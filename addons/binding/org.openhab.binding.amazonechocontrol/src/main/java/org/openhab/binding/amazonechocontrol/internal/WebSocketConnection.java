@@ -29,10 +29,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketListener;
-import org.eclipse.jetty.websocket.api.extensions.ExtensionConfig;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.eclipse.jetty.websocket.common.extensions.compress.PerMessageDeflateExtension;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPushCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,7 +90,7 @@ public class WebSocketConnection {
 
             uri = new URI("wss://" + host + "/?x-amz-device-type=ALEGCNGL9K0HM&x-amz-device-serial=" + deviceSerial);
 
-            webSocketClient.getExtensionFactory().register("permessage-deflate", PerMessageDeflateExtension.class);
+            // webSocketClient.getExtensionFactory().register("permessage-deflate", PerMessageDeflateExtension.class);
 
             try {
                 webSocketClient.start();
@@ -107,7 +105,7 @@ public class WebSocketConnection {
             request.setHeader("Pragma", "no-cache");
             request.setHeader("Origin", "alexa." + amazonSite);
 
-            request.addExtensions(new ExtensionConfig("permessage-deflate"));
+            // request.addExtensions(new ExtensionConfig("permessage-deflate"));
 
             request.setCookies(cookiesForWs);
 

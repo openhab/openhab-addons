@@ -35,7 +35,6 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.HttpException;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity;
@@ -43,6 +42,7 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activ
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates.BluetoothState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates.PairedDevice;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonCommandPayloadPushVolumeChange;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMediaState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMediaState.QueueEntry;
@@ -57,6 +57,8 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayerState.Play
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+
 /**
  * The {@link EchoHandler} is responsible for the handling of the echo device
  *
@@ -67,6 +69,7 @@ public class EchoHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EchoHandler.class);
 
+    private Gson gson = new Gson();
     private @Nullable Device device;
     private @Nullable AccountHandler account;
     private @Nullable ScheduledFuture<?> updateStateJob;
@@ -226,13 +229,11 @@ public class EchoHandler extends BaseThingHandler {
                 } else if (command == IncreaseDecreaseType.INCREASE) {
                     if (lastKnownVolume < 100) {
                         lastKnownVolume++;
-                        updateState(CHANNEL_VOLUME, new PercentType(lastKnownVolume));
                         volume = lastKnownVolume;
                     }
                 } else if (command == IncreaseDecreaseType.DECREASE) {
                     if (lastKnownVolume > 0) {
                         lastKnownVolume--;
-                        updateState(CHANNEL_VOLUME, new PercentType(lastKnownVolume));
                         volume = lastKnownVolume;
                     }
                 }
@@ -247,7 +248,10 @@ public class EchoHandler extends BaseThingHandler {
                         connection.executeSequenceCommand(device, "Alexa.DeviceControls.Volume", parameters);
                     }
                     lastKnownVolume = volume;
+                    updateState(CHANNEL_VOLUME, new PercentType(lastKnownVolume));
+                    waitForUpdate = -1;
                 }
+
             }
             // shuffle command
             if (channelId.equals(CHANNEL_SHUFFLE)) {
@@ -444,16 +448,13 @@ public class EchoHandler extends BaseThingHandler {
                             // Handle custom flashbriefings commands
                             String flashbriefing = commandText.substring(FLASH_BRIEFING_COMMAND_PREFIX.length());
 
-                            if (account != null) {
-                                for (FlashBriefingProfileHandler flashBriefing : account
-                                        .getFlashBriefingProfileHandlers()) {
-                                    ThingUID flashBriefingId = flashBriefing.getThing().getUID();
-                                    if (StringUtils.equals(flashBriefing.getThing().getUID().getId(), flashbriefing)) {
-                                        flashBriefing.handleCommand(
-                                                new ChannelUID(flashBriefingId, CHANNEL_PLAY_ON_DEVICE),
-                                                new StringType(device.serialNumber));
-                                        break;
-                                    }
+                            for (FlashBriefingProfileHandler flashBriefing : account
+                                    .getFlashBriefingProfileHandlers()) {
+                                ThingUID flashBriefingId = flashBriefing.getThing().getUID();
+                                if (StringUtils.equals(flashBriefing.getThing().getUID().getId(), flashbriefing)) {
+                                    flashBriefing.handleCommand(new ChannelUID(flashBriefingId, CHANNEL_PLAY_ON_DEVICE),
+                                            new StringType(device.serialNumber));
+                                    break;
                                 }
                             }
                         } else {
@@ -494,6 +495,9 @@ public class EchoHandler extends BaseThingHandler {
             };
             if (command instanceof RefreshType) {
                 waitForUpdate = 0;
+            }
+            if (waitForUpdate < 0) {
+                return;
             }
             if (waitForUpdate == 0) {
                 doRefresh.run();
@@ -583,6 +587,7 @@ public class EchoHandler extends BaseThingHandler {
         Provider provider = null;
         InfoText infoText = null;
         MainArt mainArt = null;
+        String providerName = null;
         try {
             JsonPlayerState playerState = connection.getPlayer(device);
             playerInfo = playerState.playerInfo;
@@ -593,6 +598,9 @@ public class EchoHandler extends BaseThingHandler {
                 }
                 mainArt = playerInfo.mainArt;
                 provider = playerInfo.provider;
+                if (provider != null) {
+                    providerName = provider.providerName;
+                }
             }
         } catch (HttpException e) {
             if (e.getCode() == 400) {
@@ -605,7 +613,11 @@ public class EchoHandler extends BaseThingHandler {
         }
         JsonMediaState mediaState = null;
         try {
-            mediaState = connection.getMediaState(device);
+
+            if (StringUtils.equalsIgnoreCase(providerName, "CLOUD_PLAYER")
+                    || StringUtils.equalsIgnoreCase(providerName, "AMAZON MUSIC")) {
+                mediaState = connection.getMediaState(device);
+            }
 
         } catch (HttpException e) {
             if (e.getCode() == 400) {
@@ -627,20 +639,19 @@ public class EchoHandler extends BaseThingHandler {
         // handle music provider id
 
         if (provider != null && isPlaying) {
-            String musicProviderId;
-            if (mediaState != null && StringUtils.equals(mediaState.currentState, "PLAYING")) {
-                musicProviderId = mediaState.providerId;
-            } else {
-                musicProviderId = provider.providerName;
-            }
+            String musicProviderId = provider.providerName;
+
             // Map the music provider id to the one used for starting music with voice command
             if (musicProviderId != null) {
                 musicProviderId = musicProviderId.toUpperCase();
             }
+            if (StringUtils.equals(musicProviderId, "AMAZON MUSIC")) {
+                musicProviderId = "AMAZON_MUSIC";
+            }
             if (StringUtils.equals(musicProviderId, "CLOUD_PLAYER")) {
                 musicProviderId = "AMAZON_MUSIC";
             }
-            if (StringUtils.equals(musicProviderId, "TUNE_IN")) {
+            if (StringUtils.startsWith(musicProviderId, "TUNEIN")) {
                 musicProviderId = "TUNEIN";
             }
             if (musicProviderId != null) {
@@ -799,13 +810,14 @@ public class EchoHandler extends BaseThingHandler {
             updateStartCommand = false;
             updateState(CHANNEL_START_COMMAND, new StringType(""));
         }
+
         updateState(CHANNEL_MUSIC_PROVIDER_ID, new StringType(musicProviderId));
         updateState(CHANNEL_AMAZON_MUSIC_TRACK_ID, new StringType(amazonMusicTrackId));
         updateState(CHANNEL_AMAZON_MUSIC, isPlaying && amazonMusic ? OnOffType.ON : OnOffType.OFF);
         updateState(CHANNEL_AMAZON_MUSIC_PLAY_LIST_ID, new StringType(amazonMusicPlayListId));
         updateState(CHANNEL_RADIO_STATION_ID, new StringType(radioStationId));
         updateState(CHANNEL_RADIO, isPlaying && isRadio ? OnOffType.ON : OnOffType.OFF);
-        updateState(CHANNEL_VOLUME, volume != null ? new PercentType(volume) : UnDefType.UNDEF);
+        updateState(CHANNEL_VOLUME, new PercentType(volume));
         updateState(CHANNEL_PROVIDER_DISPLAY_NAME, new StringType(providerDisplayName));
         updateState(CHANNEL_PLAYER, isPlaying ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
         updateState(CHANNEL_IMAGE_URL, new StringType(imageUrl));
@@ -822,8 +834,13 @@ public class EchoHandler extends BaseThingHandler {
     String lastSpokenText = "";
 
     public void handlePushActivity(Activity pushActivity) {
+
         Description description = pushActivity.ParseDescription();
 
+        if (StringUtils.isEmpty(description.firstUtteranceId)
+                || StringUtils.startsWithIgnoreCase(description.firstUtteranceId, "TextClient:")) {
+            return;
+        }
         String spokenText = description.summary;
         if (spokenText != null && StringUtils.isNotEmpty(spokenText)) {
             if (lastSpokenText.equals(spokenText)) {
@@ -833,5 +850,33 @@ public class EchoHandler extends BaseThingHandler {
             updateState(CHANNEL_LAST_VOICE_COMMAND, new StringType(spokenText));
         }
 
+    }
+
+    public void handlePushCommand(String command, String payload) {
+        switch (command) {
+            case "PUSH_VOLUME_CHANGE":
+                JsonCommandPayloadPushVolumeChange volumeChange = gson.fromJson(payload,
+                        JsonCommandPayloadPushVolumeChange.class);
+                @Nullable
+                Integer volumeSetting = volumeChange.volumeSetting;
+                @Nullable
+                Boolean muted = volumeChange.isMuted;
+                if (muted != null && muted) {
+                    updateState(CHANNEL_VOLUME, new PercentType(0));
+                } else if (volumeSetting != null) {
+                    lastKnownVolume = volumeSetting;
+                    updateState(CHANNEL_VOLUME, new PercentType(lastKnownVolume));
+                }
+                break;
+            case "PUSH_EQUALIZER_STATE_CHANGE":
+                // Currently ignored
+                break;
+            default:
+                AccountHandler account = this.account;
+                Device device = this.device;
+                if (account != null && device != null) {
+                    updateState(account, device, null);
+                }
+        }
     }
 }

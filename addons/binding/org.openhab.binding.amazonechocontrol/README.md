@@ -21,6 +21,7 @@ It provides features to control and view the current state of echo devices:
 - start automation routine
 - activate multiple configurations of flash briefings
 - start playing music by providing the voice command as text (Works with all music providers)
+- get last spoken voice command
 
 Some ideas what you can do in your home by using rules and other openHAB controlled devices:
 
@@ -34,6 +35,7 @@ Some ideas what you can do in your home by using rules and other openHAB control
 - Start your briefing if you turn on the light first time in the morning
 - Have different flash briefing in the morning and evening
 - Let alexa say 'welcome' to you if you open the door
+- Implement own handling for voice commands in a rule
 
 ## Note
 
@@ -142,6 +144,7 @@ It will be configured at runtime by using the save channel to store the current 
 | playMusicVoiceCommand | String    | W         | echo, echoshow, echospot      | Write Only! Voice command as text. E.g. 'Yesterday from the Beatles' 
 | startCommand          | String    | W         | echo, echoshow, echospot      | Write Only! Used to start anything. Available options: Weather, Traffic, GoodMorning, SingASong, TellStory, FlashBriefing and FlashBriefing.<FlahshbriefingDeviceID> (Note: The options are case sensitive)
 | textToSpeech          | String    | W         | echo, echoshow, echospot      | Write Only! Write some text to this channel and alexa will speak it 
+| lastVoiceCommand      | String    | R         | echo, echoshow, echospot      | ONLY IN BETA 2.4 (2) AND NEWER! Last voice command spoken to the device 
 | save                  | Switch    | W         | flashbriefingprofile     | Write Only! Stores the current configuration of flash briefings within the thing
 | active                | Switch    | R/W       | flashbriefingprofile     | Active the profile
 | playOnDevice          | String    | W         | flashbriefingprofile     | Specify the echo serial number or name to start the flash briefing. 
@@ -208,6 +211,9 @@ String Echo_Living_Room_TTS                   "Text to Speech"                  
 String Echo_Living_Room_Remind                "Remind"                                (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:remind"}
 String Echo_Living_Room_PlayAlarmSound        "Play Alarm Sound"                      (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:playAlarmSound"}
 String Echo_Living_Room_StartRoutine          "Start Routine"                         (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:startRoutine"}
+
+// BETA 2.4 (2) channel:
+String Echo_Living_Room_LastVoiceCommand          "Last voice command"                         (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:lastVoiceCommand"}
 
 // Flashbriefings
 Switch FlashBriefing_Technical_Save   "Save (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:save"} 

@@ -86,6 +86,7 @@ public class Connection {
     private final String amazonSite;
     private final String alexaServer;
     private final String accountThingId;
+    private final String userAgent;
 
     private @Nullable String sessionId;
     private @Nullable Date loginTime;
@@ -94,11 +95,33 @@ public class Connection {
     private final Gson gson = new Gson();
     private final Gson gsonWithNullSerialization;
 
+    private static @Nullable String operatingSystem = null;
+
+    private static String getOsName() {
+        if (operatingSystem == null) {
+            operatingSystem = System.getProperty("os.name");
+        }
+        String result = operatingSystem;
+        if (result == null) {
+            result = "Unkown";
+        }
+        return result;
+    }
+
+    private static boolean isWindows() {
+        return getOsName().startsWith("Windows");
+    }
+
     public Connection(@Nullable String email, @Nullable String password, @Nullable String amazonSite,
             @Nullable String accountThingId, @Nullable String oldCookies) {
         this.accountThingId = accountThingId != null ? accountThingId : "";
         this.email = email != null ? email : "";
         this.password = password != null ? password : "";
+        if (isWindows()) {
+            this.userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:99.0) Gecko/20100101 Firefox/99.0";
+        } else {
+            this.userAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36";
+        }
 
         String correctedAmazonSite = amazonSite != null ? amazonSite : "";
         if (correctedAmazonSite.toLowerCase().startsWith("http://")) {
@@ -312,7 +335,7 @@ public class Connection {
                 connection = (HttpsURLConnection) new URL(currentUrl).openConnection();
                 connection.setRequestMethod(verb);
                 connection.setRequestProperty("Accept-Language", "en-US");
-                connection.setRequestProperty("User-Agent", "Mozilla/5.0 openHAB/1.0.0.0");
+                connection.setRequestProperty("User-Agent", userAgent);
                 connection.setRequestProperty("DNT", "1");
                 connection.setRequestProperty("Upgrade-Insecure-Requests", "1");
                 if (customHeaders != null) {

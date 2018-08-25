@@ -12,18 +12,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link JsonPushPayloadCommand} encapsulate the GSON data of the push command with device information
+ * The {@link JsonCommandPayloadPushBluetoothStateChange} encapsulate the GSON data of automation query
  *
  * @author Michael Geramb - Initial contribution
  */
 @NonNullByDefault
-public class JsonPushCommandPayloadDevice {
-
-    public @Nullable DopplerId dopplerId;
-
-    public class DopplerId {
-        public @Nullable String deviceSerialNumber;
-        public @Nullable String deviceType;
-    }
-
+public class JsonCommandPayloadPushBluetoothStateChange extends JsonCommandPayloadPushDevice {
+    public @Nullable String destinationUserId;
+    public @Nullable String bluetoothEvent;
+    public @Nullable String bluetoothEventPayload;
+    public @Nullable Boolean bluetoothEventSuccess;
 }

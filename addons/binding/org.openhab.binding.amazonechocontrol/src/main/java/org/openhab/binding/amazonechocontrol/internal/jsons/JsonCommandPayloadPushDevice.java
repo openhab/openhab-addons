@@ -17,16 +17,13 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Michael Geramb - Initial contribution
  */
 @NonNullByDefault
-public class JsonPushCommandPayloadPushActivity {
+public class JsonCommandPayloadPushDevice {
 
-    public @Nullable String destinationUserId;
-    public @Nullable Long timestamp;
+    public @Nullable DopplerId dopplerId;
 
-    public @Nullable Key key;
-
-    public class Key {
-        public @Nullable String entryId;
-        public @Nullable String registeredUserId;
+    public class DopplerId {
+        public @Nullable String deviceSerialNumber;
+        public @Nullable String deviceType;
     }
 
 }

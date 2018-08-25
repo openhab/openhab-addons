@@ -45,11 +45,13 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activ
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity.SourceDeviceId;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates.BluetoothState;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonCommandPayloadPushActivity;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonCommandPayloadPushActivity.Key;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonCommandPayloadPushDevice;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonCommandPayloadPushDevice.DopplerId;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonFeed;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPushCommand;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPushCommandPayloadPushActivity;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPushCommandPayloadPushActivity.Key;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,14 +75,15 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     private final Set<FlashBriefingProfileHandler> flashBriefingProfileHandlers = new HashSet<>();
     private final Object synchronizeConnection = new Object();
     private Map<String, Device> jsonSerialNumberDeviceMapping = new HashMap<>();
-    private @Nullable ScheduledFuture<?> refreshJob;
-    private @Nullable ScheduledFuture<?> refreshLogin;
-    private @Nullable ScheduledFuture<?> refreshDataDelayed;
+    private @Nullable ScheduledFuture<?> checkDataJob;
+    private @Nullable ScheduledFuture<?> checkLoginJob;
+    private @Nullable ScheduledFuture<?> refreshAfterCommandJob;
     private String currentFlashBriefingJson = "";
     private final HttpService httpService;
     private @Nullable AccountServlet accountServlet;
     private final Gson gson = new Gson();
     private final Object refreshDataLock = new Object();
+    int checkDataCounter;
 
     public AccountHandler(Bridge bridge, HttpService httpService, Storage<String> stateStorage) {
         super(bridge);
@@ -131,9 +134,8 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Wait for login");
 
-        refreshLogin = scheduler.scheduleWithFixedDelay(this::checkLogin, 0, 60, TimeUnit.SECONDS);
-        pollingIntervalInSeconds = 3600; // do complete refresh after 60 minutes
-        refreshJob = scheduler.scheduleWithFixedDelay(this::refreshData, 4, pollingIntervalInSeconds, TimeUnit.SECONDS);
+        checkLoginJob = scheduler.scheduleWithFixedDelay(this::checkLogin, 0, 60, TimeUnit.SECONDS);
+        checkDataJob = scheduler.scheduleWithFixedDelay(this::checkData, 4, 60, TimeUnit.SECONDS);
 
         logger.debug("amazon account bridge handler started.");
     }
@@ -249,22 +251,22 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     private void cleanup() {
         logger.debug("cleanup {}", getThing().getUID().getAsString());
         @Nullable
-        ScheduledFuture<?> refreshJob = this.refreshJob;
+        ScheduledFuture<?> refreshJob = this.checkDataJob;
         if (refreshJob != null) {
             refreshJob.cancel(true);
-            this.refreshJob = null;
+            this.checkDataJob = null;
         }
         @Nullable
-        ScheduledFuture<?> refreshLogin = this.refreshLogin;
+        ScheduledFuture<?> refreshLogin = this.checkLoginJob;
         if (refreshLogin != null) {
             refreshLogin.cancel(true);
-            this.refreshLogin = null;
+            this.checkLoginJob = null;
         }
         @Nullable
-        ScheduledFuture<?> refreshDataDelayed = this.refreshDataDelayed;
+        ScheduledFuture<?> refreshDataDelayed = this.refreshAfterCommandJob;
         if (refreshDataDelayed != null) {
             refreshDataDelayed.cancel(true);
-            this.refreshDataDelayed = null;
+            this.refreshAfterCommandJob = null;
         }
         Connection connection = this.connection;
         if (connection != null) {
@@ -369,7 +371,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                     }
                 }
             }
-            checkWebSocketConnection();
+
         } catch (HttpException | JsonSyntaxException | ConnectionException e) {
             logger.debug("check login fails {}", e);
         } catch (Exception e) { // this handler can be removed later, if we know that nothing else can fail.
@@ -378,17 +380,17 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     }
 
     private void handleValidLogin() {
+        closeWebSocketConnection();
         updateDeviceList();
         updateFlashBriefingHandlers();
         updateStatus(ThingStatus.ONLINE);
+        checkDataCounter = 0;
+        checkData();
     }
 
     // used to set a valid connection from the web proxy login
     public void setConnection(Connection connection) {
         this.connection = connection;
-        closeWebSocketConnection();
-        checkWebSocketConnection();
-
         String serializedStorage = connection.serializeLoginData();
         this.stateStorage.put("sessionStorage", serializedStorage);
         handleValidLogin();
@@ -402,7 +404,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         }
     }
 
-    void checkWebSocketConnection() {
+    boolean checkWebSocketConnection() {
         WebSocketConnection webSocketConnection = this.webSocketConnection;
         if (webSocketConnection == null || webSocketConnection.isClosed()) {
             Connection connection = this.connection;
@@ -412,6 +414,24 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                             connection.getSessionCookies(), this);
                 } catch (IOException e) {
                     logger.info("Web socket connection starting failed: {}", e);
+                }
+            }
+            return false;
+        }
+        return true;
+    }
+
+    private void checkData() {
+        synchronized (refreshDataLock) {
+
+            Connection connection = this.connection;
+            if (connection != null && connection.getIsLoggedIn()) {
+                checkDataCounter++;
+                if (checkDataCounter == 60) {
+                    checkDataCounter = 0;
+                }
+                if (!checkWebSocketConnection() || checkDataCounter == 0) {
+                    refreshData();
                 }
             }
         }
@@ -611,27 +631,60 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
 
     @Override
     public void webSocketCommandReceived(JsonPushCommand pushCommand) {
+        scheduler.execute(() -> {
+            handleWebsocketCommand(pushCommand);
+        });
+    }
+
+    void handleWebsocketCommand(JsonPushCommand pushCommand) {
+
         String command = pushCommand.command;
         if (command != null) {
             switch (command) {
                 case "PUSH_ACTIVITY":
                     handlePushActivity(pushCommand.payload);
                     return;
+                case "PUSH_DOPPLER_CONNECTION_CHANGE":
+                case "PUSH_BLUETOOTH_STATE_CHANGE":
+                    // refresh data 200ms after last command
+                    @Nullable
+                    ScheduledFuture<?> refreshDataDelayed = this.refreshAfterCommandJob;
+                    if (refreshDataDelayed != null) {
+                        refreshDataDelayed.cancel(false);
+                    }
+                    this.refreshAfterCommandJob = scheduler.schedule(this::refreshAfterCommand, 700,
+                            TimeUnit.MILLISECONDS);
+                    break;
+                case "PUSH_NOTIFICATION_CHANGE":
+                    // Currently ignored
+                    break;
+                default:
+                    String payload = pushCommand.payload;
+                    if (payload != null && StringUtils.isNotEmpty(payload) && payload.startsWith("{")
+                            && payload.endsWith("}")) {
+                        JsonCommandPayloadPushDevice devicePayload = gson.fromJson(payload,
+                                JsonCommandPayloadPushDevice.class);
+                        @Nullable
+                        DopplerId dopplerId = devicePayload.dopplerId;
+                        if (dopplerId != null) {
+                            handlePushDeviceCommand(dopplerId, command, payload);
+                        }
+                    }
+                    break;
             }
         }
+    }
 
-        // refresh data 200ms after last command
+    private void handlePushDeviceCommand(DopplerId dopplerId, String command, String payload) {
         @Nullable
-        ScheduledFuture<?> refreshDataDelayed = this.refreshDataDelayed;
-        if (refreshDataDelayed != null) {
-            refreshDataDelayed.cancel(false);
+        EchoHandler echoHandler = findEchoHandlerBySerialNumber(dopplerId.deviceSerialNumber);
+        if (echoHandler != null) {
+            echoHandler.handlePushCommand(command, payload);
         }
-        this.refreshDataDelayed = scheduler.schedule(this::refreshAfterCommand, 700, TimeUnit.MILLISECONDS);
     }
 
     private void handlePushActivity(@Nullable String payload) {
-        JsonPushCommandPayloadPushActivity pushActivity = gson.fromJson(payload,
-                JsonPushCommandPayloadPushActivity.class);
+        JsonCommandPayloadPushActivity pushActivity = gson.fromJson(payload, JsonCommandPayloadPushActivity.class);
 
         Key key = pushActivity.key;
         if (key == null) {
