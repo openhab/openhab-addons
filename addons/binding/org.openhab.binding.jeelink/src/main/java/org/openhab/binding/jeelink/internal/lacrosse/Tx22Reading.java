@@ -78,4 +78,10 @@ public class Tx22Reading extends LaCrosseTemperatureReading {
     public boolean hasTemperature() {
         return getTemperature() != null;
     }
+
+    @Override
+    public String toString() {
+        return super.toString() + " rain=" + rain + " windDirection=" + windDirection + " windSpeed=" + windSpeed
+                + " windGust=" + windGust + " pressure=" + pressure;
+    }
 }

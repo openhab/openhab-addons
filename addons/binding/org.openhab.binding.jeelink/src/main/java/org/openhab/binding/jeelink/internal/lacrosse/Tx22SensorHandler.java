@@ -48,23 +48,14 @@ public class Tx22SensorHandler extends JeeLinkSensorHandler<Tx22Reading> {
             @Override
             public void publish(Tx22Reading reading) {
                 if (reading != null && getThing().getStatus() == ThingStatus.ONLINE) {
-                    BigDecimal temp = new BigDecimal(reading.getTemperature()).setScale(1, RoundingMode.HALF_UP);
-
-                    logger.debug(
-                            "updating states for thing {} ({}): temp={} ({}), hum={}, batNew={}, batLow={}, rain={}, pressure={}, wDir={}, wSpeed={}, gSpeed={}",
-                            getThing().getLabel(), getThing().getUID().getId(), reading.hasTemperature() ? temp : "-",
-                            reading.hasTemperature() ? reading.getTemperature() : "-",
-                            reading.hasHumidity() ? reading.getHumidity() : "-", reading.isBatteryNew(),
-                            reading.isBatteryLow(), reading.hasRain() ? reading.getRain() : "-",
-                            reading.hasPressure() ? reading.getPressure() : "-",
-                            reading.hasWindDirection() ? reading.getWindDirection() : "-",
-                            reading.hasWindSpeed() ? reading.getWindSpeed() : "-",
-                            reading.hasWindGust() ? reading.getWindGust() : "-");
+                    logger.debug("updating states for thing {} ({}): {}", getThing().getLabel(),
+                            getThing().getUID().getId(), reading);
 
                     updateState(BATTERY_NEW_CHANNEL, reading.isBatteryNew() ? OnOffType.ON : OnOffType.OFF);
                     updateState(BATTERY_LOW_CHANNEL, reading.isBatteryLow() ? OnOffType.ON : OnOffType.OFF);
 
                     if (reading.hasTemperature()) {
+                        BigDecimal temp = new BigDecimal(reading.getTemperature()).setScale(1, RoundingMode.HALF_UP);
                         updateState(TEMPERATURE_CHANNEL, new QuantityType<>(temp, SIUnits.CELSIUS));
                     }
                     if (reading.hasHumidity()) {

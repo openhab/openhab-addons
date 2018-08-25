@@ -24,12 +24,12 @@ public class LaCrosseTemperatureReading implements Reading {
     private boolean batteryNew;
     private boolean batteryLow;
 
-    public LaCrosseTemperatureReading(int sensorId, int sensorType, int channel, float temp, int humidity,
+    public LaCrosseTemperatureReading(int sensorId, int sensorType, int channel, Float temp, Integer humidity,
             boolean batteryNew, boolean batteryLow) {
         this(String.valueOf(sensorId), sensorType, channel, temp, humidity, batteryNew, batteryLow);
     }
 
-    public LaCrosseTemperatureReading(String sensorId, int sensorType, int channel, float temp, int humidity,
+    public LaCrosseTemperatureReading(String sensorId, int sensorType, int channel, Float temp, Integer humidity,
             boolean batteryNew, boolean batteryLow) {
         this.sensorId = sensorId;
         this.sensorType = sensorType;

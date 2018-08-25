@@ -12,6 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.openhab.binding.jeelink.internal.JeeLinkReadingConverter;
+import org.openhab.binding.jeelink.internal.Reading;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,7 +89,7 @@ public class Tx22ReadingConverter implements JeeLinkReadingConverter<Tx22Reading
                 Float windGust = "255".equals(matcher.group(12)) ? null
                         : (Integer.parseInt(matcher.group(12)) * 256 + Integer.parseInt(matcher.group(13))) / 10f;
 
-                byte flags = Byte.parseByte(matcher.group(14));
+                int flags = Integer.parseInt(matcher.group(14));
                 boolean batteryNew = (flags & (byte) 1) > 0;
                 boolean batteryLow = (flags & (byte) 4) > 0;
 
@@ -103,5 +104,11 @@ public class Tx22ReadingConverter implements JeeLinkReadingConverter<Tx22Reading
         }
 
         return null;
+    }
+
+    public static void main(String[] args) {
+        Tx22ReadingConverter c = new Tx22ReadingConverter();
+        Reading r = c.createReading("OK WS 24 1 255 255 255 255 255 255 255 255 255 255 255 255");
+        System.out.println(r);
     }
 }
