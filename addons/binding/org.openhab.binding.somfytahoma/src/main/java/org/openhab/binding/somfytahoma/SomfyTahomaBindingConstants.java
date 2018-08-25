@@ -91,6 +91,9 @@ public class SomfyTahomaBindingConstants {
     // Door lock
     public static final ThingTypeUID THING_TYPE_DOOR_LOCK = new ThingTypeUID(BINDING_ID, "doorlock");
 
+    // Pergola
+    public static final ThingTypeUID THING_TYPE_PERGOLA = new ThingTypeUID(BINDING_ID, "pergola");
+
     // List of all Channel ids
     // Gateway
     public static final String VERSION = "version";
@@ -185,6 +188,7 @@ public class SomfyTahomaBindingConstants {
     final public static String POD = "Pod";
     final public static String HEATINGSYSTEM = "HeatingSystem";
     final public static String DOORLOCK = "DoorLock";
+    final public static String PERGOLA = "Pergola";
 
     // unsupported uiClasses
     final public static String PROTOCOLGATEWAY = "ProtocolGateway";
