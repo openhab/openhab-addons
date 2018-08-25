@@ -320,8 +320,6 @@ public class IhcClient {
     private WSControllerState waitStateChangeNotifications(WSControllerState previousState, int timeoutInSeconds)
             throws IhcExecption {
 
-        // IhcControllerService service = new IhcControllerService(ip, timeout);
-        // return service.waitStateChangeNotifications(previousState, timeoutInSeconds);
         return controllerService.waitStateChangeNotifications(previousState, timeoutInSeconds);
     }
 
@@ -351,8 +349,6 @@ public class IhcClient {
     private List<WSResourceValue> waitResourceValueNotifications(int timeoutInSeconds)
             throws IhcExecption, SocketTimeoutException {
 
-        // IhcResourceInteractionService service = new IhcResourceInteractionService(ip, timeout);
-        // List<WSResourceValue> list = service.waitResourceValueNotifications(timeoutInSeconds);
         List<WSResourceValue> list = resourceInteractionService.waitResourceValueNotifications(timeoutInSeconds);
 
         for (WSResourceValue val : list) {

@@ -272,7 +272,6 @@ public class IhcResourceInteractionService extends IhcBaseService {
                 } else if ("ns1".equals(prefix)) {
                     return "utcs";
                 }
-                // else if ("ns2".equals(prefix)) return "utcs.values";
                 return "utcs.values";
             }
 
