@@ -24,7 +24,6 @@ import org.openhab.binding.ihc.internal.ws.datatypes.WSControllerState;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSFile;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSProjectInfo;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
-import org.openhab.binding.ihc.internal.ws.services.IhcControllerService;
 
 /**
  * Test for IHC / ELKO binding
@@ -165,7 +164,6 @@ public class IhcControllerServiceTest {
         final WSProjectInfo result = ihcControllerService.getProjectInfo();
 
         Mockito.verify(ihcControllerService).setRequestProperty(eq("SOAPAction"), eq("getProjectInfo"));
-
         assertEquals("Pertti 'Speedy' Keinonen", result.getCustomerName());
     }
 
@@ -179,7 +177,6 @@ public class IhcControllerServiceTest {
         final int result = ihcControllerService.getProjectNumberOfSegments();
 
         Mockito.verify(ihcControllerService).setRequestProperty(eq("SOAPAction"), eq("getIHCProjectNumberOfSegments"));
-
         assertEquals(28, result);
     }
 
@@ -193,7 +190,6 @@ public class IhcControllerServiceTest {
         final int result = ihcControllerService.getProjectSegmentationSize();
 
         Mockito.verify(ihcControllerService).setRequestProperty(eq("SOAPAction"), eq("getIHCProjectSegmentationSize"));
-
         assertEquals(7500, result);
     }
 
@@ -205,7 +201,6 @@ public class IhcControllerServiceTest {
         final WSControllerState result = ihcControllerService.getControllerState();
 
         Mockito.verify(ihcControllerService).setRequestProperty(eq("SOAPAction"), eq("getState"));
-
         assertEquals(IhcClient.CONTROLLER_STATE_READY, result.getState());
     }
 
@@ -220,7 +215,6 @@ public class IhcControllerServiceTest {
         final WSControllerState result = ihcControllerService.waitStateChangeNotifications(previousState, 5);
 
         Mockito.verify(ihcControllerService).setRequestProperty(eq("SOAPAction"), eq("waitForControllerStateChange"));
-
         assertEquals(IhcClient.CONTROLLER_STATE_READY, result.getState());
     }
 
@@ -234,7 +228,6 @@ public class IhcControllerServiceTest {
         final WSFile result = ihcControllerService.getProjectSegment(1, 1001, 2002);
 
         Mockito.verify(ihcControllerService).setRequestProperty(eq("SOAPAction"), eq("getIHCProjectSegment"));
-
         assertTrue("Result bytes doesn't match to expected bytes", Arrays.equals(expectedResult, result.getData()));
     }
 

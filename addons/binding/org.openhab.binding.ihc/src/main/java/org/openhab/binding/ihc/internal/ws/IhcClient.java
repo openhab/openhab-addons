@@ -46,9 +46,9 @@ public class IhcClient {
 
     /** Current state of the connection */
     public enum ConnectionState {
-        DISCONNECTED,
-        CONNECTING,
-        CONNECTED
+    DISCONNECTED,
+    CONNECTING,
+    CONNECTED
     }
 
     public final static String CONTROLLER_STATE_READY = "text.ctrl.state.ready";
@@ -527,7 +527,6 @@ public class IhcClient {
             while (iterator.hasNext()) {
                 iterator.next().errorOccured(err);
             }
-
         } catch (Exception e) {
             logger.error("Event listener invoking error", e);
         }
@@ -540,7 +539,6 @@ public class IhcClient {
             while (iterator.hasNext()) {
                 iterator.next().statusUpdateReceived(state);
             }
-
         } catch (Exception e) {
             logger.error("Event listener invoking error", e);
         }

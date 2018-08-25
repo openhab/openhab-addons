@@ -137,5 +137,4 @@ public enum ConverterFactory {
         }
         return (Converter<WSResourceValue, Type>) converters.get(new Key(resourceValueType, type));
     }
-
 }

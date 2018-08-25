@@ -23,7 +23,6 @@ public class WSSegmentationSize extends WSBaseDataType {
     }
 
     public WSSegmentationSize(int size) {
-
         this.size = size;
     }
 

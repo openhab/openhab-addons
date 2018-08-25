@@ -62,7 +62,6 @@ public class IhcResourceInteractionService extends IhcBaseService {
      * @return Resource value.
      */
     public WSResourceValue resourceQuery(int resoureId) throws IhcExecption {
-
         // @formatter:off
         final String soapQuery =
                   "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -88,11 +87,9 @@ public class IhcResourceInteractionService extends IhcBaseService {
                 } else {
                     throw new IhcExecption("No resource id found");
                 }
-
             } else {
                 throw new IhcExecption("No resource value found");
             }
-
         } catch (XPathExpressionException e) {
             throw new IhcExecption(e);
         } catch (UnsupportedEncodingException e) {
@@ -137,7 +134,6 @@ public class IhcResourceInteractionService extends IhcBaseService {
     }
 
     private WSResourceValue parseResourceValue(Node n, int nameSpaceNumber) throws XPathExpressionException {
-
         // parse resource id
         String resourceId = getValue(n, "ns1:resourceID");
 
@@ -263,7 +259,6 @@ public class IhcResourceInteractionService extends IhcBaseService {
     }
 
     private String getValue(Node n, String expr) throws XPathExpressionException {
-
         XPath xpath = XPathFactory.newInstance().newXPath();
         xpath.setNamespaceContext(new NamespaceContext() {
 
@@ -306,7 +301,6 @@ public class IhcResourceInteractionService extends IhcBaseService {
      * @return True if value is successfully updated.
      */
     public boolean resourceUpdate(WSResourceValue value) throws IhcExecption {
-
         boolean retval = false;
 
         if (value instanceof WSFloatingPointValue) {
@@ -333,7 +327,6 @@ public class IhcResourceInteractionService extends IhcBaseService {
     }
 
     public boolean resourceUpdate(WSBooleanValue value) throws IhcExecption {
-
         // @formatter:off
         final String soapQuery =
                   "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -355,7 +348,6 @@ public class IhcResourceInteractionService extends IhcBaseService {
     }
 
     public boolean resourceUpdate(WSFloatingPointValue value) throws IhcExecption {
-
         // @formatter:off
         final String soapQuery =
                   "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -380,7 +372,6 @@ public class IhcResourceInteractionService extends IhcBaseService {
     }
 
     public boolean resourceUpdate(WSIntegerValue value) throws IhcExecption {
-
         // @formatter:off
         final String soapQuery =
                   "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -405,7 +396,6 @@ public class IhcResourceInteractionService extends IhcBaseService {
     }
 
     public boolean resourceUpdate(WSTimerValue value) throws IhcExecption {
-
         // @formatter:off
         final String soapQuery =
                   "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -427,7 +417,6 @@ public class IhcResourceInteractionService extends IhcBaseService {
     }
 
     public boolean resourceUpdate(WSWeekdayValue value) throws IhcExecption {
-
         // @formatter:off
         final String soapQuery =
                   "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -449,7 +438,6 @@ public class IhcResourceInteractionService extends IhcBaseService {
     }
 
     public boolean resourceUpdate(WSEnumValue value) throws IhcExecption {
-
         // @formatter:off
         final String soapQuery =
                   "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -474,7 +462,6 @@ public class IhcResourceInteractionService extends IhcBaseService {
     }
 
     public boolean resourceUpdate(WSTimeValue value) throws IhcExecption {
-
         // @formatter:off
         final String soapQuery =
                   "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -499,7 +486,6 @@ public class IhcResourceInteractionService extends IhcBaseService {
     }
 
     public boolean resourceUpdate(WSDateValue value) throws IhcExecption {
-
         // @formatter:off
         final String soapQuery =
                   "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -537,7 +523,6 @@ public class IhcResourceInteractionService extends IhcBaseService {
      * @return True is connection successfully opened.
      */
     public void enableRuntimeValueNotifications(Set<Integer> resourceIdList) throws IhcExecption {
-
         // @formatter:off
         final String soapQueryPrefix =
                   "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"

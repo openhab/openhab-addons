@@ -130,5 +130,4 @@ public class WSLoginResult extends WSBaseDataType {
 
         return this;
     }
-
 }

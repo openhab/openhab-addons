@@ -60,7 +60,6 @@ public class UpDownTypeWSIntegerValueConverterTest {
 
         UpDownType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
         assertEquals(UpDownType.UP, type);
-
     }
 
     @Test

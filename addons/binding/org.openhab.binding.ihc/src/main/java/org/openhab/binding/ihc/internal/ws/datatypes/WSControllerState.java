@@ -54,5 +54,4 @@ public class WSControllerState extends WSBaseDataType {
         }
         return this;
     }
-
 }

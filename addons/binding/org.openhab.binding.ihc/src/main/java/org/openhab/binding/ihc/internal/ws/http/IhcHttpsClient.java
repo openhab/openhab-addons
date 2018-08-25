@@ -36,12 +36,9 @@ public abstract class IhcHttpsClient {
     private static final Logger logger = LoggerFactory.getLogger(IhcHttpsClient.class);
 
     final int DEF_CONNECT_TIMEOUT = 5000;
-
     private int connectTimeout = DEF_CONNECT_TIMEOUT;
-
     private HttpClient client = null;
     private HttpPost postReq = null;
-
     private AtomicInteger counter = new AtomicInteger();
 
     /**
@@ -71,7 +68,6 @@ public abstract class IhcHttpsClient {
         if (client == null) {
             client = IhcConnectionPool.getInstance().getHttpClient();
         }
-
         postReq = new HttpPost(url);
     }
 

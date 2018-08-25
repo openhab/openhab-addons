@@ -60,7 +60,6 @@ public class OpenClosedTypeWSIntegerValueConverterTest {
 
         OpenClosedType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
         assertEquals(OpenClosedType.OPEN, type);
-
     }
 
     @Test

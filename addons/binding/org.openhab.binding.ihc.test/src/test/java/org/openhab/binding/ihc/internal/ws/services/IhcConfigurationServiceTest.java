@@ -22,7 +22,6 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSSystemInfo;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
-import org.openhab.binding.ihc.internal.ws.services.IhcConfigurationService;
 
 /**
  * Test for IHC / ELKO binding
@@ -84,7 +83,6 @@ public class IhcConfigurationServiceTest {
         final WSSystemInfo result = ihcConfigurationService.getSystemInfo();
 
         Mockito.verify(ihcConfigurationService).setRequestProperty(eq("SOAPAction"), eq("getSystemInfo"));
-
         assertEquals(false, result.getApplicationIsWithoutViewer());
         assertEquals("ELKOFI", result.getBrand());
         assertEquals("6.2", result.getHwRevision());

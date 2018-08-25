@@ -74,7 +74,6 @@ public class IhcControllerService extends IhcBaseService {
      * @throws IhcExecption
      */
     public synchronized WSFile getProjectSegment(int index, int major, int minor) throws IhcExecption {
-
         // @formatter:off
         final String soapQuery =
                   "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -99,7 +98,6 @@ public class IhcControllerService extends IhcBaseService {
      * @throws IhcExecption
      */
     public synchronized WSControllerState getControllerState() throws IhcExecption {
-
         String response = sendSoapQuery("getState", EMPTY_QUERY, timeout);
         return new WSControllerState().parseXMLData(response);
     }

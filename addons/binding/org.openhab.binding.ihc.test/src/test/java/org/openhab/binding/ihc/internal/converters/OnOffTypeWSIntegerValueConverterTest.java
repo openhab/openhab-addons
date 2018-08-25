@@ -60,7 +60,6 @@ public class OnOffTypeWSIntegerValueConverterTest {
 
         OnOffType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
         assertEquals(OnOffType.ON, type);
-
     }
 
     @Test
