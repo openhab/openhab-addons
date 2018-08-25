@@ -118,7 +118,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             Connection connection = this.connection;
             if (connection == null || !connection.getEmail().equals(email) || !connection.getPassword().equals(password)
                     || !connection.getAmazonSite().equals(amazonSite)) {
-                this.connection = new Connection(email, password, amazonSite, this.getThing().getUID().getId());
+                this.connection = new Connection(email, password, amazonSite, this.getThing().getUID().getId(), null);
             }
         }
         if (this.accountServlet == null) {
@@ -274,31 +274,38 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                 Date verifyTime = currentConnection.tryGetVerifyTime();
                 Date currentDate = new Date();
                 long currentTime = currentDate.getTime();
+                boolean recreateSession = false;
                 if (verifyTime != null && currentTime - verifyTime.getTime() > 3600000) // Every one hour
                 {
                     try {
                         if (!currentConnection.verifyLogin()) {
                             currentConnection.logout();
+                            recreateSession = true;
                         }
                     } catch (IOException | URISyntaxException e) {
-                        logger.info("logout failed: {}", e.getMessage());
-                        currentConnection.logout();
+                        logger.info("verify login failed: {}", e.getMessage());
+
                     }
                 }
                 Date loginTime = currentConnection.tryGetLoginTime();
                 if (loginTime != null && currentTime - loginTime.getTime() > 86400000 * 5) // 5 days
                 {
                     // Recreate session
-                    this.stateStorage.put("sessionStorage", "");
+                    recreateSession = true;
+                    String loginData = currentConnection.serializeLoginData();
                     currentConnection = new Connection(currentConnection.getEmail(), currentConnection.getPassword(),
-                            currentConnection.getAmazonSite(), this.getThing().getUID().getId());
+                            currentConnection.getAmazonSite(), this.getThing().getUID().getId(), loginData);
+
                 }
                 boolean loginIsValid = true;
                 if (!currentConnection.getIsLoggedIn()) {
                     try {
 
                         // read session data from property
-                        String sessionStore = this.stateStorage.get("sessionStorage");
+                        String sessionStore = null;
+                        if (!recreateSession) {
+                            sessionStore = this.stateStorage.get("sessionStorage");
+                        }
 
                         // try use the session data
                         if (!currentConnection.tryRestoreLogin(sessionStore)) {

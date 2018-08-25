@@ -103,7 +103,13 @@ public class AccountServlet extends HttpServlet {
     }
 
     private Connection reCreateConnection() {
-        return new Connection(configuration.email, configuration.password, configuration.amazonSite, this.id);
+        Connection oldConnection = this.connectionToInitialize;
+        String oldLoginData = null;
+        if (oldConnection != null) {
+            oldLoginData = oldConnection.serializeLoginData();
+        }
+        return new Connection(configuration.email, configuration.password, configuration.amazonSite, this.id,
+                oldLoginData);
     }
 
     public void dispose() {

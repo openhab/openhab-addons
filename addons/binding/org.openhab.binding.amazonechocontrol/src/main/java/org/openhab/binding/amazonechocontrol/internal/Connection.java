@@ -93,7 +93,7 @@ public class Connection {
     private final Gson gsonWithNullSerialization;
 
     public Connection(@Nullable String email, @Nullable String password, @Nullable String amazonSite,
-            @Nullable String accountThingId) {
+            @Nullable String accountThingId, @Nullable String oldCookies) {
         this.accountThingId = accountThingId != null ? accountThingId : "";
         this.email = email != null ? email : "";
         this.password = password != null ? password : "";
@@ -116,6 +116,8 @@ public class Connection {
 
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonWithNullSerialization = gsonBuilder.create();
+        tryRestoreCookies(oldCookies, true);
+
     }
 
     public @Nullable Date tryGetLoginTime() {
@@ -194,27 +196,47 @@ public class Connection {
     }
 
     public boolean tryRestoreLogin(@Nullable String data) {
+
+        Date loginTime = tryRestoreCookies(data, false);
+        if (loginTime != null) {
+            try {
+                if (verifyLogin()) {
+                    this.loginTime = loginTime;
+                    return true;
+                }
+            } catch (IOException e) {
+                logger.info("verify login fails with io exception: {}", e);
+            } catch (URISyntaxException e) {
+                logger.warn("verify login fails with uri syntax exception: {}", e);
+            }
+        }
+        // anything goes wrong, remove session data
+        logout();
+        return false;
+    }
+
+    private @Nullable Date tryRestoreCookies(@Nullable String data, boolean doNotRestoreSessionToken) {
         // verify store data
         if (StringUtils.isEmpty(data)) {
-            return false;
+            return null;
         }
         Scanner scanner = new Scanner(data);
         String version = scanner.nextLine();
         if (!version.equals("4")) {
             scanner.close();
-            return false;
+            return null;
         }
 
         // check if email or password was changed in the mean time
         String email = scanner.nextLine();
         if (!email.equals(this.email)) {
             scanner.close();
-            return false;
+            return null;
         }
         int passwordHash = Integer.parseInt(scanner.nextLine());
         if (passwordHash != this.password.hashCode()) {
             scanner.close();
-            return false;
+            return null;
         }
 
         // Recreate session and cookies
@@ -239,26 +261,14 @@ public class Connection {
             clientCookie.setSecure(Boolean.parseBoolean(readValue(scanner)));
             clientCookie.setDiscard(Boolean.parseBoolean(readValue(scanner)));
 
+            if (doNotRestoreSessionToken && name.equalsIgnoreCase("session-token")) {
+                continue;
+            }
             cookieStore.add(null, clientCookie);
         }
 
         scanner.close();
-        try {
-            if (verifyLogin()) {
-                this.loginTime = loginTime;
-                return true;
-            }
-        } catch (IOException e) {
-            logger.info("verify login fails with io exception: {}", e);
-        } catch (URISyntaxException e) {
-            logger.warn("verify login fails with uri syntax exception: {}", e);
-        }
-        // anything goes wrong, remove session data
-        cookieStore.removeAll();
-        this.sessionId = null;
-        this.loginTime = null;
-        this.verifyTime = null;
-        return false;
+        return loginTime;
     }
 
     public String convertStream(@Nullable InputStream input) throws IOException {
@@ -416,13 +426,11 @@ public class Connection {
 
     public String getLoginPage() throws IOException, URISyntaxException {
         // clear session data
-        cookieManager.getCookieStore().removeAll();
-        sessionId = null;
-        loginTime = null;
-        verifyTime = null;
+        logout();
 
         logger.debug("Start Login to {}", alexaServer);
         // get login form
+
         String loginFormHtml = makeRequestAndReturnString(alexaServer);
 
         logger.debug("Received login form {}", loginFormHtml);
@@ -493,10 +501,7 @@ public class Connection {
 
         } catch (Exception e) {
             // clear session data
-            cookieManager.getCookieStore().removeAll();
-            sessionId = null;
-            loginTime = null;
-            verifyTime = null;
+            logout();
             logger.info("Login failed: {}", e.getLocalizedMessage());
             // rethrow
             throw e;
@@ -564,7 +569,11 @@ public class Connection {
     }
 
     public void logout() {
+        // remove the session token cookie
+        String sessionData = serializeLoginData();
         cookieManager.getCookieStore().removeAll();
+        tryRestoreCookies(sessionData, true);
+        // reset all members
         sessionId = null;
         loginTime = null;
         verifyTime = null;
