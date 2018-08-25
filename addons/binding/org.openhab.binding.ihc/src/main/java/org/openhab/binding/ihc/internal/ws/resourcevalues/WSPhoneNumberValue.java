@@ -42,8 +42,7 @@ public class WSPhoneNumberValue extends WSResourceValue {
     /**
      * Sets the value of the number property.
      *
-     * @param value
-     *            allowed object is {@link String }
+     * @param value allowed object is {@link String }
      *
      */
     public void setNumber(String value) {

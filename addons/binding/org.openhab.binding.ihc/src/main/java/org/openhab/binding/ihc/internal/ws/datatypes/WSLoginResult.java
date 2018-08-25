@@ -29,7 +29,7 @@ public class WSLoginResult extends WSBaseDataType {
     public WSLoginResult(WSUser loggedInUser, boolean loginWasSuccessful,
             boolean loginFailedDueToConnectionRestrictions, boolean loginFailedDueToInsufficientUserRights,
             boolean loginFailedDueToAccountInvalid) {
-        
+
         this.loggedInUser = loggedInUser;
         this.loginWasSuccessful = loginWasSuccessful;
         this.loginFailedDueToConnectionRestrictions = loginFailedDueToConnectionRestrictions;
@@ -40,9 +40,7 @@ public class WSLoginResult extends WSBaseDataType {
     /**
      * Gets the value of the loggedInUser property.
      *
-     * @return
-     *         possible object is
-     *         {@link WSUser }
+     * @return possible object is {@link WSUser }
      *
      */
     public WSUser getLoggedInUser() {
@@ -52,9 +50,7 @@ public class WSLoginResult extends WSBaseDataType {
     /**
      * Sets the value of the loggedInUser property.
      *
-     * @param value
-     *            allowed object is
-     *            {@link WSUser }
+     * @param value allowed object is {@link WSUser }
      *
      */
     public void setLoggedInUser(WSUser value) {

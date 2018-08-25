@@ -47,9 +47,7 @@ public class WSUser {
     /**
      * Gets the value of the createdDate property.
      *
-     * @return
-     *         possible object is
-     *         {@link WSDate }
+     * @return possible object is {@link WSDate }
      *
      */
     public WSDate getCreatedDate() {
@@ -59,9 +57,7 @@ public class WSUser {
     /**
      * Sets the value of the createdDate property.
      *
-     * @param value
-     *            allowed object is
-     *            {@link WSDate }
+     * @param value allowed object is {@link WSDate }
      *
      */
     public void setCreatedDate(WSDate value) {
@@ -71,9 +67,7 @@ public class WSUser {
     /**
      * Gets the value of the loginDate property.
      *
-     * @return
-     *         possible object is
-     *         {@link WSDate }
+     * @return possible object is {@link WSDate }
      *
      */
     public WSDate getLoginDate() {
@@ -83,9 +77,7 @@ public class WSUser {
     /**
      * Sets the value of the loginDate property.
      *
-     * @param value
-     *            allowed object is
-     *            {@link WSDate }
+     * @param value allowed object is {@link WSDate }
      *
      */
     public void setLoginDate(WSDate value) {
@@ -95,9 +87,7 @@ public class WSUser {
     /**
      * Gets the value of the username property.
      *
-     * @return
-     *         possible object is
-     *         {@link String }
+     * @return possible object is {@link String }
      *
      */
     public String getUsername() {
@@ -107,9 +97,7 @@ public class WSUser {
     /**
      * Sets the value of the username property.
      *
-     * @param value
-     *            allowed object is
-     *            {@link String }
+     * @param value allowed object is {@link String }
      *
      */
     public void setUsername(String value) {
@@ -119,9 +107,7 @@ public class WSUser {
     /**
      * Gets the value of the password property.
      *
-     * @return
-     *         possible object is
-     *         {@link String }
+     * @return possible object is {@link String }
      *
      */
     public String getPassword() {
@@ -131,9 +117,7 @@ public class WSUser {
     /**
      * Sets the value of the password property.
      *
-     * @param value
-     *            allowed object is
-     *            {@link String }
+     * @param value allowed object is {@link String }
      *
      */
     public void setPassword(String value) {
@@ -143,9 +127,7 @@ public class WSUser {
     /**
      * Gets the value of the email property.
      *
-     * @return
-     *         possible object is
-     *         {@link String }
+     * @return possible object is {@link String }
      *
      */
     public String getEmail() {
@@ -155,9 +137,7 @@ public class WSUser {
     /**
      * Sets the value of the email property.
      *
-     * @param value
-     *            allowed object is
-     *            {@link String }
+     * @param value allowed object is {@link String }
      *
      */
     public void setEmail(String value) {
@@ -167,9 +147,7 @@ public class WSUser {
     /**
      * Gets the value of the firstname property.
      *
-     * @return
-     *         possible object is
-     *         {@link String }
+     * @return possible object is {@link String }
      *
      */
     public String getFirstname() {
@@ -179,9 +157,7 @@ public class WSUser {
     /**
      * Sets the value of the firstname property.
      *
-     * @param value
-     *            allowed object is
-     *            {@link String }
+     * @return possible object is {@link String }
      *
      */
     public void setFirstname(String value) {
@@ -191,9 +167,7 @@ public class WSUser {
     /**
      * Gets the value of the lastname property.
      *
-     * @return
-     *         possible object is
-     *         {@link String }
+     * @return possible object is {@link String }
      *
      */
     public String getLastname() {
@@ -203,9 +177,7 @@ public class WSUser {
     /**
      * Sets the value of the lastname property.
      *
-     * @param value
-     *            allowed object is
-     *            {@link String }
+     * @param value allowed object is {@link String }
      *
      */
     public void setLastname(String value) {
@@ -215,9 +187,7 @@ public class WSUser {
     /**
      * Gets the value of the phone property.
      *
-     * @return
-     *         possible object is
-     *         {@link String }
+     * @param value allowed object is {@link String }
      *
      */
     public String getPhone() {
@@ -227,8 +197,7 @@ public class WSUser {
     /**
      * Sets the value of the phone property.
      *
-     * @param value
-     *            allowed object is
+     * @param value allowed object is {@link String }
      *            {@link String }
      *
      */
@@ -239,9 +208,7 @@ public class WSUser {
     /**
      * Gets the value of the group property.
      *
-     * @return
-     *         possible object is
-     *         {@link WSUserGroup }
+     * @return possible object is {@link WSUserGroup }
      *
      */
     public WSUserGroup getGroup() {
@@ -251,9 +218,7 @@ public class WSUser {
     /**
      * Sets the value of the group property.
      *
-     * @param value
-     *            allowed object is
-     *            {@link WSUserGroup }
+     * @param value allowed object is {@link WSUserGroup }
      *
      */
     public void setGroup(WSUserGroup value) {
@@ -263,9 +228,7 @@ public class WSUser {
     /**
      * Gets the value of the project property.
      *
-     * @return
-     *         possible object is
-     *         {@link String }
+     * @return possible object is {@link String }
      *
      */
     public String getProject() {
@@ -275,9 +238,7 @@ public class WSUser {
     /**
      * Sets the value of the project property.
      *
-     * @param value
-     *            allowed object is
-     *            {@link String }
+     * @param value allowed object is {@link String }
      *
      */
     public void setProject(String value) {

@@ -27,9 +27,7 @@ public class WSUserGroup {
     /**
      * Gets the value of the type property.
      *
-     * @return
-     *         possible object is
-     *         {@link String }
+     * @return possible object is {@link String }
      *
      */
     public String getType() {
@@ -39,9 +37,7 @@ public class WSUserGroup {
     /**
      * Sets the value of the type property.
      *
-     * @param value
-     *            allowed object is
-     *            {@link String }
+     * @param value allowed object is {@link String }
      *
      */
     public void setType(String value) {
