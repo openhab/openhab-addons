@@ -43,12 +43,14 @@ import org.openhab.binding.amazonechocontrol.internal.IWebSocketCommandHandler;
 import org.openhab.binding.amazonechocontrol.internal.WebSocketConnection;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity.SourceDeviceId;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAscendingAlarm.AscendingAlarmModel;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates.BluetoothState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonCommandPayloadPushActivity;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonCommandPayloadPushActivity.Key;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonCommandPayloadPushDevice;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonCommandPayloadPushDevice.DopplerId;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDeviceNotificationState.DeviceNotificationState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonFeed;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPushCommand;
@@ -78,6 +80,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     private @Nullable ScheduledFuture<?> checkDataJob;
     private @Nullable ScheduledFuture<?> checkLoginJob;
     private @Nullable ScheduledFuture<?> refreshAfterCommandJob;
+    private @Nullable ScheduledFuture<?> foceCheckDataJob;
     private String currentFlashBriefingJson = "";
     private final HttpService httpService;
     private @Nullable AccountServlet accountServlet;
@@ -158,12 +161,21 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
 
     public void addEchoHandler(EchoHandler echoHandler) {
         synchronized (echoHandlers) {
-            echoHandlers.add(echoHandler);
+            if (!echoHandlers.add(echoHandler)) {
+                return;
+            }
         }
-        Connection connection = this.connection;
-        if (connection != null) {
-            updateEchoHandler(echoHandler, connection);
+        forceCheckData();
+    }
+
+    void forceCheckData() {
+        if (foceCheckDataJob == null) {
+            foceCheckDataJob = scheduler.schedule(this::forceCheckDataHandler, 1000, TimeUnit.MILLISECONDS);
         }
+    }
+
+    void forceCheckDataHandler() {
+        this.checkData();
     }
 
     public @Nullable Thing findThingBySerialNumber(@Nullable String deviceSerialNumber) {
@@ -196,22 +208,6 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             }
             flashBriefingProfileHandler.initialize(this, currentFlashBriefingJson);
         }
-    }
-
-    private void updateEchoHandler(EchoHandler echoHandler, Connection connection) {
-        @Nullable
-        Device device = findDeviceJson(echoHandler);
-
-        JsonBluetoothStates states = null;
-        if (connection.getIsLoggedIn()) {
-            states = connection.getBluetoothConnectionStates();
-        }
-
-        BluetoothState state = null;
-        if (states != null) {
-            state = states.findStateByDevice(device);
-        }
-        echoHandler.updateState(this, device, state);
     }
 
     @Override
@@ -261,6 +257,12 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         if (refreshLogin != null) {
             refreshLogin.cancel(true);
             this.checkLoginJob = null;
+        }
+        @Nullable
+        ScheduledFuture<?> foceCheckDataJob = this.foceCheckDataJob;
+        if (foceCheckDataJob != null) {
+            foceCheckDataJob.cancel(true);
+            this.foceCheckDataJob = null;
         }
         @Nullable
         ScheduledFuture<?> refreshDataDelayed = this.refreshAfterCommandJob;
@@ -423,12 +425,12 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
 
     private void checkData() {
         synchronized (refreshDataLock) {
-
             Connection connection = this.connection;
             if (connection != null && connection.getIsLoggedIn()) {
                 checkDataCounter++;
-                if (checkDataCounter == 60) {
+                if (checkDataCounter > 60 || foceCheckDataJob != null) {
                     checkDataCounter = 0;
+                    foceCheckDataJob = null;
                 }
                 if (!checkWebSocketConnection() || checkDataCounter == 0) {
                     refreshData();
@@ -460,6 +462,18 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                 updateDeviceList();
                 updateFlashBriefingHandlers();
 
+                // update notification states
+                DeviceNotificationState[] deviceNotificationStates = null;
+                if (currentConnection.getIsLoggedIn()) {
+                    deviceNotificationStates = currentConnection.getDeviceNotificationStates();
+                }
+
+                // update ascending alarm
+                AscendingAlarmModel[] ascendingAlarmModels = null;
+                if (currentConnection.getIsLoggedIn()) {
+                    ascendingAlarmModels = currentConnection.getAscendingAlarm();
+                }
+
                 // update bluetooth states
                 JsonBluetoothStates states = null;
                 if (currentConnection.getIsLoggedIn()) {
@@ -473,7 +487,28 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                     if (states != null) {
                         state = states.findStateByDevice(device);
                     }
-                    child.updateState(this, device, state);
+                    DeviceNotificationState deviceNotificationState = null;
+                    AscendingAlarmModel ascendingAlarmModel = null;
+                    if (device != null) {
+                        if (ascendingAlarmModels != null) {
+                            for (AscendingAlarmModel current : ascendingAlarmModels) {
+                                if (StringUtils.equals(current.deviceSerialNumber, device.serialNumber)) {
+                                    ascendingAlarmModel = current;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (deviceNotificationStates != null) {
+                            for (DeviceNotificationState current : deviceNotificationStates) {
+                                if (StringUtils.equals(current.deviceSerialNumber, device.serialNumber)) {
+                                    deviceNotificationState = current;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    child.updateState(this, device, state, deviceNotificationState, ascendingAlarmModel);
                 }
 
                 // update account state
@@ -546,7 +581,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         }
         synchronized (echoHandlers) {
             for (EchoHandler child : echoHandlers) {
-                updateEchoHandler(child, currentConnection);
+                child.setDeviceAndUpdateThingState(this, findDeviceJson(child));
             }
         }
         if (devices != null) {

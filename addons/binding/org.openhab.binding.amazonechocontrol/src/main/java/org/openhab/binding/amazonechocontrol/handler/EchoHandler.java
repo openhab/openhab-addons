@@ -17,16 +17,21 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.measure.quantity.Time;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.RewindFastforwardType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -35,14 +40,17 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.HttpException;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity.Description;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAscendingAlarm.AscendingAlarmModel;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates.BluetoothState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates.PairedDevice;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonCommandPayloadPushVolumeChange;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDeviceNotificationState.DeviceNotificationState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMediaState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMediaState.QueueEntry;
@@ -52,6 +60,7 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayerState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayerState.PlayerInfo;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayerState.PlayerInfo.InfoText;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayerState.PlayerInfo.MainArt;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayerState.PlayerInfo.Progress;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayerState.PlayerInfo.Provider;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayerState.PlayerInfo.Volume;
 import org.slf4j.Logger;
@@ -68,11 +77,12 @@ import com.google.gson.Gson;
 public class EchoHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EchoHandler.class);
-
     private Gson gson = new Gson();
     private @Nullable Device device;
     private @Nullable AccountHandler account;
     private @Nullable ScheduledFuture<?> updateStateJob;
+    private @Nullable ScheduledFuture<?> updateProgressJob;
+    private Object progressLock = new Object();
     private @Nullable String lastKnownRadioStationId;
     private @Nullable String lastKnownBluetoothMAC;
     private @Nullable String lastKnownAmazonMusicId;
@@ -88,8 +98,15 @@ public class EchoHandler extends BaseThingHandler {
     private boolean updateRoutine = true;
     private boolean updatePlayMusicVoiceCommand = true;
     private boolean updateStartCommand = true;
+    private @Nullable Integer noticationVolumeLevel;
+    private @Nullable Boolean ascendingAlarm;
+
     private @Nullable JsonNotificationResponse currentNotification;
     private @Nullable ScheduledFuture<?> currentNotifcationUpdateTimer;
+    long mediaLengthMs;
+    long mediaProgressMs;
+    long mediaStartMs;
+    String lastSpokenText = "";
 
     public EchoHandler(Thing thing) {
         super(thing);
@@ -98,23 +115,18 @@ public class EchoHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Amazon Echo Control Binding initialized");
-
-        if (this.device != null) {
-            setDeviceAndUpdateThingState(this.device);
-        } else {
-            updateStatus(ThingStatus.UNKNOWN);
-            Bridge bridge = this.getBridge();
-            if (bridge != null) {
-                AccountHandler account = (AccountHandler) bridge.getHandler();
-                if (account != null) {
-                    this.account = account;
-                    account.addEchoHandler(this);
-                }
+        Bridge bridge = this.getBridge();
+        if (bridge != null) {
+            AccountHandler account = (AccountHandler) bridge.getHandler();
+            if (account != null) {
+                setDeviceAndUpdateThingState(account, this.device);
+                account.addEchoHandler(this);
             }
         }
     }
 
-    boolean setDeviceAndUpdateThingState(@Nullable Device device) {
+    public boolean setDeviceAndUpdateThingState(AccountHandler accountHandler, @Nullable Device device) {
+        this.account = accountHandler;
         if (device == null) {
             updateStatus(ThingStatus.UNKNOWN);
             return false;
@@ -136,7 +148,16 @@ public class EchoHandler extends BaseThingHandler {
         if (updateStateJob != null) {
             updateStateJob.cancel(false);
         }
+        stopProgressTimer();
         super.dispose();
+    }
+
+    private void stopProgressTimer() {
+        ScheduledFuture<?> updateProgressJob = this.updateProgressJob;
+        this.updateProgressJob = null;
+        if (updateProgressJob != null) {
+            updateProgressJob.cancel(false);
+        }
     }
 
     public @Nullable BluetoothState findBluetoothState() {
@@ -213,6 +234,67 @@ public class EchoHandler extends BaseThingHandler {
                 } else if (command == RewindFastforwardType.REWIND) {
                     connection.command(device, "{\"type\":\"RewindCommand\"}");
                 }
+            }
+            // Notification commands
+            if (channelId.equals(CHANNEL_NOTIFICATION_VOLUME)) {
+                if (command instanceof PercentType) {
+                    int volume = ((PercentType) command).intValue();
+                    connection.notificationVolume(device, volume);
+                    this.noticationVolumeLevel = volume;
+                    waitForUpdate = -1;
+                    account.forceCheckData();
+                }
+            }
+            if (channelId.equals(CHANNEL_ASCENDING_ALARM)) {
+                if (command == OnOffType.OFF) {
+                    connection.ascendingAlarm(device, false);
+                    this.ascendingAlarm = false;
+                    waitForUpdate = -1;
+                    account.forceCheckData();
+                }
+                if (command == OnOffType.ON) {
+                    connection.ascendingAlarm(device, true);
+                    this.ascendingAlarm = true;
+                    waitForUpdate = -1;
+                    account.forceCheckData();
+                }
+            }
+            // Media progress commands
+            Long mediaPosition = null;
+            if (channelId.equals(CHANNEL_MEDIA_PROGRESS)) {
+
+                if (command instanceof PercentType) {
+                    PercentType value = (PercentType) command;
+                    int percent = value.intValue();
+                    mediaPosition = Math.round((mediaLengthMs / 1000d) * (percent / 100d));
+                }
+            }
+            if (channelId.equals(CHANNEL_MEDIA_PROGRESS_TIME)) {
+                if (command instanceof DecimalType) {
+                    DecimalType value = (DecimalType) command;
+                    mediaPosition = value.longValue();
+                }
+                if (command instanceof QuantityType<?>) {
+                    QuantityType<?> value = (QuantityType<?>) command;
+                    @Nullable
+                    QuantityType<?> seconds = value.toUnit(SmartHomeUnits.SECOND);
+                    if (seconds != null) {
+                        mediaPosition = seconds.longValue();
+                    }
+                }
+            }
+            if (mediaPosition != null) {
+                waitForUpdate = -1;
+                synchronized (progressLock) {
+                    String seekCommand = "{\"type\":\"SeekCommand\",\"mediaPosition\":" + mediaPosition
+                            + ",\"contentFocusClientId\":null}";
+                    connection.command(device, seekCommand);
+                    connection.command(device, seekCommand); // Must be sent twice, the first one is ignored sometimes
+                    this.mediaProgressMs = mediaPosition * 1000;
+                    mediaStartMs = System.currentTimeMillis() - this.mediaProgressMs;
+                    updateMediaProgress(false);
+                }
+
             }
             // Volume commands
             if (channelId.equals(CHANNEL_VOLUME)) {
@@ -439,6 +521,15 @@ public class EchoHandler extends BaseThingHandler {
                     }
                 }
             }
+            if (channelId.equals(CHANNEL_LAST_VOICE_COMMAND)) {
+                if (command instanceof StringType) {
+                    String text = ((StringType) command).toFullString();
+                    if (StringUtils.isNotEmpty(text)) {
+                        waitForUpdate = -1;
+                        connection.textToSpeech(device, text);
+                    }
+                }
+            }
             if (channelId.equals(CHANNEL_START_COMMAND)) {
                 if (command instanceof StringType) {
                     String commandText = ((StringType) command).toFullString();
@@ -478,7 +569,9 @@ public class EchoHandler extends BaseThingHandler {
                     }
                 }
             }
-
+            if (waitForUpdate < 0) {
+                return;
+            }
             // force update of the state
             this.disableUpdate = true;
             final boolean bluetoothRefresh = needBluetoothRefresh;
@@ -491,13 +584,10 @@ public class EchoHandler extends BaseThingHandler {
 
                 }
                 this.disableUpdate = false;
-                updateState(account, device, state);
+                updateState(account, device, state, null, null);
             };
             if (command instanceof RefreshType) {
                 waitForUpdate = 0;
-            }
-            if (waitForUpdate < 0) {
-                return;
             }
             if (waitForUpdate == 0) {
                 doRefresh.run();
@@ -566,272 +656,345 @@ public class EchoHandler extends BaseThingHandler {
     }
 
     public void updateState(AccountHandler accountHandler, @Nullable Device device,
-            @Nullable BluetoothState bluetoothState) {
-        this.account = accountHandler;
-        if (this.disableUpdate) {
-            return;
-        }
-        if (!setDeviceAndUpdateThingState(device)) {
-            return;
-        }
-        if (device == null) {
-            return;
-        }
-
-        Connection connection = this.findConnection();
-        if (connection == null) {
-            return;
-        }
-
-        PlayerInfo playerInfo = null;
-        Provider provider = null;
-        InfoText infoText = null;
-        MainArt mainArt = null;
-        String providerName = null;
+            @Nullable BluetoothState bluetoothState, @Nullable DeviceNotificationState deviceNotificationState,
+            @Nullable AscendingAlarmModel ascendingAlarmModel) {
         try {
-            JsonPlayerState playerState = connection.getPlayer(device);
-            playerInfo = playerState.playerInfo;
-            if (playerInfo != null) {
-                infoText = playerInfo.infoText;
-                if (infoText == null) {
-                    infoText = playerInfo.miniInfoText;
-                }
-                mainArt = playerInfo.mainArt;
-                provider = playerInfo.provider;
-                if (provider != null) {
-                    providerName = provider.providerName;
-                }
+            if (deviceNotificationState != null) {
+                noticationVolumeLevel = deviceNotificationState.volumeLevel;
             }
-        } catch (HttpException e) {
-            if (e.getCode() == 400) {
-                // Ignore
-            } else {
+            if (ascendingAlarmModel != null) {
+                ascendingAlarm = ascendingAlarmModel.ascendingAlarmEnabled;
+            }
+            if (!setDeviceAndUpdateThingState(accountHandler, device)) {
+                return;
+            }
+            if (device == null) {
+                return;
+            }
+            if (this.disableUpdate) {
+                return;
+            }
+            Connection connection = this.findConnection();
+            if (connection == null) {
+                return;
+            }
+
+            PlayerInfo playerInfo = null;
+            Provider provider = null;
+            InfoText infoText = null;
+            MainArt mainArt = null;
+            String providerName = null;
+            Progress progress = null;
+            try {
+                JsonPlayerState playerState = connection.getPlayer(device);
+                playerInfo = playerState.playerInfo;
+                if (playerInfo != null) {
+                    infoText = playerInfo.infoText;
+                    if (infoText == null) {
+                        infoText = playerInfo.miniInfoText;
+                    }
+                    mainArt = playerInfo.mainArt;
+                    provider = playerInfo.provider;
+                    if (provider != null) {
+                        providerName = provider.providerName;
+                    }
+                    progress = playerInfo.progress;
+                }
+            } catch (HttpException e) {
+                if (e.getCode() == 400) {
+                    // Ignore
+                } else {
+                    logger.info("getPlayer fails: {}", e);
+                }
+            } catch (IOException | URISyntaxException e) {
                 logger.info("getPlayer fails: {}", e);
             }
-        } catch (IOException | URISyntaxException e) {
-            logger.info("getPlayer fails: {}", e);
-        }
-        JsonMediaState mediaState = null;
-        try {
+            // check playing
+            isPlaying = (playerInfo != null && StringUtils.equals(playerInfo.state, "PLAYING"));
+            // || (mediaState != null && StringUtils.equals(mediaState.currentState, "PLAYING"));
 
-            if (StringUtils.equalsIgnoreCase(providerName, "CLOUD_PLAYER")
-                    || StringUtils.equalsIgnoreCase(providerName, "AMAZON MUSIC")) {
-                mediaState = connection.getMediaState(device);
+            isPaused = (playerInfo != null && StringUtils.equals(playerInfo.state, "PAUSED"));
+            // || (mediaState != null && StringUtils.equals(mediaState.currentState, "PAUSED"));
+            synchronized (progressLock) {
+
+                if (progress != null && progress.showTiming && progress.mediaProgress != null
+                        && progress.mediaLength != null) {
+                    mediaProgressMs = progress.mediaProgress * 1000;
+                    mediaLengthMs = progress.mediaLength * 1000;
+                    mediaStartMs = System.currentTimeMillis() - mediaProgressMs;
+                    if (isPlaying) {
+                        if (updateProgressJob == null) {
+                            updateProgressJob = scheduler.scheduleWithFixedDelay(this::updateMediaProgress, 1000, 1000,
+                                    TimeUnit.MILLISECONDS);
+                        }
+                    } else {
+                        stopProgressTimer();
+                    }
+
+                } else {
+                    stopProgressTimer();
+                    mediaProgressMs = 0;
+                    mediaStartMs = 0;
+                    mediaLengthMs = 0;
+                }
+                updateMediaProgress(true);
             }
 
-        } catch (HttpException e) {
-            if (e.getCode() == 400) {
+            JsonMediaState mediaState = null;
+            try {
 
-                updateState(CHANNEL_RADIO_STATION_ID, new StringType(""));
+                if (StringUtils.equalsIgnoreCase(providerName, "CLOUD_PLAYER")
+                        || StringUtils.equalsIgnoreCase(providerName, "AMAZON MUSIC")) {
+                    mediaState = connection.getMediaState(device);
+                }
 
-            } else {
+            } catch (HttpException e) {
+                if (e.getCode() == 400) {
+
+                    updateState(CHANNEL_RADIO_STATION_ID, new StringType(""));
+
+                } else {
+                    logger.info("getMediaState fails: {}", e);
+                }
+            } catch (IOException | URISyntaxException e) {
                 logger.info("getMediaState fails: {}", e);
             }
-        } catch (IOException | URISyntaxException e) {
-            logger.info("getMediaState fails: {}", e);
-        }
-        // check playing
-        isPlaying = (playerInfo != null && StringUtils.equals(playerInfo.state, "PLAYING"))
-                || (mediaState != null && StringUtils.equals(mediaState.currentState, "PLAYING"));
 
-        isPaused = (playerInfo != null && StringUtils.equals(playerInfo.state, "PAUSED"))
-                || (mediaState != null && StringUtils.equals(mediaState.currentState, "PAUSED"));
-        // handle music provider id
+            // handle music provider id
 
-        if (provider != null && isPlaying) {
-            String musicProviderId = provider.providerName;
+            if (provider != null && isPlaying) {
+                String musicProviderId = provider.providerName;
 
-            // Map the music provider id to the one used for starting music with voice command
-            if (musicProviderId != null) {
-                musicProviderId = musicProviderId.toUpperCase();
-            }
-            if (StringUtils.equals(musicProviderId, "AMAZON MUSIC")) {
-                musicProviderId = "AMAZON_MUSIC";
-            }
-            if (StringUtils.equals(musicProviderId, "CLOUD_PLAYER")) {
-                musicProviderId = "AMAZON_MUSIC";
-            }
-            if (StringUtils.startsWith(musicProviderId, "TUNEIN")) {
-                musicProviderId = "TUNEIN";
-            }
-            if (musicProviderId != null) {
-                this.musicProviderId = musicProviderId;
-            }
-        }
-
-        // handle amazon music
-        String amazonMusicTrackId = "";
-        String amazonMusicPlayListId = "";
-        boolean amazonMusic = false;
-        if (mediaState != null && isPlaying && StringUtils.equals(mediaState.providerId, "CLOUD_PLAYER")
-                && StringUtils.isNotEmpty(mediaState.contentId)) {
-            amazonMusicTrackId = mediaState.contentId;
-            lastKnownAmazonMusicId = amazonMusicTrackId;
-            amazonMusic = true;
-        }
-
-        // handle bluetooth
-        String bluetoothMAC = "";
-        String bluetoothDeviceName = "";
-        boolean bluetoothIsConnected = false;
-        if (bluetoothState != null) {
-            this.bluetoothState = bluetoothState;
-            PairedDevice[] pairedDeviceList = bluetoothState.pairedDeviceList;
-            if (pairedDeviceList != null) {
-                for (PairedDevice paired : pairedDeviceList) {
-                    if (paired == null) {
-                        continue;
-                    }
-                    if (paired.connected && paired.address != null) {
-                        bluetoothIsConnected = true;
-                        bluetoothMAC = paired.address;
-                        bluetoothDeviceName = paired.friendlyName;
-                        if (StringUtils.isEmpty(bluetoothDeviceName)) {
-                            bluetoothDeviceName = paired.address;
-                        }
-                        break;
-                    }
+                // Map the music provider id to the one used for starting music with voice command
+                if (musicProviderId != null) {
+                    musicProviderId = musicProviderId.toUpperCase();
+                }
+                if (StringUtils.equals(musicProviderId, "AMAZON MUSIC")) {
+                    musicProviderId = "AMAZON_MUSIC";
+                }
+                if (StringUtils.equals(musicProviderId, "CLOUD_PLAYER")) {
+                    musicProviderId = "AMAZON_MUSIC";
+                }
+                if (StringUtils.startsWith(musicProviderId, "TUNEIN")) {
+                    musicProviderId = "TUNEIN";
+                }
+                if (musicProviderId != null) {
+                    this.musicProviderId = musicProviderId;
                 }
             }
-        }
-        if (StringUtils.isNotEmpty(bluetoothMAC)) {
-            lastKnownBluetoothMAC = bluetoothMAC;
-        }
 
-        // handle radio
-        boolean isRadio = false;
-        if (mediaState != null && StringUtils.isNotEmpty(mediaState.radioStationId)) {
-            lastKnownRadioStationId = mediaState.radioStationId;
-            if (provider != null && StringUtils.equalsIgnoreCase(provider.providerName, "TuneIn Live-Radio")) {
-                isRadio = true;
-            }
-        }
-        String radioStationId = "";
-        if (isRadio && mediaState != null && StringUtils.equals(mediaState.currentState, "PLAYING")
-                && mediaState.radioStationId != null) {
-            radioStationId = mediaState.radioStationId;
-        }
-
-        // handle title, subtitle, imageUrl
-        String title = "";
-        String subTitle1 = "";
-        String subTitle2 = "";
-        String imageUrl = "";
-        if (infoText != null) {
-            if (infoText.title != null) {
-                title = infoText.title;
-            }
-            if (infoText.subText1 != null) {
-                subTitle1 = infoText.subText1;
+            // handle amazon music
+            String amazonMusicTrackId = "";
+            String amazonMusicPlayListId = "";
+            boolean amazonMusic = false;
+            if (mediaState != null && isPlaying && StringUtils.equals(mediaState.providerId, "CLOUD_PLAYER")
+                    && StringUtils.isNotEmpty(mediaState.contentId)) {
+                amazonMusicTrackId = mediaState.contentId;
+                lastKnownAmazonMusicId = amazonMusicTrackId;
+                amazonMusic = true;
             }
 
-            if (infoText.subText2 != null) {
-                subTitle2 = infoText.subText2;
-            }
-        }
-        if (mainArt != null) {
-            if (mainArt.url != null) {
-                imageUrl = mainArt.url;
-            }
-        }
-        if (mediaState != null) {
-            QueueEntry[] queueEntries = mediaState.queue;
-            if (queueEntries != null && queueEntries.length > 0) {
-                QueueEntry entry = queueEntries[0];
-                if (entry != null) {
-
-                    if (isRadio) {
-                        if (StringUtils.isEmpty(imageUrl) && entry.imageURL != null) {
-                            imageUrl = entry.imageURL;
+            // handle bluetooth
+            String bluetoothMAC = "";
+            String bluetoothDeviceName = "";
+            boolean bluetoothIsConnected = false;
+            if (bluetoothState != null) {
+                this.bluetoothState = bluetoothState;
+                PairedDevice[] pairedDeviceList = bluetoothState.pairedDeviceList;
+                if (pairedDeviceList != null) {
+                    for (PairedDevice paired : pairedDeviceList) {
+                        if (paired == null) {
+                            continue;
                         }
-                        if (StringUtils.isEmpty(subTitle1) && entry.radioStationSlogan != null) {
-                            subTitle1 = entry.radioStationSlogan;
-                        }
-                        if (StringUtils.isEmpty(subTitle2) && entry.radioStationLocation != null) {
-                            subTitle2 = entry.radioStationLocation;
+                        if (paired.connected && paired.address != null) {
+                            bluetoothIsConnected = true;
+                            bluetoothMAC = paired.address;
+                            bluetoothDeviceName = paired.friendlyName;
+                            if (StringUtils.isEmpty(bluetoothDeviceName)) {
+                                bluetoothDeviceName = paired.address;
+                            }
+                            break;
                         }
                     }
                 }
             }
-        }
-
-        // handle provider
-        String providerDisplayName = "";
-        if (provider != null) {
-            if (provider.providerDisplayName != null) {
-                providerDisplayName = provider.providerDisplayName;
+            if (StringUtils.isNotEmpty(bluetoothMAC)) {
+                lastKnownBluetoothMAC = bluetoothMAC;
             }
-            if (StringUtils.isNotEmpty(provider.providerName) && StringUtils.isEmpty(providerDisplayName)) {
-                providerDisplayName = provider.providerName;
+
+            // handle radio
+            boolean isRadio = false;
+            if (mediaState != null && StringUtils.isNotEmpty(mediaState.radioStationId)) {
+                lastKnownRadioStationId = mediaState.radioStationId;
+                if (provider != null && StringUtils.equalsIgnoreCase(provider.providerName, "TuneIn Live-Radio")) {
+                    isRadio = true;
+                }
             }
-        }
-
-        // handle volume
-        Integer volume = null;
-        if (mediaState != null) {
-            volume = mediaState.volume;
-        }
-        if (playerInfo != null && volume == null) {
-
-            Volume volumnInfo = playerInfo.volume;
-            if (volumnInfo != null) {
-                volume = volumnInfo.volume;
+            String radioStationId = "";
+            if (isRadio && mediaState != null && StringUtils.equals(mediaState.currentState, "PLAYING")
+                    && mediaState.radioStationId != null) {
+                radioStationId = mediaState.radioStationId;
             }
-        }
-        if (volume != null && volume > 0) {
-            lastKnownVolume = volume;
-        }
-        if (volume == null) {
-            volume = lastKnownVolume;
-        }
 
-        // Update states
-        if (updateRemind && currentNotifcationUpdateTimer == null) {
-            updateRemind = false;
-            updateState(CHANNEL_REMIND, new StringType(""));
-        }
-        if (updateAlarm && currentNotifcationUpdateTimer == null) {
-            updateAlarm = false;
-            updateState(CHANNEL_PLAY_ALARM_SOUND, new StringType(""));
-        }
-        if (updateRoutine) {
-            updateRoutine = false;
-            updateState(CHANNEL_START_ROUTINE, new StringType(""));
-        }
-        if (updateTextToSpeech) {
-            updateTextToSpeech = false;
-            updateState(CHANNEL_TEXT_TO_SPEECH, new StringType(""));
-        }
-        if (updatePlayMusicVoiceCommand) {
-            updatePlayMusicVoiceCommand = false;
-            updateState(CHANNEL_PLAY_MUSIC_VOICE_COMMAND, new StringType(""));
-        }
-        if (updateStartCommand) {
-            updateStartCommand = false;
-            updateState(CHANNEL_START_COMMAND, new StringType(""));
-        }
+            // handle title, subtitle, imageUrl
+            String title = "";
+            String subTitle1 = "";
+            String subTitle2 = "";
+            String imageUrl = "";
+            if (infoText != null) {
+                if (infoText.title != null) {
+                    title = infoText.title;
+                }
+                if (infoText.subText1 != null) {
+                    subTitle1 = infoText.subText1;
+                }
 
-        updateState(CHANNEL_MUSIC_PROVIDER_ID, new StringType(musicProviderId));
-        updateState(CHANNEL_AMAZON_MUSIC_TRACK_ID, new StringType(amazonMusicTrackId));
-        updateState(CHANNEL_AMAZON_MUSIC, isPlaying && amazonMusic ? OnOffType.ON : OnOffType.OFF);
-        updateState(CHANNEL_AMAZON_MUSIC_PLAY_LIST_ID, new StringType(amazonMusicPlayListId));
-        updateState(CHANNEL_RADIO_STATION_ID, new StringType(radioStationId));
-        updateState(CHANNEL_RADIO, isPlaying && isRadio ? OnOffType.ON : OnOffType.OFF);
-        updateState(CHANNEL_VOLUME, new PercentType(volume));
-        updateState(CHANNEL_PROVIDER_DISPLAY_NAME, new StringType(providerDisplayName));
-        updateState(CHANNEL_PLAYER, isPlaying ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
-        updateState(CHANNEL_IMAGE_URL, new StringType(imageUrl));
-        updateState(CHANNEL_TITLE, new StringType(title));
-        updateState(CHANNEL_SUBTITLE1, new StringType(subTitle1));
-        updateState(CHANNEL_SUBTITLE2, new StringType(subTitle2));
-        if (bluetoothState != null) {
-            updateState(CHANNEL_BLUETOOTH, bluetoothIsConnected ? OnOffType.ON : OnOffType.OFF);
-            updateState(CHANNEL_BLUETOOTH_MAC, new StringType(bluetoothMAC));
-            updateState(CHANNEL_BLUETOOTH_DEVICE_NAME, new StringType(bluetoothDeviceName));
+                if (infoText.subText2 != null) {
+                    subTitle2 = infoText.subText2;
+                }
+            }
+            if (mainArt != null) {
+                if (mainArt.url != null) {
+                    imageUrl = mainArt.url;
+                }
+            }
+            if (mediaState != null) {
+                QueueEntry[] queueEntries = mediaState.queue;
+                if (queueEntries != null && queueEntries.length > 0) {
+                    QueueEntry entry = queueEntries[0];
+                    if (entry != null) {
+
+                        if (isRadio) {
+                            if (StringUtils.isEmpty(imageUrl) && entry.imageURL != null) {
+                                imageUrl = entry.imageURL;
+                            }
+                            if (StringUtils.isEmpty(subTitle1) && entry.radioStationSlogan != null) {
+                                subTitle1 = entry.radioStationSlogan;
+                            }
+                            if (StringUtils.isEmpty(subTitle2) && entry.radioStationLocation != null) {
+                                subTitle2 = entry.radioStationLocation;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // handle provider
+            String providerDisplayName = "";
+            if (provider != null) {
+                if (provider.providerDisplayName != null) {
+                    providerDisplayName = provider.providerDisplayName;
+                }
+                if (StringUtils.isNotEmpty(provider.providerName) && StringUtils.isEmpty(providerDisplayName)) {
+                    providerDisplayName = provider.providerName;
+                }
+            }
+
+            // handle volume
+            Integer volume = null;
+            if (mediaState != null) {
+                volume = mediaState.volume;
+            }
+            if (playerInfo != null && volume == null) {
+
+                Volume volumnInfo = playerInfo.volume;
+                if (volumnInfo != null) {
+                    volume = volumnInfo.volume;
+                }
+            }
+            if (volume != null && volume > 0) {
+                lastKnownVolume = volume;
+            }
+            if (volume == null) {
+                volume = lastKnownVolume;
+            }
+
+            // Update states
+            if (updateRemind && currentNotifcationUpdateTimer == null) {
+                updateRemind = false;
+                updateState(CHANNEL_REMIND, new StringType(""));
+            }
+            if (updateAlarm && currentNotifcationUpdateTimer == null) {
+                updateAlarm = false;
+                updateState(CHANNEL_PLAY_ALARM_SOUND, new StringType(""));
+            }
+            if (updateRoutine) {
+                updateRoutine = false;
+                updateState(CHANNEL_START_ROUTINE, new StringType(""));
+            }
+            if (updateTextToSpeech) {
+                updateTextToSpeech = false;
+                updateState(CHANNEL_TEXT_TO_SPEECH, new StringType(""));
+            }
+            if (updatePlayMusicVoiceCommand) {
+                updatePlayMusicVoiceCommand = false;
+                updateState(CHANNEL_PLAY_MUSIC_VOICE_COMMAND, new StringType(""));
+            }
+            if (updateStartCommand) {
+                updateStartCommand = false;
+                updateState(CHANNEL_START_COMMAND, new StringType(""));
+            }
+
+            updateState(CHANNEL_MUSIC_PROVIDER_ID, new StringType(musicProviderId));
+            updateState(CHANNEL_AMAZON_MUSIC_TRACK_ID, new StringType(amazonMusicTrackId));
+            updateState(CHANNEL_AMAZON_MUSIC, isPlaying && amazonMusic ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_AMAZON_MUSIC_PLAY_LIST_ID, new StringType(amazonMusicPlayListId));
+            updateState(CHANNEL_RADIO_STATION_ID, new StringType(radioStationId));
+            updateState(CHANNEL_RADIO, isPlaying && isRadio ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_VOLUME, new PercentType(volume));
+            updateState(CHANNEL_PROVIDER_DISPLAY_NAME, new StringType(providerDisplayName));
+            updateState(CHANNEL_PLAYER, isPlaying ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
+            updateState(CHANNEL_IMAGE_URL, new StringType(imageUrl));
+            updateState(CHANNEL_TITLE, new StringType(title));
+            updateState(CHANNEL_SUBTITLE1, new StringType(subTitle1));
+            updateState(CHANNEL_SUBTITLE2, new StringType(subTitle2));
+            if (bluetoothState != null) {
+                updateState(CHANNEL_BLUETOOTH, bluetoothIsConnected ? OnOffType.ON : OnOffType.OFF);
+                updateState(CHANNEL_BLUETOOTH_MAC, new StringType(bluetoothMAC));
+                updateState(CHANNEL_BLUETOOTH_DEVICE_NAME, new StringType(bluetoothDeviceName));
+            }
+
+            updateState(CHANNEL_ASCENDING_ALARM,
+                    ascendingAlarm != null ? (ascendingAlarm ? OnOffType.ON : OnOffType.OFF) : UnDefType.UNDEF);
+            updateState(CHANNEL_NOTIFICATION_VOLUME,
+                    noticationVolumeLevel != null ? new PercentType(noticationVolumeLevel) : UnDefType.UNDEF);
+        } catch (Exception e) {
+            disableUpdate = false;
+            throw e; // Rethrow same exception
         }
     }
 
-    String lastSpokenText = "";
+    private void updateMediaProgress() {
+        updateMediaProgress(false);
+    }
+
+    private void updateMediaProgress(boolean updateMediaLength) {
+        synchronized (progressLock) {
+            if (mediaStartMs > 0) {
+                long currentPlayTimeMs = isPlaying ? System.currentTimeMillis() - mediaStartMs : mediaProgressMs;
+                if (mediaLengthMs > 0) {
+                    int progressPercent = (int) Math.min(100,
+                            Math.round((double) currentPlayTimeMs / (double) mediaLengthMs * 100));
+                    updateState(CHANNEL_MEDIA_PROGRESS, new PercentType(progressPercent));
+                } else {
+                    updateState(CHANNEL_MEDIA_PROGRESS, UnDefType.UNDEF);
+                }
+                updateState(CHANNEL_MEDIA_PROGRESS_TIME,
+                        new QuantityType<Time>(currentPlayTimeMs / 1000, SmartHomeUnits.SECOND));
+                if (updateMediaLength) {
+                    updateState(CHANNEL_MEDIA_LENGTH,
+                            new QuantityType<Time>(mediaLengthMs / 1000, SmartHomeUnits.SECOND));
+                }
+            } else {
+                updateState(CHANNEL_MEDIA_PROGRESS, UnDefType.UNDEF);
+                updateState(CHANNEL_MEDIA_LENGTH, UnDefType.UNDEF);
+                updateState(CHANNEL_MEDIA_PROGRESS_TIME, UnDefType.UNDEF);
+                if (updateMediaLength) {
+                    updateState(CHANNEL_MEDIA_LENGTH, UnDefType.UNDEF);
+                }
+            }
+        }
+    }
 
     public void handlePushActivity(Activity pushActivity) {
 
@@ -875,8 +1038,9 @@ public class EchoHandler extends BaseThingHandler {
                 AccountHandler account = this.account;
                 Device device = this.device;
                 if (account != null && device != null) {
-                    updateState(account, device, null);
+                    updateState(account, device, null, null, null);
                 }
         }
     }
+
 }

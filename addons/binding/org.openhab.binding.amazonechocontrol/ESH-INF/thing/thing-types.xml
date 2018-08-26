@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+<thing:thing-descriptions
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bindingId="amazonechocontrol"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 	<bridge-type id="account">
@@ -46,6 +47,9 @@
 		<description>Amazon Echo device (Amazon Echo, Amazon Echo Dot, Amazon Echo Plus...)</description>
 		<channels>
 			<channel id="player" typeId="player" />
+            <channel id="mediaProgress" typeId="mediaProgress" />
+			<channel id="mediaProgressTime" typeId="mediaProgressTime" />
+			<channel id="mediaLength" typeId="mediaLength" />
 			<channel id="volume" typeId="volume" />
 			<channel id="shuffle" typeId="shuffle" />
 			<channel id="imageUrl" typeId="imageUrl" />
@@ -69,6 +73,8 @@
 			<channel id="bluetooth" typeId="bluetooth" />
 			<channel id="bluetoothDeviceName" typeId="bluetoothDeviceName" />
 			<channel id="lastVoiceCommand" typeId="lastVoiceCommand" />
+			<channel id="notificationVolume" typeId="notificationVolume" />
+			<channel id="ascendingAlarm" typeId="ascendingAlarm" />
 		</channels>
 		<representation-property>serialNumber</representation-property>
 		<config-description>
@@ -86,6 +92,9 @@
 		<description>Amazon Echo Spot device</description>
 		<channels>
 			<channel id="player" typeId="player" />
+            <channel id="mediaProgress" typeId="mediaProgress" />
+            <channel id="mediaProgressTime" typeId="mediaProgressTime" />
+            <channel id="mediaLength" typeId="mediaLength" />
 			<channel id="volume" typeId="volume" />
 			<channel id="shuffle" typeId="shuffle" />
 			<channel id="imageUrl" typeId="imageUrl" />
@@ -108,7 +117,9 @@
 			<channel id="bluetoothMAC" typeId="bluetoothMAC" />
 			<channel id="bluetooth" typeId="bluetooth" />
 			<channel id="bluetoothDeviceName" typeId="bluetoothDeviceName" />
-            <channel id="lastVoiceCommand" typeId="lastVoiceCommand" />
+			<channel id="lastVoiceCommand" typeId="lastVoiceCommand" />
+			<channel id="notificationVolume" typeId="notificationVolume" />
+			<channel id="ascendingAlarm" typeId="ascendingAlarm" />
 		</channels>
 		<representation-property>serialNumber</representation-property>
 		<config-description>
@@ -126,6 +137,9 @@
 		<description>Amazon Echo Show device</description>
 		<channels>
 			<channel id="player" typeId="player" />
+            <channel id="mediaProgress" typeId="mediaProgress" />
+            <channel id="mediaProgressTime" typeId="mediaProgressTime" />
+            <channel id="mediaLength" typeId="mediaLength" />
 			<channel id="volume" typeId="volume" />
 			<channel id="shuffle" typeId="shuffle" />
 			<channel id="imageUrl" typeId="imageUrl" />
@@ -148,7 +162,9 @@
 			<channel id="bluetoothMAC" typeId="bluetoothMAC" />
 			<channel id="bluetooth" typeId="bluetooth" />
 			<channel id="bluetoothDeviceName" typeId="bluetoothDeviceName" />
-            <channel id="lastVoiceCommand" typeId="lastVoiceCommand" />
+			<channel id="lastVoiceCommand" typeId="lastVoiceCommand" />
+			<channel id="notificationVolume" typeId="notificationVolume" />
+			<channel id="ascendingAlarm" typeId="ascendingAlarm" />
 		</channels>
 		<representation-property>serialNumber</representation-property>
 		<config-description>
@@ -166,6 +182,9 @@
 		<description>Amazon Multiroom Music</description>
 		<channels>
 			<channel id="player" typeId="player" />
+			<channel id="mediaProgressTime" typeId="mediaProgressTime" />
+			<channel id="mediaProgress" typeId="mediaProgress" />
+			<channel id="mediaLength" typeId="mediaLength" />
 			<channel id="shuffle" typeId="shuffle" />
 			<channel id="imageUrl" typeId="imageUrl" />
 			<channel id="title" typeId="title" />
@@ -340,12 +359,30 @@
 		<label>Speak</label>
 		<description>Speak the text (Write only)</description>
 	</channel-type>
-    <channel-type id="lastVoiceCommand" advanced="true">
-        <item-type>String</item-type>
-        <label>Last voice command</label>
-        <description>Last voice command spoken to the device</description>
-        <state readOnly="true" />
-    </channel-type>	
+	<channel-type id="lastVoiceCommand" advanced="true">
+		<item-type>String</item-type>
+		<label>Last voice command</label>
+		<description>Last voice command spoken to the device. Writing to the channel starts voice output.</description>
+		<state readOnly="false" />
+	</channel-type>
+	<channel-type id="mediaProgress" advanced="false">
+		<item-type>Dimmer</item-type>
+		<label>Media progress</label>
+		<description>Media progress in percent</description>
+		<state readOnly="false" />
+	</channel-type>
+	<channel-type id="mediaProgressTime" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Media play time</label>
+		<description>Media play time</description>
+		<state readOnly="false" pattern="%d %unit%" />
+	</channel-type>
+	<channel-type id="mediaLength" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Media length</label>
+		<description>Media length</description>
+		<state readOnly="true" pattern="%d %unit%" />
+	</channel-type>
 	<channel-type id="startCommand">
 		<item-type>String</item-type>
 		<label>Start</label>
@@ -360,5 +397,17 @@
 				<option value="FlashBriefing">Flash briefing</option>
 			</options>
 		</state>
+	</channel-type>
+	<channel-type id="notificationVolume" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Notification volume</label>
+		<description>Notification volume</description>
+		<state readOnly="false" />
+	</channel-type>
+	<channel-type id="ascendingAlarm" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Ascending alarm</label>
+		<description>Ascending alarm up to the configured volume</description>
+		<state readOnly="false" />
 	</channel-type>
 </thing:thing-descriptions>

@@ -43,10 +43,14 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAscendingAlarm;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAscendingAlarm.AscendingAlarmModel;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAutomation;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAutomation.Payload;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAutomation.Trigger;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDeviceNotificationState;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDeviceNotificationState.DeviceNotificationState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonEnabledFeeds;
@@ -686,6 +690,52 @@ public class Connection {
         String url = alexaServer + "/api/np/command?deviceSerialNumber=" + device.serialNumber + "&deviceType="
                 + device.deviceType;
         makeRequest("POST", url, command, true, true, null);
+    }
+
+    public void notificationVolume(Device device, int volume) throws IOException, URISyntaxException {
+        String url = alexaServer + "/api/device-notification-state/" + device.deviceType + "/" + device.softwareVersion
+                + "/" + device.serialNumber;
+        String command = "{\"deviceSerialNumber\":\"" + device.serialNumber + "\",\"deviceType\":\"" + device.deviceType
+                + "\",\"softwareVersion\":\"" + device.softwareVersion + "\",\"volumeLevel\":" + volume + "}";
+        makeRequest("PUT", url, command, true, true, null);
+    }
+
+    public void ascendingAlarm(Device device, boolean ascendingAlarm) throws IOException, URISyntaxException {
+        String url = alexaServer + "/api/ascending-alarm/" + device.serialNumber;
+        String command = "{\"ascendingAlarmEnabled\":" + (ascendingAlarm ? "true" : "false")
+                + ",\"deviceSerialNumber\":\"" + device.serialNumber + "\",\"deviceType\":\"" + device.deviceType
+                + "\",\"deviceAccountId\":null}";
+        makeRequest("PUT", url, command, true, true, null);
+    }
+
+    public DeviceNotificationState[] getDeviceNotificationStates() {
+        String json;
+        try {
+            json = makeRequestAndReturnString(alexaServer + "/api/device-notification-state");
+            JsonDeviceNotificationState result = parseJson(json, JsonDeviceNotificationState.class);
+            DeviceNotificationState[] deviceNotificationStates = result.deviceNotificationStates;
+            if (deviceNotificationStates != null) {
+                return deviceNotificationStates;
+            }
+        } catch (IOException | URISyntaxException e) {
+            logger.info("Error getting device notification states {}", e);
+        }
+        return new DeviceNotificationState[0];
+    }
+
+    public AscendingAlarmModel[] getAscendingAlarm() {
+        String json;
+        try {
+            json = makeRequestAndReturnString(alexaServer + "/api/ascending-alarm");
+            JsonAscendingAlarm result = parseJson(json, JsonAscendingAlarm.class);
+            AscendingAlarmModel[] ascendingAlarmModelList = result.ascendingAlarmModelList;
+            if (ascendingAlarmModelList != null) {
+                return ascendingAlarmModelList;
+            }
+        } catch (IOException | URISyntaxException e) {
+            logger.info("Error getting device notification states {}", e);
+        }
+        return new AscendingAlarmModel[0];
     }
 
     public void bluetooth(Device device, @Nullable String address) throws IOException, URISyntaxException {
