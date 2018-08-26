@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="lghombot"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="LGHomBot">
+		<label>LG-HomBot</label>
+		<description>LG-HomBot Vacuum robot</description>
+        <category>CleaningRobot</category>
+
+		<channels>
+            <channel id="state" typeId="stateType" />
+            <channel id="battery" typeId="batteryType" />
+            <channel id="start" typeId="startType" />
+            <channel id="home" typeId="homeType" />
+            <channel id="stop" typeId="stopType" />
+            <channel id="diagnosis" typeId="diagnosisType" />
+            <channel id="mode" typeId="modeType" />
+            <channel id="turbo" typeId="turboType" />
+            <channel id="repeat" typeId="repeatType" />
+            <channel id="mute" typeId="muteType" />
+            <channel id="nickname" typeId="nicknameType" />
+            <channel id="map" typeId="mapType" />
+            <channel id="video" typeId="videoType" />
+		</channels>
+
+        <properties>
+            <property name="vendor">LG</property>
+        </properties>
+        <representation-property>deviceId</representation-property>
+
+		<config-description uri="thing-type:lghombot:config">
+        <parameter name="ipAddress" type="text" required="true">
+            <label>Network Address</label>
+            <description>The IP or host name of the HomBot</description>
+            <context>network-address</context>
+        </parameter>
+        <parameter name="port" type="integer" min="1000" max="65335">
+            <label>Port</label>
+            <description>Port of the HomBot to control</description>
+            <default>6260</default>
+            <advanced>true</advanced>
+        </parameter>
+        <parameter name="pollingPeriod" type="integer" min="1" max="60">
+            <label>Polling Period</label>
+            <description>Time between polls in seconds.</description>
+            <default>3</default>
+            <advanced>true</advanced>
+        </parameter>
+		</config-description>
+
+	</thing-type>
+
+    <channel-type id="stateType">
+        <item-type>String</item-type>
+        <label>State</label>
+        <description>Current state</description>
+        <state pattern="%s" readOnly="true">
+            <options>
+                <option value="WORKING">Working</option>
+                <option value="BACKMOVING">Backmoving</option>
+                <option value="BACKMOVING_INIT">Backmoving Init</option>
+                <option value="PAUSE">Pause</option>
+                <option value="STANDBY">Standby</option>
+                <option value="HOMING">Homing</option>
+                <option value="DOCKING">Docking</option>
+                <option value="CHARGING">Charging</option>
+                <option value="DIAGNOSIS">Diagnosis running</option>
+                <option value="RESERVATION">Changing settings</option>
+            </options>
+        </state>
+    </channel-type>
+    <channel-type id="batteryType">
+        <item-type>Number</item-type>
+        <label>Battery</label>
+        <description>Current battery charge</description>
+        <category>BatteryLevel</category>
+        <state pattern="%d%%" readOnly="true"></state>
+    </channel-type>
+    <channel-type id="startType">
+        <item-type>Switch</item-type>
+        <label>Clean</label>
+        <description>Start cleaning</description>
+        <tags>
+            <tag>Switchable</tag>
+        </tags>
+    </channel-type>
+    <channel-type id="homeType">
+        <item-type>Switch</item-type>
+        <label>Home</label>
+        <description>Return home</description>
+        <tags>
+            <tag>Switchable</tag>
+        </tags>
+    </channel-type>
+    <channel-type id="stopType">
+        <item-type>Switch</item-type>
+        <label>Pause</label>
+        <description>Pause cleaning</description>
+    </channel-type>
+    <channel-type id="diagnosisType" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Diagnosis</label>
+        <description>Run diagnosis</description>
+    </channel-type>
+    <channel-type id="modeType">
+        <item-type>String</item-type>
+        <label>Mode</label>
+        <description>Cleaning mode</description>
+        <state>
+            <options>
+                <option value="SB">Cell by cell mode</option>
+                <option value="ZZ">Zigzag mode</option>
+                <option value="SPOT">Spot mode</option>
+            </options>
+        </state>
+    </channel-type>
+    <channel-type id="turboType">
+        <item-type>Switch</item-type>
+        <label>Turbo</label>
+        <description>Turbo mode ON, OFF</description>
+    </channel-type>
+    <channel-type id="repeatType">
+        <item-type>Switch</item-type>
+        <label>Repeat</label>
+        <description>Repeat mode On, OFF</description>
+    </channel-type>
+    <channel-type id="muteType" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Mute</label>
+        <description>Mute On, OFF</description>
+        <category>SoundVolume</category>
+    </channel-type>
+    <channel-type id="nicknameType">
+        <item-type>String</item-type>
+        <label>Nickname</label>
+        <description>The nickname of the HomBot</description>
+        <state pattern="%s" readOnly="true"></state>
+    </channel-type>
+    <channel-type id="mapType">
+        <item-type>Image</item-type>
+        <label>Map</label>
+        <description>Map of cleaned area</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="videoType">
+        <item-type>Image</item-type>
+        <label>Video</label>
+        <description>Video feed from the top camera</description>
+        <state readOnly="true"></state>
+    </channel-type>
+
+</thing:thing-descriptions>
