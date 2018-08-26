@@ -94,7 +94,7 @@
             <tag>Switchable</tag>
         </tags>
     </channel-type>
-    <channel-type id="stopType">
+    <channel-type id="stopType" advanced="true">
         <item-type>Switch</item-type>
         <label>Pause</label>
         <description>Pause cleaning</description>
