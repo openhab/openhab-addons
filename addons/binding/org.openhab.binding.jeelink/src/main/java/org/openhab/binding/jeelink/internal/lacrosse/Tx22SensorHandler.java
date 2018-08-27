@@ -88,8 +88,6 @@ public class Tx22SensorHandler extends JeeLinkSensorHandler<Tx22Reading> {
             }
         };
 
-        // TODO.vb. chain publishers
-
         return publisher;
     }
 }
