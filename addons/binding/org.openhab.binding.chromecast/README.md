@@ -3,7 +3,7 @@
 The binding integrates Google Chromecast streaming devices.
 It not only acts as a typical binding, but also registers each Chromecast device as an audio sink that can be used for playback.
 
-In order play audio streams that are served from the runtime, the binding needs to know the url to access.
+In order play audio/video streams that are served from the runtime, the binding needs to know the url(Of your Openhab instalation) to access.
 This can be configured on the binding level:
 
 | Configuration Parameter | Type | Description                                                                                        |
