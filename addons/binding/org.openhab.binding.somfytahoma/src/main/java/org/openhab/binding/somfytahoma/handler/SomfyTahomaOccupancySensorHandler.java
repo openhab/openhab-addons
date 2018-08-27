@@ -27,8 +27,6 @@ import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.CONTAC
  */
 public class SomfyTahomaOccupancySensorHandler extends SomfyTahomaContactSensorHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaOccupancySensorHandler.class);
-
     public SomfyTahomaOccupancySensorHandler(Thing thing) {
         super(thing);
     }

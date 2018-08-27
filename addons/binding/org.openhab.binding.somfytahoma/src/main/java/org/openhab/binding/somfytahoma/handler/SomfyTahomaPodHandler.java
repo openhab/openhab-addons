@@ -44,7 +44,7 @@ public class SomfyTahomaPodHandler extends SomfyTahomaBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
+        logger.debug("Received command {} for channel {}", command, channelUID);
         if (command.equals(RefreshType.REFRESH)) {
             updateChannelState(channelUID);
         }

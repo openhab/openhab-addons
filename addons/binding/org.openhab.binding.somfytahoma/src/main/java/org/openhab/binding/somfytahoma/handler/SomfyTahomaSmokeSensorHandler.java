@@ -27,8 +27,6 @@ import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
  */
 public class SomfyTahomaSmokeSensorHandler extends SomfyTahomaContactSensorHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaSmokeSensorHandler.class);
-
     public SomfyTahomaSmokeSensorHandler(Thing thing) {
         super(thing);
     }

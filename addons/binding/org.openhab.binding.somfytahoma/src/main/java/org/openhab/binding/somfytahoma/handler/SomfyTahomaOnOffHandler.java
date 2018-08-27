@@ -44,7 +44,7 @@ public class SomfyTahomaOnOffHandler extends SomfyTahomaBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
+        logger.debug("Received command {} for channel {}", command, channelUID);
         if (channelUID.getId().equals(SomfyTahomaBindingConstants.SWITCH) && command instanceof OnOffType) {
             sendCommand(command.toString().toLowerCase(), "[]");
         }

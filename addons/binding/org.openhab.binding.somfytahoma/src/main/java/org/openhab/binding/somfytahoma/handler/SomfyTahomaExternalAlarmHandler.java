@@ -45,7 +45,7 @@ public class SomfyTahomaExternalAlarmHandler extends SomfyTahomaBaseThingHandler
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
+        logger.debug("Received command {} for channel {}", command, channelUID);
         if (channelUID.getId().equals(ALARM_COMMAND) && command instanceof StringType) {
             sendCommand(command.toString(), "[]");
         }
