@@ -10,47 +10,86 @@ package org.openhab.binding.upnpcontrol.internal;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  *
  * @author Mark Herwege - Initial contribution
+ * @author Karel Goderis - Based on UPnP logic in Sonos binding
  */
+@NonNullByDefault
 public class UpnpEntry {
 
-    private final String id;
-    private final String title;
-    private final String refId;
-    private final String parentId;
-    private final String upnpClass;
-    private final List<UpnpEntryRes> resList;
-    private final String album;
-    private final String albumArtUri;
-    private final String creator;
-    private final Integer originalTrackNumber;
-    private volatile String desc;
+    private String id;
+    private String refId;
+    private String parentId;
+    private String upnpClass;
+    private String title = "";
+    private List<UpnpEntryRes> resList = new ArrayList<>();;
+    private String album = "";
+    private String albumArtUri = "";
+    private String creator = "";
+    private String artist = "";
+    private String publisher = "";
+    private String genre = "";
+    private @Nullable Integer originalTrackNumber;
 
-    public UpnpEntry(String id, String title, String refId, String parentId, String album, String albumArtUri,
-            String creator, String upnpClass, List<UpnpEntryRes> resList) {
-        this(id, title, refId, parentId, album, albumArtUri, creator, upnpClass, resList, null);
-    }
-
-    public UpnpEntry(String id, String title, String refId, String parentId, String album, String albumArtUri,
-            String creator, String upnpClass, List<UpnpEntryRes> resList, Integer originalTrackNumber) {
+    public UpnpEntry(String id, String refId, String parentId, String upnpClass) {
         this.id = id;
-        this.title = title;
         this.refId = refId;
         this.parentId = parentId;
-        this.album = album;
-        this.albumArtUri = albumArtUri;
-        this.creator = creator;
         this.upnpClass = upnpClass;
+    }
+
+    public UpnpEntry withTitle(String title) {
+        this.title = title;
+        return this;
+    }
+
+    public UpnpEntry withAlbum(String album) {
+        this.album = album;
+        return this;
+    }
+
+    public UpnpEntry withAlbumArtUri(String albumArtUri) {
+        this.albumArtUri = albumArtUri;
+        return this;
+    }
+
+    public UpnpEntry withCreator(String creator) {
+        this.creator = creator;
+        return this;
+    }
+
+    public UpnpEntry withArtist(String artist) {
+        this.artist = artist;
+        return this;
+    }
+
+    public UpnpEntry withPublisher(String publisher) {
+        this.publisher = publisher;
+        return this;
+    }
+
+    public UpnpEntry withGenre(String genre) {
+        this.genre = genre;
+        return this;
+    }
+
+    public UpnpEntry withResList(List<UpnpEntryRes> resList) {
         this.resList = resList;
+        return this;
+    }
+
+    public UpnpEntry withTrackNumber(@Nullable Integer originalTrackNumber) {
         this.originalTrackNumber = originalTrackNumber;
-        this.desc = null;
+        return this;
     }
 
     /**
@@ -90,10 +129,16 @@ public class UpnpEntry {
     }
 
     /**
-     * @return a URI of this entry.
+     * @return a URI for this entry. Thumbnail resources are not considered.
      */
     public String getRes() {
-        return resList.get(0).getRes();
+        UpnpEntryRes resource;
+        try {
+            resource = resList.stream().filter(res -> !res.isThumbnailRes()).findFirst().get();
+        } catch (NoSuchElementException e) {
+            return "";
+        }
+        return resource.getRes();
     }
 
     public List<String> getProtocolList() {
@@ -138,15 +183,19 @@ public class UpnpEntry {
         return creator;
     }
 
-    public Integer getOriginalTrackNumber() {
+    public String getArtist() {
+        return artist;
+    }
+
+    public String getPublisher() {
+        return publisher;
+    }
+
+    public String getGenre() {
+        return genre;
+    }
+
+    public @Nullable Integer getOriginalTrackNumber() {
         return originalTrackNumber;
-    }
-
-    public String getDesc() {
-        return desc;
-    }
-
-    public void setDesc(String desc) {
-        this.desc = desc;
     }
 }

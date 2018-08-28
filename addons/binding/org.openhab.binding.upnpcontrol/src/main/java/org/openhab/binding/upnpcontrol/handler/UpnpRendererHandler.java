@@ -51,6 +51,7 @@ import org.slf4j.LoggerFactory;
  * The {@link UpnpRendererHandler} is responsible for handling commands sent to the UPnP Renderer.
  *
  * @author Mark Herwege - Initial contribution
+ * @author Karel Goderis - Based on UPnP logic in Sonos binding
  */
 @NonNullByDefault
 public class UpnpRendererHandler extends UpnpHandler {
@@ -60,7 +61,7 @@ public class UpnpRendererHandler extends UpnpHandler {
     private static final int SUBSCRIPTION_DURATION = 3600;
 
     private volatile boolean audioSupport;
-    protected volatile Set<AudioFormat> supportedFormats = new HashSet<AudioFormat>();
+    protected volatile Set<AudioFormat> supportedAudioFormats = new HashSet<AudioFormat>();
     private volatile boolean audioSinkRegistered;
 
     private volatile UpnpAudioSinkReg audioSinkReg;
@@ -75,6 +76,10 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     private volatile LinkedList<UpnpEntry> currentQueue = new LinkedList<>();
     private volatile int queuePosition = -1;
+    private volatile boolean playerStopped;
+    private volatile boolean playing;
+    private volatile String trackDuration = "00:00:00";
+    private volatile @Nullable ScheduledFuture<?> trackPositionRefresh;
 
     private volatile @Nullable ScheduledFuture<?> subscriptionRefreshJob;
     private final Runnable subscriptionRefresh = () -> {
@@ -106,6 +111,9 @@ public class UpnpRendererHandler extends UpnpHandler {
         subscriptionRefreshJob = null;
         removeSubscription("AVTransport");
         upnpSubscribed = false;
+
+        cancelTrackPositionRefresh();
+
         super.dispose();
     }
 
@@ -119,29 +127,6 @@ public class UpnpRendererHandler extends UpnpHandler {
         }
         getProtocolInfo();
         getTransportState();
-    }
-
-    protected void handlePlayUri(Command command) {
-        if ((command instanceof StringType)) {
-            try {
-                playMedia(command.toString());
-            } catch (IllegalStateException e) {
-                logger.warn("Cannot play URI ({})", e.getMessage());
-            }
-        }
-    }
-
-    private void playMedia(String url) {
-        stop();
-
-        String newUrl = url;
-        if ((!url.startsWith("x-")) && (!url.startsWith("http"))) {
-            newUrl = "x-file-cifs:" + url;
-        }
-
-        setCurrentURI(newUrl, "");
-
-        play();
     }
 
     public void stop() {
@@ -193,6 +178,19 @@ public class UpnpRendererHandler extends UpnpHandler {
         invokeAction("AVTransport", "SetAVTransportURI", inputs);
     }
 
+    public void setNextURI(String nextURI, String nextURIMetaData) {
+        Map<String, String> inputs = new HashMap<>();
+        try {
+            inputs.put("InstanceID", Integer.toString(avTransportId));
+            inputs.put("NextURI", nextURI);
+            inputs.put("NextURIMetaData", nextURIMetaData);
+        } catch (NumberFormatException ex) {
+            logger.error("Action Invalid Value Format Exception {}", ex.getMessage());
+        }
+
+        invokeAction("AVTransport", "SetNextAVTransportURI", inputs);
+    }
+
     protected void getUpnpVolume() {
         Map<String, String> inputs = new HashMap<>();
         inputs.put("InstanceID", Integer.toString(rcsId));
@@ -229,6 +227,13 @@ public class UpnpRendererHandler extends UpnpHandler {
         inputs.put("DesiredMute", mute == OnOffType.ON ? "1" : "0");
 
         invokeAction("RenderingControl", "SetMute", inputs);
+    }
+
+    protected void getPositionInfo() {
+        Map<String, String> inputs = new HashMap<>();
+        inputs.put("InstanceID", Integer.toString(rcsId));
+
+        invokeAction("AVTransport", "GetPositionInfo", inputs);
     }
 
     @Override
@@ -269,11 +274,13 @@ public class UpnpRendererHandler extends UpnpHandler {
                 case STOP:
                     if (command == OnOffType.ON) {
                         updateState(CONTROL, PlayPauseType.PAUSE);
+                        playerStopped = true;
                         stop();
                     }
                     break;
                 case CONTROL:
                     updateState(STOP, OnOffType.OFF);
+                    playerStopped = false;
                     if (command instanceof PlayPauseType) {
                         if (command == PlayPauseType.PLAY) {
                             play();
@@ -282,8 +289,10 @@ public class UpnpRendererHandler extends UpnpHandler {
                         }
                     } else if (command instanceof NextPreviousType) {
                         if (command == NextPreviousType.NEXT) {
+                            playerStopped = true;
                             serveNext();
                         } else if (command == NextPreviousType.PREVIOUS) {
+                            playerStopped = true;
                             servePrevious();
                         }
                     } else if (command instanceof RewindFastforwardType) {
@@ -337,49 +346,83 @@ public class UpnpRendererHandler extends UpnpHandler {
                 break;
             case "LastChange":
                 // pre-process some variables, eg XML processing
-                if ("AVTransport".equals(service) && "LastChange".equals(variable)) {
-                    Map<String, String> parsedValues = UpnpXMLParser.getAVTransportFromXML(value);
-                    for (String parsedValue : parsedValues.keySet()) {
-                        // Update the transport state after the update of the media information
-                        // to not break the notification mechanism
-                        if (!parsedValue.equals("TransportState")) {
-                            onValueReceived(parsedValue, parsedValues.get(parsedValue), "AVTransport");
+                if (!((value == null) || value.isEmpty())) {
+                    if ("AVTransport".equals(service) && "LastChange".equals(variable)) {
+                        Map<String, String> parsedValues = UpnpXMLParser.getAVTransportFromXML(value);
+                        for (String parsedValue : parsedValues.keySet()) {
+                            // Update the transport state after the update of the media information
+                            // to not break the notification mechanism
+                            if (!parsedValue.equals("TransportState")) {
+                                onValueReceived(parsedValue, parsedValues.get(parsedValue), service);
+                            }
+                            if (parsedValue.equals("AVTransportURI")) {
+                                onValueReceived("CurrentTrackURI", parsedValues.get(parsedValue), service);
+                            } else if (parsedValue.equals("AVTransportURIMetaData")) {
+                                onValueReceived("CurrentTrackMetaData", parsedValues.get(parsedValue), service);
+                            }
                         }
-                        // Translate AVTransportURI/AVTransportURIMetaData to CurrentURI/CurrentURIMetaData
-                        // for a compatibility with the result of the action GetMediaInfo
-                        if (parsedValue.equals("AVTransportURI")) {
-                            onValueReceived("CurrentURI", parsedValues.get(parsedValue), service);
-                        } else if (parsedValue.equals("AVTransportURIMetaData")) {
-                            onValueReceived("CurrentURIMetaData", parsedValues.get(parsedValue), service);
+                        if (parsedValues.get("TransportState") != null) {
+                            onValueReceived("TransportState", parsedValues.get("TransportState"), service);
                         }
-                    }
-                    if (parsedValues.get("TransportState") != null) {
-                        onValueReceived("TransportState", parsedValues.get("TransportState"), "AVTransport");
                     }
                 }
                 break;
             case "TransportState":
+                transportState = (value == null) ? "" : value;
                 if ("STOPPED".equals(value)) {
-                    // No need to do anything: this will allow restarting to play same item
+                    // This allows us to identify if we played to the end of an entry. We should then move to the next
+                    // entry if the queue is not at the end already.
+                    if (playerStopped) {
+                        playing = false;
+                        // Stop command came from openHAB, so don't move to next
+                        updateState(STOP, OnOffType.ON);
+                        updateState(CONTROL, PlayPauseType.PAUSE);
+                        cancelTrackPositionRefresh();
+                    } else if (playing) {
+                        // Only go to next for first STOP command, then wait until we received PLAYING before moving
+                        // to next (avoids issues with renderers sending multiple stop states)
+                        playing = false;
+                        serveNext();
+                    }
                 } else if ("PLAYING".equals(value)) {
+                    playerStopped = false;
+                    playing = true;
                     updateState(STOP, OnOffType.OFF);
                     updateState(CONTROL, PlayPauseType.PLAY);
                 }
                 break;
-            case "CurrentURI":
+            case "CurrentTrackURI":
+                if ((queuePosition < (currentQueue.size() - 1)
+                        && !currentQueue.get(queuePosition).getRes().equals(value)
+                        && currentQueue.get(queuePosition + 1).getRes().equals(value))) {
+                    // Renderer advanced to next entry independent of openHAB UPnP control point.
+                    // Advance in the queue to keep proper position status.
+                    // Make the next entry available to renderers that support it.
+                    updateMetaDataState(currentQueue.get(queuePosition + 1));
+                    if (++queuePosition < (currentQueue.size() - 1)) {
+                        UpnpEntry next = currentQueue.get(queuePosition + 1);
+                        setNextURI(next.getRes(), UpnpXMLParser.compileMetadataString(next));
+                    }
+                }
                 break;
-            case "CurrentURIMetaData":
-                List<UpnpEntry> list = UpnpXMLParser.getEntriesFromXML(value);
-                if (list.size() > 0) {
-                    updateMetaDataState(list.get(0));
+            case "CurrentTrackMetaData":
+                if (!((value == null) || (value.isEmpty()))) {
+                    List<UpnpEntry> list = UpnpXMLParser.getEntriesFromXML(value);
+                    if (list.size() > 0) {
+                        updateMetaDataState(list.get(0));
+                    }
                 }
                 break;
             case "CurrentTrackDuration":
                 updateState(TRACK_DURATION, StringType.valueOf(value));
+                scheduleTrackPositionRefresh();
+            case "RelTime":
+                updateState(TRACK_POSITION, StringType.valueOf(value));
             default:
                 super.onValueReceived(variable, value, service);
                 break;
         }
+
     }
 
     public void updateProtocolInfo(String value) {
@@ -395,11 +438,11 @@ public class UpnpRendererHandler extends UpnpHandler {
                     case "audio/mpeg3":
                     case "audio/mp3":
                     case "audio/mpeg":
-                        supportedFormats.add(AudioFormat.MP3);
+                        supportedAudioFormats.add(AudioFormat.MP3);
                         break;
                     case "audio/wav":
                     case "audio/wave":
-                        supportedFormats.add(AudioFormat.WAV);
+                        supportedAudioFormats.add(AudioFormat.WAV);
                         break;
                 }
                 audioSupport = Pattern.matches("audio.*", format);
@@ -441,13 +484,18 @@ public class UpnpRendererHandler extends UpnpHandler {
             updateState(ALBUM, UnDefType.UNDEF);
             updateState(ALBUM_ART, UnDefType.UNDEF);
             updateState(CREATOR, UnDefType.UNDEF);
+            updateState(ARTIST, UnDefType.UNDEF);
+            updateState(PUBLISHER, UnDefType.UNDEF);
+            updateState(GENRE, UnDefType.UNDEF);
             updateState(TRACK_NUMBER, UnDefType.UNDEF);
             updateState(TRACK_DURATION, UnDefType.UNDEF);
-            updateState(DESC, UnDefType.UNDEF);
+            updateState(TRACK_POSITION, UnDefType.UNDEF);
 
             currentQueue = new LinkedList<>();
             queuePosition = -1;
             logger.debug("Cannot serve next, end of queue on renderer {}", thing.getLabel());
+
+            cancelTrackPositionRefresh();
 
             return;
         }
@@ -455,17 +503,24 @@ public class UpnpRendererHandler extends UpnpHandler {
         UpnpEntry nextMedia = queue.get(++queuePosition);
         logger.debug("Serve next media {} from queue on renderer {}", nextMedia, thing.getLabel());
         serve(nextMedia);
+        // make the next entry available to renderers that support it
+        if (queuePosition < (queue.size() - 1)) {
+            UpnpEntry next = queue.get(queuePosition + 1);
+            setNextURI(next.getRes(), UpnpXMLParser.compileMetadataString(next));
+        }
     }
 
     private void servePrevious() {
         LinkedList<UpnpEntry> queue = currentQueue;
         if (queue.isEmpty()) {
             logger.debug("Cannot serve previous, empty queue on renderer {}", thing.getLabel());
+            cancelTrackPositionRefresh();
             return;
         }
         if (queuePosition == 0) {
             serve(queue.get(0));
             logger.debug("Cannot serve previous, already at start of queue on renderer {}", thing.getLabel());
+            cancelTrackPositionRefresh();
             return;
         }
 
@@ -475,32 +530,87 @@ public class UpnpRendererHandler extends UpnpHandler {
     }
 
     private void serve(UpnpEntry media) {
-        if (media != null) {
-            setCurrentURI(media.getRes(), "");
-            updateMetaDataState(media);
+        updateMetaDataState(media);
+        String res = media.getRes();
+        if (res.isEmpty()) {
+            logger.debug("Cannot serve media '{}', no URI", media);
+            return;
         }
+        setCurrentURI(media.getRes(), UpnpXMLParser.compileMetadataString(media));
+        play();
+        scheduleTrackPositionRefresh();
+    }
+
+    private void scheduleTrackPositionRefresh() {
+        if (!isLinked(TRACK_POSITION)) {
+            return;
+        }
+        if (trackDuration.equals("00:00:00") || trackDuration.equals("NOT_IMPLEMENTED")) {
+            return;
+        }
+        if (trackPositionRefresh == null) {
+            trackPositionRefresh = scheduler.scheduleWithFixedDelay(() -> {
+                getPositionInfo();
+            }, 1, 1, TimeUnit.SECONDS);
+        }
+    }
+
+    private void cancelTrackPositionRefresh() {
+        if (trackPositionRefresh != null) {
+            trackPositionRefresh.cancel(true);
+        }
+        trackPositionRefresh = null;
     }
 
     private void updateMetaDataState(UpnpEntry media) {
-        updateState(TITLE, StringType.valueOf(media.getTitle()));
-        updateState(ALBUM, StringType.valueOf(media.getAlbum()));
-        State albumArt;
-        try {
-            albumArt = HttpUtil.downloadImage(media.getAlbumArtUri());
-        } catch (IllegalArgumentException e) {
-            albumArt = UnDefType.UNDEF;
-            logger.debug("Failed to download the content of URL {}", media.getAlbumArtUri());
+        // The AVTransport passes the URI resource in the ID.
+        // We don't want to update metadata if the metadata from the AVTransport is empty for the current entry.
+        boolean currentEntry = (currentQueue.isEmpty() || (queuePosition < 0)) ? false
+                : media.getId().equals(currentQueue.get(queuePosition).getRes());
+        logger.trace("Media ID: {}", media.getId());
+        logger.trace("Current queue res: {}",
+                (currentQueue.isEmpty() || (queuePosition < 0)) ? "" : currentQueue.get(queuePosition).getRes());
+        logger.trace("Updating current entry: {}", currentEntry);
+
+        if (!(currentEntry && media.getTitle().isEmpty())) {
+            updateState(TITLE, StringType.valueOf(media.getTitle()));
         }
-        updateState(ALBUM_ART, albumArt);
-        updateState(CREATOR, StringType.valueOf(media.getCreator()));
-        Integer trackNumber = media.getOriginalTrackNumber();
-        State trackNumberState = (trackNumber != null) ? new DecimalType(trackNumber) : UnDefType.UNDEF;
-        updateState(TRACK_NUMBER, trackNumberState);
-        updateState(DESC, StringType.valueOf(media.getDesc()));
+        if (!(currentEntry && (media.getAlbum().isEmpty() || media.getAlbum().matches("Unknown.*")))) {
+            updateState(ALBUM, StringType.valueOf(media.getAlbum()));
+        }
+        if (!(currentEntry
+                && (media.getAlbumArtUri().isEmpty() || media.getAlbumArtUri().contains("DefaultAlbumCover")))) {
+            State albumArt = HttpUtil.downloadImage(media.getAlbumArtUri());
+            if (albumArt == null) {
+                logger.debug("Failed to download the content of album art from URL {}", media.getAlbumArtUri());
+                if (!currentEntry) {
+                    updateState(ALBUM_ART, UnDefType.UNDEF);
+                }
+            } else {
+                updateState(ALBUM_ART, albumArt);
+            }
+        }
+        if (!(currentEntry && (media.getCreator().isEmpty() || media.getCreator().matches("Unknown.*")))) {
+            updateState(CREATOR, StringType.valueOf(media.getCreator()));
+        }
+        if (!(currentEntry && (media.getArtist().isEmpty() || media.getArtist().matches("Unknown.*")))) {
+            updateState(ARTIST, StringType.valueOf(media.getArtist()));
+        }
+        if (!(currentEntry && (media.getPublisher().isEmpty() || media.getPublisher().matches("Unknown.*")))) {
+            updateState(PUBLISHER, StringType.valueOf(media.getPublisher()));
+        }
+        if (!(currentEntry && (media.getGenre().isEmpty() || media.getGenre().matches("Unknown.*")))) {
+            updateState(GENRE, StringType.valueOf(media.getGenre()));
+        }
+        if (!(currentEntry && (media.getOriginalTrackNumber() == null))) {
+            Integer trackNumber = media.getOriginalTrackNumber();
+            State trackNumberState = (trackNumber != null) ? new DecimalType(trackNumber) : UnDefType.UNDEF;
+            updateState(TRACK_NUMBER, trackNumberState);
+        }
     }
 
     public Set<AudioFormat> getSupportedAudioFormats() {
-        return supportedFormats;
+        return supportedAudioFormats;
     }
 
     protected List<String> getSink() {

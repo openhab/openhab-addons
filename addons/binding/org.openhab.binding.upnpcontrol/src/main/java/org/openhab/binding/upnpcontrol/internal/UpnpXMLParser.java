@@ -10,11 +10,15 @@ package org.openhab.binding.upnpcontrol.internal;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringEscapeUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
@@ -27,10 +31,23 @@ import org.xml.sax.helpers.XMLReaderFactory;
 /**
  *
  * @author Mark Herwege - Initial contribution
+ * @author Karel Goderis - Based on UPnP logic in Sonos binding
  */
+@NonNullByDefault
 public class UpnpXMLParser {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UpnpXMLParser.class);
+
+    private static final MessageFormat METADATA_FORMAT = new MessageFormat(
+            "<DIDL-Lite xmlns:dc=\"http://purl.org/dc/elements/1.1/\" "
+                    + "xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\" "
+                    + "xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\">"
+                    + "<item id=\"{0}\" parentID=\"{1}\" restricted=\"true\">" + "<dc:title>{2}</dc:title>"
+                    + "<upnp:class>{3}</upnp:class>" + "<upnp:album>{4}</upnp:album>"
+                    + "<upnp:albumArtURI>{5}</upnp:albumArtURI>" + "<dc:creator>{6}</dc:creator>"
+                    + "<upnp:artist>{7}</upnp:artist>" + "<dc:publisher>{8}</dc:publisher>"
+                    + "<upnp:genre>{9}</upnp:genre>" + "<upnp:originalTrackNumber>{10}</upnp:originalTrackNumber>"
+                    + "</item></DIDL-Lite>");
 
     private enum Element {
         TITLE,
@@ -38,14 +55,15 @@ public class UpnpXMLParser {
         ALBUM,
         ALBUM_ART_URI,
         CREATOR,
-        RES,
+        ARTIST,
+        PUBLISHER,
+        GENRE,
         TRACK_NUMBER,
-        RESMD,
-        DESC
+        RES
     }
 
     public static Map<String, String> getAVTransportFromXML(String xml) {
-        if ((xml == null) || (xml.isEmpty())) {
+        if (xml.isEmpty()) {
             LOGGER.debug("Could not parse AV Transport from empty xml");
             return new HashMap<String, String>();
         }
@@ -56,9 +74,9 @@ public class UpnpXMLParser {
             reader.parse(new InputSource(new StringReader(xml)));
         } catch (IOException e) {
             // This should never happen - we're not performing I/O!
-            LOGGER.error("Could not parse AV Transport from string '{}'", xml);
+            LOGGER.error("Could not parse AV Transport from string '{}'", xml, e);
         } catch (SAXException s) {
-            LOGGER.debug("Could not parse AV Transport from string '{}'", xml);
+            LOGGER.debug("Could not parse AV Transport from string '{}'", xml, s);
         }
         return handler.getChanges();
     }
@@ -70,7 +88,7 @@ public class UpnpXMLParser {
      * @throws SAXException
      */
     public static List<UpnpEntry> getEntriesFromXML(String xml) {
-        if ((xml == null) || (xml.isEmpty())) {
+        if (xml.isEmpty()) {
             LOGGER.debug("Could not parse Entries from empty xml");
             return new ArrayList<UpnpEntry>();
         }
@@ -80,9 +98,10 @@ public class UpnpXMLParser {
             reader.setContentHandler(handler);
             reader.parse(new InputSource(new StringReader(xml)));
         } catch (IOException e) {
-            LOGGER.error("Could not parse Entries from string '{}'", xml);
+            // This should never happen - we're not performing I/O!
+            LOGGER.error("Could not parse Entries from string '{}'", xml, e);
         } catch (SAXException s) {
-            LOGGER.debug("Could not parse Entries from string '{}'", xml);
+            LOGGER.debug("Could not parse Entries from string '{}'", xml, s);
         }
         return handler.getEntries();
     }
@@ -91,19 +110,19 @@ public class UpnpXMLParser {
 
         private final Map<String, String> changes = new HashMap<String, String>();
 
+        AVTransportEventHandler() {
+            // shouldn't be used outside of this package.
+        }
+
         @Override
-        public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
+        public void startElement(@Nullable String uri, @Nullable String localName, @Nullable String qName,
+                @Nullable Attributes atts) throws SAXException {
             /*
              * The events are all of the form <qName val="value"/> so we can get all
              * the info we need from here.
              */
-            try {
-                if (atts.getValue("val") != null) {
-                    changes.put(localName, atts.getValue("val"));
-                }
-            } catch (IllegalArgumentException e) {
-                // this means that localName isn't defined in EventType, which is expected for some elements
-                LOGGER.info("{} is not defined in EventType. ", localName);
+            if ((localName != null) && (atts != null) && (atts.getValue("val") != null)) {
+                changes.put(localName, atts.getValue("val"));
             }
         }
 
@@ -115,13 +134,13 @@ public class UpnpXMLParser {
 
     private static class EntryHandler extends DefaultHandler {
 
-        // Maintain a set of elements about which it is unuseful to complain about.
-        // This list will be initialized on the first failure case
-        private static List<String> ignore = null;
+        // Maintain a set of elements it is not useful to complain about.
+        // This list will be initialized on the first failure case.
+        private static List<String> ignore = new ArrayList<String>();;
 
-        private String id;
-        private String refId;
-        private String parentId;
+        private String id = "";
+        private String refId = "";
+        private String parentId = "";
         private StringBuilder upnpClass = new StringBuilder();
         private List<UpnpEntryRes> resList = new ArrayList<>();
         private StringBuilder res = new StringBuilder();
@@ -129,9 +148,12 @@ public class UpnpXMLParser {
         private StringBuilder album = new StringBuilder();
         private StringBuilder albumArtUri = new StringBuilder();
         private StringBuilder creator = new StringBuilder();
+        private StringBuilder artist = new StringBuilder();
+        private List<String> artistList = new ArrayList<>();
+        private StringBuilder publisher = new StringBuilder();
+        private StringBuilder genre = new StringBuilder();
         private StringBuilder trackNumber = new StringBuilder();
-        private StringBuilder desc = new StringBuilder();
-        private Element element = null;
+        private @Nullable Element element = null;
 
         private List<UpnpEntry> entries = new ArrayList<>();
 
@@ -140,41 +162,64 @@ public class UpnpXMLParser {
         }
 
         @Override
-        public void startElement(String uri, String localName, String qName, Attributes attributes)
-                throws SAXException {
-            if (qName.equals("container") || qName.equals("item")) {
-                id = attributes.getValue("id");
-                refId = attributes.getValue("refID");
-                parentId = attributes.getValue("parentID");
-            } else if (qName.equals("res")) {
+        public void startElement(@Nullable String uri, @Nullable String localName, @Nullable String qName,
+                @Nullable Attributes attributes) throws SAXException {
+            if (("container".equals(qName) || "item".equals(qName))) {
+                if (attributes.getValue("id") != null) {
+                    id = attributes.getValue("id");
+                }
+                if (attributes.getValue("refID") != null) {
+                    refId = attributes.getValue("refID");
+                }
+                if (attributes.getValue("parentID") != null) {
+                    parentId = attributes.getValue("parentID");
+                }
+            } else if ("res".equals(qName)) {
                 String protocolInfo = attributes.getValue("protocolInfo");
-                Long size = Long.parseLong(attributes.getValue("size"));
+                Long size;
+                try {
+                    size = Long.parseLong(attributes.getValue("size"));
+                } catch (NumberFormatException e) {
+                    size = null;
+                }
+                String duration = attributes.getValue("duration");
                 String importUri = attributes.getValue("importUri");
-                resList.add(0, new UpnpEntryRes(protocolInfo, size, importUri));
+                resList.add(0, new UpnpEntryRes(protocolInfo, size, duration, importUri));
                 element = Element.RES;
-            } else if (qName.equals("dc:title")) {
+            } else if ("dc:title".equals(qName)) {
                 element = Element.TITLE;
-            } else if (qName.equals("upnp:class")) {
+            } else if ("upnp:class".equals(qName)) {
                 element = Element.CLASS;
-            } else if (qName.equals("dc:creator")) {
+            } else if ("dc:creator".equals(qName)) {
                 element = Element.CREATOR;
-            } else if (qName.equals("upnp:album")) {
+            } else if ("upnp:artist".equals(qName)) {
+                element = Element.ARTIST;
+            } else if ("dc:publisher".equals(qName)) {
+                element = Element.PUBLISHER;
+            } else if ("upnp:genre".equals(qName)) {
+                element = Element.GENRE;
+            } else if ("upnp:album".equals(qName)) {
                 element = Element.ALBUM;
-            } else if (qName.equals("upnp:albumArtURI")) {
+            } else if ("upnp:albumArtURI".equals(qName)) {
                 element = Element.ALBUM_ART_URI;
-            } else if (qName.equals("upnp:originalTrackNumber")) {
+            } else if ("upnp:originalTrackNumber".equals(qName)) {
                 element = Element.TRACK_NUMBER;
-            } else if (qName.equals("r:resMD")) {
-                element = Element.RESMD;
             } else {
-                if (ignore == null) {
-                    ignore = new ArrayList<String>();
+                if (ignore.isEmpty()) {
                     ignore.add("DIDL-Lite");
                     ignore.add("type");
                     ignore.add("ordinal");
                     ignore.add("description");
                     ignore.add("writeStatus");
                     ignore.add("storageUsed");
+                    ignore.add("supported");
+                    ignore.add("pushSource");
+                    ignore.add("icon");
+                    ignore.add("playlist");
+                    ignore.add("date");
+                    ignore.add("rating");
+                    ignore.add("userrating");
+                    ignore.add("episodeSeason");
                 }
 
                 if (!ignore.contains(localName)) {
@@ -185,11 +230,12 @@ public class UpnpXMLParser {
         }
 
         @Override
-        public void characters(char[] ch, int start, int length) throws SAXException {
-            if (element == null) {
+        public void characters(char @Nullable [] ch, int start, int length) throws SAXException {
+            Element el = element;
+            if (el == null) {
                 return;
             }
-            switch (element) {
+            switch (el) {
                 case TITLE:
                     title.append(ch, start, length);
                     break;
@@ -208,20 +254,25 @@ public class UpnpXMLParser {
                 case CREATOR:
                     creator.append(ch, start, length);
                     break;
+                case ARTIST:
+                    artist.append(ch, start, length);
+                    break;
+                case PUBLISHER:
+                    publisher.append(ch, start, length);
+                    break;
+                case GENRE:
+                    genre.append(ch, start, length);
+                    break;
                 case TRACK_NUMBER:
                     trackNumber.append(ch, start, length);
-                    break;
-                case RESMD:
-                    break;
-                case DESC:
-                    desc.append(ch, start, length);
                     break;
             }
         }
 
         @Override
-        public void endElement(String uri, String localName, String qName) throws SAXException {
-            if (qName.equals("container") || qName.equals("item")) {
+        public void endElement(@Nullable String uri, @Nullable String localName, @Nullable String qName)
+                throws SAXException {
+            if ("container".equals(qName) || "item".equals(qName)) {
                 element = null;
 
                 Integer trackNumberVal;
@@ -231,24 +282,53 @@ public class UpnpXMLParser {
                     trackNumberVal = null;
                 }
 
-                entries.add(new UpnpEntry(id, title.toString(), refId, parentId, album.toString(),
-                        albumArtUri.toString(), creator.toString(), upnpClass.toString(), resList, trackNumberVal));
+                entries.add(new UpnpEntry(id, refId, parentId, upnpClass.toString()).withTitle(title.toString())
+                        .withAlbum(album.toString()).withAlbumArtUri(albumArtUri.toString())
+                        .withCreator(creator.toString())
+                        .withArtist(artistList.size() > 0 ? artistList.get(0) : artist.toString())
+                        .withPublisher(publisher.toString()).withGenre(genre.toString()).withTrackNumber(trackNumberVal)
+                        .withResList(resList));
+
                 title = new StringBuilder();
                 upnpClass = new StringBuilder();
                 resList = new ArrayList<>();
                 album = new StringBuilder();
                 albumArtUri = new StringBuilder();
                 creator = new StringBuilder();
+                artistList = new ArrayList<>();
+                publisher = new StringBuilder();
+                genre = new StringBuilder();
                 trackNumber = new StringBuilder();
-                desc = new StringBuilder();
-            } else if (qName.equals("res")) {
+            } else if ("res".equals(qName)) {
                 resList.get(0).setRes(res.toString());
                 res = new StringBuilder();
+            } else if ("upnp:artist".equals(qName)) {
+                artistList.add(artist.toString());
+                artist = new StringBuilder();
             }
         }
 
         public List<UpnpEntry> getEntries() {
             return entries;
         }
+    }
+
+    public static String compileMetadataString(UpnpEntry entry) {
+        String id = entry.getId();
+        String parentId = entry.getParentId();
+        String title = StringEscapeUtils.escapeXml(entry.getTitle());
+        String upnpClass = entry.getUpnpClass();
+        String album = StringEscapeUtils.escapeXml(entry.getAlbum());
+        String albumArtUri = entry.getAlbumArtUri();
+        String creator = StringEscapeUtils.escapeXml(entry.getCreator());
+        String artist = StringEscapeUtils.escapeXml(entry.getArtist());
+        String publisher = StringEscapeUtils.escapeXml(entry.getPublisher());
+        String genre = StringEscapeUtils.escapeXml(entry.getGenre());
+        Integer trackNumber = entry.getOriginalTrackNumber();
+
+        String metadata = METADATA_FORMAT.format(new Object[] { id, parentId, title, upnpClass, album, albumArtUri,
+                creator, artist, publisher, genre, trackNumber });
+
+        return metadata;
     }
 }

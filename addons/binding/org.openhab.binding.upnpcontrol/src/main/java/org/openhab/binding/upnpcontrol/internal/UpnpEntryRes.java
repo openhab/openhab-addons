@@ -8,21 +8,27 @@
  */
 package org.openhab.binding.upnpcontrol.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  *
  * @author Mark Herwege - Initial contribution
  */
+@NonNullByDefault
 class UpnpEntryRes {
 
     private String protocolInfo;
-    private Long size;
+    private @Nullable Long size;
+    private String duration;
     private String importUri;
-    private String res;
+    private String res = "";
 
-    UpnpEntryRes(String protocolInfo, Long size, String importUri) {
+    UpnpEntryRes(String protocolInfo, @Nullable Long size, @Nullable String duration, @Nullable String importUri) {
         this.protocolInfo = protocolInfo;
         this.size = size;
-        this.importUri = importUri;
+        this.duration = (duration == null) ? "" : duration;
+        this.importUri = (importUri == null) ? "" : importUri;
     }
 
     /**
@@ -46,8 +52,15 @@ class UpnpEntryRes {
     /**
      * @return the size
      */
-    public Long getSize() {
+    public @Nullable Long getSize() {
         return size;
+    }
+
+    /**
+     * @return the duration
+     */
+    public String getDuration() {
+        return duration;
     }
 
     /**
@@ -55,5 +68,12 @@ class UpnpEntryRes {
      */
     public String getImportUri() {
         return importUri;
+    }
+
+    /**
+     * @return true if this resource defines a thumbnail as specified in the DLNA specs
+     */
+    public boolean isThumbnailRes() {
+        return getProtocolInfo().toLowerCase().contains("dlna.org_pn=jpeg_tn");
     }
 }

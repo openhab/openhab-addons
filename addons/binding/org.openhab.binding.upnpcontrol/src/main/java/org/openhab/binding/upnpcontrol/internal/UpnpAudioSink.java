@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class UpnpAudioSink implements AudioSink {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(UpnpAudioSink.class);
 
     private static final Set<Class<? extends AudioStream>> SUPPORTED_STREAMS = Stream
             .of(AudioStream.class, FixedLengthAudioStream.class).collect(Collectors.toSet());
@@ -76,7 +76,7 @@ public class UpnpAudioSink implements AudioSink {
             logger.warn("We do not have any callback url, so {} cannot play the audio stream!", handler.getUDN());
             return;
         }
-        this.playMedia(url);
+        playMedia(url);
     }
 
     @Override

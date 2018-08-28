@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
  * The {@link UpnpServerHandler} is responsible for handling commands sent to the UPnP Server.
  *
  * @author Mark Herwege - Initial contribution
+ * @author Karel Goderis - Based on UPnP logic in Sonos binding
  */
 @NonNullByDefault
 public class UpnpServerHandler extends UpnpHandler {
@@ -60,7 +61,6 @@ public class UpnpServerHandler extends UpnpHandler {
     private static final String DIRECTORY_ROOT = "0";
     private static final String UP = "..";
 
-    private volatile String uriMetaData = "";
     private volatile List<UpnpEntry> resultList = new ArrayList<UpnpEntry>();
     private volatile int numberReturned;
     private volatile int totalMatches;
@@ -137,10 +137,15 @@ public class UpnpServerHandler extends UpnpHandler {
                 if (command == OnOffType.ON) {
                     String browseTarget = currentSelection;
                     if (browseTarget != null) {
-                        if (browseTarget.equals(UP)) {
+                        if (UP.equals(browseTarget)) {
+                            // Move up in tree
                             if (entryMap.get(currentId) != null) {
+                                // Parent can be empty
                                 browseTarget = entryMap.get(currentId).getParentId();
-                            } else {
+
+                            }
+                            if (browseTarget.isEmpty() || UP.equals(browseTarget)) {
+                                // No parent found, so make it the root directory
                                 browseTarget = DIRECTORY_ROOT;
                             }
                         }
@@ -163,14 +168,17 @@ public class UpnpServerHandler extends UpnpHandler {
                 if (command == OnOffType.ON) {
                     String criteria = this.searchCriteria;
                     if (criteria != null) {
-                        String searchContainer;
+                        String searchContainer = "";
                         if (entryMap.get(currentId) != null) {
                             if (entryMap.get(currentId).isContainer()) {
                                 searchContainer = currentId;
                             } else {
+                                // Parent can be empty
                                 searchContainer = entryMap.get(currentId).getParentId();
                             }
-                        } else {
+                        }
+                        if (searchContainer.isEmpty()) {
+                            // No parent found, so make it the root directory
                             searchContainer = DIRECTORY_ROOT;
                         }
                         logger.debug("Search container {} for {}", searchContainer, criteria);
@@ -224,7 +232,7 @@ public class UpnpServerHandler extends UpnpHandler {
 
         List<StateOption> stateOptionList = new ArrayList<>();
         // Add a directory up selector if not in the directory root
-        if ((!list.isEmpty() && !(list.get(0).getParentId().equals(DIRECTORY_ROOT)))
+        if ((!list.isEmpty() && !(DIRECTORY_ROOT.equals(list.get(0).getParentId())))
                 || (list.isEmpty() && !currentId.equals(DIRECTORY_ROOT))) {
             StateOption stateOption = new StateOption(UP, UP);
             stateOptionList.add(stateOption);
@@ -235,6 +243,7 @@ public class UpnpServerHandler extends UpnpHandler {
             stateOptionList.add(stateOption);
             logger.debug("{} added to selection list", value.getId());
 
+            // Keep the entries in a map so we can find the parent info to go back up
             entryMap.put(value.getId(), value);
         });
         updateStateDescription(currentTitleChannelUID, stateOptionList);
@@ -275,12 +284,12 @@ public class UpnpServerHandler extends UpnpHandler {
      * Method that does a UPnP browse on a content directory. Results will be retrieved in the {@link onValueReceived}
      * method
      *
-     * @param objectID content directory object
-     * @param browseFlag BrowseMetaData or BrowseDirectChildren
-     * @param filter properties to be returned
-     * @param startingIndex starting index of objects to return
+     * @param objectID       content directory object
+     * @param browseFlag     BrowseMetaData or BrowseDirectChildren
+     * @param filter         properties to be returned
+     * @param startingIndex  starting index of objects to return
      * @param requestedCount number of objects to return, 0 for all
-     * @param sortCriteria sort criteria, example: +dc:title
+     * @param sortCriteria   sort criteria, example: +dc:title
      */
     public void browse(String objectID, String browseFlag, String filter, String startingIndex, String requestedCount,
             String sortCriteria) {
@@ -299,16 +308,16 @@ public class UpnpServerHandler extends UpnpHandler {
      * Method that does a UPnP search on a content directory. Results will be retrieved in the {@link onValueReceived}
      * method
      *
-     * @param containerID content directory container
+     * @param containerID    content directory container
      * @param searchCriteria search criteria, examples:
-     *            dc:title contains "song"
-     *            dc:creator contains "Springsteen"
-     *            upnp:class = "object.item.audioItem"
-     *            upnp:album contains "Born in"
-     * @param filter properties to be returned
-     * @param startingIndex starting index of objects to return
+     *                           dc:title contains "song"
+     *                           dc:creator contains "Springsteen"
+     *                           upnp:class = "object.item.audioItem"
+     *                           upnp:album contains "Born in"
+     * @param filter         properties to be returned
+     * @param startingIndex  starting index of objects to return
      * @param requestedCount number of objects to return, 0 for all
-     * @param sortCriteria sort criteria, example: +dc:title
+     * @param sortCriteria   sort criteria, example: +dc:title
      */
     public void search(String containerID, String searchCriteria, String filter, String startingIndex,
             String requestedCount, String sortCriteria) {
@@ -340,17 +349,22 @@ public class UpnpServerHandler extends UpnpHandler {
         }
         switch (variable) {
             case "Result":
-                if (value != null) {
-                    uriMetaData = value;
+                if (!((value == null) || (value.isEmpty()))) {
+                    resultList = removeDuplicates(UpnpXMLParser.getEntriesFromXML(value));
+                } else {
+                    resultList = new ArrayList<UpnpEntry>();
                 }
-                resultList = removeDuplicates(UpnpXMLParser.getEntriesFromXML(value));
                 updateTitleSelection();
                 break;
             case "NumberReturned":
-                numberReturned = Integer.parseInt(value);
+                if (!((value == null) || (value.isEmpty()))) {
+                    numberReturned = Integer.parseInt(value);
+                }
                 break;
             case "TotalMatches":
-                totalMatches = Integer.parseInt(value);
+                if (!((value == null) || (value.isEmpty()))) {
+                    totalMatches = Integer.parseInt(value);
+                }
                 break;
             case "UpdateID":
                 break;
@@ -379,19 +393,15 @@ public class UpnpServerHandler extends UpnpHandler {
         List<String> refIdList = new ArrayList<>();
         list.forEach(entry -> {
             String refId = entry.getRefId();
-            if ((refId == null) || refId.isEmpty()
-                    || (list.stream().noneMatch(any -> (any.getId().equals(refId))) && !refIdList.contains(refId))) {
+            if (refId.isEmpty()
+                    || (list.stream().noneMatch(any -> (refId.equals(any.getId()))) && !refIdList.contains(refId))) {
                 newList.add(entry);
             }
-            if ((refId != null) && !refId.isEmpty()) {
+            if (!refId.isEmpty()) {
                 refIdList.add(refId);
             }
         });
         return newList;
-    }
-
-    public String getURIMetaData() {
-        return uriMetaData;
     }
 
     private void serveMedia() {

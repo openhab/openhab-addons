@@ -17,9 +17,12 @@
 			<channel id="album" typeId="album" />
 			<channel id="albumart" typeId="albumart" />
 			<channel id="creator" typeId="creator" />
+            <channel id="artist" typeId="artist" />
+            <channel id="publisher" typeId="publisher" />
+            <channel id="genre" typeId="genre" />
 			<channel id="tracknumber" typeId="tracknumber" />
 			<channel id="trackduration" typeId="trackduration" />
-			<channel id="desc" typeId="desc" />
+            <channel id="trackposition" typeId="trackposition" />
 		</channels>
 	</thing-type>
 	<thing-type id="upnpserver">
@@ -97,6 +100,24 @@
 		<description>Now playing creator</description>
 		<state readOnly="true" />
 	</channel-type>
+    <channel-type id="artist">
+        <item-type>String</item-type>
+        <label>Artist</label>
+        <description>Now playing artist</description>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="publisher">
+        <item-type>String</item-type>
+        <label>Publisher</label>
+        <description>Now playing publisher</description>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="genre">
+        <item-type>String</item-type>
+        <label>Genre</label>
+        <description>Now playing genre</description>
+        <state readOnly="true" />
+    </channel-type>
 	<channel-type id="tracknumber">
 		<item-type>Number</item-type>
 		<label>Track Number</label>
@@ -109,12 +130,12 @@
 		<description>Now playing track duration</description>
 		<state readOnly="true" />
 	</channel-type>
-	<channel-type id="desc">
-		<item-type>String</item-type>
-		<label>Description</label>
-		<description>Now playing description</description>
-		<state readOnly="true" />
-	</channel-type>
+    <channel-type id="trackposition">
+        <item-type>String</item-type>
+        <label>Track Position</label>
+        <description>Now playing track position</description>
+        <state readOnly="true" />
+    </channel-type>
 
 	<channel-type id="upnprenderer">
 		<item-type>String</item-type>

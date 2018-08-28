@@ -47,9 +47,12 @@ public class UpnpControlBindingConstants {
     public static final String ALBUM = "album";
     public static final String ALBUM_ART = "albumart";
     public static final String CREATOR = "creator";
+    public static final String ARTIST = "artist";
+    public static final String PUBLISHER = "publisher";
+    public static final String GENRE = "genre";
     public static final String TRACK_NUMBER = "tracknumber";
     public static final String TRACK_DURATION = "trackduration";
-    public static final String DESC = "desc";
+    public static final String TRACK_POSITION = "trackposition";
 
     public static final String UPNPRENDERER = "upnprenderer";
     public static final String CURRENTTITLE = "currenttitle";

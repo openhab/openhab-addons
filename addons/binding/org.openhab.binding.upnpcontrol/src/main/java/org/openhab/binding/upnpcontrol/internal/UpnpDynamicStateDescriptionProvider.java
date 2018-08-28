@@ -26,9 +26,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mark Herwege - Initial contribution
  */
-@NonNullByDefault
 @Component(service = { DynamicStateDescriptionProvider.class,
         UpnpDynamicStateDescriptionProvider.class }, immediate = true)
+@NonNullByDefault
 public class UpnpDynamicStateDescriptionProvider implements DynamicStateDescriptionProvider {
 
     private Logger logger = LoggerFactory.getLogger(getClass());

@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.upnp.UpnpDiscoveryParticipant;
@@ -29,6 +31,7 @@ import org.slf4j.LoggerFactory;
  * @author Mark Herwege - Initial contribution
  */
 @Component(service = { UpnpDiscoveryParticipant.class }, immediate = true)
+@NonNullByDefault
 public class UpnpControlDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
@@ -39,7 +42,7 @@ public class UpnpControlDiscoveryParticipant implements UpnpDiscoveryParticipant
     }
 
     @Override
-    public DiscoveryResult createResult(RemoteDevice device) {
+    public @Nullable DiscoveryResult createResult(RemoteDevice device) {
         DiscoveryResult result = null;
         ThingUID thingUid = getThingUID(device);
         if (thingUid != null) {
@@ -55,7 +58,7 @@ public class UpnpControlDiscoveryParticipant implements UpnpDiscoveryParticipant
     }
 
     @Override
-    public ThingUID getThingUID(RemoteDevice device) {
+    public @Nullable ThingUID getThingUID(RemoteDevice device) {
         ThingUID result = null;
         String deviceType = device.getType().getType();
         String manufacturer = device.getDetails().getManufacturerDetails().getManufacturer();

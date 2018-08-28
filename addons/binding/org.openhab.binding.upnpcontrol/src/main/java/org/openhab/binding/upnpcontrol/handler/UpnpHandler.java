@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
  * The {@link UpnpHandler} is the base class for {@link UpnpRendererHandler} and {@link UpnpServerHandler}.
  *
  * @author Mark Herwege - Initial contribution
+ * @author Karel Goderis - Based on UPnP logic in Sonos binding
  */
 @NonNullByDefault
 public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOParticipant {
@@ -67,24 +68,33 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
         inputs.put("PeerConnectionManager", peerConnectionManager);
         inputs.put("PeerConnectionID", Integer.toString(peerConnectionId));
         inputs.put("Direction", direction);
+
         invokeAction("ConnectionManager", "PrepareForConnection", inputs);
     }
 
     protected void connectionComplete(int connectionId) {
         HashMap<String, String> inputs = new HashMap<String, String>();
         inputs.put("ConnectionID", String.valueOf(connectionId));
+
         invokeAction("ConnectionManager", "connectionComplete", inputs);
     }
 
     protected void getTransportState() {
         HashMap<String, String> inputs = new HashMap<String, String>();
         inputs.put("InstanceID", Integer.toString(avTransportId));
+
         invokeAction("AVTransport", "GetTransportInfo", inputs);
+    }
+
+    protected void getProtocolInfo() {
+        Map<String, String> inputs = new HashMap<>();
+
+        invokeAction("ConnectionManager", "GetProtocolInfo", inputs);
     }
 
     @Override
     public void onServiceSubscribed(@Nullable String service, boolean succeeded) {
-        logger.debug("Upnp device {) received subscription reply {} from service {}", thing.getLabel(), succeeded,
+        logger.debug("Upnp device {} received subscription reply {} from service {}", thing.getLabel(), succeeded,
                 service);
     }
 
@@ -103,6 +113,16 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
         return getThing().getProperties().get("udn");
     }
 
+    /**
+     * This method wraps {@link org.eclipse.smarthome.io.transport.upnp.UpnpIOService.invokeAction}. It schedules and
+     * submits the call and calls {@link onValueReceived} upon completion. All state updates or other actions depending
+     * on the results should be triggered from {@link onValueReceived} because the class fields with results will be
+     * filled asynchronously.
+     *
+     * @param serviceId
+     * @param actionId
+     * @param inputs
+     */
     protected void invokeAction(String serviceId, String actionId, Map<String, String> inputs) {
         scheduler.submit(() -> {
             logger.debug("Upnp device {} invoke upnp action {} on service {} with inputs {}", thing.getLabel(),
@@ -149,11 +169,5 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
         if (service.isRegistered(this)) {
             service.removeSubscription(this, serviceId);
         }
-    }
-
-    public void getProtocolInfo() {
-        Map<String, String> inputs = new HashMap<>();
-
-        invokeAction("ConnectionManager", "GetProtocolInfo", inputs);
     }
 }
