@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Handler for a LaCrosse Temperature Sensor thing.
+ * Handler for a TX22 Temperature/Humidity Sensor thing.
  *
  * @author Volker Bier - Initial contribution
  */

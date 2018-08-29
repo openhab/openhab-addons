@@ -15,7 +15,7 @@ import org.openhab.binding.jeelink.internal.JeeLinkSensorHandler;
 import org.openhab.binding.jeelink.internal.SensorDefinition;
 
 /**
- * Sensor Defintion of a LaCrosse Temperature Sensor
+ * Sensor Defintion of a TX22 Temperature/Humidity Sensor.
  *
  * @author Volker Bier - Initial contribution
  */

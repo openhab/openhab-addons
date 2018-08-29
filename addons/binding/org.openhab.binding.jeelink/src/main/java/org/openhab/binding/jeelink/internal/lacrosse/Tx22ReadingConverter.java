@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Converter for converting a line read from a LaCrosseITPlusReader sketch to a LaCrosseTemperatureReading.
+ * Converter for converting a line read from a LaCrosseITPlusReader sketch to a Tx22Reading.
  *
  * @author Volker Bier - Initial contribution
  */
