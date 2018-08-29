@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="netatmo"
+                          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                          xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+                          xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- Netatmo Thermostat and Relay/Plug -->
+    <thing-type id="Room">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="netatmoapi" />
+        </supported-bridge-type-refs>
+
+        <label>Room</label>
+        <description>A room containing netatmo devices</description>
+
+        <channels>
+            <channel id="Reachable" typeId="reachable" />
+            <channel id="Temperature" typeId="temperature" />
+            <channel id="WindowOpen" typeId="WindowOpen" />
+        </channels>
+
+        <properties>
+            <property name="refreshPeriod">3600000</property>
+        </properties>
+
+        <representation-property>id</representation-property>
+        <config-description-ref uri="thing-type:netatmo:room" />
+    </thing-type>
+
+</thing:thing-descriptions>

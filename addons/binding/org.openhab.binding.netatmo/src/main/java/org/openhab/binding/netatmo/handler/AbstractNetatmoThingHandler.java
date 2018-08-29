@@ -150,7 +150,7 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
         }
     }
 
-    protected String getParentId() {
+    public String getParentId() {
         if (config != null && config.containsKey(PARENT_ID)) {
             String parentId = (String) config.get(PARENT_ID);
             return parentId.toLowerCase();

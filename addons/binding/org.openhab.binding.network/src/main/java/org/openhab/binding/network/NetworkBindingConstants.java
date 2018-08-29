@@ -39,6 +39,7 @@ public class NetworkBindingConstants {
 
     // List of all Parameters
     public static final String PARAMETER_HOSTNAME = "hostname";
+    public static final String PARAMETER_MAC = "macId";
     public static final String PARAMETER_RETRY = "retry";
     public static final String PARAMETER_TIMEOUT = "timeout";
     public static final String PARAMETER_REFRESH_INTERVAL = "refreshInterval";

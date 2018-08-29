@@ -8,6 +8,7 @@ This is either done using [ping](https://en.wikipedia.org/wiki/Ping_%28networkin
 The binding has the following configuration options:
 
 -   **allowSystemPings:** Use the external ICMP ping program of the operating system instead of the Java ping. Useful if the devices cannot be reached by Java ping. Default is true.
+-   **useMacId:** Use MacId instead of IP for presence check
 -   **allowDHCPlisten:**  If devices leave and reenter a network, they usually request their last IPv4 address by using DHCP requests. By listening for those messages, the status update can be more "real-time" without having to wait for the next refresh cycle. Default is true.
 -   **arpPingToolPath:** If the arp ping tool is not called `arping` and cannot be found in the PATH environment variable, the absolute path can be configured here. Default is `arping`.
 -   **cacheDeviceStateTimeInMS:** The result of a device presence detection is cached for a small amount of time. Set this time here in milliseconds. Be aware that no new pings will be issued within this time frame, even if explicitly requested. Default is 2000.
@@ -17,6 +18,7 @@ Create a `<openHAB-conf>/services/network.cfg` file and use the above options li
 ```
 binding.network:allowSystemPings=true
 binding.network:allowDHCPlisten=false
+binding.network:useMacId=false
 binding.network:arpPingToolPath=arping
 binding.network:cacheDeviceStateTimeInMS=2000
 ```

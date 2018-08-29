@@ -60,11 +60,6 @@ public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
         }
     }
 
-    protected String getParentId() {
-        String parentId = (String) config.get(PARENT_ID);
-        return parentId.toLowerCase();
-    }
-
     public boolean childOf(AbstractNetatmoThingHandler naThingHandler) {
         return naThingHandler.matchesId(getParentId());
     }

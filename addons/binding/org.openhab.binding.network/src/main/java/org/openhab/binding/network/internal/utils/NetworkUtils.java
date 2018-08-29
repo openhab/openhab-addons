@@ -10,6 +10,7 @@ package org.openhab.binding.network.internal.utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.ConnectException;
 import java.net.DatagramPacket;
@@ -34,6 +35,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.net.util.SubnetUtils;
 import org.eclipse.smarthome.io.net.exec.ExecUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * Network utility functions for pinging and for determining all interfaces and assigned IP addresses.
@@ -41,6 +45,9 @@ import org.eclipse.smarthome.io.net.exec.ExecUtil;
  * @author David Graeff <david.graeff@web.de>
  */
 public class NetworkUtils {
+
+    private Logger logger = LoggerFactory.getLogger(NetworkUtils.class);
+
     /**
      * Gets every IPv4 Address on each Interface except the loopback
      * The Address format is ip/subnet
@@ -59,7 +66,7 @@ public class NetworkUtils {
         }
 
         // For each interface ...
-        for (Enumeration<NetworkInterface> en = interfaces; en.hasMoreElements();) {
+        for (Enumeration<NetworkInterface> en = interfaces; en.hasMoreElements(); ) {
             NetworkInterface networkInterface = en.nextElement();
             boolean isLoopback = true;
             try {
@@ -69,7 +76,7 @@ public class NetworkUtils {
             if (!isLoopback) {
                 // .. and for each address ...
                 for (Iterator<InterfaceAddress> it = networkInterface.getInterfaceAddresses().iterator(); it
-                        .hasNext();) {
+                        .hasNext(); ) {
 
                     // ... get IP and Subnet
                     InterfaceAddress interfaceAddress = it.next();
@@ -92,7 +99,7 @@ public class NetworkUtils {
 
         try {
             // For each interface ...
-            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
                 NetworkInterface networkInterface = en.nextElement();
                 if (!networkInterface.isLoopback()) {
                     result.add(networkInterface.getName());
@@ -118,7 +125,7 @@ public class NetworkUtils {
     /**
      * Takes the interfaceIPs and fetches every IP which can be assigned on their network
      *
-     * @param networkIPs The IPs which are assigned to the Network Interfaces
+     * @param interfaceIPs The IPs which are assigned to the Network Interfaces
      * @param maximumPerInterface The maximum of IP addresses per interface or 0 to get all.
      * @return Every single IP which can be assigned on the Networks the computer is connected to
      */
@@ -152,7 +159,6 @@ public class NetworkUtils {
      * @param host The IP or hostname
      * @param port The tcp port. Must be not 0.
      * @param timeout Timeout in ms
-     * @param logger A slf4j logger instance to log IOException
      * @return
      * @throws IOException
      */
@@ -303,25 +309,65 @@ public class NetworkUtils {
      * @return Return true if the device responded
      * @throws IOException The ping command could probably not be found
      */
-    public boolean nativeARPPing(ArpPingUtilEnum arpingTool, String arpUtilPath, String interfaceName,
-            String ipV4address, int timeoutInMS) throws IOException, InterruptedException {
+    public String nativeARPPing(ArpPingUtilEnum arpingTool, String arpUtilPath, String interfaceName,
+                                String ipV4address, String macId, int timeoutInMS) throws IOException, InterruptedException {
         if (arpUtilPath == null || arpingTool == null || arpingTool == ArpPingUtilEnum.UNKNOWN_TOOL) {
-            return false;
+            logger.info("return early");
+
+            return null;
         }
-        Process proc;
+        ProcessBuilder build;
+        String addr = macId == null ? ipV4address : macId;
         if (arpingTool == ArpPingUtilEnum.THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT) {
-            proc = new ProcessBuilder(arpUtilPath, "-c", "1", "-i", interfaceName, ipV4address).start();
+            build = new ProcessBuilder(arpUtilPath, "-c", "1", "-i", interfaceName, addr);
         } else if (arpingTool == ArpPingUtilEnum.THOMAS_HABERT_ARPING) {
-            proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeoutInMS / 1000), "-c", "1", "-i",
-                    interfaceName, ipV4address).start();
+            build = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeoutInMS / 1000), "-c", "1", "-i",
+                    interfaceName, addr);
         } else {
-            proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeoutInMS / 1000), "-c", "1", "-I",
-                    interfaceName, ipV4address).start();
+            build = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeoutInMS / 1000), "-c", "1", "-I",
+                    interfaceName, addr);
         }
 
+        Process proc = build.start();
+
+        String mac = getMacFromStream(proc.getInputStream());
+
+        int result = proc.waitFor();
         // The return code is 0 for a successful ping. 1 if device didn't respond and 2 if there is another error like
         // network interface not ready.
-        return proc.waitFor() == 0;
+
+
+
+        if (result != 0) {
+            return null;
+        }
+        logger.info("max: {} result: {}", mac, result);
+        return mac;
+    }
+
+    private String getMacFromStream(InputStream is) {
+        String mac = null;
+        try {
+            String line;
+            BufferedReader input = new BufferedReader(new InputStreamReader(is));
+            while (mac == null && (line = input.readLine()) != null) {
+                //logger.info("output: {}", line);
+                int startIndex = line.indexOf("from ");
+                int endIndex = line.indexOf(" (");
+                if (startIndex >= 0 && endIndex > 0) {
+                    mac = line.substring(startIndex + 5, endIndex);
+                }
+            }
+            input.close();
+        } catch (Exception e) {
+            logger.error("parsing error", e);
+
+        }
+        if (mac == null) {
+            return "";
+        }
+        logger.error("mac {}", mac);
+        return mac;
     }
 
     /**

@@ -25,6 +25,7 @@ public class PresenceDetectionValue {
     private final Set<PresenceDetectionType> reachableByType = new TreeSet<>();
     private final List<Integer> tcpServiceReachable = new ArrayList<>();
     private final String hostAddress;
+    private final String macAdress;
 
     /**
      * Returns true if the target is reachable by any means.
@@ -76,9 +77,10 @@ public class PresenceDetectionValue {
      * @param hostAddress The target IP
      * @param latency The ping latency in ms. Can be <0 if the device is not reachable.
      */
-    PresenceDetectionValue(String hostAddress, double latency) {
+    PresenceDetectionValue(String hostAddress, String macAdress, double latency) {
         this.hostAddress = hostAddress;
         this.latency = latency;
+        this.macAdress = macAdress;
     }
 
     /**
@@ -131,6 +133,13 @@ public class PresenceDetectionValue {
      */
     public String getHostAddress() {
         return hostAddress;
+    }
+
+    /**
+     * Return the mac address of the presence detection result object if available.
+     */
+    public String getMacId(){
+        return macAdress;
     }
 
     /**

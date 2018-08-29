@@ -89,7 +89,7 @@ public class NetworkHandler extends BaseThingHandler implements PresenceDetectio
                 if (presenceDetection.getLastSeen() > 0) {
                     Calendar c = Calendar.getInstance();
                     c.setTimeInMillis(presenceDetection.getLastSeen());
-                    updateState(CHANNEL_LASTSEEN, new DateTimeType(c));
+                    updateState(CHANNEL_LASTSEEN, new DateTimeType());
                 } else {
                     updateState(CHANNEL_LASTSEEN, UnDefType.UNDEF);
                 }
@@ -132,7 +132,7 @@ public class NetworkHandler extends BaseThingHandler implements PresenceDetectio
         if (value.isReachable()) {
             Calendar c = Calendar.getInstance();
             c.setTimeInMillis(presenceDetection.getLastSeen());
-            updateState(CHANNEL_LASTSEEN, new DateTimeType(c));
+            updateState(CHANNEL_LASTSEEN, new DateTimeType());
         }
 
         updateProperty(NetworkBindingConstants.PROPERTY_PRESENCE_DETECTION_TYPE, value.getSuccessfulDetectionTypes());
@@ -154,6 +154,7 @@ public class NetworkHandler extends BaseThingHandler implements PresenceDetectio
 
         try {
             presenceDetection.setHostname(handlerConfiguration.hostname);
+            presenceDetection.setMacId(handlerConfiguration.mac);
         } catch (UnknownHostException e) {
             logger.error("Configuration for hostname is faulty", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getLocalizedMessage());
@@ -175,6 +176,7 @@ public class NetworkHandler extends BaseThingHandler implements PresenceDetectio
             presenceDetection.setIOSDevice(true);
             // Hand over binding configurations to the network service
             presenceDetection.setUseDhcpSniffing(configuration.allowDHCPlisten);
+            presenceDetection.setUseMac(configuration.useMacId);
             presenceDetection.setUseIcmpPing(configuration.allowSystemPings);
             presenceDetection.setUseArpPing(true, configuration.arpPingToolPath);
         }

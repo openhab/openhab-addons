@@ -27,6 +27,11 @@
 				<description>Hostname or IP of the device</description>
 			</parameter>
 
+			<parameter name="macId" type="text" required="false">
+				<label>MacId</label>
+				<description>MacId of the device</description>
+			</parameter>
+
 			<parameter name="refresh_interval" type="integer">
 				<label>Refresh Interval</label>
 				<description>States how long to wait after a device state update before the next refresh shall occur (in ms)</description>
@@ -70,6 +75,10 @@
 			<parameter name="hostname" type="text" required="true">
 				<label>Hostname or IP</label>
 				<description>Hostname or IP of the device</description>
+			</parameter>
+			<parameter name="macId" type="text" required="true">
+				<label>MacId</label>
+				<description>MacId of the device</description>
 			</parameter>
 
 			<parameter name="port" type="integer" required="true">

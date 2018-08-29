@@ -18,6 +18,7 @@ import java.math.BigDecimal;
  */
 public class NetworkHandlerConfiguration {
     public String hostname;
+    public String mac;
     public BigDecimal port;
     public BigDecimal retry = BigDecimal.valueOf(1);
     public BigDecimal refreshInterval = BigDecimal.valueOf(60000);

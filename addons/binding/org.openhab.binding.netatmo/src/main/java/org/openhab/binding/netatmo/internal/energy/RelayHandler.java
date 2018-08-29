@@ -24,7 +24,6 @@ import java.time.ZoneOffset;
 import java.util.List;
 
 import static org.openhab.binding.netatmo.NetatmoBindingConstants.CHANNEL_CONNECTED_BOILER;
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.EQUIPMENT_ID;
 import static org.openhab.binding.netatmo.NetatmoBindingConstants.PARENT_ID;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.toOnOffType;
 
@@ -47,12 +46,11 @@ public class RelayHandler extends NetatmoDeviceHandler<RelayModule> {
     protected RelayModule updateReadings() {
 
         logger.debug("start update readings with ID " + getId() + " and home: " + getParentId());
+
         final HomesDataBody thermostatDataBody = getBridgeHandler().api
                 .getEnergyApi()
                 .getCombinedHome(getParentId())
                 .executeSync();
-
-        logger.debug("received Data: " + thermostatDataBody);
 
         if (thermostatDataBody == null
                 || thermostatDataBody.getHomes().get(0) == null) {
@@ -77,7 +75,7 @@ public class RelayHandler extends NetatmoDeviceHandler<RelayModule> {
             }
         }
 
-        logger.debug("module " + result + "\n childs: " + childs.size());
+        logger.debug("module " + result + "\n childs: " + childs.size() + " parentId: " + getParentId());
 
         return result;
     }

@@ -17,7 +17,9 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.core.thing.type.ThingType;
 import org.openhab.binding.netatmo.handler.NetatmoBridgeHandler;
+import org.openhab.binding.netatmo.handler.NetatmoRoomHandler;
 import org.openhab.binding.netatmo.internal.discovery.NetatmoModuleDiscoveryService;
 import org.openhab.binding.netatmo.internal.energy.RelayHandler;
 import org.openhab.binding.netatmo.internal.energy.ThermosthatHandler;
@@ -60,12 +62,16 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
+        ThingType type = getThingTypeByUID(thingTypeUID);
+        logger.error("Supports {} {}", thingTypeUID, type);
         return (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID));
     }
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
+
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        logger.error("Insatnciate {} {}", thingTypeUID, ROOM);
         if (thingTypeUID.equals(APIBRIDGE_THING_TYPE)) {
             WelcomeWebHookServlet servlet = registerWebHookServlet(thing.getUID());
             NetatmoBridgeHandler bridgeHandler = new NetatmoBridgeHandler((Bridge) thing, servlet);
@@ -95,6 +101,8 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
             return new NAWelcomeCameraHandler(thing);
         } else if (thingTypeUID.equals(WELCOME_PERSON_THING_TYPE)) {
             return new NAWelcomePersonHandler(thing);
+        } else if (thingTypeUID.equals(ROOM)) {
+            return new NetatmoRoomHandler(thing);
         } else {
             logger.warn("ThingHandler not found for {}", thing.getThingTypeUID());
             return null;

@@ -9,6 +9,7 @@
 package org.openhab.binding.netatmo.internal.discovery;
 
 import io.rudolph.netatmo.api.common.model.*;
+import io.rudolph.netatmo.api.energy.model.BaseRoom;
 import io.rudolph.netatmo.api.energy.model.HomesDataBody;
 import io.rudolph.netatmo.api.energy.model.module.ThermostatModule;
 import io.rudolph.netatmo.api.energy.model.module.ValveModule;
@@ -79,20 +80,25 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
             }
         }
         if (netatmoBridgeHandler.configuration.readThermostat) {
-            HomesDataBody thermostatsDataBody = netatmoBridgeHandler.api
+            HomesDataBody energyDataBody = netatmoBridgeHandler.api
                     .getEnergyApi()
                     .getCombinedHome(null)
                     .executeSync();
-            if (thermostatsDataBody != null) {
-                thermostatsDataBody.getHomes().forEach(home -> home.getModules()
-                        .forEach(module -> discoverModule(module, home.getId())));
+            if (energyDataBody != null) {
+                energyDataBody.getHomes().forEach(home -> {
+                    home.getModules()
+                        .forEach(module -> discoverModule(module, home.getId()));
+
+                    home.getRooms().
+                            forEach(room -> discoverRoom(room, home.getId()));
+                });
             }
         }
 
         if (netatmoBridgeHandler.configuration.readWelcome) {
             SecurityHome welcomeHomeData = netatmoBridgeHandler.api.getWelcomeApi().getHomeData(null, null)
                     .executeSync();
-            if (welcomeHomeData != null) {
+            if (welcomeHomeData != null && welcomeHomeData.getHomes() != null) {
                 welcomeHomeData.getHomes().forEach(this::discoverWelcomeHome);
             }
         }
@@ -128,25 +134,53 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
         }
     }
 
+    private void discoverRoom(BaseRoom room, String parentId) {
+        onDeviceAddedInternal(room.getId(),
+                parentId,
+                ROOM_PROPERTY,
+                room.getName(),
+                null);
+    }
+
     private void discoverModule(Module module, String parentId) {
         switch (module.getType()) {
             case INDOORMODULE:
                 ClimateModule indoorModule = (ClimateModule) module;
-                onDeviceAddedInternal(module.getId(), parentId, module.getType(), module.getModuleName(),
+                onDeviceAddedInternal(module.getId(),
+                        parentId,
+                        module.getType(),
+                        module.getModuleName(),
                         indoorModule.getFirmware());
             case THERMOSTAT:
                 ThermostatModule thermostatModule = (ThermostatModule) module;
-                onDeviceAddedInternal(module.getId(), thermostatModule.getBridgeId(), module.getType(),
-                        module.getModuleName(), thermostatModule.getFirmware());
+                onDeviceAddedInternal(module.getId(),
+                        thermostatModule.getBridgeId(),
+                        module.getType(),
+                        module.getModuleName(),
+                        thermostatModule.getFirmware());
                 break;
             case VALVE:
                 ValveModule energyModule = (ValveModule) module;
-                onDeviceAddedInternal(module.getId(), energyModule.getBridgeId(), module.getType(),
-                        module.getModuleName(), energyModule.getFirmware());
+                logger.error("*** Valve: {}", energyModule);
+                onDeviceAddedInternal(module.getId(),
+                        energyModule.getBridgeId(),
+                        module.getType(),
+                        module.getModuleName(),
+                        energyModule.getFirmware());
                 break;
             case RELAY:
-                onDeviceAddedInternal(module.getId(), parentId, module.getType(), module.getModuleName(), null);
 
+                final String tParentId;
+                if (parentId == null) {
+                    tParentId = netatmoBridgeHandler.findNAThing(module.getId()).get().getParentId();
+                } else {
+                    tParentId = parentId;
+                }
+                onDeviceAddedInternal(module.getId(),
+                        tParentId,
+                        module.getType(),
+                        module.getModuleName(),
+                        null);
         }
     }
 
@@ -182,13 +216,20 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
             onDeviceAddedInternal(home.getId(), null, WELCOME_HOME_THING_TYPE.getId(), home.getName(), null);
             // Discover Cameras
             home.getCameras().forEach(camera -> {
-                onDeviceAddedInternal(camera.getId(), home.getId(), camera.getType(), camera.getName(), null);
+                onDeviceAddedInternal(camera.getId(),
+                        home.getId(),
+                        camera.getType(),
+                        camera.getName(),
+                        null);
             });
 
             // Discover Known Persons
             home.getPersons().stream().filter(person -> person.getPseudo() != null).forEach(person -> {
-                onDeviceAddedInternal(person.getId(), home.getId(), WELCOME_PERSON_THING_TYPE.getId(),
-                        person.getPseudo(), null);
+                onDeviceAddedInternal(person.getId(),
+                        home.getId(),
+                        WELCOME_PERSON_THING_TYPE.getId(),
+                        person.getPseudo(),
+                        null);
             });
         }
     }
@@ -202,7 +243,7 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
         ThingUID thingUID = findThingUID(type, id);
         Map<String, Object> properties = new HashMap<>();
 
-        logger.debug("set Equipment_ID: " + id);
+        logger.debug("set Equipment_ID: " + id + "parentId: " + parentId);
         properties.put(EQUIPMENT_ID, id);
         if (parentId != null) {
             properties.put(PARENT_ID, parentId);
@@ -217,7 +258,7 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
     }
 
     private void addDiscoveredThing(ThingUID thingUID, Map<String, Object> properties, String displayLabel) {
-        logger.debug("Add module " + thingUID.getThingTypeId() + " label: " + displayLabel);
+        logger.debug("Add module " + thingUID + " label: " + displayLabel);
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                 .withProperties(properties)
                 .withBridge(netatmoBridgeHandler.getThing().getUID())
@@ -230,6 +271,7 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
     private ThingUID findThingUID(String thingType, String thingId) throws IllegalArgumentException {
         for (ThingTypeUID supportedThingTypeUID : getSupportedThingTypes()) {
             String uid = supportedThingTypeUID.getId();
+            logger.debug("*** thingType " + thingType + " id: " + thingId + " uid: " + uid);
 
             if (uid.equalsIgnoreCase(thingType)) {
                 return new ThingUID(supportedThingTypeUID, netatmoBridgeHandler.getThing().getUID(),

@@ -95,7 +95,8 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     public void partialDetectionResult(PresenceDetectionValue value) {
         final String ip = value.getHostAddress();
         if (value.isPingReachable()) {
-            newPingDevice(ip);
+            final String macId = value.getMacId();
+            newPingDevice(ip, macId);
         } else if (value.isTCPServiceReachable()) {
             List<Integer> tcpServices = value.getReachableTCPports();
             for (int port : tcpServices) {
@@ -139,6 +140,7 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
             s.setUseArpPing(true, configuration.arpPingToolPath);
             // TCP devices
             s.setServicePorts(tcp_service_ports);
+
 
             executorService.execute(() -> {
                 Thread.currentThread().setName("Discovery thread " + ip);
@@ -213,22 +215,38 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
                 .withProperties(properties).withLabel(label).build());
     }
 
-    public static ThingUID createPingUID(String ip) {
+    private static ThingUID createPingUID(String ip) {
         // uid must not contains dots
         return new ThingUID(PING_DEVICE, ip.replace('.', '_'));
     }
+
+    private static ThingUID createMacUID(String mac) {
+        // uid must not contains dots
+        return new ThingUID(PING_DEVICE, mac.replace(':', '_'));
+    }
+
 
     /**
      * Submit newly discovered devices. This method is called by the spawned threads in {@link startScan}.
      *
      * @param ip The device IP
      */
-    public void newPingDevice(String ip) {
-        logger.trace("Found pingable network device with IP address {}", ip);
+    public void newPingDevice(String ip, String macId) {
+        logger.debug("Found pingable network device with IP address {} and eventually mac {}", ip, macId);
 
         Map<String, Object> properties = new HashMap<>();
         properties.put(PARAMETER_HOSTNAME, ip);
-        thingDiscovered(DiscoveryResultBuilder.create(createPingUID(ip)).withTTL(120).withProperties(properties)
-                .withLabel("Network Device (" + ip + ")").build());
+        properties.put(PARAMETER_MAC, macId);
+        ThingUID uid;
+        String label;
+        if (macId != null) {
+            uid = createMacUID(macId);
+            label = macId;
+        } else {
+            uid = createPingUID(ip);
+            label = ip;
+        }
+        thingDiscovered(DiscoveryResultBuilder.create(uid).withTTL(120).withProperties(properties)
+                .withLabel("Network Device (" + label + ")").build());
     }
 }

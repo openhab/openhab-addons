@@ -9,28 +9,20 @@
 package org.openhab.binding.netatmo.internal.energy;
 
 import io.rudolph.netatmo.api.common.model.*;
-import io.rudolph.netatmo.api.energy.EnergyConnector;
 import io.rudolph.netatmo.api.energy.model.module.ValveModule;
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.netatmo.handler.NetatmoModuleHandler;
-import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.NetatmoBindingConstants.CHANNEL_REACHABLE;
+import static org.openhab.binding.netatmo.NetatmoBindingConstants.CHANNEL_TEMPERATURE;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.toOnOffType;
+import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.toQuantityType;
 
 /**
  * {@link ValveHandler} is the class used to handle the energy
@@ -41,6 +33,7 @@ import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.toOnOffType;
 public class ValveHandler extends NetatmoModuleHandler<ValveModule> {
     private final Logger logger = LoggerFactory.getLogger(ValveHandler.class);
 
+    private float temperature = Float.MIN_VALUE;
 
     public ValveHandler(@NonNull Thing thing) {
         super(thing);
@@ -48,16 +41,49 @@ public class ValveHandler extends NetatmoModuleHandler<ValveModule> {
 
     @Override
     protected void updateProperties(ValveModule moduleData) {
-        ValveModule module = getBridgeHandler().api.getEnergyApi().getModuleStatus(getParentId(), moduleData);
-
-
         updateProperties(moduleData.getFirmware(), moduleData.getType().getValue());
     }
 
     @Override
     protected void updateChannels(Object module) {
-        logger.debug("object null: " + module );
-        super.updateChannels(module);
+        if (!isRefreshRequired()
+                || !(module instanceof ValveModule)
+                || ((ValveModule) module).getType() != DeviceType.VALVE) {
+            return;
+        }
+
+        String homeId = getBridgeHandler().findNAThing(getParentId()).get().getParentId();
+
+        Module tModule = getBridgeHandler().api
+                .getEnergyApi()
+                .getModuleDataById(homeId, getId());
+
+        if (tModule.getType() != DeviceType.VALVE || !(tModule instanceof ValveModule)) {
+            return;
+        }
+        super.updateChannels(tModule);
+
+        List<MeasureRequestResponse> response = getBridgeHandler().api
+                .getEnergyApi()
+                .getMeasure(getId(),
+                        this.module.getBridgeId(),
+                        Scale.HALFHOUR,
+                        ScaleType.TEMPERATURE,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null)
+                .executeSync();
+
+        if (response == null || response.size() == 0) {
+            return;
+        }
+
+
+        temperature = response.get(0).getValue().get(0).get(0);
+
+        setRefreshRequired(false);
     }
 
     @Override
@@ -65,6 +91,9 @@ public class ValveHandler extends NetatmoModuleHandler<ValveModule> {
         switch (channelId) {
             case CHANNEL_REACHABLE:
                 return toOnOffType(module.isReachable());
+
+            case CHANNEL_TEMPERATURE:
+                return toQuantityType(temperature, API_TEMPERATURE_UNIT);
         }
 
         return super.getNAThingProperty(channelId);

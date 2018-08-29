@@ -21,12 +21,14 @@ import org.eclipse.jdt.annotation.NonNull;
 public class NetworkBindingConfiguration {
     public Boolean allowSystemPings = true;
     public Boolean allowDHCPlisten = true;
+    public Boolean useMacId = false;
     public BigDecimal cacheDeviceStateTimeInMS = BigDecimal.valueOf(2000);
     public String arpPingToolPath = "arping";
 
     public void update(@NonNull NetworkBindingConfiguration newConfiguration) {
         this.allowSystemPings = newConfiguration.allowSystemPings;
         this.allowDHCPlisten = newConfiguration.allowDHCPlisten;
+        this.useMacId = newConfiguration.useMacId;
         this.cacheDeviceStateTimeInMS = newConfiguration.cacheDeviceStateTimeInMS;
         this.arpPingToolPath = newConfiguration.arpPingToolPath;
     }

@@ -10,6 +10,13 @@
 		<state readOnly="true" />
 	</channel-type>
 
+	<channel-type id="reachable" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Module reachable</label>
+		<description>Indicates wheather the module can be contacted or not</description>
+		<state readOnly="true" />
+	</channel-type>
+
 	<channel-type id="location">
 		<item-type>Location</item-type>
 		<label>Location</label>
@@ -324,7 +331,14 @@
 		<state min="0" max="360" step="1" readOnly="true" pattern="%d %unit%" />
 	</channel-type>
 
-	<channel-type id="GustStrength">
+    <channel-type id="WindowOpen">
+        <item-type>Switch</item-type>
+        <label>Window opened in a room</label>
+        <description>Indicates whether a open window was detected ot nor</description>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="GustStrength">
 		<item-type>Number:Speed</item-type>
 		<label>Gust Strength</label>
 		<description>Speed of the last 5 minutes highest gust wind</description>

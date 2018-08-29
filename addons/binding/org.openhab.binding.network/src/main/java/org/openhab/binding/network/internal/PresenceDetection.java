@@ -8,20 +8,6 @@
  */
 package org.openhab.binding.network.internal;
 
-import java.io.IOException;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
-
 import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.network.internal.dhcp.DHCPListenService;
 import org.openhab.binding.network.internal.dhcp.IPRequestReceivedCallback;
@@ -31,6 +17,16 @@ import org.openhab.binding.network.internal.utils.NetworkUtils.ArpPingUtilEnum;
 import org.openhab.binding.network.internal.utils.NetworkUtils.IpPingMethodEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.*;
+import java.util.function.Consumer;
 
 /**
  * The {@link PresenceDetection} handles the connection to the Device
@@ -66,6 +62,8 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     private String dhcpState = "off";
     Integer currentCheck = 0;
     int detectionChecks;
+    private String macId;
+    private Boolean useMac;
 
     public PresenceDetection(final PresenceDetectionListener updateListener, int cacheDeviceStateTimeInMS)
             throws IllegalArgumentException {
@@ -103,6 +101,10 @@ public class PresenceDetection implements IPRequestReceivedCallback {
         }
     }
 
+    public void setMacId(String macId) {
+        this.macId = useMac ? macId : null;
+    }
+
     public void setServicePorts(Set<Integer> ports) {
         this.tcpPorts = ports;
     }
@@ -110,6 +112,9 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     public void setUseDhcpSniffing(boolean enable) {
         this.useDHCPsniffing = enable;
     }
+
+
+    public void setUseMac(Boolean useMacId) { this.useMac = useMacId; }
 
     public void setRefreshInterval(long refreshInterval) {
         this.refreshIntervalInMS = refreshInterval;
@@ -188,6 +193,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
      * Return the last seen value in milliseconds based on {@link System.currentTimeMillis()} or 0 if not seen yet.
      */
     public long getLastSeen() {
+        System.currentTimeMillis();
         return lastSeenInMS;
     }
 
@@ -313,7 +319,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
         // Therefore use lastSeenInMS here and not cache.isExpired() to determine if we got a ping response.
         if (lastSeenInMS + timeoutInMS + 100 < System.currentTimeMillis()) {
             // We haven't seen the device in the detection process
-            v = new PresenceDetectionValue(destination.getHostAddress(), -1);
+            v = new PresenceDetectionValue(destination.getHostAddress(), macId, -1);
         } else {
             // Make the cache valid again and submit the value.
             v = cache.getExpiredValue();
@@ -366,11 +372,11 @@ public class PresenceDetection implements IPRequestReceivedCallback {
      * @param type The detection type
      * @return The non expired or a new instance of PresenceDetectionValue.
      */
-    synchronized PresenceDetectionValue updateReachableValue(PresenceDetectionType type, double latency) {
+    synchronized PresenceDetectionValue updateReachableValue(PresenceDetectionType type, double latency, String macId) {
         lastSeenInMS = System.currentTimeMillis();
         PresenceDetectionValue v;
         if (cache.isExpired()) {
-            v = new PresenceDetectionValue(destination.getHostAddress(), 0);
+            v = new PresenceDetectionValue(destination.getHostAddress(), macId, 0);
         } else {
             v = cache.getExpiredValue();
         }
@@ -379,6 +385,22 @@ public class PresenceDetection implements IPRequestReceivedCallback {
         cache.setValue(v);
         return v;
     }
+
+    /**
+     * If the cached PresenceDetectionValue has not expired yet, the cached version
+     * is returned otherwise a new reachable PresenceDetectionValue is created with
+     * a latency of 0.
+     *
+     * It is safe to call this method from multiple threads. The returned PresenceDetectionValue
+     * might be still be altered in other threads though.
+     *
+     * @param type The detection type
+     * @return The non expired or a new instance of PresenceDetectionValue.
+     */
+    synchronized PresenceDetectionValue updateReachableValue(PresenceDetectionType type, double latency) {
+        return updateReachableValue(type, latency, null);
+    }
+
 
     protected void performServicePing(int tcpPort) {
         logger.trace("Perform TCP presence detection for {} on port: {}", hostname, tcpPort);
@@ -406,16 +428,25 @@ public class PresenceDetection implements IPRequestReceivedCallback {
      */
     protected void performARPping(String interfaceName) {
         try {
-            logger.trace("Perform ARP ping presence detection for {} on interface: {}", hostname, interfaceName);
+            //logger.debug("Perform ARP ping presence detection for {} on interface: {}", hostname, interfaceName);
             if (iosDevice) {
                 networkUtils.wakeUpIOS(destination);
                 Thread.sleep(50);
             }
             double pingTime = System.nanoTime();
-            if (networkUtils.nativeARPPing(arpPingMethod, arpPingUtilPath, interfaceName, destination.getHostAddress(),
-                    timeoutInMS)) {
+
+            String macId = networkUtils.nativeARPPing(arpPingMethod, arpPingUtilPath, interfaceName,
+                    destination.getHostAddress(),
+                    this.macId,
+                    timeoutInMS);
+
+            if (macId != null) {
                 final double latency = Math.round((System.nanoTime() - pingTime) / 1000000.0f);
-                PresenceDetectionValue v = updateReachableValue(PresenceDetectionType.ARP_PING, latency);
+                String savableMac = macId.length() != 0 ? macId : null;
+                this.macId = savableMac;
+                logger.info("savableMac {} isnull {}", savableMac, savableMac == null);
+
+                PresenceDetectionValue v = updateReachableValue(PresenceDetectionType.ARP_PING, latency, savableMac);
                 updateListener.partialDetectionResult(v);
             }
         } catch (IOException e) {
@@ -525,4 +556,5 @@ public class PresenceDetection implements IPRequestReceivedCallback {
             dhcpState = "off";
         }
     }
+
 }

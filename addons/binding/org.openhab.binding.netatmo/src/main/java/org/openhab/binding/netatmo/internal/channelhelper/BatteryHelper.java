@@ -8,28 +8,28 @@
  */
 package org.openhab.binding.netatmo.internal.channelhelper;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Optional;
-
 import io.rudolph.netatmo.api.common.model.BatteryState;
 import io.rudolph.netatmo.api.common.model.ClimateModule;
+import io.rudolph.netatmo.api.energy.model.module.EnergyModule;
+import io.rudolph.netatmo.api.energy.model.module.ValveBaseModule;
 import io.rudolph.netatmo.api.energy.model.module.ValveModule;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Method;
+import java.util.Optional;
+
+import static org.openhab.binding.netatmo.NetatmoBindingConstants.CHANNEL_BATTERY_LEVEL;
+import static org.openhab.binding.netatmo.NetatmoBindingConstants.CHANNEL_LOW_BATTERY;
 
 /**
  * The {@link BatteryHelper} handle specific behavior
  * of modules using batteries
  *
  * @author Gaël L'hopital - Initial contribution
- *
  */
 public class BatteryHelper {
     private Logger logger = LoggerFactory.getLogger(BatteryHelper.class);
@@ -42,30 +42,28 @@ public class BatteryHelper {
 
     public Optional<State> getNAThingProperty(String channelId) {
         if (module != null) {
-            try {
-                if (CHANNEL_BATTERY_LEVEL.equalsIgnoreCase(channelId)
-                        || CHANNEL_LOW_BATTERY.equalsIgnoreCase(channelId)) {
-                    switch (channelId) {
-                        case CHANNEL_BATTERY_LEVEL:
-                            Integer batteryLevel;
-                            if (module instanceof ValveModule) {
-                                batteryLevel = ((ValveModule) module).getBatteryLevel();
-                            } else if (module instanceof ClimateModule) {
-                                batteryLevel = ((ClimateModule) module).getBatteryVP();
-                            } else {
-                                break;
-                            }
-                            return Optional.of(ChannelTypeUtils.toDecimalType(batteryLevel));
-                        case CHANNEL_LOW_BATTERY:
-                            Method getBatteryVp = module.getClass().getMethod("getGetBatteryState");
-                            BatteryState batteryVp = (BatteryState) getBatteryVp.invoke(module);
-                            return Optional.of(batteryVp == BatteryState.NO_DATA ? OnOffType.OFF : OnOffType.ON);
+            switch (channelId) {
+                case CHANNEL_BATTERY_LEVEL:
+                    final Integer batteryLevel;
+                    if (module instanceof ValveModule) {
+                        batteryLevel = ((ValveModule) module).getBatteryLevel();
+                    } else if (module instanceof ClimateModule) {
+                        batteryLevel = ((ClimateModule) module).getBatteryVP();
+                    } else {
+                        break;
                     }
-                }
-            } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-                    | InvocationTargetException e) {
-                logger.warn("The module has no method to access {} property : {}", channelId, e.getMessage());
-                return Optional.of(UnDefType.NULL);
+                    return Optional.of(ChannelTypeUtils.toDecimalType(batteryLevel));
+                case CHANNEL_LOW_BATTERY:
+                    final BatteryState batteryVp;
+                    if (module instanceof ValveBaseModule) {
+                        batteryVp = ((ValveBaseModule) module).getBatteryState();
+                    } else {
+                        break;
+                    }
+                    return Optional.of(batteryVp == BatteryState.NO_DATA ? OnOffType.OFF : OnOffType.ON);
+                default:
+                    logger.warn("The module has no property: {}", channelId);
+                    return Optional.empty();
             }
         }
         return Optional.empty();

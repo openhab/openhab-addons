@@ -35,6 +35,7 @@ public class NetatmoBindingConstants {
     public static final String PARENT_ID = "parentId";
     public static final String REFRESH_INTERVAL = "refreshInterval";
     public static final String SETPOINT_DEFAULT_DURATION = "setpointDefaultDuration";
+    public static final String ROOM_PROPERTY = "Room";
 
     public static final String WEBHOOK_APP = "app_security";
 
@@ -56,6 +57,7 @@ public class NetatmoBindingConstants {
     public static final ThingTypeUID RELAY = new ThingTypeUID(BINDING_ID, DeviceType.RELAY.getValue());
     public static final ThingTypeUID THERMOSTAT = new ThingTypeUID(BINDING_ID, DeviceType.THERMOSTAT.getValue());
     public static final ThingTypeUID VALVE = new ThingTypeUID(BINDING_ID, DeviceType.VALVE.getValue());
+    public static final ThingTypeUID ROOM = new ThingTypeUID(BINDING_ID, ROOM_PROPERTY);
 
     // List of Welcome Home Things Type UIDs
     public static final ThingTypeUID WELCOME_HOME_THING_TYPE = new ThingTypeUID(BINDING_ID, "NAWelcomeHome");
@@ -97,6 +99,7 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_BATTERY_LEVEL = "BatteryVP";
     public static final String CHANNEL_WIFI_STATUS = "WifiStatus";
     public static final String CHANNEL_RF_STATUS = "RfStatus";
+    public static final String CHANNEL_WINDOW_OPEN = "WindowOpen";
 
     // Healthy Home Coach specific channel
     public static final String CHANNEL_HEALTH_INDEX = "HealthIndex";
@@ -175,7 +178,7 @@ public class NetatmoBindingConstants {
     // List of all supported physical devices and modules
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Stream
             .of(BASESTATION, OUTDOORMODULE, WINDMODULE, RAINGAUGEMODULE, INDOORMODULE, HOMECOACH, RELAY, THERMOSTAT,
-                    WELCOME_HOME_THING_TYPE, WELCOME_CAMERA, WELCOME_PERSON_THING_TYPE, VALVE)
+                    WELCOME_HOME_THING_TYPE, WELCOME_CAMERA, WELCOME_PERSON_THING_TYPE, VALVE, ROOM)
             .collect(Collectors.toSet());
 
     // List of all adressable things in OH = SUPPORTED_DEVICE_THING_TYPES_UIDS + the virtual bridge

@@ -43,8 +43,9 @@
         <channels>
             <!--  Common to all devices -->
             <channel id="LastStatusStore" typeId="lastStatusStore"/>
-            <channel id="WifiStatus" typeId="system.signal-strength"/>
-            <channel id="Location" typeId="location"/>
+			<channel id="RfStatus" typeId="system.signal-strength" />
+			<channel id="BatteryVP" typeId="system.battery-level" />
+			<channel id="Reachable" typeId="reachable" />
         </channels>
 
         <properties>
