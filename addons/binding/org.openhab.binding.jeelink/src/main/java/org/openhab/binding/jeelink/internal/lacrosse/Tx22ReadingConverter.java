@@ -12,7 +12,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.openhab.binding.jeelink.internal.JeeLinkReadingConverter;
-import org.openhab.binding.jeelink.internal.Reading;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,11 +103,5 @@ public class Tx22ReadingConverter implements JeeLinkReadingConverter<Tx22Reading
         }
 
         return null;
-    }
-
-    public static void main(String[] args) {
-        Tx22ReadingConverter c = new Tx22ReadingConverter();
-        Reading r = c.createReading("OK WS 24 1 255 255 255 255 255 255 255 255 255 255 255 255");
-        System.out.println(r);
     }
 }
