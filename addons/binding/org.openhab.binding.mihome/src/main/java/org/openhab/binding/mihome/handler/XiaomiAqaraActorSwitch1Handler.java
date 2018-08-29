@@ -63,7 +63,7 @@ public class XiaomiAqaraActorSwitch1Handler extends XiaomiActorBaseHandler {
 
     @Override
     void parseWriteAck(JsonObject data) {
-        parseDefault(data);
+        logger.debug("Got write ack message but ignoring it to prevent item state toggling");
     }
 
     @Override
