@@ -39,8 +39,8 @@ List of channels
 | `customEvents`     | `Number`     | Displays number of custom lines matched to search pattern      |
 | `logRotated`       | `DateTime`   | Last time when log rotated recognized                          |
 | `newErrorEvent`    | -            | Trigger channel for last [ERROR] line                          |
-| `newWarningEvent`  | -            | Trigger channel for last [ERROR] line                          |
-| `newCustomEvent`   | -            | Trigger channel for last [ERROR] line                          |
+| `newWarningEvent`  | -            | Trigger channel for last [WARN] line                          |
+| `newCustomEvent`   | -            | Trigger channel for last custom line                          |
 
 ## Examples
 
