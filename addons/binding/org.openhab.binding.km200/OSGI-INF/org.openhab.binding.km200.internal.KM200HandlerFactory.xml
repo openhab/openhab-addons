@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.2.0" configuration-pid="binding.km200" configuration-policy="optional" immediate="true" name="org.openhab.binding.km200.internal.KM200HandlerFactory">
-	<implementation class="org.openhab.binding.km200.internal.KM200HandlerFactory"/>
-	<service>
-	  		<provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
-	</service>
-	<reference bind="setChannelTypeProvider" interface="org.openhab.binding.km200.internal.KM200ChannelTypeProvider" name="ChannelTypeProvider" unbind="unsetChannelTypeProvider"/>
-</scr:component>
