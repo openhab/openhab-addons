@@ -8,19 +8,35 @@
  */
 package org.openhab.binding.enocean.internal.config;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
 public class EnOceanBaseConfig {
     public String eepId;
-    public String receivingEEPId;
+    // TODO uncomment this line if ESH can parse parameter value list (issue eclipse/smarthome #6146)
+    // public ArrayList<String> receivingEEPId;
 
-    public String getReceivingEEPId() {
-        if (receivingEEPId == null || receivingEEPId.isEmpty()) {
-            return eepId;
+    protected ArrayList<String> rEEPId;
+
+    public List<String> getReceivingEEPId() {
+        if (rEEPId == null || rEEPId.isEmpty()) {
+            return Arrays.asList(eepId);
         }
 
-        return receivingEEPId;
+        return rEEPId;
+    }
+
+    public void setReceivingEEPId(String receivingEEPId) {
+        rEEPId = new ArrayList<String>(Arrays.asList(receivingEEPId.split(",")));
+    }
+
+    public void setReceivingEEPId(ArrayList<String> receivingEEPId) {
+        rEEPId = new ArrayList<>();
+        rEEPId.addAll(receivingEEPId);
     }
 }

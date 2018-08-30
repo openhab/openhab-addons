@@ -1,21 +1,35 @@
 # EnOcean Binding
 
-The EnOcean binding connects OpenHab to the EnOcean ecosystem.
+The EnOcean binding connects openHAB to the EnOcean ecosystem.
 
-The binding uses an EnOcean gateway to retrieve sensor data and control actuators. For _bidirectional_ actuators it is even possible to update the OpenHab item state if the actuator gets modified outside of OpenHab.
-This binding has been developed on an USB300 gateway and was also tested with an EnOceanPi. As this binding implements a full EnOcean stack, we have full control over these gateways. This binding can enable the repeater function (level 1 or 2) of these gateways and retrieve detailed information about them.   
+The binding uses an EnOcean gateway to retrieve sensor data and control actuators.
+For _bidirectional_ actuators it is even possible to update the openHAB item state if the actuator gets modified outside of openHAB.
+This binding has been developed on an USB300 gateway and was also tested with an EnOceanPi.
+As this binding implements a full EnOcean stack, we have full control over these gateways.
+This binding can enable the repeater function (level 1 or 2) of these gateways and retrieve detailed information about them.
 
 ## Concepts/Configuration
 
-First of all you have to configure an EnOcean Transceiver (Gateway). This device has to be added manually to OpenHab and is represented by an _EnOcean bridge_. You just have to set the right serial port. If everything is running fine you should see the _base id_ of your gateway in the properties of your bridge.
+First of all you have to configure an EnOcean transceiver (gateway).
+A directly connected USB300 can be auto discovered, an EnOceanPi has to be added manually to openHAB.
+Both gateways are represented by an _EnOcean gateway_ in openHAB.
+If you want to place the gateway for better reception apart from your openHAB server, you can forward its serial messages over TCP/IP (_ser2net_). In this case you have to define the path to the gateway like this rfc2217://x.x.x.x:3001.
+If everything is running fine you should see the _base id_ of your gateway in the properties of your bridge.
 
-EnOcean messages are mainly send as broadcast messages without an explicit receiver address. However each message contains a unique sender address (EnOcean Id) to determine from which device this message was sent. To receive messages from an EnOcean device you have to determine its EnOcean Id and add an appropriate thing to OpenHab. **The thing Id has to be set to the EnOcean Id**. If the device is an actuator which you want to control, you have to generate an unique sender id and announce it to the actuator (_teach-in_). This sender id is made up of the base id of the EnOcean gateway and a number between 1 and 127. This number can be set manually or determined by the binding.
+The vast majority of EnOcean messages are sent as broadcast messages without an explicit receiver address.
+However each EnOcean device is identified by an unique id, called EnOceanId, which is used as the sender address in these messages.
+To receive messages from an EnOcean device you have to determine its EnOceanId and add an appropriate thing to openHAB.
 
-## Supported Things
+If the device is an actuator which you want to control with your gateway from openHAB, you also have to use an unique sender id and announce it to the actuator (_teach-in_).
+For security reasons you cannot choose a random id, instead each gateway has 127 unique ids build in, from which you can choose.
+A SenderId of your gateway is made up its base id and a number between 1 and 127.
+This number can be chosen manually or the next free/unused number can be determined by the binding.
 
-This binding is developed on and tested with the following things
+## Supported things
 
- * USB300 and EnOceanPi gateways as OpenHab bridges
+This binding is developed on and tested with the following devices
+
+ * USB300 and EnOceanPi gateways
  * The following Eltako actuators:
     * FSR14 (light switch)
     * FSB14 (rollershutter)
@@ -34,95 +48,221 @@ This binding is developed on and tested with the following things
  * Hoppe SecuSignal window handles
  * Rocker switches (NodOn, Eltako FT55 etc)
 
-However because of the standardized EnOcean protocol it is more important which EEP this binding supports: F6-02, F6-10, D5-00, A5-10, A5-38 (switching and dimming), A5-37 (use generic things). Hence if your device supports one of these EEPs the chances are good that your device is also supported by this binding.
+However because of the standardized EnOcean protocol it is more important which EEP this binding supports. Hence if your device supports one of the following EEPs the chances are good that your device is also supported by this binding.
 
-## Discovery
+|Thing type                       | EEP family  | EEP Types     | Channels¹                    |  Devices²                      | Pairing   |
+|---------------------------------|-------------|---------------|------------------------------|--------------------------------|-----------|
+| bridge                          | -           | -             | repeaterMode, setBaseId      | USB300, EnOceanPi              | -         |
+| pushButton                      | F6-01       | 0x01          | pushButton                   |                                | Manually  |
+| rockerSwitch                    | F6-02       | 0x01-02       | rockerswitchA, rockerswitchB | Eltako FT55                    | Discovery |
+| mechanicalHandle                | F6-10       | 0x00-01       | windowHandleState, contact   | Hoppe SecuSignal handles       | Discovery |
+| contact                         | D5-00       | 0x01          | contact                      | Eltako FTK                     | Discovery |
+| temperatureSensor               | A5-02       | 0x01-30       | temperature                  | Thermokon SR65                 | Discovery |
+| humidityTemperatureSensor       | A5-04       | 0x01-03       | humidity, temperature        | Eltako FTSB                    | Discovery |
+| lightTemperatureOccupancySensor | A5-08       | 0x01-03       | illumination, temperature,<br/>occupancy, motionDetection | Eltako FABH | Discovery |
+| roomOperatingPanel              | A5-10       | 0x01-23       | temperature, setPoint, fanSpeedStage,<br/>occupancy           | Thermokon SR04 | Discovery |
+| centralCommand                  | A5-38       | 0x08          | dimmer, generalSwitch        | Eltako FUD14, FSR14            | Teach-in |
+| rollershutter                   | A5-3F/D2-05 | 0x7F/0x00     | rollershutter                | Eltako FSB14, NodOn SIN-2-RS-01| Teach-in/Discovery |
+| measurementSwitch               | D2-01       | 0x09,0A,0F,12 | generalSwitch(/A/B), instantpower,<br/>totalusage, repeaterMode | NodOn In Wall Switch | Discovery |
+| virtualRockerSwitch             | F6-02       | 0x01-02       | virtualRockerswitchA, virtualRockerswitchB | - | Teach-in |
 
-Most of the EnOcean devices can be automatically created and configured as an OpenHab thing through the discovery service. The EnOcean protocol defines a so called "teach-in" process to announce the abilities and services of an EnOcean device and pair devices. To pair an EnOcean device with its OpenHab thing representation, you have to differentiate between sensors and actuators.
+¹ Not all channels are supported by all devices, it depends which specific EEP type is used by the device, all thing types additionally support receivingState channel
+
+² These are just examples of supported devices
+
+A rockerSwitch is used to receive message from a physical EnOcean Rocker Switch.
+A virtualRockerSwitch is used to send rocker switch messages to paired EnOcean devices.
+
+## Pairing
+
+Most of the EnOcean devices can be automatically created and configured as an openHAB thing through the discovery service.
+The EnOcean protocol defines a so called "teach-in" process to announce the abilities and services of an EnOcean device and pair devices.
+To pair an EnOcean device with its openHAB thing representation, you have to differentiate between sensors and actuators.
 
 ### Sensors
 
-To pair a sensor with its thing, you first have to start the discovery scan for this binding in PaperUI. Then press the "teach-in" button of the sensor. The sensor sends a teach-in message which contains the information about the EEP and the device Id of the sensor. If the EEP is known by this binding the thing representation of the device is created. The corresponding channels are created dynamically, too. 
+To pair a sensor with its thing, you first have to start the discovery scan for this binding in PaperUI.
+Then press the "teach-in" button of the sensor.
+The sensor sends a teach-in message which contains the information about the EEP and the EnOceanId of the sensor.
+If the EEP is known by this binding the thing representation of the device is created.
+The corresponding channels are created dynamically, too. 
 
 ### Actuators
  
-If the actuator supports UTE teach-ins, the corresponding thing can be created and paired automatically. First you have to start the discovery scan for this binding in PaperUI. Then press the teach-in button of the actuator. 
+If the actuator supports UTE teach-in, the corresponding thing can be created and paired automatically.
+First you have to **start the discovery scan for a gateway** in PaperUI.
+Then press the teach-in button of the actuator.
+If the EEP of the actuator is known, the binding sends an UTE teach-in response with a new SenderId and creates a new thing with its channels. 
 
-If the actuator does not support UTE teach-ins, you have to create, configure and choose the right EEP of the thing manually. It is important to link the teach-in channel of this thing. Afterwards you have to activate the pairing mode of the actuator. Then switch on the teach-in item(/channel) to send a teach-in message to the actuator. If the pairing was successful, you can control the actuator and unlink the teach-in channel.
+If the actuator does not support UTE teach-ins, you have to create, configure and choose the right EEP of the thing manually.
+It is important to link the teach-in channel of this thing to a switch item.
+Afterwards you have to **activate the pairing mode of the actuator**.
+Then switch on the teach-in item to send a teach-in message to the actuator.
+If the pairing was successful, you can control the actuator and unlink the teach-in channel now.
+The content of this teach-in message is device specific and can be configured through the teach-in channel.
 
+To pair a virtualRockerSwitch with an EnOcean device, you first have to activate the pairing mode of the actuator.
+Then switch the virtualRockerSwitch On/Off.
 
-## Adding Enocean-Things (Actuators, Switches, Sensors, etc.)
-
-https://github.com/fruggy83/enocean/wiki#how-to-add-an-enocean-thing-actuator-sensor-wallswitch-etc-via-paperui
+Each EnOcean gateway supports 127 unique SenderIds.
+The SenderId of a thing can be set manually or determined automatically by the binding.
+In case of an UTE teach-in the next unused SenderId is taken automatically.
+To set this SenderId to a specific one, you have to use the nextSenderId parameter of your gateway.
 
 ## Thing Configuration
 
-Things can and should by configured through PaperUI. Following the most important config parameters:
+The pairing process of an openHAB thing and an EnOcean device has to be triggered within PaperUI.
+Therefore if you do not want to use PaperUI, a mixed mode configuration approach has to be done.
+To determine the EEP and EnOceanId of the device and announce a SenderId to it, you first have to pair an openHAB thing with the EnOcean device.
+Afterwards you can delete this thing and manage it with its necessary parameters through a configuration file.
+If you change the SenderId of your thing, you have to pair again the thing with your device.
 
-Bridge
+|Thing type                       | Parameter         | Meaning                     | Possible Values |
+|---------------------------------|-------------------|-----------------------------|---|
+| bridge                          | path              | Path to the EnOcean Gateway | COM3, /dev/ttyAMA0, rfc2217://x.x.x.x:3001 |
+|                                 | nextSenderId      | Set SenderId of next created thing.<br/>If omitted, the next unused SenderId is taken | 1-127 |
+| pushButton                      | receivingEEPId    | EEP used for receiving msg  | F6_01_01 |
+| rockerSwitch                    | receivingEEPId    |                             | F6_02_01, F6_02_02 |
+| mechanicalHandle                | receivingEEPId    |                             | F6_10_00, F6_10_01 |
+| contact                         | receivingEEPId    |                             | D5_00_01 |
+| temperatureSensor               | receivingEEPId    |                             | A5_02_01-0B, A5_02_10-1B, A5_02_20, A5_02_30 |
+| humidityTemperatureSensor       | receivingEEPId    |                             | A5_04_01-03 |
+| lightTemperatureOccupancySensor | receivingEEPId    |                             | A5_08_01-03, A5_08_01_FXBH |
+| roomOperatingPanel              | receivingEEPId    |                             | A5_10_01-0D, A5_10_10-1F, A5_10_20-23 |
+| centralCommand                  | senderIdOffset    | SenderId used for sending msg.<br/>If omitted, nextSenderId of bridge is used | 1-127 |
+|                                 | sendingEEPId      | EEP used for sending msg    | A5_38_08_01, A5_38_08_02 |
+|                                 | broadcastMessages | Send broadcast or addressed msg | true, false |
+|                                 | receivingEEPId    |                             | F6_00_00, A5_38_08_02 |
+|                                 | suppressRepeating | Suppress repeating of msg   | true, false |
+| rollershutter                   | senderIdOffset    |                             | 1-127 |
+|                                 | sendingEEPId      |                             | A5_3F_7F_EltakoFSB, D2_05_00 |
+|                                 | broadcastMessages |                             | true, false |
+|                                 | receivingEEPId    |                             | A5_3F_7F_EltakoFSB, D2_05_00 |
+|                                 | suppressRepeating |                             | true, false |
+|                                 | pollingInterval   | Refresh interval in seconds | Integer |
+| measurementSwitch               | senderIdOffset    |                             | 1-127 |
+|                                 | eepId             | EEP used for sending and receiving | D2_01_09, D2_01_0A, D2_01_0F, D2_01_12,<br/>D2_01_0F_NODON, D2_01_12_NODON |
+|                                 | broadcastMessages |                             | true, false |
+|                                 | pollingInterval   |                             | Integer |
+|                                 | suppressRepeating |                             | true, false |
+| virtualRockerSwitch             | senderIdOffset    |                             | 1-127 |
+|                                 | sendingEEPId      |                             | F6_02_01_Virtual, F6_02_02_Virtual |
+|                                 | broadcastMessages |                             | true, false |
+|                                 | suppressRepeating |                             | true, false |
 
- * Serial port: The serial port to which the EnOcean gateway is connected to
- * Next device id: The device Id which should be taken for the next created actuator without an explicit device Id
- 
-Things
-
- * Thing Id: EnOcean Id of the device. 4 byte hex string (abcdef00).
- * Bridge: Must be provided
- * Sender Id: Is used to generate the unique EnOcean device Id for sending messages (added to the base Id of the gateway). If you leave it empty, the next free Id will be determined automatically (see "next device id" of bridge). The resulting device Id can be seen through the properties.
- * (Sending/receiving) EEP: Set the EEP which should be used to send and receive message to or from the device.
- 
-## Generic Things
-
-  If an Enocean device uses an unsupported EEP or _A5-3F-7F_, you have to create a generice thing. Generic things support all generic channels like switch, number, string etc. However you have to specify how to convert the Enocean messages from the thing into Openhab state updates and how to convert the Openhab commands into Enocean messages. These conversion functions can be defined with the help of transformation functions like MAP or JavaScript.
-
-For an inbound transformation (Enocean message => Openhab state) you get the channel id and the Enocean data seperated by a pipe.
-
-```
-ChannelId|EnoceanData(Hex)=OpenhabState|Value
-genericLightSwitch|70=OnOffType|ON
-genericLightSwitch|50=OnOffType|OFF
-```
-
-Outbound transformation (Openhab command => Enocean message):
-
-```
-ChannelId|OpenhabCommand=EnoceanData(Hex)
-genericLightSwitch|ON=01000009
-genericLightSwitch|OFF=01000008
-```
+If you want to receive messages of your EnOcean devices you have to set **the thing Id to the EnOceanId of your device**.
 
 ## Channels
 
-The channels of a thing are determined automatically based on the choosen EEP. The following channels are supported: (Light) Switch, Dimmer, Rollershutter, Temperature, Handle state and many more.
+The channels of a thing are determined automatically based on the chosen EEP. 
 
-## Profiles
+|Channel              | Item               | Description |
+|---------------------|--------------------|---------------------------------|
+| repeaterMode        | String             | Set repeater level to 1, 2 or disable |
+| setBaseId           | String             | Changes the BaseId of your gateway. This can only be done 10 times! So use it with care. |
+| pushButton          | Trigger            | Channel type system:rawbutton, emits PRESSED and RELEASED events |
+| rockerswitchA/B     | Trigger            | Channel type system:rawrocker, emits DIR1_PRESSED, DIR1_RELEASED, DIR2_PRESSED, DIR2_RELEASED events |
+| windowHandleState   | String             | Textual representation of handle position (OPEN, CLOSED, TILTED)  |
+| contact             | Contact            | State OPEN/CLOSED (tilted handle => OPEN) |
+| temperature         | Number:Temperature | Temperature in degree Celsius |
+| humidity            | Number             | Relative humidity level in percentages |
+| illumination        | Number:Illuminance | Illumination in lux |
+| occupancy           | Switch             | Occupancy button pressed (ON) or released (OFF) |
+| motionDetection     | Switch             | On=Motion detected, Off=not |
+| setPoint            | Number             | linear set point |
+| fanSpeedStage       | String             | Fan speed: -1 (Auto), 0, 1, 2, 3 |
+| dimmer              | Dimmer             | Dimmer value in percent |
+| generalSwitch(/A/B) | Switch             | Switch something (channel A/B) ON/OFF |
+| rollershutter       | Rollershutter      | Shut time (shutTime) in seconds can be configured |
+| instantpower        | Number:Power       | Instant power consumption in Watts |
+| totalusage          | Number:Energy      | Used energy in Kilowatt hours |
+| receivingState      | String             | RSSI value and repeater count of last received message |
+| teachInCMD          | Switch             | Sends a teach-in msg, content can configured with parameter teachInMSG |
+| virtualRockerswitch | String             | Used to send rocker switch messages, can be linked to a Switch item.<br/>Time in ms between sending a pressed and release message can be defined with channel parameter duration.<br/>The switch mode (rocker switch: use DIR1 and DIR2, toggle: use just one DIR) can be set with channel parameter switchMode (rockerSwitch, toggleButtonDir1, toggleButtonDir2)|
 
-The (sensor) rocker switches use _system:rawrocker_ channels. So they trigger _DIR1[/2]_\__PRESSED_ and DIR1[/2]_\__RELEASED_ events. You can use these events in your rules
+## Rules and Profiles
+
+The rockerSwitch things use _system:rawrocker_ channel types.
+So they trigger _DIR1[/2]_\__PRESSED_ and DIR1[/2]_\__RELEASED_ events.
+These channels can be directly linked to simple item like Switch or Dimmer with the help of _profiles_.
+Furthermore this binding implements another profile (rockerswitch-to-play-pause) to link a rockerSwitch directly to a Player item.
+If you want to do more advanced stuff, you have to implement rules which react to these events
 
 ```
-rule "Sonos ON"
+rule "Advanced rocker rule"
 when
-    Channel 'enocean:rockerSwitch:4326d3ef:ffffffff:rockerswitchB' triggered DIR1_PRESSED
+    Channel 'enocean:rockerSwitch:gtwy:AABBCC00:rockerswitchA' triggered DIR1_PRESSED
 then
-    Sonos_Bad_Control.sendCommand("PLAY")
-end
-
-rule "Sonos OFF"
-when
-    Channel 'enocean:rockerSwitch:4326d3ef:ffffffff:rockerswitchB' triggered DIR2_PRESSED
-then
-    Sonos_Bad_Control.sendCommand("PAUSE")
+    // do some advanced stuff
 end
 ```
 
-or link them directly to your items. The following items are supported by profiles: switch, dimmer, player.
+## Example
+
+```
+Bridge enocean:bridge:gtwy "EnOcean Gateway" [ path="/dev/ttyAMA0" ] {
+   Thing rockerSwitch AABBCC00 "Rocker" @ "Kitchen" [ receivingEEPId="F6_02_01" ]
+   Thing mechanicalHandle AABBCC01 "Door handle" @ "Living room" [ receivingEEPId="F6_10_00" ]
+   Thing roomOperatingPanel AABBCC02 "Panel" @ "Floor" [ receivingEEPId="A5_10_06" ]
+   Thing centralCommand AABBCC03 "Light" @ "Kitchen" [ senderIdOffset=1, sendingEEPId="A5_38_08_01", receivingEEPId="F6_00_00", broadcastMessages=true, suppressRepeating=false ]
+   Thing centralCommand AABBCC04 "Dimmer" @ "Living room" [ senderIdOffset=2, sendingEEPId="A5_38_08_02", receivingEEPId="A5_38_08_02", broadcastMessages=true, suppressRepeating=false ]
+   Thing rollershutter AABBCC05 "Rollershutter" @ "Kitchen" [ senderIdOffset=3, sendingEEPId="A5_3F_7F_EltakoFSB", receivingEEPId="A5_3F_7F_EltakoFSB", broadcastMessages=true, suppressRepeating=false ] {Channels: Type rollershutter:rollershutter [shutTime=25]}
+   Thing measurementSwitch AABBCCDD06 "TV Smart Plug" @ "Living room" [senderIdOffset=4, eepId="D2_01_09", broadcastMessages=false, suppressRepeating=false, pollingInterval=300]
+   Thing virtualRockerSwitch FFFFFF00 "Virtual_Rocker" [ senderIdOffset=5, sendingEEPId="F6_02_01_Virtual", broadcastMessages=true, suppressRepeating=false ] {Channels: Type virtualRockerswitch:virtualRockerswitchA [duration=300, switchMode="rockerSwitch"]}
+}
+```
+
+```
+Player Kitchen_Sonos "Sonos" (Kitchen) {channel="sonos:PLAY1:ID:control", channel="enocean:rockerSwitch:gtwy:AABBCC00:rockerswitchA" [profile="enocean:rockerswitch-to-play-pause"]}
+Dimmer Kitchen_Hue "Hue" <light> {channel="enocean:rockerSwitch:gtwy:AABBCC00:rockerswitchB" [profile="system:rawrocker-to-dimmer"], channel="hue:0220:0017884f6626:9:brightness"}
+Switch Virtual_Rocker "Switch" {channel="enocean:virtualRockerSwitch:gtwy:FFFFFF00:virtualRockerswitchA" [profile="enocean:rockerswitch-from-on-off"]}
+```
+
+## Generic Things
+
+If an EnOcean device uses an unsupported EEP or _A5-3F-7F_, you have to create a genericThing.
+Generic things support all channels like switch, number, string etc as generic channels.
+However you have to specify how to convert the EnOcean messages of the device into openHAB state updates and how to convert the openHAB commands into EnOcean messages.
+These conversion functions can be defined with the help of transformation functions like MAP.
+
+|Thing type                       | Parameter         | Meaning                     | Possible Values |
+|---------------------------------|-------------------|-----------------------------|---|
+| genericThing                    | senderIdOffset    |                             | 1-127 |
+|                                 | eepId             | EEP family of received and sent messages | F6_FF_FF, A5_FF_FF, D2_FF_FF |
+|                                 | broadcastMessages |                             | true, false |
+|                                 | suppressRepeating |                             | true, false |
+
+Supported channels: genericSwitch, genericRollershutter, genericDimmer, genericNumber, genericString, genericColor, genericTeachInCMD.
+You have to define the transformationType (e.g. MAP) and transformationFuntion (e.g. for MAP: file name of mapping file) for each of these channels. 
+
+For an inbound transformation (EnOcean message => openHAB state) you receive the channel id and the EnOcean data in hex separated by a pipe.
+Your transformation function has to return the openHAB State type and value separated by a pipe.
+If you want to use a mapping transformation, your mapping file has to look like this for a genericThing using EEP F6_FF_FF:
+
+```
+ChannelId|EnoceanData(Hex)=OpenhabState|Value
+genericSwitch|70=OnOffType|ON
+genericSwitch|50=OnOffType|OFF
+genericRollershutter|70=PercentType|0
+genericRollershutter|50=PercentType|100
+```
+
+For an outbound transformation (openHAB command => EnOcean message) you receive the channel id and the command separated by a pipe.
+Your transformation function has to return the payload of the EnOcean message.
+You do not have to worry about CRC and header data.
+If you want to use a mapping transformation, your mapping file has to look like this for a genericThing using EEP A5_FF_FF:
+
+```
+ChannelId|OpenhabCommand=EnoceanData(Hex)
+genericSwitch|ON=01000009
+genericSwitch|OFF=01000008
+```
 
 ## Credits
 
 Many thanks to:
 
  * The NodOn support for their hints about the ADT and UTE teach in messages.
- * The fhem project for the inspiration and their EnOcean addon
- * [leifbladt](https://github.com/leifbladt) for his work on the installation notes
+ * The fhem project for the inspiration and their EnOcean addon 
  * [Casshern81](https://github.com/Casshern81) for his work on the documentation, valuable hints and testing efforts
  * [bodiroga](https://github.com/bodiroga) for implementing the USB Discovery service

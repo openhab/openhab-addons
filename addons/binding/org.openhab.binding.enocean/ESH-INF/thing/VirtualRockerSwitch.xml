@@ -7,16 +7,11 @@
 	<!-- RockerSwitch -->
 	<thing-type id="virtualRockerSwitch">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="serialbridge" />
-			<bridge-type-ref id="tcpbridge" />
+			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
 		<label>F6-02 - Virtual Rocker Switch</label>
 		<description>Virtual Rocker Switch to emit rocker messages</description>
-
-		<properties>
-			<property name="enoceanId" />
-		</properties>
 
 		<config-description>
 			<parameter name="senderIdOffset" type="integer">

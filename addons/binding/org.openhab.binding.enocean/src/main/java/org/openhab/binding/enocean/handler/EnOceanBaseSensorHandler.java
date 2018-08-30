@@ -10,6 +10,10 @@ package org.openhab.binding.enocean.handler;
 
 import static org.openhab.binding.enocean.EnOceanBindingConstants.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Set;
 
 import org.eclipse.smarthome.config.core.Configuration;
@@ -26,10 +30,9 @@ import org.openhab.binding.enocean.internal.eep.EEP;
 import org.openhab.binding.enocean.internal.eep.EEPFactory;
 import org.openhab.binding.enocean.internal.eep.EEPType;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
+import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
 import org.openhab.binding.enocean.internal.messages.ESP3Packet;
 import org.openhab.binding.enocean.internal.transceiver.ESP3PacketListener;
-
-import com.google.common.collect.Sets;
 
 /**
  *
@@ -39,28 +42,56 @@ import com.google.common.collect.Sets;
 public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements ESP3PacketListener {
 
     // List of all thing types which support receiving of eep messages
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.newHashSet(THING_TYPE_ROOMOPERATINGPANEL,
-            THING_TYPE_MECHANICALHANDLE, THING_TYPE_CONTACTANDSWITCH, THING_TYPE_TEMPERATURESENSOR,
-            THING_TYPE_HUMIDITYTEMPERATURESENSOR, THING_TYPE_ROCKERSWITCH, THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR,
-            THING_TYPE_PUSHBUTTON);
+    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>(
+            Arrays.asList(THING_TYPE_ROOMOPERATINGPANEL, THING_TYPE_MECHANICALHANDLE, THING_TYPE_CONTACT,
+                    THING_TYPE_TEMPERATURESENSOR, THING_TYPE_HUMIDITYTEMPERATURESENSOR, THING_TYPE_ROCKERSWITCH,
+                    THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR, THING_TYPE_PUSHBUTTON));
 
-    protected EEPType receivingEEPType = null;
+    protected Hashtable<RORG, EEPType> receivingEEPTypes = null;
     protected String enoceanId; // enoceanId to listen to. This is the thingId
 
     public EnOceanBaseSensorHandler(Thing thing) {
         super(thing);
     }
 
+    protected void setReceivingEEP(EnOceanBaseConfig cfg) {
+        Configuration c = getConfig();
+        Object r = c.get(PARAMETER_RECEIVINGEEPID);
+        if (r != null && r instanceof String) {
+            cfg.setReceivingEEPId(r.toString());
+        }
+        if (r != null && r instanceof ArrayList<?>) {
+            cfg.setReceivingEEPId((ArrayList<String>) r);
+        }
+    }
+
     @Override
     boolean validateConfig() {
+        receivingEEPTypes = new Hashtable<>();
         EnOceanBaseConfig cfg = getConfigAs(EnOceanBaseConfig.class);
+        setReceivingEEP(cfg);
+
         try {
             if (cfg.getReceivingEEPId() != null && !cfg.getReceivingEEPId().isEmpty()) {
 
-                receivingEEPType = EEPType.getType(cfg.getReceivingEEPId());
-                updateChannels(receivingEEPType, true);
+                boolean first = true;
+                for (String receivingEEP : cfg.getReceivingEEPId()) {
+                    if (receivingEEP == null) {
+                        continue;
+                    }
+
+                    EEPType receivingEEPType = EEPType.getType(receivingEEP);
+                    if (receivingEEPTypes.containsKey(receivingEEPType.getRORG())) {
+                        configurationErrorDescription = "Receiving more than one EEP of the same RORG is not dupported";
+                        return false;
+                    }
+
+                    receivingEEPTypes.put(receivingEEPType.getRORG(), receivingEEPType);
+                    updateChannels(receivingEEPType, first);
+                    first = false;
+                }
             } else {
-                receivingEEPType = null;
+                receivingEEPTypes = null;
             }
         } catch (Exception e) {
             configurationErrorDescription = "Receiving EEP is not supported";
@@ -69,7 +100,7 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
 
         enoceanId = thing.getUID().getId();
         if (validateEnoceanId(enoceanId)) {
-            if (receivingEEPType != null) {
+            if (receivingEEPTypes != null) {
                 getBridgeHandler().addPacketListener(this);
             }
             return true;
@@ -102,13 +133,19 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
     @Override
     public void espPacketReceived(ESP3Packet packet) {
 
-        if (receivingEEPType == null) {
+        if (receivingEEPTypes == null) {
             return;
         }
 
         try {
-            EEP eep = EEPFactory.buildEEP(receivingEEPType, (ERP1Message) packet);
 
+            ERP1Message msg = (ERP1Message) packet;
+            EEPType receivingEEPType = receivingEEPTypes.get(msg.getRORG());
+            if (receivingEEPType == null) {
+                return;
+            }
+
+            EEP eep = EEPFactory.buildEEP(receivingEEPType, (ERP1Message) packet);
             logger.debug("ESP Packet {} for {} received", HexUtils.bytesToHex(packet.getPayload()),
                     this.getThing().getUID().getId());
 

@@ -12,7 +12,9 @@ import static org.openhab.binding.enocean.EnOceanBindingConstants.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -31,6 +33,8 @@ import org.eclipse.smarthome.core.thing.binding.ConfigStatusBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.util.HexUtils;
+import org.eclipse.smarthome.io.transport.serial.PortInUseException;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.enocean.internal.EnOceanConfigStatusMessage;
 import org.openhab.binding.enocean.internal.messages.BaseResponse;
 import org.openhab.binding.enocean.internal.messages.ESP3Packet;
@@ -42,18 +46,12 @@ import org.openhab.binding.enocean.internal.messages.Response;
 import org.openhab.binding.enocean.internal.messages.Response.ResponseType;
 import org.openhab.binding.enocean.internal.transceiver.ESP3PacketListener;
 import org.openhab.binding.enocean.internal.transceiver.EnOceanSerialTransceiver;
-import org.openhab.binding.enocean.internal.transceiver.EnOceanTCPTransceiver;
 import org.openhab.binding.enocean.internal.transceiver.EnOceanTransceiver;
 import org.openhab.binding.enocean.internal.transceiver.ResponseListener;
 import org.openhab.binding.enocean.internal.transceiver.ResponseListenerIgnoringTimeouts;
 import org.openhab.binding.enocean.internal.transceiver.TransceiverErrorListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Sets;
-
-import gnu.io.NoSuchPortException;
-import gnu.io.PortInUseException;
 
 /**
  * The {@link EnOceanBridgeHandler} is responsible for sending ESP3Packages build by {@link EnOceanActuatorHandler} and
@@ -65,8 +63,8 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
 
     private Logger logger = LoggerFactory.getLogger(EnOceanBridgeHandler.class);
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.newHashSet(THING_TYPE_SERIALBRIDGE,
-            THING_TYPE_TCPBRIDGE);
+    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>(
+            Arrays.asList(THING_TYPE_BRIDGE));
 
     private EnOceanTransceiver transceiver; // holds connection to serial/tcp port and sends/receives messages
     private ScheduledFuture<?> connectorTask; // is used for reconnection if something goes wrong
@@ -74,10 +72,12 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
     private byte[] baseId = null;
     private Thing[] sendingThings = new Thing[128];
 
-    private int nextDeviceId = 0;
+    private int nextSenderId = 0;
+    private SerialPortManager serialPortManager;
 
-    public EnOceanBridgeHandler(Bridge bridge) {
+    public EnOceanBridgeHandler(Bridge bridge, SerialPortManager serialPortManager) {
         super(bridge);
+        this.serialPortManager = serialPortManager;
     }
 
     @Override
@@ -159,11 +159,11 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
     public void initialize() {
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "trying to connect to gateway...");
-        Object devId = getConfig().get(NEXTDEVICEID);
+        Object devId = getConfig().get(NEXTSENDERID);
         if (devId != null) {
-            nextDeviceId = ((BigDecimal) devId).intValue();
+            nextSenderId = ((BigDecimal) devId).intValue();
         } else {
-            nextDeviceId = 0;
+            nextSenderId = 0;
         }
 
         if (connectorTask == null || connectorTask.isDone()) {
@@ -185,73 +185,66 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
         try {
 
             Configuration c = getThing().getConfiguration();
-            if (transceiver == null) {
-                if (getThing().getThingTypeUID().equals(THING_TYPE_SERIALBRIDGE)) {
-                    transceiver = new EnOceanSerialTransceiver((String) getThing().getConfiguration().get(PORT), this,
-                            scheduler);
-                } else {
-                    transceiver = new EnOceanTCPTransceiver((String) getThing().getConfiguration().get(HOST),
-                            ((BigDecimal) getThing().getConfiguration().get(PORT)).intValue(), this, scheduler);
-                }
-            }
-
             if (transceiver != null) {
                 transceiver.ShutDown();
+            }
 
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "opening serial port...");
-                transceiver.Initialize();
+            transceiver = new EnOceanSerialTransceiver((String) getThing().getConfiguration().get(PATH), this,
+                    scheduler, serialPortManager);
 
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "starting rx thread...");
-                transceiver.StartReceiving(scheduler);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "opening serial port...");
+            transceiver.Initialize();
 
-                if ((boolean) c.get(RS485)) {
-                    baseId = new byte[4];
-                    updateStatus(ThingStatus.ONLINE);
-                } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                            "trying to get bridge base id...");
-                    logger.debug("request base id");
-                    transceiver.sendESP3Packet(ESP3PacketFactory.CO_RD_IDBASE,
-                            new ResponseListenerIgnoringTimeouts<RDBaseIdResponse>() {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "starting rx thread...");
+            transceiver.StartReceiving(scheduler);
 
-                                @Override
-                                public void responseReceived(RDBaseIdResponse response) {
-
-                                    logger.debug("received response for base id");
-
-                                    if (response.isValid() && response.isOK()) {
-                                        baseId = response.getBaseId().clone();
-                                        updateProperty(PROPERTY_Base_ID, HexUtils.bytesToHex(response.getBaseId()));
-                                        updateProperty(PROPERTY_REMAINING_WRITE_CYCLES_Base_ID,
-                                                Integer.toString(response.getRemainingWriteCycles()));
-                                        transceiver.setFilteredDeviceId(baseId);
-
-                                        updateStatus(ThingStatus.ONLINE);
-                                    } else {
-                                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                                "Could not get BaseId");
-                                    }
-                                }
-                            });
-                }
-
-                transceiver.sendESP3Packet(ESP3PacketFactory.CO_RD_VERSION,
-                        new ResponseListenerIgnoringTimeouts<RDVersionResponse>() {
+            if ((boolean) c.get(RS485)) {
+                baseId = new byte[4];
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                        "trying to get bridge base id...");
+                logger.debug("request base id");
+                transceiver.sendESP3Packet(ESP3PacketFactory.CO_RD_IDBASE,
+                        new ResponseListenerIgnoringTimeouts<RDBaseIdResponse>() {
 
                             @Override
-                            public void responseReceived(RDVersionResponse response) {
+                            public void responseReceived(RDBaseIdResponse response) {
+
+                                logger.debug("received response for base id");
 
                                 if (response.isValid() && response.isOK()) {
-                                    updateProperty(PROPERTY_APP_VERSION, response.getAPPVersion());
-                                    updateProperty(PROPERTY_API_VERSION, response.getAPIVersion());
-                                    updateProperty(PROPERTY_CHIP_ID, response.getChipID());
-                                    updateProperty(PROPERTY_DESCRIPTION, response.getDescription());
+                                    baseId = response.getBaseId().clone();
+                                    updateProperty(PROPERTY_Base_ID, HexUtils.bytesToHex(response.getBaseId()));
+                                    updateProperty(PROPERTY_REMAINING_WRITE_CYCLES_Base_ID,
+                                            Integer.toString(response.getRemainingWriteCycles()));
+                                    transceiver.setFilteredDeviceId(baseId);
+
+                                    updateStatus(ThingStatus.ONLINE);
+                                } else {
+                                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                            "Could not get BaseId");
                                 }
                             }
                         });
             }
 
-        } catch (NoSuchPortException e) {
+            transceiver.sendESP3Packet(ESP3PacketFactory.CO_RD_VERSION,
+                    new ResponseListenerIgnoringTimeouts<RDVersionResponse>() {
+
+                        @Override
+                        public void responseReceived(RDVersionResponse response) {
+
+                            if (response.isValid() && response.isOK()) {
+                                updateProperty(PROPERTY_APP_VERSION, response.getAPPVersion());
+                                updateProperty(PROPERTY_API_VERSION, response.getAPIVersion());
+                                updateProperty(PROPERTY_CHIP_ID, response.getChipID());
+                                updateProperty(PROPERTY_DESCRIPTION, response.getDescription());
+                            }
+                        }
+                    });
+
+        } catch (IOException e) {
             logger.debug("error during bridge init occured", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Port could not be found");
         } catch (PortInUseException e) {
@@ -284,10 +277,10 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
         Collection<ConfigStatusMessage> configStatusMessages = new LinkedList<ConfigStatusMessage>();
 
         // The serial port must be provided
-        final String bridgePort = (String) getThing().getConfiguration().get(PORT);
-        if (bridgePort == null || bridgePort.isEmpty()) {
-            configStatusMessages.add(ConfigStatusMessage.Builder.error(PORT)
-                    .withMessageKeySuffix(EnOceanConfigStatusMessage.PORT_MISSING.getMessageKey()).withArguments(PORT)
+        String path = (String) getThing().getConfiguration().get(PATH);
+        if (path == null || path.isEmpty()) {
+            configStatusMessages.add(ConfigStatusMessage.Builder.error(PATH)
+                    .withMessageKeySuffix(EnOceanConfigStatusMessage.PORT_MISSING.getMessageKey()).withArguments(PATH)
                     .build());
         }
 
@@ -298,17 +291,17 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
         return baseId.clone();
     }
 
-    public int getNextDeviceId(Thing sender) {
-        return getNextDeviceId(sender.getUID().getId());
+    public int getNextSenderId(Thing sender) {
+        return getNextSenderId(sender.getUID().getId());
     }
 
-    public int getNextDeviceId(String senderId) {
-        if (nextDeviceId != 0 && sendingThings[nextDeviceId] == null) {
-            int result = nextDeviceId;
+    public int getNextSenderId(String senderId) {
+        if (nextSenderId != 0 && sendingThings[nextSenderId] == null) {
+            int result = nextSenderId;
             Configuration config = getConfig();
-            config.put(NEXTDEVICEID, null);
+            config.put(NEXTSENDERID, null);
             updateConfiguration(config);
-            nextDeviceId = 0;
+            nextSenderId = 0;
 
             return result;
         }

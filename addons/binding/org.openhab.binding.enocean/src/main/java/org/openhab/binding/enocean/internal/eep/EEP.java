@@ -87,7 +87,7 @@ public abstract class EEP {
 
     public State convertToState(String channelId, Configuration config, State currentState) {
         if (!getSupportedChannels().contains(channelId)) {
-            throw new IllegalArgumentException("Channel " + channelId + " is not supported");
+            return UnDefType.UNDEF;
         }
 
         if (channelId.equals(CHANNEL_RECEIVINGSTATE)) {

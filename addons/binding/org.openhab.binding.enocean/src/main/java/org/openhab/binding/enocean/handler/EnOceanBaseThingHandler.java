@@ -45,11 +45,7 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
     private EnOceanBridgeHandler gateway = null;
     protected Logger logger = LoggerFactory.getLogger(EnOceanBaseThingHandler.class);
 
-    // public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.union(
-    // EnOceanBaseSensorHandler.SUPPORTED_THING_TYPES, EnOceanBaseActuatorHandler.SUPPORTED_THING_TYPES);
-
     protected String enoceanId;
-
     protected String configurationErrorDescription;
 
     private Hashtable<String, Channel> linkedChannels = null;
@@ -92,7 +88,6 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
         if (id == null || id.isEmpty()) {
             return false;
         } else {
-
             if (id.length() != 8) {
                 return false;
             }

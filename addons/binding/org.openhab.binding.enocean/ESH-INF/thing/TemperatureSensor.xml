@@ -6,8 +6,7 @@
 
 	<thing-type id="temperatureSensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="serialbridge" />
-			<bridge-type-ref id="tcpbridge" />
+			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
 		<label>A5-02 - Temperature sensor</label>

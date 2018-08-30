@@ -6,16 +6,12 @@
 
 	<thing-type id="rollershutter">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="serialbridge" />
-			<bridge-type-ref id="tcpbridge" />
+			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
 		<label>Rollershutter</label>
 		<description>Rollershutter (like Eltako FSB14/61/71 or NodOn SIN-2-RS-01)</description>
 
-		<properties>
-			<property name="enoceanId" />
-		</properties>
 		<config-description>
 			<parameter name="senderIdOffset" type="integer">
 				<label>Sender Id</label>
@@ -40,13 +36,13 @@
 				<label>Send broadcast messages</label>
 				<default>true</default>
 			</parameter>
-			<parameter name="receivingEEPId" type="text">
+			<parameter name="receivingEEPId" type="text" multiple="true">
 				<label>EEP for receiving states</label>
 				<options>
 					<option value="A5_3F_7F_EltakoFSB">Eltako FSB14/61/71</option>
 					<option value="D2_05_00">D2-05-00 Rollershutter (like SIN-2-RS-01)</option>
 				</options>
-				<default>A5_3F_7F_EltakoFSB</default>
+				<multipleLimit>4</multipleLimit>
 				<limitToOptions>true</limitToOptions>
 				<required>true</required>
 			</parameter>

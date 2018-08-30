@@ -7,16 +7,12 @@
 	<!-- RockerSwitch -->
 	<thing-type id="pushButton">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="serialbridge" />
-			<bridge-type-ref id="tcpbridge" />
+			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
 		<label>F6-01 - Simple push button</label>
 		<description>Represents a physical push button (triggers "PRESSED" and "RELEASED" events)</description>
 
-		<properties>
-			<property name="enoceanId" />
-		</properties>
 		<config-description>
 			<parameter name="receivingEEPId" type="text">
 				<label>EEP</label>

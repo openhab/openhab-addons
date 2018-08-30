@@ -105,7 +105,9 @@ public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService
             int deviceId = 0;
             boolean broadcastMessages = true;
 
-            if (msg.getRORG() == RORG.UTE && (msg.getPayload(1, 1)[0] & UTEResponse.CommunicationType_MASK) == 1) {
+            // check for bidirectional communication => do not use broadcast
+            if (msg.getRORG() == RORG.UTE && (msg.getPayload(1, 1)[0]
+                    & UTEResponse.CommunicationType_MASK) == UTEResponse.CommunicationType_MASK) {
                 broadcastMessages = false;
             }
 
@@ -113,7 +115,7 @@ public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService
             if (msg.getRORG() == RORG.UTE && (msg.getPayload(1, 1)[0] & UTEResponse.ResponseNeeded_MASK) == 0) {
 
                 // get new sender Id
-                deviceId = bridgeHandler.getNextDeviceId(HexUtils.bytesToHex(id));
+                deviceId = bridgeHandler.getNextSenderId(HexUtils.bytesToHex(id));
                 if (deviceId > 0) {
                     byte[] newSenderId = bridgeHandler.getBaseId();
                     newSenderId[3] += deviceId;

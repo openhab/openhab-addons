@@ -10,6 +10,8 @@ package org.openhab.binding.enocean.handler;
 
 import static org.openhab.binding.enocean.EnOceanBindingConstants.*;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -30,8 +32,6 @@ import org.openhab.binding.enocean.internal.eep.EEPFactory;
 import org.openhab.binding.enocean.internal.eep.EEPType;
 import org.openhab.binding.enocean.internal.messages.ESP3Packet;
 
-import com.google.common.collect.Sets;
-
 /**
  *
  * @author Daniel Weber - Initial contribution
@@ -41,9 +41,9 @@ import com.google.common.collect.Sets;
 public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
 
     // List of thing types which support sending of eep messages
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.newHashSet(THING_TYPE_CENTRALCOMMAND,
-            THING_TYPE_VIRTUALROCKERSWITCH, THING_TYPE_MEASUREMENTSWITCH, THING_TYPE_GENERICTHING,
-            THING_TYPE_ROLLERSHUTTER);
+    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>(
+            Arrays.asList(THING_TYPE_CENTRALCOMMAND, THING_TYPE_VIRTUALROCKERSWITCH, THING_TYPE_MEASUREMENTSWITCH,
+                    THING_TYPE_GENERICTHING, THING_TYPE_ROLLERSHUTTER));
 
     protected byte[] senderId; // base id of bridge + senderIdOffset
     protected byte[] destinationId; // in case of broadcast FFFFFFFF otherwise a valid enocean device id
@@ -147,7 +147,7 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
         // TODO: senderId vs senderIdOffset vs deviceId => refactor to same name
         if (senderId == -1) {
             Configuration config = editConfiguration();
-            senderId = bridgeHandler.getNextDeviceId(thing);
+            senderId = bridgeHandler.getNextSenderId(thing);
             if (senderId == -1) {
                 configurationErrorDescription = "Could not get a free sender Id from Bridge";
                 return false;

@@ -10,6 +10,8 @@ package org.openhab.binding.enocean.internal.discovery;
 
 import static org.openhab.binding.enocean.EnOceanBindingConstants.*;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -20,8 +22,6 @@ import org.eclipse.smarthome.config.discovery.usbserial.UsbSerialDiscoveryPartic
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * Discovery for Enocean USB dongles, integrated in Eclipse SmartHome's USB-serial discovery by implementing
@@ -34,7 +34,8 @@ import com.google.common.collect.ImmutableSet;
 @Component(service = UsbSerialDiscoveryParticipant.class)
 public class EnOceanUsbSerialDiscoveryParticipant implements UsbSerialDiscoveryParticipant {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = ImmutableSet.of(THING_TYPE_SERIALBRIDGE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>(
+            Arrays.asList(THING_TYPE_BRIDGE));
 
     public static final int ENOCEAN_USB300_DONGLE_VENDOR_ID = 0x0403;
     public static final int ENOCEAN_USB300_DONGLE_PRODUCT_ID = 0x6001;
@@ -49,8 +50,8 @@ public class EnOceanUsbSerialDiscoveryParticipant implements UsbSerialDiscoveryP
     public @Nullable DiscoveryResult createResult(UsbSerialDeviceInformation deviceInformation) {
         if (isEnoceanUSB300Dongle(deviceInformation)) {
             return DiscoveryResultBuilder.create(createBridgeThingType(deviceInformation))
-                    .withLabel(createEnoceanUSB300DongleLabel(deviceInformation)).withRepresentationProperty(PORT)
-                    .withProperty(PORT, deviceInformation.getSerialPort()).build();
+                    .withLabel(createEnoceanUSB300DongleLabel(deviceInformation)).withRepresentationProperty(PATH)
+                    .withProperty(PATH, deviceInformation.getSerialPort()).build();
         } else {
             return null;
         }
@@ -67,9 +68,9 @@ public class EnOceanUsbSerialDiscoveryParticipant implements UsbSerialDiscoveryP
 
     private ThingUID createBridgeThingType(UsbSerialDeviceInformation deviceInformation) {
         if (deviceInformation.getSerialNumber() != null) {
-            return new ThingUID(THING_TYPE_SERIALBRIDGE, deviceInformation.getSerialNumber());
+            return new ThingUID(THING_TYPE_BRIDGE, deviceInformation.getSerialNumber());
         } else {
-            return new ThingUID(THING_TYPE_SERIALBRIDGE, String.valueOf(deviceInformation.getProductId()));
+            return new ThingUID(THING_TYPE_BRIDGE, String.valueOf(deviceInformation.getProductId()));
         }
     }
 
