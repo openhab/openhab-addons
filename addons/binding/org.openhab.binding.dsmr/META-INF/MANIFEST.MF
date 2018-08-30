@@ -11,7 +11,6 @@ Bundle-Version: 2.4.0.qualifier
 Export-Package: org.openhab.binding.dsmr,
  org.openhab.binding.dsmr.handler
 Import-Package: 
- gnu.io,
  javax.measure,
  javax.measure.quantity,
  org.apache.commons.lang,
@@ -27,6 +26,7 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.io.transport.serial,
  org.openhab.binding.dsmr,
  org.openhab.binding.dsmr.handler,
  org.osgi.framework,

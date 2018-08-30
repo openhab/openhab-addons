@@ -9,9 +9,9 @@
 package org.openhab.binding.dsmr.internal.device;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.dsmr.internal.device.connector.DSMRSerialConnector;
 import org.openhab.binding.dsmr.internal.device.connector.DSMRSerialSettings;
-import org.openhab.binding.dsmr.internal.device.connector.SerialPortManager;
 
 /**
  * Implementation of a DSMRDevice with fixed serial port settings. With fixed port settings the code is much simpler
@@ -30,9 +30,9 @@ public class DSMRFixedConfigDevice implements DSMRDevice {
      * Constructor
      *
      * @param serialPortManager the manager to get a new serial port connecting from
-     * @param serialPortName    the port name (e.g. /dev/ttyUSB0 or COM1)
+     * @param serialPortName the port name (e.g. /dev/ttyUSB0 or COM1)
      * @param fixedPortSettings The serial port connection settings
-     * @param listener          the parent {@link DSMREventListener}
+     * @param listener the parent {@link DSMREventListener}
      */
     public DSMRFixedConfigDevice(SerialPortManager serialPortManager, String serialPortName,
             DSMRSerialSettings fixedPortSettings, DSMREventListener listener) {
