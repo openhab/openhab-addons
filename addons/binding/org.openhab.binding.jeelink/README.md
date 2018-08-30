@@ -4,7 +4,7 @@ This binding integrates JeeLink USB RF receivers and LaCrosseGateways.
 
 ## Introduction
 
-Binding should be compatible with JeeLink USB receivers and LaCrosseGateways. It supports connected LaCrosse temperature sensors as well as EC3000 sensors and PCA301 power monitoring wireless sockets.
+Binding should be compatible with JeeLink USB receivers and LaCrosseGateways. It supports connected LaCrosse temperature sensors, EC3000 sensors, PCA301 power monitoring wireless sockets and TX22 temperature and humidity sensors (including connected TX23 wind and TX26 rain sensors).
 
 ## Supported Things
 
@@ -14,9 +14,10 @@ This binding supports:
 *   JeeLink (connected over TCP)
 *   LaCrosseGateway (connected to USB)
 *   LaCrosseGateway (connected over TCP)
-*   LaCrosse Temperature Sensors
-*   EC3000 Power Monitors
+*   LaCrosse temperature sensors
+*   EC3000 power monitors
 *   PCA301 power monitoring wireless sockets
+*   TX22 temperature & humidity Sensors (including connected TX23 wind and TX26 rain sensors)
 
 ## Binding configuration
 
@@ -67,7 +68,6 @@ The available init commands depend on the sketch that is running on the USB stic
 | Upper Temperature Limit    | Decimal   | The highest allowed valid temperature. Higher temperature readings will be ignored                                                                   |
 | Maximum allowed difference | Decimal   | The maximum allowed difference from a value to the previous value (0 disables this check). If the difference is higher, the reading will be ignored. |
 
-
 #### EC3000 power monitors
 
 | Parameter       | Item Type | Description                                                                                                             |
@@ -95,6 +95,18 @@ The available init commands depend on the sketch that is running on the USB stic
 | humidity        | Number:Dimensionless  | Humidity reading                                  |
 | batteryNew      | Contact               | Whether the battery is new (CLOSED) or not (OPEN) |
 | batteryLow      | Contact               | Whether the battery is low (CLOSED) or not (OPEN) |
+
+#### TX22 temperature and humidity sensors
+
+| Channel Type ID | Item Type             | Description                |
+|-----------------|-----------------------|----------------------------|
+| temperature     | Number:Temperature    | Temperature reading        |
+| humidity        | Number:Dimensionless  | Humidity reading           |
+| pressure        | Number:Pressure       | Current pressure reading   |
+| rain            | Number:Length         | Rainfall today             |
+| windStrength    | Number:Speed          | Current wind speed         |
+| windAngle       | Number:Angle          | Current wind direction     |
+| gustStrength    | Number:Speed          | Gust speed                 |
 
 #### EC3000 power monitors
 
@@ -163,4 +175,17 @@ A typical item configuration for a PCA301 power monitoring wireless sockets look
 Switch SocketSwitch {channel="jeelink:pca301:1-160-236:switchingState"}
 Number:Power SocketWattage {channel="jeelink:pca301:1-160-236:currentPower"}
 Number:Energy SocketConsumption {channel="jeelink:pca301:1-160-236:consumptionTotal"}
+```
+
+A typical item configuration for a TX22 temperature and humidity sensor looks like this:
+
+```
+Number:Dimensionless Humidity "Outside [%.1f %unit%]" <humidity> {channel="jeelink:tx22:42:humidity"}
+Number:Temperature Temperature "Outside [%.1f %unit%]" <temperature> {channel="jeelink:tx22:42:temperature"}
+Contact Battery_Low_LR "Battery Low Outside" {channel="jeelink:tx22:42:batteryLow"}
+Contact Battery_New_LR "Battery New Outside" {channel="jeelink:tx22:42:batteryLow"}
+Number:Length Rain "Outside [%.1f %unit%]" {channel="jeelink:tx22:42:rain"}
+Number:Speed WindStrength "Wind [%.1f %unit%]" {channel="jeelink:tx22:42:windStrength"}
+Number:Angle WindDir "Wind dir [%.1f %unit%]" {channel="jeelink:tx22:42:windAngle"}
+Number:Speed GustStrength "Gust [%.1f %unit%]" {channel="jeelink:tx22:42:gustStrength"}
 ```

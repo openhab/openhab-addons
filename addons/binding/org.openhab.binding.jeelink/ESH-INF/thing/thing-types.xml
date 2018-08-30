@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="jeelink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="jeelink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
@@ -263,6 +264,78 @@
 			</parameter>
 		</config-description>
 	</thing-type>
+
+	<!-- TX22 Temperature/Humidity SensorThing Type -->
+	<thing-type id="tx22">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="jeelinkTcp" />
+			<bridge-type-ref id="jeelinkUsb" />
+			<bridge-type-ref id="lgwTcp" />
+			<bridge-type-ref id="lgwUsb" />
+		</supported-bridge-type-refs>
+
+		<label>@text/thing-type.tx22.label</label>
+		<description>@text/thing-type.tx22.description</description>
+
+		<channels>
+			<channel id="temperature" typeId="temperature" />
+			<channel id="humidity" typeId="humidity" />
+			<channel id="batteryNew" typeId="battery-new" />
+			<channel id="batteryLow" typeId="system.low-battery" />
+			<channel id="pressure" typeId="pressure" />
+			<channel id="rain" typeId="rain" />
+			<channel id="windStrength" typeId="wind-strength" />
+			<channel id="windAngle" typeId="wind-angle" />
+			<channel id="gustStrength" typeId="wind-strength">
+				<label>@text/gust-strength.label</label>
+				<description>@text/gust-strength.description</description>
+			</channel>
+		</channels>
+
+		<config-description>
+			<parameter name="sensorId" type="text" required="true">
+				<label>@text/parameter.sensorid.label</label>
+				<description>@text/parameter.sensorid.description</description>
+			</parameter>
+			<parameter name="sensorTimeout" type="integer" required="false" min="5" max="3600" unit="s" step="5">
+				<label>@text/parameter.sensortimeout.label</label>
+				<description>@text/parameter.sensortimeout.description</description>
+				<default>600</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="wind-angle">
+		<item-type>Number:Angle</item-type>
+		<label>@text/channel-type.wind-angle.label</label>
+		<description>@text/channel-type.wind-angle.description</description>
+		<category>Wind</category>
+		<state min="0" max="360" step="1" readOnly="true" pattern="%d %unit%" />
+	</channel-type>
+
+	<channel-type id="wind-strength">
+		<item-type>Number:Speed</item-type>
+		<label>@text/channel-type.wind-strength.label</label>
+		<description>@text/channel-type.wind-strength.description</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="rain">
+		<item-type>Number:Length</item-type>
+		<label>@text/channel-type.rain.label</label>
+		<description>@text/channel-type.rain.description</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.2f %unit%" />
+	</channel-type>
+
+	<channel-type id="pressure">
+		<item-type>Number:Pressure</item-type>
+		<label>@text/channel-type.pressure.label</label>
+		<description>@text/channel-type.pressure.description</description>
+		<category>Pressure</category>
+		<state readOnly="true" pattern="%.3f %unit%" />
+	</channel-type>
 
 	<!-- Current Power Channel Type -->
 	<channel-type id="current-power">
