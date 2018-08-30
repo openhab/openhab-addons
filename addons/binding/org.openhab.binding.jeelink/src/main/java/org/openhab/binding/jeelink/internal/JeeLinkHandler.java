@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * @author Volker Bier - Initial contribution
  */
 public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, ConnectionListener {
-    private static final Pattern READING_P = Pattern.compile("^OK\\s+([0-9]+)(?:\\s+([0-9]+))+$");
+    private static final Pattern READING_P = Pattern.compile("^OK\\s+(WS|[0-9]+)(?:\\s+([0-9]+))+$");
 
     private final Logger logger = LoggerFactory.getLogger(JeeLinkHandler.class);
 
