@@ -29,7 +29,7 @@ public class EnOceanActuatorConfig extends EnOceanBaseConfig {
 
     public String getSendingEEPId() {
         if (sendingEEPId == null || sendingEEPId.isEmpty()) {
-            return super.getReceivingEEPId();
+            return eepId;
         }
 
         return sendingEEPId;

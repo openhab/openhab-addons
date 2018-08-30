@@ -6,8 +6,7 @@
 
 	<thing-type id="measurementSwitch">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="serialbridge" />
-			<bridge-type-ref id="tcpbridge" />
+			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
 		<label>D2-01 - Energy measurement switch</label>
@@ -27,10 +26,11 @@
 				<description>Time in seconds after a refresh is triggerd, 0 to disable</description>
 				<default>300</default>
 			</parameter>
-			<parameter name="eepId" type="text">
+			<parameter name="sendingEEPId" type="text">
 				<label>EEP for sending commands</label>
 				<options>
 					<option value="D2_01_09">Switching, dimming and energy measurement (EEP: D2_01_09)</option>
+					<option value="D2_01_09_PERMUNDO">Permundo PSC</option>
 					<option value="D2_01_0A">Switching, dimming and energy measurement (EEP: D2_01_0A)</option>
 					<option value="D2_01_0F">Switching (EEP: D2_01_0F)</option>
 					<option value="D2_01_0F_NODON">NodON SIN-2-1-00 (EEP: D2_01_0F)</option>
@@ -41,9 +41,29 @@
 				<required>true</required>
 			</parameter>
 			<parameter name="broadcastMessages" type="boolean">
-				<label>Send broadcast messages</label>
-				<default>false</default>
-			</parameter>
+                <label>Send broadcast messages</label>
+                <default>false</default>
+            </parameter>
+			<parameter name="receivingEEPId" type="text" multiple="true">
+                <label>EEP for receiving commands</label>
+                <options>
+                    <option value="D2_01_09">Switching, dimming and energy measurement (EEP: D2_01_09)</option>
+                    <option value="D2_01_09_PERMUNDO">Permundo PSC</option>
+                    <option value="D2_01_0A">Switching, dimming and energy measurement (EEP: D2_01_0A)</option>
+                    <option value="D2_01_0F">Switching (EEP: D2_01_0F)</option>
+                    <option value="D2_01_0F_NODON">NodON SIN-2-1-00 (EEP: D2_01_0F)</option>
+                    <option value="D2_01_12">Switching (EEP: D2_01_12)</option>
+                    <option value="D2_01_12_NODON">NodON SIN-2-2-0x (EEP: D2_01_12)</option>
+                    <option value="A5_12_01">AMR (EEP: A5_12_01)</option>
+                </options>
+                <multipleLimit>4</multipleLimit>
+                <limitToOptions>true</limitToOptions>
+                <required>true</required>
+            </parameter>
+			<parameter name="suppressRepeating" type="boolean">
+                <label>Suppress repeating of messages</label>
+                <default>false</default>
+            </parameter>
 		</config-description>
 
 	</thing-type>

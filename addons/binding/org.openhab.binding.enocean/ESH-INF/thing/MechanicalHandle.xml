@@ -7,8 +7,7 @@
 	<!-- MechanicalHandle -->
 	<thing-type id="mechanicalHandle">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="serialbridge" />
-			<bridge-type-ref id="tcpbridge" />
+			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
 		<label>F6-10 - Mechanical Handle</label>

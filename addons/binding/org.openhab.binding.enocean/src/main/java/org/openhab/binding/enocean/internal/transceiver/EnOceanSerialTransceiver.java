@@ -13,18 +13,19 @@ import java.util.TooManyListenersException;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.apache.commons.io.IOUtils;
+import org.eclipse.smarthome.io.transport.serial.PortInUseException;
+import org.eclipse.smarthome.io.transport.serial.SerialPort;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEventListener;
+import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
+import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
+import org.openhab.binding.enocean.EnOceanBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gnu.io.CommPort;
 import gnu.io.CommPortIdentifier;
-import gnu.io.NoSuchPortException;
-import gnu.io.PortInUseException;
 import gnu.io.RXTXCommDriver;
-import gnu.io.SerialPort;
-import gnu.io.SerialPortEvent;
-import gnu.io.SerialPortEventListener;
-import gnu.io.UnsupportedCommOperationException;
 
 /**
  *
@@ -34,42 +35,57 @@ public class EnOceanSerialTransceiver extends EnOceanTransceiver implements Seri
 
     protected String path;
     SerialPort serialPort;
+    gnu.io.SerialPort sp;
     private static final int ENOCEAN_DEFAULT_BAUD = 57600;
 
     private Logger logger = LoggerFactory.getLogger(EnOceanSerialTransceiver.class);
+    private SerialPortManager serialPortManager;
 
     public EnOceanSerialTransceiver(String path, TransceiverErrorListener errorListener,
-            ScheduledExecutorService scheduler) {
+            ScheduledExecutorService scheduler, SerialPortManager serialPortManager) {
         super(errorListener, scheduler);
         this.path = path;
+        this.serialPortManager = serialPortManager;
     }
 
     @Override
-    public void Initialize() throws UnsupportedCommOperationException, NoSuchPortException, PortInUseException,
-            IOException, TooManyListenersException {
-
-        CommPort commPort;
+    public void Initialize()
+            throws UnsupportedCommOperationException, PortInUseException, IOException, TooManyListenersException {
 
         // There is currently a bug in nrjavaserial (https://github.com/NeuronRobotics/nrjavaserial/pull/121) so
         // directly use RXTXCommDriver on windows os
-        if (System.getProperty("os.name").toLowerCase().indexOf("windows") != -1) {
-            RXTXCommDriver RXTXDriver = new RXTXCommDriver();
-            RXTXDriver.initialize();
-            commPort = RXTXDriver.getCommPort(path, CommPortIdentifier.PORT_SERIAL);
+        if (System.getProperty("os.name").toLowerCase().indexOf("windows") != -1
+                && path.toLowerCase().indexOf("com") != -1) {
+            try {
+                RXTXCommDriver RXTXDriver = new RXTXCommDriver();
+                RXTXDriver.initialize();
+                sp = (gnu.io.SerialPort) RXTXDriver.getCommPort(path, CommPortIdentifier.PORT_SERIAL);
+
+                sp.setSerialPortParams(ENOCEAN_DEFAULT_BAUD, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+                        SerialPort.PARITY_NONE);
+                sp.enableReceiveThreshold(1);
+                sp.enableReceiveTimeout(100); // In ms. Small values mean faster shutdown but more cpu usage.
+
+                inputStream = sp.getInputStream();
+                outputStream = sp.getOutputStream();
+            } catch (gnu.io.UnsupportedCommOperationException e) {
+                throw new UnsupportedCommOperationException(e);
+            }
         } else {
-            CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(path);
-            commPort = portIdentifier.open(this.getClass().getName(), 2000);
+            SerialPortIdentifier id = serialPortManager.getIdentifier(path);
+            if (id == null) {
+                throw new IOException("Could not find a gateway on given path");
+            }
+
+            serialPort = id.open(EnOceanBindingConstants.BINDING_ID, 1000);
+            serialPort.setSerialPortParams(ENOCEAN_DEFAULT_BAUD, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+                    SerialPort.PARITY_NONE);
+            serialPort.enableReceiveThreshold(1);
+            serialPort.enableReceiveTimeout(100); // In ms. Small values mean faster shutdown but more cpu usage.
+
+            inputStream = serialPort.getInputStream();
+            outputStream = serialPort.getOutputStream();
         }
-
-        serialPort = (SerialPort) commPort;
-        serialPort.setSerialPortParams(ENOCEAN_DEFAULT_BAUD, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
-                SerialPort.PARITY_NONE);
-        serialPort.enableReceiveThreshold(1);
-        serialPort.enableReceiveTimeout(100); // In ms. Small values mean faster shutdown but more cpu usage.
-
-        inputStream = serialPort.getInputStream();
-        outputStream = serialPort.getOutputStream();
-
         logger.info("EnOceanSerialTransceiver initialized");
     }
 
@@ -93,6 +109,12 @@ public class EnOceanSerialTransceiver extends EnOceanTransceiver implements Seri
             serialPort.close();
         }
 
+        if (sp != null) {
+            logger.debug("Closing serial port");
+            sp.close();
+        }
+
+        sp = null;
         serialPort = null;
         outputStream = null;
         inputStream = null;

@@ -13,7 +13,7 @@ import static org.openhab.binding.enocean.EnOceanBindingConstants.*;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
-import org.eclipse.smarthome.core.library.types.UpDownType;
+import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -52,11 +52,10 @@ public class PTM200Message extends _RPSMessage {
         }
 
         switch (channelId) {
-            case CHANNEL_LIGHT_SWITCHING:
             case CHANNEL_GENERAL_SWITCHING:
                 return bytes[0] == On ? OnOffType.ON : OnOffType.OFF;
             case CHANNEL_ROLLERSHUTTER:
-                return bytes[0] == Up ? UpDownType.UP : (bytes[0] == Down ? UpDownType.DOWN : UnDefType.UNDEF);
+                return bytes[0] == Up ? PercentType.ZERO : (bytes[0] == Down ? PercentType.HUNDRED : UnDefType.UNDEF);
             case CHANNEL_CONTACT:
                 return bytes[0] == Open ? OpenClosedType.OPEN
                         : (bytes[0] == Closed ? OpenClosedType.CLOSED : UnDefType.UNDEF);

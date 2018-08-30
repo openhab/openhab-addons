@@ -10,7 +10,9 @@ package org.openhab.binding.enocean.profiles;
 
 import static org.openhab.binding.enocean.EnOceanBindingConstants.*;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -30,8 +32,6 @@ import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeRegistry;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  *
@@ -90,8 +90,8 @@ public class EnOceanProfileFactory implements ProfileFactory, ProfileAdvisor, Pr
 
     @Override
     public Collection<@NonNull ProfileType> getProfileTypes(@Nullable Locale locale) {
-        return ImmutableSet.of(EnOceanProfileTypes.RockerSwitchToPlayPauseType,
-                EnOceanProfileTypes.RockerSwitchFromOnOffType);
+        return new HashSet<ProfileType>(Arrays.asList(EnOceanProfileTypes.RockerSwitchToPlayPauseType,
+                EnOceanProfileTypes.RockerSwitchFromOnOffType));
     }
 
     @Reference

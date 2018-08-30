@@ -8,8 +8,10 @@
  */
 package org.openhab.binding.enocean;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -20,8 +22,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.profiles.ProfileTypeUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.openhab.binding.enocean.profiles.EnOceanProfileTypes;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * The {@link EnOceanBinding} class defines common constants, which are
@@ -34,8 +34,7 @@ public class EnOceanBindingConstants {
     public static final String BINDING_ID = "enocean";
 
     // bridge
-    public final static ThingTypeUID THING_TYPE_SERIALBRIDGE = new ThingTypeUID(BINDING_ID, "serialbridge");
-    public final static ThingTypeUID THING_TYPE_TCPBRIDGE = new ThingTypeUID(BINDING_ID, "tcpbridge");
+    public final static ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
 
     // List of all Thing Type UIDs
     public final static ThingTypeUID THING_TYPE_PUSHBUTTON = new ThingTypeUID(BINDING_ID, "pushButton");
@@ -46,28 +45,28 @@ public class EnOceanBindingConstants {
     public final static ThingTypeUID THING_TYPE_CENTRALCOMMAND = new ThingTypeUID(BINDING_ID, "centralCommand");
     public final static ThingTypeUID THING_TYPE_ROOMOPERATINGPANEL = new ThingTypeUID(BINDING_ID, "roomOperatingPanel");
     public final static ThingTypeUID THING_TYPE_MECHANICALHANDLE = new ThingTypeUID(BINDING_ID, "mechanicalHandle");
-    public final static ThingTypeUID THING_TYPE_CONTACTANDSWITCH = new ThingTypeUID(BINDING_ID, "contactSwitch");
+    public final static ThingTypeUID THING_TYPE_CONTACT = new ThingTypeUID(BINDING_ID, "contact");
     public final static ThingTypeUID THING_TYPE_MEASUREMENTSWITCH = new ThingTypeUID(BINDING_ID, "measurementSwitch");
     public final static ThingTypeUID THING_TYPE_TEMPERATURESENSOR = new ThingTypeUID(BINDING_ID, "temperatureSensor");
     public final static ThingTypeUID THING_TYPE_HUMIDITYTEMPERATURESENSOR = new ThingTypeUID(BINDING_ID,
             "humidityTemperatureSensor");
+    public final static ThingTypeUID THING_TYPE_AUTOMATEDMETERSENSOR = new ThingTypeUID(BINDING_ID,
+            "automatedMeterSensor");
     public final static ThingTypeUID THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR = new ThingTypeUID(BINDING_ID,
             "lightTemperatureOccupancySensor");
     public final static ThingTypeUID THING_TYPE_GENERICTHING = new ThingTypeUID(BINDING_ID, "genericThing");
-    // public final static ThingTypeUID THING_TYPE_ELTAKOFSB = new ThingTypeUID(BINDING_ID, "eltakoFSB");
     public final static ThingTypeUID THING_TYPE_ROLLERSHUTTER = new ThingTypeUID(BINDING_ID, "rollershutter");
 
-    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_PUSHBUTTON,
-            THING_TYPE_ROCKERSWITCH, THING_TYPE_VIRTUALROCKERSWITCH, THING_TYPE_CENTRALCOMMAND,
-            THING_TYPE_ROOMOPERATINGPANEL, THING_TYPE_MECHANICALHANDLE, THING_TYPE_CONTACTANDSWITCH,
+    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(Arrays.asList(
+            THING_TYPE_PUSHBUTTON, THING_TYPE_ROCKERSWITCH, THING_TYPE_VIRTUALROCKERSWITCH, THING_TYPE_CENTRALCOMMAND,
+            THING_TYPE_ROOMOPERATINGPANEL, THING_TYPE_MECHANICALHANDLE, THING_TYPE_CONTACT,
             THING_TYPE_MEASUREMENTSWITCH, THING_TYPE_TEMPERATURESENSOR, THING_TYPE_HUMIDITYTEMPERATURESENSOR,
-            THING_TYPE_GENERICTHING, THING_TYPE_ROLLERSHUTTER, THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR);
+            THING_TYPE_GENERICTHING, THING_TYPE_ROLLERSHUTTER, THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR));
 
     // List of all Channel Type Ids, these type ids are also used as channel ids during dynamic creation of channels
-    // this makes things easier as we do not have to manage a type id and an id, drawback long channel names
+    // this makes it a lot easier as we do not have to manage a type id and an id, drawback long channel names
     public final static String CHANNEL_REPEATERMODE = "repeaterMode";
     public final static String CHANNEL_SETBASEID = "setBaseId";
-    public final static String CHANNEL_LIGHT_SWITCHING = "lightSwitch";
     public final static String CHANNEL_GENERAL_SWITCHING = "generalSwitch";
 
     public final static String CHANNEL_GENERAL_SWITCHINGA = "generalSwitchA"; // used for D2-01-12 EEP
@@ -100,10 +99,11 @@ public class EnOceanBindingConstants {
     public final static String CHANNEL_DELAYRADIOOFF = "delayRadioOFF";
     public final static String CHANNEL_EXTERNALINTERFACEMODE = "externalInterfaceMode";
     public final static String CHANNEL_TWOSTATESWITCH = "twoStateSwitch";
+    public final static String CHANNEL_ECOMODE = "ecoMode";
 
     public final static String CHANNEL_RECEIVINGSTATE = "receivingState";
 
-    public final static String CHANNEL_GENERIC_LIGHT_SWITCHING = "genericLightSwitch";
+    public final static String CHANNEL_GENERIC_SWITCH = "genericSwitch";
     public final static String CHANNEL_GENERIC_ROLLERSHUTTER = "genericRollershutter";
     public final static String CHANNEL_GENERIC_DIMMER = "genericDimmer";
     public final static String CHANNEL_GENERIC_NUMBER = "genericNumber";
@@ -119,8 +119,6 @@ public class EnOceanBindingConstants {
                 private static final long serialVersionUID = 1L;
 
                 {
-                    put(CHANNEL_LIGHT_SWITCHING, new ChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_LIGHT_SWITCHING), CoreItemFactory.SWITCH));
                     put(CHANNEL_GENERAL_SWITCHING, new ChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_GENERAL_SWITCHING), CoreItemFactory.SWITCH));
 
@@ -181,12 +179,14 @@ public class EnOceanBindingConstants {
                             new ChannelTypeUID(BINDING_ID, CHANNEL_EXTERNALINTERFACEMODE), CoreItemFactory.STRING));
                     put(CHANNEL_TWOSTATESWITCH, new ChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_TWOSTATESWITCH), CoreItemFactory.SWITCH));
+                    put(CHANNEL_ECOMODE, new ChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_ECOMODE),
+                            CoreItemFactory.SWITCH));
 
                     put(CHANNEL_RECEIVINGSTATE, new ChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_RECEIVINGSTATE), CoreItemFactory.STRING));
 
-                    put(CHANNEL_GENERIC_LIGHT_SWITCHING, new ChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_GENERIC_LIGHT_SWITCHING), CoreItemFactory.SWITCH));
+                    put(CHANNEL_GENERIC_SWITCH, new ChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_GENERIC_SWITCH), CoreItemFactory.SWITCH));
                     put(CHANNEL_GENERIC_ROLLERSHUTTER,
                             new ChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_GENERIC_ROLLERSHUTTER),
                                     CoreItemFactory.ROLLERSHUTTER));
@@ -215,10 +215,10 @@ public class EnOceanBindingConstants {
 
     // Bridge config properties
     public static final String SENDERID = "senderId";
-    public static final String PORT = "port";
+    public static final String PATH = "path";
     public static final String HOST = "host";
     public static final String RS485 = "rs485";
-    public static final String NEXTDEVICEID = "nextDeviceId";
+    public static final String NEXTSENDERID = "nextSenderId";
 
     // Bridge properties
     @NonNull
@@ -239,9 +239,8 @@ public class EnOceanBindingConstants {
 
     // Thing config parameter
     public static final String PARAMETER_SENDERIDOFFSET = "senderIdOffset";
-    public static final String PARAMETER_RECEIVINGEEPID = "receivingEEPId"; // this parameter is set in case of using a
-                                                                            // different eep for receiving messages than
-                                                                            // for sending
+    public static final String PARAMETER_SENDINGEEPID = "sendingEEPId";
+    public static final String PARAMETER_RECEIVINGEEPID = "receivingEEPId";
     @NonNull
     public static final String PARAMETER_EEPID = "eepId";
 
@@ -251,11 +250,12 @@ public class EnOceanBindingConstants {
     public static final String PARAMETER_CHANNEL_TeachInMSG = "teachInMSG";
 
     @NonNull
-    public static final Set<ProfileTypeUID> SUPPORTED_PROFILETYPES_UIDS = ImmutableSet
-            .of(EnOceanProfileTypes.RockerSwitchToPlayPause, EnOceanProfileTypes.RockerSwitchFromOnOff);
+    public static final Set<ProfileTypeUID> SUPPORTED_PROFILETYPES_UIDS = new HashSet<ProfileTypeUID>(
+            Arrays.asList(EnOceanProfileTypes.RockerSwitchToPlayPause, EnOceanProfileTypes.RockerSwitchFromOnOff));
 
     // Manufacturer Ids - used to recognize special EEPs during auto discovery
     public static final int EltakoId = 0x00d;
     public static final int NodONId = 0x046; // NodOn devices are designed by ID-RF hence use their ID
+    public static final int PermundoId = 0x033;
 
 }

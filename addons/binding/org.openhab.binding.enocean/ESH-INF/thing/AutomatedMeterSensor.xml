@@ -4,23 +4,21 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="contactSwitch">
+	<thing-type id="automatedMeterSensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="serialbridge" />
-			<bridge-type-ref id="tcpbridge" />
+			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>D5-00 - Single input contact</label>
-		<description>Single input contact which sends EEP D5-00-01</description>
+		<label>A5-12 - Automated meter sensor</label>
+		<description>Sensor for different meters like energy measurement (EEP: A5-12)</description>
 
 		<config-description>
 			<parameter name="receivingEEPId" type="text">
 				<label>EEP</label>
-				<description>EEP which is used by contact</description>
+				<description>EEP which is used by panel</description>
 				<options>
-					<option value="D5_00_01">D5-00-01 single input</option>
+					<option value="A5_12_01">A5-12-01 temperature sensor, set point, fan speed and occupancy control</option>					
 				</options>
-				<default>D5_00_01</default>
 				<limitToOptions>true</limitToOptions>
 				<required>true</required>
 			</parameter>

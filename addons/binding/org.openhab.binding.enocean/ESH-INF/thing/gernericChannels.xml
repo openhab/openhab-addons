@@ -5,19 +5,7 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Light Switch Channel with transformation configuration -->
-	<channel-type id="genericLightSwitch">
-		<item-type>Switch</item-type>
-		<label>Switch</label>
-		<description>The switch channel allows to switch the light on and off.</description>
-		<category>Light</category>
-		<tags>
-			<tag>Lighting</tag>
-		</tags>
-		<config-description-ref uri="enocean:genericChannel:config" />
-	</channel-type>
-
-	<!-- General Switch Channel with transformation configuration -->
-	<channel-type id="genericGeneralSwitch">
+	<channel-type id="genericSwitch">
 		<item-type>Switch</item-type>
 		<label>Switch</label>
 		<description>The switch channel allows to switch something on and off.</description>

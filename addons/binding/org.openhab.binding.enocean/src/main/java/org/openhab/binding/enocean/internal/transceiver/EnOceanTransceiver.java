@@ -21,6 +21,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.util.HexUtils;
+import org.eclipse.smarthome.io.transport.serial.PortInUseException;
+import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
 import org.openhab.binding.enocean.internal.EnOceanException;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.binding.enocean.internal.messages.ESP3Packet;
@@ -29,10 +31,6 @@ import org.openhab.binding.enocean.internal.messages.ESP3PacketFactory;
 import org.openhab.binding.enocean.internal.messages.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gnu.io.NoSuchPortException;
-import gnu.io.PortInUseException;
-import gnu.io.UnsupportedCommOperationException;
 
 /**
  *
@@ -146,8 +144,8 @@ public abstract class EnOceanTransceiver {
         this.errorListener = errorListener;
     }
 
-    public abstract void Initialize() throws UnsupportedCommOperationException, NoSuchPortException, PortInUseException,
-            IOException, TooManyListenersException;
+    public abstract void Initialize()
+            throws UnsupportedCommOperationException, PortInUseException, IOException, TooManyListenersException;
 
     public void StartReceiving(ScheduledExecutorService scheduler) {
 

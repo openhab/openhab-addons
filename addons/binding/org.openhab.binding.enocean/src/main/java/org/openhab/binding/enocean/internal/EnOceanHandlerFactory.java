@@ -12,7 +12,10 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -21,6 +24,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.enocean.EnOceanBindingConstants;
 import org.openhab.binding.enocean.handler.EnOceanBaseActuatorHandler;
 import org.openhab.binding.enocean.handler.EnOceanBaseSensorHandler;
@@ -29,8 +33,7 @@ import org.openhab.binding.enocean.internal.discovery.EnOceanDeviceDiscoveryServ
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
-
-import com.google.common.collect.Sets;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link EnOceanHandlerFactory} is responsible for creating things and thing
@@ -41,10 +44,14 @@ import com.google.common.collect.Sets;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.enocean", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class EnOceanHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.union(
-            EnOceanBridgeHandler.SUPPORTED_THING_TYPES, EnOceanBindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS);
+    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
+            .concat(EnOceanBridgeHandler.SUPPORTED_THING_TYPES.stream(),
+                    EnOceanBindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS.stream())
+            .collect(Collectors.toSet());
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+
+    private @NonNullByDefault({}) SerialPortManager serialPortManager;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -57,7 +64,11 @@ public class EnOceanHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (EnOceanBridgeHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            EnOceanBridgeHandler bridgeHandler = new EnOceanBridgeHandler((Bridge) thing);
+            if (serialPortManager == null) {
+                return null;
+            }
+
+            EnOceanBridgeHandler bridgeHandler = new EnOceanBridgeHandler((Bridge) thing, serialPortManager);
             registerDeviceDiscoveryService(bridgeHandler);
             return bridgeHandler;
         } else if (EnOceanBaseActuatorHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
@@ -85,5 +96,14 @@ public class EnOceanHandlerFactory extends BaseThingHandlerFactory {
         discoveryService.activate();
         this.discoveryServiceRegs.put(handler.getThing().getUID(), bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+    }
+
+    @Reference
+    protected void setSerialPortManager(SerialPortManager serialPortManager) {
+        this.serialPortManager = serialPortManager;
+    }
+
+    protected void unsetSerialPortManager(SerialPortManager serialPortManager) {
+        this.serialPortManager = null;
     }
 }

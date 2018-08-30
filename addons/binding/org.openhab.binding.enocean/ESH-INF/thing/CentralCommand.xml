@@ -6,16 +6,12 @@
 
 	<thing-type id="centralCommand">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="serialbridge" />
-			<bridge-type-ref id="tcpbridge" />
+			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
 		<label>A5-38 - Central command</label>
 		<description>Send a command to an actor by using A5-38 EEP</description>
 
-		<properties>
-			<property name="enoceanId" />
-		</properties>
 		<config-description>
 			<parameter name="senderIdOffset" type="integer">
 				<label>Sender Id</label>

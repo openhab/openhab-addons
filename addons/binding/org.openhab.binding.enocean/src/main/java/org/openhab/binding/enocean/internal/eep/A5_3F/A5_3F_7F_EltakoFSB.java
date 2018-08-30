@@ -18,7 +18,6 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelRollershutterConfig;
 import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
-import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
 
 /**
  *
@@ -85,40 +84,21 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
     @Override
     protected State convertToStateImpl(String channelId, State currentState, Configuration config) {
 
-        if (packet != null) {
-            if (packet.getRORG() == RORG.RPS) {
-                if (bytes[0] == Up) {
-                    return PercentType.ZERO;
-                } else if (bytes[0] == Down) {
-                    return PercentType.HUNDRED;
-                }
+        if (currentState != null) {
+            int direction = getDB_1() == MoveUp ? -1 : 1;
+            int duration = ((getDB_3Value() << 8) + getDB_2Value()) / 10; // => Time in DB3 and DB2 is given
+                                                                          // in ms
 
-            } else if (packet.getRORG() == RORG._4BS && currentState != null) {
-                int direction = getDB_1() == MoveUp ? -1 : 1;
-                int duration = ((getDB_3Value() << 8) + getDB_2Value()) / 10; // => Time in DB3 and DB2 is given
-                                                                              // in ms
-
-                PercentType current = currentState.as(PercentType.class);
-                if (config != null && current != null) {
-                    EnOceanChannelRollershutterConfig c = config.as(EnOceanChannelRollershutterConfig.class);
-                    if (c.shutTime != -1) {
-                        return new PercentType(Math.min(100, (Math.max(0, current.intValue()
-                                + direction * ((duration * PercentType.HUNDRED.intValue()) / c.shutTime)))));
-                    }
+            PercentType current = currentState.as(PercentType.class);
+            if (config != null && current != null) {
+                EnOceanChannelRollershutterConfig c = config.as(EnOceanChannelRollershutterConfig.class);
+                if (c.shutTime != -1 && c.shutTime != 0) {
+                    return new PercentType(Math.min(100, (Math.max(0, current.intValue()
+                            + direction * ((duration * PercentType.HUNDRED.intValue()) / c.shutTime)))));
                 }
             }
         }
 
         return UnDefType.UNDEF;
-
-    }
-
-    @Override
-    protected int getDataLength() {
-        if (packet == null || packet.getRORG() == RORG._4BS) {
-            return super.getDataLength();
-        }
-
-        return packet.getRORG().getDataLength();
     }
 }

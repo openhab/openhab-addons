@@ -13,7 +13,6 @@ Export-Package:
  org.openhab.binding.enocean.handler,
  org.openhab.binding.enocean.profiles
 Import-Package: 
- com.google.common.collect,
  gnu.io,
  javax.measure.quantity,
  org.apache.commons.io,
@@ -34,13 +33,14 @@ Import-Package:
  org.eclipse.smarthome.core.transform,
  org.eclipse.smarthome.core.transform.actions,
  org.eclipse.smarthome.core.types,
- org.junit;version="4.0.0";resolution:=optional,
  org.eclipse.smarthome.core.util,
  org.eclipse.smarthome.model.script.engine.action,
  org.openhab.binding.enocean,
  org.openhab.binding.enocean.handler,
  org.openhab.binding.enocean.profiles,
  org.osgi.framework,
- org.osgi.service.component.annotations;resolution:=optional,
- org.slf4j
-Service-Component: OSGI-INF/*.xml
+ org.slf4j,
+ org.eclipse.smarthome.io.transport.serial,
+ org.eclipse.smarthome.io.transport.serial.rxtx
+Service-Component: OSGI-INF/*.xml 
+Require-Capability: osgi.service;objectClass:List<String>="org.eclipse.smarthome.io.transport.serial.SerialPortManager"

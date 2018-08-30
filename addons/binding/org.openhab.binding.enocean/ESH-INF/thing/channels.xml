@@ -24,17 +24,6 @@
 		<description>Set base id of EnOcean gateway. Use this with care! Must be between 0xFF800000 and 0xFFFFFF80</description>
 	</channel-type>
 
-	<!-- Light Switch Channel -->
-	<channel-type id="lightSwitch">
-		<item-type>Switch</item-type>
-		<label>Switch</label>
-		<description>The switch channel allows to switch the light on and off.</description>
-		<category>Light</category>
-		<tags>
-			<tag>Lighting</tag>
-		</tags>
-	</channel-type>
-
 	<!-- General Switch Channel -->
 	<channel-type id="generalSwitch">
 		<item-type>Switch</item-type>
@@ -90,14 +79,6 @@
 	</channel-type>
 
 	<channel-type id="humidity">
-		<item-type>Number</item-type>
-		<label>Humidity</label>
-		<description>Relative humidity level in percentages</description>
-		<category>Humidity</category>
-		<state min="0" max="100" step="1" pattern="%d %%" readOnly="true" />
-	</channel-type>
-
-	<channel-type id="barometer">
 		<item-type>Number</item-type>
 		<label>Humidity</label>
 		<description>Relative humidity level in percentages</description>
@@ -264,5 +245,11 @@
 		<description>Switch state according to specific on/off positions (otherwise toggle)</description>
 		<category>Switch</category>
 	</channel-type>
+	
+	<channel-type id="ecoMode">
+        <item-type>Switch</item-type>
+        <label>Eco mode</label>
+        <description>Activates eco mode (disables certain messages)</description>
+    </channel-type>
 
 </thing:thing-descriptions>
