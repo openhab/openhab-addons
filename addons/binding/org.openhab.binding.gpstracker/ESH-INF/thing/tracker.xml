@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="gpstracker"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<!-- Thing Types -->
+	<thing-type id="tracker">
+		<label>Tracker Device</label>
+		<description>Device running tracker application</description>
+		<channels>
+			<channel id="lastReport" typeId="lastReport"/>
+			<channel id="location" typeId="location"/>
+			<channel id="batteryLevel" typeId="batteryLevel"/>
+		</channels>
+		<config-description-ref uri="thing-type:gpstracker:tracker"/>
+	</thing-type>
+	<!-- Channel Types -->
+	<channel-type id="lastReport">
+		<item-type>Date</item-type>
+		<label>Last seen</label>
+		<description>Last report timestamp</description>
+		<state pattern="%1$tF %1$tR" readOnly="true"/>
+	</channel-type>
+	<channel-type id="location">
+		<item-type>Location</item-type>
+		<label>Location</label>
+		<description>Tracker location</description>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+	<channel-type id="batteryLevel">
+		<item-type>Number</item-type>
+		<label>Tracker battery level [%]</label>
+		<description>Battery level in percent</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+	<channel-type id="distance">
+		<item-type>Number</item-type>
+		<label>Distance</label>
+		<description>Distance from primary location</description>
+		<state pattern="%.2f" readOnly="true"/>
+	</channel-type>
+	<channel-type id="regionPresence">
+		<item-type>Switch</item-type>
+		<label>Region switch</label>
+		<description>ON in case the tracker is at specific location, OFF otherwise. This channel is added to the thing at
+		runtime is the region is configured to have a switch for region presence instead of using triggers.</description>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+	<channel-type id="regionEnterTrigger">
+		<kind>trigger</kind>
+		<label>Region enter trigger channel</label>
+		<description>Trigger channel for entering regions. Payload is the region name. It will be
+		created dynamically at runtime if at least one region configured for tracker (centrally or tracker level configuration)
+		requires a trigger to be fired when entering the region.</description>
+		<event/>
+	</channel-type>
+	<channel-type id="regionLeaveTrigger">
+		<kind>trigger</kind>
+		<label>Region leave trigger channel</label>
+		<description>Trigger channel for leaving regions. Payload is the region name. It will be
+			created dynamically at runtime if at least one region configured for tracker (central or tracker level configuration)
+			requires a trigger to be fired when leaving the region.</description>
+		<event/>
+	</channel-type>
+</thing:thing-descriptions>
