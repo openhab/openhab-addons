@@ -19,8 +19,8 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalTime;
 import java.util.Hashtable;
 
+import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
 import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.STATUS;
-import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.VERSION;
 
 /**
  * The {@link SomfyTahomaGatewayHandler} is responsible for handling commands,
@@ -58,10 +58,10 @@ public class SomfyTahomaGatewayHandler extends SomfyTahomaBaseThingHandler {
     public void updateChannelState(ChannelUID channelUID) {
         if (isStatusExpired()) {
             String id = getThing().getConfiguration().get("id").toString();
-            if (channelUID.getId().equals(VERSION)) {
-                updateState(channelUID, new StringType(getTahomaVersion(id)));
-            } else if (channelUID.getId().equals(STATUS)) {
+            if (channelUID.getId().equals(STATUS)) {
                 updateState(channelUID, new StringType(getTahomaStatus(id)));
+                //update the firmware property
+                updateProperty(PROPERTY_FIRMWARE_VERSION, getTahomaVersion(id));
             }
             lastUpdated = LocalTime.now();
         }

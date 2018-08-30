@@ -151,7 +151,7 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
 
     private synchronized void registerItemDiscoveryService(SomfyTahomaBridgeHandler bridgeHandler) {
         SomfyTahomaItemDiscoveryService discoveryService = new SomfyTahomaItemDiscoveryService(bridgeHandler);
-        discoveryService.activate();
+        discoveryService.activate(null);
         this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
 

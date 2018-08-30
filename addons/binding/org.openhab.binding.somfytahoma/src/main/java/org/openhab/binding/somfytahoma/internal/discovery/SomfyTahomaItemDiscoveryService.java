@@ -8,17 +8,19 @@
  */
 package org.openhab.binding.somfytahoma.internal.discovery;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
 import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
-import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.somfytahoma.handler.SomfyTahomaBaseThingHandler;
 import org.openhab.binding.somfytahoma.handler.SomfyTahomaBridgeHandler;
 import org.openhab.binding.somfytahoma.internal.model.*;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +45,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
 
 
     private static final int DISCOVERY_TIMEOUT_SEC = 10;
-    private static final int DISCOVERY_REFRESH_SEC = 30;
+    private static final int DISCOVERY_REFRESH_SEC = 1800;
 
     public SomfyTahomaItemDiscoveryService(SomfyTahomaBridgeHandler bridgeHandler) {
         super(DISCOVERY_TIMEOUT_SEC);
@@ -54,11 +56,14 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
     /**
      * Called on component activation.
      */
-    public void activate() {
-        super.activate(new HashMap<>());
+    @Override
+    @Activate
+    public void activate(@Nullable Map<@NonNull String, @Nullable Object> configProperties) {
+        super.activate(configProperties);
     }
 
     @Override
+    @Deactivate
     public void deactivate() {
         super.deactivate();
     }
@@ -74,7 +79,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
 
         if (discoveryJob == null || discoveryJob.isCancelled()) {
             discoveryJob = scheduler.scheduleWithFixedDelay(this::runDiscovery, 10, DISCOVERY_REFRESH_SEC,
-                    TimeUnit.MINUTES);
+                    TimeUnit.SECONDS);
         }
 
     }
@@ -86,11 +91,6 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
             discoveryJob.cancel(true);
             discoveryJob = null;
         }
-    }
-
-    @Override
-    public boolean isBackgroundDiscoveryEnabled() {
-        return true;
     }
 
     @Override
@@ -209,8 +209,9 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
             case PROTOCOLGATEWAY:
                 break;
             default:
-                logger.warn("Detected a new unsupported device: {}", device.getUiClass());
-                logger.warn("Supported commands: {}", device.getDefinition().toString());
+                logger.info("Detected a new unsupported device: {}", device.getUiClass());
+                logger.info("If you want to add the support, please create a new issue and attach the information below");
+                logger.info("Supported commands: {}", device.getDefinition().toString());
 
                 StringBuilder sb = new StringBuilder().append('\n');
                 for (SomfyTahomaState state : device.getStates()) {

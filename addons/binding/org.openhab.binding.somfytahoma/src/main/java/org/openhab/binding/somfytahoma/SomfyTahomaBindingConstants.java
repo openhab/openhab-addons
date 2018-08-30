@@ -96,7 +96,6 @@ public class SomfyTahomaBindingConstants {
 
     // List of all Channel ids
     // Gateway
-    public static final String VERSION = "version";
     public static final String STATUS = "status";
 
     // Roller shutter, Awning, Screen, Blind, Garage door, Window

@@ -4,47 +4,47 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<channel-type id="control_silent">
-		<item-type>Rollershuter</item-type>
-		<label>Somfy Device Control - silent mode</label>
+		<item-type>Rollershutter</item-type>
+		<label>Control (silent)</label>
 		<description>Device control (UP, DOWN, MY/STOP, closure 0-100%) (only for IO devices)</description>
 	</channel-type>
 
 	<channel-type id="control">
 		<item-type>Rollershutter</item-type>
-		<label>Somfy Device Control</label>
+		<label>Control</label>
 		<description>Device control (UP, DOWN, MY/STOP, closure 0-100%)</description>
 	</channel-type>
 
 	<channel-type id="orientation">
 		<item-type>Dimmer</item-type>
-		<label>Somfy Device Orientation</label>
+		<label>Orientation</label>
 		<description>Orientation of the device slats</description>
 		<state max="100" min="0" step="1" pattern="%d %%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="switch">
 		<item-type>Switch</item-type>
-		<label>Somfy Switch</label>
+		<label>Switch</label>
 		<description>An ON/OFF switch (zwave/enocean/rts)</description>
 	</channel-type>
 
 	<channel-type id="contact">
 		<item-type>Contact</item-type>
-		<label>Somfy Contact</label>
+		<label>Contact</label>
 		<description>A contact having OPEN/CLOSE state</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="luminance">
-		<item-type>Number</item-type>
-		<label>Somfy Light Sensor Luminance</label>
+		<item-type>Number:Illuminance</item-type>
+		<label>Luminance</label>
 		<description>A light sensor luminance in lux</description>
-		<state readOnly="true" pattern="%.1f lux"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="alarm_command">
 		<item-type>String</item-type>
-		<label>Somfy Command</label>
+		<label>Command</label>
 		<description>A channel used for sending commands to Somfy Alarm device</description>
 		<state>
 			<options>
@@ -58,7 +58,7 @@
 
 	<channel-type id="intrusion_control">
 		<item-type>String</item-type>
-		<label>Somfy Intrusion Control</label>
+		<label>Intrusion Control</label>
 		<description>A channel used for Alarm external intrusion controlling</description>
 		<state>
 			<options>
@@ -72,70 +72,70 @@
 
 	<channel-type id="alarm_state">
 		<item-type>String</item-type>
-		<label>Somfy Alarm State</label>
+		<label>Alarm State</label>
 		<description>A state of the Somfy Alarm</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="active_zones_state">
 		<item-type>String</item-type>
-		<label>Somfy Active Zones State</label>
+		<label>Active Zones State</label>
 		<description>Active Zones State</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="intrusion_state">
 		<item-type>String</item-type>
-		<label>Somfy Alarm Intrusion State</label>
+		<label>Alarm Intrusion State</label>
 		<description>An intrusion state of the Somfy Alarm</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="cyclic_button_state">
 		<item-type>String</item-type>
-		<label>Somfy Cyclic Button State</label>
+		<label>Cyclic Button State</label>
 		<description>Cyclic Button State</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="battery_status_state">
 		<item-type>String</item-type>
-		<label>Somfy Battery Status State</label>
+		<label>Battery Status State</label>
 		<description>Battery Status State</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="lighting_led_pod_mod_state">
 		<item-type>Number</item-type>
-		<label>Somfy Lighting Led Pod Mod State</label>
+		<label>Lighting Led Pod Mod State</label>
 		<description>Lighting Led Pod Mod State</description>
 		<state pattern="%.2f" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="current_temperature">
 		<item-type>Number:Temperature</item-type>
-		<label>Somfy Current Temperature</label>
+		<label>Current Temperature</label>
 		<description>The current temperature of the heating system</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="current_state">
 		<item-type>String</item-type>
-		<label>Somfy Heating System Current State</label>
+		<label>Heating System Current State</label>
 		<description>A channel used for getting the heating state</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="target_temperature">
 		<item-type>Number:Temperature</item-type>
-		<label>Somfy Target Temperature</label>
+		<label>Target Temperature</label>
 		<description>The target temperature of the heating system</description>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="target_heating_level">
 		<item-type>String</item-type>
-		<label>Somfy Target Heating Level</label>
+		<label>Target Heating Level</label>
 		<description>A channel used for getting/setting the target heating level (on/off, frostprotection, confort, eco)</description>
 		<state>
 			<options>
@@ -149,13 +149,13 @@
 
 	<channel-type id="open">
 		<item-type>Switch</item-type>
-		<label>Somfy Open/Close</label>
+		<label>Open/Close</label>
 		<description>A channel for controlling door OPEN/CLOSE state</description>
 	</channel-type>
 
 	<channel-type id="lock">
 		<item-type>Switch</item-type>
-		<label>Somfy Lock</label>
+		<label>Lock</label>
 		<description>A lock having ON/OFF state (unlocked/locked)</description>
 	</channel-type>
 

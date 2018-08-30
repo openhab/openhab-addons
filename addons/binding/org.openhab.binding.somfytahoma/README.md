@@ -4,10 +4,10 @@ This binding integrates the [Somfy Tahoma](https://www.somfy.fr/produits/domotiq
 
 ## Supported Things
 
-Currently supports these things
+ Currently these things are supported:
 
 - bridge (Somfy Tahoma bridge, which can discover gateways, roller shutters, awnings, switches and action groups)
-- gateways (Somfy Tahoma gateway - getting firmware version)
+- gateways (Somfy Tahoma gateway - gateway status)
 - roller shutters (UP, DOWN, STOP control of a roller shutter). IO Homecontrol devices are allowed to set exact position of a shutter (0-100%)
 - blinds (UP, DOWN, STOP control of a blind). IO Homecontrol devices are allowed to set exact position of a blinds (0-100%) as well as orientation of slats (0-100%)
 - screens (UP, DOWN, STOP control of a screen). IO Homecontrol devices are allowed to set exact position of a screen (0-100%)
@@ -52,7 +52,6 @@ Please see the example below.
 | Thing         | Channel      | Note  |
 | ------------- |:-------------:| -----:|
 | bridge        | N.A |  bridge does not expose any channel |
-| gateway       | version | firmware version of your Tahoma gateway |
 | gateway       | status  | status of your Tahoma gateway |
 | roller shutter, screen, venetian blind, garage door, awning & window | control |  device controller which reacts to commands UP/DOWN/STOP + closure 0-100 |
 | venetian blind | orientation | percentual orientation of the blind's slats, it can have value 0-100). For IO Homecontrol devices only (non RTS)|

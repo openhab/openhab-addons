@@ -8,7 +8,6 @@
 			<label>Somfy Tahoma device URL</label>
 			<description>The identifier of this Somfy device</description>
 			<required>true</required>
-			<advanced>true</advanced>
 		</parameter>
 	</config-description>
 
@@ -17,7 +16,6 @@
 			<label>Somfy Tahoma gateway ID</label>
 			<description>The identifier of this Somfy gateway</description>
 			<required>true</required>
-			<advanced>true</advanced>
 		</parameter>
 	</config-description>
 

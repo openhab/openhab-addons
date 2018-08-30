@@ -83,10 +83,11 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
         httpClient.setFollowRedirects(false);
 
-        login();
-
-        initPolling(thingConfig.getRefresh());
-        logger.debug("Initialize done...");
+        scheduler.execute(() -> {
+            login();
+            initPolling(thingConfig.getRefresh());
+            logger.debug("Initialize done...");
+        });
     }
 
     /**
@@ -146,7 +147,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
     private ArrayList<SomfyTahomaEvent> getEvents() {
         String url;
-        String line = "";
+        String line;
 
         try {
             url = TAHOMA_URL + "getEvents";
@@ -454,7 +455,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
     private Boolean sendCommandInternal(String io, String command, String params) {
         String url;
-        String line = "";
+        String line;
 
         try {
             url = TAHOMA_URL + "apply";
@@ -515,7 +516,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
     private String getCurrentExecutionsInternal(String type) {
         String url;
-        String line = "";
+        String line;
 
         try {
             url = TAHOMA_URL + "getCurrentExecutions";
@@ -585,7 +586,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     }
 
     public String getTahomaVersion(String gatewayId) {
-        String line = "";
+        String line;
         try {
             String url = SETUP_URL + gatewayId + "/version";
             line = sendToTahomaWithCookie(url);
@@ -619,7 +620,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     }
 
     public String executeActionGroupInternal(String id) {
-        String line = "";
+        String line;
         try {
             String url = EXEC_URL + id;
 
@@ -648,7 +649,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     }
 
     public String getTahomaStatus(String gatewayId) {
-        String line = "";
+        String line;
         try {
             String url = SETUP_URL + gatewayId;
             line = sendToTahomaWithCookie(url);
