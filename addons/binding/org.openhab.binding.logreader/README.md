@@ -33,14 +33,14 @@ List of channels
 | ------------------ | ------------ | -------------------------------------------------------------- |
 | `lastErrorEvent`   | `String`     | Displays contents of last [ERROR] event                        |
 | `lastWarningEvent` | `String`     | Displays contents of last [WARN] event                         |
-| `lastCustomEvent`  | `String`     | Displays contents of last custom event                         |
+| `lastCustomEvent`  | `String`     | Displays contents of last [CUSTOM] event                       |
 | `errorEvents`      | `Number`     | Displays number of [ERROR] lines matched to search pattern     |
 | `warningEvents`    | `Number`     | Displays number of [WARN] lines matched to search pattern      |
-| `customEvents`     | `Number`     | Displays number of custom lines matched to search pattern      |
+| `customEvents`     | `Number`     | Displays number of [CUSTOM] lines matched to search pattern    |
 | `logRotated`       | `DateTime`   | Last time when log rotated recognized                          |
 | `newErrorEvent`    | -            | Trigger channel for last [ERROR] line                          |
-| `newWarningEvent`  | -            | Trigger channel for last [ERROR] line                          |
-| `newCustomEvent`   | -            | Trigger channel for last [ERROR] line                          |
+| `newWarningEvent`  | -            | Trigger channel for last [WARN] line                           |
+| `newCustomEvent`   | -            | Trigger channel for last [CUSTOM] line                         |
 
 ## Examples
 
@@ -56,11 +56,13 @@ logreader:reader:openhablog[ refreshRate=1000, errorPatterns="ERROR+", errorBlac
 
 ```xtend
 
-String   logreaderLastError         "Last error [%s]"                                      { channel="logreader:reader:openhablog:lastErrorEvent" }
-String   logreaderLastWarning       "Last warning [%s]"                                    { channel="logreader:reader:openhablog:lastWarningEvent" }
-Number   logreaderErrors            "Error events matched [%d]"                            { channel="logreader:reader:openhablog:errorEvents" }
-Number   logreaderWarnings          "Warning events matched [%d]"                          { channel="logreader:reader:openhablog:warningEvents" }
-DateTime logreaderLogRotated        "Last Log Rotation [%1$tY.%1$tm.%1$te %1$tR]"          { channel="logreader:reader:openhablog:logRotated" } 
+DateTime logreaderLogRotated        "Last Log Rotation [%1$tY.%1$tm.%1$te %1$tR]"   <time>  { channel="logreader:reader:openhablog:logRotated" }
+Number   logreaderErrors            "Error events matched [%d]"                     <alarm> { channel="logreader:reader:openhablog:errorEvents" }
+String   logreaderLastError         "Last error [%s]"                                       { channel="logreader:reader:openhablog:lastErrorEvent" }
+Number   logreaderWarnings          "Warning events matched [%d]"                   <alarm> { channel="logreader:reader:openhablog:warningEvents" }
+String   logreaderLastWarning       "Last warning [%s]"                                     { channel="logreader:reader:openhablog:lastWarningEvent" }
+Number   logreaderCustoms           "Custom events matched [%d]"                    <alarm> { channel="logreader:reader:openhablog:customEvents" }
+String   logreaderLastCustom        "Last Custom [%s]"                                      { channel="logreader:reader:openhablog:lastCustomEvent" }
 
 ```
 
@@ -69,13 +71,15 @@ DateTime logreaderLogRotated        "Last Log Rotation [%1$tY.%1$tm.%1$te %1$tR]
 ```xtend
 
 sitemap logreader_example label="Example" {
-    Frame label="LogReader" {
-        Text item=logreaderLastError
-        Text item=logreaderLastWarning
-        Text item=logreaderErrors
-        Text item=logreaderWarnings
-        Text item=logreaderLogRotated
-    }
+	Frame label="openHAB Log Reader" {
+		Text item=logreaderErrors
+		Text item=logreaderLastError
+		Text item=logreaderWarnings
+		Text item=logreaderLastWarning
+		Text item=logreaderCustoms
+		Text item=logreaderLastCustom
+		Text item=logreaderLogRotated
+	}
 }
 
 ```
