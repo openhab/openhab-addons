@@ -21,6 +21,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.gpstracker.internal.config.BindingConfiguration;
 import org.openhab.binding.gpstracker.internal.discovery.TrackerDiscoveryService;
 import org.openhab.binding.gpstracker.internal.handler.TrackerHandler;
+import org.openhab.binding.gpstracker.internal.handler.TranslationUtil;
 import org.openhab.binding.gpstracker.internal.message.NotificationBroker;
 import org.openhab.binding.gpstracker.internal.provider.gpslogger.GPSLoggerCallbackServlet;
 import org.openhab.binding.gpstracker.internal.provider.owntracks.OwnTracksCallbackServlet;
@@ -84,11 +85,6 @@ public class BindingComponent extends BaseThingHandlerFactory implements Managed
     private GPSLoggerCallbackServlet glHTTPEndpoint;
 
     /**
-     * Discovery service
-     */
-    private TrackerDiscoveryService discoveryService;
-
-    /**
      * Reference
      */
     private ThingRegistry thingRegistry;
@@ -97,6 +93,11 @@ public class BindingComponent extends BaseThingHandlerFactory implements Managed
      * Notification broker
      */
     private NotificationBroker notificationBroker = new NotificationBroker();
+
+    /**
+     * Translation helper
+     */
+    private TranslationUtil translationUtil;
 
     /**
      * Called by the framework to find out if thing type is supported by the handler factory.
@@ -117,8 +118,7 @@ public class BindingComponent extends BaseThingHandlerFactory implements Managed
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (BindingConstants.THING_TYPE_TRACKER.equals(thingTypeUID)) {
-            String id = thing.getUID().getId();
-            return new TrackerHandler(thing, this.config, notificationBroker);
+            return new TrackerHandler(thing, this.config, notificationBroker, translationUtil);
         } else {
             return null;
         }
@@ -136,8 +136,11 @@ public class BindingComponent extends BaseThingHandlerFactory implements Managed
         updatePrimaryLocationFromSystemConfig();
 
         logger.debug("Initializing discovery service");
-        this.discoveryService = new TrackerDiscoveryService();
-        this.serviceRegistration = this.bundleContext.registerService(DiscoveryService.class.getName(), this.discoveryService, new Hashtable<>());
+        TrackerDiscoveryService discoveryService = new TrackerDiscoveryService();
+        this.serviceRegistration = this.bundleContext.registerService(DiscoveryService.class.getName(),
+                discoveryService, new Hashtable<>());
+
+        this.translationUtil = new TranslationUtil(getBundleContext());
 
         logger.debug("Initializing callback servlets");
         otHTTPEndpoint = new OwnTracksCallbackServlet(httpService, thingRegistry, discoveryService);

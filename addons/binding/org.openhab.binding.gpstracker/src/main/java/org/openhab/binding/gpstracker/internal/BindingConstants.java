@@ -46,4 +46,8 @@ public abstract class BindingConstants {
     static final String CONFIG_RADIUS = "radius";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_TRACKER);
+
+    //translation
+    public static final String TRANSLATION_PRESENCE = "channel.gpstracker.presence.label";
+    public static final String TRANSLATION_DISTANCE = "channel.gpstracker.distance.label";
 }

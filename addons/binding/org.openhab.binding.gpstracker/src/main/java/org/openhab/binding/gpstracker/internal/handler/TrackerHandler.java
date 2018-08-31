@@ -81,8 +81,9 @@ public class TrackerHandler extends BaseThingHandler implements TrackerRecorder 
      * @param thing              Thing.
      * @param bindingConfig      Binding level configuration.
      * @param notificationBroker Notification broker
+     * @param translationUtil    Tranlation helper
      */
-    public TrackerHandler(Thing thing, BindingConfiguration bindingConfig, NotificationBroker notificationBroker) {
+    public TrackerHandler(Thing thing, BindingConfiguration bindingConfig, NotificationBroker notificationBroker, TranslationUtil translationUtil) {
         super(thing);
         this.bindingConfig = bindingConfig;
 
@@ -91,7 +92,7 @@ public class TrackerHandler extends BaseThingHandler implements TrackerRecorder 
         String trackerId = thing.getUID().getId();
         notificationBroker.registerHandler(trackerId, notificationHandler);
 
-        channelUtil = new ChannelUtil(thing, bindingConfig, trackerConfig);
+        channelUtil = new ChannelUtil(thing, bindingConfig, trackerConfig, translationUtil);
         loadTrackerConfig();
         logger.debug("Tracker handler created: {}", trackerId);
     }

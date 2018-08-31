@@ -58,16 +58,24 @@ class ChannelUtil {
     private TrackerConfiguration trackerConfig;
 
     /**
+     * Translation helper
+     */
+    private TranslationUtil translationUtil;
+
+
+    /**
      * Constructor.
      *
-     * @param thing         The thing
-     * @param bindingConfig Binding level configuration
-     * @param trackerConfig  Device level configuration
+     * @param thing           The thing
+     * @param bindingConfig   Binding level configuration
+     * @param trackerConfig   Device level configuration
+     * @param translationUtil Translation helper
      */
-    ChannelUtil(Thing thing, BindingConfiguration bindingConfig, TrackerConfiguration trackerConfig) {
+    ChannelUtil(Thing thing, BindingConfiguration bindingConfig, TrackerConfiguration trackerConfig, TranslationUtil translationUtil) {
         this.thing = thing;
         this.bindingConfig = bindingConfig;
         this.trackerConfig = trackerConfig;
+        this.translationUtil = translationUtil;
     }
 
     void setTrackerConfig(TrackerConfiguration trackerConfig) {
@@ -115,7 +123,8 @@ class ChannelUtil {
                 if (!channelMap.containsKey(presenceChannelId)) {
                     Channel channel = ChannelBuilder.create(new ChannelUID(uid, presenceChannelId),
                             "Switch").withType(BindingConstants.CHANNEL_TYPE_PRESENCE)
-                            .withLabel(uid.getId() + " @ " + r.getName()).build();
+                            .withLabel(translationUtil.getText(TRANSLATION_PRESENCE, r.getName()))
+                            .build();
                     channelMap.put(presenceChannelId, channel);
                     logger.trace("Creating channel {} for region {}", presenceChannelId, r.getName());
                 }
@@ -154,6 +163,7 @@ class ChannelUtil {
                     Channel channel = ChannelBuilder.create(new ChannelUID(uid,
                             channelId), "Number")
                             .withType(CHANNEL_TYPE_DISTANCE)
+                            .withLabel(translationUtil.getText(TRANSLATION_DISTANCE, r.getName()))
                             .build();
                     channelMap.put(channelId, channel);
                     logger.trace("Creating distance channel for region {}", r.getName());

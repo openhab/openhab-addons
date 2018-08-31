@@ -38,6 +38,7 @@ The dialog above shows the details of this primary region configuration where th
 * **Additional region definitions** - This configuration option is for expert users to create additional internal regions in JSON format. The binding expects an array of regions in the following format:
 
  ```
+ [
     {
         "name": "ExtraRegion1",
         "location": "xx.xxxx,yy.yyyy",
