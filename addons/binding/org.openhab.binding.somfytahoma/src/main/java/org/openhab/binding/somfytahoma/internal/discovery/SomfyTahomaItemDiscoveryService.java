@@ -8,8 +8,8 @@
  */
 package org.openhab.binding.somfytahoma.internal.discovery;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
@@ -36,11 +36,16 @@ import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
  *
  * @author Ondrej Pecta - Initial contribution
  */
+@NonNullByDefault
 public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService implements ExtendedDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(SomfyTahomaItemDiscoveryService.class);
+
     private SomfyTahomaBridgeHandler bridge;
+
+    @Nullable
     private DiscoveryServiceCallback discoveryServiceCallback;
+    @Nullable
     private ScheduledFuture<?> discoveryJob;
 
 
@@ -58,7 +63,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
      */
     @Override
     @Activate
-    public void activate(@Nullable Map<@NonNull String, @Nullable Object> configProperties) {
+    public void activate(@Nullable Map<String, @Nullable Object> configProperties) {
         super.activate(configProperties);
     }
 
