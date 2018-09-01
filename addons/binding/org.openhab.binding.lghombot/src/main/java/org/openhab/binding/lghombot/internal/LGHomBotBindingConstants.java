@@ -41,6 +41,8 @@ public class LGHomBotBindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_STATE = "state";
     public static final String CHANNEL_BATTERY = "battery";
+    public static final String CHANNEL_CPULOAD = "cpuLoad";
+    public static final String CHANNEL_SRVMEM = "srvMem";
     public static final String CHANNEL_START = "start";
     public static final String CHANNEL_HOME = "home";
     public static final String CHANNEL_STOP = "stop";
@@ -50,13 +52,16 @@ public class LGHomBotBindingConstants {
     public static final String CHANNEL_REPEAT = "repeat";
     public static final String CHANNEL_MUTE = "mute";
     public static final String CHANNEL_NICKNAME = "nickname";
-    public static final String CHANNEL_MAP = "map";
     public static final String CHANNEL_VIDEO = "video";
+    public static final String CHANNEL_MAP = "map";
+    public static final String CHANNEL_MOVE = "move";
 
     // List of all HomBot states
+    public static final String HBSTATE_UNKNOWN = "UNKNOWN";
     public static final String HBSTATE_WORKING = "WORKING";
     public static final String HBSTATE_BACKMOVING = "BACKMOVING";
     public static final String HBSTATE_BACKMOVING_INIT = "BACKMOVING_INIT";
+    public static final String HBSTATE_BACKMOVING_JOY = "BACKMOVING_JOY";
     public static final String HBSTATE_PAUSE = "PAUSE";
     public static final String HBSTATE_STANDBY = "STANDBY";
     public static final String HBSTATE_HOMING = "HOMING";

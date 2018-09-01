@@ -14,14 +14,19 @@ package org.openhab.binding.lghombot.internal;
 
 import static org.openhab.binding.lghombot.internal.LGHomBotBindingConstants.*;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import javax.imageio.ImageIO;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -31,6 +36,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,15 +65,21 @@ public class LGHomBotHandler extends BaseThingHandler {
     @Nullable
     private String currentNickname = null;
     @Nullable
+    private String currentSrvMem = null;
+    @Nullable
     private Integer currentBattery = null;
+    @Nullable
+    private Integer currentCPULoad = null;
     @Nullable
     private Boolean currentTurbo = null;
     @Nullable
     private Boolean currentRepeat = null;
     @Nullable
     private Boolean currentMute = null;
+    private State currentImage = UnDefType.UNDEF;
 
     private boolean disposed = false;
+    private int refreshCounter = 0;
 
     public LGHomBotHandler(Thing thing) {
         super(thing);
@@ -82,70 +94,95 @@ public class LGHomBotHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command.equals(RefreshType.REFRESH)) {
-            updateAllChannels();
+            refreshFromState(channelUID);
         } else {
             switch (channelUID.getId()) {
                 case CHANNEL_START:
                     if (command instanceof OnOffType) {
                         if (((OnOffType) command) == OnOffType.ON) {
                             if (currentState != null && currentState.equals(HBSTATE_HOMING)) {
-                                sendCommand("/json.cgi?%7B%22COMMAND%22:%22PAUSE%22%7D");
+                                sendHomBotCommand("PAUSE");
                             }
-                            sendCommand("/json.cgi?%7B%22COMMAND%22:%22CLEAN_START%22%7D");
+                            sendHomBotCommand("CLEAN_START");
                         } else if (((OnOffType) command) == OnOffType.OFF) {
-                            sendCommand("/json.cgi?%7B%22COMMAND%22:%22PAUSE%22%7D");
+                            sendHomBotCommand("PAUSE");
                         }
                     }
                     break;
                 case CHANNEL_HOME:
                     if (command instanceof OnOffType) {
                         if (((OnOffType) command) == OnOffType.ON) {
-                            sendCommand("/json.cgi?%7B%22COMMAND%22:%22HOMING%22%7D");
+                            sendHomBotCommand("HOMING");
                         } else if (((OnOffType) command) == OnOffType.OFF) {
-                            sendCommand("/json.cgi?%7B%22COMMAND%22:%22PAUSE%22%7D");
+                            sendHomBotCommand("PAUSE");
                         }
                     }
                     break;
                 case CHANNEL_STOP:
                     if (command instanceof OnOffType) {
-                        sendCommand("/json.cgi?%7B%22COMMAND%22:%22PAUSE%22%7D");
+                        sendHomBotCommand("PAUSE");
                     }
                     break;
                 case CHANNEL_TURBO:
                     if (command instanceof OnOffType) {
                         if (((OnOffType) command) == OnOffType.ON) {
-                            sendCommand("/json.cgi?%7B%22COMMAND%22:%7B%22TURBO%22:%22true%22%7D%7D");
+                            sendHomBotCommand("TURBO", "true");
                         } else if (((OnOffType) command) == OnOffType.OFF) {
-                            sendCommand("/json.cgi?%7B%22COMMAND%22:%7B%22TURBO%22:%22false%22%7D%7D");
+                            sendHomBotCommand("TURBO", "false");
                         }
                     }
                     break;
                 case CHANNEL_REPEAT:
                     if (command instanceof OnOffType) {
                         if (((OnOffType) command) == OnOffType.ON) {
-                            sendCommand("/json.cgi?%7B%22COMMAND%22:%7B%22REPEAT%22:%22true%22%7D%7D");
+                            sendHomBotCommand("REPEAT", "true");
                         } else if (((OnOffType) command) == OnOffType.OFF) {
-                            sendCommand("/json.cgi?%7B%22COMMAND%22:%7B%22REPEAT%22:%22false%22%7D%7D");
+                            sendHomBotCommand("REPEAT", "false");
                         }
                     }
                     break;
                 case CHANNEL_MUTE:
                     if (command instanceof OnOffType) {
                         if (((OnOffType) command) == OnOffType.ON) {
-                            sendCommand("/json.cgi?%7B%22COMMAND%22:%7B%22MUTING%22:%22true%22%7D%7D");
+                            sendHomBotCommand("MUTING", "true");
                         } else if (((OnOffType) command) == OnOffType.OFF) {
-                            sendCommand("/json.cgi?%7B%22COMMAND%22:%7B%22MUTING%22:%22false%22%7D%7D");
+                            sendHomBotCommand("MUTING", "false");
                         }
                     }
                     break;
                 case CHANNEL_MODE:
                     if (command instanceof StringType) {
                         if (((StringType) command).toString().equals("SB")) {
-                            sendCommand("/json.cgi?%7B%22COMMAND%22:%7B%22CLEAN_MODE%22:%22CLEAN_SB%22%7D%7D");
+                            sendHomBotCommand("CLEAN_MODE", "CLEAN_SB");
                         } else if (((StringType) command).toString().equals("ZZ")) {
-                            sendCommand("/json.cgi?%7B%22COMMAND%22:%7B%22CLEAN_MODE%22:%22CLEAN_ZZ%22%7D%7D");
+                            sendHomBotCommand("CLEAN_MODE", "CLEAN_ZZ");
                         } else if (((StringType) command).toString().equals("SPOT")) {
-                            sendCommand("/json.cgi?%7B%22COMMAND%22:%7B%22CLEAN_MODE%22:%22CLEAN_SPOT%22%7D%7D");
+                            sendHomBotCommand("CLEAN_MODE", "CLEAN_SPOT");
+                        } else if (((StringType) command).toString().equals("MACRO_SECTOR")) {
+                            sendHomBotCommand("CLEAN_MODE", "CLEAN_MACRO_SECTOR");
+                        }
+                    }
+                    break;
+                case CHANNEL_MOVE:
+                    if (command instanceof StringType) {
+                        if (((StringType) command).toString().equals("FORWARD")) {
+                            sendHomBotJoystick("FORWARD");
+                        } else if (((StringType) command).toString().equals("FORWARD_LEFT")) {
+                            sendHomBotJoystick("FORWARD_LEFT");
+                        } else if (((StringType) command).toString().equals("FORWARD_RIGHT")) {
+                            sendHomBotJoystick("FORWARD_RIGHT");
+                        } else if (((StringType) command).toString().equals("LEFT")) {
+                            sendHomBotJoystick("LEFT");
+                        } else if (((StringType) command).toString().equals("RIGHT")) {
+                            sendHomBotJoystick("RIGHT");
+                        } else if (((StringType) command).toString().equals("BACKWARD")) {
+                            sendHomBotJoystick("BACKWARD");
+                        } else if (((StringType) command).toString().equals("BACKWARD_LEFT")) {
+                            sendHomBotJoystick("BACKWARD_LEFT");
+                        } else if (((StringType) command).toString().equals("BACKWARD_RIGHT")) {
+                            sendHomBotJoystick("BACKWARD_RIGHT");
+                        } else if (((StringType) command).toString().equals("RELEASE")) {
+                            sendHomBotJoystick("RELEASE");
                         }
                     }
                     break;
@@ -165,8 +202,8 @@ public class LGHomBotHandler extends BaseThingHandler {
         // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
         // Long running initialization should be done asynchronously in background.
         updateAllChannels();
-        updateStatus(ThingStatus.ONLINE);
         setupRefreshTimer(config.getPollingPeriod());
+        updateStatus(ThingStatus.ONLINE);
 
         // Note: When initialization can NOT be done set the status with more details for further
         // analysis. See also class ThingStatusDetail for all available status details.
@@ -194,6 +231,21 @@ public class LGHomBotHandler extends BaseThingHandler {
         return "http://" + config.getIpAddress() + ":" + config.getPort() + path;
     }
 
+    private void sendHomBotCommand(String command) {
+        String fullCmd = "/json.cgi?%7B%22COMMAND%22:%22" + command + "%22%7D";
+        sendCommand(fullCmd);
+    }
+
+    private void sendHomBotCommand(String command, String argument) {
+        String fullCmd = "/json.cgi?%7B%22COMMAND%22:%7B%22" + command + "%22:%22" + argument + "%22%7D%7D";
+        sendCommand(fullCmd);
+    }
+
+    private void sendHomBotJoystick(String command) {
+        String fullCmd = "/json.cgi?%7B%22JOY%22:%22" + command + "%22%7D";
+        sendCommand(fullCmd);
+    }
+
     private void sendCommand(String path) {
         String url = buildHttpAddress(path);
         String status = null;
@@ -205,8 +257,48 @@ public class LGHomBotHandler extends BaseThingHandler {
         logger.debug("Status received: {}", status);
     }
 
+    private void refreshFromState(ChannelUID channelUID) {
+        switch (channelUID.getId()) {
+            case CHANNEL_STATE:
+                updateState(channelUID, StringType.valueOf(currentState));
+                break;
+            case CHANNEL_BATTERY:
+                updateState(channelUID, new DecimalType(currentBattery));
+                break;
+            case CHANNEL_CPULOAD:
+                updateState(channelUID, new DecimalType(currentCPULoad));
+                break;
+            case CHANNEL_SRVMEM:
+                updateState(channelUID, StringType.valueOf(currentSrvMem));
+                break;
+            case CHANNEL_TURBO:
+                updateState(channelUID, currentTurbo ? OnOffType.ON : OnOffType.OFF);
+                break;
+            case CHANNEL_REPEAT:
+                updateState(channelUID, currentRepeat ? OnOffType.ON : OnOffType.OFF);
+                break;
+            case CHANNEL_MODE:
+                updateState(channelUID, StringType.valueOf(currentMode));
+                break;
+            case CHANNEL_NICKNAME:
+                updateState(channelUID, StringType.valueOf(currentNickname));
+                break;
+            case CHANNEL_VIDEO:
+                updateState(channelUID, currentImage);
+                break;
+            default:
+                logger.warn("Channel refresh for {} not implemented!", channelUID.getId());
+        }
+    }
+
     private void updateAllChannels() {
         if (disposed) {
+            return;
+        }
+        refreshCounter++;
+        if (refreshCounter % 5 == 0) {
+            parseImage();
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_VIDEO), currentImage);
             return;
         }
         String status = null;
@@ -219,15 +311,13 @@ public class LGHomBotHandler extends BaseThingHandler {
         if (status != null && !status.isEmpty()) {
             String[] rows = status.split("\\r?\\n");
             ChannelUID channel;
-            State st;
             for (String row : rows) {
                 if (row.startsWith("JSON_ROBOT_STATE=")) {
                     String state = row.substring(17).replace("\"", "");
                     if (!state.equals(currentState)) {
                         currentState = state;
-                        st = StringType.valueOf(state);
                         channel = new ChannelUID(getThing().getUID(), CHANNEL_STATE);
-                        updateState(channel, st);
+                        updateState(channel, StringType.valueOf(state));
 
                         if (state.equals(HBSTATE_WORKING) || state.equals(HBSTATE_BACKMOVING)
                                 || state.equals(HBSTATE_BACKMOVING_INIT)) {
@@ -254,51 +344,89 @@ public class LGHomBotHandler extends BaseThingHandler {
                     Integer battery = Integer.valueOf(row.substring(14).replace("\"", ""));
                     if (!battery.equals(currentBattery)) {
                         currentBattery = battery;
-                        st = DecimalType.valueOf(row.substring(14).replace("\"", ""));
                         channel = new ChannelUID(getThing().getUID(), CHANNEL_BATTERY);
-                        updateState(channel, st);
+                        updateState(channel, new DecimalType(battery));
+                    }
+                } else if (row.startsWith("CPU_IDLE=")) {
+                    Integer cpuLoad = 100 - Double.valueOf(row.substring(9).replace("\"", "")).intValue();
+                    if (!cpuLoad.equals(currentCPULoad)) {
+                        currentCPULoad = cpuLoad;
+                        channel = new ChannelUID(getThing().getUID(), CHANNEL_CPULOAD);
+                        updateState(channel, new DecimalType(cpuLoad));
+                    }
+                } else if (row.startsWith("LGSRV_MEMUSAGE=")) {
+                    String srvMem = row.substring(15).replace("\"", "");
+                    if (!srvMem.equals(currentSrvMem)) {
+                        currentSrvMem = srvMem;
+                        channel = new ChannelUID(getThing().getUID(), CHANNEL_SRVMEM);
+                        updateState(channel, StringType.valueOf(srvMem));
                     }
                 } else if (row.startsWith("JSON_TURBO=")) {
                     Boolean turbo = (row.substring(11).replace("\"", "").equalsIgnoreCase("true"));
                     if (!turbo.equals(currentTurbo)) {
                         currentTurbo = turbo;
-                        st = OnOffType.OFF;
-                        if (turbo) {
-                            st = OnOffType.ON;
-                        }
                         channel = new ChannelUID(getThing().getUID(), CHANNEL_TURBO);
-                        updateState(channel, st);
+                        updateState(channel, turbo ? OnOffType.ON : OnOffType.OFF);
                     }
                 } else if (row.startsWith("JSON_REPEAT=")) {
                     Boolean repeat = (row.substring(12).replace("\"", "").equalsIgnoreCase("true"));
                     if (!repeat.equals(currentRepeat)) {
                         currentRepeat = repeat;
-                        st = OnOffType.OFF;
-                        if (repeat) {
-                            st = OnOffType.ON;
-                        }
                         channel = new ChannelUID(getThing().getUID(), CHANNEL_REPEAT);
-                        updateState(channel, st);
+                        updateState(channel, repeat ? OnOffType.ON : OnOffType.OFF);
                     }
                 } else if (row.startsWith("JSON_MODE=")) {
                     String mode = row.substring(10).replace("\"", "");
                     if (!mode.equals(currentMode)) {
                         currentMode = mode;
-                        st = StringType.valueOf(mode);
                         channel = new ChannelUID(getThing().getUID(), CHANNEL_MODE);
-                        updateState(channel, st);
+                        updateState(channel, StringType.valueOf(mode));
                     }
                 } else if (row.startsWith("JSON_NICKNAME=")) {
                     String nickname = row.substring(14).replace("\"", "");
                     if (!nickname.equals(currentNickname)) {
                         currentNickname = nickname;
-                        st = StringType.valueOf(nickname);
                         channel = new ChannelUID(getThing().getUID(), CHANNEL_NICKNAME);
-                        updateState(channel, st);
+                        updateState(channel, StringType.valueOf(nickname));
                     }
                 }
             }
         }
     }
 
+    private void parseImage() {
+        int width = 320;
+        int height = 240;
+        int size = width * height;
+
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        String url = buildHttpAddress("/images/snapshot.yuv");
+        byte[] yuvData = HttpUtil.downloadData(url, null, false, size * 2).getBytes();
+
+        for (int i = 0; i < size; i++) {
+            double y = yuvData[i] & 0xFF;
+            double u = yuvData[size + i / 2] & 0xFF;
+            double v = yuvData[(int) (width * height * 1.5 + i / 2)] & 0xFF;
+
+            int r = Math.min(Math.max((int) (y + 1.371 * (v - 128)), 0), 255); // red
+            int g = Math.min(Math.max((int) (y - 0.336 * (u - 128) - 0.698 * (v - 128)), 0), 255); // green
+            int b = Math.min(Math.max((int) (y + 1.732 * (u - 128)), 0), 255); // blue
+
+            int p = (r << 16) | (g << 8) | b; // pixel
+            image.setRGB(i % width, i / width, p);
+        }
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(image, "jpg", baos);
+        } catch (IOException e) {
+            logger.error("IOException {}", e);
+        }
+        byte[] byteArray = baos.toByteArray();
+        if (byteArray != null && byteArray.length > 0) {
+            currentImage = new RawType(byteArray, "image/jpeg");
+        } else {
+            currentImage = UnDefType.UNDEF;
+        }
+    }
 }

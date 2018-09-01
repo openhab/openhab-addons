@@ -12,6 +12,8 @@
 		<channels>
             <channel id="state" typeId="stateType" />
             <channel id="battery" typeId="batteryType" />
+            <channel id="cpuLoad" typeId="cpuLoadType" />
+            <channel id="srvMem" typeId="srvMemType" />
             <channel id="start" typeId="startType" />
             <channel id="home" typeId="homeType" />
             <channel id="stop" typeId="stopType" />
@@ -21,12 +23,15 @@
             <channel id="repeat" typeId="repeatType" />
             <channel id="mute" typeId="muteType" />
             <channel id="nickname" typeId="nicknameType" />
-            <channel id="map" typeId="mapType" />
             <channel id="video" typeId="videoType" />
+            <channel id="map" typeId="mapType" />
+            <channel id="move" typeId="moveType" />
 		</channels>
 
         <properties>
-            <property name="vendor">LG</property>
+            <property name="Vendor">LG</property>
+            <property name="Firmware V">15562</property>
+            <property name="Server V">1.52</property>
         </properties>
         <representation-property>deviceId</representation-property>
 
@@ -58,9 +63,11 @@
         <description>Current state</description>
         <state pattern="%s" readOnly="true">
             <options>
+                <option value="UNKNOWN">Unknown</option>
                 <option value="WORKING">Working</option>
                 <option value="BACKMOVING">Backmoving</option>
                 <option value="BACKMOVING_INIT">Backmoving Init</option>
+                <option value="BACKMOVING_JOY">Backmoving Joy</option>
                 <option value="PAUSE">Pause</option>
                 <option value="STANDBY">Standby</option>
                 <option value="HOMING">Homing</option>
@@ -77,6 +84,18 @@
         <description>Current battery charge</description>
         <category>BatteryLevel</category>
         <state pattern="%d%%" readOnly="true"></state>
+    </channel-type>
+    <channel-type id="cpuLoadType" advanced="true">
+        <item-type>Number</item-type>
+        <label>CPU Load</label>
+        <description>Current CPU load</description>
+        <state pattern="%d%%" readOnly="true"></state>
+    </channel-type>
+    <channel-type id="srvMemType" advanced="true">
+        <item-type>String</item-type>
+        <label>Used Memory</label>
+        <description>Memory used by Webserver</description>
+        <state pattern="%s" readOnly="true"></state>
     </channel-type>
     <channel-type id="startType">
         <item-type>Switch</item-type>
@@ -110,9 +129,10 @@
         <description>Cleaning mode</description>
         <state>
             <options>
-                <option value="SB">Cell by cell mode</option>
                 <option value="ZZ">Zigzag mode</option>
-                <option value="SPOT">Spot mode</option>
+                <option value="SB">Cell by cell mode</option>
+                <option value="SPOT">Spiral spot mode</option>
+                <option value="MACRO_SECTOR">My space mode</option>
             </options>
         </state>
     </channel-type>
@@ -138,17 +158,35 @@
         <description>The nickname of the HomBot</description>
         <state pattern="%s" readOnly="true"></state>
     </channel-type>
-    <channel-type id="mapType">
-        <item-type>Image</item-type>
-        <label>Map</label>
-        <description>Map of cleaned area</description>
-        <state readOnly="true"></state>
-    </channel-type>
     <channel-type id="videoType">
         <item-type>Image</item-type>
         <label>Video</label>
         <description>Video feed from the top camera</description>
         <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="mapType" advanced="true">
+        <item-type>Image</item-type>
+        <label>Map</label>
+        <description>Map of last cleaned area</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    <channel-type id="moveType" advanced="true">
+        <item-type>String</item-type>
+        <label>Move</label>
+        <description>Move direction</description>
+        <state>
+            <options>
+                <option value="FORWARD">Forward</option>
+                <option value="FORWARD_LEFT">Forward left</option>
+                <option value="FORWARD_RIGHT">Forward right</option>
+                <option value="LEFT">Left</option>
+                <option value="RIGHT">Right</option>
+                <option value="BACKWARD">Backward</option>
+                <option value="BACKWARD_LEFT">Backward left</option>
+                <option value="BACKWARD_RIGHT">Backward right</option>
+                <option value="RELEASE">Release</option>
+            </options>
+        </state>
     </channel-type>
 
 </thing:thing-descriptions>
