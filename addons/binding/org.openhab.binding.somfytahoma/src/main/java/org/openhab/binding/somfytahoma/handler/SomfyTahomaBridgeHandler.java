@@ -9,6 +9,7 @@
 package org.openhab.binding.somfytahoma.handler;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -133,6 +134,9 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error logging in");
                 throw new SomfyTahomaException(response.getContentAsString());
             }
+        } catch (JsonSyntaxException e) {
+            logger.debug("Received invalid data", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Received invalid data");
         } catch (SomfyTahomaException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unauthorized. Please check credentials");
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
@@ -147,7 +151,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
     private ArrayList<SomfyTahomaEvent> getEvents() {
         String url;
-        String line;
+        String line = "";
 
         try {
             url = TAHOMA_URL + "getEvents";
@@ -155,6 +159,9 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             line = sendDataToTahomaWithCookie(url, "");
             SomfyTahomaEvent[] array = gson.fromJson(line, SomfyTahomaEvent[].class);
             return filterStateChangedEvents(array);
+        } catch (JsonSyntaxException e) {
+            logger.debug("Received data: {} is not JSON", line, e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Received invalid data");
         } catch (SomfyTahomaException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized. Please check credentials");
         } catch (ExecutionException e) {
@@ -224,8 +231,14 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             return Collections.emptyList();
         }
 
-        SomfyTahomaActionGroupResponse data = gson.fromJson(groups, SomfyTahomaActionGroupResponse.class);
-        return data.getActionGroups();
+        try {
+            SomfyTahomaActionGroupResponse data = gson.fromJson(groups, SomfyTahomaActionGroupResponse.class);
+            return data.getActionGroups();
+        } catch (JsonSyntaxException e) {
+            logger.debug("Received data: {} is not JSON", groups, e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Received invalid data");
+        }
+        return new ArrayList<>();
     }
 
     private String getGroups() {
@@ -256,14 +269,18 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
     public SomfyTahomaSetup listDevices() {
         String url;
+        String line = "";
 
         try {
             url = TAHOMA_URL + "getSetup";
             String urlParameters = "";
 
-            String line = sendDataToTahomaWithCookie(url, urlParameters);
+            line = sendDataToTahomaWithCookie(url, urlParameters);
             SomfyTahomaSetupResponse data = gson.fromJson(line, SomfyTahomaSetupResponse.class);
             return data.getSetup();
+        } catch (JsonSyntaxException e) {
+            logger.debug("Received data: {} is not JSON", line, e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Received invalid data");
         } catch (SomfyTahomaException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized. Please check credentials");
         } catch (ExecutionException e) {
@@ -300,7 +317,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
     public List<SomfyTahomaState> getAllStates(Collection<String> stateNames, String deviceUrl) {
         String url;
-        String line;
+        String line = "";
 
         logger.debug("Getting states for a device: {}", deviceUrl);
         try {
@@ -316,6 +333,9 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
                 logger.debug("Device: {} has not returned any state", deviceUrl);
             }
             return device.getStates();
+        } catch (JsonSyntaxException e) {
+            logger.debug("Received data: {} is not JSON", line, e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Received invalid data");
         } catch (SomfyTahomaException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized. Please check credentials");
         } catch (ExecutionException e) {
@@ -455,7 +475,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
     private Boolean sendCommandInternal(String io, String command, String params) {
         String url;
-        String line;
+        String line = "";
 
         try {
             url = TAHOMA_URL + "apply";
@@ -475,6 +495,9 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
                 throw new SomfyTahomaException(line);
             }
             return true;
+        } catch (JsonSyntaxException e) {
+            logger.debug("Received data: {} is not JSON", line, e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Received invalid data");
         } catch (SomfyTahomaException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized. Please check credentials");
             return false;
@@ -516,7 +539,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
     private String getCurrentExecutionsInternal(String type) {
         String url;
-        String line;
+        String line = "";
 
         try {
             url = TAHOMA_URL + "getCurrentExecutions";
@@ -535,6 +558,9 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
                 }
             }
             return null;
+        } catch (JsonSyntaxException e) {
+            logger.debug("Received data: {} is not JSON", line, e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Received invalid data");
         } catch (SomfyTahomaException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized. Please check credentials");
             return UNAUTHORIZED;
@@ -586,7 +612,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     }
 
     public String getTahomaVersion(String gatewayId) {
-        String line;
+        String line = "";
         try {
             String url = SETUP_URL + gatewayId + "/version";
             line = sendToTahomaWithCookie(url);
@@ -594,6 +620,9 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             logger.debug("Tahoma version: {}", data.getResult());
 
             return data.getResult();
+        } catch (JsonSyntaxException e) {
+            logger.debug("Received data: {} is not JSON", line, e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Received invalid data");
         } catch (SomfyTahomaException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized. Please check credentials");
             return UNAUTHORIZED;
@@ -620,7 +649,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     }
 
     public String executeActionGroupInternal(String id) {
-        String line;
+        String line = "";
         try {
             String url = EXEC_URL + id;
 
@@ -630,6 +659,9 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
                 logger.debug("Got empty exec response");
             }
             return data.getExecId();
+        } catch (JsonSyntaxException e) {
+            logger.debug("Received data: {} is not JSON", line, e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Received invalid data");
         } catch (SomfyTahomaException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized. Please check credentials");
             return UNAUTHORIZED;
@@ -649,7 +681,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     }
 
     public String getTahomaStatus(String gatewayId) {
-        String line;
+        String line = "";
         try {
             String url = SETUP_URL + gatewayId;
             line = sendToTahomaWithCookie(url);
@@ -660,6 +692,9 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             }
             logger.debug("Tahoma status: {}", data.getConnectivity().getStatus());
             return data.getConnectivity().getStatus();
+        } catch (JsonSyntaxException e) {
+            logger.debug("Received data: {} is not JSON", line, e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Received invalid data");
         } catch (SomfyTahomaException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized. Please check credentials");
             return UNAUTHORIZED;
