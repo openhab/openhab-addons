@@ -84,9 +84,8 @@ public class BaseChannels extends AbstractChannels {
             ChannelGroup.BASE, MetricPrefix.DECI(SIUnits.CELSIUS)));
     public static final Channel CH_40067 = INSTANCE.addChannel(
             new QuantityChannel("40067", "BT1 Average", ChannelGroup.BASE, MetricPrefix.DECI(SIUnits.CELSIUS)));
-    public static final Channel CH_43005 = INSTANCE
-            .addChannel(new QuantityChannel("43005", "Degree Minutes (16 bit)", ChannelGroup.BASE,
-                    MetricPrefix.DECI(SIUnits.DEGREE_ANGLE.multiply(SIUnits.MINUTE)), "/Manage/4.9.3", "[0-9]+"));
+    public static final Channel CH_43005 = INSTANCE.addChannel(new ScaledChannel("43005", "Degree Minutes (16 bit)",
+            ChannelGroup.BASE, ScaledChannel.F01, "/Manage/4.9.3", "[0-9]+"));
     public static final Channel CH_43009 = INSTANCE.addChannel(
             new QuantityChannel("43009", "Calc. Supply S1", ChannelGroup.BASE, MetricPrefix.DECI(SIUnits.CELSIUS)));
     public static final Channel CH_40071 = INSTANCE.addChannel(

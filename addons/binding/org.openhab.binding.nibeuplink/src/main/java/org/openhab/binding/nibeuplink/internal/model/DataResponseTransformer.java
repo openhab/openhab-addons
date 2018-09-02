@@ -58,6 +58,9 @@ public class DataResponseTransformer {
                     logger.debug("Channel {} transformed to OnOffType ({})", channel.getFQName(), value);
                     OnOffType mapped = ((SwitchChannel) channel).mapValue(value);
                     result.put(channel, mapped);
+                } else if (channel instanceof ScaledChannel) {
+                    logger.debug("Channel {} transformed to scaled NumberType ({})", channel.getFQName(), value);
+                    result.put(channel, new DecimalType(value * ((ScaledChannel) channel).getFactor()));
                 } else {
                     logger.debug("Channel {} transformed to NumberType ({})", channel.getFQName(), value);
                     result.put(channel, new DecimalType(value));

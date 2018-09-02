@@ -77,8 +77,8 @@ public final class F730Channels extends BaseChannels {
             ChannelGroup.AIRSUPPLY, MetricPrefix.DECI(SIUnits.CELSIUS)));
     public static final Channel CH_40026 = INSTANCE.addChannel(new QuantityChannel("40026", "BT21 Vented air temp. 1",
             ChannelGroup.AIRSUPPLY, MetricPrefix.DECI(SIUnits.CELSIUS)));
-    public static final Channel CH_43124 = INSTANCE.addChannel(new QuantityChannel("43124", "Air flow ref.",
-            ChannelGroup.AIRSUPPLY, MetricPrefix.DECI(SmartHomeUnits.ONE)));
+    public static final Channel CH_43124 = INSTANCE
+            .addChannel(new ScaledChannel("43124", "Air flow ref.", ChannelGroup.AIRSUPPLY, ScaledChannel.F01));
     public static final Channel CH_41026 = INSTANCE
             .addChannel(new Channel("41026", "EB100-Adjusted BS1 Air flow", ChannelGroup.AIRSUPPLY));
     public static final Channel CH_43125 = INSTANCE
@@ -86,6 +86,6 @@ public final class F730Channels extends BaseChannels {
     public static final Channel CH_40919 = INSTANCE.addChannel(
             new QuantityChannel("40919", "Air mix", ChannelGroup.AIRSUPPLY, MetricPrefix.DECI(SIUnits.CELSIUS)));
     public static final Channel CH_40101 = INSTANCE.addChannel(new QuantityChannel("40101", "BT28 Air mix Temp",
-            ChannelGroup.AIRSUPPLY, MetricPrefix.DECI(SmartHomeUnits.ONE)));
+            ChannelGroup.AIRSUPPLY, MetricPrefix.DECI(SIUnits.CELSIUS)));
 
 }

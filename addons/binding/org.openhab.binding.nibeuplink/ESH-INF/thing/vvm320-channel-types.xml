@@ -244,14 +244,14 @@
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="vvm320-type-47402">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number</item-type>
 		<label>Room sensor factor S1</label>
 		<description>Setting of how much the difference between set and actual room temperature should affect the supply temperature.</description>
 		<state min="0" max="60" step="1" pattern="%.1f" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="vvm320-type-48793">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number</item-type>
 		<label>Room sensor cool factor S1</label>
 		<description>Setting of how much the difference between set and actual room temperature should affect the supply temperature in cooling mode.</description>
 		<state min="0" max="60" step="1" pattern="%.1f" readOnly="false">

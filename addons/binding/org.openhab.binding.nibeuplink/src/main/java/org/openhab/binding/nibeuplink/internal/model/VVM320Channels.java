@@ -54,10 +54,10 @@ public final class VVM320Channels extends BaseChannels {
             new Channel("47011", "Heat Offset S1", ChannelGroup.GENERAL, "/Manage/1.9.1.1-S1", "[-1]*[0-9]"));
     public static final Channel CH_47394 = INSTANCE
             .addChannel(new SwitchChannel("47394", "Room Sensor", ChannelGroup.GENERAL, "/Manage/1.9.4"));
-    public static final Channel CH_47402 = INSTANCE.addChannel(new QuantityChannel("47402", "Room sensor factor",
-            ChannelGroup.GENERAL, MetricPrefix.DECI(SmartHomeUnits.ONE), "/Manage/1.9.4", "[0123456]*[0-9]"));
-    public static final Channel CH_48793 = INSTANCE.addChannel(new QuantityChannel("48793", "Room sensor cool factor",
-            ChannelGroup.GENERAL, MetricPrefix.DECI(SmartHomeUnits.ONE), "/Manage/1.9.4", "[0123456]*[0-9]"));
+    public static final Channel CH_47402 = INSTANCE.addChannel(new ScaledChannel("47402", "Room sensor factor",
+            ChannelGroup.GENERAL, ScaledChannel.F01, "/Manage/1.9.4", "[0123456]*[0-9]"));
+    public static final Channel CH_48793 = INSTANCE.addChannel(new ScaledChannel("48793", "Room sensor cool factor",
+            ChannelGroup.GENERAL, ScaledChannel.F01, "/Manage/1.9.4", "[0123456]*[0-9]"));
 
     // Compressor
     public static final Channel CH_44362 = INSTANCE.addChannel(new QuantityChannel("44362",
