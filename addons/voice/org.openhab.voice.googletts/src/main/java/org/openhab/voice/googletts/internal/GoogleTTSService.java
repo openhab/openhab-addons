@@ -112,7 +112,6 @@ public class GoogleTTSService implements TTSService {
         File homeFolder = new File(userData, SERVICE_ID);
 
         if (!homeFolder.exists()) {
-            //noinspection ResultOfMethodCallIgnored
             homeFolder.mkdirs();
         }
         logger.info("Using home folder: {}", homeFolder.getAbsolutePath());
@@ -120,7 +119,6 @@ public class GoogleTTSService implements TTSService {
         //create cache folder
         File cacheFolder = new File(new File(userData, CACHE_FOLDER_NAME), SERVICE_PID);
         if (!cacheFolder.exists()) {
-            //noinspection ResultOfMethodCallIgnored
             cacheFolder.mkdirs();
         }
         logger.info("Using cache folder {}", cacheFolder.getAbsolutePath());
@@ -279,8 +277,8 @@ public class GoogleTTSService implements TTSService {
     /**
      * Checks parameters and calls the API to synthesize voice.
      *
-     * @param text            Input text.
-     * @param voice           Selected voice.
+     * @param text Input text.
+     * @param voice Selected voice.
      * @param requestedFormat Format that is supported by the target sink as well.
      * @return Output audio stream
      * @throws TTSException in case the service is unavailable or a parameter is invalid.

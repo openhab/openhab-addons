@@ -107,7 +107,6 @@ class GoogleCloudAPI {
         if (config.getPurgeCache() != null && config.getPurgeCache()) {
             File[] files = cacheFolder.listFiles();
             if (files != null && files.length > 0) {
-                //noinspection ResultOfMethodCallIgnored
                 Arrays.stream(files).forEach(File::delete);
             }
             logger.debug("Cache purged.");
@@ -233,9 +232,9 @@ class GoogleCloudAPI {
     /**
      * Create cache entry.
      *
-     * @param text      Converted text.
+     * @param text Converted text.
      * @param cacheFile Cache entry file.
-     * @param audio     Byte array of the audio.
+     * @param audio Byte array of the audio.
      * @throws IOException in case of file handling exceptions
      */
     private void saveAudioAndTextToFile(String text, File cacheFile, byte[] audio) throws IOException {
@@ -256,7 +255,7 @@ class GoogleCloudAPI {
     /**
      * Call Google service to synthesize the required text
      *
-     * @param text  Text to synthesise
+     * @param text Text to synthesise
      * @param voice Voice parameter
      * @return Audio input stream
      */
