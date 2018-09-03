@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
  * @author Pauli Anttila - Initial contribution
  */
 public class IhcAuthenticationService extends IhcBaseService {
-    private static final Logger logger = LoggerFactory.getLogger(IhcAuthenticationService.class);
+    private final Logger logger = LoggerFactory.getLogger(IhcAuthenticationService.class);
 
     IhcAuthenticationService(String host, IhcConnectionPool ihcConnectionPool) {
         super(ihcConnectionPool);

@@ -51,8 +51,8 @@ import org.openhab.binding.ihc.internal.converters.Converter;
 import org.openhab.binding.ihc.internal.converters.ConverterAdditionalInfo;
 import org.openhab.binding.ihc.internal.converters.ConverterFactory;
 import org.openhab.binding.ihc.internal.ws.IhcClient;
-import org.openhab.binding.ihc.internal.ws.IhcEventListener;
 import org.openhab.binding.ihc.internal.ws.IhcClient.ConnectionState;
+import org.openhab.binding.ihc.internal.ws.IhcEventListener;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSControllerState;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSRFDevice;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSSystemInfo;
@@ -91,7 +91,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
      * Reminder to slow down resource value notification ordering from
      * controller.
      */
-    private NotificationsRequestReminder reminder = null;
+    private NotificationsRequestReminder reminder;
 
     /** Holds local IHC / ELKO project file */
     Document projectFile;

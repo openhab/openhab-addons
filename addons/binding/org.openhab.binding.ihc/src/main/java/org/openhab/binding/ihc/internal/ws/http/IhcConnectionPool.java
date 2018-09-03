@@ -45,13 +45,13 @@ public class IhcConnectionPool {
      * This is special SSL context which will be configured to trust all
      * certificates and manual work is not required.
      */
-    private SSLContext sslContext = null;
+    private SSLContext sslContext;
 
     /** Holds and share cookie information (session id) from authentication procedure */
-    private CookieStore cookieStore = null;
+    private CookieStore cookieStore;
 
-    private HttpClientBuilder httpClientBuilder = null;
-    private HttpClientContext localContext = null;
+    private HttpClientBuilder httpClientBuilder;
+    private HttpClientContext localContext;
 
     public IhcConnectionPool() {
         init();
