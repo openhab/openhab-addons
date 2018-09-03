@@ -140,7 +140,7 @@ public class NeatoRobot {
             request.setCmd("stopCleaning");
         } else if ("resume".equalsIgnoreCase(command.toString())) {
             request.setCmd("resumeCleaning");
-        } else if ("dock".equalsIgnoreCase(command.toString())) {
+        } else if ("goToBase".equalsIgnoreCase(command.toString())) {
             request.setCmd("sendToBase");
         } else if ("dismissAlert".equalsIgnoreCase(command.toString())) {
             request.setCmd("dismissCurrentAlert");

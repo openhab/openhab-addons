@@ -26,6 +26,18 @@ public class NeatoBindingConstants {
 
     // List of all Channel ids
     public static final String CHANNEL_BATTERY = "battery-level";
+    public static final String CHANNEL_INFO_PRODUCTNUMBER = "info-productnumber";
+    public static final String CHANNEL_INFO_SERIAL = "info-serial";
+    public static final String CHANNEL_INFO_MODEL = "info-model";
+    public static final String CHANNEL_INFO_LANGUAGE = "info-language";
+    public static final String CHANNEL_INFO_FIRMWARE = "info-firmware";
+    public static final String CHANNEL_INFO_BATTERY_LEVEL = "info-battery-level";
+    public static final String CHANNEL_INFO_BATTERY_TIMETOEMPTY = "info-battery-timetoempty";
+    public static final String CHANNEL_INFO_BATTERY_TIMETOFULLCHARGE = "info-battery-timetofullcharge";
+    public static final String CHANNEL_INFO_BATTERY_TOTALCHARGES = "info-battery-totalcharges";
+    public static final String CHANNEL_INFO_BATTERY_MANUFACTORINGDATE = "info-battery-manufactoringdate";
+    public static final String CHANNEL_INFO_BATTERY_AUTHORIZATIONSTATUS = "info-battery-authorizationstatus";
+    public static final String CHANNEL_INFO_BATTERY_VENDOR = "info-battery-vendor";
     public static final String CHANNEL_STATE = "state";
     public static final String CHANNEL_ERROR = "error";
     public static final String CHANNEL_ACTION = "action";

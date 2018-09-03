@@ -28,8 +28,11 @@ import org.openhab.binding.neato.NeatoBindingConstants;
 import org.openhab.binding.neato.internal.CouldNotFindRobotException;
 import org.openhab.binding.neato.internal.NeatoCommunicationException;
 import org.openhab.binding.neato.internal.NeatoRobot;
+import org.openhab.binding.neato.internal.classes.Battery;
 import org.openhab.binding.neato.internal.classes.Cleaning;
 import org.openhab.binding.neato.internal.classes.Details;
+import org.openhab.binding.neato.internal.classes.NeatoGeneralInfo;
+import org.openhab.binding.neato.internal.classes.NeatoGeneralInfoData;
 import org.openhab.binding.neato.internal.classes.NeatoState;
 import org.openhab.binding.neato.internal.config.NeatoRobotConfig;
 import org.slf4j.Logger;
@@ -159,6 +162,39 @@ public class NeatoHandler extends BaseThingHandler {
             updateState(CHANNEL_CLEANINGMODIFIER, new StringType(cleaning.getModifier().name()));
             updateState(CHANNEL_CLEANINGSPOTWIDTH, new DecimalType(cleaning.getSpotWidth()));
             updateState(CHANNEL_CLEANINGSPOTHEIGHT, new DecimalType(cleaning.getSpotHeight()));
+        }
+
+        NeatoGeneralInfo neatoGeneralInfo = mrRobot.getGeneralInfo();
+        if (neatoGeneralInfo == null) {
+            return;
+        }
+
+        NeatoGeneralInfoData neatoGeneralInfoData = neatoGeneralInfo.getData();
+        if (neatoGeneralInfoData != null) {
+            updateState(CHANNEL_INFO_PRODUCTNUMBER, new StringType(neatoGeneralInfoData.getProductNumber()));
+            updateState(CHANNEL_INFO_SERIAL, new StringType(neatoGeneralInfoData.getSerial()));
+            updateState(CHANNEL_INFO_MODEL, new StringType(neatoGeneralInfoData.getModel()));
+            updateState(CHANNEL_INFO_LANGUAGE, new StringType(neatoGeneralInfoData.getLanguage()));
+            updateState(CHANNEL_INFO_FIRMWARE, new StringType(neatoGeneralInfoData.getFirmware()));
+        }
+
+        Battery battery = neatoGeneralInfo.getData().getBattery();
+        if (battery != null) {
+            updateState(CHANNEL_INFO_BATTERY_LEVEL, new DecimalType(battery.getLevel()));
+            if (battery.getTimeToEmpty() != null) {
+                updateState(CHANNEL_INFO_BATTERY_TIMETOEMPTY, new DecimalType(battery.getTimeToEmpty()));
+            } else {
+                updateState(CHANNEL_INFO_BATTERY_TIMETOEMPTY, new DecimalType(0));
+            }
+            if (battery.getTimeToFullCharge() != null) {
+                updateState(CHANNEL_INFO_BATTERY_TIMETOFULLCHARGE, new DecimalType(battery.getTimeToFullCharge()));
+            } else {
+                updateState(CHANNEL_INFO_BATTERY_TIMETOFULLCHARGE, new DecimalType(0));
+            }
+            updateState(CHANNEL_INFO_BATTERY_TOTALCHARGES, new DecimalType(battery.getTotalCharges()));
+            updateState(CHANNEL_INFO_BATTERY_MANUFACTORINGDATE, new StringType(battery.getManufacturingDate()));
+            updateState(CHANNEL_INFO_BATTERY_AUTHORIZATIONSTATUS, new StringType(battery.getBatteryStatus().name()));
+            updateState(CHANNEL_INFO_BATTERY_VENDOR, new StringType(battery.getVendor()));
         }
     }
 }
