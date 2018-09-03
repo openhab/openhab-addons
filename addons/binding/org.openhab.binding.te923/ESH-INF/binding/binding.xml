@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="te923" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+
+	<name>TE923 and IROX Binding</name>
+	<description>Mebus TE923 / Honeywell TE923W / Irox USB pro binding requests data from the Weather Station.</description>
+	<author>Gabriel Klein</author>
+
+</binding:binding>

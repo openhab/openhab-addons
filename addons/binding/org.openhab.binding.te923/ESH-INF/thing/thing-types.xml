@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="te923" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- TE923 Binding -->
+	<thing-type id="weather">
+
+		<label>TE923, Irox Information</label>
+		<description>Extract information from the TE923, Irox USB devices</description>
+
+
+		<channels>
+			<!-- channel id="time" typeId="time" / -->
+			<channel id="temperature_c0" typeId="temperature">
+				<label>Temperature Internal Sensor</label>
+				<description>Temperature in °C of the internal sensor</description>
+			</channel>
+			<channel id="humidity_c0" typeId="humidity">
+				<label>Humidity Internal Sensor</label>
+				<description>Humidity in percent of the internal sensor</description>
+			</channel>
+			<channel id="temperature_c1" typeId="temperature">
+				<label>Temperature Sensor 1</label>
+				<description>Temperature in °C of the sensor on channel 1</description>
+			</channel>
+			<channel id="humidity_c1" typeId="humidity">
+				<label>Humidity Sensor 1</label>
+				<description>Humidity in percent of the sensor on channel 1</description>
+			</channel>
+			<channel id="temperature_c2" typeId="temperature">
+				<label>Temperature Sensor 2</label>
+				<description>Temperature in °C of the sensor on channel 2</description>
+			</channel>
+			<channel id="humidity_c2" typeId="humidity">
+				<label>Humidity Sensor 2</label>
+				<description>Humidity in percent of the sensor on channel 2</description>
+			</channel>
+			<channel id="temperature_c3" typeId="temperature_adv">
+				<label>Temperature Sensor 3</label>
+				<description>Temperature in °C of the sensor on channel 3</description>
+			</channel>
+			<channel id="humidity_c3" typeId="humidity_adv">
+				<label>Humidity Sensor 3</label>
+				<description>Humidity in percent of the sensor on channel 3</description>
+			</channel>
+			<channel id="temperature_c4" typeId="temperature_adv">
+				<label>Temperature Sensor 4</label>
+				<description>Temperature in °C of the sensor on channel 4</description>
+			</channel>
+			<channel id="humidity_c4" typeId="humidity_adv">
+				<label>Humidity Sensor 4</label>
+				<description>Humidity in percent of the sensor on channel 4</description>
+			</channel>
+			<channel id="temperature_c5" typeId="temperature_adv">
+				<label>Temperature Sensor 5</label>
+				<description>Temperature in °C of the sensor on channel 5</description>
+			</channel>
+			<channel id="humidity_c5" typeId="humidity_adv">
+				<label>Humidity Sensor 5</label>
+				<description>Humidity in percent of the sensor on channel 5</description>
+			</channel>
+			<channel id="pressure" typeId="pressure" />
+			<channel id="uv" typeId="uv" />
+			<!-- channel id="fc" typeId="fc" / -->
+			<!-- channel id="storm" typeId="storm" / -->
+			<channel id="wind-direction" typeId="wind-direction" />
+			<channel id="wind-speed" typeId="wind-speed" />
+			<!-- channel id="wind-gust" typeId="wind-gust" / -->
+			<!-- channel id="wind-chill" typeId="wind-chill" / -->
+			<channel id="rain-raw" typeId="rain-raw" />
+
+		</channels>
+
+		<config-description>
+			<parameter name="cmdte923con" type="text">
+				<label>TE923 Executable</label>
+				<description>The location of the te923con executable. More information on http://te923.fukz.org/. Check that you have the right to execute from the user used for openhab.</description>
+				<default>/opt/te923/te923con</default>
+			</parameter>
+			<parameter name="refresh" type="integer" min="5">
+				<label>Refresh interval</label>
+				<description>Specifies the refresh interval in seconds.</description>
+				<default>60</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="temperature" advanced="false">
+		<item-type>Number</item-type>
+		<label>Temperature</label>
+		<description>Current temperature in degrees celsius</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C">
+		</state>
+	</channel-type>
+
+	<channel-type id="humidity" advanced="false">
+		<item-type>Number</item-type>
+		<label>Humidity</label>
+		<description>Current humidity in %</description>
+		<category>Humidity</category>
+		<state readOnly="true" pattern="%d %%">
+		</state>
+	</channel-type>
+
+	<channel-type id="temperature_adv" advanced="true">
+		<item-type>Number</item-type>
+		<label>Temperature</label>
+		<description>Current temperature in degrees celsius</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C">
+		</state>
+	</channel-type>
+
+	<channel-type id="humidity_adv" advanced="true">
+		<item-type>Number</item-type>
+		<label>Humidity</label>
+		<description>Current humidity in %</description>
+		<category>Humidity</category>
+		<state readOnly="true" pattern="%d %%">
+		</state>
+	</channel-type>
+
+	<channel-type id="pressure" advanced="false">
+		<item-type>Number</item-type>
+		<label>Pressure</label>
+		<description>Current pressure in millibar</description>
+		<category>Pressure</category>
+		<state readOnly="true" pattern="%.1f mBar">
+		</state>
+	</channel-type>
+
+	<channel-type id="uv" advanced="true">
+		<item-type>Number</item-type>
+		<label>UV index</label>
+		<description>UV index from UV sensor</description>
+		<category>Light</category>
+		<state readOnly="true" pattern="%.1f %%">
+		</state>
+	</channel-type>
+
+	<channel-type id="wind-direction" advanced="true">
+		<item-type>Number</item-type>
+		<label>Wind Direction</label>
+		<description>Wind direction</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.0f °">
+		</state>
+	</channel-type>
+
+	<channel-type id="wind-speed" advanced="true">
+		<item-type>Number</item-type>
+		<label>Wind Speed</label>
+		<description>Wind speed</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.2f m/s">
+		</state>
+	</channel-type>
+
+	<channel-type id="rain-raw" advanced="true">
+		<item-type>Number</item-type>
+		<label>Rainfall (Raw)</label>
+		<description>A counter between 0 and 255 in 0.01mm steps</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.1f">
+		</state>
+	</channel-type>
+
+</thing:thing-descriptions>
