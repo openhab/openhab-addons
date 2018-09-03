@@ -15,7 +15,6 @@ import org.openhab.binding.milight.internal.MilightThingState;
  * Color temperature and saturation are not supported for this type of bulbs.
  *
  * @author David Graeff - Initial contribution
- * @since 2.0
  */
 public class MilightV3RGBW extends MilightV3 {
     protected static final int BRIGHTNESS_LEVELS = 26;

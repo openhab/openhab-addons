@@ -11,14 +11,13 @@ package org.openhab.binding.max.internal.device;
 /**
  * Room information provided by the M message meta information.
  *
- * @author Andreas Heil (info@aheil.de)
- * @author Marcel Verpaalen (marcel@verpaalen.com)
- * @since 1.4.0
+ * @author Andreas Heil (info@aheil.de) - Initial contribution
+ * @author Marcel Verpaalen (marcel@verpaalen.com) - OH2 update
  */
 public class RoomInformation {
-    private int position = -1;
-    private String name = "";
-    private String rfAddress = "";
+    private int position;
+    private String name;
+    private String rfAddress;
 
     public RoomInformation(int position, String name, String rfAddress) {
         this.position = position;

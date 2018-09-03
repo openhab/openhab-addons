@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.nest.handler;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Collection;
@@ -36,7 +35,6 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.nest.internal.config.NestDeviceConfiguration;
@@ -121,13 +119,6 @@ abstract class NestBaseHandler<T> extends BaseThingHandler implements NestThingD
         }
     }
 
-    protected <U extends Quantity<U>> QuantityType<U> commandToQuantityType(Command command, Unit<U> defaultUnit) {
-        if (command instanceof QuantityType) {
-            return (QuantityType<U>) command;
-        }
-        return new QuantityType<U>(new BigDecimal(command.toString()), defaultUnit);
-    }
-
     @Override
     public String getId() {
         return getDeviceId();
@@ -175,7 +166,7 @@ abstract class NestBaseHandler<T> extends BaseThingHandler implements NestThingD
         return value == null ? UnDefType.NULL : new StringType(value.toString());
     }
 
-    protected State getAsStringTypeListOrNull(@Nullable Collection<? extends Object> values) {
+    protected State getAsStringTypeListOrNull(@Nullable Collection<?> values) {
         return values == null || values.isEmpty() ? UnDefType.NULL : new StringType(StringUtils.join(values, ","));
     }
 

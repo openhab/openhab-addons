@@ -49,6 +49,7 @@ import org.eclipse.smarthome.core.thing.link.ManagedItemChannelLinkProvider;
 import org.eclipse.smarthome.core.thing.type.ChannelDefinition;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupDefinition;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupType;
+import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeRegistry;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeRegistry;
 import org.eclipse.smarthome.core.thing.type.ThingType;
@@ -89,6 +90,7 @@ public abstract class NestThingHandlerOSGiTest extends JavaOSGiTest {
     private static NestTestApiServlet servlet = new NestTestApiServlet();
 
     private ChannelTypeRegistry channelTypeRegistry;
+    private ChannelGroupTypeRegistry channelGroupTypeRegistry;
     private ItemFactory itemFactory;
     private ItemRegistry itemRegistry;
     private EventPublisher eventPublisher;
@@ -128,6 +130,9 @@ public abstract class NestThingHandlerOSGiTest extends JavaOSGiTest {
 
         channelTypeRegistry = getService(ChannelTypeRegistry.class);
         assertThat("Could not get ChannelTypeRegistry", channelTypeRegistry, is(notNullValue()));
+
+        channelGroupTypeRegistry = getService(ChannelGroupTypeRegistry.class);
+        assertThat("Could not get ChannelGroupTypeRegistry", channelGroupTypeRegistry, is(notNullValue()));
 
         eventPublisher = getService(EventPublisher.class);
         assertThat("Could not get EventPublisher", eventPublisher, is(notNullValue()));
@@ -191,7 +196,7 @@ public abstract class NestThingHandlerOSGiTest extends JavaOSGiTest {
         channels.addAll(buildChannels(thingUID, thingType.getChannelDefinitions(), (id) -> id));
 
         for (ChannelGroupDefinition channelGroupDefinition : thingType.getChannelGroupDefinitions()) {
-            ChannelGroupType channelGroupType = channelTypeRegistry
+            ChannelGroupType channelGroupType = channelGroupTypeRegistry
                     .getChannelGroupType(channelGroupDefinition.getTypeUID());
             String groupId = channelGroupDefinition.getId();
             if (channelGroupType != null) {

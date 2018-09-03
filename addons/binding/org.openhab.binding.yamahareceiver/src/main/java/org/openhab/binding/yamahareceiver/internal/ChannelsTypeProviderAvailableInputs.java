@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.yamahareceiver.internal;
 
+import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Inputs.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -19,15 +21,13 @@ import java.util.Map.Entry;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupType;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
-import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeProvider;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
-
-import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Inputs.*;
 
 /**
  * Provide a custom channel type for available inputs
@@ -75,8 +75,8 @@ public class ChannelsTypeProviderAvailableInputs implements ChannelTypeProvider 
     }
 
     private void createChannelType(StateDescription state) {
-        channelType = new ChannelType(channelTypeUID, false, "String", ChannelKind.STATE, "Input source",
-                "Select the input source of the AVR", null, null, state, null, null);
+        channelType = ChannelTypeBuilder.state(channelTypeUID, "Input source", "String")
+                .withDescription("Select the input source of the AVR").withStateDescription(state).build();
     }
 
     private StateDescription getDefaultStateDescription() {

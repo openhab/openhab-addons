@@ -13,7 +13,6 @@ package org.openhab.ui.cometvisu.internal.editor.dataprovider.beans;
  * which delivers some additional data for the CometVisu-Editor
  * 
  * @author Tobias Bräutigam
- * @since 2.0.0
  */
 public class DataBean {
     public String value;

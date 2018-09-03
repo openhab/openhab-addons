@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="freebox" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="freebox"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
@@ -41,7 +42,7 @@
 		<config-description>
 			<parameter name="fqdn" type="text">
 				<label>Freebox Server FQDN</label>
-				<context>network_address</context>
+				<context>network-address</context>
 				<description>The IP address / FQDN of the Freebox Server (can include port number)</description>
 				<default>mafreebox.freebox.fr</default>
 				<required>false</required>
@@ -64,6 +65,38 @@
 				<label>Use only HTTP API</label>
 				<description>Use HTTP API even if HTTPS is available</description>
 				<default>false</default>
+				<required>false</required>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="discoverPhone" type="boolean">
+				<label>Enable Phone Discovery</label>
+				<description>Enable the discovery of phone things</description>
+				<default>true</default>
+				<required>false</required>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="discoverNetDevice" type="boolean">
+				<label>Enable Network Device Discovery</label>
+				<description>Enable the discovery of network device things</description>
+				<default>true</default>
+				<required>false</required>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="discoverNetInterface" type="boolean">
+				<label>Enable Network Interface Discovery</label>
+				<description>Enable the discovery of network interface things</description>
+				<default>true</default>
+				<required>false</required>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="discoverAirPlayReceiver" type="boolean">
+				<label>Enable AirPlay Receiver Discovery</label>
+				<description>Enable the discovery of AirPlay receiver things</description>
+				<default>true</default>
 				<required>false</required>
 				<advanced>true</advanced>
 			</parameter>

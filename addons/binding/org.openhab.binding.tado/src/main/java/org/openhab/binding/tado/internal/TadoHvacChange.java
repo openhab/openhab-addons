@@ -15,7 +15,7 @@ import org.openhab.binding.tado.TadoBindingConstants.FanSpeed;
 import org.openhab.binding.tado.TadoBindingConstants.HvacMode;
 import org.openhab.binding.tado.TadoBindingConstants.OperationMode;
 import org.openhab.binding.tado.handler.TadoZoneHandler;
-import org.openhab.binding.tado.internal.api.TadoClientException;
+import org.openhab.binding.tado.internal.api.ApiException;
 import org.openhab.binding.tado.internal.api.model.GenericZoneSetting;
 import org.openhab.binding.tado.internal.api.model.Overlay;
 import org.openhab.binding.tado.internal.api.model.OverlayTerminationCondition;
@@ -111,7 +111,7 @@ public class TadoHvacChange {
         return this;
     }
 
-    public void apply() throws IOException, TadoClientException {
+    public void apply() throws IOException, ApiException {
         if (followSchedule) {
             zoneHandler.removeOverlay();
         } else {
@@ -120,7 +120,7 @@ public class TadoHvacChange {
         }
     }
 
-    private Overlay buildOverlay() throws IOException, TadoClientException {
+    private Overlay buildOverlay() throws IOException, ApiException {
         ZoneStateProvider zoneStateProvider = new ZoneStateProvider(zoneHandler);
         OverlayTerminationCondition terminationCondition = terminationConditionBuilder.build(zoneStateProvider);
         GenericZoneSetting setting = settingsBuilder.build(zoneStateProvider, zoneHandler.getZoneCapabilities());

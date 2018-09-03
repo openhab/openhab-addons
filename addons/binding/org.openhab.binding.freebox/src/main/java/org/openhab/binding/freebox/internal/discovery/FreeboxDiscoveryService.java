@@ -32,6 +32,7 @@ import org.openhab.binding.freebox.handler.FreeboxHandler;
 import org.openhab.binding.freebox.internal.config.FreeboxAirPlayDeviceConfiguration;
 import org.openhab.binding.freebox.internal.config.FreeboxNetDeviceConfiguration;
 import org.openhab.binding.freebox.internal.config.FreeboxNetInterfaceConfiguration;
+import org.openhab.binding.freebox.internal.config.FreeboxServerConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +41,7 @@ import org.slf4j.LoggerFactory;
  * except the Freebox Server thing itself
  *
  * @author Laurent Garnier - Initial contribution
+ * @author Laurent Garnier - add discovery settings
  */
 public class FreeboxDiscoveryService extends AbstractDiscoveryService implements FreeboxDataListener {
 
@@ -50,6 +52,10 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
     private static final String PHONE_ID = "wired";
 
     private FreeboxHandler bridgeHandler;
+    private boolean discoverPhone;
+    private boolean discoverNetDevice;
+    private boolean discoverNetInterface;
+    private boolean discoverAirPlayReceiver;
 
     /**
      * Creates a FreeboxDiscoveryService with background discovery disabled.
@@ -57,11 +63,16 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
     public FreeboxDiscoveryService(FreeboxHandler freeboxBridgeHandler) {
         super(FreeboxBindingConstants.SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME, false);
         this.bridgeHandler = freeboxBridgeHandler;
+        this.discoverPhone = true;
+        this.discoverNetDevice = true;
+        this.discoverNetInterface = true;
+        this.discoverAirPlayReceiver = true;
     }
 
     @Override
     public void activate(@Nullable Map<@NonNull String, @Nullable Object> configProperties) {
         super.activate(configProperties);
+        applyConfig(configProperties);
         bridgeHandler.registerDataListener(this);
     }
 
@@ -69,6 +80,32 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
     public void deactivate() {
         bridgeHandler.unregisterDataListener(this);
         super.deactivate();
+    }
+
+    @Override
+    public void applyConfig(Map<String, Object> configProperties) {
+        if (configProperties != null) {
+            Object property = configProperties.get(FreeboxServerConfiguration.DISCOVER_PHONE);
+            if (property != null) {
+                discoverPhone = ((Boolean) property).booleanValue();
+            }
+            property = configProperties.get(FreeboxServerConfiguration.DISCOVER_NET_DEVICE);
+            if (property != null) {
+                discoverNetDevice = ((Boolean) property).booleanValue();
+            }
+            property = configProperties.get(FreeboxServerConfiguration.DISCOVER_NET_INTERFACE);
+            if (property != null) {
+                discoverNetInterface = ((Boolean) property).booleanValue();
+            }
+            property = configProperties.get(FreeboxServerConfiguration.DISCOVER_AIRPLAY_RECEIVER);
+            if (property != null) {
+                discoverAirPlayReceiver = ((Boolean) property).booleanValue();
+            }
+        }
+        logger.debug("Freebox discovery - discoverPhone : {}", discoverPhone);
+        logger.debug("Freebox discovery - discoverNetDevice : {}", discoverNetDevice);
+        logger.debug("Freebox discovery - discoverNetInterface : {}", discoverNetInterface);
+        logger.debug("Freebox discovery - discoverAirPlayReceiver : {}", discoverAirPlayReceiver);
     }
 
     @Override
@@ -92,46 +129,54 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
             return;
         }
 
-        // Phone
-        ThingUID thingUID = new ThingUID(FreeboxBindingConstants.FREEBOX_THING_TYPE_PHONE, bridge, PHONE_ID);
-        logger.trace("Adding new Freebox Phone {} to inbox", thingUID);
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridge)
-                .withLabel("Wired phone").build();
-        thingDiscovered(discoveryResult);
+        ThingUID thingUID;
+        DiscoveryResult discoveryResult;
 
-        if (hostsConfig != null) {
+        if (discoverPhone) {
+            // Phone
+            thingUID = new ThingUID(FreeboxBindingConstants.FREEBOX_THING_TYPE_PHONE, bridge, PHONE_ID);
+            logger.trace("Adding new Freebox Phone {} to inbox", thingUID);
+            discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridge).withLabel("Wired phone")
+                    .build();
+            thingDiscovered(discoveryResult);
+        }
+
+        if (hostsConfig != null && (discoverNetDevice || discoverNetInterface)) {
             // Network devices
             for (LanHostConfig hostConfig : hostsConfig.getConfig()) {
                 String mac = hostConfig.getMAC();
                 if (StringUtils.isNotEmpty(mac)) {
-                    String uid = mac.replaceAll("[^A-Za-z0-9_]", "_");
-                    thingUID = new ThingUID(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_DEVICE, bridge, uid);
-                    String name = StringUtils.isEmpty(hostConfig.getPrimaryName()) ? ("Freebox Network Device " + mac)
-                            : hostConfig.getPrimaryName();
-                    logger.trace("Adding new Freebox Network Device {} to inbox", thingUID);
-                    Map<String, Object> properties = new HashMap<>(1);
-                    if (StringUtils.isNotEmpty(hostConfig.getVendorName())) {
-                        properties.put(Thing.PROPERTY_VENDOR, hostConfig.getVendorName());
+                    if (discoverNetDevice) {
+                        String uid = mac.replaceAll("[^A-Za-z0-9_]", "_");
+                        thingUID = new ThingUID(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_DEVICE, bridge, uid);
+                        String name = StringUtils.isEmpty(hostConfig.getPrimaryName())
+                                ? ("Freebox Network Device " + mac)
+                                : hostConfig.getPrimaryName();
+                        logger.trace("Adding new Freebox Network Device {} to inbox", thingUID);
+                        Map<String, Object> properties = new HashMap<>(1);
+                        if (StringUtils.isNotEmpty(hostConfig.getVendorName())) {
+                            properties.put(Thing.PROPERTY_VENDOR, hostConfig.getVendorName());
+                        }
+                        properties.put(FreeboxNetDeviceConfiguration.MAC_ADDRESS, mac);
+                        discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                                .withBridge(bridge).withLabel(name).build();
+                        thingDiscovered(discoveryResult);
                     }
-                    properties.put(FreeboxNetDeviceConfiguration.MAC_ADDRESS, mac);
-                    discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                            .withBridge(bridge).withLabel(name).build();
-                    thingDiscovered(discoveryResult);
 
                     // Network interfaces
-                    if (hostConfig.getL3connectivities() != null) {
+                    if (hostConfig.getL3connectivities() != null && discoverNetInterface) {
                         for (LanHostL3Connectivity l3 : hostConfig.getL3connectivities()) {
                             String addr = l3.getAddr();
                             if (StringUtils.isNotEmpty(addr)) {
-                                uid = addr.replaceAll("[^A-Za-z0-9_]", "_");
+                                String uid = addr.replaceAll("[^A-Za-z0-9_]", "_");
                                 thingUID = new ThingUID(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_INTERFACE,
                                         bridge, uid);
-                                name = addr;
+                                String name = addr;
                                 if (StringUtils.isNotEmpty(hostConfig.getPrimaryName())) {
                                     name += " (" + (hostConfig.getPrimaryName() + ")");
                                 }
                                 logger.trace("Adding new Freebox Network Interface {} to inbox", thingUID);
-                                properties = new HashMap<>(1);
+                                Map<String, Object> properties = new HashMap<>(1);
                                 if (StringUtils.isNotEmpty(hostConfig.getVendorName())) {
                                     properties.put(Thing.PROPERTY_VENDOR, hostConfig.getVendorName());
                                 }
@@ -146,7 +191,7 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
             }
         }
 
-        if (airPlayDevices != null) {
+        if (airPlayDevices != null && discoverAirPlayReceiver) {
             // AirPlay devices
             for (AirMediaReceiver device : airPlayDevices) {
                 String name = device.getName();

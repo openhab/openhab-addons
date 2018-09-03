@@ -81,6 +81,8 @@ Bridge mihome:bridge:f0b429XXXXXX "Xiaomi Gateway" [ serialNumber="f0b429XXXXXX"
     Thing mihome:gateway:f0b429XXXXXX "Xiaomi Mi Smart Home Gateway" [itemId="f0b429XXXXXX"]
 
     Thing mihome:sensor_ht:158d0001XXXXXX "Xiaomi Temperature Sensor" [itemId="158d0001XXXXXX"]
+    
+    Thing mihome:sensor_weather_v1:158d0001XXXXXX "Xiaomi Aqara Temp, Hum and Press Sensor" [itemId="158d0001XXXXXX"]
 
     Thing mihome:sensor_motion:158d0001XXXXXX "Xiaomi Motion Sensor" [itemId="158d0001XXXXXX"]
 
@@ -113,6 +115,13 @@ Number HT_Temperature <temperature> { channel="mihome:sensor_ht:<ID>:temperature
 Number HT_Humidity <humidity> { channel="mihome:sensor_ht:<ID>:humidity" }
 Number HT_Battery <battery> { channel="mihome:sensor_ht:<ID>:batteryLevel" }
 Switch HT_BatteryLow <energy> { channel="mihome:sensor_ht:<ID>:lowBattery" }
+
+// Xiaomi Aqara Temperature, Humidity and pressure Sensor
+Number HTP_Temperature <temperature> { channel="mihome:sensor_weather_v1:<ID>:temperature" }
+Number HTP_Humidity <humidity> { channel="mihome:sensor_weather_v1:<ID>:humidity" }
+Number HTP_Pressure <pressure> { channel="mihome:sensor_weather_v1:<ID>:pressure" }
+Number HTP_Battery <battery> { channel="mihome:sensor_weather_v1:<ID>:batteryLevel" }
+Switch HTP_BatteryLow <energy> { channel="mihome:sensor_weather_v1:<ID>:lowBattery" }
 
 // Xiaomi Motion Sensor
 Switch MotionSensor_MotionStatus <motion>  { channel="mihome:sensor_motion:<ID>:motion" }

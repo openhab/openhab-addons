@@ -8,6 +8,10 @@
  */
 package org.openhab.binding.chromecast.internal;
 
+import static org.eclipse.smarthome.core.types.UnDefType.UNDEF;
+import static org.openhab.binding.chromecast.ChromecastBindingConstants.*;
+import static su.litvak.chromecast.api.v2.MediaStatus.PlayerState.*;
+
 import java.time.Instant;
 import java.util.Calendar;
 import java.util.Collections;
@@ -15,6 +19,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -23,49 +28,30 @@ import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
 import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.chromecast.ChromecastBindingConstants;
 import org.openhab.binding.chromecast.handler.ChromecastHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import su.litvak.chromecast.api.v2.Application;
 import su.litvak.chromecast.api.v2.Media;
 import su.litvak.chromecast.api.v2.MediaStatus;
 import su.litvak.chromecast.api.v2.Status;
 import su.litvak.chromecast.api.v2.Volume;
 
-import static org.eclipse.smarthome.core.types.UnDefType.UNDEF;
-import static org.openhab.binding.chromecast.ChromecastBindingConstants.CHANNEL_APP_ID;
-import static org.openhab.binding.chromecast.ChromecastBindingConstants.CHANNEL_APP_NAME;
-import static org.openhab.binding.chromecast.ChromecastBindingConstants.CHANNEL_CONTROL;
-import static org.openhab.binding.chromecast.ChromecastBindingConstants.CHANNEL_CURRENT_TIME;
-import static org.openhab.binding.chromecast.ChromecastBindingConstants.CHANNEL_DURATION;
-import static org.openhab.binding.chromecast.ChromecastBindingConstants.CHANNEL_IDLING;
-import static org.openhab.binding.chromecast.ChromecastBindingConstants.CHANNEL_IMAGE;
-import static org.openhab.binding.chromecast.ChromecastBindingConstants.CHANNEL_IMAGE_SRC;
-import static org.openhab.binding.chromecast.ChromecastBindingConstants.CHANNEL_LOCATION;
-import static org.openhab.binding.chromecast.ChromecastBindingConstants.CHANNEL_METADATA_TYPE;
-import static org.openhab.binding.chromecast.ChromecastBindingConstants.CHANNEL_MUTE;
-import static org.openhab.binding.chromecast.ChromecastBindingConstants.CHANNEL_STATUS_TEXT;
-import static org.openhab.binding.chromecast.ChromecastBindingConstants.CHANNEL_VOLUME;
-import static org.openhab.binding.chromecast.ChromecastBindingConstants.LOCATION_METADATA_LATITUDE;
-import static org.openhab.binding.chromecast.ChromecastBindingConstants.LOCATION_METADATA_LONGITUDE;
-import static org.openhab.binding.chromecast.ChromecastBindingConstants.METADATA_SIMPLE_CHANNELS;
-import static su.litvak.chromecast.api.v2.MediaStatus.PlayerState.BUFFERING;
-import static su.litvak.chromecast.api.v2.MediaStatus.PlayerState.PAUSED;
-import static su.litvak.chromecast.api.v2.MediaStatus.PlayerState.PLAYING;
-
 /**
  * Responsible for updating the Thing status based on messages received from a ChromeCast. This doesn't query
- * anything - it just parses the messages and updates the Thing. Message handling/scheduling/receiving is done elsewhere.
+ * anything - it just parses the messages and updates the Thing. Message handling/scheduling/receiving is done
+ * elsewhere.
  * <p>
  * This also maintains state of both volume and the appSessionId (only if we started playing media).
  *
- * @author Jason Holmes - Initial Author.
+ * @author Jason Holmes - Initial contribution
  */
 public class ChromecastStatusUpdater {
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -109,7 +95,6 @@ public class ChromecastStatusUpdater {
         updateAppStatus(status.getRunningApp());
         updateVolumeStatus(status.volume);
     }
-
 
     public void updateAppStatus(final Application application) {
         State name = UNDEF;
@@ -171,10 +156,8 @@ public class ChromecastStatusUpdater {
 
         // If we're playing, paused or buffering but don't have any MEDIA information don't null everything out.
         Media media = mediaStatus.media;
-        if (media == null &&
-                (mediaStatus.playerState == PLAYING
-                        || mediaStatus.playerState == PAUSED
-                        || mediaStatus.playerState == BUFFERING)) {
+        if (media == null && (mediaStatus.playerState == PLAYING || mediaStatus.playerState == PAUSED
+                || mediaStatus.playerState == BUFFERING)) {
             return;
         }
 
@@ -231,7 +214,7 @@ public class ChromecastStatusUpdater {
         // Channel name and metadata key don't match.
         Object imagesValue = metadata.get("images");
 
-        if (!(callback.isLinked(CHANNEL_IMAGE) || (callback.isLinked(CHANNEL_IMAGE_SRC)) )) {
+        if (!(callback.isLinked(CHANNEL_IMAGE) || (callback.isLinked(CHANNEL_IMAGE_SRC)))) {
             return;
         }
 

@@ -16,7 +16,6 @@ import java.util.Map;
  * which delivers some additional data for the CometVisu-Editor
  * 
  * @author Tobias Bräutigam
- * @since 2.0.0
  */
 public class ItemBean extends DataBean {
     public Map<String, String> hints = new HashMap<String, String>();

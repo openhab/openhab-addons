@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="valloxmv"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="valloxmv">
+		<label>Vallox Ventilation Unit</label>
+		<description>Interface to online interface of Vallox ventilation unit</description>
+		<channels>
+			<channel id="onoff" typeId="onoff" />
+			<channel id="state" typeId="state" />
+			<channel id="fanspeed" typeId="fanspeed" />
+			<channel id="fanspeedextract" typeId="fanspeedextract" />
+			<channel id="fanspeedsupply" typeId="fanspeedsupply" />
+			<channel id="tempinside" typeId="tempinside" />
+			<channel id="tempoutside" typeId="tempoutside" />
+			<channel id="tempexhaust" typeId="tempexhaust" />
+			<channel id="tempincomingbeforeheating" typeId="tempincomingbeforeheating" />
+			<channel id="tempincoming" typeId="tempincoming" />
+			<channel id="humidity" typeId="humidity" />
+			<channel id="cellstate" typeId="cellstate" />
+			<channel id="uptimeyears" typeId="uptimeyears" />
+			<channel id="uptimehours" typeId="uptimehours" />
+			<channel id="uptimehourscurrent" typeId="uptimehourscurrent" />
+			<channel id="extrfanbalancebase" typeId="extrfanbalancebase" />
+			<channel id="suppfanbalancebase" typeId="suppfanbalancebase" />
+			<channel id="homespeedsetting" typeId="homespeedsetting" />
+			<channel id="homeairtemptarget" typeId="homeairtemptarget" />
+		</channels>
+		<config-description>
+			<parameter name="ip" type="text" required="true">
+				<label>IP Address</label>
+				<context>network-address</context>
+				<description>IP address or host name of online interface of ventilation unit</description>
+			</parameter>
+			<parameter name="updateinterval" type="integer" required="false">
+				<label>Update interval</label>
+				<description>Data update interval in seconds (default: 60s)</description>
+				<required>false</required>
+				<default>60</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="onoff">
+		<item-type>Switch</item-type>
+		<label>On</label>
+		<description>Power switch for ventilation unit</description>
+	</channel-type>
+
+	<channel-type id="state">
+		<item-type>Number</item-type>
+		<label>State</label>
+		<description>Current state of ventilation unit</description>
+		<state readOnly="false">
+			<options>
+				<option value="1">Fireplace</option>
+				<option value="2">Away</option>
+				<option value="3">At home</option>
+				<option value="4">Boost</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="fanspeed">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Fan speed</label>
+		<description>Fan speed in % (0-100)</description>
+		<state readOnly="true" min="0" max="1" pattern="%d %unit%" />
+	</channel-type>
+
+	<channel-type id="fanspeedextract" advanced="true">
+		<item-type>Number</item-type>
+		<label>Fan speed extracting</label>
+		<description>Fan speed of extracting fan (1/min)</description>
+		<state pattern="%d 1/min" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="fanspeedsupply" advanced="true">
+		<item-type>Number</item-type>
+		<label>Fan speed supplying</label>
+		<description>Fan speed of supplying fan (1/min)</description>
+		<state pattern="%d 1/min" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="tempinside">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature inside</label>
+		<description>Current temperature inside the building.</description>
+		<category>Temperature</category>
+		<state pattern="%.2f %unit%" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="tempoutside">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature outside</label>
+		<description>Current temperature outside the building.</description>
+		<category>Temperature</category>
+		<state pattern="%.2f %unit%" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="tempexhaust">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature exhaust</label>
+		<description>Current temperature of the air flow exhausting the building.</description>
+		<category>Temperature</category>
+		<state pattern="%.2f %unit%" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="tempincomingbeforeheating" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature incoming before heating</label>
+		<description>
+			Current temperature of the air flow incoming to the building before heating (if optional heating module
+			included in ventilation unit).
+		</description>
+		<category>Temperature</category>
+		<state pattern="%.2f %unit%" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="tempincoming">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature incoming</label>
+		<description>Current temperature of the air flow incoming to the building.</description>
+		<category>Temperature</category>
+		<state pattern="%.2f %unit%" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="humidity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<description>Current humidity of the air flow exhausting the building.</description>
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%" />
+	</channel-type>
+
+	<channel-type id="cellstate">
+		<item-type>Number</item-type>
+		<label>Cell state</label>
+		<description>Current cell state</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">Heat recovery</option>
+				<option value="1">Cool recovery</option>
+				<option value="2">Bypass</option>
+				<option value="3">Defrosting</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="uptimeyears">
+		<item-type>Number</item-type>
+		<label>Total uptime years</label>
+		<description>Total uptime in years (+ uptime in hours = total uptime)</description>
+		<state pattern="%d Y" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="uptimehours">
+		<item-type>Number</item-type>
+		<label>Total uptime hours</label>
+		<description>Total uptime in hours (+ uptime in years = total uptime)</description>
+		<state pattern="%d h" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="uptimehourscurrent">
+		<item-type>Number</item-type>
+		<label>Current uptime hours</label>
+		<description>Current uptime in hours</description>
+		<state pattern="%d h" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="extrfanbalancebase" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Extract fan base speed</label>
+		<description>Extract fan base speed in % (0-100)</description>
+		<state readOnly="false" min="0" max="100" pattern="%d %%" />
+	</channel-type>
+
+	<channel-type id="suppfanbalancebase" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Supply fan base speed</label>
+		<description>Supply fan base speed in % (0-100)</description>
+		<state readOnly="false" min="0" max="100" pattern="%d %%" />
+	</channel-type>
+
+	<channel-type id="homespeedsetting" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Home fan speed</label>
+		<description>Home fan speed in % (0-100)</description>
+		<state readOnly="false" min="0" max="100" pattern="%d %%" />
+	</channel-type>
+
+	<channel-type id="homeairtemptarget" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Home target temperature</label>
+		<description>Target temperature in home state</description>
+		<category>Temperature</category>
+		<state pattern="%.2f %unit%" readOnly="false" />
+	</channel-type>
+</thing:thing-descriptions>

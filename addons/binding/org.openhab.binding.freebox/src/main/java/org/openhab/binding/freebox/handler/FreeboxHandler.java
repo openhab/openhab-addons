@@ -13,6 +13,7 @@ import static org.openhab.binding.freebox.FreeboxBindingConstants.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -33,6 +34,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
@@ -67,6 +69,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gaël L'hopital - Initial contribution
  * @author Laurent Garnier - updated to a bridge handler and delegate few things to another handler
+ * @author Laurent Garnier - update discovery configuration
  */
 public class FreeboxHandler extends BaseBridgeHandler {
 
@@ -199,6 +202,18 @@ public class FreeboxHandler extends BaseBridgeHandler {
         logger.debug("initializing Freebox Server handler for thing {}", getThing().getUID());
 
         FreeboxServerConfiguration configuration = getConfigAs(FreeboxServerConfiguration.class);
+
+        // Update the discovery configuration
+        Map<String, Object> configDiscovery = new HashMap<String, Object>();
+        configDiscovery.put(FreeboxServerConfiguration.DISCOVER_PHONE, configuration.discoverPhone);
+        configDiscovery.put(FreeboxServerConfiguration.DISCOVER_NET_DEVICE, configuration.discoverNetDevice);
+        configDiscovery.put(FreeboxServerConfiguration.DISCOVER_NET_INTERFACE, configuration.discoverNetInterface);
+        configDiscovery.put(FreeboxServerConfiguration.DISCOVER_AIRPLAY_RECEIVER,
+                configuration.discoverAirPlayReceiver);
+        for (FreeboxDataListener dataListener : dataListeners) {
+            dataListener.applyConfig(configDiscovery);
+        }
+
         if (StringUtils.isNotEmpty(configuration.fqdn)) {
             updateStatus(ThingStatus.OFFLINE);
 
@@ -486,8 +501,9 @@ public class FreeboxHandler extends BaseBridgeHandler {
 
         // The update of channels is delegated to each thing handler
         for (Thing thing : getThing().getThings()) {
-            if (thing.getHandler() != null) {
-                ((FreeboxThingHandler) thing.getHandler()).updateNetInfo(lanHostsConfiguration);
+            ThingHandler handler = thing.getHandler();
+            if (handler instanceof FreeboxThingHandler) {
+                ((FreeboxThingHandler) handler).updateNetInfo(lanHostsConfiguration);
             }
         }
 
@@ -499,8 +515,9 @@ public class FreeboxHandler extends BaseBridgeHandler {
 
         // The update of channels is delegated to each thing handler
         for (Thing thing : getThing().getThings()) {
-            if (thing.getHandler() != null) {
-                ((FreeboxThingHandler) thing.getHandler()).updateAirPlayDevice(airPlayDevices);
+            ThingHandler handler = thing.getHandler();
+            if (handler instanceof FreeboxThingHandler) {
+                ((FreeboxThingHandler) handler).updateAirPlayDevice(airPlayDevices);
             }
         }
 

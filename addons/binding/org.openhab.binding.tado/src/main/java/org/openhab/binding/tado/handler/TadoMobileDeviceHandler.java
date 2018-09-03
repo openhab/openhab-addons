@@ -22,7 +22,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.tado.TadoBindingConstants;
-import org.openhab.binding.tado.internal.api.TadoClientException;
+import org.openhab.binding.tado.internal.api.ApiException;
 import org.openhab.binding.tado.internal.api.model.MobileDevice;
 import org.openhab.binding.tado.internal.config.TadoMobileDeviceConfig;
 import org.slf4j.Logger;
@@ -82,7 +82,7 @@ public class TadoMobileDeviceHandler extends BaseHomeThingHandler {
                             "Geotracking is disabled on mobile device " + device.getName());
                     return;
                 }
-            } catch (IOException | TadoClientException e) {
+            } catch (IOException | ApiException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Could not connect to server due to " + e.getMessage());
                 cancelScheduledStateUpdate();
@@ -102,17 +102,18 @@ public class TadoMobileDeviceHandler extends BaseHomeThingHandler {
             MobileDevice device = getMobileDevice();
             updateState(TadoBindingConstants.CHANNEL_MOBILE_DEVICE_AT_HOME,
                     device.getLocation().isAtHome() ? OnOffType.ON : OnOffType.OFF);
-        } catch (IOException | TadoClientException e) {
+        } catch (IOException | ApiException e) {
             logger.debug("Status update of mobile device with id {} failed: {}", configuration.id, e.getMessage());
         }
     }
 
-    private MobileDevice getMobileDevice() throws IOException, TadoClientException {
+    private MobileDevice getMobileDevice() throws IOException, ApiException {
         MobileDevice device = null;
 
         try {
-            device = getApi().getMobileDeviceDetails(getHomeId(), configuration.id);
-        } catch (IOException | TadoClientException e) {
+            device = getApi().listMobileDevices(getHomeId()).stream().filter(m -> m.getId() == configuration.id)
+                    .findFirst().orElse(null);
+        } catch (IOException | ApiException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Could not connect to server due to " + e.getMessage());
             throw e;

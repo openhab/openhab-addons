@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
  * Parsers for the pulseaudio return strings
  *
  * @author Tobias Bräutigam - Initial contribution
- * @since 1.2.0
  */
 public class Parser {
     private static final Logger LOGGER = LoggerFactory.getLogger(Parser.class);

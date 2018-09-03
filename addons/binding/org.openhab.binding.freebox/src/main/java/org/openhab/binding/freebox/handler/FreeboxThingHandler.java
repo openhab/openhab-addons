@@ -12,10 +12,13 @@ import static org.openhab.binding.freebox.FreeboxBindingConstants.*;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -110,7 +113,12 @@ public class FreeboxThingHandler extends BaseThingHandler {
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         logger.debug("bridgeStatusChanged {}", bridgeStatusInfo);
-        initializeThing((getBridge() == null) ? null : getBridge().getHandler(), bridgeStatusInfo.getStatus());
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            initializeThing(null, bridgeStatusInfo.getStatus());
+        } else {
+            initializeThing(bridge.getHandler(), bridgeStatusInfo.getStatus());
+        }
     }
 
     private void initializeThing(ThingHandler thingHandler, ThingStatus bridgeStatus) {
@@ -278,8 +286,9 @@ public class FreeboxThingHandler extends BaseThingHandler {
                     new StringType(call.getNumber()));
             updateState(new ChannelUID(getThing().getUID(), channelGroup, CALLDURATION),
                     new DecimalType(call.getDuration()));
-            updateState(new ChannelUID(getThing().getUID(), channelGroup, CALLTIMESTAMP),
-                    new DateTimeType(call.getTimeStamp()));
+            ZonedDateTime zoned = ZonedDateTime.ofInstant(Instant.ofEpochMilli(call.getTimeStamp().getTimeInMillis()),
+                    TimeZone.getDefault().toZoneId());
+            updateState(new ChannelUID(getThing().getUID(), channelGroup, CALLTIMESTAMP), new DateTimeType(zoned));
             updateState(new ChannelUID(getThing().getUID(), channelGroup, CALLNAME), new StringType(call.getName()));
             if (channelGroup.equals(ANY)) {
                 updateState(new ChannelUID(getThing().getUID(), channelGroup, CALLSTATUS),

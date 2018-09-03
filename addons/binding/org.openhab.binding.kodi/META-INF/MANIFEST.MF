@@ -13,6 +13,7 @@ Export-Package:
  org.openhab.binding.kodi.handler
 Import-Package: 
  com.google.gson,
+ javax.measure,
  javax.measure.quantity,
  org.apache.commons.lang,
  org.eclipse.jdt.annotation;resolution:=optional,

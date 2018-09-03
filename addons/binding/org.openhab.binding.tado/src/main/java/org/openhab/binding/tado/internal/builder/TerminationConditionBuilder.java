@@ -13,7 +13,7 @@ import static org.openhab.binding.tado.internal.api.TadoApiTypeUtils.*;
 import java.io.IOException;
 
 import org.openhab.binding.tado.handler.TadoZoneHandler;
-import org.openhab.binding.tado.internal.api.TadoClientException;
+import org.openhab.binding.tado.internal.api.ApiException;
 import org.openhab.binding.tado.internal.api.model.OverlayTerminationCondition;
 import org.openhab.binding.tado.internal.api.model.OverlayTerminationConditionType;
 import org.openhab.binding.tado.internal.api.model.TimerTerminationCondition;
@@ -54,7 +54,7 @@ public class TerminationConditionBuilder {
     }
 
     public OverlayTerminationCondition build(ZoneStateProvider zoneStateProvider)
-            throws IOException, TadoClientException {
+            throws IOException, ApiException {
         OverlayTerminationCondition terminationCondition = null;
 
         if (terminationType != null) {
@@ -75,13 +75,13 @@ public class TerminationConditionBuilder {
         return terminationCondition;
     }
 
-    private OverlayTerminationCondition getDefaultTerminationCondition() throws IOException, TadoClientException {
+    private OverlayTerminationCondition getDefaultTerminationCondition() throws IOException, ApiException {
         OverlayTerminationCondition defaultTerminationCondition = zoneHandler.getDefaultTerminationCondition();
         return defaultTerminationCondition != null ? defaultTerminationCondition : manualTermination();
     }
 
     private TimerTerminationCondition getCurrentOrDefaultTimerTermination(ZoneStateProvider zoneStateProvider)
-            throws IOException, TadoClientException {
+            throws IOException, ApiException {
         // Timer without duration
         int duration = zoneHandler.getFallbackTimerDuration() * 60;
 

@@ -115,8 +115,8 @@ Number Watering_Timer_1     "Watering Timer 1 [%d min]  { channel="gardena:ic24:
 ```
 
 ```shell
-Watering_Valve.sendCommand(30) // 30 minutes
-Watering_Duration.sendCommand(ON)
+Watering_Duration.sendCommand(30) // 30 minutes
+Watering_Valve.sendCommand(ON)
 
 Power_Timer.sendCommand("on")
 Power_Timer.sendCommand("off")

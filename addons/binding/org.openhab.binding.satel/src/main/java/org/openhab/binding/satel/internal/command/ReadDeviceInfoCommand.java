@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
  * (partition, zone, user, etc).
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.9.0
  */
 public class ReadDeviceInfoCommand extends SatelCommandBase {
 

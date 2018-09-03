@@ -41,6 +41,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.BridgeBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -355,9 +356,9 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
             states.add(new StateOption(activity.getLabel(), activity.getLabel()));
         }
 
-        ChannelType channelType = new ChannelType(channelTypeUID, false, "String", "Current Activity",
-                "Current activity for " + getThing().getLabel(), null, null,
-                new StateDescription(null, null, null, "%s", false, states), null);
+        ChannelType channelType = ChannelTypeBuilder.state(channelTypeUID, "Current Activity", "String")
+                .withDescription("Current activity for " + getThing().getLabel())
+                .withStateDescription(new StateDescription(null, null, null, "%s", false, states)).build();
 
         factory.addChannelType(channelType);
 

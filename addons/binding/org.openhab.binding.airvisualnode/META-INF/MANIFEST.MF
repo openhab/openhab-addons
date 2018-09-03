@@ -1,0 +1,34 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.airvisualnode
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: 
+ .,
+ lib/jcifs-1.3.18.jar
+Bundle-ManifestVersion: 2
+Bundle-Name: AirVisualNode Binding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.binding.airvisualnode;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.4.0.qualifier
+Export-Package: 
+ org.openhab.binding.airvisualnode,
+ org.openhab.binding.airvisualnode.handler
+Import-Package: 
+ org.openhab.binding.airvisualnode,
+ org.openhab.binding.airvisualnode.handler,
+ com.google.gson,
+ com.google.gson.annotations,
+ javax.measure,
+ javax.measure.quantity,
+ org.apache.commons.io,
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.library.unit,
+ org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.thing.type,
+ org.eclipse.smarthome.core.types,
+ org.slf4j
+Service-Component: OSGI-INF/*.xml
