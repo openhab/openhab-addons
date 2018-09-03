@@ -23,6 +23,27 @@ public class Battery {
     private Integer authorizationStatus;
     private String vendor;
 
+    public enum BatteryStatus {
+        NOTSUPPORTED(0),
+        GENUINE(1),
+        NOTGENUINE(2);
+
+        private int value;
+
+        private BatteryStatus(int value) {
+            this.value = value;
+        }
+
+        public static BatteryStatus fromValue(int value) {
+            for (BatteryStatus s : BatteryStatus.values()) {
+                if (s.value == value) {
+                    return s;
+                }
+            }
+            return NOTSUPPORTED;
+        }
+    }
+
     public Integer getLevel() {
         return level;
     }
@@ -65,6 +86,10 @@ public class Battery {
 
     public Integer getAuthorizationStatus() {
         return authorizationStatus;
+    }
+
+    public BatteryStatus getBatteryStatus() {
+        return BatteryStatus.fromValue(this.authorizationStatus);
     }
 
     public void setAuthorizationStatus(Integer authorizationStatus) {

@@ -12,61 +12,44 @@ package org.openhab.binding.neato.internal.classes;
  * The {@link NeatoGeneralInfo} is the internal class for Neato general information.
  *
  * @author Patrik Wimnell - Initial contribution
+ * @author Holger Eisold - fixes to get GeneralInfo working
  */
 public class NeatoGeneralInfo {
 
-    private String productNumber;
-    private String serial;
-    private String model;
-    private String language;
-    private String firmware;
-    private Battery battery;
+    private Integer version;
+    private String reqId;
+    private String result;
+    private NeatoGeneralInfoData data;
 
-    public String getProductNumber() {
-        return productNumber;
+    public Integer getVersion() {
+        return version;
     }
 
-    public void setProductNumber(String productNumber) {
-        this.productNumber = productNumber;
+    public void setVersion(Integer version) {
+        this.version = version;
     }
 
-    public String getSerial() {
-        return serial;
+    public String getReqId() {
+        return reqId;
     }
 
-    public void setSerial(String serial) {
-        this.serial = serial;
+    public void setReqId(String reqId) {
+        this.reqId = reqId;
     }
 
-    public String getModel() {
-        return model;
+    public String getResult() {
+        return result;
     }
 
-    public void setModel(String model) {
-        this.model = model;
+    public void setResult(String result) {
+        this.result = result;
     }
 
-    public String getLanguage() {
-        return language;
+    public NeatoGeneralInfoData getData() {
+        return data;
     }
 
-    public void setLanguage(String language) {
-        this.language = language;
-    }
-
-    public String getFirmware() {
-        return firmware;
-    }
-
-    public void setFirmware(String firmware) {
-        this.firmware = firmware;
-    }
-
-    public Battery getBattery() {
-        return battery;
-    }
-
-    public void setBattery(Battery battery) {
-        this.battery = battery;
+    public void setData(NeatoGeneralInfoData data) {
+        this.data = data;
     }
 }

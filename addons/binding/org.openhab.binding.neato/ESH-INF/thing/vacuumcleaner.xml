@@ -34,7 +34,19 @@
 		<description>Provides communication with Neato Vacuum cleaner.</description>
 
 		<channels>
-			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="battery-level" typeId="system.battery-level" />
+			<channel id="info-productnumber" typeId="info-productnumber" />
+			<channel id="info-serial" typeId="info-serial" />
+			<channel id="info-model" typeId="info-model" />
+			<channel id="info-language" typeId="info-language" />
+			<channel id="info-firmware" typeId="info-firmware" />
+			<channel id="info-battery-level" typeId="info-battery-level" />
+			<channel id="info-battery-timetoempty" typeId="info-battery-timetoempty" />
+			<channel id="info-battery-timetofullcharge" typeId="info-battery-timetofullcharge" />
+			<channel id="info-battery-totalcharges" typeId="info-battery-totalcharges" />
+			<channel id="info-battery-manufactoringdate" typeId="info-battery-manufactoringdate" />
+			<channel id="info-battery-authorizationstatus" typeId="info-battery-authorizationstatus" />
+			<channel id="info-battery-vendor" typeId="info-battery-vendor" />
 			<channel id="state" typeId="state" />
 			<channel id="action" typeId="action" />
 			<channel id="dock-has-been-seen" typeId="dock-has-been-seen" />
@@ -68,6 +80,96 @@
 			</parameter>
 		</config-description>
 	</thing-type>
+
+	<channel-type id="info-productnumber">
+		<item-type>String</item-type>
+		<label>Info Product Number</label>
+		<description>The Product number.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="info-serial">
+		<item-type>String</item-type>
+		<label>Info Serial Number</label>
+		<description>The robot serial number.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="info-model">
+		<item-type>String</item-type>
+		<label>Info Model</label>
+		<description>The robot model identifier. MUST be the same one as reported in meta/model.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="info-language">
+		<item-type>String</item-type>
+		<label>Info Language</label>
+		<description>The robot's interface language (if available).</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="info-firmware">
+		<item-type>String</item-type>
+		<label>Info Firmware</label>
+		<description>The software version, defined according to Semantic Versioning principles. The format is MAJOR.MINOR.PATCH-BUILDNUM, where BUILDNUM is a sequentially increasing number.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="info-battery-level">
+		<item-type>Number</item-type>
+		<label>Info Battery Level</label>
+		<description>expresses the battery bar level (1-4).</description>
+		<state readOnly="true" pattern="%d" />
+	</channel-type>
+
+	<channel-type id="info-battery-timetoempty">
+		<item-type>Number</item-type>
+		<label>Info Battery Time To Empty</label>
+		<description>how many minutes is the battery able to run. null if the robot is currently computing it.</description>
+		<state readOnly="true" pattern="%d" />
+	</channel-type>
+
+	<channel-type id="info-battery-timetofullcharge">
+		<item-type>Number</item-type>
+		<label>Info Battery Time To Full Charge</label>
+		<description>how many minutes are needed to fully recharge the battery at its current level. null if the robot is currently computing it.</description>
+		<state readOnly="true" pattern="%d" />
+	</channel-type>
+
+	<channel-type id="info-battery-totalcharges">
+		<item-type>Number</item-type>
+		<label>Info Battery Total Charges</label>
+		<description>the total number of battery charges since it was manufactured.</description>
+		<state readOnly="true" pattern="%d" />
+	</channel-type>
+
+	<channel-type id="info-battery-manufactoringdate">
+		<item-type>String</item-type>
+		<label>Info Battery Manufactoring Date</label>
+		<description>The ISO8601 formatted date (YYYY-MM-DD) stating when the battery was manufactured.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="info-battery-authorizationstatus">
+		<item-type>String</item-type>
+		<label>Info Battery Authorization Status</label>
+		<description>The battery authorization status (0 - not supported , 1 genuine, 2 not genuine).</description>
+		<state readOnly="true" pattern="%s">
+			<options>
+				<option value="NOTSUPPORTED">Not Supported</option>
+				<option value="GENUINE">Genuine</option>
+				<option value="NOTGENUINE">Not Genuine</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="info-battery-vendor">
+		<item-type>String</item-type>
+		<label>Info Battery Vendor</label>
+		<description>The vendor name.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
 
 	<channel-type id="state">
 		<item-type>String</item-type>
@@ -148,14 +250,14 @@
 	<channel-type id="command">
 		<item-type>String</item-type>
 		<label>Send Command</label>
-		<description>Send Commands to Vacuum Cleaner. (clean, pause, resume, stop, dock)</description>
+		<description>Send Commands to Vacuum Cleaner. (clean, pause, resume, stop, goToBase)</description>
 		<state readOnly="false" pattern="%s">
 			<options>
 				<option value="clean">Clean</option>
 				<option value="pause">Pause</option>
 				<option value="resume">Resume</option>
 				<option value="stop">Stop</option>
-				<option value="dock">Go to Dock</option>
+				<option value="goToBase">Go to base</option>
 			</options>
 		</state>
 	</channel-type>
