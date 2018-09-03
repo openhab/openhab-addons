@@ -134,6 +134,12 @@ public class BulbDeviceTest extends DeviceTestBase {
     }
 
     @Test
+    public void testUpdateChannelColorTemperature() {
+        assertEquals("Color temperature should be set", new PercentType(3),
+                device.updateChannel(CHANNEL_COLOR_TEMPERATURE, deviceState));
+    }
+
+    @Test
     public void testUpdateChannelOther() {
         assertSame("Unknown channel should return UNDEF", UnDefType.UNDEF, device.updateChannel("OTHER", deviceState));
     }

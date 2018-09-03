@@ -32,8 +32,8 @@ public class LightState extends ErrorResponse {
         return onOff > 0 ? new PercentType(brightness) : PercentType.ZERO;
     }
 
-    public DecimalType getColorTemp() {
-        return new DecimalType(colorTemp);
+    public int getColorTemp() {
+        return colorTemp;
     }
 
     public DecimalType getHue() {
