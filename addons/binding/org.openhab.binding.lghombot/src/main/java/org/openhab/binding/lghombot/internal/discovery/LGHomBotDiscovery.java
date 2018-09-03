@@ -10,17 +10,24 @@ package org.openhab.binding.lghombot.internal.discovery;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.net.UnknownHostException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.net.CidrAddress;
+import org.eclipse.smarthome.core.net.NetUtil;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
@@ -42,19 +49,24 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(LGHomBotDiscovery.class);
 
     /**
-     * Address SDDP broadcasts on
-     */
-    private static final String SDDP_ADDR = "239.255.255.250";
-
-    /**
      * Port number HomBot uses
      */
     private static final int HOMBOT_PORT = 6260;
 
     /**
-     * Socket read timeout (in ms) - allows us to shutdown the listening every TIMEOUT
+     * HTTP read timeout (in ms) - allows us to shutdown the listening every TIMEOUT
      */
     private static final int TIMEOUT = 500;
+
+    /**
+     * Timeout in seconds of the complete scan
+     */
+    private static final int FULL_SCAN_TIMEOUT = 30;
+
+    /**
+     * Timeout in seconds of the complete scan
+     */
+    private static final int SCAN_THREADS = 10;
 
     /**
      * Whether we are currently scanning or not
@@ -62,6 +74,9 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
     private boolean scanning;
 
     private int octet;
+    private int ipMask;
+    private CidrAddress baseIp;
+
     /**
      * The {@link ExecutorService} to run the listening threads on.
      */
@@ -71,12 +86,40 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
      * Constructs the discovery class using the thing IDs that we can discover.
      */
     public LGHomBotDiscovery() {
-        super(LGHomBotBindingConstants.SUPPORTED_THING_TYPES_UIDS, 100, false);
+        super(LGHomBotBindingConstants.SUPPORTED_THING_TYPES_UIDS, FULL_SCAN_TIMEOUT, false);
     }
 
-    private synchronized int getNextOctet() {
+    private void setupBaseIp(CidrAddress adr) {
+        byte[] octets = adr.getAddress().getAddress();
+        ipMask = 0xFFFFFFFF << (32 - adr.getPrefix());
+        octets[0] &= ipMask >> 24;
+        octets[1] &= ipMask >> 16;
+        octets[2] &= ipMask >> 8;
+        octets[3] &= ipMask;
+        try {
+            InetAddress iAdr = InetAddress.getByAddress(octets);
+            baseIp = new CidrAddress(iAdr, (short) adr.getPrefix());
+        } catch (UnknownHostException e) {
+            logger.debug("Could not build net ip address, exception: {}", e);
+        }
+        octet = 0;
+    }
+
+    private synchronized String getNextIPAddress() {
         octet++;
-        return octet;
+        octet &= ~ipMask;
+        byte[] octets = baseIp.getAddress().getAddress();
+        octets[2] += (octet >> 8);
+        octets[3] += octet;
+        String address = null;
+        try {
+            InetAddress iAdr = null;
+            iAdr = InetAddress.getByAddress(octets);
+            address = iAdr.getHostAddress();
+        } catch (UnknownHostException e) {
+            logger.debug("Could not find next ip address, exception: {}", e);
+        }
+        return address;
     }
 
     /**
@@ -100,37 +143,33 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
             stopScan();
         }
 
-        // logger.debug("Starting discovery of LG-HomBot");
-        // fakeMessageReceive();
+        executorService = Executors.newFixedThreadPool(SCAN_THREADS);
 
-        try {
+        scanning = true;
+        List<CidrAddress> l = NetUtil.getAllInterfaceAddresses().stream()
+                .filter(a -> a.getAddress() instanceof Inet4Address).map(a -> a).collect(Collectors.toList());
+        setupBaseIp(l.get(0));
+        for (int i = 1; i < 255; i++) {
 
-            executorService = Executors.newFixedThreadPool(5);
-            scanning = true;
-            octet = 0;
-            for (int i = 1; i < 255; i++) {
+            executorService.execute(() -> {
+                String ipAdd = getNextIPAddress();
+                String url = "http://" + ipAdd + ":" + HOMBOT_PORT + "/status.txt";
+                String message = null;
 
-                executorService.execute(() -> {
-                    String ipAdd = "192.168.1." + getNextOctet();
-                    String url = "http://" + ipAdd + ":" + HOMBOT_PORT + "/status.txt";
-                    String message = null;
-
-                    if (scanning) {
-                        try {
-                            message = HttpUtil.executeUrl("GET", url, TIMEOUT);
-                            if (message != null && message.length() > 0) {
-                                fakeMessageReceive();
-                            }
-                        } catch (IOException e) {
-                            // ignore
+                if (scanning) {
+                    try {
+                        message = HttpUtil.executeUrl("GET", url, TIMEOUT);
+                        if (message != null && message.length() > 0) {
+                            messageReceive(message, ipAdd);
                         }
+                    } catch (IOException e) {
+                        // Ignore, this is the expected behavior.
                     }
+                }
 
-                });
-            }
-        } catch (Exception e) {
-            logger.debug("Error getting ip addresses: {}", e.getMessage(), e);
+            });
         }
+        // executorService.awaitTermination(FULL_SCAN_TIMEOUT, TimeUnit.SECONDS);
 
     }
 
@@ -158,87 +197,50 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
      * CLREC_LAST_CLEAN="2018/08/30/11/00/00.826531"
      * </pre>
      *
-     * First parse the manufacturer, host, model and IP address from the message. For the "Host" field, we parse out the
-     * serial #. For the From field, we parse out the IP address (minus the port #). If we successfully found all four
-     * and the manufacturer is "Atlona" and it's a model we recognize, we then create our thing from it.
+     * First parse the first string to see that it's a HomBot, then parse nickname, server version & firmware version.
+     * We then create our thing from it.
      *
-     * @param message possibly null, possibly empty SDDP message
+     * @param message   possibly null, possibly empty message
+     * @param ipAddress current probed ip address
      */
-    private void messageReceive(String message) {
-        if (message == null || message.trim().length() == 0) {
+    private void messageReceive(String message, String ipAddress) {
+
+        if (!message.startsWith("JSON_ROBOT_STATE=")) {
             return;
         }
 
-        String host = null;
-        String model = null;
-        String from = null;
-        String manufacturer = null;
+        String host = "a4_24_56_8f_2c_5b";
+        String model = "HomBot";
+        String nickName = "HOMBOT";
+        String srvVersion = "0";
+        String fwVersion = "0";
 
-        for (String msg : message.split("\r\n")) {
-            int idx = msg.indexOf(':');
+        for (String msg : message.split("\\r?\\n")) {
+            int idx = msg.indexOf('=');
             if (idx > 0) {
                 String name = msg.substring(0, idx);
 
-                if (name.equalsIgnoreCase("Host")) {
-                    host = msg.substring(idx + 1).trim().replaceAll("\"", "");
-                    int sep = host.indexOf('_');
-                    if (sep >= 0) {
-                        host = host.substring(sep + 1);
-                    }
-                } else if (name.equalsIgnoreCase("Model")) {
-                    model = msg.substring(idx + 1).trim().replaceAll("\"", "");
-                } else if (name.equalsIgnoreCase("Manufacturer")) {
-                    manufacturer = msg.substring(idx + 1).trim().replaceAll("\"", "");
-                } else if (name.equalsIgnoreCase("From")) {
-                    from = msg.substring(idx + 1).trim().replaceAll("\"", "");
-                    int sep = from.indexOf(':');
-                    if (sep >= 0) {
-                        from = from.substring(0, sep);
-                    }
+                if (name.equalsIgnoreCase("JSON_NICKNAME")) {
+                    nickName = msg.substring(idx + 1).trim().replaceAll("\"", "");
+                } else if (name.equalsIgnoreCase("JSON_VERSION")) {
+                    fwVersion = msg.substring(idx + 1).trim().replaceAll("\"", "");
+                } else if (name.equalsIgnoreCase("LGSRV_VERSION")) {
+                    srvVersion = msg.substring(idx + 1).trim().replaceAll("\"", "");
                 }
             }
 
         }
 
-        if (!"Atlona".equalsIgnoreCase(manufacturer)) {
-            return;
-        }
-
-        if (host != null && model != null && from != null) {
-            ThingTypeUID typeId = null;
-            if (model.equalsIgnoreCase("AT-UHD-PRO3-44M")) {
-                typeId = LGHomBotBindingConstants.THING_TYPE_LGHOMBOT;
-            } else {
-                logger.warn("Unknown model #: {}");
-            }
-
-            if (typeId != null) {
-                logger.debug("Creating binding for {} ({})", model, from);
-                ThingUID j = new ThingUID(typeId, host);
-
-                Map<String, Object> properties = new HashMap<>(1);
-                properties.put(LGHomBotConfiguration.IP_ADDRESS, from);
-                DiscoveryResult result = DiscoveryResultBuilder.create(j).withProperties(properties)
-                        .withLabel(model + " (" + from + ")").build();
-                thingDiscovered(result);
-            }
-        }
-    }
-
-    private void fakeMessageReceive() {
-
-        String host = "a4_24_56_8f_2c_5b";
-        String model = "HomBot";
-        String from = "192.168.1.198";
-
-        if (host != null) {
+        if (ipAddress != null) {
             ThingTypeUID typeId = LGHomBotBindingConstants.THING_TYPE_LGHOMBOT;
-            ThingUID j = new ThingUID(typeId, host);
+            ThingUID uid = new ThingUID(typeId, host);
 
-            Map<String, Object> properties = new HashMap<>(1);
-            properties.put(LGHomBotConfiguration.IP_ADDRESS, from);
-            DiscoveryResult result = DiscoveryResultBuilder.create(j).withProperties(properties)
-                    .withLabel(model + " (" + from + ")").build();
+            Map<String, Object> properties = new HashMap<>(3);
+            properties.put(LGHomBotConfiguration.IP_ADDRESS, ipAddress);
+            properties.put("Firmware V", fwVersion);
+            properties.put("Server V", srvVersion);
+            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                    .withLabel(model + " (" + nickName + ")").build();
             thingDiscovered(result);
         }
     }
@@ -247,7 +249,7 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
      * {@inheritDoc}
      *
      * Stops the discovery scan. We set {@link #scanning} to false (allowing the listening threads to end naturally
-     * within {@link #TIMEOUT) * 5 time then shutdown the {@link #executorService}
+     * within {@link #TIMEOUT) * {@link #SCAN_THREADS} time then shutdown the {@link #executorService}
      */
     @Override
     protected synchronized void stopScan() {
@@ -259,8 +261,9 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
         scanning = false;
 
         try {
-            executorService.awaitTermination(TIMEOUT * 5, TimeUnit.MILLISECONDS);
+            executorService.awaitTermination(TIMEOUT * SCAN_THREADS, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
+            logger.debug("HomBot scacn interrupted, exception: {}", e);
         }
         executorService.shutdown();
         executorService = null;

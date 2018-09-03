@@ -30,8 +30,8 @@
 
         <properties>
             <property name="Vendor">LG</property>
-            <property name="Firmware V">15562</property>
-            <property name="Server V">1.52</property>
+            <property name="Firmware V">0</property>
+            <property name="Server V">0</property>
         </properties>
         <representation-property>deviceId</representation-property>
 
