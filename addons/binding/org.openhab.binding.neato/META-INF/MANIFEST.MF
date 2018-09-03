@@ -30,3 +30,4 @@ Import-Package:
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.neato,
  org.openhab.binding.neato.handler
+Bundle-ActivationPolicy: lazy
