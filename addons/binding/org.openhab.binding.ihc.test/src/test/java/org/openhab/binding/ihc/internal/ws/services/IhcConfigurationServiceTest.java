@@ -22,6 +22,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSSystemInfo;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
+import org.openhab.binding.ihc.internal.ws.http.IhcConnectionPool;
 
 /**
  * Test for IHC / ELKO binding
@@ -70,7 +71,7 @@ public class IhcConfigurationServiceTest {
 
     @Before
     public void setUp() throws IhcExecption, SocketTimeoutException {
-        ihcConfigurationService = spy(new IhcConfigurationService(url, 0));
+        ihcConfigurationService = spy(new IhcConfigurationService(url, 0, new IhcConnectionPool()));
         doNothing().when(ihcConfigurationService).openConnection(eq(url));
 
         doReturn(response).when(ihcConfigurationService).sendQuery(eq(query), ArgumentMatchers.anyInt());

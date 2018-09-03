@@ -20,6 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
+import org.openhab.binding.ihc.internal.ws.http.IhcConnectionPool;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSBooleanValue;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSDateValue;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSEnumValue;
@@ -29,7 +30,6 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSTimeValue;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSTimerValue;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSWeekdayValue;
-import org.openhab.binding.ihc.internal.ws.services.IhcResourceInteractionService;
 
 /**
  * Test for IHC / ELKO binding
@@ -496,7 +496,7 @@ public class IhcResourceInteractionServiceTest {
 
     @Before
     public void setUp() throws IhcExecption, SocketTimeoutException {
-        ihcResourceInteractionService = spy(new IhcResourceInteractionService(url, 0));
+        ihcResourceInteractionService = spy(new IhcResourceInteractionService(url, 0, new IhcConnectionPool()));
         doNothing().when(ihcResourceInteractionService).openConnection(eq(url));
 
         doReturn(response11111).when(ihcResourceInteractionService).sendQuery(eq(String.format(query, 11111)),

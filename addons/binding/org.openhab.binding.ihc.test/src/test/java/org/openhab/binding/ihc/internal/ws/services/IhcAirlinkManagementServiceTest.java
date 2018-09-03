@@ -21,7 +21,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSRFDevice;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
-import org.openhab.binding.ihc.internal.ws.services.IhcAirlinkManagementService;
+import org.openhab.binding.ihc.internal.ws.http.IhcConnectionPool;
 
 /**
  * Test for IHC / ELKO binding
@@ -66,7 +66,7 @@ public class IhcAirlinkManagementServiceTest {
 
     @Before
     public void setUp() throws IhcExecption, SocketTimeoutException {
-        ihcAirlinkManagementService = spy(new IhcAirlinkManagementService(url, 0));
+        ihcAirlinkManagementService = spy(new IhcAirlinkManagementService(url, 0, new IhcConnectionPool()));
         doNothing().when(ihcAirlinkManagementService).openConnection(eq(url));
 
         doReturn(response).when(ihcAirlinkManagementService).sendQuery(eq(query), ArgumentMatchers.anyInt());

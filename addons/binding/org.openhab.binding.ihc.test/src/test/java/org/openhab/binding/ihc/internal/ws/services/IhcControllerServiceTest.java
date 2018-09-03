@@ -24,6 +24,7 @@ import org.openhab.binding.ihc.internal.ws.datatypes.WSControllerState;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSFile;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSProjectInfo;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
+import org.openhab.binding.ihc.internal.ws.http.IhcConnectionPool;
 
 /**
  * Test for IHC / ELKO binding
@@ -152,7 +153,7 @@ public class IhcControllerServiceTest {
 
     @Before
     public void setUp() throws IhcExecption, SocketTimeoutException {
-        ihcControllerService = spy(new IhcControllerService(url, 0));
+        ihcControllerService = spy(new IhcControllerService(url, 0, new IhcConnectionPool()));
         doNothing().when(ihcControllerService).openConnection(eq(url));
     }
 

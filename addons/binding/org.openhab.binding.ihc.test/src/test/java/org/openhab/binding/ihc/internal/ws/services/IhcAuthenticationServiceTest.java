@@ -19,7 +19,7 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSLoginResult;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
-import org.openhab.binding.ihc.internal.ws.services.IhcAuthenticationService;
+import org.openhab.binding.ihc.internal.ws.http.IhcConnectionPool;
 
 /**
  * Test for IHC / ELKO binding
@@ -147,7 +147,7 @@ public class IhcAuthenticationServiceTest {
 
     @Before
     public void setUp() throws IhcExecption, SocketTimeoutException {
-        ihcAuthenticationService = spy(new IhcAuthenticationService(url, 0));
+        ihcAuthenticationService = spy(new IhcAuthenticationService(url, 0, new IhcConnectionPool()));
         doNothing().when(ihcAuthenticationService).openConnection(eq(url));
 
         doReturn(responseSuccesfulLogin).when(ihcAuthenticationService).sendQuery(eq(querySuccesfulLogin),
