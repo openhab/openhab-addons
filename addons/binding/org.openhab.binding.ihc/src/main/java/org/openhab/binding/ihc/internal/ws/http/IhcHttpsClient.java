@@ -33,13 +33,19 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class IhcHttpsClient {
 
-    private static final Logger logger = LoggerFactory.getLogger(IhcHttpsClient.class);
+    private final Logger logger = LoggerFactory.getLogger(IhcHttpsClient.class);
+
+    protected IhcConnectionPool ihcConnectionPool;
 
     final int DEF_CONNECT_TIMEOUT = 5000;
     private int connectTimeout = DEF_CONNECT_TIMEOUT;
     private HttpClient client = null;
     private HttpPost postReq = null;
     private AtomicInteger counter = new AtomicInteger();
+
+    public IhcHttpsClient(IhcConnectionPool ihcConnectionPool) {
+        this.ihcConnectionPool = ihcConnectionPool;
+    }
 
     /**
      * @return the timeout in milliseconds
@@ -66,7 +72,7 @@ public abstract class IhcHttpsClient {
     public void openConnection(String url) throws IhcExecption {
         logger.debug("Open connection to '{}'", url);
         if (client == null) {
-            client = IhcConnectionPool.getInstance().getHttpClient();
+            client = ihcConnectionPool.getHttpClient();
         }
         postReq = new HttpPost(url);
     }
@@ -114,8 +120,9 @@ public abstract class IhcHttpsClient {
 
         if (logger.isTraceEnabled()) {
             requestId = counter.getAndIncrement();
-            logger.trace("Send query (clientId={} requestId={}, timeout={}, headers={}): {}", client.hashCode(),
-                    requestId, timeout, postReq.getAllHeaders(), query);
+            logger.trace("Send query (connectionPool={}, clientId={} requestId={}, timeout={}, headers={}): {}",
+                    ihcConnectionPool.hashCode(), client.hashCode(), requestId, timeout, postReq.getAllHeaders(),
+                    query);
         }
 
         final RequestConfig params = RequestConfig.custom().setConnectTimeout(connectTimeout).setSocketTimeout(timeout)
@@ -124,11 +131,12 @@ public abstract class IhcHttpsClient {
 
         // Execute POST
         LocalDateTime start = LocalDateTime.now();
-        HttpResponse response = client.execute(postReq, IhcConnectionPool.getInstance().getHttpContext());
+        HttpResponse response = client.execute(postReq, ihcConnectionPool.getHttpContext());
         String resp = EntityUtils.toString(response.getEntity());
         if (logger.isTraceEnabled()) {
-            logger.trace("Received response (clientId={} requestId={}, in {}, headers={}): {}", client.hashCode(),
-                    requestId, Duration.between(start, LocalDateTime.now()), response.getAllHeaders(), resp);
+            logger.trace("Received response (connectionPool={}, clientId={} requestId={}, in {}, headers={}): {}",
+                    ihcConnectionPool.hashCode(), client.hashCode(), requestId,
+                    Duration.between(start, LocalDateTime.now()), response.getAllHeaders(), resp);
         }
         return resp;
     }

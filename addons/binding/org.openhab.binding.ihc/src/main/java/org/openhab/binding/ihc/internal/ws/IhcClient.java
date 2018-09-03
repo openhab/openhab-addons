@@ -28,6 +28,7 @@ import org.openhab.binding.ihc.internal.ws.datatypes.WSProjectInfo;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSRFDevice;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSSystemInfo;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
+import org.openhab.binding.ihc.internal.ws.http.IhcConnectionPool;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
 import org.openhab.binding.ihc.internal.ws.services.IhcAirlinkManagementService;
 import org.openhab.binding.ihc.internal.ws.services.IhcAuthenticationService;
@@ -56,22 +57,24 @@ public class IhcClient {
 
     private final static int NOTIFICATION_WAIT_TIMEOUT_IN_SEC = 5;
 
-    private static final Logger logger = LoggerFactory.getLogger(IhcClient.class);
+    private final Logger logger = LoggerFactory.getLogger(IhcClient.class);
 
-    private static ConnectionState connState = ConnectionState.DISCONNECTED;
+    private ConnectionState connState = ConnectionState.DISCONNECTED;
+
+    private IhcConnectionPool ihcConnectionPool;
 
     /** Controller services */
-    private static IhcAuthenticationService authenticationService = null;
-    private static IhcResourceInteractionService resourceInteractionService = null;
-    private static IhcControllerService controllerService = null;
-    private static IhcConfigurationService configurationService = null;
-    private static IhcAirlinkManagementService airlinkManagementService = null;
+    private IhcAuthenticationService authenticationService;
+    private IhcResourceInteractionService resourceInteractionService;
+    private IhcControllerService controllerService;
+    private IhcConfigurationService configurationService;
+    private IhcAirlinkManagementService airlinkManagementService;
 
     /** Thread to handle resource value notifications from the controller */
-    private IhcResourceValueNotificationListener resourceValueNotificationListener = null;
+    private IhcResourceValueNotificationListener resourceValueNotificationListener;
 
     /** Thread to handle controller's state change notifications */
-    private IhcControllerStateListener controllerStateListener = null;
+    private IhcControllerStateListener controllerStateListener;
 
     private String username = "";
     private String password = "";
@@ -97,7 +100,7 @@ public class IhcClient {
     }
 
     private synchronized void setConnectionState(ConnectionState newState) {
-        IhcClient.connState = newState;
+        connState = newState;
     }
 
     public void addEventListener(IhcEventListener listener) {
@@ -158,8 +161,8 @@ public class IhcClient {
         logger.debug("Opening connection");
 
         setConnectionState(ConnectionState.CONNECTING);
-
-        authenticationService = new IhcAuthenticationService(ip, timeout);
+        ihcConnectionPool = new IhcConnectionPool();
+        authenticationService = new IhcAuthenticationService(ip, timeout, ihcConnectionPool);
         WSLoginResult loginResult = authenticationService.authenticate(username, password, "treeview");
 
         if (!loginResult.isLoginWasSuccessful()) {
@@ -185,10 +188,10 @@ public class IhcClient {
 
         logger.debug("Connection successfully opened");
 
-        resourceInteractionService = new IhcResourceInteractionService(ip, timeout);
-        controllerService = new IhcControllerService(ip, timeout);
-        configurationService = new IhcConfigurationService(ip, timeout);
-        airlinkManagementService = new IhcAirlinkManagementService(ip, timeout);
+        resourceInteractionService = new IhcResourceInteractionService(ip, timeout, ihcConnectionPool);
+        controllerService = new IhcControllerService(ip, timeout, ihcConnectionPool);
+        configurationService = new IhcConfigurationService(ip, timeout, ihcConnectionPool);
+        airlinkManagementService = new IhcAirlinkManagementService(ip, timeout, ihcConnectionPool);
         setConnectionState(ConnectionState.CONNECTED);
     }
 

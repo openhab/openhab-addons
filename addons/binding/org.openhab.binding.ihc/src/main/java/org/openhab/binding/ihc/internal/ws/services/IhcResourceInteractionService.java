@@ -27,6 +27,7 @@ import javax.xml.xpath.XPathFactory;
 import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSBaseDataType;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
+import org.openhab.binding.ihc.internal.ws.http.IhcConnectionPool;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSBooleanValue;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSDateValue;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSEnumValue;
@@ -49,7 +50,8 @@ import org.xml.sax.InputSource;
  */
 public class IhcResourceInteractionService extends IhcBaseService {
 
-    public IhcResourceInteractionService(String host, int timeout) {
+    public IhcResourceInteractionService(String host, int timeout, IhcConnectionPool ihcConnectionPool) {
+        super(ihcConnectionPool);
         url = "https://" + host + "/ws/ResourceInteractionService";
         this.timeout = timeout;
         super.setConnectTimeout(timeout);

@@ -9,6 +9,7 @@
 package org.openhab.binding.ihc.internal.ws.services;
 
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
+import org.openhab.binding.ihc.internal.ws.http.IhcConnectionPool;
 import org.openhab.binding.ihc.internal.ws.http.IhcHttpsClient;
 
 /**
@@ -30,6 +31,10 @@ public abstract class IhcBaseService extends IhcHttpsClient {
 
     protected String url;
     protected int timeout;
+
+    public IhcBaseService(IhcConnectionPool ihcConnectionPool) {
+        super(ihcConnectionPool);
+    }
 
     protected String sendSoapQuery(String soapAction, String query, int timeout) throws IhcExecption {
         openConnection(url);

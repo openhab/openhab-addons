@@ -37,9 +37,7 @@ import org.slf4j.LoggerFactory;
  */
 public class IhcConnectionPool {
 
-    private static final Logger logger = LoggerFactory.getLogger(IhcConnectionPool.class);
-
-    private static IhcConnectionPool instance = null;
+    private final Logger logger = LoggerFactory.getLogger(IhcConnectionPool.class);
 
     /**
      * Controller TLS certificate is self signed, which means that certificate
@@ -55,19 +53,8 @@ public class IhcConnectionPool {
     private HttpClientBuilder httpClientBuilder = null;
     private HttpClientContext localContext = null;
 
-    protected IhcConnectionPool() {
+    public IhcConnectionPool() {
         init();
-    }
-
-    public static IhcConnectionPool getInstance() {
-        if (instance == null) {
-            synchronized (IhcConnectionPool.class) {
-                if (instance == null) {
-                    instance = new IhcConnectionPool();
-                }
-            }
-        }
-        return instance;
     }
 
     private void init() {

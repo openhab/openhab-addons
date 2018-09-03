@@ -10,6 +10,7 @@ package org.openhab.binding.ihc.internal.ws.services;
 
 import org.openhab.binding.ihc.internal.ws.datatypes.WSSystemInfo;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
+import org.openhab.binding.ihc.internal.ws.http.IhcConnectionPool;
 
 /**
  * Class to handle IHC / ELKO LS Controller's configuration service.
@@ -20,7 +21,8 @@ import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
  */
 public class IhcConfigurationService extends IhcBaseService {
 
-    public IhcConfigurationService(String host, int timeout) {
+    public IhcConfigurationService(String host, int timeout, IhcConnectionPool ihcConnectionPool) {
+        super(ihcConnectionPool);
         url = "https://" + host + "/ws/ConfigurationService";
         this.timeout = timeout;
         setConnectTimeout(timeout);

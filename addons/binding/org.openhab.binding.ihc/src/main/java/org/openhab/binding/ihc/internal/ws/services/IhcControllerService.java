@@ -14,6 +14,7 @@ import org.openhab.binding.ihc.internal.ws.datatypes.WSNumberOfSegments;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSProjectInfo;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSSegmentationSize;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
+import org.openhab.binding.ihc.internal.ws.http.IhcConnectionPool;
 
 /**
  * Class to handle IHC / ELKO LS Controller's controller service.
@@ -25,7 +26,8 @@ import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
  */
 public class IhcControllerService extends IhcBaseService {
 
-    public IhcControllerService(String host, int timeout) {
+    public IhcControllerService(String host, int timeout, IhcConnectionPool ihcConnectionPool) {
+        super(ihcConnectionPool);
         url = "https://" + host + "/ws/ControllerService";
         this.timeout = timeout;
         setConnectTimeout(timeout);

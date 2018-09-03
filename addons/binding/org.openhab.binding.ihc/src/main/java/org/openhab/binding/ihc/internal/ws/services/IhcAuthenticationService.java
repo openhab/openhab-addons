@@ -10,6 +10,7 @@ package org.openhab.binding.ihc.internal.ws.services;
 
 import org.openhab.binding.ihc.internal.ws.datatypes.WSLoginResult;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
+import org.openhab.binding.ihc.internal.ws.http.IhcConnectionPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,12 +26,13 @@ import org.slf4j.LoggerFactory;
 public class IhcAuthenticationService extends IhcBaseService {
     private static final Logger logger = LoggerFactory.getLogger(IhcAuthenticationService.class);
 
-    IhcAuthenticationService(String host) {
+    IhcAuthenticationService(String host, IhcConnectionPool ihcConnectionPool) {
+        super(ihcConnectionPool);
         url = "https://" + host + "/ws/AuthenticationService";
     }
 
-    public IhcAuthenticationService(String host, int timeout) {
-        this(host);
+    public IhcAuthenticationService(String host, int timeout, IhcConnectionPool ihcConnectionPool) {
+        this(host, ihcConnectionPool);
         this.timeout = timeout;
         super.setConnectTimeout(timeout);
     }

@@ -25,6 +25,7 @@ import javax.xml.xpath.XPathFactory;
 import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSRFDevice;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
+import org.openhab.binding.ihc.internal.ws.http.IhcConnectionPool;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -37,7 +38,8 @@ import org.xml.sax.InputSource;
  */
 public class IhcAirlinkManagementService extends IhcBaseService {
 
-    public IhcAirlinkManagementService(String host, int timeout) {
+    public IhcAirlinkManagementService(String host, int timeout, IhcConnectionPool ihcConnectionPool) {
+        super(ihcConnectionPool);
         url = "https://" + host + "/ws/AirlinkManagementService";
         this.timeout = timeout;
         setConnectTimeout(timeout);
