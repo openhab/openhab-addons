@@ -315,6 +315,9 @@ public class LGHomBotHandler extends BaseThingHandler {
                 if (row.startsWith("JSON_ROBOT_STATE=")) {
                     String state = row.substring(17).replace("\"", "");
                     if (!state.equals(currentState)) {
+                        if (state.isEmpty()) {
+                            state = "ERROR";
+                        }
                         currentState = state;
                         channel = new ChannelUID(getThing().getUID(), CHANNEL_STATE);
                         updateState(channel, StringType.valueOf(state));

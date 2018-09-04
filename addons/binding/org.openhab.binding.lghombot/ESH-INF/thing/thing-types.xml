@@ -75,6 +75,7 @@
                 <option value="CHARGING">Charging</option>
                 <option value="DIAGNOSIS">Diagnosis running</option>
                 <option value="RESERVATION">Changing settings</option>
+                <option value="ERROR">Error</option>
             </options>
         </state>
     </channel-type>
