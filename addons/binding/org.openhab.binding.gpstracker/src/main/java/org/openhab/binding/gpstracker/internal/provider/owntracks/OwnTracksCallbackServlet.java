@@ -17,7 +17,7 @@ import org.osgi.service.http.HttpService;
 /**
  * Callback servlet for OwnTracks trackers
  *
- * @author Gabor Bicskei - - Initial contribution
+ * @author Gabor Bicskei - Initial contribution
  */
 public class OwnTracksCallbackServlet extends AbstractCallbackServlet {
     /**

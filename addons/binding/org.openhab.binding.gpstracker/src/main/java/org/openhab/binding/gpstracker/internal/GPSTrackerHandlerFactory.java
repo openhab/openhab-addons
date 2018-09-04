@@ -41,7 +41,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.openhab.binding.gpstracker.internal.BindingConstants.CONFIG_PID;
+import static org.openhab.binding.gpstracker.internal.GPSTrackerConstants.CONFIG_PID;
 
 /**
  * Main component
@@ -53,11 +53,11 @@ import static org.openhab.binding.gpstracker.internal.BindingConstants.CONFIG_PI
         immediate = true,
         service = {ThingHandlerFactory.class, ManagedService.class}
 )
-public class BindingComponent extends BaseThingHandlerFactory implements ManagedService {
+public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements ManagedService {
     /**
      * Class logger
      */
-    private final Logger logger = LoggerFactory.getLogger(BindingComponent.class);
+    private final Logger logger = LoggerFactory.getLogger(GPSTrackerHandlerFactory.class);
 
     /**
      * Discovery service registration
@@ -106,7 +106,7 @@ public class BindingComponent extends BaseThingHandlerFactory implements Managed
      * @return True if supported.
      */
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return BindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return GPSTrackerConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     /**
@@ -117,7 +117,7 @@ public class BindingComponent extends BaseThingHandlerFactory implements Managed
      */
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if (BindingConstants.THING_TYPE_TRACKER.equals(thingTypeUID)) {
+        if (GPSTrackerConstants.THING_TYPE_TRACKER.equals(thingTypeUID)) {
             return new TrackerHandler(thing, this.config, notificationBroker, translationUtil);
         } else {
             return null;
@@ -170,18 +170,18 @@ public class BindingComponent extends BaseThingHandlerFactory implements Managed
                         if (properties != null) {
                             logger.debug("Bundle configuration was found.");
                             PointType location = locationProv.getLocation();
-                            String locationConfig = (String) properties.get(BindingConstants.CONFIG_LOCATION);
+                            String locationConfig = (String) properties.get(GPSTrackerConstants.CONFIG_LOCATION);
                             if (location != null) {
                                 if (locationConfig == null || !location.toFullString().equals(locationConfig)) {
                                     logger.debug("Updating location from system config: {}", location.toFullString());
-                                    properties.put(BindingConstants.CONFIG_LOCATION, location.toFullString());
+                                    properties.put(GPSTrackerConstants.CONFIG_LOCATION, location.toFullString());
                                     configuration.update(properties);
                                 }
                             } else if (locationConfig != null) {
                                 logger.debug("Clear primary location config as system location is missing");
-                                properties.remove(BindingConstants.CONFIG_NAME);
-                                properties.remove(BindingConstants.CONFIG_LOCATION);
-                                properties.put(BindingConstants.CONFIG_RADIUS, 100);
+                                properties.remove(GPSTrackerConstants.CONFIG_NAME);
+                                properties.remove(GPSTrackerConstants.CONFIG_LOCATION);
+                                properties.put(GPSTrackerConstants.CONFIG_RADIUS, 100);
                                 configuration.update(properties);
                             }
                         }

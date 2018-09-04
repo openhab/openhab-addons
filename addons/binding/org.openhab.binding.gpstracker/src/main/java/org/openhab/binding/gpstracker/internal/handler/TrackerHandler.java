@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Map;
 
-import static org.openhab.binding.gpstracker.internal.BindingConstants.*;
+import static org.openhab.binding.gpstracker.internal.GPSTrackerConstants.*;
 
 /**
  * Tracker thing handler.

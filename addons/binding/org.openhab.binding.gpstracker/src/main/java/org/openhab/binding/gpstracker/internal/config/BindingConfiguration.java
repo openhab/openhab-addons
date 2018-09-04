@@ -10,7 +10,7 @@ package org.openhab.binding.gpstracker.internal.config;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import org.openhab.binding.gpstracker.internal.BindingComponent;
+import org.openhab.binding.gpstracker.internal.GPSTrackerHandlerFactory;
 import org.openhab.binding.gpstracker.internal.message.Region;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +28,7 @@ public class BindingConfiguration {
     /**
      * Class logger
      */
-    private final Logger logger = LoggerFactory.getLogger(BindingComponent.class);
+    private final Logger logger = LoggerFactory.getLogger(GPSTrackerHandlerFactory.class);
 
     /**
      * Gson instance used to serialize/deserialize JSON configuration

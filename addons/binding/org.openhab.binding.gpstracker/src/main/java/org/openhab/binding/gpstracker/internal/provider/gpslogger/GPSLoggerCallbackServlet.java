@@ -17,7 +17,7 @@ import org.osgi.service.http.HttpService;
 /**
  * Callback servlet for GPSLogger
  *
- * @author Gabor Bicskei - - Initial contribution and API
+ * @author Gabor Bicskei - Initial contribution
  */
 public class GPSLoggerCallbackServlet extends AbstractCallbackServlet {
     /**

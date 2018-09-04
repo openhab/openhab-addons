@@ -13,7 +13,7 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.gpstracker.internal.BindingConstants;
+import org.openhab.binding.gpstracker.internal.GPSTrackerConstants;
 
 /**
  * Tracker discovery service.
@@ -32,7 +32,7 @@ public class TrackerDiscoveryService extends AbstractDiscoveryService {
      * @throws IllegalArgumentException thrown by the super constructor
      */
     public TrackerDiscoveryService() throws IllegalArgumentException {
-        super(BindingConstants.SUPPORTED_THING_TYPES_UIDS, TIMEOUT, true);
+        super(GPSTrackerConstants.SUPPORTED_THING_TYPES_UIDS, TIMEOUT, true);
     }
 
     /**
@@ -42,7 +42,7 @@ public class TrackerDiscoveryService extends AbstractDiscoveryService {
      * @param trackerId Tracker id.
      */
     public void addTracker(String trackerId) {
-        ThingUID id = new ThingUID(BindingConstants.THING_TYPE_TRACKER, trackerId);
+        ThingUID id = new ThingUID(GPSTrackerConstants.THING_TYPE_TRACKER, trackerId);
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(id).withLabel(getTrackerLabel(trackerId)).build();
         this.thingDiscovered(discoveryResult);
     }

@@ -18,9 +18,9 @@ import java.util.Set;
 /**
  * Binding constants
  *
- * @author Gabor Bicskei - - Initial contribution
+ * @author Gabor Bicskei - Initial contribution
  */
-public abstract class BindingConstants {
+public abstract class GPSTrackerConstants {
     private static final String BINDING_ID = "gpstracker";
     static final String CONFIG_PID = "binding." + BINDING_ID;
     private static final String THING_TYPE = "tracker";

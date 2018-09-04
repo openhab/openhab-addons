@@ -13,7 +13,7 @@ import org.eclipse.smarthome.core.library.types.PointType;
 /**
  * Region POJO
  *
- * @author Gabor Bicskei - Initial contribution and API
+ * @author Gabor Bicskei - Initial contribution
  */
 public class Region {
     /**

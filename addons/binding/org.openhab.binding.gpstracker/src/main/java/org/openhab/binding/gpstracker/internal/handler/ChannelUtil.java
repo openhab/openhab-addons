@@ -15,7 +15,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelKind;
-import org.openhab.binding.gpstracker.internal.BindingConstants;
+import org.openhab.binding.gpstracker.internal.GPSTrackerConstants;
 import org.openhab.binding.gpstracker.internal.config.BindingConfiguration;
 import org.openhab.binding.gpstracker.internal.config.TrackerConfiguration;
 import org.openhab.binding.gpstracker.internal.message.Region;
@@ -29,7 +29,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.openhab.binding.gpstracker.internal.BindingConstants.*;
+import static org.openhab.binding.gpstracker.internal.GPSTrackerConstants.*;
 
 /**
  * Dynamic channel handling helper.
@@ -122,7 +122,7 @@ class ChannelUtil {
             if (!r.getTriggerEvent()) {
                 if (!channelMap.containsKey(presenceChannelId)) {
                     Channel channel = ChannelBuilder.create(new ChannelUID(uid, presenceChannelId),
-                            "Switch").withType(BindingConstants.CHANNEL_TYPE_PRESENCE)
+                            "Switch").withType(GPSTrackerConstants.CHANNEL_TYPE_PRESENCE)
                             .withLabel(translationUtil.getText(TRANSLATION_PRESENCE, r.getName()))
                             .build();
                     channelMap.put(presenceChannelId, channel);

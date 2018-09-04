@@ -43,7 +43,7 @@ public class TranslationUtil {
      */
     public TranslationUtil(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
-        //get location provider
+        //get locale provider
         ServiceReference<LocaleProvider> locServiceReference = bundleContext.getServiceReference(LocaleProvider.class);
         if (locServiceReference != null) {
             localeProvider = bundleContext.getService(locServiceReference);

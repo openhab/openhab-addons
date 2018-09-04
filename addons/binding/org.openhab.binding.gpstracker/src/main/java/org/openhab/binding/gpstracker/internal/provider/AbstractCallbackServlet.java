@@ -11,7 +11,7 @@ package org.openhab.binding.gpstracker.internal.provider;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingRegistry;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.gpstracker.internal.BindingConstants;
+import org.openhab.binding.gpstracker.internal.GPSTrackerConstants;
 import org.openhab.binding.gpstracker.internal.discovery.TrackerDiscoveryService;
 import org.openhab.binding.gpstracker.internal.handler.TrackerRecorder;
 import org.openhab.binding.gpstracker.internal.message.AbstractBaseMessage;
@@ -178,7 +178,7 @@ public abstract class AbstractCallbackServlet extends HttpServlet {
      */
     private TrackerRecorder getHandlerById(String trackerId) {
         if (trackerId != null) {
-            ThingUID thingUuid = new ThingUID(BindingConstants.THING_TYPE_TRACKER, trackerId);
+            ThingUID thingUuid = new ThingUID(GPSTrackerConstants.THING_TYPE_TRACKER, trackerId);
             Thing tracker = this.thingRegistry.get(thingUuid);
             if (tracker == null) {
                 //thing was not found - adding the tracker to discovery service.
