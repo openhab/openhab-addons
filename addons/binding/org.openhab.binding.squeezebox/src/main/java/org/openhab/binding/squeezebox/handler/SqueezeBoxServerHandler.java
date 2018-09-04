@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -1029,7 +1030,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     private void scheduleReconnect() {
         logger.debug("scheduling squeeze server reconnect in {} seconds", RECONNECT_TIME);
         cancelReconnect();
-        reconnectFuture = scheduler.submit(this::connect);
+        reconnectFuture = scheduler.schedule(this::connect, RECONNECT_TIME, TimeUnit.SECONDS);
     }
 
     /**
