@@ -52,7 +52,7 @@ public class LGHomBotBindingConstants {
     public static final String CHANNEL_REPEAT = "repeat";
     public static final String CHANNEL_MUTE = "mute";
     public static final String CHANNEL_NICKNAME = "nickname";
-    public static final String CHANNEL_VIDEO = "video";
+    public static final String CHANNEL_CAMERA = "camera";
     public static final String CHANNEL_MAP = "map";
     public static final String CHANNEL_MOVE = "move";
 
@@ -69,4 +69,5 @@ public class LGHomBotBindingConstants {
     public static final String HBSTATE_CHARGING = "CHARGING";
     public static final String HBSTATE_DIAGNOSIS = "DIAGNOSIS";
     public static final String HBSTATE_RESERVATION = "RESERVATION";
+    public static final String HBSTATE_ERROR = "ERROR";
 }

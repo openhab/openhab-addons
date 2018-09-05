@@ -283,7 +283,7 @@ public class LGHomBotHandler extends BaseThingHandler {
             case CHANNEL_NICKNAME:
                 updateState(channelUID, StringType.valueOf(currentNickname));
                 break;
-            case CHANNEL_VIDEO:
+            case CHANNEL_CAMERA:
                 updateState(channelUID, currentImage);
                 break;
             default:
@@ -298,7 +298,7 @@ public class LGHomBotHandler extends BaseThingHandler {
         refreshCounter++;
         if (refreshCounter % 5 == 0) {
             parseImage();
-            updateState(new ChannelUID(getThing().getUID(), CHANNEL_VIDEO), currentImage);
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_CAMERA), currentImage);
             return;
         }
         String status = null;

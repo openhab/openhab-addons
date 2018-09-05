@@ -17,21 +17,21 @@
             <channel id="start" typeId="startType" />
             <channel id="home" typeId="homeType" />
             <channel id="stop" typeId="stopType" />
-            <channel id="diagnosis" typeId="diagnosisType" />
-            <channel id="mode" typeId="modeType" />
             <channel id="turbo" typeId="turboType" />
             <channel id="repeat" typeId="repeatType" />
+            <channel id="mode" typeId="modeType" />
+            <channel id="diagnosis" typeId="diagnosisType" />
             <channel id="mute" typeId="muteType" />
             <channel id="nickname" typeId="nicknameType" />
-            <channel id="video" typeId="videoType" />
+            <channel id="camera" typeId="cameraType" />
             <channel id="map" typeId="mapType" />
             <channel id="move" typeId="moveType" />
 		</channels>
 
         <properties>
-            <property name="Vendor">LG</property>
-            <property name="Firmware V">0</property>
-            <property name="Server V">0</property>
+            <property name="vendor">LG</property>
+            <property name="firmware">0</property>
+            <property name="server">0</property>
         </properties>
         <representation-property>deviceId</representation-property>
 
@@ -119,10 +119,15 @@
         <label>Pause</label>
         <description>Pause cleaning</description>
     </channel-type>
-    <channel-type id="diagnosisType" advanced="true">
+    <channel-type id="turboType">
         <item-type>Switch</item-type>
-        <label>Diagnosis</label>
-        <description>Run diagnosis</description>
+        <label>Turbo</label>
+        <description>Turbo mode ON, OFF</description>
+    </channel-type>
+    <channel-type id="repeatType">
+        <item-type>Switch</item-type>
+        <label>Repeat</label>
+        <description>Repeat mode On, OFF</description>
     </channel-type>
     <channel-type id="modeType">
         <item-type>String</item-type>
@@ -137,21 +142,16 @@
             </options>
         </state>
     </channel-type>
-    <channel-type id="turboType">
-        <item-type>Switch</item-type>
-        <label>Turbo</label>
-        <description>Turbo mode ON, OFF</description>
-    </channel-type>
-    <channel-type id="repeatType">
-        <item-type>Switch</item-type>
-        <label>Repeat</label>
-        <description>Repeat mode On, OFF</description>
-    </channel-type>
     <channel-type id="muteType" advanced="true">
         <item-type>Switch</item-type>
         <label>Mute</label>
         <description>Mute On, OFF</description>
         <category>SoundVolume</category>
+    </channel-type>
+    <channel-type id="diagnosisType" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Diagnosis</label>
+        <description>Run diagnosis</description>
     </channel-type>
     <channel-type id="nicknameType">
         <item-type>String</item-type>
@@ -159,10 +159,10 @@
         <description>The nickname of the HomBot</description>
         <state pattern="%s" readOnly="true"></state>
     </channel-type>
-    <channel-type id="videoType">
+    <channel-type id="cameraType">
         <item-type>Image</item-type>
-        <label>Video</label>
-        <description>Video feed from the top camera</description>
+        <label>Camera</label>
+        <description>Image feed from the top camera</description>
         <state readOnly="true"></state>
     </channel-type>
     <channel-type id="mapType" advanced="true">

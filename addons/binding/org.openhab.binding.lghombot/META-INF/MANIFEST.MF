@@ -10,8 +10,8 @@ Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
 Import-Package: 
  org.eclipse.jdt.annotation;resolution:=optional,
- org.eclipse.jetty.client;version="9.3.22",
- org.eclipse.jetty.http;version="9.3.22",
+ org.eclipse.jetty.client,
+ org.eclipse.jetty.http,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.library.types,

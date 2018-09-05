@@ -16,7 +16,7 @@ If you already know the IP-address of your HomBot you might as well just plug it
 
 ## Thing Configuration
 
-The binding only requires an IP-address to function, this should hopefully be found using the discovery method.
+The thing only requires an IP-address to function, this should hopefully be found using the discovery method.
 
 ## Channels
 
@@ -28,11 +28,12 @@ The binding only requires an IP-address to function, this should hopefully be fo
 | pause           | Switch    | Pause current activity.                                                                       | RW         |
 | state           | String    | Current state of the HomBot.                                                                  | R          |
 | battery         | Number    | Current battery charge.                                                                       | R          |
+| cpuLoad         | Number    | Current CPU load.                                                                             | R          |
 | mode            | String    | Current cleaning mode.                                                                        | RW         |
 | turbo           | Switch    | Turn turbo on/off.                                                                            | RW         |
 | repeat          | Switch    | Turn repeat cleaning on/off.                                                                  | RW         |
 | nickname        | String    | Nickname of the HomBot.                                                                       | R          |
-| video           | Image     | Image from the top camera.                                                                    | R          |
+| camera          | Image     | Image from the top camera.                                                                    | R          |
 
 ## Full Example
 
@@ -42,16 +43,16 @@ Here are some examples on how to map the channels to items.
 demo.items:
 
 ```
-String HomBot_State "State [%s]" <vacummrobot> { channel="lghombot:LGHomBot:hombot2343:state" }
-Number HomBot_Battery "Battery [%d%%]"         { channel="lghombot:LGHomBot:hombot2343:battery" }
-Switch HomBot_Clean "Clean"                    { channel="lghombot:LGHomBot:hombot2343:clean" }
-Switch HomBot_Home  "Home"                     { channel="lghombot:LGHomBot:hombot2343:home" }
-Switch HomBot_Pause "Pause"                    { channel="lghombot:LGHomBot:hombot2343:pause" }
-Switch HomBot_Turbo "Turbo"                    { channel="lghombot:LGHomBot:hombot2343:turbo" }
-Switch HomBot_Repeat "Repeat"                  { channel="lghombot:LGHomBot:hombot2343:repeat" }
-String HomBot_CleanMode "Clean mode [%s]"      { channel="lghombot:LGHomBot:hombot2343:mode" }
-String HomBot_Nickname                         { channel="lghombot:LGHomBot:hombot2343:nickname" }
-Image HomBot_Image                             { channel="lghombot:LGHomBot:hombot2343:video" }
+String HomBot_State "State [%s]" <CleaningRobot> { channel="lghombot:LGHomBot:a4_24_56_8f_2c_5b:state" }
+Number HomBot_Battery "Battery [%d%%]"           { channel="lghombot:LGHomBot:a4_24_56_8f_2c_5b:battery" }
+Switch HomBot_Clean "Clean"                      { channel="lghombot:LGHomBot:a4_24_56_8f_2c_5b:start" }
+Switch HomBot_Home  "Home"                       { channel="lghombot:LGHomBot:a4_24_56_8f_2c_5b:home" }
+Switch HomBot_Pause "Pause"                      { channel="lghombot:LGHomBot:a4_24_56_8f_2c_5b:pause" }
+Switch HomBot_Turbo "Turbo"                      { channel="lghombot:LGHomBot:a4_24_56_8f_2c_5b:turbo" }
+Switch HomBot_Repeat "Repeat"                    { channel="lghombot:LGHomBot:a4_24_56_8f_2c_5b:repeat" }
+String HomBot_CleanMode "Clean mode [%s]"        { channel="lghombot:LGHomBot:a4_24_56_8f_2c_5b:mode" }
+String HomBot_Nickname                           { channel="lghombot:LGHomBot:a4_24_56_8f_2c_5b:nickname" }
+Image HomBot_Image                               { channel="lghombot:LGHomBot:a4_24_56_8f_2c_5b:camera" }
 ```
 
 demo.sitemap:

@@ -9,10 +9,8 @@
 package org.openhab.binding.lghombot.internal.discovery;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
 import java.net.Inet4Address;
 import java.net.InetAddress;
-import java.net.MulticastSocket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.List;
@@ -75,6 +73,7 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
 
     private int octet;
     private int ipMask;
+    private int addressCount;
     private CidrAddress baseIp;
 
     /**
@@ -91,6 +90,7 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
 
     private void setupBaseIp(CidrAddress adr) {
         byte[] octets = adr.getAddress().getAddress();
+        addressCount = (1 << (32 - adr.getPrefix())) - 2;
         ipMask = 0xFFFFFFFF << (32 - adr.getPrefix());
         octets[0] &= ipMask >> 24;
         octets[1] &= ipMask >> 16;
@@ -127,15 +127,11 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
      *
      * Starts the scan. This discovery will:
      * <ul>
-     * <li>Request all the network interfaces</li>
-     * <li>For each network interface, create a listening thread using {@link #executorService}</li>
-     * <li>Each listening thread will open up a {@link MulticastSocket} using {@link #SDDP_ADDR} and {@link #SDDP_PORT}
-     * and
-     * will receive any {@link DatagramPacket} that comes in</li>
-     * <li>The {@link DatagramPacket} is then investigated to see if is a SDDP packet and will create a new thing from
-     * it</li>
+     * <li>Request this hosts first IPV4 address.</li>
+     * <li>Send a HTTP request on port 6260 to all IPs on the subnet.</li>
+     * <li>The response is then investigated to see if is an answer from a HomBot lg.srv</li>
      * </ul>
-     * The process will continue until {@link #stopScan()} is called.
+     * The process will continue until all addresses are checked, timeout or {@link #stopScan()} is called.
      */
     @Override
     protected void startScan() {
@@ -143,13 +139,15 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
             stopScan();
         }
 
-        executorService = Executors.newFixedThreadPool(SCAN_THREADS);
-
+        CidrAddress localAdr = getLocalIP4Address();
+        if (localAdr == null) {
+            stopScan();
+            return;
+        }
         scanning = true;
-        List<CidrAddress> l = NetUtil.getAllInterfaceAddresses().stream()
-                .filter(a -> a.getAddress() instanceof Inet4Address).map(a -> a).collect(Collectors.toList());
-        setupBaseIp(l.get(0));
-        for (int i = 1; i < 255; i++) {
+        setupBaseIp(localAdr);
+        executorService = Executors.newFixedThreadPool(SCAN_THREADS);
+        for (int i = 0; i < addressCount; i++) {
 
             executorService.execute(() -> {
                 String ipAdd = getNextIPAddress();
@@ -174,6 +172,22 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
     }
 
     /**
+     * Tries to find valid IP4 address.
+     *
+     * @return An IP4 address or null if none is found.
+     */
+    private CidrAddress getLocalIP4Address() {
+        List<CidrAddress> l = NetUtil.getAllInterfaceAddresses().stream()
+                .filter(a -> a.getAddress() instanceof Inet4Address).map(a -> a).collect(Collectors.toList());
+        for (int i = 0; i < l.size(); i++) {
+            if (!l.get(i).toString().startsWith("169.254.")) {
+                return l.get(i);
+            }
+        }
+        return null;
+    }
+
+    /**
      * lgsrv message has the following format
      *
      * <pre>
@@ -192,7 +206,7 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
      * JSON_REPEAT="false"
      * JSON_MODE="ZZ"
      * JSON_VERSION="16552"
-     * JSON_NICKNAME=""
+     * JSON_NICKNAME="HOMBOT"
      * CLREC_CURRENTBUMPING="29441"
      * CLREC_LAST_CLEAN="2018/08/30/11/00/00.826531"
      * </pre>
@@ -209,9 +223,8 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
             return;
         }
 
-        String host = "a4_24_56_8f_2c_5b";
         String model = "HomBot";
-        String nickName = "HOMBOT";
+        String nickName = "";
         String srvVersion = "0";
         String fwVersion = "0";
 
@@ -232,8 +245,11 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
         }
 
         if (ipAddress != null) {
+            if (nickName.isEmpty()) {
+                nickName = "HOMBOT1";
+            }
             ThingTypeUID typeId = LGHomBotBindingConstants.THING_TYPE_LGHOMBOT;
-            ThingUID uid = new ThingUID(typeId, host);
+            ThingUID uid = new ThingUID(typeId, nickName);
 
             Map<String, Object> properties = new HashMap<>(3);
             properties.put(LGHomBotConfiguration.IP_ADDRESS, ipAddress);
@@ -263,7 +279,7 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
         try {
             executorService.awaitTermination(TIMEOUT * SCAN_THREADS, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
-            logger.debug("HomBot scacn interrupted, exception: {}", e);
+            logger.debug("HomBot scan interrupted, exception: {}", e);
         }
         executorService.shutdown();
         executorService = null;
