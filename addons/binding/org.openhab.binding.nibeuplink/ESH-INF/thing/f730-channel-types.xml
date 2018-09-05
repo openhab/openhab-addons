@@ -14,56 +14,56 @@
 		<item-type>Number:Temperature</item-type>
 		<label>EB100-EP14-BT12 Condensor Out</label>
 		<description>Condensor out temperature, BT12</description>
-		<state pattern="%.1f °C" readOnly="true">
+		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-40018">
 		<item-type>Number:Temperature</item-type>
 		<label>EB100-EP14-BT14 Hot Gas Temp</label>
 		<description>Hot gas temperature, BT14</description>
-		<state pattern="%.1f °C" readOnly="true">
+		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-40019">
 		<item-type>Number:Temperature</item-type>
 		<label>EB100-EP14-BT15 Liquid Line</label>
 		<description>Liquid line temperature, BT15</description>
-		<state pattern="%.1f °C" readOnly="true">
+		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-40020">
 		<item-type>Number:Temperature</item-type>
 		<label>EB100-BT16 Evaporator temp</label>
 		<description></description>
-		<state pattern="%.1f °C" readOnly="true">
+		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-40022">
 		<item-type>Number:Temperature</item-type>
 		<label>EB100-EP14-BT17 Suction</label>
 		<description>Suction temperature, BT17</description>
-		<state pattern="%.1f °C" readOnly="true">
+		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-40025">
 		<item-type>Number:Temperature</item-type>
 		<label>BT20 Exhaust air temp. 1</label>
 		<description></description>
-		<state pattern="%.1f °C" readOnly="true">
+		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-40026">
 		<item-type>Number:Temperature</item-type>
 		<label>BT21 Vented air temp. 1</label>
 		<description></description>
-		<state pattern="%.1f °C" readOnly="true">
+		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-40101">
 		<item-type>Number:Temperature</item-type>
 		<label>BT28 Airmix Temp</label>
 		<description>External airmix temperature BT28</description>
-		<state pattern="%.1f °C" readOnly="true">
+		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-40919">
@@ -91,14 +91,14 @@
 		<item-type>Number:Frequency</item-type>
 		<label>Compr. current min.freq.</label>
 		<description>The current minimum frequency of the compressor</description>
-		<state pattern="%d Hz" readOnly="true">
+		<state pattern="%d %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-43123">
 		<item-type>Number:Frequency</item-type>
 		<label>Compr. current max.freq.</label>
 		<description>The current maximum frequency of the compressor</description>
-		<state pattern="%d Hz" readOnly="true">
+		<state pattern="%d %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-43124">
@@ -119,7 +119,7 @@
 		<item-type>Number:Frequency</item-type>
 		<label>Compressor Frequency, Actual</label>
 		<description>The compressor frequency the compressor is currently running at</description>
-		<state pattern="%.1f Hz" readOnly="true">
+		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-43181">
@@ -140,14 +140,14 @@
 		<item-type>Number:Time</item-type>
 		<label>Tot. op.time compr. EB100-EP14</label>
 		<description>Total compressor operation time</description>
-		<state pattern="%d h" readOnly="true">
+		<state pattern="%d %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f730-type-43424">
 		<item-type>Number:Time</item-type>
 		<label>Tot. HW op.time compr. EB100-EP14</label>
 		<description>Total compressor operation time in hot water mode</description>
-		<state pattern="%d h" readOnly="true">
+		<state pattern="%d %unit%" readOnly="true">
 		</state>
 	</channel-type>
 </thing:thing-descriptions>

@@ -19,10 +19,23 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class ScaledChannel extends Channel {
 
-    static final double F01 = 0.1;
-    static final double F001 = 0.01;
+    static enum ScaleFactor {
+        ONE(1),
+        DIV_10(0.1),
+        DIV_100(0.01);
 
-    private final double factor;
+        private final double factor;
+
+        private ScaleFactor(double factor) {
+            this.factor = factor;
+        }
+
+        private final double getFactor() {
+            return factor;
+        }
+    }
+
+    private final ScaleFactor factor;
 
     /**
      * constructor for channels with write access enabled + unit
@@ -34,7 +47,7 @@ public class ScaledChannel extends Channel {
      * @param writeApiUrl
      * @param validationExpression
      */
-    ScaledChannel(String id, String name, ChannelGroup channelGroup, double factor, @Nullable String writeApiUrl,
+    ScaledChannel(String id, String name, ChannelGroup channelGroup, ScaleFactor factor, @Nullable String writeApiUrl,
             @Nullable String validationExpression) {
         super(id, name, channelGroup, writeApiUrl, validationExpression);
         this.factor = factor;
@@ -48,11 +61,11 @@ public class ScaledChannel extends Channel {
      * @param channelGroup
      * @param unit
      */
-    ScaledChannel(String id, String name, ChannelGroup channelGroup, double factor) {
+    ScaledChannel(String id, String name, ChannelGroup channelGroup, ScaleFactor factor) {
         this(id, name, channelGroup, factor, null, null);
     }
 
     public final double getFactor() {
-        return factor;
+        return factor.getFactor();
     }
 }

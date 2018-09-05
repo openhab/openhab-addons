@@ -11,36 +11,34 @@ package org.openhab.binding.nibeuplink.internal.model;
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * extension of the channel class which adds support of QuantityType
+ * extension of the ScaledChannel class which adds support of QuantityType
+ * write access is in general not support by this type of channel as Nibe cannot handle unit conversions
  *
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class QuantityChannel extends Channel {
+public class QuantityChannel extends ScaledChannel {
 
     private final Unit<?> unit;
 
     /**
-     * constructor for channels with write access enabled + unit
+     * constructor for channels with explicit scaling
      *
      * @param id
      * @param name
      * @param channelGroup
+     * @param factor
      * @param unit
-     * @param writeApiUrl
-     * @param validationExpression
      */
-    QuantityChannel(String id, String name, ChannelGroup channelGroup, Unit<?> unit, @Nullable String writeApiUrl,
-            @Nullable String validationExpression) {
-        super(id, name, channelGroup, writeApiUrl, validationExpression);
+    QuantityChannel(String id, String name, ChannelGroup channelGroup, ScaleFactor factor, Unit<?> unit) {
+        super(id, name, channelGroup, factor, null, null);
         this.unit = unit;
     }
 
     /**
-     * constructor for channels without write access
+     * constructor for channels with defaulted scaling to 1
      *
      * @param id
      * @param name
@@ -48,7 +46,7 @@ public class QuantityChannel extends Channel {
      * @param unit
      */
     QuantityChannel(String id, String name, ChannelGroup channelGroup, Unit<?> unit) {
-        this(id, name, channelGroup, unit, null, null);
+        this(id, name, channelGroup, ScaleFactor.ONE, unit);
     }
 
     public Unit<?> getUnit() {

@@ -19,56 +19,56 @@
 		<item-type>Number:Temperature</item-type>
 		<label>BT1 Outdoor Temperature</label>
 		<description>Current outdoor temperature</description>
-		<state pattern="%.1f °C" readOnly="true">
+		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="base-type-40008">
 		<item-type>Number:Temperature</item-type>
 		<label>BT2 Supply temp S1</label>
 		<description>Supply temperature for system 1</description>
-		<state pattern="%.1f °C" readOnly="true">
+		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="base-type-40012">
 		<item-type>Number:Temperature</item-type>
 		<label>EB100-EP14-BT3 Return temp</label>
 		<description>Return temperature</description>
-		<state pattern="%.1f °C" readOnly="true">
+		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="base-type-40013">
 		<item-type>Number:Temperature</item-type>
 		<label>BT7 HW Top</label>
 		<description>Hot water top temperature, BT7</description>
-		<state pattern="%.1f °C" readOnly="true">
+		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="base-type-40014">
 		<item-type>Number:Temperature</item-type>
 		<label>BT6 HW Load</label>
 		<description>Hot water load temperature, BT6</description>
-		<state pattern="%.1f °C" readOnly="true">
+		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="base-type-40033">
 		<item-type>Number:Temperature</item-type>
 		<label>BT50 Room Temp S1</label>
 		<description></description>
-		<state pattern="%.1f °C" readOnly="true">
+		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="base-type-40067">
 		<item-type>Number:Temperature</item-type>
 		<label>BT1 Average</label>
 		<description>EB100-BT1 Outdoor temperature average</description>
-		<state pattern="%.1f °C" readOnly="true">
+		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="base-type-40071">
 		<item-type>Number:Temperature</item-type>
 		<label>BT25 Ext. Supply</label>
 		<description>External supply temperature, BT25</description>
-		<state pattern="%.1f °C" readOnly="true">
+		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="base-type-40072">
@@ -82,21 +82,21 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>EB100-BE3 Current</label>
 		<description></description>
-		<state pattern="%.1f A" readOnly="true">
+		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="base-type-40081">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>EB100-BE2 Current</label>
 		<description></description>
-		<state pattern="%.1f A" readOnly="true">
+		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="base-type-40083">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>EB100-BE1 Current</label>
 		<description></description>
-		<state pattern="%.1f A" readOnly="true">
+		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="base-type-43005">
@@ -110,21 +110,21 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Calc. Supply S1</label>
 		<description>Calculated supply temperature for the climate system</description>
-		<state pattern="%.1f °C" readOnly="true">
+		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="base-type-43081">
 		<item-type>Number:Time</item-type>
 		<label>Tot. op.time add.</label>
 		<description>Total electric additive operation time</description>
-		<state pattern="%.1f h" readOnly="true">
+		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="base-type-43084">
 		<item-type>Number:Power</item-type>
 		<label>Int. el.add. Power</label>
 		<description>Current power from the internal electrical addition</description>
-		<state pattern="%.2f kW" readOnly="true">
+		<state pattern="%.2f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="base-type-43161">
@@ -137,35 +137,35 @@
 		<item-type>Number:Energy</item-type>
 		<label>Heat Meter - HW Cpr and Add EP14</label>
 		<description>Accumulated energy production as calculated by the heat meter</description>
-		<state pattern="%.1f kWh" readOnly="true">
+		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="base-type-44300">
 		<item-type>Number:Energy</item-type>
 		<label>Heat Meter - Heat Cpr and Add EP14</label>
 		<description>Accumulated energy production as calculated by the heat meter</description>
-		<state pattern="%.1f kWh" readOnly="true">
+		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="base-type-44304">
 		<item-type>Number:Energy</item-type>
 		<label>Heat Meter - Pool Cpr EP14</label>
 		<description>Accumulated energy production as calculated by the heat meter</description>
-		<state pattern="%.1f kWh" readOnly="true">
+		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="base-type-44306">
 		<item-type>Number:Energy</item-type>
 		<label>Heat Meter - HW Cpr EP14</label>
 		<description>Accumulated energy production as calculated by the heat meter</description>
-		<state pattern="%.1f kWh" readOnly="true">
+		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="base-type-44308">
 		<item-type>Number:Energy</item-type>
 		<label>Heat Meter - Heat Cpr EP14</label>
 		<description>Accumulated energy production as calculated by the heat meter</description>
-		<state pattern="%.1f kWh" readOnly="true">
+		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="base-type-47041">
@@ -184,7 +184,7 @@
 		<item-type>Number:Power</item-type>
 		<label>Max int add. power</label>
 		<description></description>
-		<state min="0" max="4500" step="1" pattern="%.2f kW" readOnly="false">
+		<state min="0" max="4500" step="1" pattern="%.2f %unit%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="base-type-48043">
@@ -210,7 +210,7 @@
 		<item-type>Number:Power</item-type>
 		<label>Max int add. power, SG Ready</label>
 		<description></description>
-		<state min="0" max="4500" step="1" pattern="%.2f kW" readOnly="false">
+		<state min="0" max="4500" step="1" pattern="%.2f %unit%" readOnly="false">
 		</state>
 	</channel-type>
 </thing:thing-descriptions>

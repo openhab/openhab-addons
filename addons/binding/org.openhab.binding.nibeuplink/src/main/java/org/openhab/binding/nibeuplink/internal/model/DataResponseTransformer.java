@@ -51,16 +51,19 @@ public class DataResponseTransformer {
             } else {
                 if (channel instanceof QuantityChannel) {
                     Unit<?> unit = ((QuantityChannel) channel).getUnit();
-                    logger.debug("Channel {} transformed to QuantityType ({} {})", channel.getFQName(), value,
-                            unit.toString());
-                    result.put(channel, new QuantityType<>(value, unit));
+                    double factor = ((ScaledChannel) channel).getFactor();
+                    logger.debug("Channel {} transformed to QuantityType ({}*{} {})", channel.getFQName(), value,
+                            factor, unit.toString());
+                    result.put(channel, new QuantityType<>(value * factor, unit));
                 } else if (channel instanceof SwitchChannel) {
                     logger.debug("Channel {} transformed to OnOffType ({})", channel.getFQName(), value);
                     OnOffType mapped = ((SwitchChannel) channel).mapValue(value);
                     result.put(channel, mapped);
                 } else if (channel instanceof ScaledChannel) {
-                    logger.debug("Channel {} transformed to scaled NumberType ({})", channel.getFQName(), value);
-                    result.put(channel, new DecimalType(value * ((ScaledChannel) channel).getFactor()));
+                    double factor = ((ScaledChannel) channel).getFactor();
+                    logger.debug("Channel {} transformed to scaled NumberType ({}*{})", channel.getFQName(), value,
+                            factor);
+                    result.put(channel, new DecimalType(value * factor));
                 } else {
                     logger.debug("Channel {} transformed to NumberType ({})", channel.getFQName(), value);
                     result.put(channel, new DecimalType(value));
