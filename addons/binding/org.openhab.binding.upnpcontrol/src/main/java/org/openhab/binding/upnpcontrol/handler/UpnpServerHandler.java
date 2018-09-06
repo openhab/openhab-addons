@@ -31,6 +31,7 @@ import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
+import org.openhab.binding.upnpcontrol.internal.UpnpControlHandlerFactory;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicStateDescriptionProvider;
 import org.openhab.binding.upnpcontrol.internal.UpnpEntry;
 import org.openhab.binding.upnpcontrol.internal.UpnpProtocolMatcher;
@@ -199,12 +200,24 @@ public class UpnpServerHandler extends UpnpHandler {
 
     }
 
+    /**
+     * Add a renderer to the renderer channel state option list.
+     * This method is called from the {@link UpnpControlHandlerFactory} class when creating a renderer handler.
+     *
+     * @param key
+     */
     public void addRendererOption(String key) {
         rendererStateOptionList.add(new StateOption(key, upnpRenderers.get(key).getThing().getLabel()));
         updateStateDescription(rendererChannelUID, rendererStateOptionList);
         logger.debug("Renderer option {} added to {}", key, thing.getLabel());
     }
 
+    /**
+     * Remove a renderer from the renderer channel state option list.
+     * This method is called from the {@link UpnpControlHandlerFactory} class when removing a renderer handler.
+     *
+     * @param key
+     */
     public void removeRendererOption(String key) {
         UpnpRendererHandler handler = currentRendererHandler;
         if ((handler != null) && (handler.getThing().getUID().toString().equals(key))) {
@@ -236,16 +249,17 @@ public class UpnpServerHandler extends UpnpHandler {
                 || (list.isEmpty() && !currentId.equals(DIRECTORY_ROOT))) {
             StateOption stateOption = new StateOption(UP, UP);
             stateOptionList.add(stateOption);
-            logger.debug("UP added to selection list");
+            logger.debug("UP added to selection list on server {}", thing.getLabel());
         }
         list.forEach((value) -> {
             StateOption stateOption = new StateOption(value.getId(), value.getTitle());
             stateOptionList.add(stateOption);
-            logger.debug("{} added to selection list", value.getId());
+            logger.trace("{} added to selection list on server {}", value.getId(), thing.getLabel());
 
             // Keep the entries in a map so we can find the parent info to go back up
             entryMap.put(value.getId(), value);
         });
+        logger.debug("{} entries added to selection list on server {}", stateOptionList.size(), thing.getLabel());
         updateStateDescription(currentTitleChannelUID, stateOptionList);
 
         // put the selector to first entry in list if available
@@ -261,6 +275,13 @@ public class UpnpServerHandler extends UpnpHandler {
         updateState(currentTitleChannelUID, new StringType(currentSelection));
     }
 
+    /**
+     * Filter a list of media and only keep the media that are playable on the currently selected renderer.
+     *
+     * @param resultList
+     * @param includeContainers
+     * @return
+     */
     private List<UpnpEntry> filterEntries(List<UpnpEntry> resultList, boolean includeContainers) {
         logger.debug("Raw result list {}", resultList);
         List<UpnpEntry> list = new ArrayList<>();
@@ -282,7 +303,7 @@ public class UpnpServerHandler extends UpnpHandler {
 
     /**
      * Method that does a UPnP browse on a content directory. Results will be retrieved in the {@link onValueReceived}
-     * method
+     * method.
      *
      * @param objectID       content directory object
      * @param browseFlag     BrowseMetaData or BrowseDirectChildren
@@ -306,7 +327,7 @@ public class UpnpServerHandler extends UpnpHandler {
 
     /**
      * Method that does a UPnP search on a content directory. Results will be retrieved in the {@link onValueReceived}
-     * method
+     * method.
      *
      * @param containerID    content directory container
      * @param searchCriteria search criteria, examples:
@@ -343,7 +364,8 @@ public class UpnpServerHandler extends UpnpHandler {
 
     @Override
     public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
-        logger.debug("Received variable {} with value {} from service {}", variable, value, service);
+        logger.debug("Upnp device {} received variable {} with value {} from service {}", thing.getLabel(), variable,
+                value, service);
         if (variable == null) {
             return;
         }

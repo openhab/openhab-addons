@@ -61,6 +61,15 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
         service.unregisterParticipant(this);
     }
 
+    /**
+     * Invoke PrepareForConnection on the UPnP Connection Manager.
+     * Result is received in {@link onValueReceived}.
+     *
+     * @param remoteProtocolInfo
+     * @param peerConnectionManager
+     * @param peerConnectionId
+     * @param direction
+     */
     protected void prepareForConnection(String remoteProtocolInfo, String peerConnectionManager, int peerConnectionId,
             String direction) {
         HashMap<String, String> inputs = new HashMap<String, String>();
@@ -72,13 +81,22 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
         invokeAction("ConnectionManager", "PrepareForConnection", inputs);
     }
 
+    /**
+     * Invoke ConnectionComplete on UPnP Connection Manager.
+     *
+     * @param connectionId
+     */
     protected void connectionComplete(int connectionId) {
         HashMap<String, String> inputs = new HashMap<String, String>();
         inputs.put("ConnectionID", String.valueOf(connectionId));
 
-        invokeAction("ConnectionManager", "connectionComplete", inputs);
+        invokeAction("ConnectionManager", "ConnectionComplete", inputs);
     }
 
+    /**
+     * Invoke GetTransportState on UPnP AV Transport.
+     * Result is received in {@link onValueReceived}.
+     */
     protected void getTransportState() {
         HashMap<String, String> inputs = new HashMap<String, String>();
         inputs.put("InstanceID", Integer.toString(avTransportId));
@@ -86,6 +104,10 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
         invokeAction("AVTransport", "GetTransportInfo", inputs);
     }
 
+    /**
+     * Invoke GetProtocolInfo on UPnP Connection Manager.
+     * Result is received in {@link onValueReceived}.
+     */
     protected void getProtocolInfo() {
         Map<String, String> inputs = new HashMap<>();
 
@@ -160,11 +182,22 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
         }
     }
 
+    /**
+     * Subscribe this handler as a participant to a GENA subscription.
+     *
+     * @param serviceId
+     * @param duration
+     */
     protected void addSubscription(String serviceId, int duration) {
         logger.debug("Upnp device {} add upnp subscription on {}", thing.getLabel(), serviceId);
         service.addSubscription(this, serviceId, duration);
     }
 
+    /**
+     * Remove this handler from the GENA subscriptions.
+     *
+     * @param serviceId
+     */
     protected void removeSubscription(String serviceId) {
         if (service.isRegistered(this)) {
             service.removeSubscription(this, serviceId);

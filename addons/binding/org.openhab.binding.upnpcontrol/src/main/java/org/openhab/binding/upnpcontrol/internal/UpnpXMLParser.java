@@ -220,6 +220,9 @@ public class UpnpXMLParser {
                     ignore.add("rating");
                     ignore.add("userrating");
                     ignore.add("episodeSeason");
+                    ignore.add("childCountContainer");
+                    ignore.add("modificationTime");
+                    ignore.add("containerContent");
                 }
 
                 if (!ignore.contains(localName)) {
