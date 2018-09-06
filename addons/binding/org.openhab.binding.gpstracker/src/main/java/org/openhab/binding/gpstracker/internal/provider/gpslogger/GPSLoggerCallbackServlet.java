@@ -33,10 +33,10 @@ public class GPSLoggerCallbackServlet extends AbstractCallbackServlet {
      * Constructor called at binding startup.
      *
      * @param discoveryService Discovery service for new trackers.
-     * @param trackerRegistryImpl Tracker registry implementation
+     * @param trackerRegistry Tracker registry
      */
-    public GPSLoggerCallbackServlet(TrackerDiscoveryService discoveryService, TrackerRegistry trackerRegistryImpl) {
-        super(discoveryService, trackerRegistryImpl);
+    public GPSLoggerCallbackServlet(TrackerDiscoveryService discoveryService, TrackerRegistry trackerRegistry) {
+        super(discoveryService, trackerRegistry);
     }
 
     @Override

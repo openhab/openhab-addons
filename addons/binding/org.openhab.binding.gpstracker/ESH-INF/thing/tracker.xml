@@ -25,7 +25,7 @@
 		<item-type>Number:Length</item-type>
 		<label>Distance</label>
 		<description>Distance from primary location</description>
-		<state pattern="%.2f km" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="regionPresence">
 		<item-type>Switch</item-type>

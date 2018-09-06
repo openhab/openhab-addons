@@ -47,7 +47,7 @@ public abstract class AbstractCallbackServlet extends HttpServlet {
     private MessageUtil messageUtil = new MessageUtil();
 
     /**
-     * Tracker registry implementation
+     * Tracker registry
      */
     private TrackerRegistry trackerRegistryImpl;
 
@@ -55,11 +55,11 @@ public abstract class AbstractCallbackServlet extends HttpServlet {
      * Constructor called at binding startup.
      *
      * @param discoveryService Discovery service for new trackers.
-     * @param trackerRegistryImpl Tracker handler registry
+     * @param trackerRegistry Tracker handler registry
      */
-    protected AbstractCallbackServlet(TrackerDiscoveryService discoveryService, TrackerRegistry trackerRegistryImpl) {
+    protected AbstractCallbackServlet(TrackerDiscoveryService discoveryService, TrackerRegistry trackerRegistry) {
         this.discoveryService = discoveryService;
-        this.trackerRegistryImpl = trackerRegistryImpl;
+        this.trackerRegistryImpl = trackerRegistry;
     }
 
     protected abstract String getPath();

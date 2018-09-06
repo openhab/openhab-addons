@@ -11,10 +11,8 @@ package org.openhab.binding.gpstracker.internal.handler;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.library.types.DateTimeType;
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.PointType;
+import org.eclipse.smarthome.core.library.types.*;
+import org.eclipse.smarthome.core.library.unit.*;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -115,7 +113,7 @@ public class TrackerHandler extends BaseThingHandler implements TrackerRecorder 
     @Override
     public void initialize() {
         updateThingChannels();
-        updateStatus(ThingStatus.UNKNOWN);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
@@ -225,7 +223,7 @@ public class TrackerHandler extends BaseThingHandler implements TrackerRecorder 
 
                     logger.trace("Existing new location: {}", newLocation.toString());
                     int newDistance = newLocation.distanceFrom(center).intValue();
-                    updateState(CHANNEL_DISTANCE + "_" + r.getId(), new DecimalType(newDistance / 1000));
+                    updateState(CHANNEL_DISTANCE + "_" + r.getId(), new QuantityType<>(newDistance/1000, MetricPrefix.KILO(SIUnits.METRE)));
                     logger.trace("Region center distance from new {} is {} with radius {}", newLocation.toString(), newDistance, radius);
 
                     logger.trace("Existing old location: {}", oldLocation.toString());
