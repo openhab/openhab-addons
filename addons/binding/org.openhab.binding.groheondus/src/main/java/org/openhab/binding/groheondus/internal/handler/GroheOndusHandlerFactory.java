@@ -65,13 +65,10 @@ public class GroheOndusHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof GroheOndusAccountHandler) {
-            ServiceRegistration<?> serviceReg = discoveryServiceRegs.get(thingHandler.getThing().getUID());
-
-            if (serviceReg == null) {
-                return;
+            ServiceRegistration<?> serviceReg = discoveryServiceRegs.remove(thingHandler.getThing().getUID());
+            if (serviceReg != null) {
+                serviceReg.unregister();
             }
-            serviceReg.unregister();
-            discoveryServiceRegs.remove(thingHandler.getThing().getUID());
         }
     }
 

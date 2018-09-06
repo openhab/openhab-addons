@@ -96,14 +96,15 @@ public class AVMFritzHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected synchronized void removeHandler(@NonNull ThingHandler thingHandler) {
         if (thingHandler instanceof AVMFritzBaseBridgeHandler) {
-            ServiceRegistration<?> serviceReg = discoveryServiceRegs.get(thingHandler.getThing().getUID());
+            ServiceRegistration<?> serviceReg = discoveryServiceRegs.remove(thingHandler.getThing().getUID());
             if (serviceReg != null) {
                 // remove discovery service, if bridge handler is removed
-                AVMFritzDiscoveryService discoveryService = (AVMFritzDiscoveryService) bundleContext
+                AVMFritzDiscoveryService service = (AVMFritzDiscoveryService) bundleContext
                         .getService(serviceReg.getReference());
-                discoveryService.deactivate();
                 serviceReg.unregister();
-                discoveryServiceRegs.remove(thingHandler.getThing().getUID());
+                if (service != null) {
+                    service.deactivate();
+                }
             }
         }
     }

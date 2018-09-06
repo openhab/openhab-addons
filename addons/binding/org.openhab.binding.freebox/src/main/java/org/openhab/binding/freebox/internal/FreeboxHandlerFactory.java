@@ -133,14 +133,15 @@ public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private void unregisterDiscoveryService(Thing thing) {
-        ServiceRegistration<?> serviceReg = discoveryServiceRegs.get(thing.getUID());
+        ServiceRegistration<?> serviceReg = discoveryServiceRegs.remove(thing.getUID());
         if (serviceReg != null) {
             // remove discovery service, if bridge handler is removed
             FreeboxDiscoveryService service = (FreeboxDiscoveryService) bundleContext
                     .getService(serviceReg.getReference());
-            service.deactivate();
             serviceReg.unregister();
-            discoveryServiceRegs.remove(thing.getUID());
+            if (service != null) {
+                service.deactivate();
+            }
         }
     }
 

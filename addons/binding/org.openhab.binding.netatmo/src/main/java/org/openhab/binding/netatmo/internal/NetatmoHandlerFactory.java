@@ -123,13 +123,14 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private void unregisterDeviceDiscoveryService(ThingUID thingUID) {
-        ServiceRegistration<?> serviceReg = discoveryServiceRegs.get(thingUID);
+        ServiceRegistration<?> serviceReg = discoveryServiceRegs.remove(thingUID);
         if (serviceReg != null) {
             NetatmoModuleDiscoveryService service = (NetatmoModuleDiscoveryService) bundleContext
                     .getService(serviceReg.getReference());
-            service.deactivate();
             serviceReg.unregister();
-            discoveryServiceRegs.remove(thingUID);
+            if (service != null) {
+                service.deactivate();
+            }
         }
     }
 
@@ -144,10 +145,9 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private void unregisterWebHookServlet(ThingUID thingUID) {
-        ServiceRegistration<?> serviceReg = webHookServiceRegs.get(thingUID);
+        ServiceRegistration<?> serviceReg = webHookServiceRegs.remove(thingUID);
         if (serviceReg != null) {
             serviceReg.unregister();
-            webHookServiceRegs.remove(thingUID);
         }
     }
 

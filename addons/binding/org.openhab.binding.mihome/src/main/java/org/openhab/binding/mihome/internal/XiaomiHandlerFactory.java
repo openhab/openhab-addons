@@ -158,15 +158,16 @@ public class XiaomiHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof XiaomiBridgeHandler) {
-            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
+            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.remove(thingHandler.getThing().getUID());
             if (serviceReg != null) {
                 // remove discovery service, if bridge handler is removed
                 XiaomiItemDiscoveryService service = (XiaomiItemDiscoveryService) bundleContext
                         .getService(serviceReg.getReference());
-                service.onHandlerRemoved();
-                service.deactivate();
                 serviceReg.unregister();
-                discoveryServiceRegs.remove(thingHandler.getThing().getUID());
+                if (service != null) {
+                    service.onHandlerRemoved();
+                    service.deactivate();
+                }
             }
         }
     }

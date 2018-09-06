@@ -22,11 +22,11 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.velbus.handler.VelbusBridgeHandler;
-import org.openhab.binding.velbus.handler.VelbusSensorHandler;
 import org.openhab.binding.velbus.handler.VelbusBlindsHandler;
+import org.openhab.binding.velbus.handler.VelbusBridgeHandler;
 import org.openhab.binding.velbus.handler.VelbusDimmerHandler;
 import org.openhab.binding.velbus.handler.VelbusRelayHandler;
+import org.openhab.binding.velbus.handler.VelbusSensorHandler;
 import org.openhab.binding.velbus.handler.VelbusVMBGPHandler;
 import org.openhab.binding.velbus.handler.VelbusVMBGPOHandler;
 import org.openhab.binding.velbus.handler.VelbusVMBPIROHandler;
@@ -93,15 +93,14 @@ public class VelbusHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private void unregisterDiscoveryService(VelbusBridgeHandler bridgeHandler) {
-        ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(bridgeHandler.getThing().getUID());
+        ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.remove(bridgeHandler.getThing().getUID());
         if (serviceReg != null) {
             VelbusThingDiscoveryService service = (VelbusThingDiscoveryService) bundleContext
-                .getService(serviceReg.getReference());
+                    .getService(serviceReg.getReference());
+            serviceReg.unregister();
             if (service != null) {
                 service.deactivate();
             }
-            serviceReg.unregister();
-            discoveryServiceRegs.remove(bridgeHandler.getThing().getUID());
         }
     }
 }

@@ -68,10 +68,9 @@ public class RFXComHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected void removeHandler(ThingHandler thingHandler) {
         if (this.discoveryServiceRegs != null) {
-            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
+            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.remove(thingHandler.getThing().getUID());
             if (serviceReg != null) {
                 serviceReg.unregister();
-                discoveryServiceRegs.remove(thingHandler.getThing().getUID());
             }
         }
     }

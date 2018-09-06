@@ -132,15 +132,14 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
             }
 
             ServiceRegistration<?> serviceReg = this.discoveryServiceRegistrations
-                    .get(thingHandler.getThing().getUID());
+                    .remove(thingHandler.getThing().getUID());
             if (serviceReg != null) {
                 // remove discovery service, if bridge handler is removed
                 AmazonEchoDiscovery service = (AmazonEchoDiscovery) bundleContext.getService(serviceReg.getReference());
+                serviceReg.unregister();
                 if (service != null) {
                     service.deactivate();
                 }
-                serviceReg.unregister();
-                discoveryServiceRegistrations.remove(thingHandler.getThing().getUID());
             }
         }
     }
