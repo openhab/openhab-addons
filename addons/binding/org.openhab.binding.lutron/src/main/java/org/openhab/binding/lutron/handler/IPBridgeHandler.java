@@ -74,6 +74,10 @@ public class IPBridgeHandler extends BaseBridgeHandler {
     private Date lastDbUpdateDate;
     private ServiceRegistration<DiscoveryService> discoveryServiceRegistration;
 
+    private class LutronSafemodeException extends Exception {
+        private static final long serialVersionUID = 1L;
+    }
+
     public IPBridgeHandler(Bridge bridge) {
         super(bridge);
 
@@ -156,6 +160,11 @@ public class IPBridgeHandler extends BaseBridgeHandler {
             // a scan for paired devices.
             sendCommand(
                     new LutronCommand(LutronOperation.QUERY, LutronCommandType.SYSTEM, -1, SYSTEM_DBEXPORTDATETIME));
+        } catch (LutronSafemodeException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "main repeater is in safe mode");
+            disconnect();
+
+            return;
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             disconnect();
@@ -246,7 +255,7 @@ public class IPBridgeHandler extends BaseBridgeHandler {
         connect();
     }
 
-    private boolean login(IPBridgeConfig config) throws IOException, InterruptedException {
+    private boolean login(IPBridgeConfig config) throws IOException, InterruptedException, LutronSafemodeException {
         this.session.open(config.getIpAddress());
         this.session.waitFor("login:");
 
@@ -256,13 +265,19 @@ public class IPBridgeHandler extends BaseBridgeHandler {
             this.session.waitFor("password:");
             this.session.writeLine(config.getPassword() != null ? config.getPassword() : DEFAULT_PASSWORD);
 
-            MatchResult matchResult = this.session.waitFor("(login:|GNET>)");
-            if ("GNET>".equals(matchResult.group())) {
+            MatchResult matchResult = this.session.waitFor("(login:|[GQ]NET>|SAFE>)");
+
+            if ("GNET>".equals(matchResult.group()) || "QNET>".equals(matchResult.group())) {
                 return true;
+            } else if ("SAFE>".equals(matchResult.group())) {
+                logger.warn("Lutron repeater is in safe mode. Unable to connect.");
+                throw new LutronSafemodeException();
             }
 
-            logger.debug("got another login prompt, logging in again");
-            // we already got the login prompt so go straight to sending user
+            else {
+                logger.debug("got another login prompt, logging in again");
+                // we already got the login prompt so go straight to sending user
+            }
         }
         return false;
     }
