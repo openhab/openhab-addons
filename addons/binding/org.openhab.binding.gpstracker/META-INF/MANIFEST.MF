@@ -9,8 +9,6 @@ Bundle-Description: GPSTracker binding for openHAB
 Bundle-ClassPath: .
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: 
- com.google.common.collect,
- com.google.common.reflect,
  com.google.gson,
  com.google.gson.annotations,
  javax.servlet,
@@ -27,7 +25,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.osgi.framework,
- org.osgi.service.cm,
  org.osgi.service.component,
  org.osgi.service.http,
  org.slf4j

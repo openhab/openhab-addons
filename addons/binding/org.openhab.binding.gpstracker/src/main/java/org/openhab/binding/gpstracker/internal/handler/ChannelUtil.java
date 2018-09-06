@@ -15,8 +15,8 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelKind;
-import org.openhab.binding.gpstracker.internal.GPSTrackerConstants;
-import org.openhab.binding.gpstracker.internal.config.BindingConfiguration;
+import org.openhab.binding.gpstracker.internal.GPSTrackerBindingConstants;
+import org.openhab.binding.gpstracker.internal.config.GPSTrackerBindingConfiguration;
 import org.openhab.binding.gpstracker.internal.config.TrackerConfiguration;
 import org.openhab.binding.gpstracker.internal.message.Region;
 import org.slf4j.Logger;
@@ -29,7 +29,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.openhab.binding.gpstracker.internal.GPSTrackerConstants.*;
+import static org.openhab.binding.gpstracker.internal.GPSTrackerBindingConstants.*;
 
 /**
  * Dynamic channel handling helper.
@@ -50,7 +50,7 @@ class ChannelUtil {
     /**
      * Binding level configuration
      */
-    private BindingConfiguration bindingConfig;
+    private GPSTrackerBindingConfiguration bindingConfig;
 
     /**
      * Tracker level configuration
@@ -71,7 +71,7 @@ class ChannelUtil {
      * @param trackerConfig   Device level configuration
      * @param translationUtil Translation helper
      */
-    ChannelUtil(Thing thing, BindingConfiguration bindingConfig, TrackerConfiguration trackerConfig, TranslationUtil translationUtil) {
+    ChannelUtil(Thing thing, GPSTrackerBindingConfiguration bindingConfig, TrackerConfiguration trackerConfig, TranslationUtil translationUtil) {
         this.thing = thing;
         this.bindingConfig = bindingConfig;
         this.trackerConfig = trackerConfig;
@@ -116,42 +116,33 @@ class ChannelUtil {
      */
     private void createMissingChannels(Map<String, Channel> channelMap) {
         ThingUID uid = thing.getUID();
-        boolean triggerChannelsNeeded = false;
+        boolean triggerChannelNeeded = false;
         for (Region r : getAllRegions()) {
             String presenceChannelId = CHANNEL_REGION_PRESENCE + "_" + r.getId();
             if (!r.getTriggerEvent()) {
                 if (!channelMap.containsKey(presenceChannelId)) {
                     Channel channel = ChannelBuilder.create(new ChannelUID(uid, presenceChannelId),
-                            "Switch").withType(GPSTrackerConstants.CHANNEL_TYPE_PRESENCE)
+                            "Switch").withType(GPSTrackerBindingConstants.CHANNEL_TYPE_PRESENCE)
                             .withLabel(translationUtil.getText(TRANSLATION_PRESENCE, r.getName()))
                             .build();
                     channelMap.put(presenceChannelId, channel);
                     logger.trace("Creating channel {} for region {}", presenceChannelId, r.getName());
                 }
             } else {
-                triggerChannelsNeeded = true;
+                triggerChannelNeeded = true;
                 logger.trace("Trigger channel is required by region {}", r.getName());
             }
         }
-        //if at least one region configured for the thing requires event triggering we need the trigger channels
-        if (triggerChannelsNeeded) {
-            if (!channelMap.containsKey(CHANNEL_REGION_LEAVE_TRIGGER)) {
+        //if at least one region configured for the thing requires event triggering we need the trigger channel
+        if (triggerChannelNeeded) {
+            if (!channelMap.containsKey(CHANNEL_REGION_TRIGGER)) {
                 Channel channel = ChannelBuilder.create(new ChannelUID(uid,
-                        CHANNEL_REGION_LEAVE_TRIGGER), null)
-                        .withType(CHANNEL_TYPE_LEAVE_TRIGGER)
+                        CHANNEL_REGION_TRIGGER), null)
+                        .withType(CHANNEL_TYPE_TRIGGER)
                         .withKind(ChannelKind.TRIGGER)
                         .build();
-                channelMap.put(CHANNEL_REGION_LEAVE_TRIGGER, channel);
-                logger.trace("Creating trigger channel {} for region leave events", CHANNEL_REGION_LEAVE_TRIGGER);
-            }
-            if (!channelMap.containsKey(CHANNEL_REGION_ENTER_TRIGGER)) {
-                Channel channel = ChannelBuilder.create(new ChannelUID(uid,
-                        CHANNEL_REGION_ENTER_TRIGGER), null)
-                        .withType(CHANNEL_TYPE_ENTER_TRIGGER)
-                        .withKind(ChannelKind.TRIGGER)
-                        .build();
-                channelMap.put(CHANNEL_REGION_ENTER_TRIGGER, channel);
-                logger.trace("Creating trigger channel {} for region enter events", CHANNEL_REGION_ENTER_TRIGGER);
+                channelMap.put(CHANNEL_REGION_TRIGGER, channel);
+                logger.trace("Creating trigger channel {} for region events", CHANNEL_REGION_TRIGGER);
             }
         }
 
@@ -221,8 +212,7 @@ class ChannelUtil {
         }
         if (!needTriggerChannels) {
             logger.trace("Triggers channels are not required by regions - removing.");
-            channelMap.remove(CHANNEL_REGION_ENTER_TRIGGER);
-            channelMap.remove(CHANNEL_REGION_LEAVE_TRIGGER);
+            channelMap.remove(CHANNEL_REGION_TRIGGER);
         } else {
             logger.trace("Triggers channels are required.");
         }

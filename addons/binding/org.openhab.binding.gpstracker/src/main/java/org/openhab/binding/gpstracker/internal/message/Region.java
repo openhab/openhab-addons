@@ -24,7 +24,7 @@ public class Region {
     /**
      * Location coordinates
      */
-    private String location;
+    private PointType location;
 
     /**
      * Region radius
@@ -41,7 +41,7 @@ public class Region {
      */
     private Boolean primary = false;
 
-    public Region(String name, String location, Integer radius, Boolean triggerEvent, Boolean primary) {
+    public Region(String name, PointType location, Integer radius, Boolean triggerEvent, Boolean primary) {
         this.name = name;
         this.location = location;
         this.radius = radius;
@@ -81,6 +81,6 @@ public class Region {
     }
 
     public PointType getLocation() {
-        return location != null && radius != null ? new PointType(location): null;
+        return location != null && radius != null ? location: null;
     }
 }

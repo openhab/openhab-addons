@@ -9,10 +9,9 @@
 package org.openhab.binding.gpstracker.internal.provider.owntracks;
 
 
-import org.eclipse.smarthome.core.thing.ThingRegistry;
 import org.openhab.binding.gpstracker.internal.discovery.TrackerDiscoveryService;
 import org.openhab.binding.gpstracker.internal.provider.AbstractCallbackServlet;
-import org.osgi.service.http.HttpService;
+import org.openhab.binding.gpstracker.internal.provider.TrackerRegistry;
 
 /**
  * Callback servlet for OwnTracks trackers
@@ -33,16 +32,15 @@ public class OwnTracksCallbackServlet extends AbstractCallbackServlet {
     /**
      * Constructor called at binding startup.
      *
-     * @param httpService      HTTP service that runs the servlet.
-     * @param thingRegistry    Thing registry.
      * @param discoveryService Discovery service for new trackers.
+     * @param trackerRegistryImpl Tracker registry implementation
      */
-    public OwnTracksCallbackServlet(HttpService httpService, ThingRegistry thingRegistry, TrackerDiscoveryService discoveryService) {
-        super(httpService, thingRegistry, discoveryService);
+    public OwnTracksCallbackServlet(TrackerDiscoveryService discoveryService, TrackerRegistry trackerRegistryImpl) {
+        super(discoveryService, trackerRegistryImpl);
     }
 
     @Override
-    protected String getPath() {
+    public String getPath() {
         return CALLBACK_PATH;
     }
 

@@ -10,7 +10,7 @@ package org.openhab.binding.gpstracker.internal.config;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import org.openhab.binding.gpstracker.internal.GPSTrackerHandlerFactory;
+import org.eclipse.smarthome.core.library.types.PointType;
 import org.openhab.binding.gpstracker.internal.message.Region;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,11 +24,11 @@ import java.util.Map;
  *
  * @author Gabor Bicskei - Initial contribution
  */
-public class BindingConfiguration {
+public class GPSTrackerBindingConfiguration {
     /**
      * Class logger
      */
-    private final Logger logger = LoggerFactory.getLogger(GPSTrackerHandlerFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(GPSTrackerBindingConfiguration.class);
 
     /**
      * Gson instance used to serialize/deserialize JSON configuration
@@ -43,7 +43,7 @@ public class BindingConfiguration {
     /**
      * Primary location (this is copied from System/Regional settings)
      */
-    private String location;
+    private PointType location;
 
     /**
      * Primary region radius
@@ -104,13 +104,13 @@ public class BindingConfiguration {
         return this.regions.get(name);
     }
 
-    public String getLocation() {
+    public PointType getLocation() {
         return location;
     }
 
     @Override
     public String toString() {
-        return "BindingConfiguration{" +
+        return "GPSTrackerBindingConfiguration{" +
                 "name='" + name + '\'' +
                 ", location=" + location+
                 ", radius=" + radius +
@@ -118,5 +118,9 @@ public class BindingConfiguration {
                 ", additionalRegionsJSON='" + additionalRegionsJSON + '\'' +
                 ", regions=" + regions +
                 '}';
+    }
+
+    public void setLocation(PointType location) {
+        this.location =location;
     }
 }

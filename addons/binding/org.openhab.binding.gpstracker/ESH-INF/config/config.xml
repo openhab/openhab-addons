@@ -5,7 +5,12 @@
 		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
 		http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 	<config-description uri="thing-type:gpstracker:tracker">
-		<parameter name="externalRegionsJSON" type="text" required="false" readOnly="true">
+		<parameter name="trackerId" type="text" required="true">
+			<label>Tracker Id</label>
+			<description>Id configured in tracker application.</description>
+			<advanced>false</advanced>
+		</parameter>
+		<parameter name="externalRegionsJSON" type="text" required="false">
 			<context>script</context>
 			<label>External Regions</label>
 			<description>External region definition received from tracker</description>
@@ -26,13 +31,6 @@
 			</description>
 			<advanced>false</advanced>
 			<default>Home</default>
-		</parameter>
-		<parameter name="location" type="text" required="false" readOnly="true" groupName="primaryRegion">
-			<label>Location</label>
-			<description>This is read-only here. To change the primary location edit the
-				System/Regional Settings.
-			</description>
-			<advanced>false</advanced>
 		</parameter>
 		<parameter name="radius" type="integer" required="false" groupName="primaryRegion">
 			<label>Radius</label>

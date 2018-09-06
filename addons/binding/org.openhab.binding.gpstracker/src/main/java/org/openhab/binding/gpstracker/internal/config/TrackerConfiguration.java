@@ -8,17 +8,16 @@
  */
 package org.openhab.binding.gpstracker.internal.config;
 
-import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.openhab.binding.gpstracker.internal.message.Region;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Tracker level configuration POJO
@@ -47,10 +46,8 @@ public class TrackerConfiguration {
     public void parseRegions() {
         if (externalRegionsJSON != null) {
             //parse external regions to map
-            TypeToken typeToken = new TypeToken<List<Region>>() {
-            };
-            List<Region> regionList = gson.fromJson(externalRegionsJSON, typeToken.getType());
-            regions = regionList.stream().collect(Collectors.toMap(Region::getName, Function.identity()));
+            Region[] regionArray = gson.fromJson(externalRegionsJSON, Region[].class);
+            regions = Stream.of(regionArray).collect(Collectors.toMap(Region::getName, Function.identity()));
         }
     }
 

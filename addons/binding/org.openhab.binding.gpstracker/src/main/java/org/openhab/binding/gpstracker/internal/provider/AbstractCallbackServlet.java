@@ -8,22 +8,16 @@
  */
 package org.openhab.binding.gpstracker.internal.provider;
 
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingRegistry;
-import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.gpstracker.internal.GPSTrackerConstants;
 import org.openhab.binding.gpstracker.internal.discovery.TrackerDiscoveryService;
+import org.openhab.binding.gpstracker.internal.handler.TrackerHandler;
 import org.openhab.binding.gpstracker.internal.handler.TrackerRecorder;
 import org.openhab.binding.gpstracker.internal.message.AbstractBaseMessage;
 import org.openhab.binding.gpstracker.internal.message.Location;
 import org.openhab.binding.gpstracker.internal.message.MessageUtil;
 import org.openhab.binding.gpstracker.internal.message.Transition;
-import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,16 +37,6 @@ public abstract class AbstractCallbackServlet extends HttpServlet {
     private final Logger logger = LoggerFactory.getLogger(AbstractCallbackServlet.class);
 
     /**
-     * Core HTTP service
-     */
-    private HttpService httpService;
-
-    /**
-     * Thing registry used to find things for existing trackers
-     */
-    private ThingRegistry thingRegistry;
-
-    /**
      * Discovery service to handle new trackers
      */
     private TrackerDiscoveryService discoveryService;
@@ -63,44 +47,27 @@ public abstract class AbstractCallbackServlet extends HttpServlet {
     private MessageUtil messageUtil = new MessageUtil();
 
     /**
-     * Constructor called at binding startup.
-     *
-     * @param httpService      HTTP service that runs the servlet.
-     * @param thingRegistry    Thing registry.
-     * @param discoveryService Discovery service for new trackers.
+     * Tracker registry implementation
      */
-    protected AbstractCallbackServlet(HttpService httpService, ThingRegistry thingRegistry, TrackerDiscoveryService discoveryService) {
-        this.httpService = httpService;
-        this.thingRegistry = thingRegistry;
-        this.discoveryService = discoveryService;
-    }
+    private TrackerRegistry trackerRegistryImpl;
 
     /**
-     * Register the callback servlet.
+     * Constructor called at binding startup.
+     *
+     * @param discoveryService Discovery service for new trackers.
+     * @param trackerRegistryImpl Tracker handler registry
      */
-    public void activate() {
-        try {
-            this.httpService.registerServlet(getPath(), this, null, this.httpService.createDefaultHttpContext());
-            logger.debug("Started GPSTracker Callback servlet on {}", getPath());
-        } catch (NamespaceException | ServletException e) {
-            logger.error("Could not start GPSTracker Callback servlet: {}", e.getMessage(), e);
-        }
+    protected AbstractCallbackServlet(TrackerDiscoveryService discoveryService, TrackerRegistry trackerRegistryImpl) {
+        this.discoveryService = discoveryService;
+        this.trackerRegistryImpl = trackerRegistryImpl;
     }
 
     protected abstract String getPath();
 
     /**
-     * Stops callback servlet.
-     */
-    public void deactivate() {
-        this.httpService.unregister(getPath());
-        logger.debug("GPSTracker callback servlet stopped on {}", getPath());
-    }
-
-    /**
      * Process the HTTP requests from tracker applications
      *
-     * @param req  HTTP request
+     * @param req HTTP request
      * @param resp HTTP response
      */
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
@@ -178,13 +145,12 @@ public abstract class AbstractCallbackServlet extends HttpServlet {
      */
     private TrackerRecorder getHandlerById(String trackerId) {
         if (trackerId != null) {
-            ThingUID thingUuid = new ThingUID(GPSTrackerConstants.THING_TYPE_TRACKER, trackerId);
-            Thing tracker = this.thingRegistry.get(thingUuid);
-            if (tracker == null) {
-                //thing was not found - adding the tracker to discovery service.
+            TrackerHandler handler = trackerRegistryImpl.getTrackerHandler(trackerId);
+            if (handler == null) {
+                //handler was not found - adding the tracker to discovery service.
                 discoveryService.addTracker(trackerId);
             } else {
-                return (TrackerRecorder) tracker.getHandler();
+                return handler;
             }
         }
         return null;

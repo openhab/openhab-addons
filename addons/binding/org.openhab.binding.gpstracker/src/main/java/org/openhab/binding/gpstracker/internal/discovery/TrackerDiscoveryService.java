@@ -13,7 +13,13 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.gpstracker.internal.GPSTrackerConstants;
+import org.openhab.binding.gpstracker.internal.GPSTrackerBindingConstants;
+
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.openhab.binding.gpstracker.internal.GPSTrackerBindingConstants.CONFIG_TRACKER_ID;
 
 /**
  * Tracker discovery service.
@@ -27,12 +33,17 @@ public class TrackerDiscoveryService extends AbstractDiscoveryService {
     private static final int TIMEOUT = 5;
 
     /**
+     * Registry of tracker to discover next time
+     */
+    private Set<String> trackersToDiscover = new HashSet<>();
+
+    /**
      * Constructor.
      *
      * @throws IllegalArgumentException thrown by the super constructor
      */
     public TrackerDiscoveryService() throws IllegalArgumentException {
-        super(GPSTrackerConstants.SUPPORTED_THING_TYPES_UIDS, TIMEOUT, true);
+        super(GPSTrackerBindingConstants.SUPPORTED_THING_TYPES_UIDS, TIMEOUT, false);
     }
 
     /**
@@ -42,9 +53,11 @@ public class TrackerDiscoveryService extends AbstractDiscoveryService {
      * @param trackerId Tracker id.
      */
     public void addTracker(String trackerId) {
-        ThingUID id = new ThingUID(GPSTrackerConstants.THING_TYPE_TRACKER, trackerId);
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(id).withLabel(getTrackerLabel(trackerId)).build();
-        this.thingDiscovered(discoveryResult);
+        trackersToDiscover.add(trackerId);
+    }
+
+    public void removeTracker(String trackerId) {
+        trackersToDiscover.remove(trackerId);
     }
 
     private String getTrackerLabel(String trackerId) {
@@ -53,5 +66,25 @@ public class TrackerDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
+        trackersToDiscover.stream().forEach(trackerId -> {
+            ThingUID id = new ThingUID(GPSTrackerBindingConstants.THING_TYPE_TRACKER, trackerId);
+            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(id)
+                    .withLabel(getTrackerLabel(trackerId))
+                    .withProperty(CONFIG_TRACKER_ID,trackerId)
+                    .build();
+            this.thingDiscovered(discoveryResult);
+        });
+    }
+
+    @Override
+    public void deactivate() {
+        removeOlderResults(new Date().getTime());
+        super.deactivate();
+    }
+
+    @Override
+    protected void stopScan() {
+        super.stopScan();
+        removeOlderResults(getTimestampOfLastScan());
     }
 }
