@@ -41,20 +41,19 @@ public class LGHomBotBindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_STATE = "state";
     public static final String CHANNEL_BATTERY = "battery";
-    public static final String CHANNEL_CPULOAD = "cpuLoad";
-    public static final String CHANNEL_SRVMEM = "srvMem";
+    public static final String CHANNEL_CPU_LOAD = "cpuLoad";
+    public static final String CHANNEL_SRV_MEM = "srvMem";
     public static final String CHANNEL_START = "start";
     public static final String CHANNEL_HOME = "home";
     public static final String CHANNEL_STOP = "stop";
-    public static final String CHANNEL_DIAGNOSIS = "diagnosis";
     public static final String CHANNEL_MODE = "mode";
     public static final String CHANNEL_TURBO = "turbo";
     public static final String CHANNEL_REPEAT = "repeat";
-    public static final String CHANNEL_MUTE = "mute";
     public static final String CHANNEL_NICKNAME = "nickname";
     public static final String CHANNEL_CAMERA = "camera";
     public static final String CHANNEL_MAP = "map";
     public static final String CHANNEL_MOVE = "move";
+    public static final String CHANNEL_LAST_CLEAN = "lastClean";
 
     // List of all HomBot states
     public static final String HBSTATE_UNKNOWN = "UNKNOWN";

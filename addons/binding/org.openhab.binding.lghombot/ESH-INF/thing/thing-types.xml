@@ -20,17 +20,16 @@
             <channel id="turbo" typeId="turboType" />
             <channel id="repeat" typeId="repeatType" />
             <channel id="mode" typeId="modeType" />
-            <channel id="diagnosis" typeId="diagnosisType" />
-            <channel id="mute" typeId="muteType" />
             <channel id="nickname" typeId="nicknameType" />
             <channel id="camera" typeId="cameraType" />
             <channel id="map" typeId="mapType" />
             <channel id="move" typeId="moveType" />
+            <channel id="lastClean" typeId="lastCleanType" />
 		</channels>
 
         <properties>
             <property name="vendor">LG</property>
-            <property name="firmware">0</property>
+            <property name="firmwareVersion">0</property>
             <property name="server">0</property>
         </properties>
         <representation-property>deviceId</representation-property>
@@ -84,19 +83,19 @@
         <label>Battery</label>
         <description>Current battery charge</description>
         <category>BatteryLevel</category>
-        <state pattern="%d%%" readOnly="true"></state>
+        <state pattern="%d%%" readOnly="true"/>
     </channel-type>
     <channel-type id="cpuLoadType" advanced="true">
         <item-type>Number</item-type>
         <label>CPU Load</label>
         <description>Current CPU load</description>
-        <state pattern="%d%%" readOnly="true"></state>
+        <state pattern="%d%%" readOnly="true"/>
     </channel-type>
     <channel-type id="srvMemType" advanced="true">
         <item-type>String</item-type>
         <label>Used Memory</label>
         <description>Memory used by Webserver</description>
-        <state pattern="%s" readOnly="true"></state>
+        <state pattern="%s" readOnly="true"/>
     </channel-type>
     <channel-type id="startType">
         <item-type>Switch</item-type>
@@ -142,34 +141,23 @@
             </options>
         </state>
     </channel-type>
-    <channel-type id="muteType" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Mute</label>
-        <description>Mute On, OFF</description>
-        <category>SoundVolume</category>
-    </channel-type>
-    <channel-type id="diagnosisType" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Diagnosis</label>
-        <description>Run diagnosis</description>
-    </channel-type>
     <channel-type id="nicknameType">
         <item-type>String</item-type>
         <label>Nickname</label>
         <description>The nickname of the HomBot</description>
-        <state pattern="%s" readOnly="true"></state>
+        <state pattern="%s" readOnly="true"/>
     </channel-type>
     <channel-type id="cameraType">
         <item-type>Image</item-type>
         <label>Camera</label>
         <description>Image feed from the top camera</description>
-        <state readOnly="true"></state>
+        <state readOnly="true"/>
     </channel-type>
     <channel-type id="mapType" advanced="true">
         <item-type>Image</item-type>
         <label>Map</label>
         <description>Map of last cleaned area</description>
-        <state readOnly="true"></state>
+        <state readOnly="true"/>
     </channel-type>
     <channel-type id="moveType" advanced="true">
         <item-type>String</item-type>
@@ -188,6 +176,12 @@
                 <option value="RELEASE">Release</option>
             </options>
         </state>
+    </channel-type>
+    <channel-type id="lastCleanType">
+        <item-type>DateTime</item-type>
+        <label>Last clean</label>
+        <description>Last time the robot cleaned</description>
+        <state readOnly="true" pattern="%1$tF %1$tR" />
     </channel-type>
 
 </thing:thing-descriptions>

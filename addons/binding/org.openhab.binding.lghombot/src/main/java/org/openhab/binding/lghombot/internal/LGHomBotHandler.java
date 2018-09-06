@@ -17,6 +17,10 @@ import static org.openhab.binding.lghombot.internal.LGHomBotBindingConstants.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -24,6 +28,7 @@ import javax.imageio.ImageIO;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.RawType;
@@ -58,25 +63,19 @@ public class LGHomBotHandler extends BaseThingHandler {
     @Nullable
     private ScheduledFuture<?> refreshTimer;
 
-    @Nullable
-    private String currentState = null;
-    @Nullable
-    private String currentMode = null;
-    @Nullable
-    private String currentNickname = null;
-    @Nullable
-    private String currentSrvMem = null;
-    @Nullable
-    private Integer currentBattery = null;
-    @Nullable
-    private Integer currentCPULoad = null;
+    private String currentState = "";
+    private String currentMode = "";
+    private String currentNickname = "";
+    private String currentSrvMem = "";
+    private DecimalType currentBattery = DecimalType.ZERO;
+    private DecimalType currentCPULoad = DecimalType.ZERO;
     @Nullable
     private Boolean currentTurbo = null;
     @Nullable
     private Boolean currentRepeat = null;
-    @Nullable
-    private Boolean currentMute = null;
     private State currentImage = UnDefType.UNDEF;
+    private DateTimeType currentLastClean = new DateTimeType();
+    private final DateTimeFormatter formatterLG = DateTimeFormatter.ofPattern("yyyy/MM/dd/HH/mm/ss");
 
     private boolean disposed = false;
     private int refreshCounter = 0;
@@ -100,7 +99,7 @@ public class LGHomBotHandler extends BaseThingHandler {
                 case CHANNEL_START:
                     if (command instanceof OnOffType) {
                         if (((OnOffType) command) == OnOffType.ON) {
-                            if (currentState != null && currentState.equals(HBSTATE_HOMING)) {
+                            if (currentState.equals(HBSTATE_HOMING)) {
                                 sendHomBotCommand("PAUSE");
                             }
                             sendHomBotCommand("CLEAN_START");
@@ -138,15 +137,6 @@ public class LGHomBotHandler extends BaseThingHandler {
                             sendHomBotCommand("REPEAT", "true");
                         } else if (((OnOffType) command) == OnOffType.OFF) {
                             sendHomBotCommand("REPEAT", "false");
-                        }
-                    }
-                    break;
-                case CHANNEL_MUTE:
-                    if (command instanceof OnOffType) {
-                        if (((OnOffType) command) == OnOffType.ON) {
-                            sendHomBotCommand("MUTING", "true");
-                        } else if (((OnOffType) command) == OnOffType.OFF) {
-                            sendHomBotCommand("MUTING", "false");
                         }
                     }
                     break;
@@ -263,12 +253,12 @@ public class LGHomBotHandler extends BaseThingHandler {
                 updateState(channelUID, StringType.valueOf(currentState));
                 break;
             case CHANNEL_BATTERY:
-                updateState(channelUID, new DecimalType(currentBattery));
+                updateState(channelUID, currentBattery);
                 break;
-            case CHANNEL_CPULOAD:
-                updateState(channelUID, new DecimalType(currentCPULoad));
+            case CHANNEL_CPU_LOAD:
+                updateState(channelUID, currentCPULoad);
                 break;
-            case CHANNEL_SRVMEM:
+            case CHANNEL_SRV_MEM:
                 updateState(channelUID, StringType.valueOf(currentSrvMem));
                 break;
             case CHANNEL_TURBO:
@@ -285,6 +275,9 @@ public class LGHomBotHandler extends BaseThingHandler {
                 break;
             case CHANNEL_CAMERA:
                 updateState(channelUID, currentImage);
+                break;
+            case CHANNEL_LAST_CLEAN:
+                updateState(channelUID, currentLastClean);
                 break;
             default:
                 logger.warn("Channel refresh for {} not implemented!", channelUID.getId());
@@ -344,24 +337,25 @@ public class LGHomBotHandler extends BaseThingHandler {
                         }
                     }
                 } else if (row.startsWith("JSON_BATTPERC=")) {
-                    Integer battery = Integer.valueOf(row.substring(14).replace("\"", ""));
+                    DecimalType battery = DecimalType.valueOf(row.substring(14).replace("\"", ""));
                     if (!battery.equals(currentBattery)) {
                         currentBattery = battery;
                         channel = new ChannelUID(getThing().getUID(), CHANNEL_BATTERY);
-                        updateState(channel, new DecimalType(battery));
+                        updateState(channel, battery);
                     }
                 } else if (row.startsWith("CPU_IDLE=")) {
-                    Integer cpuLoad = 100 - Double.valueOf(row.substring(9).replace("\"", "")).intValue();
+                    DecimalType cpuLoad = new DecimalType(
+                            100 - Double.valueOf(row.substring(9).replace("\"", "")).intValue());
                     if (!cpuLoad.equals(currentCPULoad)) {
                         currentCPULoad = cpuLoad;
-                        channel = new ChannelUID(getThing().getUID(), CHANNEL_CPULOAD);
-                        updateState(channel, new DecimalType(cpuLoad));
+                        channel = new ChannelUID(getThing().getUID(), CHANNEL_CPU_LOAD);
+                        updateState(channel, cpuLoad);
                     }
                 } else if (row.startsWith("LGSRV_MEMUSAGE=")) {
                     String srvMem = row.substring(15).replace("\"", "");
                     if (!srvMem.equals(currentSrvMem)) {
                         currentSrvMem = srvMem;
-                        channel = new ChannelUID(getThing().getUID(), CHANNEL_SRVMEM);
+                        channel = new ChannelUID(getThing().getUID(), CHANNEL_SRV_MEM);
                         updateState(channel, StringType.valueOf(srvMem));
                     }
                 } else if (row.startsWith("JSON_TURBO=")) {
@@ -392,15 +386,30 @@ public class LGHomBotHandler extends BaseThingHandler {
                         channel = new ChannelUID(getThing().getUID(), CHANNEL_NICKNAME);
                         updateState(channel, StringType.valueOf(nickname));
                     }
+                } else if (row.startsWith("CLREC_LAST_CLEAN=")) {
+                    final String stringDate = row.substring(17, 37).replace("\"", "");
+                    ZonedDateTime date = ZonedDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneId.systemDefault());
+                    try {
+                        LocalDateTime localDateTime = LocalDateTime.parse(stringDate, formatterLG);
+                        date = ZonedDateTime.of(localDateTime, ZoneId.systemDefault());
+                    } catch (Exception e) {
+                        logger.info("Couldn't parse DateTime {}", e);
+                    }
+                    DateTimeType lastClean = new DateTimeType(date);
+                    if (!lastClean.equals(currentLastClean)) {
+                        currentLastClean = lastClean;
+                        channel = new ChannelUID(getThing().getUID(), CHANNEL_LAST_CLEAN);
+                        updateState(channel, lastClean);
+                    }
                 }
             }
         }
     }
 
     private void parseImage() {
-        int width = 320;
-        int height = 240;
-        int size = width * height;
+        final int width = 320;
+        final int height = 240;
+        final int size = width * height;
 
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         String url = buildHttpAddress("/images/snapshot.yuv");
@@ -409,7 +418,7 @@ public class LGHomBotHandler extends BaseThingHandler {
         for (int i = 0; i < size; i++) {
             double y = yuvData[i] & 0xFF;
             double u = yuvData[size + i / 2] & 0xFF;
-            double v = yuvData[(int) (width * height * 1.5 + i / 2)] & 0xFF;
+            double v = yuvData[(int) (size * 1.5 + i / 2.0)] & 0xFF;
 
             int r = Math.min(Math.max((int) (y + 1.371 * (v - 128)), 0), 255); // red
             int g = Math.min(Math.max((int) (y - 0.336 * (u - 128) - 0.698 * (v - 128)), 0), 255); // green
