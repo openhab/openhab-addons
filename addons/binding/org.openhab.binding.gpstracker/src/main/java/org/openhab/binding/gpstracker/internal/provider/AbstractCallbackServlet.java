@@ -8,6 +8,14 @@
  */
 package org.openhab.binding.gpstracker.internal.provider;
 
+import java.io.BufferedReader;
+import java.util.Collections;
+import java.util.List;
+
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.openhab.binding.gpstracker.internal.discovery.TrackerDiscoveryService;
 import org.openhab.binding.gpstracker.internal.handler.TrackerHandler;
 import org.openhab.binding.gpstracker.internal.handler.TrackerRecorder;
@@ -18,19 +26,15 @@ import org.openhab.binding.gpstracker.internal.message.Transition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
-import java.util.Collections;
-import java.util.List;
-
 /**
  * Abstract callback servlet used by the trackers.
  *
  * @author Gabor Bicskei - Initial contribution
  */
 public abstract class AbstractCallbackServlet extends HttpServlet {
+
+    private static final long serialVersionUID = -2725161358635927815L;
+
     /**
      * Class logger
      */
@@ -49,17 +53,17 @@ public abstract class AbstractCallbackServlet extends HttpServlet {
     /**
      * Tracker registry
      */
-    private TrackerRegistry trackerRegistryImpl;
+    private TrackerRegistry trackerRegistry;
 
     /**
      * Constructor called at binding startup.
      *
      * @param discoveryService Discovery service for new trackers.
-     * @param trackerRegistry Tracker handler registry
+     * @param trackerRegistry  Tracker handler registry
      */
     protected AbstractCallbackServlet(TrackerDiscoveryService discoveryService, TrackerRegistry trackerRegistry) {
         this.discoveryService = discoveryService;
-        this.trackerRegistryImpl = trackerRegistry;
+        this.trackerRegistry = trackerRegistry;
     }
 
     protected abstract String getPath();
@@ -67,9 +71,10 @@ public abstract class AbstractCallbackServlet extends HttpServlet {
     /**
      * Process the HTTP requests from tracker applications
      *
-     * @param req HTTP request
+     * @param req  HTTP request
      * @param resp HTTP response
      */
+    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
         try {
             StringBuilder jb = new StringBuilder();
@@ -80,7 +85,7 @@ public abstract class AbstractCallbackServlet extends HttpServlet {
                 jb.append(line);
             }
 
-            //clear the whitespaces from the message
+            // clear the whitespaces from the message
             String json = jb.toString().replaceAll("\\p{Z}", "");
             logger.debug("Post message received from {} tracker: {}", getProvider(), json);
 
@@ -121,8 +126,7 @@ public abstract class AbstractCallbackServlet extends HttpServlet {
                 }
                 return recorder.getNotifications();
             } else {
-                logger.debug("There is no handler for tracker {}. Check the inbox for the new tracker.",
-                        trackerId);
+                logger.debug("There is no handler for tracker {}. Check the inbox for the new tracker.", trackerId);
             }
         } else {
             logger.debug("Message without tracker id. Dropping message. {}", messageUtil.toJson(message));
@@ -138,9 +142,9 @@ public abstract class AbstractCallbackServlet extends HttpServlet {
      */
     private TrackerRecorder getHandlerById(String trackerId) {
         if (trackerId != null) {
-            TrackerHandler handler = trackerRegistryImpl.getTrackerHandler(trackerId);
+            TrackerHandler handler = trackerRegistry.getTrackerHandler(trackerId);
             if (handler == null) {
-                //handler was not found - adding the tracker to discovery service.
+                // handler was not found - adding the tracker to discovery service.
                 discoveryService.addTracker(trackerId);
             } else {
                 return handler;

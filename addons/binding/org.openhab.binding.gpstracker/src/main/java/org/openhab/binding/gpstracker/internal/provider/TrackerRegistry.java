@@ -16,5 +16,12 @@ import org.openhab.binding.gpstracker.internal.handler.TrackerHandler;
  * @author Gabor Bicskei - Initial contribution
  */
 public interface TrackerRegistry {
+
+    /**
+     * Returns a handler for a given id
+     * 
+     * @param trackerId the id of the tracker
+     * @return the handler or null if it does not exist
+     */
     TrackerHandler getTrackerHandler(String trackerId);
 }

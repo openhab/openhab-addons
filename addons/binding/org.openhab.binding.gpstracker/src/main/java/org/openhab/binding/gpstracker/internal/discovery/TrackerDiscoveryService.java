@@ -8,29 +8,39 @@
  */
 package org.openhab.binding.gpstracker.internal.discovery;
 
-
-import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
-import org.eclipse.smarthome.config.discovery.DiscoveryResult;
-import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.gpstracker.internal.GPSTrackerBindingConstants;
+import static org.openhab.binding.gpstracker.internal.GPSTrackerBindingConstants.CONFIG_TRACKER_ID;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
-import static org.openhab.binding.gpstracker.internal.GPSTrackerBindingConstants.CONFIG_TRACKER_ID;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
+import org.eclipse.smarthome.config.discovery.DiscoveryResult;
+import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.gpstracker.internal.GPSTrackerBindingConstants;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Modified;
 
 /**
  * Tracker discovery service.
  *
  * @author Gabor Bicskei - Initial contribution
  */
+@NonNullByDefault
+@Component(service = { DiscoveryService.class,
+        TrackerDiscoveryService.class }, immediate = true, configurationPid = "discovery.gsptracker")
 public class TrackerDiscoveryService extends AbstractDiscoveryService {
     /**
      * Discovery timeout
      */
-    private static final int TIMEOUT = 5;
+    private static final int TIMEOUT = 1;
 
     /**
      * Registry of tracker to discover next time
@@ -43,7 +53,7 @@ public class TrackerDiscoveryService extends AbstractDiscoveryService {
      * @throws IllegalArgumentException thrown by the super constructor
      */
     public TrackerDiscoveryService() throws IllegalArgumentException {
-        super(GPSTrackerBindingConstants.SUPPORTED_THING_TYPES_UIDS, TIMEOUT, false);
+        super(GPSTrackerBindingConstants.SUPPORTED_THING_TYPES_UIDS, TIMEOUT, true);
     }
 
     /**
@@ -54,6 +64,9 @@ public class TrackerDiscoveryService extends AbstractDiscoveryService {
      */
     public void addTracker(String trackerId) {
         trackersToDiscover.add(trackerId);
+        if (isBackgroundDiscoveryEnabled()) {
+            createDiscoveryResult(trackerId);
+        }
     }
 
     public void removeTracker(String trackerId) {
@@ -67,17 +80,32 @@ public class TrackerDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         trackersToDiscover.forEach(trackerId -> {
-            ThingUID id = new ThingUID(GPSTrackerBindingConstants.THING_TYPE_TRACKER, trackerId);
-            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(id)
-                    .withLabel(getTrackerLabel(trackerId))
-                    .withProperty(CONFIG_TRACKER_ID,trackerId)
-                    .build();
-            this.thingDiscovered(discoveryResult);
+            createDiscoveryResult(trackerId);
         });
     }
 
+    private void createDiscoveryResult(String trackerId) {
+        ThingUID id = new ThingUID(GPSTrackerBindingConstants.THING_TYPE_TRACKER, trackerId);
+        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(id).withLabel(getTrackerLabel(trackerId))
+                .withProperty(CONFIG_TRACKER_ID, trackerId).build();
+        this.thingDiscovered(discoveryResult);
+    }
+
     @Override
-    public void deactivate() {
+    @Activate
+    protected void activate(@Nullable Map<String, @Nullable Object> configProperties) {
+        super.activate(configProperties);
+    }
+
+    @Override
+    @Modified
+    protected void modified(@Nullable Map<String, @Nullable Object> configProperties) {
+        super.modified(configProperties);
+    }
+
+    @Override
+    @Deactivate
+    protected void deactivate() {
         removeOlderResults(new Date().getTime());
         super.deactivate();
     }

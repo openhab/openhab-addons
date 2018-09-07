@@ -8,8 +8,19 @@
  */
 package org.openhab.binding.gpstracker.internal;
 
+import static org.openhab.binding.gpstracker.internal.GPSTrackerBindingConstants.*;
+
+import java.util.Collections;
+import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import javax.servlet.ServletException;
+
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.i18n.LocationProvider;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -21,10 +32,10 @@ import org.openhab.binding.gpstracker.internal.discovery.TrackerDiscoveryService
 import org.openhab.binding.gpstracker.internal.handler.TrackerHandler;
 import org.openhab.binding.gpstracker.internal.handler.TranslationUtil;
 import org.openhab.binding.gpstracker.internal.message.NotificationBroker;
+import org.openhab.binding.gpstracker.internal.provider.TrackerRegistry;
 import org.openhab.binding.gpstracker.internal.provider.gpslogger.GPSLoggerCallbackServlet;
 import org.openhab.binding.gpstracker.internal.provider.owntracks.OwnTracksCallbackServlet;
 import org.osgi.framework.ServiceReference;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -33,34 +44,17 @@ import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletException;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import static org.openhab.binding.gpstracker.internal.GPSTrackerBindingConstants.CONFIG_PID;
-import static org.openhab.binding.gpstracker.internal.GPSTrackerBindingConstants.CONFIG_TRACKER_ID;
-
 /**
  * Main component
  *
  * @author Gabor Bicskei - Initial contribution
  */
-@Component(
-        configurationPid = CONFIG_PID,
-        immediate = true,
-        service = ThingHandlerFactory.class
-)
-public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory {
+@Component(configurationPid = CONFIG_PID, immediate = true, service = ThingHandlerFactory.class)
+public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements TrackerRegistry {
     /**
      * Class logger
      */
     private final Logger logger = LoggerFactory.getLogger(GPSTrackerHandlerFactory.class);
-
-    /**
-     * Discovery service registration
-     */
-    private ServiceRegistration<?> serviceRegistration = null;
 
     /**
      * Discovery service instance
@@ -108,6 +102,7 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory {
      * @param thingTypeUID Thing type UID
      * @return True if supported.
      */
+    @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return GPSTrackerBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
@@ -118,9 +113,11 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory {
      * @param thing Tracker thing
      * @return Handler instance
      */
+    @Override
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if (GPSTrackerBindingConstants.THING_TYPE_TRACKER.equals(thingTypeUID) && thing.getConfiguration().get(CONFIG_TRACKER_ID) != null) {
+        if (GPSTrackerBindingConstants.THING_TYPE_TRACKER.equals(thingTypeUID)
+                && thing.getConfiguration().get(CONFIG_TRACKER_ID) != null) {
             TrackerHandler trackerHandler = new TrackerHandler(thing, this.config, notificationBroker, translationUtil);
             discoveryService.removeTracker(trackerHandler.getTrackerId());
             trackerHandlers.put(trackerHandler.getTrackerId(), trackerHandler);
@@ -128,6 +125,11 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory {
         } else {
             return null;
         }
+    }
+
+    @Override
+    protected void removeHandler(ThingHandler thingHandler) {
+        trackerHandlers.remove(thingHandler.getThing().getConfiguration().get(CONFIG_TRACKER_ID));
     }
 
     /**
@@ -141,29 +143,22 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory {
         logger.debug("Initializing the configuration.");
         updateConfiguration(componentContext.getProperties());
 
-        logger.debug("Initializing discovery service");
-        discoveryService = new TrackerDiscoveryService();
-        this.serviceRegistration = this.bundleContext.registerService(DiscoveryService.class.getName(),
-                discoveryService, new Hashtable<>());
-
         this.translationUtil = new TranslationUtil(getBundleContext());
 
         logger.debug("Initializing callback servlets");
         try {
-            otHTTPEndpoint = new OwnTracksCallbackServlet(discoveryService, this::getTrackerHandler);
-            this.httpService.registerServlet(otHTTPEndpoint.getPath(), otHTTPEndpoint, null, this.httpService.createDefaultHttpContext());
+            otHTTPEndpoint = new OwnTracksCallbackServlet(discoveryService, this);
+            this.httpService.registerServlet(otHTTPEndpoint.getPath(), otHTTPEndpoint, null,
+                    this.httpService.createDefaultHttpContext());
             logger.debug("Started GPSTracker Callback servlet on {}", otHTTPEndpoint.getPath());
 
-            glHTTPEndpoint = new GPSLoggerCallbackServlet(discoveryService, this::getTrackerHandler);
-            this.httpService.registerServlet(glHTTPEndpoint.getPath(), glHTTPEndpoint, null, this.httpService.createDefaultHttpContext());
+            glHTTPEndpoint = new GPSLoggerCallbackServlet(discoveryService, this);
+            this.httpService.registerServlet(glHTTPEndpoint.getPath(), glHTTPEndpoint, null,
+                    this.httpService.createDefaultHttpContext());
             logger.debug("Started GPSTracker Callback servlet on {}", glHTTPEndpoint.getPath());
         } catch (NamespaceException | ServletException e) {
             logger.error("Could not start GPSTracker Callback servlet: {}", e.getMessage(), e);
         }
-    }
-
-    private TrackerHandler getTrackerHandler(String trackerId) {
-        return trackerHandlers.get(trackerId);
     }
 
     /**
@@ -182,12 +177,6 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory {
         this.httpService.unregister(glHTTPEndpoint.getPath());
         logger.debug("GPSTracker callback servlet stopped on {}", glHTTPEndpoint.getPath());
 
-        logger.debug("Stopping discovery service");
-        if (serviceRegistration != null) {
-            this.serviceRegistration.unregister();
-            this.serviceRegistration = null;
-        }
-
         super.deactivate(componentContext);
     }
 
@@ -200,10 +189,23 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory {
         this.httpService = null;
     }
 
+    @Reference
+    protected void setTrackerDiscoveryService(TrackerDiscoveryService discoveryService) {
+        this.discoveryService = discoveryService;
+    }
+
+    protected void unsetTrackerDiscoveryService(TrackerDiscoveryService discoveryService) {
+        this.discoveryService = null;
+    }
+
+    @Override
+    public TrackerHandler getTrackerHandler(String trackerId) {
+        return trackerHandlers.get(trackerId);
+    }
+
     private void updateConfiguration(Dictionary<String, ?> dictionary) {
         List<String> keys = Collections.list(dictionary.keys());
-        Map<String, Object> map = keys.stream()
-                .collect(Collectors.toMap(Function.identity(), dictionary::get));
+        Map<String, Object> map = keys.stream().collect(Collectors.toMap(Function.identity(), dictionary::get));
         Configuration newConfig = new Configuration(map);
         config = newConfig.as(GPSTrackerBindingConfiguration.class);
 

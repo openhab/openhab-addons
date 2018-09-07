@@ -17,8 +17,8 @@
 	</thing-type>
 	<!-- Channel Types -->
 	<channel-type id="lastReport">
-		<item-type>Date</item-type>
-		<label>Last seen</label>
+		<item-type>DateTime</item-type>
+		<label>Last Seen</label>
 		<description>Last report timestamp</description>
 		<state pattern="%1$tF %1$tR" readOnly="true"/>
 	</channel-type>
@@ -30,12 +30,12 @@
 	</channel-type>
 	<channel-type id="regionPresence">
 		<item-type>Switch</item-type>
-		<label>Region switch</label>
+		<label>Region Switch</label>
 		<description>Shows if the device is at this location</description>
 	</channel-type>
 	<channel-type id="regionTrigger">
 		<kind>trigger</kind>
-		<label>Region Trigger Channel</label>
+		<label>Region Trigger</label>
 		<description>Trigger channel for entering/leaving regions. Payload is the region name with prefix &gt; for entering and &lt; for leaving.</description>
 		<event/>
 	</channel-type>

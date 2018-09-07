@@ -32,3 +32,4 @@ Import-Package:
  org.slf4j,
  javax.measure
 Service-Component: OSGI-INF/*.xml
+Bundle-ActivationPolicy: lazy

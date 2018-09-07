@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.gpstracker.internal.provider.gpslogger;
 
-
 import org.openhab.binding.gpstracker.internal.discovery.TrackerDiscoveryService;
 import org.openhab.binding.gpstracker.internal.provider.AbstractCallbackServlet;
 import org.openhab.binding.gpstracker.internal.provider.TrackerRegistry;
@@ -19,6 +18,9 @@ import org.openhab.binding.gpstracker.internal.provider.TrackerRegistry;
  * @author Gabor Bicskei - Initial contribution
  */
 public class GPSLoggerCallbackServlet extends AbstractCallbackServlet {
+
+    private static final long serialVersionUID = -6992472786850682196L;
+
     /**
      * Servlet path
      */
@@ -33,7 +35,7 @@ public class GPSLoggerCallbackServlet extends AbstractCallbackServlet {
      * Constructor called at binding startup.
      *
      * @param discoveryService Discovery service for new trackers.
-     * @param trackerRegistry Tracker registry
+     * @param trackerRegistry  Tracker registry
      */
     public GPSLoggerCallbackServlet(TrackerDiscoveryService discoveryService, TrackerRegistry trackerRegistry) {
         super(discoveryService, trackerRegistry);
