@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(NikoHomeControlDiscoveryService.class);
 
     private static final int TIMEOUT = 5;
 
@@ -104,10 +104,10 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
 
         Map<Integer, NhcThermostat> thermostats = nhcComm.getThermostats();
 
-        for (Map.Entry<Integer, NhcThermostat> thermostat : thermostats.entrySet()) {
+        for (Map.Entry<Integer, NhcThermostat> thermostatEntry : thermostats.entrySet()) {
 
-            int thermostatId = thermostat.getKey();
-            NhcThermostat nhcThermostat = thermostat.getValue();
+            int thermostatId = thermostatEntry.getKey();
+            NhcThermostat nhcThermostat = thermostatEntry.getValue();
             String thingName = nhcThermostat.getName();
             String thingLocation = nhcThermostat.getLocation();
             addThermostatDevice(new ThingUID(THING_TYPE_THERMOSTAT, this.handler.getThing().getUID(),

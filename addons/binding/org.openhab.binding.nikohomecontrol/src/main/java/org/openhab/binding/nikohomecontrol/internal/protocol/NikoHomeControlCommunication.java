@@ -47,7 +47,7 @@ import com.google.gson.JsonParseException;
 @NonNullByDefault
 public final class NikoHomeControlCommunication {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(NikoHomeControlCommunication.class);
 
     @Nullable
     private Socket nhcSocket;

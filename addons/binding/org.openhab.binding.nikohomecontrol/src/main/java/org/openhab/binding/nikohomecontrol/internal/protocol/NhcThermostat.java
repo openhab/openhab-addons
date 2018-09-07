@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public final class NhcThermostat {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(NhcThermostat.class);
 
     @Nullable
     private NikoHomeControlCommunication nhcComm;

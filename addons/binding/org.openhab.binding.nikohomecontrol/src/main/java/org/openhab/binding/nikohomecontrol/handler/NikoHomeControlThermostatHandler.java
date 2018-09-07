@@ -12,7 +12,6 @@ import static org.eclipse.smarthome.core.library.unit.SIUnits.CELSIUS;
 import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
 import static org.openhab.binding.nikohomecontrol.NikoHomeControlBindingConstants.*;
 
-import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -44,7 +43,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class NikoHomeControlThermostatHandler extends BaseThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(NikoHomeControlThermostatHandler.class);
 
     @Nullable
     private volatile ScheduledFuture<?> refreshTimer; // used to refresh the remaining overrule time every minute
@@ -137,22 +136,14 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler {
                 QuantityType<Temperature> setpoint = null;
                 if (command instanceof QuantityType) {
                     setpoint = ((QuantityType<Temperature>) command).toUnit(CELSIUS);
-                }
-                if (setpoint == null) {
-                    try {
-                        setpoint = new QuantityType<Temperature>(new BigDecimal(command.toString()), CELSIUS);
-                    } catch (NumberFormatException e) {
-                        logger.debug("Niko Home Control: illegal thermostat setpoint {}", command);
-                        setpoint = new QuantityType<Temperature>(0, CELSIUS);
+                    // Always set the new setpoint temperature as an overrule
+                    // If no overrule time is given yet, set the overrule to the configuration parameter
+                    int time = nhcThermostat.getOverruletime();
+                    if (time <= 0) {
+                        time = ((Number) this.getConfig().get(CONFIG_OVERRULETIME)).intValue();
                     }
+                    nhcThermostat.executeOverrule(Math.round(setpoint.floatValue() * 10), time);
                 }
-                // Always set the new setpoint temperature as an overrule
-                // If no overrule time is given yet, set the overrule to the configuration parameter
-                int time = nhcThermostat.getOverruletime();
-                if (time <= 0) {
-                    time = ((Number) this.getConfig().get(CONFIG_OVERRULETIME)).intValue();
-                }
-                nhcThermostat.executeOverrule(Math.round(setpoint.floatValue() * 10), time);
                 updateStatus(ThingStatus.ONLINE);
                 break;
 

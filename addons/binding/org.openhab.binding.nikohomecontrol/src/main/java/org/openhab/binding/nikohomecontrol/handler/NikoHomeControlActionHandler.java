@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class NikoHomeControlActionHandler extends BaseThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(NikoHomeControlActionHandler.class);
 
     // dimmer constants
     static final int NHCON = 254;
@@ -133,7 +133,7 @@ public class NikoHomeControlActionHandler extends BaseThingHandler {
     private void handleCommandSelection(NhcAction nhcAction, ChannelUID channelUID, Command command) {
         logger.debug("Niko Home Control: handle command {} for {}", command, channelUID);
 
-        if (REFRESH.equals(command)) {
+        if (command == REFRESH) {
             handleStateUpdate(nhcAction);
             return;
         }

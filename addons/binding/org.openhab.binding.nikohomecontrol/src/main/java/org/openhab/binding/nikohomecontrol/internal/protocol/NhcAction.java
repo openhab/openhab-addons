@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public final class NhcAction {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(NhcAction.class);
 
     @Nullable
     private NikoHomeControlCommunication nhcComm;
@@ -162,9 +162,9 @@ public final class NhcAction {
      * Sends action to Niko Home Control.
      *
      * @param percent - The allowed values depend on the action type.
-     *                switch action: 0 or 100
-     *                dimmer action: between 0 and 100, 254 for on, 255 for off
-     *                rollershutter action: 254 to close, 255 to open, 253 to stop
+     *                    switch action: 0 or 100
+     *                    dimmer action: between 0 and 100, 254 for on, 255 for off
+     *                    rollershutter action: 254 to close, 255 to open, 253 to stop
      */
     public void execute(int percent) {
         logger.debug("Niko Home Control: execute action {} of type {} for {}", percent, this.type, this.id);

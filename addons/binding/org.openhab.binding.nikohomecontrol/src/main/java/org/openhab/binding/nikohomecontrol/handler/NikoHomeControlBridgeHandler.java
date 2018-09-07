@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  */
 public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
 
-    private Logger logger = LoggerFactory.getLogger(NikoHomeControlBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(NikoHomeControlBridgeHandler.class);
 
     private NikoHomeControlCommunication nhcComm;
 
