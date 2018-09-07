@@ -101,7 +101,6 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
                 }
             }
         }
-        super.removeHandler(thingHandler);
     }
 
     @Override

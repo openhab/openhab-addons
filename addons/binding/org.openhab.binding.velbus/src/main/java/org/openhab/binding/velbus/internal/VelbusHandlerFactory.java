@@ -82,7 +82,6 @@ public class VelbusHandlerFactory extends BaseThingHandlerFactory {
         if (thingHandler instanceof VelbusBridgeHandler) {
             unregisterDiscoveryService((VelbusBridgeHandler) thingHandler);
         }
-        super.removeHandler(thingHandler);
     }
 
     private synchronized void registerDiscoveryService(VelbusBridgeHandler bridgeHandler) {

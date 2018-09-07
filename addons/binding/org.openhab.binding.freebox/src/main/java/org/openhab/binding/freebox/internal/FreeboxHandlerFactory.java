@@ -122,7 +122,6 @@ public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
         } else if (thingHandler instanceof FreeboxThingHandler) {
             unregisterAudioSink(thingHandler.getThing());
         }
-        super.removeHandler(thingHandler);
     }
 
     private synchronized void registerDiscoveryService(FreeboxHandler bridgeHandler) {

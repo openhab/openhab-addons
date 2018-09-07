@@ -110,7 +110,6 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
             unregisterDeviceDiscoveryService(thingUID);
             unregisterWebHookServlet(thingUID);
         }
-        super.removeHandler(thingHandler);
     }
 
     private synchronized void registerDeviceDiscoveryService(@NonNull NetatmoBridgeHandler netatmoBridgeHandler) {
