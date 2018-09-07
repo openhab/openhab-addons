@@ -76,7 +76,7 @@ public class ZWayHandlerFactory extends BaseThingHandlerFactory {
         }
     }
 
-    private void registerDeviceDiscoveryService(ZWayBridgeHandler handler) {
+    private synchronized void registerDeviceDiscoveryService(ZWayBridgeHandler handler) {
         ZWayDeviceDiscoveryService discoveryService = new ZWayDeviceDiscoveryService(handler);
         this.discoveryServiceRegs.put(handler.getThing().getUID(),
                 bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));

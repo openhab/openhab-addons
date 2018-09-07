@@ -79,7 +79,7 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
         return thingUID;
     }
 
-    private void registerDeviceDiscoveryService(MaxCubeBridgeHandler maxCubeBridgeHandler) {
+    private synchronized void registerDeviceDiscoveryService(MaxCubeBridgeHandler maxCubeBridgeHandler) {
         MaxDeviceDiscoveryService discoveryService = new MaxDeviceDiscoveryService(maxCubeBridgeHandler);
         discoveryService.activate();
 

@@ -113,7 +113,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
         super.removeHandler(thingHandler);
     }
 
-    private void registerDeviceDiscoveryService(@NonNull NetatmoBridgeHandler netatmoBridgeHandler) {
+    private synchronized void registerDeviceDiscoveryService(@NonNull NetatmoBridgeHandler netatmoBridgeHandler) {
         if (bundleContext != null) {
             NetatmoModuleDiscoveryService discoveryService = new NetatmoModuleDiscoveryService(netatmoBridgeHandler);
             discoveryService.activate(null);
@@ -122,7 +122,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
         }
     }
 
-    private void unregisterDeviceDiscoveryService(ThingUID thingUID) {
+    private synchronized void unregisterDeviceDiscoveryService(ThingUID thingUID) {
         ServiceRegistration<?> serviceReg = discoveryServiceRegs.remove(thingUID);
         if (serviceReg != null) {
             NetatmoModuleDiscoveryService service = (NetatmoModuleDiscoveryService) bundleContext
@@ -134,7 +134,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
         }
     }
 
-    private WelcomeWebHookServlet registerWebHookServlet(ThingUID thingUID) {
+    private synchronized WelcomeWebHookServlet registerWebHookServlet(ThingUID thingUID) {
         WelcomeWebHookServlet servlet = null;
         if (bundleContext != null) {
             servlet = new WelcomeWebHookServlet(httpService, thingUID.getId());
@@ -144,7 +144,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
         return servlet;
     }
 
-    private void unregisterWebHookServlet(ThingUID thingUID) {
+    private synchronized void unregisterWebHookServlet(ThingUID thingUID) {
         ServiceRegistration<?> serviceReg = webHookServiceRegs.remove(thingUID);
         if (serviceReg != null) {
             serviceReg.unregister();

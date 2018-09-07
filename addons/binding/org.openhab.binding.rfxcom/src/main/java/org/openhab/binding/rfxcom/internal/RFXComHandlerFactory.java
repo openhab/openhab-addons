@@ -72,14 +72,14 @@ public class RFXComHandlerFactory extends BaseThingHandlerFactory {
         }
     }
 
-    private void registerDeviceDiscoveryService(RFXComBridgeHandler handler) {
+    private synchronized void registerDeviceDiscoveryService(RFXComBridgeHandler handler) {
         RFXComDeviceDiscoveryService discoveryService = new RFXComDeviceDiscoveryService(handler);
         discoveryService.activate();
         this.discoveryServiceRegs.put(handler.getThing().getUID(), bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
     }
 
-    private void unregisterDeviceDiscoveryService(Thing thing) {
+    private synchronized void unregisterDeviceDiscoveryService(Thing thing) {
         ServiceRegistration<?> serviceReg = discoveryServiceRegs.remove(thing.getUID());
         if (serviceReg != null) {
             RFXComDeviceDiscoveryService service = (RFXComDeviceDiscoveryService) bundleContext

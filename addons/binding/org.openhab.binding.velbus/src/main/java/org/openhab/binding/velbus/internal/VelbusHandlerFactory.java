@@ -78,21 +78,21 @@ public class VelbusHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected synchronized void removeHandler(ThingHandler thingHandler) {
+    protected void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof VelbusBridgeHandler) {
             unregisterDiscoveryService((VelbusBridgeHandler) thingHandler);
         }
         super.removeHandler(thingHandler);
     }
 
-    private void registerDiscoveryService(VelbusBridgeHandler bridgeHandler) {
+    private synchronized void registerDiscoveryService(VelbusBridgeHandler bridgeHandler) {
         VelbusThingDiscoveryService discoveryService = new VelbusThingDiscoveryService(bridgeHandler);
         discoveryService.activate();
         this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
     }
 
-    private void unregisterDiscoveryService(VelbusBridgeHandler bridgeHandler) {
+    private synchronized void unregisterDiscoveryService(VelbusBridgeHandler bridgeHandler) {
         ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.remove(bridgeHandler.getThing().getUID());
         if (serviceReg != null) {
             VelbusThingDiscoveryService service = (VelbusThingDiscoveryService) bundleContext

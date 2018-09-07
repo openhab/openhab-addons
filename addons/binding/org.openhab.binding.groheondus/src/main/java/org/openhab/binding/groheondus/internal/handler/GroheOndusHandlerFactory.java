@@ -72,7 +72,7 @@ public class GroheOndusHandlerFactory extends BaseThingHandlerFactory {
         }
     }
 
-    private void registerDeviceDiscoveryService(GroheOndusAccountHandler handler) {
+    private synchronized void registerDeviceDiscoveryService(GroheOndusAccountHandler handler) {
         GroheOndusDiscoveryService discoveryService = new GroheOndusDiscoveryService(handler);
         discoveryServiceRegs.put(handler.getThing().getUID(),
                 bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));

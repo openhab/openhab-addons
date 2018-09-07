@@ -114,7 +114,7 @@ public class AVMFritzHandlerFactory extends BaseThingHandlerFactory {
      *
      * @param handler
      */
-    private void registerDeviceDiscoveryService(AVMFritzBaseBridgeHandler handler) {
+    private synchronized void registerDeviceDiscoveryService(AVMFritzBaseBridgeHandler handler) {
         AVMFritzDiscoveryService discoveryService = new AVMFritzDiscoveryService(handler);
         discoveryServiceRegs.put(handler.getThing().getUID(), bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
