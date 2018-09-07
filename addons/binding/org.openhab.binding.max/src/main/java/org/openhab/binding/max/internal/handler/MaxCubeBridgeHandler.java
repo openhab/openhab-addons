@@ -609,7 +609,11 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
      * @throws IOException
      */
     private void readLines(String terminator) throws IOException {
-        while (true) {
+        if (terminator == null) {
+            return;
+        }
+        boolean cont = true;
+        while (cont) {
             String raw = reader.readLine();
             if (raw != null) {
                 logger.trace("message block: '{}'", raw);
@@ -630,11 +634,15 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                         this.messageProcessor.reset();
                     }
                 } catch (Exception e) {
-                    logger.info(
-                            "Error while handling message block: '{}' from MAX! Cube lan gateway: {}, Error message: {}: ",
-                            raw, ipAddress, e.getMessage(), e);
+                    logger.info("Error while handling message block: '{}' from MAX! Cube lan gateway: {}:", raw,
+                            ipAddress, e.getMessage(), e);
                     this.messageProcessor.reset();
                 }
+                if (raw.startsWith(terminator)) {
+                    cont = false;
+                }
+            } else {
+                cont = false;
             }
         }
     }
