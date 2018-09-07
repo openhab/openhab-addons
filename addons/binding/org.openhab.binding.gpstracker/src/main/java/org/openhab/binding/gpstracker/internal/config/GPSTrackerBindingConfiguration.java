@@ -51,11 +51,6 @@ public class GPSTrackerBindingConfiguration {
     private Integer radius;
 
     /**
-     * If true events are triggered instead of using switches for region enter/leave
-     */
-    private Boolean triggerEvent;
-
-    /**
      * Additional region definitions in JSON
      */
     private String additionalRegionsJSON;
@@ -92,7 +87,7 @@ public class GPSTrackerBindingConfiguration {
         }
         //add primary region if defined
         if (location != null ) {
-            this.regions.put(name, new Region(name, location, radius, triggerEvent, true));
+            this.regions.put(name, new Region(name, location, radius));
         }
     }
 
@@ -114,7 +109,6 @@ public class GPSTrackerBindingConfiguration {
                 "name='" + name + '\'' +
                 ", location=" + location+
                 ", radius=" + radius +
-                ", triggerEvent=" + triggerEvent +
                 ", additionalRegionsJSON='" + additionalRegionsJSON + '\'' +
                 ", regions=" + regions +
                 '}';

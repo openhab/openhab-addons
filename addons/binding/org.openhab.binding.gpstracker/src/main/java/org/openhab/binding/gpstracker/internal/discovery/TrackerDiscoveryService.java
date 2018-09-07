@@ -66,7 +66,7 @@ public class TrackerDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        trackersToDiscover.stream().forEach(trackerId -> {
+        trackersToDiscover.forEach(trackerId -> {
             ThingUID id = new ThingUID(GPSTrackerBindingConstants.THING_TYPE_TRACKER, trackerId);
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(id)
                     .withLabel(getTrackerLabel(trackerId))

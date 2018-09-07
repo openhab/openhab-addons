@@ -25,12 +25,6 @@ public class Location extends AbstractBaseMessage {
     BigDecimal altitude;
 
     /**
-     * Course over ground (iOS/integer/degree/optional)
-     */
-    @SerializedName("cog")
-    BigDecimal groundCourse;
-
-    /**
      * Radius around the region when entering/leaving (iOS/integer/meters/optional)
      */
     @SerializedName("rad")
@@ -41,21 +35,4 @@ public class Location extends AbstractBaseMessage {
      */
     @SerializedName("vac")
     BigDecimal verticalAccuracy;
-
-    /**
-     * velocity (iOS,Android/integer/kmh/optional)
-     */
-    @SerializedName("vel")
-    BigDecimal velocity;
-
-    /**
-     * Contains a list of regions the tracker is currently in (e.g. ["Home","Garage"]). Might be empty.
-     * (iOS,Android/list of strings/optional)
-     */
-    @SerializedName("inregions")
-    String[] regionsInside;
-
-    public String[] getRegionsInside() {
-        return regionsInside;
-    }
 }

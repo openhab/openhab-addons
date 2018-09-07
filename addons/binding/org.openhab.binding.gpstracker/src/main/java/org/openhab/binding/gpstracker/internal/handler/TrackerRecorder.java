@@ -21,13 +21,6 @@ import java.util.List;
  */
 public interface TrackerRecorder {
     /**
-     * Update configuration with regions defined in tracker application.
-     *
-     * @param regionName Region name.
-     */
-    void maintainExternalRegion(String regionName);
-
-    /**
      * Location update.
      *
      * @param lm Location message.

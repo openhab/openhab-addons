@@ -10,13 +10,6 @@
 			<description>Id configured in tracker application.</description>
 			<advanced>false</advanced>
 		</parameter>
-		<parameter name="externalRegionsJSON" type="text" required="false">
-			<context>script</context>
-			<label>External Regions</label>
-			<description>External region definition received from tracker</description>
-			<default>[]</default>
-			<advanced>true</advanced>
-		</parameter>
 	</config-description>
 	<config-description uri="binding:gpstracker">
 		<parameter-group name="primaryRegion">
@@ -37,14 +30,6 @@
 			<description>Radius of the primary location</description>
 			<default>100</default>
 			<advanced>false</advanced>
-		</parameter>
-		<parameter name="triggerEvent" type="boolean" required="false" groupName="primaryRegion">
-			<label>Use Trigger Events</label>
-			<description>If set to TRUE entering and leaving the location will trigger an event instead of switching
-				ON/OFF the region switch.
-			</description>
-			<advanced>false</advanced>
-			<default>true</default>
 		</parameter>
 		<parameter name="additionalRegionsJSON" type="text" required="false">
 			<context>script</context>

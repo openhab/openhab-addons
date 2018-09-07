@@ -31,22 +31,10 @@ public class Region {
      */
     private Integer radius;
 
-    /**
-     * Entering or leaving should trigger an event
-     */
-    private Boolean triggerEvent;
-
-    /**
-     * True for the primary region
-     */
-    private Boolean primary = false;
-
-    public Region(String name, PointType location, Integer radius, Boolean triggerEvent, Boolean primary) {
+    public Region(String name, PointType location, Integer radius) {
         this.name = name;
         this.location = location;
         this.radius = radius;
-        this.triggerEvent = triggerEvent;
-        this.primary = primary;
     }
 
     public Region() {
@@ -66,18 +54,6 @@ public class Region {
 
     public Integer getRadius() {
         return this.radius;
-    }
-
-    public Boolean getTriggerEvent() {
-        return this.triggerEvent;
-    }
-
-    public void setTriggerEvent(Boolean triggerEvent) {
-        this.triggerEvent = triggerEvent;
-    }
-
-    public Boolean isPrimary() {
-        return primary != null && primary;
     }
 
     public PointType getLocation() {

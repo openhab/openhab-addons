@@ -114,16 +114,9 @@ public abstract class AbstractCallbackServlet extends HttpServlet {
             if (recorder != null) {
                 if (message instanceof Location) {
                     Location lm = (Location) message;
-                    String[] regions = lm.getRegionsInside();
-                    if (regions != null) {
-                        for (String regionName : regions) {
-                            recorder.maintainExternalRegion(regionName);
-                        }
-                    }
                     recorder.updateLocation(lm);
                 } else if (message instanceof Transition) {
                     Transition tm = (Transition) message;
-                    recorder.maintainExternalRegion(tm.getRegionName());
                     recorder.doTransition(tm);
                 }
                 return recorder.getNotifications();

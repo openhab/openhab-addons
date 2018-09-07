@@ -36,25 +36,23 @@ Details for the primary region can be defined on binding's configuration dialog 
 Parameter | Type | Description | Default value
 :--- |:---|:---|:---
 Name | String | Region name
+Location | Location | Region center defined by System/Regional Settings |
 Radius | Integer | Radius of the region circle in meters. The value should be set based on the tracker application used and its settings (location update interval and displacement) | 100m
-Use trigger events | Boolean | If **true** the binding creates trigger channels for each tracker and fires the entering and leaving events with the region name payload. If set to **false** the binding creates switch channels which are set to ON if the tracker is inside the region or OFF if outside. | false
 Additional region definitions | JSON String | 
 
-Example for additional region definition:
+Example for additional region definition (parameters are the same as for the primary region above):
 
  ```
  [
     {
         "name": "ExtraRegion1",
         "location": "xx.xxxx,yy.yyyy",
-        "radius": 100,
-        "triggerEvent": true
+        "radius": 100
     },
     {
         "name": "ExtraRegion2",
         "location": "xx.xxxx,yy.yyyy",
-        "radius": 100,
-        "triggerEvent": false
+        "radius": 100
     },
     ...
  ]
@@ -102,10 +100,7 @@ Right after enabling, the app takes you to the Log to custom URL settings and mo
     "tid":"XY",
     "acc":%ACC,
     "batt":%BATT,
-    "tst":%TIMESTAMP,
-    "alt":%ALT,
-    "cog":%DIR,
-    "vel":%SPD
+    "tst":%TIMESTAMP
 }
 ```
 
@@ -127,38 +122,37 @@ Make sure these tracker ids are unique in group of trackers connected to a singl
 
 ```
 //phones
-Thing gpstracker:tracker:XY   "XY tracker"
-Thing gpstracker:tracker:PQ   "PQ tracker"
+Thing gpstracker:tracker:1   "XY tracker" [trackerId="XY"]
+Thing gpstracker:tracker:2   "PQ tracker" [trackerId="PQ"]
 ...
 ```
 
 #### Discovery
 
-If the things are not defined in **.things** files the first time the tracker sends a GPS log record the binding recognizes it as new tracker and insert an entry into the Inbox as new tracker with name **GPS Tracker ??**.
+If the things are not defined in **.things** files the first time the tracker sends a GPS log record the binding recognizes it as new tracker and inserts an entry into the Inbox as new tracker with name **GPS Tracker ??**.
 
 ### Channels
 
-The binding creates dynamic channels based on the configuration:
+The binding creates dynamic channels based on the configuration for internal regions only:
 
-* **Region presence channels** - These switch channels are created for all regions that have the **triggerEvent** flag set to false. ON state of the switch indicates the presence within region radius.
-* **Region enter/leave trigger channels** - These two channels are added to the thing in case there is at least one region with **triggerEvent** set to true. Event is fired with payload of the region name when the binding receives a **transition** log record (for external regions) or in case the distance from the center of the internal region is less than the region radius.
+* **Region presence channels** - ON state of the switch channels indicate the presence within region radius. Dynamic channel id format for these channels is **regionPresence_%regionId%**.
+* **Distance** - Distance from region center is calculated after every location report received. Dynamic channel id format for these channels is **distance_%regionId%**.
 
-Static channels povided by the tracker things:
+Static channels provided by the tracker things:
 
 * **Location** - Current location of the tracker
-* **Last Report** - Timestamt of the last location report
-* **Battery Level** - Battery level of the device runnig the tracker application
+* **Last Report** - Timestamp of the last location report
+* **Battery Level** - Battery level of the device running the tracker application
+* **Region trigger channel** - Used by external regions only. Event is fired with payload of the region name when the binding receives a **transition** log record. Payload is prefixed with `>` for entering and with `<` for leaving events.
 
 ```
-Number		distanceEX	"Distance [%.2f km]"	{channel="gpstracker:tracker:EX:distance"}
-Switch		atWorkEX	"EX @ Work"		{channel="gpstracker:tracker:EX:regionPresence_Work"}
-Switch		atHomeEX	"EX @ Home"		{channel="gpstracker:tracker:EX:regionPresence_Home"}
-Location	locationEX	"Location"		{channel="gpstracker:tracker:EX:location"}
-DateTime	lastSeenEX	"Last seen"		{channel="gpstracker:tracker:EX:lastReport"}
-Number		batteryEX	"Battery level"		{channel="gpstracker:tracker:EX:batteryLevel"}
+Number		distanceEX	"Distance [%.2f km]"	{channel="gpstracker:tracker:1:distance"}
+Switch		atWorkEX	"EX @ Work"		{channel="gpstracker:tracker:1:regionPresence_Work"}
+Switch		atHomeEX	"EX @ Home"		{channel="gpstracker:tracker:1:regionPresence_Home"}
+Location	locationEX	"Location"		{channel="gpstracker:tracker:1:location"}
+DateTime	lastSeenEX	"Last seen"		{channel="gpstracker:tracker:1:lastReport"}
+Number		batteryEX	"Battery level"		{channel="gpstracker:tracker:1:batteryLevel"}
 ```
-
-**Note**: EX is the tracker id in channel references configured in mobile applications.
 
 ### Sitemaps
 
