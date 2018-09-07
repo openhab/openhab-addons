@@ -21,6 +21,11 @@ public interface ConnectionListener {
     void connectionOpened();
 
     /**
+     * Called when the connection has been closed.
+     */
+    void connectionClosed();
+
+    /**
      * Called when the connection has been aborted.
      *
      * @param cause a text describing the cause of the abort.

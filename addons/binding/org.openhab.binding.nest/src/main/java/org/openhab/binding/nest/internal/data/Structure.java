@@ -19,43 +19,29 @@ import com.google.gson.annotations.SerializedName;
 /**
  * The structure details from Nest.
  *
- * @author David Bennett - Initial Contribution
+ * @author David Bennett - Initial contribution
+ * @author Wouter Born - Add equals and hashCode methods
  */
 public class Structure implements NestIdentifiable {
-    @SerializedName("structure_id")
+
     private String structureId;
-    @SerializedName("thermostats")
-    private List<String> thermostatIds;
-    @SerializedName("smoke_co_alarms")
-    private List<String> smokeAlarmIds;
-    @SerializedName("cameras")
-    private List<String> cameraIds;
-    @SerializedName("country_code")
+    private List<String> thermostats;
+    private List<String> smokeCoAlarms;
+    private List<String> cameras;
     private String countryCode;
-    @SerializedName("postal_code")
     private String postalCode;
-    @SerializedName("peak_period_start_time")
     private Date peakPeriodStartTime;
-    @SerializedName("peak_period_end_time")
     private Date peakPeriodEndTime;
-    @SerializedName("time_zone")
     private String timeZone;
-    @SerializedName("eta_begin")
     private Date etaBegin;
-    @SerializedName("co_alarm_state")
     private SmokeDetector.AlarmState coAlarmState;
-    @SerializedName("smoke_alarm_state")
     private SmokeDetector.AlarmState smokeAlarmState;
-    @SerializedName("rhr_enrollment")
-    private boolean rushHourRewardsEnrollement;
-    @SerializedName("wheres")
-    private Map<String, Where> whereIds;
-    @SerializedName("away")
+    private Boolean rhrEnrollment;
+    private Map<String, Where> wheres;
     private HomeAwayState away;
-    @SerializedName("name")
     private String name;
-    @SerializedName("eta")
     private ETA eta;
+    private SecurityState wwnSecurityState;
 
     @Override
     public String getId() {
@@ -74,16 +60,16 @@ public class Structure implements NestIdentifiable {
         return structureId;
     }
 
-    public List<String> getThermostatIds() {
-        return thermostatIds;
+    public List<String> getThermostats() {
+        return thermostats;
     }
 
-    public List<String> getSmokeAlarmIds() {
-        return smokeAlarmIds;
+    public List<String> getSmokeCoAlarms() {
+        return smokeCoAlarms;
     }
 
-    public List<String> getCameraIds() {
-        return cameraIds;
+    public List<String> getCameras() {
+        return cameras;
     }
 
     public String getCountryCode() {
@@ -118,79 +104,24 @@ public class Structure implements NestIdentifiable {
         return smokeAlarmState;
     }
 
-    public boolean isRushHourRewardsEnrollement() {
-        return rushHourRewardsEnrollement;
+    public Boolean isRhrEnrollment() {
+        return rhrEnrollment;
     }
 
-    public Map<String, Where> getWhereIds() {
-        return whereIds;
+    public Map<String, Where> getWheres() {
+        return wheres;
     }
 
     public ETA getEta() {
         return eta;
     }
 
-    public void setEta(ETA eta) {
-        this.eta = eta;
-    }
-
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * Used to set and update the eta values for Nest.
-     */
-    public class ETA {
-        @SerializedName("trip_id")
-        private String tripId;
-        @SerializedName("estimated_arrival_window_begin")
-        private Date estimatedArrivalWindowBegin;
-        @SerializedName("estimated_arrival_window_end")
-        private Date estimatedArrivalWindowEnd;
-
-        public String getTripId() {
-            return tripId;
-        }
-
-        public void setTripId(String tripId) {
-            this.tripId = tripId;
-        }
-
-        public Date getEstimatedArrivalWindowBegin() {
-            return estimatedArrivalWindowBegin;
-        }
-
-        public void setEstimatedArrivalWindowBegin(Date estimatedArrivalWindowBegin) {
-            this.estimatedArrivalWindowBegin = estimatedArrivalWindowBegin;
-        }
-
-        public Date getEstimatedArrivalWindowEnd() {
-            return estimatedArrivalWindowEnd;
-        }
-
-        public void setEstimatedArrivalWindowEnd(Date estimatedArrivalWindowEnd) {
-            this.estimatedArrivalWindowEnd = estimatedArrivalWindowEnd;
-        }
-    }
-
-    public class Where {
-        @SerializedName("where_id")
-        private String whereId;
-        @SerializedName("name")
-        private String name;
-
-        public String getWhereId() {
-            return whereId;
-        }
-
-        public String getName() {
-            return name;
-        }
+    public SecurityState getWwnSecurityState() {
+        return wwnSecurityState;
     }
 
     public enum HomeAwayState {
@@ -202,18 +133,175 @@ public class Structure implements NestIdentifiable {
         UNKNOWN
     }
 
+    public enum SecurityState {
+        @SerializedName("ok")
+        OK,
+        @SerializedName("deter")
+        DETER
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Structure other = (Structure) obj;
+        if (away != other.away) {
+            return false;
+        }
+        if (cameras == null) {
+            if (other.cameras != null) {
+                return false;
+            }
+        } else if (!cameras.equals(other.cameras)) {
+            return false;
+        }
+        if (coAlarmState != other.coAlarmState) {
+            return false;
+        }
+        if (countryCode == null) {
+            if (other.countryCode != null) {
+                return false;
+            }
+        } else if (!countryCode.equals(other.countryCode)) {
+            return false;
+        }
+        if (eta == null) {
+            if (other.eta != null) {
+                return false;
+            }
+        } else if (!eta.equals(other.eta)) {
+            return false;
+        }
+        if (etaBegin == null) {
+            if (other.etaBegin != null) {
+                return false;
+            }
+        } else if (!etaBegin.equals(other.etaBegin)) {
+            return false;
+        }
+        if (name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!name.equals(other.name)) {
+            return false;
+        }
+        if (peakPeriodEndTime == null) {
+            if (other.peakPeriodEndTime != null) {
+                return false;
+            }
+        } else if (!peakPeriodEndTime.equals(other.peakPeriodEndTime)) {
+            return false;
+        }
+        if (peakPeriodStartTime == null) {
+            if (other.peakPeriodStartTime != null) {
+                return false;
+            }
+        } else if (!peakPeriodStartTime.equals(other.peakPeriodStartTime)) {
+            return false;
+        }
+        if (postalCode == null) {
+            if (other.postalCode != null) {
+                return false;
+            }
+        } else if (!postalCode.equals(other.postalCode)) {
+            return false;
+        }
+        if (rhrEnrollment == null) {
+            if (other.rhrEnrollment != null) {
+                return false;
+            }
+        } else if (!rhrEnrollment.equals(other.rhrEnrollment)) {
+            return false;
+        }
+        if (smokeAlarmState != other.smokeAlarmState) {
+            return false;
+        }
+        if (smokeCoAlarms == null) {
+            if (other.smokeCoAlarms != null) {
+                return false;
+            }
+        } else if (!smokeCoAlarms.equals(other.smokeCoAlarms)) {
+            return false;
+        }
+        if (structureId == null) {
+            if (other.structureId != null) {
+                return false;
+            }
+        } else if (!structureId.equals(other.structureId)) {
+            return false;
+        }
+        if (thermostats == null) {
+            if (other.thermostats != null) {
+                return false;
+            }
+        } else if (!thermostats.equals(other.thermostats)) {
+            return false;
+        }
+        if (timeZone == null) {
+            if (other.timeZone != null) {
+                return false;
+            }
+        } else if (!timeZone.equals(other.timeZone)) {
+            return false;
+        }
+        if (wheres == null) {
+            if (other.wheres != null) {
+                return false;
+            }
+        } else if (!wheres.equals(other.wheres)) {
+            return false;
+        }
+        if (wwnSecurityState != other.wwnSecurityState) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((away == null) ? 0 : away.hashCode());
+        result = prime * result + ((cameras == null) ? 0 : cameras.hashCode());
+        result = prime * result + ((coAlarmState == null) ? 0 : coAlarmState.hashCode());
+        result = prime * result + ((countryCode == null) ? 0 : countryCode.hashCode());
+        result = prime * result + ((eta == null) ? 0 : eta.hashCode());
+        result = prime * result + ((etaBegin == null) ? 0 : etaBegin.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((peakPeriodEndTime == null) ? 0 : peakPeriodEndTime.hashCode());
+        result = prime * result + ((peakPeriodStartTime == null) ? 0 : peakPeriodStartTime.hashCode());
+        result = prime * result + ((postalCode == null) ? 0 : postalCode.hashCode());
+        result = prime * result + ((rhrEnrollment == null) ? 0 : rhrEnrollment.hashCode());
+        result = prime * result + ((smokeAlarmState == null) ? 0 : smokeAlarmState.hashCode());
+        result = prime * result + ((smokeCoAlarms == null) ? 0 : smokeCoAlarms.hashCode());
+        result = prime * result + ((structureId == null) ? 0 : structureId.hashCode());
+        result = prime * result + ((thermostats == null) ? 0 : thermostats.hashCode());
+        result = prime * result + ((timeZone == null) ? 0 : timeZone.hashCode());
+        result = prime * result + ((wheres == null) ? 0 : wheres.hashCode());
+        result = prime * result + ((wwnSecurityState == null) ? 0 : wwnSecurityState.hashCode());
+        return result;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("Structure [structureId=").append(structureId).append(", thermostatIds=").append(thermostatIds)
-                .append(", smokeAlarmIds=").append(smokeAlarmIds).append(", cameraIds=").append(cameraIds)
+        builder.append("Structure [structureId=").append(structureId).append(", thermostats=").append(thermostats)
+                .append(", smokeCoAlarms=").append(smokeCoAlarms).append(", cameras=").append(cameras)
                 .append(", countryCode=").append(countryCode).append(", postalCode=").append(postalCode)
                 .append(", peakPeriodStartTime=").append(peakPeriodStartTime).append(", peakPeriodEndTime=")
                 .append(peakPeriodEndTime).append(", timeZone=").append(timeZone).append(", etaBegin=").append(etaBegin)
                 .append(", coAlarmState=").append(coAlarmState).append(", smokeAlarmState=").append(smokeAlarmState)
-                .append(", rushHourRewardsEnrollement=").append(rushHourRewardsEnrollement).append(", whereIds=")
-                .append(whereIds).append(", away=").append(away).append(", name=").append(name).append(", eta=")
-                .append(eta).append("]");
+                .append(", rhrEnrollment=").append(rhrEnrollment).append(", wheres=").append(wheres).append(", away=")
+                .append(away).append(", name=").append(name).append(", eta=").append(eta).append(", wwnSecurityState=")
+                .append(wwnSecurityState).append("]");
         return builder.toString();
     }
 

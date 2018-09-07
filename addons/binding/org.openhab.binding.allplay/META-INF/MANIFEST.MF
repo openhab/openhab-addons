@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.allplay
 Bundle-ClassPath: 
  .,
  lib/tchaikovsky.jar
@@ -18,7 +19,7 @@ Bundle-NativeCode:
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.allplay;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.3.0.qualifier
+Bundle-Version: 2.4.0.qualifier
 Export-Package: 
  org.openhab.binding.allplay,
  org.openhab.binding.allplay.handler

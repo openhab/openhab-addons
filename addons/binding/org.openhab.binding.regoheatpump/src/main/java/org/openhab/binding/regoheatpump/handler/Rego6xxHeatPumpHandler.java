@@ -22,8 +22,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -37,6 +35,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.regoheatpump.internal.protocol.RegoConnection;
 import org.openhab.binding.regoheatpump.internal.rego6xx.CommandFactory;
 import org.openhab.binding.regoheatpump.internal.rego6xx.ErrorLine;
@@ -325,7 +324,7 @@ abstract class Rego6xxHeatPumpHandler extends BaseThingHandler {
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Sending {}", DatatypeConverter.printHexBinary(command));
+            logger.debug("Sending {}", HexUtils.bytesToHex(command));
         }
 
         // Send command
@@ -357,7 +356,7 @@ abstract class Rego6xxHeatPumpHandler extends BaseThingHandler {
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Received {}", DatatypeConverter.printHexBinary(response));
+            logger.debug("Received {}", HexUtils.bytesToHex(response));
         }
 
         T result = parser.parse(response);

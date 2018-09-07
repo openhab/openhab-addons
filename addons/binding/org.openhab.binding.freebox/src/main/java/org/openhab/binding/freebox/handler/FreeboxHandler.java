@@ -13,6 +13,7 @@ import static org.openhab.binding.freebox.FreeboxBindingConstants.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -33,6 +34,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
@@ -54,7 +56,7 @@ import org.matmaul.freeboxos.system.SystemConfiguration;
 import org.matmaul.freeboxos.upnpav.UPnPAVConfig;
 import org.matmaul.freeboxos.wifi.WifiGlobalConfig;
 import org.openhab.binding.freebox.FreeboxBindingConstants;
-import org.openhab.binding.freebox.internal.FreeboxDataListener;
+import org.openhab.binding.freebox.FreeboxDataListener;
 import org.openhab.binding.freebox.internal.config.FreeboxServerConfiguration;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
@@ -67,6 +69,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gaël L'hopital - Initial contribution
  * @author Laurent Garnier - updated to a bridge handler and delegate few things to another handler
+ * @author Laurent Garnier - update discovery configuration
  */
 public class FreeboxHandler extends BaseBridgeHandler {
 
@@ -89,7 +92,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command == null || command instanceof RefreshType) {
+        if (command instanceof RefreshType) {
             return;
         }
         if ((getThing().getStatus() == ThingStatus.OFFLINE)
@@ -147,7 +150,6 @@ public class FreeboxHandler extends BaseBridgeHandler {
      * @throws FreeboxException
      */
     private boolean authorize(boolean useHttps, String fqdn, String apiBaseUrl, String apiVersion) {
-
         FreeboxServerConfiguration configuration = getConfigAs(FreeboxServerConfiguration.class);
 
         Bundle bundle = FrameworkUtil.getBundle(getClass());
@@ -158,9 +160,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
         LoginManager loginManager = fbClient.getLoginManager();
         TrackAuthorizeStatus authorizeStatus = TrackAuthorizeStatus.UNKNOWN;
         try {
-
             if (StringUtils.isEmpty(configuration.appToken)) {
-
                 Authorize authorize = loginManager.newAuthorize(bundle.getHeaders().get("Bundle-Name"), // Freebox
                                                                                                         // Binding
                         String.format("%d.%d", bundle.getVersion().getMajor(), bundle.getVersion().getMinor()), // eg.
@@ -202,7 +202,19 @@ public class FreeboxHandler extends BaseBridgeHandler {
         logger.debug("initializing Freebox Server handler for thing {}", getThing().getUID());
 
         FreeboxServerConfiguration configuration = getConfigAs(FreeboxServerConfiguration.class);
-        if ((configuration != null) && StringUtils.isNotEmpty(configuration.fqdn)) {
+
+        // Update the discovery configuration
+        Map<String, Object> configDiscovery = new HashMap<String, Object>();
+        configDiscovery.put(FreeboxServerConfiguration.DISCOVER_PHONE, configuration.discoverPhone);
+        configDiscovery.put(FreeboxServerConfiguration.DISCOVER_NET_DEVICE, configuration.discoverNetDevice);
+        configDiscovery.put(FreeboxServerConfiguration.DISCOVER_NET_INTERFACE, configuration.discoverNetInterface);
+        configDiscovery.put(FreeboxServerConfiguration.DISCOVER_AIRPLAY_RECEIVER,
+                configuration.discoverAirPlayReceiver);
+        for (FreeboxDataListener dataListener : dataListeners) {
+            dataListener.applyConfig(configDiscovery);
+        }
+
+        if (StringUtils.isNotEmpty(configuration.fqdn)) {
             updateStatus(ThingStatus.OFFLINE);
 
             logger.debug("Binding will schedule a job to establish a connection...");
@@ -347,25 +359,16 @@ public class FreeboxHandler extends BaseBridgeHandler {
         }
 
         Map<String, String> properties = editProperties();
-        boolean update = false;
-        if (StringUtils.isNotEmpty(apiBaseUrl)
-                && !apiBaseUrl.equals(properties.get(FreeboxBindingConstants.API_BASE_URL))) {
-            update = true;
+        if (StringUtils.isNotEmpty(apiBaseUrl)) {
             properties.put(FreeboxBindingConstants.API_BASE_URL, apiBaseUrl);
         }
-        if (StringUtils.isNotEmpty(apiVersion)
-                && !apiVersion.equals(properties.get(FreeboxBindingConstants.API_VERSION))) {
-            update = true;
+        if (StringUtils.isNotEmpty(apiVersion)) {
             properties.put(FreeboxBindingConstants.API_VERSION, apiVersion);
         }
-        if (StringUtils.isNotEmpty(hardwareVersion)
-                && !hardwareVersion.equals(properties.get(Thing.PROPERTY_HARDWARE_VERSION))) {
-            update = true;
+        if (StringUtils.isNotEmpty(hardwareVersion)) {
             properties.put(Thing.PROPERTY_HARDWARE_VERSION, hardwareVersion);
         }
-        if (update) {
-            updateProperties(properties);
-        }
+        updateProperties(properties);
     };
 
     @Override
@@ -471,20 +474,13 @@ public class FreeboxHandler extends BaseBridgeHandler {
         SystemConfiguration systemConfiguration = fbClient.getSystemManager().getConfiguration();
 
         Map<String, String> properties = editProperties();
-        boolean update = false;
-        if (!systemConfiguration.getSerial().isEmpty()
-                && !systemConfiguration.getSerial().equals(properties.get(Thing.PROPERTY_SERIAL_NUMBER))) {
-            update = true;
+        if (!systemConfiguration.getSerial().isEmpty()) {
             properties.put(Thing.PROPERTY_SERIAL_NUMBER, systemConfiguration.getSerial());
         }
-        if (!systemConfiguration.getFirmware_version().isEmpty()
-                && !systemConfiguration.getFirmware_version().equals(properties.get(Thing.PROPERTY_FIRMWARE_VERSION))) {
-            update = true;
+        if (!systemConfiguration.getFirmware_version().isEmpty()) {
             properties.put(Thing.PROPERTY_FIRMWARE_VERSION, systemConfiguration.getFirmware_version());
         }
-        if (update) {
-            updateProperties(properties);
-        }
+        updateProperties(properties);
 
         updateState(new ChannelUID(getThing().getUID(), FWVERSION),
                 new StringType(systemConfiguration.getFirmware_version()));
@@ -505,8 +501,9 @@ public class FreeboxHandler extends BaseBridgeHandler {
 
         // The update of channels is delegated to each thing handler
         for (Thing thing : getThing().getThings()) {
-            if (thing.getHandler() != null) {
-                ((FreeboxThingHandler) thing.getHandler()).updateNetInfo(lanHostsConfiguration);
+            ThingHandler handler = thing.getHandler();
+            if (handler instanceof FreeboxThingHandler) {
+                ((FreeboxThingHandler) handler).updateNetInfo(lanHostsConfiguration);
             }
         }
 
@@ -518,8 +515,9 @@ public class FreeboxHandler extends BaseBridgeHandler {
 
         // The update of channels is delegated to each thing handler
         for (Thing thing : getThing().getThings()) {
-            if (thing.getHandler() != null) {
-                ((FreeboxThingHandler) thing.getHandler()).updateAirPlayDevice(airPlayDevices);
+            ThingHandler handler = thing.getHandler();
+            if (handler instanceof FreeboxThingHandler) {
+                ((FreeboxThingHandler) handler).updateAirPlayDevice(airPlayDevices);
             }
         }
 
@@ -530,7 +528,6 @@ public class FreeboxHandler extends BaseBridgeHandler {
         if (command != null) {
             if (command instanceof OnOffType || command instanceof IncreaseDecreaseType
                     || command instanceof DecimalType || command instanceof PercentType) {
-
                 LCDConfig lcd = fbClient.getLCDManager().getLCDConfig();
                 int value = 0;
                 int newValue = 0;
@@ -572,7 +569,6 @@ public class FreeboxHandler extends BaseBridgeHandler {
     private void setForced(Command command) throws FreeboxException {
         if (command != null) {
             if (command instanceof OnOffType || command instanceof OpenClosedType || command instanceof UpDownType) {
-
                 LCDConfig lcd = fbClient.getLCDManager().getLCDConfig();
 
                 lcd.setOrientationForced(command.equals(OnOffType.ON) || command.equals(UpDownType.UP)
@@ -586,7 +582,6 @@ public class FreeboxHandler extends BaseBridgeHandler {
     private void setWifiStatus(Command command) throws FreeboxException {
         if (command != null) {
             if (command instanceof OnOffType || command instanceof OpenClosedType || command instanceof UpDownType) {
-
                 WifiGlobalConfig wifiConfiguration = new WifiGlobalConfig();
 
                 wifiConfiguration.setEnabled(command.equals(OnOffType.ON) || command.equals(UpDownType.UP)
@@ -601,7 +596,6 @@ public class FreeboxHandler extends BaseBridgeHandler {
     private void setFtpStatus(Command command) throws FreeboxException {
         if (command != null) {
             if (command instanceof OnOffType || command instanceof OpenClosedType || command instanceof UpDownType) {
-
                 FtpConfig ftpConfiguration = new FtpConfig();
 
                 ftpConfiguration.setEnabled(command.equals(OnOffType.ON) || command.equals(UpDownType.UP)
@@ -616,7 +610,6 @@ public class FreeboxHandler extends BaseBridgeHandler {
     private void setAirMediaStatus(Command command) throws FreeboxException {
         if (command != null) {
             if (command instanceof OnOffType || command instanceof OpenClosedType || command instanceof UpDownType) {
-
                 AirMediaConfig airMediaConfiguration = new AirMediaConfig();
 
                 airMediaConfiguration.setEnabled(command.equals(OnOffType.ON) || command.equals(UpDownType.UP)
@@ -631,7 +624,6 @@ public class FreeboxHandler extends BaseBridgeHandler {
     private void setUPnPAVStatus(Command command) throws FreeboxException {
         if (command != null) {
             if (command instanceof OnOffType || command instanceof OpenClosedType || command instanceof UpDownType) {
-
                 UPnPAVConfig upnpAvConfiguration = new UPnPAVConfig();
 
                 upnpAvConfiguration.setEnabled(command.equals(OnOffType.ON) || command.equals(UpDownType.UP)
@@ -646,7 +638,6 @@ public class FreeboxHandler extends BaseBridgeHandler {
     private void setSambaFileStatus(Command command) throws FreeboxException {
         if (command != null) {
             if (command instanceof OnOffType || command instanceof OpenClosedType || command instanceof UpDownType) {
-
                 SambaConfig sambaConfiguration = new SambaConfig();
 
                 sambaConfiguration.setFileShareEnabled(command.equals(OnOffType.ON) || command.equals(UpDownType.UP)
@@ -661,7 +652,6 @@ public class FreeboxHandler extends BaseBridgeHandler {
     private void setSambaPrinterStatus(Command command) throws FreeboxException {
         if (command != null) {
             if (command instanceof OnOffType || command instanceof OpenClosedType || command instanceof UpDownType) {
-
                 SambaConfig sambaConfiguration = new SambaConfig();
 
                 sambaConfiguration.setPrintShareEnabled(command.equals(OnOffType.ON) || command.equals(UpDownType.UP)
@@ -676,7 +666,6 @@ public class FreeboxHandler extends BaseBridgeHandler {
     private void setReboot(Command command) throws FreeboxException {
         if (command != null) {
             if (command.equals(OnOffType.ON) || command.equals(UpDownType.UP) || command.equals(OpenClosedType.OPEN)) {
-
                 fbClient.getSystemManager().Reboot();
             }
         }

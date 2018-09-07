@@ -39,8 +39,8 @@ class MaryTTSAudioStream extends FixedLengthAudioStream {
      */
     private InputStream inputStream;
 
-    private byte[] rawAudio;
-    private int length;
+    private final byte[] rawAudio;
+    private final int length;
 
     /**
      * Constructs an instance with the passed properties
@@ -118,8 +118,8 @@ class MaryTTSAudioStream extends FixedLengthAudioStream {
         header[22] = channel;
         header[23] = 0;
         header[24] = (byte) (srate & 0xff);
-        header[25] = (byte) ((srate >> 8) & 0xff);
-        header[26] = (byte) ((srate >> 16) & 0xff);
+        header[25] = (byte) ((srate >> 8) & 0xff); 
+        header[26] = (byte) ((srate >> 16) & 0xff); 
         header[27] = (byte) ((srate >> 24) & 0xff);
         header[28] = (byte) ((bitrate / 8) & 0xff);
         header[29] = (byte) (((bitrate / 8) >> 8) & 0xff);

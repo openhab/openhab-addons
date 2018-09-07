@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="switch-type">
+		<item-type>Switch</item-type>
+		<label>Value as Switch</label>
+		<description>Switch item channel</description>
+	</channel-type>
+	<channel-type id="contact-type">
+		<item-type>Contact</item-type>
+		<label>Value as Contact</label>
+		<description>Contact item channel</description>
+	</channel-type>
+	<channel-type id="datetime-type">
+		<item-type>DateTime</item-type>
+		<label>Value as DateTime</label>
+		<description>DateTime item channel</description>
+	</channel-type>
+	<channel-type id="dimmer-type">
+		<item-type>Dimmer</item-type>
+		<label>Value as Dimmer</label>
+		<description>Dimmer item channel</description>
+	</channel-type>
+	<channel-type id="rollershutter-type">
+		<item-type>Rollershutter</item-type>
+		<label>Value as Rollershutter</label>
+		<description>Rollershutter item channel</description>
+	</channel-type>
+	<channel-type id="string-type">
+		<item-type>String</item-type>
+		<label>Value as String</label>
+		<description>String item channel</description>
+	</channel-type>
+	<channel-type id="number-type">
+		<item-type>Number</item-type>
+		<label>Value as Number</label>
+		<description>Number item channel</description>
+		<config-description></config-description>
+	</channel-type>
+	<channel-type id="last-successful-read-type">
+		<item-type>DateTime</item-type>
+		<label>Last successful read</label>
+		<description>Date of last read</description>
+		<config-description></config-description>
+	</channel-type>
+	<channel-type id="last-erroring-read-type">
+		<item-type>DateTime</item-type>
+		<label>Last erroring read</label>
+		<description>Date of last read error</description>
+		<config-description></config-description>
+	</channel-type>
+	<channel-type id="last-successful-write-type">
+		<item-type>DateTime</item-type>
+		<label>Last successful write</label>
+		<description>Date of last write</description>
+		<config-description></config-description>
+	</channel-type>
+	<channel-type id="last-erroring-write-type">
+		<item-type>DateTime</item-type>
+		<label>Last erroring write</label>
+		<description>Date of last write error</description>
+		<config-description></config-description>
+	</channel-type>
+</thing:thing-descriptions>

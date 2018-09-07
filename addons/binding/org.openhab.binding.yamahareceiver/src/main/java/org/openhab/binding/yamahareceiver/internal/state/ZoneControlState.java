@@ -24,7 +24,7 @@ public class ZoneControlState {
     // This may differ from what the AVR returns in Input/Input_Sel ("NET RADIO", "HDMI1")
     public String inputID = VALUE_EMPTY;
     public String surroundProgram = VALUE_EMPTY;
-    public float volume = 0.0f; // volume in percent
+    public float volumeDB = 0.0f; // volume in dB
     public boolean mute = false;
     public int dialogueLevel = 0;
 }

@@ -11,17 +11,13 @@
 		<label>Nest Cam</label>
 		<description>A Nest Cam registered with your account</description>
 
-		<channels>
-			<channel id="audio_input_enabled" typeId="AudioInputEnabled" />
-			<channel id="video_history_enabled" typeId="VideoHistoryEnabled" />
-			<channel id="streaming" typeId="Streaming" />
-			<channel id="web_url" typeId="WebUrl" />
-			<channel id="app_url" typeId="AppUrl" />
-			<channel id="public_share_enabled" typeId="PublicShareEnabled" />
-			<channel id="public_share_url" typeId="PublicShareUrl" />
-			<channel id="snapshot_url" typeId="SnapshotUrl" />
-			<channel id="last_online_change" typeId="LastOnlineChange" />
-		</channels>
+		<channel-groups>
+			<channel-group id="camera" typeId="Camera" />
+			<channel-group id="last_event" typeId="CameraEvent">
+				<label>Last Event</label>
+				<description>Information about the last camera event (requires Nest Aware subscription)</description>
+			</channel-group>
+		</channel-groups>
 
 		<properties>
 			<property name="vendor">Nest</property>

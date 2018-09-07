@@ -11,8 +11,7 @@ package org.openhab.binding.rfxcom.internal.messages;
 import static org.junit.Assert.assertEquals;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComWindMessage.SubType.WIND1;
 
-import javax.xml.bind.DatatypeConverter;
-
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 
@@ -20,13 +19,12 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
  * Test for RFXCom-binding
  *
  * @author Martin van Wingerden
- * @since 1.9.0
  */
 public class RFXComWindMessageTest {
     @Test
     public void testSomeMessages() throws RFXComException {
         String hexMessage = "105601122F000087000000140000000079";
-        byte[] message = DatatypeConverter.parseHexBinary(hexMessage);
+        byte[] message = HexUtils.hexToBytes(hexMessage);
         RFXComWindMessage msg = (RFXComWindMessage) RFXComMessageFactory.createMessage(message);
         assertEquals("SubType", WIND1, msg.subType);
         assertEquals("Seq Number", 18, msg.seqNbr);
@@ -39,6 +37,6 @@ public class RFXComWindMessageTest {
 
         byte[] decoded = msg.decodeMessage();
 
-        assertEquals("Message converted back", hexMessage, DatatypeConverter.printHexBinary(decoded));
+        assertEquals("Message converted back", hexMessage, HexUtils.bytesToHex(decoded));
     }
 }

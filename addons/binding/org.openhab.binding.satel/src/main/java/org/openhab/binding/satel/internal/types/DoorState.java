@@ -12,7 +12,6 @@ package org.openhab.binding.satel.internal.types;
  * Available door states.
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.7.0
  */
 public enum DoorState implements StateType {
     OPENED(0x18),

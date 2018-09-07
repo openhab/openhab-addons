@@ -20,11 +20,13 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.max.MaxBinding;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.openhab.binding.max.MaxBindingConstants;
 import org.openhab.binding.max.internal.discovery.MaxDeviceDiscoveryService;
 import org.openhab.binding.max.internal.handler.MaxCubeBridgeHandler;
 import org.openhab.binding.max.internal.handler.MaxDevicesHandler;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,17 +36,16 @@ import org.slf4j.LoggerFactory;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
-
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.max")
 public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
 
-    private Logger logger = LoggerFactory.getLogger(MaxCubeHandlerFactory.class);
-    private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private final Logger logger = LoggerFactory.getLogger(MaxCubeHandlerFactory.class);
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     @Override
     public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,
             ThingUID bridgeUID) {
-
-        if (MaxBinding.CUBEBRIDGE_THING_TYPE.equals(thingTypeUID)) {
+        if (MaxBindingConstants.CUBEBRIDGE_THING_TYPE.equals(thingTypeUID)) {
             ThingUID cubeBridgeUID = getBridgeThingUID(thingTypeUID, thingUID, configuration);
             return super.createThing(thingTypeUID, configuration, cubeBridgeUID, null);
         }
@@ -57,23 +58,23 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return MaxBinding.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return MaxBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     private ThingUID getBridgeThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration) {
         if (thingUID == null) {
-            String SerialNumber = (String) configuration.get(MaxBinding.PROPERTY_SERIAL_NUMBER);
-            thingUID = new ThingUID(thingTypeUID, SerialNumber);
+            String serialNumber = (String) configuration.get(Thing.PROPERTY_SERIAL_NUMBER);
+            return new ThingUID(thingTypeUID, serialNumber);
         }
         return thingUID;
     }
 
     private ThingUID getMaxCubeDeviceUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration,
             ThingUID bridgeUID) {
-        String SerialNumber = (String) configuration.get(MaxBinding.PROPERTY_SERIAL_NUMBER);
+        String serialNumber = (String) configuration.get(Thing.PROPERTY_SERIAL_NUMBER);
 
         if (thingUID == null) {
-            thingUID = new ThingUID(thingTypeUID, SerialNumber, bridgeUID.getId());
+            return new ThingUID(thingTypeUID, serialNumber, bridgeUID.getId());
         }
         return thingUID;
     }
@@ -82,8 +83,8 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
         MaxDeviceDiscoveryService discoveryService = new MaxDeviceDiscoveryService(maxCubeBridgeHandler);
         discoveryService.activate();
 
-        this.discoveryServiceRegs.put(maxCubeBridgeHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+        this.discoveryServiceRegs.put(maxCubeBridgeHandler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
     @Override
@@ -104,7 +105,7 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-        if (thing.getThingTypeUID().equals(MaxBinding.CUBEBRIDGE_THING_TYPE)) {
+        if (thing.getThingTypeUID().equals(MaxBindingConstants.CUBEBRIDGE_THING_TYPE)) {
             MaxCubeBridgeHandler handler = new MaxCubeBridgeHandler((Bridge) thing);
             registerDeviceDiscoveryService(handler);
             return handler;

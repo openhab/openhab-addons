@@ -11,8 +11,7 @@ package org.openhab.binding.rfxcom.internal.messages;
 import static org.junit.Assert.assertArrayEquals;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage.TransceiverType._433_92MHZ_TRANSCEIVER;
 
-import javax.xml.bind.DatatypeConverter;
-
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.config.RFXComBridgeConfiguration;
@@ -22,7 +21,6 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
  * Test for RFXCom-binding
  *
  * @author Mike Jagdis
- * @since 2.1.0
  */
 public class RFXComInterfaceControlMessageTest {
     private RFXComBridgeConfiguration configuration = new RFXComBridgeConfiguration();
@@ -61,7 +59,7 @@ public class RFXComInterfaceControlMessageTest {
     private void testMessage(RFXComInterfaceMessage.TransceiverType transceiverType, RFXComBridgeConfiguration configuration, String data)
             throws RFXComException {
 
-        assertArrayEquals(DatatypeConverter.parseHexBinary(data),
+        assertArrayEquals(HexUtils.hexToBytes(data),
             new RFXComInterfaceControlMessage(transceiverType, configuration).decodeMessage());
     }
 

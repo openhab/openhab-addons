@@ -7,26 +7,19 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 package org.openhab.voice.marytts.internal;
-/**
- * Copyright (c) 2014-2016 openHAB UG (haftungsbeschraenkt) and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- */
+
+import static javax.sound.sampled.AudioSystem.NOT_SPECIFIED;
 
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-
 import org.eclipse.smarthome.core.audio.AudioFormat;
 import org.eclipse.smarthome.core.audio.AudioStream;
 import org.eclipse.smarthome.core.voice.TTSException;
 import org.eclipse.smarthome.core.voice.TTSService;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +35,7 @@ import marytts.modules.synthesis.Voice;
  * @author Kelly Davis - Initial contribution and API
  * @author Kai Kreuzer - Refactored to updated APIs and moved to openHAB
  */
+@Component
 public class MaryTTSService implements TTSService {
 
     private final Logger logger = LoggerFactory.getLogger(MaryTTSService.class);
@@ -51,53 +45,47 @@ public class MaryTTSService implements TTSService {
     /**
      * Set of supported voices
      */
-    private HashSet<org.eclipse.smarthome.core.voice.Voice> voices;
+    private Set<org.eclipse.smarthome.core.voice.Voice> voices;
 
     /**
      * Set of supported audio formats
      */
-    private HashSet<AudioFormat> audioFormats;
+    private Set<AudioFormat> audioFormats;
 
     protected void activate() {
         try {
-            marytts = getMaryInterface();
+            marytts = new LocalMaryInterface();
             voices = initVoices();
             audioFormats = initAudioFormats();
-        } catch (Throwable t) {
-            logger.error("Failed to initialize MaryTTS: {}", t.getMessage(), t);
+        } catch (MaryConfigurationException e) {
+            logger.error("Failed to initialize MaryTTS: {}", e.getMessage(), e);
         }
     }
 
     @Override
     public Set<org.eclipse.smarthome.core.voice.Voice> getAvailableVoices() {
-        return this.voices;
+        return voices;
     }
 
     @Override
     public Set<AudioFormat> getSupportedFormats() {
-        return this.audioFormats;
+        return audioFormats;
     }
 
     @Override
     public AudioStream synthesize(String text, org.eclipse.smarthome.core.voice.Voice voice,
             AudioFormat requestedFormat) throws TTSException {
         // Validate arguments
-        if ((null == text) || text.isEmpty()) {
+        if (text == null || text.isEmpty()) {
             throw new TTSException("The passed text is null or empty");
         }
-        if (!this.voices.contains(voice)) {
+        if (!voices.contains(voice)) {
             throw new TTSException("The passed voice is unsupported");
         }
-        boolean isAudioFormatSupported = false;
-        for (AudioFormat currentAudioFormat : this.audioFormats) {
-            if (currentAudioFormat.isCompatible(requestedFormat)) {
-                isAudioFormatSupported = true;
-                break;
-            }
-        }
-        if (!isAudioFormatSupported) {
+        if (audioFormats.stream().noneMatch(f -> f.isCompatible(requestedFormat))) {
             throw new TTSException("The passed AudioFormat is unsupported");
         }
+
         /*
          * NOTE: For each MaryTTS voice only a single AudioFormat is supported
          * However, the TTSService interface allows the AudioFormat and
@@ -124,52 +112,42 @@ public class MaryTTSService implements TTSService {
 
         // Synchronize on marytts
         synchronized (marytts) {
-            // AudioStream to return
-            AudioStream audioStream = null;
-
-            // Set voice (Each voice supports onl a single AudioFormat)
+            // Set voice (Each voice supports only a single AudioFormat)
             marytts.setLocale(voice.getLocale());
             marytts.setVoice(voice.getLabel());
 
             try {
-                AudioInputStream audioInputStream = marytts.generateAudio(text);
-                audioStream = new MaryTTSAudioStream(audioInputStream, maryTTSVoiceAudioFormat);
+                return new MaryTTSAudioStream(marytts.generateAudio(text), maryTTSVoiceAudioFormat);
             } catch (SynthesisException | IOException e) {
                 throw new TTSException("Error generating an AudioStream", e);
             }
-
-            return audioStream;
         }
     }
 
     /**
-     * Initializes this.voices
+     * Initializes voices
      *
      * @return The voices of this instance
      */
-    private final HashSet<org.eclipse.smarthome.core.voice.Voice> initVoices() {
-        HashSet<org.eclipse.smarthome.core.voice.Voice> voices = new HashSet<org.eclipse.smarthome.core.voice.Voice>();
-        Set<Locale> locales = marytts.getAvailableLocales();
-        for (Locale local : locales) {
-            Set<String> voiceLabels = marytts.getAvailableVoices(local);
-            for (String voiceLabel : voiceLabels) {
-                voices.add(new MaryTTSVoice(local, voiceLabel));
+    private Set<org.eclipse.smarthome.core.voice.Voice> initVoices() {
+        Set<org.eclipse.smarthome.core.voice.Voice> voices = new HashSet<>();
+        for (Locale locale : marytts.getAvailableLocales()) {
+            for (String voiceLabel : marytts.getAvailableVoices(locale)) {
+                voices.add(new MaryTTSVoice(locale, voiceLabel));
             }
         }
         return voices;
     }
 
     /**
-     * Initializes this.audioFormats
+     * Initializes audioFormats
      *
      * @return The audio formats of this instance
      */
-    private final HashSet<AudioFormat> initAudioFormats() {
-        HashSet<AudioFormat> audioFormats = new HashSet<AudioFormat>();
-        Set<String> voiceLabels = marytts.getAvailableVoices();
-        for (String voiceLabel : voiceLabels) {
-            Voice voice = Voice.getVoice(voiceLabel);
-            audioFormats.add(getAudioFormat(voice.dbAudioFormat()));
+    private Set<AudioFormat> initAudioFormats() {
+        Set<AudioFormat> audioFormats = new HashSet<>();
+        for (String voiceLabel : marytts.getAvailableVoices()) {
+            audioFormats.add(getAudioFormat(Voice.getVoice(voiceLabel).dbAudioFormat()));
         }
         return audioFormats;
     }
@@ -180,40 +158,22 @@ public class MaryTTSService implements TTSService {
      * @param audioFormat The javax.sound.sampled.AudioFormat
      * @return The corresponding AudioFormat
      */
-    private final AudioFormat getAudioFormat(javax.sound.sampled.AudioFormat audioFormat) {
+    private AudioFormat getAudioFormat(javax.sound.sampled.AudioFormat audioFormat) {
         String container = AudioFormat.CONTAINER_WAVE;
-
         String codec = audioFormat.getEncoding().toString();
-
-        Boolean bigEndian = new Boolean(audioFormat.isBigEndian());
+        Boolean bigEndian = audioFormat.isBigEndian();
 
         int frameSize = audioFormat.getFrameSize(); // In bytes
         int bitsPerFrame = frameSize * 8;
-        Integer bitDepth = ((AudioSystem.NOT_SPECIFIED == frameSize) ? null : new Integer(bitsPerFrame));
+        Integer bitDepth = NOT_SPECIFIED == frameSize ? null : bitsPerFrame;
 
         float frameRate = audioFormat.getFrameRate();
-        Integer bitRate = ((AudioSystem.NOT_SPECIFIED == frameRate) ? null
-                : new Integer((int) (frameRate * bitsPerFrame)));
+        Integer bitRate = NOT_SPECIFIED == frameRate ? null : (int) frameRate * bitsPerFrame;
 
         float sampleRate = audioFormat.getSampleRate();
-        Long frequency = ((AudioSystem.NOT_SPECIFIED == sampleRate) ? null : new Long((long) sampleRate));
+        Long frequency = NOT_SPECIFIED == sampleRate ? null : (long) sampleRate;
 
         return new AudioFormat(container, codec, bigEndian, bitDepth, bitRate, frequency);
-    }
-
-    /**
-     * Create the MaryInterface
-     *
-     * @return The MaryInterface
-     */
-    private static final MaryInterface getMaryInterface() {
-        MaryInterface maryInterface = null;
-        try {
-            maryInterface = new LocalMaryInterface();
-        } catch (MaryConfigurationException e) {
-            throw new RuntimeException("Error creating MaryInterface", e);
-        }
-        return maryInterface;
     }
 
     @Override
@@ -223,7 +183,7 @@ public class MaryTTSService implements TTSService {
 
     @Override
     public String getLabel(Locale locale) {
-        return "Mary Text-to-Speech Engine";
+        return "MaryTTS";
     }
 
 }

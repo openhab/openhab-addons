@@ -12,8 +12,12 @@ import static org.openhab.binding.plugwise.PlugwiseBindingConstants.*;
 
 import java.time.Duration;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.plugwise.internal.config.PlugwiseSenseConfig;
 import org.openhab.binding.plugwise.internal.protocol.AcknowledgementMessage;
@@ -39,13 +43,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Wouter Born - Initial contribution
  */
+@NonNullByDefault
 public class PlugwiseSenseHandler extends AbstractSleepingEndDeviceHandler {
 
     private final Logger logger = LoggerFactory.getLogger(PlugwiseSenseHandler.class);
+    private final DeviceType deviceType = DeviceType.SENSE;
 
-    private PlugwiseSenseConfig configuration;
-    private DeviceType deviceType = DeviceType.SENSE;
-    private MACAddress macAddress;
+    private @NonNullByDefault({}) PlugwiseSenseConfig configuration;
+    private @NonNullByDefault({}) MACAddress macAddress;
 
     // Flags that keep track of the pending Sense configuration updates. When the corresponding Thing configuration
     // parameters change a flag is set to true. When the Sense goes online the respective command is sent to update the
@@ -121,8 +126,8 @@ public class PlugwiseSenseHandler extends AbstractSleepingEndDeviceHandler {
 
     private void handleSenseReportRequestMessage(SenseReportRequestMessage message) {
         updateLastSeen();
-        updateState(CHANNEL_HUMIDITY, new DecimalType(message.getHumidity().getValue()));
-        updateState(CHANNEL_TEMPERATURE, new DecimalType(message.getTemperature().getValue()));
+        updateState(CHANNEL_HUMIDITY, new QuantityType<>(message.getHumidity().getValue(), SmartHomeUnits.PERCENT));
+        updateState(CHANNEL_TEMPERATURE, new QuantityType<>(message.getTemperature().getValue(), SIUnits.CELSIUS));
     }
 
     @Override
@@ -172,7 +177,8 @@ public class PlugwiseSenseHandler extends AbstractSleepingEndDeviceHandler {
         super.sendConfigurationUpdateCommands();
     }
 
-    private void setUpdateCommandFlags(PlugwiseSenseConfig oldConfiguration, PlugwiseSenseConfig newConfiguration) {
+    private void setUpdateCommandFlags(@Nullable PlugwiseSenseConfig oldConfiguration,
+            PlugwiseSenseConfig newConfiguration) {
         boolean fullUpdate = newConfiguration.isUpdateConfiguration() && !isConfigurationPending();
         if (fullUpdate) {
             logger.debug("Updating all configuration properties of {} ({})", deviceType, macAddress);

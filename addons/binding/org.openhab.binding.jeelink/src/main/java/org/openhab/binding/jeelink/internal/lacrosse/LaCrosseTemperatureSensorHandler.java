@@ -18,8 +18,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -123,16 +125,19 @@ public class LaCrosseTemperatureSensorHandler extends JeeLinkSensorHandler<LaCro
                                 "updating states for thing {} ({}): temp={} ({}), humidity={}, batteryNew={}, batteryLow={}",
                                 getThing().getLabel(), getThing().getUID().getId(), temp, reading.getTemperature(),
                                 reading.getHumidity(), reading.isBatteryNew(), reading.isBatteryLow());
-                        updateState(TEMPERATURE_CHANNEL, new DecimalType(temp));
-                        updateState(HUMIDITY_CHANNEL, new DecimalType(reading.getHumidity()));
+                        updateState(TEMPERATURE_CHANNEL, new QuantityType<>(temp, SIUnits.CELSIUS));
+                        updateState(HUMIDITY_CHANNEL,
+                                new QuantityType<>(reading.getHumidity(), SmartHomeUnits.PERCENT));
                         updateState(BATTERY_NEW_CHANNEL, reading.isBatteryNew() ? OnOffType.ON : OnOffType.OFF);
                         updateState(BATTERY_LOW_CHANNEL, reading.isBatteryLow() ? OnOffType.ON : OnOffType.OFF);
                     } else {
                         logger.debug("updating states for channel {} of thing {} ({}): temp={} ({}), humidity={}",
                                 reading.getChannel(), getThing().getLabel(), getThing().getUID().getId(), temp,
                                 reading.getTemperature(), reading.getHumidity());
-                        updateState(TEMPERATURE_CHANNEL + reading.getChannel(), new DecimalType(temp));
-                        updateState(HUMIDITY_CHANNEL + reading.getChannel(), new DecimalType(reading.getHumidity()));
+                        updateState(TEMPERATURE_CHANNEL + reading.getChannel(),
+                                new QuantityType<>(temp, SIUnits.CELSIUS));
+                        updateState(HUMIDITY_CHANNEL + reading.getChannel(),
+                                new QuantityType<>(reading.getHumidity(), SmartHomeUnits.PERCENT));
                     }
                 }
             }
@@ -143,7 +148,7 @@ public class LaCrosseTemperatureSensorHandler extends JeeLinkSensorHandler<LaCro
         };
 
         LaCrosseTemperatureSensorConfig cfg = getConfigAs(LaCrosseTemperatureSensorConfig.class);
-        if (cfg.bufferSize > 1) {
+        if (cfg.bufferSize > 1 && cfg.updateInterval > 0) {
             publisher = new RollingAveragePublisher<LaCrosseTemperatureReading>(cfg.bufferSize, cfg.updateInterval,
                     publisher, scheduler) {
                 @Override

@@ -40,6 +40,7 @@ public class XiaomiAqaraActorSwitch1Handler extends XiaomiActorBaseHandler {
         if (CHANNEL_SWITCH_CH0.equals(channelUID.getId())) {
             String status = command.toString().toLowerCase();
             getXiaomiBridgeHandler().writeToDevice(getItemId(), new String[] { CHANNEL_0 }, new Object[] { status });
+            return;
         }
         // Only gets here, if no condition was met
         logger.error("Can't handle command {} on channel {}", command, channelUID);
@@ -62,7 +63,7 @@ public class XiaomiAqaraActorSwitch1Handler extends XiaomiActorBaseHandler {
 
     @Override
     void parseWriteAck(JsonObject data) {
-        parseDefault(data);
+        logger.debug("Got write ack message but ignoring it to prevent item state toggling");
     }
 
     @Override

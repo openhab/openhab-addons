@@ -9,6 +9,10 @@
 package org.openhab.binding.wifiled.handler;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -21,30 +25,40 @@ import org.eclipse.smarthome.core.library.types.StringType;
  *
  * @author Osman Basha - Initial contribution
  * @author Stefan Endrullis
- * @author Ries van Twisk
+ * @author Ries van Twisk - Prevent flashes during classic driver color + white updates
  */
 public class ClassicWiFiLEDDriver extends AbstractWiFiLEDDriver {
 
-    public ClassicWiFiLEDDriver(String host, int port, Protocol protocol) {
+    private static final int WAIT_UPDATE_LED_FOR_MS = 25;
+    private final WiFiLEDHandler wifiLedHandler;
+    private final ExecutorService updateScheduler = Executors.newSingleThreadExecutor();
+    private Future<Boolean> ledUpdateFuture = CompletableFuture.completedFuture(null);
+    private LEDStateDTO cachedLedStatus = null;
+
+    public ClassicWiFiLEDDriver(WiFiLEDHandler wifiLedHandler, String host, int port, Protocol protocol) {
         super(host, port, protocol);
+        this.wifiLedHandler = wifiLedHandler;
     }
 
     @Override
     public void shutdown() {
-
     }
 
     @Override
     public synchronized LEDStateDTO getLEDStateDTO() throws IOException {
-        LEDState s = getLEDState();
+        if (ledUpdateFuture.isDone()) {
+            LEDState s = getLEDState();
 
-        try {
-            Thread.sleep(100);
-        } catch (Exception e) {
-            throw new IOException(e);
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                throw new IOException(e);
+            }
+
+            return LEDStateDTO.valueOf(s.state, s.program, s.programSpeed, s.red, s.green, s.blue, s.white, s.white2);
+        } else {
+            return cachedLedStatus;
         }
-
-        return LEDStateDTO.valueOf(s.state, s.program, s.programSpeed, s.red, s.green, s.blue, s.white, s.white2);
     }
 
     @Override
@@ -137,34 +151,50 @@ public class ClassicWiFiLEDDriver extends AbstractWiFiLEDDriver {
         sendLEDData(ledState);
     }
 
-    private void sendLEDData(LEDStateDTO ledState) throws IOException {
-        logger.debug("Setting LED State to {}", ledState);
+    private synchronized void sendLEDData(final LEDStateDTO ledState) {
+        cachedLedStatus = ledState;
+        if (!ledUpdateFuture.isDone()) {
+            ledUpdateFuture.cancel(true);
+        }
 
+        final byte[] bytes;
         int program = Integer.valueOf(ledState.getProgram().toString());
         if (program == 0x61) {
             // "normal" program: set color etc.
-            byte r = (byte) (ledState.getColor().getRed() & 0xFF);
-            byte g = (byte) (ledState.getColor().getGreen() & 0xFF);
-            byte b = (byte) (ledState.getColor().getBlue() & 0xFF);
+            byte r = (byte) (ledState.getRGB() >> 16 & 0xFF);
+            byte g = (byte) (ledState.getRGB() >> 8 & 0xFF);
+            byte b = (byte) (ledState.getRGB() & 0xFF);
             byte w = (byte) (((int) (ledState.getWhite().doubleValue() * 255 / 100)) & 0xFF);
             byte w2 = (byte) (((int) (ledState.getWhite2().doubleValue() * 255 / 100)) & 0xFF);
 
-            byte[] bytes = getBytesForColor(r, g, b, w, w2);
-
-            sendRaw(bytes);
+            bytes = getBytesForColor(r, g, b, w, w2);
         } else {
             // program selected
             byte p = (byte) (program & 0xFF);
             byte s = (byte) (((100 - ledState.getProgramSpeed().intValue()) * 0x1F / 100) & 0xFF);
-            byte[] data = { 0x61, p, s };
-            sendRaw(data);
+            bytes = new byte[] { 0x61, p, s };
         }
+
+        ledUpdateFuture = updateScheduler.submit(() -> {
+            try {
+                Thread.sleep(WAIT_UPDATE_LED_FOR_MS);
+                logger.debug("Setting LED State to {}", bytesToHex(bytes));
+                sendRaw(bytes);
+                return true;
+            } catch (IOException e) {
+                logger.debug("Exception occurred while sending command to LED", e);
+                wifiLedHandler.reportCommunicationError(e);
+            } catch (InterruptedException e) {
+                // Ignore, this is expected
+            }
+            return false;
+        });
     }
 
-    public static final String bytesToHex(byte[] bytes) {
+    public static String bytesToHex(byte[] bytes) {
         StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < bytes.length; i++) {
-            builder.append(String.format("%02x ", bytes[i]));
+        for (byte aByte : bytes) {
+            builder.append(String.format("%02x ", aByte));
         }
         String string = builder.toString();
         return string.substring(0, string.length() - 1);

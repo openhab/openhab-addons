@@ -12,11 +12,13 @@ import static org.openhab.binding.freebox.FreeboxBindingConstants.*;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
+import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -54,7 +56,7 @@ import org.slf4j.LoggerFactory;
  * The {@link FreeboxThingHandler} is responsible for handling everything associated to
  * any Freebox thing types except the bridge thing type.
  *
- * @author Laurent Garnier
+ * @author Laurent Garnier - Initial contribution
  */
 public class FreeboxThingHandler extends BaseThingHandler {
 
@@ -80,7 +82,7 @@ public class FreeboxThingHandler extends BaseThingHandler {
             return;
         }
         try {
-            if (command == null || command instanceof RefreshType) {
+            if (command instanceof RefreshType) {
                 return;
             } else if (command instanceof StringType && PLAYURL.equals(channelUID.getId())) {
                 playMedia(command.toString());
@@ -111,13 +113,17 @@ public class FreeboxThingHandler extends BaseThingHandler {
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         logger.debug("bridgeStatusChanged {}", bridgeStatusInfo);
-        initializeThing((getBridge() == null) ? null : getBridge().getHandler(), bridgeStatusInfo.getStatus());
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            initializeThing(null, bridgeStatusInfo.getStatus());
+        } else {
+            initializeThing(bridge.getHandler(), bridgeStatusInfo.getStatus());
+        }
     }
 
     private void initializeThing(ThingHandler thingHandler, ThingStatus bridgeStatus) {
         logger.debug("initializeThing {}", bridgeStatus);
         if (thingHandler != null && bridgeStatus != null) {
-
             if (bridgeStatus == ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
 
@@ -259,7 +265,6 @@ public class FreeboxThingHandler extends BaseThingHandler {
             Calendar callEndTime = call.getTimeStamp();
             callEndTime.add(Calendar.SECOND, (int) (call.getDuration()));
             if ((call.getDuration() > 0) && callEndTime.after(lastPhoneCheck)) {
-
                 updateCall(call, ANY);
 
                 if (call.getType().equalsIgnoreCase("accepted")) {
@@ -281,8 +286,9 @@ public class FreeboxThingHandler extends BaseThingHandler {
                     new StringType(call.getNumber()));
             updateState(new ChannelUID(getThing().getUID(), channelGroup, CALLDURATION),
                     new DecimalType(call.getDuration()));
-            updateState(new ChannelUID(getThing().getUID(), channelGroup, CALLTIMESTAMP),
-                    new DateTimeType(call.getTimeStamp()));
+            ZonedDateTime zoned = ZonedDateTime.ofInstant(Instant.ofEpochMilli(call.getTimeStamp().getTimeInMillis()),
+                    TimeZone.getDefault().toZoneId());
+            updateState(new ChannelUID(getThing().getUID(), channelGroup, CALLTIMESTAMP), new DateTimeType(zoned));
             updateState(new ChannelUID(getThing().getUID(), channelGroup, CALLNAME), new StringType(call.getName()));
             if (channelGroup.equals(ANY)) {
                 updateState(new ChannelUID(getThing().getUID(), channelGroup, CALLSTATUS),
@@ -327,11 +333,7 @@ public class FreeboxThingHandler extends BaseThingHandler {
                         reachable ? OnOffType.ON : OnOffType.OFF);
             }
             if ((vendor != null) && !vendor.isEmpty()) {
-                Map<String, String> properties = editProperties();
-                if ((properties.get(Thing.PROPERTY_VENDOR) == null)
-                        || !properties.get(Thing.PROPERTY_VENDOR).equals(vendor)) {
-                    updateProperty(Thing.PROPERTY_VENDOR, vendor);
-                }
+                updateProperty(Thing.PROPERTY_VENDOR, vendor);
             }
         }
     }

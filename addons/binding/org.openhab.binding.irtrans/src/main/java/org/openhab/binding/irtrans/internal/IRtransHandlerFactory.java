@@ -22,7 +22,6 @@ import org.openhab.binding.irtrans.IRtransBindingConstants;
 import org.openhab.binding.irtrans.handler.BlasterHandler;
 import org.openhab.binding.irtrans.handler.EthernetBridgeHandler;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 
 import com.google.common.collect.Lists;
 
@@ -31,10 +30,9 @@ import com.google.common.collect.Lists;
  * thing handlers.
  *
  * @author Karel Goderis - Initial contribution
- * @since 2.3.0
  *
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.irtrans", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.irtrans")
 public class IRtransHandlerFactory extends BaseThingHandlerFactory {
 
     public static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists.newArrayList(

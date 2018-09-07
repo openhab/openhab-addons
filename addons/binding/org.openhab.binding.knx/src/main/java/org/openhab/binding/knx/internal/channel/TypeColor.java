@@ -24,8 +24,7 @@ import tuwien.auto.calimero.dptxlator.DPTXlatorRGB;
 /**
  * color channel type description
  *
- * @author Simon Kaufmann - initial contribution and API.
- * @author Helmut Lehmeyer
+ * @author Helmut Lehmeyer - initial contribution
  *
  */
 @NonNullByDefault

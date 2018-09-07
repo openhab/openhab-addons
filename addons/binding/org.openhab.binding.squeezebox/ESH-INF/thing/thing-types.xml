@@ -78,7 +78,6 @@
 			<channel id="coverartdata" typeId="coverartdata" />
 			<channel id="ircode" typeId="ircode" />
 			<channel id="numberPlaylistTracks" typeId="numberPlaylistTracks" />
-			<channel id="notificationSoundVolume" typeId="notificationVolume" />
 			<channel id="playFavorite" typeId="playFavorite" />
 		</channels>
 
@@ -94,6 +93,15 @@
 			<parameter name="mac" type="text" required="true">
 				<label>MAC Address</label>
 				<description>SqueezeBox Players are identified by their MAC address</description>
+			</parameter>
+			<parameter name="notificationTimeout" type="integer" unit="s">
+				<label>Notification Timeout</label>
+				<description>Maximum amount of time in seconds for which the notification will be played</description>
+				<default>20</default>
+			</parameter>
+			<parameter name="notificationVolume" type="integer" min="0" max="100" step="1" unit="%">
+				<label>Notification Sound Volume</label>
+				<description>Volume used for notifications. Leaving blank uses current player volume.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -277,12 +285,5 @@
 		<label>Number of Playlist Tracks</label>
 		<description>Number of playlist tracks</description>
 		<state readOnly="true" pattern="%d"></state>
-	</channel-type>
-	<channel-type id="notificationVolume">
-		<item-type>Dimmer</item-type>
-		<label>Notification Volume</label>
-		<description>Volume of notifications</description>
-		<state min="0" max="100" step="1" pattern="%d %%">
-		</state>
 	</channel-type>
 </thing:thing-descriptions>

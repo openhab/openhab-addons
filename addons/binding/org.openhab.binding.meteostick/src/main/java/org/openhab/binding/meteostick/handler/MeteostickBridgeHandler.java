@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.meteostick.handler;
 
+import static org.eclipse.smarthome.core.library.unit.MetricPrefix.HECTO;
+import static org.eclipse.smarthome.core.library.unit.SIUnits.*;
 import static org.openhab.binding.meteostick.MeteostickBindingConstants.*;
 
 import java.io.IOException;
@@ -23,7 +25,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -254,11 +256,11 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
                             case "B": // Barometer
                                 BigDecimal temperature = new BigDecimal(p[1]);
                                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_INDOOR_TEMPERATURE),
-                                        new DecimalType(temperature.setScale(1)));
+                                        new QuantityType<>(temperature.setScale(1), CELSIUS));
 
                                 BigDecimal pressure = new BigDecimal(p[2]);
                                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_PRESSURE),
-                                        new DecimalType(pressure.setScale(1, RoundingMode.HALF_UP)));
+                                        new QuantityType<>(pressure.setScale(1, RoundingMode.HALF_UP), HECTO(PASCAL)));
                                 break;
                             case "#":
                                 break;

@@ -9,14 +9,15 @@
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 
 import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
 import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
 import org.openhab.binding.yamahareceiver.internal.protocol.InputWithNavigationControl;
 import org.openhab.binding.yamahareceiver.internal.protocol.ReceivedMessageParseException;
+import org.openhab.binding.yamahareceiver.internal.state.DeviceInformationState;
 import org.openhab.binding.yamahareceiver.internal.state.NavigationControlState;
 import org.openhab.binding.yamahareceiver.internal.state.NavigationControlStateListener;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -41,10 +42,7 @@ import org.w3c.dom.Node;
  * @author Dennis Frommknecht - Initial idea and implementaton
  * @author Tomasz Maruszak - Refactor
  */
-public class InputWithNavigationControlXML implements InputWithNavigationControl {
-    protected final WeakReference<AbstractConnection> comReference;
-
-    protected final String inputID;
+public class InputWithNavigationControlXML extends AbstractInputControlXML implements InputWithNavigationControl {
 
     public static final int MAX_PER_PAGE = 8;
     private boolean useAlternativeBackToHomeCmd = false;
@@ -58,25 +56,18 @@ public class InputWithNavigationControlXML implements InputWithNavigationControl
      * @param state We need the current navigation state, because most navigation commands are relative commands and we
      *            offer API with absolute values.
      * @param inputID The input ID like USB or NET_RADIO.
-     * @param com The Yamaha communication object to send http requests.
+     * @param con The Yamaha communication object to send http requests.
      */
-    public InputWithNavigationControlXML(NavigationControlState state, String inputID, AbstractConnection com,
-            NavigationControlStateListener observer) {
-        this.state = state;
-        this.comReference = new WeakReference<>(com);
-        this.inputID = inputID;
-        this.observer = observer;
-    }
+    public InputWithNavigationControlXML(NavigationControlState state,
+                                         String inputID,
+                                         AbstractConnection con,
+                                         NavigationControlStateListener observer,
+                                         DeviceInformationState deviceInformationState) {
 
-    /**
-     * Wraps the XML message with the inputID tags. Example with inputID=NET_RADIO:
-     * <NETRADIO>message</NETRADIO>.
-     *
-     * @param message XML message
-     * @return
-     */
-    private String wrInput(String message) {
-        return "<" + inputID + ">" + message + "</" + inputID + ">";
+        super(LoggerFactory.getLogger(InputWithNavigationControlXML.class), inputID, con, deviceInformationState);
+
+        this.state = state;
+        this.observer = observer;
     }
 
     /**

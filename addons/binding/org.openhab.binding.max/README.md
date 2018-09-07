@@ -49,17 +49,17 @@ These properties can be found in the `Device Settings` section of parameters.
 
 Depending on the thing it supports different Channels
 
-| Channel Type ID | Item Type | Description                                                                                                                                                                                                                                               | Available on thing                                                    |
-|-----------------|-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------|
-| mode            | String    | This channel indicates the mode of a thermostat (AUTOMATIC/MANUAL/BOOST/VACATION).                                                                                                                                                                        | thermostat, thermostatplus, wallthermostat                            |
-| battery_low     | Switch    | This channel indicates if the device battery is low (ON/OFF).                                                                                                                                                                                             | thermostat, thermostatplus, wallthermostat, ecoswitch, shuttercontact |
-| set_temp        | Number    | This channel indicates the sets temperature (in °C) of a thermostat.                                                                                                                                                                                      | thermostat, thermostatplus, wallthermostat                            |
-| actual_temp     | Number    | This channel indicates the measured temperature (in °C) of a thermostat (see below for more details).                                                                                                                                                     | thermostat, thermostatplus, wallthermostat                            |
-| valve           | Number    | This channel indicates the valve opening in %. Note this is an advanced setting, normally not visible.                                                                                                                                                    | thermostat, thermostatplus, wallthermostat                            |
-| locked          | Contact   | This channel indicates if the thermostat is locked for adjustments (OPEN/CLOSED). Note this is an advanced setting, normally not visible.                                                                                                                 | thermostat, thermostatplus, wallthermostat                            |
-| contact_state   | Contact   | This channel indicates the contact state for a shutterswitch (OPEN/CLOSED).                                                                                                                                                                               | shuttercontact                                                        |
-| free_mem        | Number    | This channel indicates the free available memory on the cube to hold send commands. Note this is an advanced setting, normally not visible.                                                                                                               | bridge                                                                |
-| duty_cycle      | Number    | This channel indicates the duty cycle (due to regulatory compliance reasons the cube is allowed only to send for a limited time. Duty cycle indicates how much of the available time is consumed) Note this is an advanced setting, normally not visible. | bridge                                                                |
+| Channel Type ID | Item Type          | Description                                                                                                                                                                                                                                               | Available on thing                                                    |
+|-----------------|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------|
+| mode            | String             | This channel indicates the mode of a thermostat (AUTOMATIC/MANUAL/BOOST/VACATION).                                                                                                                                                                        | thermostat, thermostatplus, wallthermostat                            |
+| battery_low     | Switch             | This channel indicates if the device battery is low (ON/OFF).                                                                                                                                                                                             | thermostat, thermostatplus, wallthermostat, ecoswitch, shuttercontact |
+| set_temp        | Number:Temperature | This channel indicates the sets temperature of a thermostat.                                                                                                                                                                                              | thermostat, thermostatplus, wallthermostat                            |
+| actual_temp     | Number:Temperature | This channel indicates the measured temperature of a thermostat (see below for more details).                                                                                                                                                             | thermostat, thermostatplus, wallthermostat                            |
+| valve           | Number             | This channel indicates the valve opening in %. Note this is an advanced setting, normally not visible.                                                                                                                                                    | thermostat, thermostatplus, wallthermostat                            |
+| locked          | Contact            | This channel indicates if the thermostat is locked for adjustments (OPEN/CLOSED). Note this is an advanced setting, normally not visible.                                                                                                                 | thermostat, thermostatplus, wallthermostat                            |
+| contact_state   | Contact            | This channel indicates the contact state for a shutterswitch (OPEN/CLOSED).                                                                                                                                                                               | shuttercontact                                                        |
+| free_mem        | Number             | This channel indicates the free available memory on the cube to hold send commands. Note this is an advanced setting, normally not visible.                                                                                                               | bridge                                                                |
+| duty_cycle      | Number             | This channel indicates the duty cycle (due to regulatory compliance reasons the cube is allowed only to send for a limited time. Duty cycle indicates how much of the available time is consumed) Note this is an advanced setting, normally not visible. | bridge                                                                |
 
 ## Full Example
 
@@ -69,35 +69,36 @@ Only in exceptional cases you would need to define the thermostats etc.
 
 max.things:
 
-```
+```java
 Bridge max:bridge:KEQ0565026 [ ipAddress="192.168.3.9", serialNumber="KEQ0565026" ] {
-    Thing max:thermostat:KEQ0565026:KEQ0565123 [ serialNumber="KEQ0565123" ]
+    Thing thermostat KEQ0565123 [ serialNumber="KEQ0565123", refreshActualRate=60 ]
+    Thing shuttercontact NEQ1150510 [ serialNumber="NEQ1150510" ]
 }
 ```
 
 max.items:
 
-```
+```java
 Group gMAX 			"MAX Heating" 	<temperature>	[ "home-group" ]
 
 Switch maxBattery "Battery Low" (gMAX) {channel="max:thermostat:KEQ0565026:KEQ0648949:battery_low"}
-String maxMode    "Thermostat Mode Setting" (gMAX) {channel="max:thermostat:KEQ0565026:KEQ0648949:mode"}
-Number maxActual  "Actual measured room temperature  [%.1f °C]" (gMAX) {channel="max:thermostat:KEQ0565026:KEQ0648949:actual_temp"}
-Number maxSetTemp "Thermostat temperature setpoint [%.1f °C]" (gMAX) {channel="max:thermostat:KEQ0565026:KEQ0648949:set_temp"}
+String maxMode "Thermostat Mode Setting" (gMAX) {channel="max:thermostat:KEQ0565026:KEQ0648949:mode"}
+Number:Temperature maxActual "Actual measured room temperature  [%.1f %unit%]" (gMAX) {channel="max:thermostat:KEQ0565026:KEQ0648949:actual_temp"}
+Number:Temperature maxSetTemp "Thermostat temperature setpoint [%.1f %unit%]" (gMAX) {channel="max:thermostat:KEQ0565026:KEQ0648949:set_temp"}
+Contact maxShuttercontactState "Contact State" (gMAX) {channel="max:shuttercontact:KEQ0565026:NEQ1150510:contact_state"}
+Switch maxShuttercontactBattery "Contact Battery Low" <battery> (gMAX) {channel="max:shuttercontact:KEQ0565026:NEQ1150510:battery_low"}
 ```
 
 demo.sitemap:
 
-```
-sitemap demo label="Main Menu"
-{
-	Frame label="MAX Heating System" {
-			Switch  item=maxMode  icon="climate" mappings=[AUTOMATIC=AUTOMATIC, MANUAL=MANUAL, BOOST=BOOST]
-			Setpoint item=maxSetTemp minValue=4.5 maxValue=32 step=0.5 icon="temperature"
-			Text item=maxActual  icon="temperature"
-			Switch  item=maxBattery
-		}
-
+```perl
+sitemap demo label="Main Menu" {
+    Frame label="MAX Heating System" {
+        Switch item=maxMode icon="climate" mappings=[AUTOMATIC=AUTOMATIC, MANUAL=MANUAL, BOOST=BOOST]
+        Setpoint item=maxSetTemp minValue=4.5 maxValue=32 step=0.5 icon="temperature"
+        Text item=maxActual icon="temperature"
+        Switch item=maxBattery
+    }
 }
 ```
 

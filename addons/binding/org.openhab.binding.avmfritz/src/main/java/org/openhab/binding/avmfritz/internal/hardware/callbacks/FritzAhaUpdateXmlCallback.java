@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.avmfritz.internal.hardware.callbacks;
 
+import static org.eclipse.jetty.http.HttpMethod.GET;
+
 import java.io.StringReader;
 
 import javax.xml.bind.JAXBException;
@@ -15,10 +17,9 @@ import javax.xml.bind.Unmarshaller;
 
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.openhab.binding.avmfritz.handler.IFritzHandler;
-import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel;
+import org.openhab.binding.avmfritz.handler.AVMFritzBaseBridgeHandler;
 import org.openhab.binding.avmfritz.internal.ahamodel.DevicelistModel;
-import org.openhab.binding.avmfritz.internal.hardware.FritzahaWebInterface;
+import org.openhab.binding.avmfritz.internal.hardware.FritzAhaWebInterface;
 import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,9 +28,8 @@ import org.slf4j.LoggerFactory;
  * Callback implementation for updating multiple numbers decoded from a xml
  * response. Supports reauthorization.
  *
- * @author Robert Bausdorf
- * @author Christoph Weitkamp
- *
+ * @author Robert Bausdorf - Initial contribution
+ * @author Christoph Weitkamp - Added support for groups
  */
 public class FritzAhaUpdateXmlCallback extends FritzAhaReauthCallback {
 
@@ -38,16 +38,16 @@ public class FritzAhaUpdateXmlCallback extends FritzAhaReauthCallback {
     /**
      * Handler to update
      */
-    private IFritzHandler handler;
+    private AVMFritzBaseBridgeHandler handler;
 
     /**
      * Constructor
      *
      * @param webIface Webinterface to FRITZ!Box
-     * @param handler Bridge handler that will update things.
+     * @param handler  Bridge handler that will update things.
      */
-    public FritzAhaUpdateXmlCallback(FritzahaWebInterface webIface, IFritzHandler handler) {
-        super(WEBSERVICE_PATH, "switchcmd=getdevicelistinfos", webIface, Method.GET, 1);
+    public FritzAhaUpdateXmlCallback(FritzAhaWebInterface webIface, AVMFritzBaseBridgeHandler handler) {
+        super(WEBSERVICE_PATH, "switchcmd=getdevicelistinfos", webIface, GET, 1);
         this.handler = handler;
     }
 
@@ -60,15 +60,15 @@ public class FritzAhaUpdateXmlCallback extends FritzAhaReauthCallback {
                 Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
                 DevicelistModel model = (DevicelistModel) u.unmarshal(new StringReader(response));
                 if (model != null) {
-                    for (DeviceModel device : model.getDevicelist()) {
-                        handler.addDeviceList(device);
-                    }
-                    handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, "FRITZ!Box online");
+                    handler.addDeviceList(model.getDevicelist());
                 } else {
                     logger.warn("no model in response");
                 }
+                handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
             } catch (JAXBException e) {
                 logger.error("Exception creating Unmarshaller: {}", e.getLocalizedMessage(), e);
+                handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        e.getLocalizedMessage());
             }
         } else {
             logger.debug("request is invalid: {}", status);

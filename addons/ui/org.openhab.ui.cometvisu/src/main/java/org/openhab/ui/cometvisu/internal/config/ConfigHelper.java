@@ -70,7 +70,6 @@ import org.slf4j.LoggerFactory;
  * XML file.
  *
  * @author Tobias Bräutigam
- * @since 2.0.0
  */
 public class ConfigHelper {
     public enum Transform {

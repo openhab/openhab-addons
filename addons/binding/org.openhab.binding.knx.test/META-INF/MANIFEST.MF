@@ -1,11 +1,13 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.knx.test
 Bundle-ManifestVersion: 2
 Bundle-Name: KNX Binding Tests
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.knx.test;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.3.0.qualifier
-Export-Package: org.openhab.binding.knx;uses:="org.eclipse.smarthome.test"
+Bundle-Version: 2.4.0.qualifier
+Export-Package: 
+ org.openhab.binding.knx;uses:="org.eclipse.smarthome.test"
 Fragment-Host: org.openhab.binding.knx
 Import-Package: 
  org.openhab.binding.knx,

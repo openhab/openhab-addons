@@ -22,7 +22,6 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  * RFXCOM data class for Current and Energy message.
  *
  * @author Damien Servant
- * @since 1.9.0
  */
 public class RFXComCurrentEnergyMessage extends RFXComBatteryDeviceMessage<RFXComCurrentEnergyMessage.SubType> {
     private static final float TOTAL_USAGE_CONVERSION_FACTOR = 223.666F;

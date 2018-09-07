@@ -19,13 +19,12 @@ import org.slf4j.LoggerFactory;
  * must implement {@link SatelEventListener} interface.
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.7.0
  */
 public class EventDispatcher {
 
     private final Logger logger = LoggerFactory.getLogger(EventDispatcher.class);
 
-    private final Set<SatelEventListener> eventListeners = new CopyOnWriteArraySet<SatelEventListener>();
+    private final Set<SatelEventListener> eventListeners = new CopyOnWriteArraySet<>();
 
     /**
      * Add a listener for Satel events.

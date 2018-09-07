@@ -15,7 +15,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * handler classes
  *
  * @author Karel Goderis - Initial contribution
- * @since 2.3.0
  *
  **/
 public class IRtransBindingConstants {
@@ -30,8 +29,8 @@ public class IRtransBindingConstants {
     public static final String CHANNEL_IO = "io";
 
     // List of all Channel types
-    public static final String BLASTER_CHANNEL_TYPE = "Blaster";
-    public static final String RECEIVER_CHANNEL_TYPE = "Receiver";
+    public static final String BLASTER_CHANNEL_TYPE = "blaster";
+    public static final String RECEIVER_CHANNEL_TYPE = "receiver";
 
     // List of possible leds on a IRtrans transceiver
     public enum Led {

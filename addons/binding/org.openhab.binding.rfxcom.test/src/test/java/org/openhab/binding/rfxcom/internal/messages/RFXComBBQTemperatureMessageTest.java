@@ -11,8 +11,7 @@ package org.openhab.binding.rfxcom.internal.messages;
 import static org.junit.Assert.assertEquals;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComBBQTemperatureMessage.SubType.BBQ1;
 
-import javax.xml.bind.DatatypeConverter;
-
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 
@@ -20,13 +19,12 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
  * Test for RFXCom-binding
  *
  * @author Mike Jagdis
- * @since 2.2.0
  */
 public class RFXComBBQTemperatureMessageTest {
     @Test
     public void testSomeMessages() throws RFXComException {
         String hexMessage = "0A4E012B2955001A002179";
-        byte[] message = DatatypeConverter.parseHexBinary(hexMessage);
+        byte[] message = HexUtils.hexToBytes(hexMessage);
         RFXComBBQTemperatureMessage msg = (RFXComBBQTemperatureMessage) RFXComMessageFactory.createMessage(message);
         assertEquals("SubType", BBQ1, msg.subType);
         assertEquals("Seq Number", 43, msg.seqNbr);
@@ -38,6 +36,6 @@ public class RFXComBBQTemperatureMessageTest {
 
         byte[] decoded = msg.decodeMessage();
 
-        assertEquals("Message converted back", hexMessage, DatatypeConverter.printHexBinary(decoded));
+        assertEquals("Message converted back", hexMessage, HexUtils.bytesToHex(decoded));
     }
 }

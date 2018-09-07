@@ -11,16 +11,12 @@ package org.openhab.binding.pioneeravr.protocol;
 /**
  * The base interface for an AVR command.
  *
- * @author Antoine Besnard
- *
+ * @author Antoine Besnard - Initial contribution
  */
 public interface AvrCommand {
 
     /**
      * Represent a CommandType of command requests
-     *
-     * @author Antoine Besnard
-     *
      */
     public interface CommandType {
 

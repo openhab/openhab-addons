@@ -28,8 +28,7 @@ import org.openhab.binding.plugwise.internal.protocol.field.MessageType;
  * Before sending off a message in the Plugwise network they are prepended with a protocol header and trailer is
  * added at the end.
  *
- * @author Karel Goderis
- * @author Wouter Born - Initial contribution
+ * @author Wouter Born, Karel Goderis - Initial contribution
  */
 public abstract class Message {
 

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="logreader" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="reader">
+
+		<label>LogReader</label>
+		<description>Log reader to analyze log events</description>
+
+		<channels>
+			<channel typeId="lastWarningEvent" id="lastWarningEvent" />
+			<channel typeId="lastErrorEvent" id="lastErrorEvent" />
+			<channel typeId="lastCustomEvent" id="lastCustomEvent" />
+			<channel typeId="warningEvents" id="warningEvents" />
+			<channel typeId="errorEvents" id="errorEvents" />
+			<channel typeId="customEvents" id="customEvents" />
+			<channel typeId="logRotated" id="logRotated" />
+
+			<channel typeId="newWarningEvent" id="newWarningEvent" />
+			<channel typeId="newErrorEvent" id="newErrorEvent" />
+			<channel typeId="newCustomEvent" id="newCustomEvent" />
+		</channels>
+
+		<config-description>
+			<parameter name="filePath" type="text" required="true">
+				<label>Log file path</label>
+				<description>Path to log file. Empty will default to ${OPENHAB_LOGDIR}/openhab.log</description>
+				<default>${OPENHAB_LOGDIR}/openhab.log</default>
+			</parameter>
+			<parameter name="refreshRate" type="integer" required="false">
+				<label>Refresh rate</label>
+				<description>Refresh rate in milliseconds for reading logs</description>
+				<default>1000</default>
+			</parameter>
+			<parameter name="errorPatterns" type="text" required="false">
+				<label>Error Patterns</label>
+				<description>Search patterns separated by | character for error events. Empty will default to ERROR+</description>
+				<default>ERROR+</default>
+			</parameter>
+			<parameter name="errorBlacklistingPatterns" type="text" required="false">
+				<label>Error Blacklisting Patterns</label>
+				<description>Search patterns for blacklisting unwanted error events separated by | character. </description>
+			</parameter>
+			<parameter name="warningPatterns" type="text" required="false">
+				<label>Warning Patterns</label>
+				<description>Search patterns separated by | character for warning events. Empty will default to WARN+</description>
+				<default>WARN+</default>
+			</parameter>
+			<parameter name="warningBlacklistingPatterns" type="text" required="false">
+				<label>Warning Blacklisting Patterns</label>
+				<description>Search patterns for blacklisting unwanted warning events separated by | character.</description>
+			</parameter>
+			<parameter name="customPatterns" type="text" required="false">
+				<label>Custom Patterns</label>
+				<description>Search patterns separated by | character for custom events.</description>
+			</parameter>
+			<parameter name="customBlacklistingPatterns" type="text" required="false">
+				<label>Custom Blacklisting Patterns</label>
+				<description>Search patterns for blacklisting unwanted custom events separated by | character.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

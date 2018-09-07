@@ -11,46 +11,31 @@ package org.openhab.binding.nest.internal.data;
 import java.util.Date;
 import java.util.List;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * The data for the camera.
  *
- * @author David Bennett - Initial Contribution
+ * @author David Bennett - Initial contribution
+ * @author Wouter Born - Add equals and hashCode methods
  */
 public class Camera extends BaseNestDevice {
-    @SerializedName("is_streaming")
-    private boolean isStreaming;
-    @SerializedName("is_audio_input_enabled")
-    private boolean isAudioInputEnabled;
-    @SerializedName("last_is_online_change")
-    private Date lastIsOnlineChange;
-    @SerializedName("is_video_history_enabled")
-    private boolean isVideoHistoryEnabled;
-    @SerializedName("web_url")
-    private String webUrl;
-    @SerializedName("app_url")
-    private String appUrl;
-    @SerializedName("is_public_share_enabled")
-    private boolean isPublicShareEnabled;
-    @SerializedName("activity_zones")
-    private List<ActivityZone> activityZones;
-    @SerializedName("public_share_url")
-    private String publicShareUrl;
-    @SerializedName("snapshot_url")
-    private String snapshotUrl;
-    @SerializedName("last_event")
-    private Event lastEvent;
 
-    public boolean isStreaming() {
+    private Boolean isStreaming;
+    private Boolean isAudioInputEnabled;
+    private Date lastIsOnlineChange;
+    private Boolean isVideoHistoryEnabled;
+    private String webUrl;
+    private String appUrl;
+    private Boolean isPublicShareEnabled;
+    private List<ActivityZone> activityZones;
+    private String publicShareUrl;
+    private String snapshotUrl;
+    private CameraEvent lastEvent;
+
+    public Boolean isStreaming() {
         return isStreaming;
     }
 
-    public void setStreaming(boolean isStreaming) {
-        this.isStreaming = isStreaming;
-    }
-
-    public boolean isAudioInputEnabled() {
+    public Boolean isAudioInputEnabled() {
         return isAudioInputEnabled;
     }
 
@@ -58,7 +43,7 @@ public class Camera extends BaseNestDevice {
         return lastIsOnlineChange;
     }
 
-    public boolean isVideoHistoryEnabled() {
+    public Boolean isVideoHistoryEnabled() {
         return isVideoHistoryEnabled;
     }
 
@@ -70,7 +55,7 @@ public class Camera extends BaseNestDevice {
         return appUrl;
     }
 
-    public boolean isPublicShareEnabled() {
+    public Boolean isPublicShareEnabled() {
         return isPublicShareEnabled;
     }
 
@@ -86,94 +71,118 @@ public class Camera extends BaseNestDevice {
         return snapshotUrl;
     }
 
-    public Event getLastEvent() {
+    public CameraEvent getLastEvent() {
         return lastEvent;
     }
 
-    public static class ActivityZone {
-        @SerializedName("name")
-        private String name;
-        @SerializedName("id")
-        private int id;
-
-        public String getName() {
-            return name;
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
         }
-
-        public int getId() {
-            return id;
+        if (!super.equals(obj)) {
+            return false;
         }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Camera other = (Camera) obj;
+        if (activityZones == null) {
+            if (other.activityZones != null) {
+                return false;
+            }
+        } else if (!activityZones.equals(other.activityZones)) {
+            return false;
+        }
+        if (appUrl == null) {
+            if (other.appUrl != null) {
+                return false;
+            }
+        } else if (!appUrl.equals(other.appUrl)) {
+            return false;
+        }
+        if (isAudioInputEnabled == null) {
+            if (other.isAudioInputEnabled != null) {
+                return false;
+            }
+        } else if (!isAudioInputEnabled.equals(other.isAudioInputEnabled)) {
+            return false;
+        }
+        if (isPublicShareEnabled == null) {
+            if (other.isPublicShareEnabled != null) {
+                return false;
+            }
+        } else if (!isPublicShareEnabled.equals(other.isPublicShareEnabled)) {
+            return false;
+        }
+        if (isStreaming == null) {
+            if (other.isStreaming != null) {
+                return false;
+            }
+        } else if (!isStreaming.equals(other.isStreaming)) {
+            return false;
+        }
+        if (isVideoHistoryEnabled == null) {
+            if (other.isVideoHistoryEnabled != null) {
+                return false;
+            }
+        } else if (!isVideoHistoryEnabled.equals(other.isVideoHistoryEnabled)) {
+            return false;
+        }
+        if (lastEvent == null) {
+            if (other.lastEvent != null) {
+                return false;
+            }
+        } else if (!lastEvent.equals(other.lastEvent)) {
+            return false;
+        }
+        if (lastIsOnlineChange == null) {
+            if (other.lastIsOnlineChange != null) {
+                return false;
+            }
+        } else if (!lastIsOnlineChange.equals(other.lastIsOnlineChange)) {
+            return false;
+        }
+        if (publicShareUrl == null) {
+            if (other.publicShareUrl != null) {
+                return false;
+            }
+        } else if (!publicShareUrl.equals(other.publicShareUrl)) {
+            return false;
+        }
+        if (snapshotUrl == null) {
+            if (other.snapshotUrl != null) {
+                return false;
+            }
+        } else if (!snapshotUrl.equals(other.snapshotUrl)) {
+            return false;
+        }
+        if (webUrl == null) {
+            if (other.webUrl != null) {
+                return false;
+            }
+        } else if (!webUrl.equals(other.webUrl)) {
+            return false;
+        }
+        return true;
     }
 
-    /** Internal class to handle the camera event data. */
-    public static class Event {
-        @SerializedName("has_sound")
-        private boolean hasSound;
-        @SerializedName("has_motion")
-        private boolean hasMotion;
-        @SerializedName("has_person")
-        private boolean hasPerson;
-        @SerializedName("start_time")
-        private Date startTime;
-        @SerializedName("end_time")
-        private Date endTime;
-        @SerializedName("urls_expire_time")
-        private Date urlsExpireTime;
-        @SerializedName("web_url")
-        private String webUrl;
-        @SerializedName("app_url")
-        private String appUrl;
-        @SerializedName("image_url")
-        private String imageUrl;
-        @SerializedName("animated_image_url")
-        private String animatedImageUrl;
-        @SerializedName("activity_zone_ids")
-        private List<String> activityZones;
-
-        public boolean isHasSound() {
-            return hasSound;
-        }
-
-        public boolean isHasMotion() {
-            return hasMotion;
-        }
-
-        public boolean isHasPerson() {
-            return hasPerson;
-        }
-
-        public Date getStartTime() {
-            return startTime;
-        }
-
-        public Date getEndTime() {
-            return endTime;
-        }
-
-        public Date getUrlsExpireTime() {
-            return urlsExpireTime;
-        }
-
-        public String getWebUrl() {
-            return webUrl;
-        }
-
-        public String getAppUrl() {
-            return appUrl;
-        }
-
-        public String getImageUrl() {
-            return imageUrl;
-        }
-
-        public String getAnimatedImageUrl() {
-            return animatedImageUrl;
-        }
-
-        public List<String> getActivityZones() {
-            return activityZones;
-        }
-
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((activityZones == null) ? 0 : activityZones.hashCode());
+        result = prime * result + ((appUrl == null) ? 0 : appUrl.hashCode());
+        result = prime * result + ((isAudioInputEnabled == null) ? 0 : isAudioInputEnabled.hashCode());
+        result = prime * result + ((isPublicShareEnabled == null) ? 0 : isPublicShareEnabled.hashCode());
+        result = prime * result + ((isStreaming == null) ? 0 : isStreaming.hashCode());
+        result = prime * result + ((isVideoHistoryEnabled == null) ? 0 : isVideoHistoryEnabled.hashCode());
+        result = prime * result + ((lastEvent == null) ? 0 : lastEvent.hashCode());
+        result = prime * result + ((lastIsOnlineChange == null) ? 0 : lastIsOnlineChange.hashCode());
+        result = prime * result + ((publicShareUrl == null) ? 0 : publicShareUrl.hashCode());
+        result = prime * result + ((snapshotUrl == null) ? 0 : snapshotUrl.hashCode());
+        result = prime * result + ((webUrl == null) ? 0 : webUrl.hashCode());
+        return result;
     }
 
     @Override

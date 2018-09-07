@@ -14,8 +14,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import io.swagger.client.model.NAWebhookCameraEvent.EventTypeEnum;
+import org.openhab.binding.netatmo.internal.webhook.NAWebhookCameraEvent.EventTypeEnum;
 
 /**
  * The {@link NetatmoBinding} class defines common constants, which are used
@@ -27,6 +26,8 @@ import io.swagger.client.model.NAWebhookCameraEvent.EventTypeEnum;
 public class NetatmoBindingConstants {
 
     private static final String BINDING_ID = "netatmo";
+
+    public static final String VENDOR = "Netatmo";
 
     // Configuration keys
     public static final String EQUIPMENT_ID = "id";
@@ -70,8 +71,6 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_LAST_STATUS_STORE = "LastStatusStore";
     public static final String CHANNEL_LAST_MESSAGE = "LastMessage";
     public static final String CHANNEL_LOCATION = "Location";
-    public static final String CHANNEL_BOILER_ON = "BoilerOn";
-    public static final String CHANNEL_BOILER_OFF = "BoilerOff";
     public static final String CHANNEL_DATE_MAX_TEMP = "DateMaxTemp";
     public static final String CHANNEL_DATE_MIN_TEMP = "DateMinTemp";
     public static final String CHANNEL_MAX_TEMP = "MaxTemp";
@@ -86,15 +85,14 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_SUM_RAIN24 = "SumRain24";
     public static final String CHANNEL_WIND_ANGLE = "WindAngle";
     public static final String CHANNEL_WIND_STRENGTH = "WindStrength";
+    public static final String CHANNEL_MAX_WIND_STRENGTH = "MaxWindStrength";
+    public static final String CHANNEL_DATE_MAX_WIND_STRENGTH = "DateMaxWindStrength";
     public static final String CHANNEL_GUST_ANGLE = "GustAngle";
     public static final String CHANNEL_GUST_STRENGTH = "GustStrength";
     public static final String CHANNEL_LOW_BATTERY = "LowBattery";
     public static final String CHANNEL_BATTERY_LEVEL = "BatteryVP";
     public static final String CHANNEL_WIFI_STATUS = "WifiStatus";
     public static final String CHANNEL_RF_STATUS = "RfStatus";
-    public static final String CHANNEL_UNIT = "Unit";
-    public static final String CHANNEL_WIND_UNIT = "WindUnit";
-    public static final String CHANNEL_PRESSURE_UNIT = "PressureUnit";
 
     // Healthy Home Coach specific channel
     public static final String CHANNEL_HEALTH_INDEX = "HealthIndex";
@@ -108,6 +106,15 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_CONNECTED_BOILER = "ConnectedBoiler";
     public static final String CHANNEL_LAST_PLUG_SEEN = "LastPlugSeen";
     public static final String CHANNEL_LAST_BILAN = "LastBilan";
+
+    public static final String CHANNEL_PLANNING = "Planning";
+
+    public static final String CHANNEL_SETPOINT_MODE_MANUAL = "manual";
+    public static final String CHANNEL_SETPOINT_MODE_AWAY = "away";
+    public static final String CHANNEL_SETPOINT_MODE_HG = "hg";
+    public static final String CHANNEL_SETPOINT_MODE_OFF = "off";
+    public static final String CHANNEL_SETPOINT_MODE_MAX = "max";
+    public static final String CHANNEL_SETPOINT_MODE_PROGRAM = "program";
 
     // Module Properties
     public static final String PROPERTY_SIGNAL_LEVELS = "signalLevels";
@@ -168,8 +175,7 @@ public class NetatmoBindingConstants {
             .concat(SUPPORTED_DEVICE_THING_TYPES_UIDS.stream(), Stream.of(APIBRIDGE_THING_TYPE))
             .collect(Collectors.toSet());
 
-    public static final Set<String> MEASURABLE_CHANNELS = Stream.of(CHANNEL_BOILER_ON, CHANNEL_BOILER_OFF)
-            .collect(Collectors.toSet());
+    public static final Set<String> MEASURABLE_CHANNELS = Stream.of(new String[] {}).collect(Collectors.toSet());
 
     public static final Set<EventTypeEnum> HOME_EVENTS = Stream.of(EventTypeEnum.PERSON_AWAY)
             .collect(Collectors.toSet());

@@ -75,6 +75,22 @@ public class KNXChannelTypeTest {
         assertEquals(1, res.getReadGAs().size());
     }
 
+    @Test
+    public void testParse_twoLevel() {
+        ChannelConfiguration res = ct.parse("5.001:<3/1024+<4/1025");
+        assertEquals("3/1024", res.getMainGA().getGA());
+        assertEquals(2, res.getListenGAs().size());
+        assertEquals(2, res.getReadGAs().size());
+    }
+
+    @Test
+    public void testParse_freeLevel() {
+        ChannelConfiguration res = ct.parse("5.001:<4610+<4611");
+        assertEquals("4610", res.getMainGA().getGA());
+        assertEquals(2, res.getListenGAs().size());
+        assertEquals(2, res.getReadGAs().size());
+    }
+
     private static class MyKNXChannelType extends KNXChannelType {
         public MyKNXChannelType(String channelTypeID) {
             super(channelTypeID);

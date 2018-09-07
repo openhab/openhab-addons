@@ -8,17 +8,15 @@
  */
 package org.openhab.binding.nest.internal.data;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * The meta data in the data downloads from Nest.
  *
- * @author David Bennett - Initial Contribution
+ * @author David Bennett - Initial contribution
+ * @author Wouter Born - Add equals and hashCode methods
  */
 public class NestMetadata {
-    @SerializedName("access_token")
+
     private String accessToken;
-    @SerializedName("client_version")
     private String clientVersion;
 
     public String getAccessToken() {
@@ -30,10 +28,49 @@ public class NestMetadata {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        NestMetadata other = (NestMetadata) obj;
+        if (accessToken == null) {
+            if (other.accessToken != null) {
+                return false;
+            }
+        } else if (!accessToken.equals(other.accessToken)) {
+            return false;
+        }
+        if (clientVersion == null) {
+            if (other.clientVersion != null) {
+                return false;
+            }
+        } else if (!clientVersion.equals(other.clientVersion)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((accessToken == null) ? 0 : accessToken.hashCode());
+        result = prime * result + ((clientVersion == null) ? 0 : clientVersion.hashCode());
+        return result;
+    }
+
+    @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("NestMetadata [accessToken=").append(accessToken).append(", clientVersion=")
                 .append(clientVersion).append("]");
         return builder.toString();
     }
+
 }

@@ -21,12 +21,12 @@ public class VariableInformation {
         U32,
         S8,
         S16,
-        S32;
+        S32
     }
 
     public enum Type {
         SENSOR,
-        SETTING;
+        SETTING
     }
 
     public int factor;
@@ -48,6 +48,8 @@ public class VariableInformation {
         switch (model) {
             case F1X45:
                 return F1X45.getVariableInfo(key);
+            case F750:
+                return F750.getVariableInfo(key);
             default:
                 return null;
         }

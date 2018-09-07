@@ -11,8 +11,7 @@ package org.openhab.binding.rfxcom.internal.messages;
 import static org.junit.Assert.assertArrayEquals;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.RFY;
 
-import javax.xml.bind.DatatypeConverter;
-
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComRfyMessage.Commands;
@@ -22,7 +21,6 @@ import org.openhab.binding.rfxcom.internal.messages.RFXComRfyMessage.SubType;
  * Test for RFXCom-binding
  *
  * @author Martin van Wingerden
- * @since 1.9.0
  */
 public class RFXComRfyMessageTest {
 
@@ -44,7 +42,7 @@ public class RFXComRfyMessageTest {
 	message.command = command;
         message.setDeviceId(deviceId);
 
-        assertArrayEquals(DatatypeConverter.parseHexBinary(data), message.decodeMessage());
+        assertArrayEquals(HexUtils.hexToBytes(data), message.decodeMessage());
     }
 
     @Test

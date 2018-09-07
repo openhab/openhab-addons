@@ -16,7 +16,6 @@ import org.openhab.binding.irtrans.IrCommand;
  * transceiver
  *
  * @author Karel Goderis - Initial contribution
- * @since 2.3.0
  *
  */
 public interface TransceiverStatusListener {

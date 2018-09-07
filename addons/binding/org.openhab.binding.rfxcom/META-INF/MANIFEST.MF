@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.rfxcom
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: 
  .,
@@ -8,7 +9,7 @@ Bundle-Name: Rfxcom Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.rfxcom;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.3.0.qualifier
+Bundle-Version: 2.4.0.qualifier
 Export-Package: 
  org.openhab.binding.rfxcom,
  org.openhab.binding.rfxcom.handler
@@ -27,6 +28,7 @@ Import-Package:
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.core.util,
  org.openhab.binding.rfxcom,
  org.openhab.binding.rfxcom.handler,
  org.osgi.framework,

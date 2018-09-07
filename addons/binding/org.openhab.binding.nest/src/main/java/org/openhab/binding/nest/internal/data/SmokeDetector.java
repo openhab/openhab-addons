@@ -15,20 +15,16 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Data for the Nest smoke detector.
  *
- * @author David Bennett - Initial Contribution
+ * @author David Bennett - Initial contribution
+ * @author Wouter Born - Add equals and hashCode methods
  */
 public class SmokeDetector extends BaseNestDevice {
-    @SerializedName("battery_health")
+
     private BatteryHealth batteryHealth;
-    @SerializedName("co_alarm_state")
     private AlarmState coAlarmState;
-    @SerializedName("last_manual_test_time")
     private Date lastManualTestTime;
-    @SerializedName("smoke_alarm_state")
     private AlarmState smokeAlarmState;
-    @SerializedName("is_manual_test_active")
-    private boolean isManualTestActive;
-    @SerializedName("ui_color_state")
+    private Boolean isManualTestActive;
     private UiColorState uiColorState;
 
     public UiColorState getUiColorState() {
@@ -51,7 +47,7 @@ public class SmokeDetector extends BaseNestDevice {
         return smokeAlarmState;
     }
 
-    public boolean isManualTestActive() {
+    public Boolean isManualTestActive() {
         return isManualTestActive;
     }
 
@@ -80,6 +76,60 @@ public class SmokeDetector extends BaseNestDevice {
         YELLOW,
         @SerializedName("red")
         RED
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        SmokeDetector other = (SmokeDetector) obj;
+        if (batteryHealth != other.batteryHealth) {
+            return false;
+        }
+        if (coAlarmState != other.coAlarmState) {
+            return false;
+        }
+        if (isManualTestActive == null) {
+            if (other.isManualTestActive != null) {
+                return false;
+            }
+        } else if (!isManualTestActive.equals(other.isManualTestActive)) {
+            return false;
+        }
+        if (lastManualTestTime == null) {
+            if (other.lastManualTestTime != null) {
+                return false;
+            }
+        } else if (!lastManualTestTime.equals(other.lastManualTestTime)) {
+            return false;
+        }
+        if (smokeAlarmState != other.smokeAlarmState) {
+            return false;
+        }
+        if (uiColorState != other.uiColorState) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((batteryHealth == null) ? 0 : batteryHealth.hashCode());
+        result = prime * result + ((coAlarmState == null) ? 0 : coAlarmState.hashCode());
+        result = prime * result + ((isManualTestActive == null) ? 0 : isManualTestActive.hashCode());
+        result = prime * result + ((lastManualTestTime == null) ? 0 : lastManualTestTime.hashCode());
+        result = prime * result + ((smokeAlarmState == null) ? 0 : smokeAlarmState.hashCode());
+        result = prime * result + ((uiColorState == null) ? 0 : uiColorState.hashCode());
+        return result;
     }
 
     @Override

@@ -10,8 +10,7 @@ package org.openhab.binding.rfxcom.internal.messages;
 
 import static org.junit.Assert.assertEquals;
 
-import javax.xml.bind.DatatypeConverter;
-
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComChimeMessage.SubType;
@@ -22,14 +21,13 @@ import org.openhab.binding.rfxcom.internal.messages.RFXComChimeMessage.SubType;
  *
  * @author Mike Jagdis
  * @author Martin van Wingerden
- * @since 1.9.0
  */
 public class RFXComChimeMessageTest {
 
     @Test
     public void testSomeMessages() throws RFXComException {
         String hexMessage = "0716020900A1F350";
-        byte[] message = DatatypeConverter.parseHexBinary(hexMessage);
+        byte[] message = HexUtils.hexToBytes(hexMessage);
         RFXComChimeMessage msg = (RFXComChimeMessage) RFXComMessageFactory.createMessage(message);
         assertEquals("SubType", SubType.SELECTPLUS, msg.subType);
         assertEquals("Seq Number", 9, msg.seqNbr);
@@ -38,6 +36,6 @@ public class RFXComChimeMessageTest {
 
         byte[] decoded = msg.decodeMessage();
 
-        assertEquals("Message converted back", hexMessage, DatatypeConverter.printHexBinary(decoded));
+        assertEquals("Message converted back", hexMessage, HexUtils.bytesToHex(decoded));
     }
 }

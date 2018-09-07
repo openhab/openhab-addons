@@ -40,9 +40,9 @@ public class InnogyBindingConstants {
     public static final String CLIENT_SECRET_SMARTHOME_AUSTRIA = "no secret";
     public static final String CLIENT_SECRET_START_SMARTHOME = "no secret";
 
-    public static final String REDIRECT_URL_INNOGY_SMARTHOME = "https://www.openhab.org/oauth/innogy-smarthome/";
-    public static final String REDIRECT_URL_SMARTHOME_AUSTRIA = "https://www.openhab.org/oauth/smarthome-austria/";
-    public static final String REDIRECT_URL_START_SMARTHOME = "https://www.openhab.org/oauth/start-smarthome/";
+    public static final String REDIRECT_URL_INNOGY_SMARTHOME = "https://www.openhab.org/oauth/innogy/innogy-smarthome.html";
+    public static final String REDIRECT_URL_SMARTHOME_AUSTRIA = "https://www.openhab.org/oauth/innogy/smarthome-austria.html";
+    public static final String REDIRECT_URL_START_SMARTHOME = "https://www.openhab.org/oauth/innogy/start-smarthome.html";
 
     // Bridge config parameters
     public static final String CONFIG_BRAND = "brand";

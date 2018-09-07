@@ -18,7 +18,7 @@ The refresh interval is specified in seconds.
 A possible entry in your thing file could be:
 
 ```java
-boschindego:indego:lawnmower [username="myname@myhost.tld", password="idontneedtocutthelawnagain", refresh=120]
+boschindego:indego:lawnmower [username="mail@example.com", password="idontneedtocutthelawnagain", refresh=120]
 ```
 
 ## Channels

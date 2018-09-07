@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.plugwise.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.plugwise.internal.listener.PlugwiseMessageListener;
 import org.openhab.binding.plugwise.internal.protocol.Message;
 import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
@@ -17,16 +19,17 @@ import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
  *
  * @author Wouter Born - Initial contribution
  */
+@NonNullByDefault
 public class PlugwiseFilteredMessageListener {
 
     private final PlugwiseMessageListener listener;
-    private final MACAddress macAddress;
+    private final @Nullable MACAddress macAddress;
 
     public PlugwiseFilteredMessageListener(PlugwiseMessageListener listener) {
         this(listener, null);
     }
 
-    public PlugwiseFilteredMessageListener(PlugwiseMessageListener listener, MACAddress macAddress) {
+    public PlugwiseFilteredMessageListener(PlugwiseMessageListener listener, @Nullable MACAddress macAddress) {
         this.listener = listener;
         this.macAddress = macAddress;
     }
@@ -35,11 +38,12 @@ public class PlugwiseFilteredMessageListener {
         return listener;
     }
 
-    public MACAddress getMACAddress() {
+    public @Nullable MACAddress getMACAddress() {
         return macAddress;
     }
 
     public boolean matches(Message message) {
-        return macAddress == null || macAddress.equals(message.getMACAddress());
+        MACAddress localMACAddress = macAddress;
+        return localMACAddress == null || localMACAddress.equals(message.getMACAddress());
     }
 }

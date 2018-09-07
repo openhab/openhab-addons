@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -52,9 +54,9 @@ import org.slf4j.LoggerFactory;
  * Plugwise ZigBee mesh network.
  * </p>
  *
- * @author Karel Goderis
- * @author Wouter Born - Initial contribution
+ * @author Wouter Born, Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public class PlugwiseStickHandler extends BaseBridgeHandler implements PlugwiseMessageListener {
 
     private final PlugwiseDeviceTask onlineStateUpdateTask = new PlugwiseDeviceTask("Online state update", scheduler) {
@@ -75,13 +77,13 @@ public class PlugwiseStickHandler extends BaseBridgeHandler implements PlugwiseM
     };
 
     private final Logger logger = LoggerFactory.getLogger(PlugwiseStickHandler.class);
-
     private final PlugwiseCommunicationHandler communicationHandler = new PlugwiseCommunicationHandler();
-    private PlugwiseStickConfig configuration;
-    private List<PlugwiseStickStatusListener> statusListeners = new CopyOnWriteArrayList<>();
+    private final List<PlugwiseStickStatusListener> statusListeners = new CopyOnWriteArrayList<>();
 
-    private MACAddress circlePlusMAC;
-    private MACAddress stickMAC;
+    private @NonNullByDefault({}) PlugwiseStickConfig configuration;
+
+    private @Nullable MACAddress circlePlusMAC;
+    private @Nullable MACAddress stickMAC;
 
     public PlugwiseStickHandler(Bridge bridge) {
         super(bridge);
@@ -107,11 +109,11 @@ public class PlugwiseStickHandler extends BaseBridgeHandler implements PlugwiseM
         onlineStateUpdateTask.stop();
     }
 
-    public MACAddress getCirclePlusMAC() {
+    public @Nullable MACAddress getCirclePlusMAC() {
         return circlePlusMAC;
     }
 
-    public MACAddress getStickMAC() {
+    public @Nullable MACAddress getStickMAC() {
         return stickMAC;
     }
 
@@ -217,7 +219,7 @@ public class PlugwiseStickHandler extends BaseBridgeHandler implements PlugwiseM
     }
 
     @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail detail, String comment) {
+    protected void updateStatus(ThingStatus status, ThingStatusDetail detail, @Nullable String comment) {
         ThingStatus oldStatus = thing.getStatus();
         super.updateStatus(status, detail, comment);
         ThingStatus newStatus = thing.getStatus();

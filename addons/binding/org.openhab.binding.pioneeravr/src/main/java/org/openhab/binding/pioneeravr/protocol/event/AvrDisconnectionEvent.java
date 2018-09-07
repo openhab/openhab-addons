@@ -12,9 +12,8 @@ import org.openhab.binding.pioneeravr.protocol.AvrConnection;
 
 /**
  * An event fired when an AVR is disconnected.
- * 
- * @author Antoine Besnard
  *
+ * @author Antoine Besnard - Initial contribution
  */
 public class AvrDisconnectionEvent {
 

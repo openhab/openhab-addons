@@ -12,10 +12,11 @@ import java.util.EventListener;
 
 /**
  * This interface defines interface to receive status updates from pioneerav receiver.
- * 
- * @author Antoine Besnard
- * @author Rainer Ostendorf
- * @author based on the Onkyo binding by Pauli Anttila and others
+ *
+ * Based on the Onkyo binding by Pauli Anttila and others
+ *
+ * @author Antoine Besnard - Initial contribution
+ * @author Rainer Ostendorf - Initial contribution
  */
 public interface AvrUpdateListener extends EventListener {
 

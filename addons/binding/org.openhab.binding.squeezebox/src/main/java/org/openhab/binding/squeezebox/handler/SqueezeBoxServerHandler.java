@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
@@ -91,7 +91,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     // client socket and listener thread
     private Socket clientSocket;
     private SqueezeServerListener listener;
-    private ScheduledFuture<?> reconnectFuture;
+    private Future<?> reconnectFuture;
 
     private String host;
 
@@ -110,14 +110,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("initializing server handler for thing {}", getThing().getUID());
-
-        scheduler.schedule(new Runnable() {
-
-            @Override
-            public void run() {
-                connect();
-            }
-        }, 0, TimeUnit.SECONDS);
+        scheduler.submit(this::connect);
     }
 
     @Override
@@ -212,7 +205,16 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     }
 
     public void addPlaylistItem(String mac, String url) {
-        sendCommand(mac + " playlist add " + url);
+        addPlaylistItem(mac, url, null);
+    }
+
+    public void addPlaylistItem(String mac, String url, String title) {
+        StringBuilder playlistCommand = new StringBuilder();
+        playlistCommand.append(mac).append(" playlist add ").append(url);
+        if (title != null) {
+            playlistCommand.append(" ").append(title);
+        }
+        sendCommand(playlistCommand.toString());
     }
 
     public void setPlayingTime(String mac, int time) {
@@ -981,10 +983,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         // update our children
         Bridge bridge = getThing();
 
-        if (bridge == null) {
-            return;
-        }
-
         List<Thing> things = bridge.getThings();
         for (Thing thing : things) {
             ThingHandler handler = thing.getHandler();
@@ -1032,12 +1030,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     private void scheduleReconnect() {
         logger.debug("scheduling squeeze server reconnect in {} seconds", RECONNECT_TIME);
         cancelReconnect();
-        reconnectFuture = scheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                connect();
-            }
-        }, RECONNECT_TIME, TimeUnit.SECONDS);
+        reconnectFuture = scheduler.schedule(this::connect, RECONNECT_TIME, TimeUnit.SECONDS);
     }
 
     /**

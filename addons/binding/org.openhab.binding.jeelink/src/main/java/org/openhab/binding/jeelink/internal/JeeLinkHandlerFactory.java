@@ -25,7 +25,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.jeelink.internal.discovery.SensorDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +33,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Volker Bier - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.jeelink", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.jeelink")
 public class JeeLinkHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(JeeLinkHandlerFactory.class);
 
@@ -50,7 +49,8 @@ public class JeeLinkHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUid = thing.getThingTypeUID();
         ThingHandler handler = null;
 
-        if (thingTypeUid.equals(JEELINK_USB_STICK_THING_TYPE) || thingTypeUid.equals(JEELINK_TCP_STICK_THING_TYPE)) {
+        if (thingTypeUid.equals(JEELINK_USB_STICK_THING_TYPE) || thingTypeUid.equals(JEELINK_TCP_STICK_THING_TYPE)
+                || thingTypeUid.equals(LGW_TCP_STICK_THING_TYPE) || thingTypeUid.equals(LGW_USB_STICK_THING_TYPE)) {
             logger.debug("creating JeeLinkHandler for thing {}...", thing.getUID().getId());
 
             handler = new JeeLinkHandler((Bridge) thing);

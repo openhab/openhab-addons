@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.openhab.binding.pulseaudio.PulseaudioBindingConstants;
 import org.openhab.binding.pulseaudio.internal.cli.Parser;
 import org.openhab.binding.pulseaudio.internal.items.AbstractAudioDeviceConfig;
 import org.openhab.binding.pulseaudio.internal.items.AbstractAudioDeviceConfig.State;
@@ -38,7 +39,6 @@ import org.slf4j.LoggerFactory;
  * On the pulseaudio server the module-cli-protocol-tcp has to be loaded.
  *
  * @author Tobias Bräutigam - Initial contribution
- * @since 1.2.0
  */
 public class PulseaudioClient {
 
@@ -138,11 +138,24 @@ public class PulseaudioClient {
         modules.addAll(Parser.parseModules(listModules()));
 
         items.clear();
-        items.addAll(Parser.parseSinks(listSinks(), this));
-        items.addAll(Parser.parseSources(listSources(), this));
-        items.addAll(Parser.parseSinkInputs(listSinkInputs(), this));
-        items.addAll(Parser.parseSourceOutputs(listSourceOutputs(), this));
-
+        if (PulseaudioBindingConstants.TYPE_FILTERS.get(PulseaudioBindingConstants.SINK_THING_TYPE.getId()) == true) {
+            logger.debug("reading sinks");
+            items.addAll(Parser.parseSinks(listSinks(), this));
+        }
+        if (PulseaudioBindingConstants.TYPE_FILTERS.get(PulseaudioBindingConstants.SOURCE_THING_TYPE.getId()) == true) {
+            logger.debug("reading sources");
+            items.addAll(Parser.parseSources(listSources(), this));
+        }
+        if (PulseaudioBindingConstants.TYPE_FILTERS
+                .get(PulseaudioBindingConstants.SINK_INPUT_THING_TYPE.getId()) == true) {
+            logger.debug("reading sink-inputs");
+            items.addAll(Parser.parseSinkInputs(listSinkInputs(), this));
+        }
+        if (PulseaudioBindingConstants.TYPE_FILTERS
+                .get(PulseaudioBindingConstants.SOURCE_OUTPUT_THING_TYPE.getId()) == true) {
+            logger.debug("reading source-outputs");
+            items.addAll(Parser.parseSourceOutputs(listSourceOutputs(), this));
+        }
         logger.debug("Pulseaudio server {}: {} modules and {} items updated", host, modules.size(), items.size());
     }
 

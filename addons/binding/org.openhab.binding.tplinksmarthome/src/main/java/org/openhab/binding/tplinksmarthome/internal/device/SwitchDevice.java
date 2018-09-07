@@ -13,6 +13,7 @@ import static org.openhab.binding.tplinksmarthome.TPLinkSmartHomeBindingConstant
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
@@ -23,22 +24,12 @@ import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeConfiguration
 import org.openhab.binding.tplinksmarthome.internal.model.HasErrorResponse;
 
 /**
- * TP-Link Smart Home device with a switch, like Smart Plugs.
+ * TP-Link Smart Home device with a switch, like Smart Plugs and Switches.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
 @NonNullByDefault
 public class SwitchDevice extends SmartHomeDevice {
-
-    /**
-     * Returns the switch state.
-     *
-     * @param deviceState data object containing the state
-     * @return the switch state
-     */
-    protected State getOnOffState(DeviceState deviceState) {
-        return deviceState.getSysinfo().getRelayState();
-    }
 
     @Override
     public String getUpdateCommand() {
@@ -51,16 +42,37 @@ public class SwitchDevice extends SmartHomeDevice {
         return command instanceof OnOffType && handleOnOffType(channelID, connection, (OnOffType) command);
     }
 
+    /**
+     * Returns the switch state.
+     *
+     * @param deviceState data object containing the state
+     * @return the switch state
+     */
+    protected State getOnOffState(DeviceState deviceState) {
+        return deviceState.getSysinfo().getRelayState();
+    }
+
     private boolean handleOnOffType(String channelID, Connection connection, OnOffType onOff) throws IOException {
         HasErrorResponse response = null;
 
         if (CHANNEL_SWITCH.equals(channelID)) {
-            response = commands.setRelayStateResponse(connection.sendCommand(commands.setRelayState(onOff)));
+            response = setOnOffState(connection, onOff);
         } else if (CHANNEL_LED.equals(channelID)) {
             response = commands.setLedOnResponse(connection.sendCommand(commands.setLedOn(onOff)));
         }
         checkErrors(response);
         return response != null;
+    }
+
+    /**
+     * Sends the {@link OnOffType} command to the device and returns the returned answer.
+     *
+     * @param connection Connection to use
+     * @param onOff command to the send
+     * @return state returned by the device
+     */
+    protected @Nullable HasErrorResponse setOnOffState(Connection connection, OnOffType onOff) throws IOException {
+        return commands.setRelayStateResponse(connection.sendCommand(commands.setRelayState(onOff)));
     }
 
     @Override

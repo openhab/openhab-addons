@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * as Milight Bridges as well. For v5/v6 there are some additional checks to make sure we are
  * talking to a Milight.
  *
- * @author David Graeff <david.graeff@web.de>
+ * @author David Graeff - Initial contribution
  */
 public class MilightDiscover extends Thread {
     /**
@@ -51,10 +51,10 @@ public class MilightDiscover extends Thread {
     }
 
     ///// Network
-    private byte[] discoverbuffer_v3 = "Link_Wi-Fi".getBytes();
-    private byte[] discoverbuffer_v6 = "HF-A11ASSISTHREAD".getBytes();
-    private final DatagramPacket discoverPacket_v3;
-    private final DatagramPacket discoverPacket_v6;
+    private byte[] discoverBufferV3 = "Link_Wi-Fi".getBytes();
+    private byte[] discoverBufferV6 = "HF-A11ASSISTHREAD".getBytes();
+    private final DatagramPacket discoverPacketV3;
+    private final DatagramPacket discoverPacketV6;
     private boolean willbeclosed = false;
     private DatagramSocket datagramSocket;
     private byte[] buffer = new byte[1024];
@@ -76,8 +76,8 @@ public class MilightDiscover extends Thread {
             throws SocketException {
         this.resendAttempts = resendAttempts;
         this.resendTimeoutInMillis = resendTimeoutInMillis;
-        discoverPacket_v3 = new DatagramPacket(discoverbuffer_v3, discoverbuffer_v3.length);
-        discoverPacket_v6 = new DatagramPacket(discoverbuffer_v6, discoverbuffer_v6.length);
+        discoverPacketV3 = new DatagramPacket(discoverBufferV3, discoverBufferV3.length);
+        discoverPacketV6 = new DatagramPacket(discoverBufferV6, discoverBufferV6.length);
         datagramSocket = new DatagramSocket(null);
         datagramSocket.setBroadcast(true);
         datagramSocket.bind(null);
@@ -145,20 +145,20 @@ public class MilightDiscover extends Thread {
         }
 
         private void sendDiscover(InetAddress destIP) {
-            discoverPacket_v3.setAddress(destIP);
-            discoverPacket_v3.setPort(MilightBindingConstants.PORT_DISCOVER);
-            discoverPacket_v6.setAddress(destIP);
-            discoverPacket_v6.setPort(MilightBindingConstants.PORT_DISCOVER);
+            discoverPacketV3.setAddress(destIP);
+            discoverPacketV3.setPort(MilightBindingConstants.PORT_DISCOVER);
+            discoverPacketV6.setAddress(destIP);
+            discoverPacketV6.setPort(MilightBindingConstants.PORT_DISCOVER);
 
             try {
-                datagramSocket.send(discoverPacket_v3);
+                datagramSocket.send(discoverPacketV3);
             } catch (IOException e) {
                 logger.error("Sending a V3 discovery packet to {} failed. {}", destIP.getHostAddress(),
                         e.getLocalizedMessage());
             }
 
             try {
-                datagramSocket.send(discoverPacket_v6);
+                datagramSocket.send(discoverPacketV6);
             } catch (IOException e) {
                 logger.error("Sending a V6 discovery packet to {} failed. {}", destIP.getHostAddress(),
                         e.getLocalizedMessage());

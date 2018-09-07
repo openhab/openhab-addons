@@ -8,15 +8,17 @@
  */
 package org.openhab.binding.avmfritz.internal.hardware.callbacks;
 
+import static org.eclipse.jetty.http.HttpMethod.GET;
+
 import java.io.StringReader;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel;
+import org.openhab.binding.avmfritz.internal.ahamodel.AVMFritzBaseModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.DevicelistModel;
 import org.openhab.binding.avmfritz.internal.discovery.AVMFritzDiscoveryService;
-import org.openhab.binding.avmfritz.internal.hardware.FritzahaWebInterface;
+import org.openhab.binding.avmfritz.internal.hardware.FritzAhaWebInterface;
 import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * @author Robert Bausdorf - Initial contribution
  * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet
  *         DECT
- *
+ * @author Christoph Weitkamp - Added support for groups
  */
 public class FritzAhaDiscoveryCallback extends FritzAhaReauthCallback {
 
@@ -42,10 +44,10 @@ public class FritzAhaDiscoveryCallback extends FritzAhaReauthCallback {
      * Constructor
      *
      * @param webIface Webinterface to FRITZ!Box
-     * @param service Discovery service to call with result.
+     * @param service  Discovery service to call with result.
      */
-    public FritzAhaDiscoveryCallback(FritzahaWebInterface webIface, AVMFritzDiscoveryService service) {
-        super(WEBSERVICE_PATH, "switchcmd=getdevicelistinfos", webIface, Method.GET, 1);
+    public FritzAhaDiscoveryCallback(FritzAhaWebInterface webIface, AVMFritzDiscoveryService service) {
+        super(WEBSERVICE_PATH, "switchcmd=getdevicelistinfos", webIface, GET, 1);
         this.service = service;
     }
 
@@ -58,7 +60,7 @@ public class FritzAhaDiscoveryCallback extends FritzAhaReauthCallback {
                 Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
                 DevicelistModel model = (DevicelistModel) u.unmarshal(new StringReader(response));
                 if (model != null) {
-                    for (DeviceModel device : model.getDevicelist()) {
+                    for (AVMFritzBaseModel device : model.getDevicelist()) {
                         service.onDeviceAddedInternal(device);
                     }
                 } else {
