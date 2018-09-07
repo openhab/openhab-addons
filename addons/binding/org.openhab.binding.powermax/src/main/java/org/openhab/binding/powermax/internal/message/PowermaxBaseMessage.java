@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.powermax.internal.message;
 
-import java.lang.reflect.InvocationTargetException;
-
 import javax.xml.bind.DatatypeConverter;
 
 import org.openhab.binding.powermax.internal.state.PowermaxState;
@@ -19,8 +17,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A base class for handling a message with the Visonic alarm system
  *
- * @author Laurent Garnier
- * @since 1.9.0
+ * @author Laurent Garnier - Initial contribution
  */
 public class PowermaxBaseMessage {
 
@@ -34,8 +31,7 @@ public class PowermaxBaseMessage {
     /**
      * Constructor.
      *
-     * @param message
-     *            the message as a buffer of bytes
+     * @param message the message as a buffer of bytes
      */
     public PowermaxBaseMessage(byte[] message) {
         this.sendType = null;
@@ -45,8 +41,7 @@ public class PowermaxBaseMessage {
     /**
      * Constructor.
      *
-     * @param sendType
-     *            the type of a message to be sent
+     * @param sendType the type of a message to be sent
      */
     public PowermaxBaseMessage(PowermaxSendType sendType) {
         this(sendType, null);
@@ -55,10 +50,8 @@ public class PowermaxBaseMessage {
     /**
      * Constructor.
      *
-     * @param sendType
-     *            the type of a message to be sent
-     * @param param
-     *            the dynamic part of a message to be sent; null if no dynamic part
+     * @param sendType the type of a message to be sent
+     * @param param the dynamic part of a message to be sent; null if no dynamic part
      */
     public PowermaxBaseMessage(PowermaxSendType sendType, byte[] param) {
         this.sendType = sendType;
@@ -81,8 +74,7 @@ public class PowermaxBaseMessage {
     /**
      * Extract information from the buffer of bytes and set class attributes
      *
-     * @param data
-     *            the message as a buffer of bytes
+     * @param data the message as a buffer of bytes
      */
     private void decodeMessage(byte[] data) {
         rawData = data;
@@ -99,15 +91,15 @@ public class PowermaxBaseMessage {
      *
      * @return a new state containing all changes driven by the message
      */
-    public PowermaxState handleMessage() {
+    public PowermaxState handleMessage(PowermaxCommManager commManager) {
         // Send an ACK if needed
-        if (isAckRequired()) {
-            PowermaxCommDriver.getTheCommDriver().sendAck(this, (byte) 0x02);
+        if (isAckRequired() && commManager != null) {
+            commManager.sendAck(this, (byte) 0x02);
         }
 
         if (logger.isDebugEnabled()) {
             logger.debug("{}message handled by class {}: {}", (receiveType == null) ? "Unsupported " : "",
-                    this.getClass().getSimpleName(), this.toString());
+                    this.getClass().getSimpleName(), this);
         }
 
         return null;
@@ -132,6 +124,10 @@ public class PowermaxBaseMessage {
      */
     public PowermaxSendType getSendType() {
         return sendType;
+    }
+
+    public void setSendType(PowermaxSendType sendType) {
+        this.sendType = sendType;
     }
 
     /**
@@ -164,29 +160,63 @@ public class PowermaxBaseMessage {
     /**
      * Instantiate a class for handling a received message The class depends on the message.
      *
-     * @param message
-     *            the received message as a buffer of bytes
+     * @param message the received message as a buffer of bytes
      *
      * @return a new class instance
      */
-    public static PowermaxBaseMessage getMessageObject(byte[] message) {
-        Class<?> cl;
+    public static PowermaxBaseMessage getMessageHandler(byte[] message) {
+        PowermaxBaseMessage msgHandler;
         try {
-            cl = PowermaxReceiveType.fromCode(message[1]).getHandlerClass();
+            PowermaxReceiveType msgType = PowermaxReceiveType.fromCode(message[1]);
+            switch (msgType) {
+                case ACK:
+                    msgHandler = new PowermaxAckMessage(message);
+                    break;
+                case TIMEOUT:
+                    msgHandler = new PowermaxTimeoutMessage(message);
+                    break;
+                case DENIED:
+                    msgHandler = new PowermaxDeniedMessage(message);
+                    break;
+                case DOWNLOAD_RETRY:
+                    msgHandler = new PowermaxDownloadRetryMessage(message);
+                    break;
+                case SETTINGS:
+                case SETTINGS_ITEM:
+                    msgHandler = new PowermaxSettingsMessage(message);
+                    break;
+                case INFO:
+                    msgHandler = new PowermaxInfoMessage(message);
+                    break;
+                case EVENT_LOG:
+                    msgHandler = new PowermaxEventLogMessage(message);
+                    break;
+                case ZONESNAME:
+                    msgHandler = new PowermaxZonesNameMessage(message);
+                    break;
+                case STATUS:
+                    msgHandler = new PowermaxStatusMessage(message);
+                    break;
+                case ZONESTYPE:
+                    msgHandler = new PowermaxZonesTypeMessage(message);
+                    break;
+                case PANEL:
+                    msgHandler = new PowermaxPanelMessage(message);
+                    break;
+                case POWERLINK:
+                    msgHandler = new PowermaxPowerlinkMessage(message);
+                    break;
+                case POWERMASTER:
+                    msgHandler = new PowermaxPowerMasterMessage(message);
+                    break;
+                default:
+                    msgHandler = new PowermaxBaseMessage(message);
+                    break;
+            }
         } catch (IllegalArgumentException e) {
-            cl = PowermaxBaseMessage.class;
+            msgHandler = new PowermaxBaseMessage(message);
         }
-        try {
-            return (PowermaxBaseMessage) cl.getConstructor(byte[].class).newInstance(message);
-        } catch (InstantiationException e) {
-            return new PowermaxBaseMessage(message);
-        } catch (IllegalAccessException e) {
-            return new PowermaxBaseMessage(message);
-        } catch (NoSuchMethodException e) {
-            return new PowermaxBaseMessage(message);
-        } catch (InvocationTargetException e) {
-            return new PowermaxBaseMessage(message);
-        }
+        return msgHandler;
     }
 
 }

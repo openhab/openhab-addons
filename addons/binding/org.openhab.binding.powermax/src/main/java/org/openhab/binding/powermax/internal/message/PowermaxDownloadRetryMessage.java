@@ -13,8 +13,7 @@ import org.openhab.binding.powermax.internal.state.PowermaxState;
 /**
  * A class for DOWNLOAD RETRY message handling
  *
- * @author Laurent Garnier
- * @since 1.9.0
+ * @author Laurent Garnier - Initial contribution
  */
 public class PowermaxDownloadRetryMessage extends PowermaxBaseMessage {
 
@@ -29,13 +28,17 @@ public class PowermaxDownloadRetryMessage extends PowermaxBaseMessage {
     }
 
     @Override
-    public PowermaxState handleMessage() {
-        super.handleMessage();
+    public PowermaxState handleMessage(PowermaxCommManager commManager) {
+        super.handleMessage(commManager);
+
+        if (commManager == null) {
+            return null;
+        }
 
         byte[] message = getRawData();
         int waitTime = message[4] & 0x000000FF;
 
-        PowermaxCommDriver.getTheCommDriver().sendMessageLater(PowermaxSendType.DOWNLOAD, waitTime);
+        commManager.sendMessageLater(PowermaxSendType.DOWNLOAD, waitTime);
 
         return null;
     }

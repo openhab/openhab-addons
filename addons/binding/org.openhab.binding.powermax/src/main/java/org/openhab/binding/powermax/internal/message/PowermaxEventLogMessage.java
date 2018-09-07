@@ -14,8 +14,7 @@ import org.openhab.binding.powermax.internal.state.PowermaxState;
 /**
  * A class for EVENTLOG message handling
  *
- * @author Laurent Garnier
- * @since 1.9.0
+ * @author Laurent Garnier - Initial contribution
  */
 public class PowermaxEventLogMessage extends PowermaxBaseMessage {
 
@@ -68,10 +67,15 @@ public class PowermaxEventLogMessage extends PowermaxBaseMessage {
     }
 
     @Override
-    public PowermaxState handleMessage() {
-        super.handleMessage();
+    public PowermaxState handleMessage(PowermaxCommManager commManager) {
+        super.handleMessage(commManager);
 
-        PowermaxState updatedState = new PowermaxState();
+        if (commManager == null) {
+            return null;
+        }
+
+        PowermaxPanelSettings panelSettings = commManager.getPanelSettings();
+        PowermaxState updatedState = commManager.createNewState();
 
         byte[] message = getRawData();
         int eventNum = message[3] & 0x000000FF;
@@ -97,7 +101,7 @@ public class PowermaxEventLogMessage extends PowermaxBaseMessage {
                     : "UNKNOWN";
 
             String eventStr;
-            if (PowermaxPanelSettings.getThePanelSettings().getPanelType().getPartitions() > 1) {
+            if (panelSettings.getPanelType().getPartitions() > 1) {
                 String part;
                 if ((second & 0x01) == 0x01) {
                     part = "Part. 1";
@@ -151,14 +155,8 @@ public class PowermaxEventLogMessage extends PowermaxBaseMessage {
                     ? LOG_USER_TABLE[eventZone & 0x000000FF]
                     : "UNKNOWN";
 
-            if (PowermaxPanelSettings.getThePanelSettings().getPanelType().getPartitions() > 1) {
-                str += "\n - event " + eventNum + " date & time = "
-                        + String.format("%02d/%02d/%04d %02d:%02d", day, month, year, hour, minute);
-                str += "\n - event " + eventNum + " partition = " + String.format("%02X", second);
-            } else {
-                str += "\n - event " + eventNum + " date & time = "
-                        + String.format("%02d/%02d/%04d %02d:%02d:%02d", day, month, year, hour, minute, second);
-            }
+            str += "\n - event " + eventNum + " date & time = "
+                    + String.format("%02d/%02d/%04d %02d:%02d:%02d", day, month, year, hour, minute, second);
             str += "\n - event " + eventNum + " zone code = " + String.format("%08X - %s", eventZone, logUserStr);
             str += "\n - event " + eventNum + " event code = " + String.format("%08X - %s", logEvent, logEventStr);
         }

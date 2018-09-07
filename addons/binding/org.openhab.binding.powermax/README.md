@@ -12,11 +12,11 @@ The binding implemntation of this protocol is largely inspired by the [Vera plug
 
 This binding supports the following thing types:
 
-| Thing  | Thing Type | Description                                                                             |
-|--------|------------|-----------------------------------------------------------------------------------------|
-| ip     | Bridge     | The IP connection to the alarm system.                                                  |
-| serial | Bridge     | The serial connection to the alarm system.                                              |
-| x10    | Thing      | A X10 device.                                                                           |
+| Thing  | Thing Type | Description                                                                      |
+|--------|------------|----------------------------------------------------------------------------------|
+| ip     | Bridge     | The IP connection to the alarm system.                                           |
+| serial | Bridge     | The serial connection to the alarm system.                                       |
+| x10    | Thing      | A X10 device.                                                                    |
 | zone   | Thing      | A zone representing a physical device such as a door, window or a motion sensor. |
 
 ## Discovery

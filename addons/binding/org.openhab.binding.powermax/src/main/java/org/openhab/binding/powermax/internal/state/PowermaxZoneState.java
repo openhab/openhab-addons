@@ -11,8 +11,7 @@ package org.openhab.binding.powermax.internal.state;
 /**
  * A class to store the state of a zone
  *
- * @author Laurent Garnier
- * @since 1.9.0
+ * @author Laurent Garnier - Initial contribution
  */
 public class PowermaxZoneState {
 
@@ -44,6 +43,10 @@ public class PowermaxZoneState {
 
     public void setLastTripped(Long lastTripped) {
         this.lastTripped = lastTripped;
+    }
+
+    public boolean isLastTripBeforeTime(long refTime) {
+        return isTripped() == Boolean.TRUE && getLastTripped() != null && getLastTripped() < refTime;
     }
 
     public Boolean isLowBattery() {

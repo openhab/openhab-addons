@@ -8,21 +8,31 @@
  */
 package org.openhab.binding.powermax.internal.message;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.EventObject;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.smarthome.core.common.ThreadPoolManager;
+import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.powermax.internal.connector.PowermaxConnector;
-import org.openhab.binding.powermax.internal.connector.PowermaxEventListener;
 import org.openhab.binding.powermax.internal.connector.PowermaxSerialConnector;
 import org.openhab.binding.powermax.internal.connector.PowermaxTcpConnector;
+import org.openhab.binding.powermax.internal.state.PowermaxArmMode;
 import org.openhab.binding.powermax.internal.state.PowermaxPanelSettings;
+import org.openhab.binding.powermax.internal.state.PowermaxPanelType;
+import org.openhab.binding.powermax.internal.state.PowermaxState;
+import org.openhab.binding.powermax.internal.state.PowermaxStateEvent;
+import org.openhab.binding.powermax.internal.state.PowermaxStateEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,46 +43,65 @@ import org.slf4j.LoggerFactory;
  * the binding uses the available protocol specification given at the ​domoticaforum
  * http://www.domoticaforum.eu/viewtopic.php?f=68&t=6581
  *
- * @author Laurent Garnier
- * @since 1.9.0
+ * @author Laurent Garnier - Initial contribution
  */
-public class PowermaxCommDriver {
+public class PowermaxCommManager implements PowermaxMessageEventListener {
 
-    private final Logger logger = LoggerFactory.getLogger(PowermaxCommDriver.class);
+    private final Logger logger = LoggerFactory.getLogger(PowermaxCommManager.class);
 
     private static final int DEFAULT_TCP_PORT = 80;
     private static final int TCP_CONNECTION_TIMEOUT = 5000;
     private static final int DEFAULT_BAUD_RATE = 9600;
     private static final int WAITING_DELAY_FOR_RESPONSE = 750;
+    private static final long DELAY_BETWEEN_SETUP_DOWNLOADS = TimeUnit.SECONDS.toMillis(45);
+    private static final String COMM_MANAGER_THREAD_POOL_NAME = "powermax-comm";
 
-    /** The unique instance of this class */
-    private static PowermaxCommDriver theCommDriver = null;
+    private final ScheduledExecutorService scheduler = ThreadPoolManager
+            .getScheduledPool(COMM_MANAGER_THREAD_POOL_NAME);
+
+    /** The object to store the current settings of the Powermax alarm system */
+    private PowermaxPanelSettings panelSettings;
+
+    /** Panel type used when in standard mode */
+    private PowermaxPanelType panelType;
+
+    private boolean forceStandardMode;
+    private boolean autoSyncTime;
+
+    private List<PowermaxStateEventListener> listeners = new ArrayList<>();
 
     /** The serial or TCP connecter used to communicate with the Powermax alarm system */
-    private PowermaxConnector connector = null;
+    private PowermaxConnector connector;
 
     /** The last message sent to the the Powermax alarm system */
-    private PowermaxBaseMessage lastSendMsg = null;
+    private PowermaxBaseMessage lastSendMsg;
 
     /** The message queue of messages to be sent to the the Powermax alarm system */
     private ConcurrentLinkedQueue<PowermaxBaseMessage> msgQueue = new ConcurrentLinkedQueue<PowermaxBaseMessage>();
 
     /** The time in milliseconds the last download of the panel setup was requested */
-    private Long lastTimeDownloadRequested = null;
+    private Long lastTimeDownloadRequested;
 
     /** The boolean indicating if the download of the panel setup is in progress or not */
-    private boolean downloadRunning = false;
+    private boolean downloadRunning;
 
     /** The time in milliseconds used to set time and date */
-    private Long syncTimeCheck = null;
+    private Long syncTimeCheck;
 
     /**
      * Constructor for Serial Connection
      *
-     * @param sPort
-     *            the serial port name
+     * @param sPort the serial port name
+     * @param panelType the panel type to be used when in standard mode
+     * @param forceStandardMode true to force the standard mode rather than trying using the Powerlink mode
+     * @param autoSyncTime true for automatic sync time
      */
-    private PowermaxCommDriver(String sPort) {
+    public PowermaxCommManager(String sPort, PowermaxPanelType panelType, boolean forceStandardMode,
+            boolean autoSyncTime) {
+        this.panelType = panelType;
+        this.forceStandardMode = forceStandardMode;
+        this.autoSyncTime = autoSyncTime;
+        this.panelSettings = new PowermaxPanelSettings(panelType);
         String serialPort = StringUtils.isNotBlank(sPort) ? sPort : null;
         if (serialPort != null) {
             connector = new PowermaxSerialConnector(serialPort, DEFAULT_BAUD_RATE);
@@ -84,12 +113,18 @@ public class PowermaxCommDriver {
     /**
      * Constructor for TCP connection
      *
-     * @param ip
-     *            the IP address
-     * @param port
-     *            TCP port number; default port is used if value <= 0
+     * @param ip the IP address
+     * @param port TCP port number; default port is used if value <= 0
+     * @param panelType the panel type to be used when in standard mode
+     * @param forceStandardMode true to force the standard mode rather than trying using the Powerlink mode
+     * @param autoSyncTime true for automatic sync time
      */
-    private PowermaxCommDriver(String ip, int port) {
+    public PowermaxCommManager(String ip, int port, PowermaxPanelType panelType, boolean forceStandardMode,
+            boolean autoSyncTime) {
+        this.panelType = panelType;
+        this.forceStandardMode = forceStandardMode;
+        this.autoSyncTime = autoSyncTime;
+        this.panelSettings = new PowermaxPanelSettings(panelType);
         String ipAddress = StringUtils.isNotBlank(ip) ? ip : null;
         int tcpPort = (port > 0) ? port : DEFAULT_TCP_PORT;
         if (ipAddress != null) {
@@ -100,56 +135,27 @@ public class PowermaxCommDriver {
     }
 
     /**
-     * Get the communication driver in charge of the communication with the Powermax alarm system
-     *
-     * @return the unique instance of class PowermaxCommDriver
-     */
-    public static PowermaxCommDriver getTheCommDriver() {
-        return theCommDriver;
-    }
-
-    /**
-     * Initialize a new communication driver in charge of the communication with the Powermax alarm system
-     *
-     * @param sPort
-     *            the serial port name
-     * @param ip
-     *            the IP address
-     * @param port
-     *            TCP port number; default port is used if value <= 0
-     */
-    public static void initTheCommDriver(String sPort, String ip, int port) {
-        if (sPort != null) {
-            theCommDriver = new PowermaxCommDriver(sPort);
-        } else if (ip != null) {
-            theCommDriver = new PowermaxCommDriver(ip, port);
-        } else {
-            theCommDriver = null;
-        }
-    }
-
-    /**
      * Add event listener
      *
-     * @param listener
-     *            the listener to be added
+     * @param listener the listener to be added
      */
-    public synchronized void addEventListener(PowermaxEventListener listener) {
+    public synchronized void addEventListener(PowermaxStateEventListener listener) {
+        listeners.add(listener);
         if (connector != null) {
-            connector.addEventListener(listener);
+            connector.addEventListener(this);
         }
     }
 
     /**
      * Remove event listener
      *
-     * @param listener
-     *            the listener to be removed
+     * @param listener the listener to be removed
      */
-    public synchronized void removeEventListener(PowermaxEventListener listener) {
+    public synchronized void removeEventListener(PowermaxStateEventListener listener) {
         if (connector != null) {
-            connector.removeEventListener(listener);
+            connector.removeEventListener(this);
         }
+        listeners.remove(listener);
     }
 
     /**
@@ -188,26 +194,82 @@ public class PowermaxCommDriver {
     }
 
     /**
+     * @return the current settings of the Powermax alarm system
+     */
+    public PowermaxPanelSettings getPanelSettings() {
+        return panelSettings;
+    }
+
+    /**
+     * Process and store all the panel settings from the raw buffers
+     *
+     * @param PowerlinkMode true if in Powerlink mode or false if in standard mode
+     *
+     * @return true if no problem encountered to get all the settings; false if not
+     */
+    public boolean processPanelSettings(boolean powerlinkMode) {
+        return panelSettings.process(powerlinkMode, panelType, powerlinkMode ? syncTimeCheck : null);
+    }
+
+    /**
+     * @return a new instance of PowermaxState
+     */
+    public PowermaxState createNewState() {
+        return new PowermaxState(panelSettings);
+    }
+
+    /**
      * @return the last message sent to the Powermax alarm system
      */
     public synchronized PowermaxBaseMessage getLastSendMsg() {
         return lastSendMsg;
     }
 
-    /**
-     * @return the time in milliseconds used to set time and date
-     */
-    public Long getSyncTimeCheck() {
-        return syncTimeCheck;
+    @Override
+    public void onNewMessageEvent(EventObject event) {
+        PowermaxMessageEvent messageEvent = (PowermaxMessageEvent) event;
+        PowermaxBaseMessage message = messageEvent.getMessage();
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("onNewMessageReceived(): received message {}",
+                    (message.getReceiveType() != null) ? message.getReceiveType()
+                            : String.format("%02X", message.getCode()));
+        }
+
+        if (forceStandardMode && message instanceof PowermaxPowerlinkMessage) {
+            message = new PowermaxBaseMessage(message.getRawData());
+        }
+
+        PowermaxState updateState = message.handleMessage(this);
+        if (updateState != null) {
+            if (updateState.getUpdateSettings() != null) {
+                panelSettings.updateRawSettings(updateState.getUpdateSettings());
+            }
+            if (!updateState.getUpdatedZoneNames().isEmpty()) {
+                for (Integer zoneIdx : updateState.getUpdatedZoneNames().keySet()) {
+                    panelSettings.updateZoneName(zoneIdx, updateState.getUpdatedZoneNames().get(zoneIdx));
+                }
+            }
+            if (!updateState.getUpdatedZoneInfos().isEmpty()) {
+                for (Integer zoneIdx : updateState.getUpdatedZoneInfos().keySet()) {
+                    panelSettings.updateZoneInfo(zoneIdx, updateState.getUpdatedZoneInfos().get(zoneIdx));
+                }
+            }
+
+            PowermaxStateEvent newEvent = new PowermaxStateEvent(this, updateState);
+
+            // send message to event listeners
+            for (int i = 0; i < listeners.size(); i++) {
+                listeners.get(i).onNewStateEvent(newEvent);
+            }
+        }
     }
 
     /**
      * Compute the CRC of a message
      *
-     * @param data
-     *            the buffer containing the message
-     * @param len
-     *            the size of the message in the buffer
+     * @param data the buffer containing the message
+     * @param len the size of the message in the buffer
      *
      * @return the computed CRC
      */
@@ -226,10 +288,8 @@ public class PowermaxCommDriver {
     /**
      * Send an ACK for a received message
      *
-     * @param msg
-     *            the received message object
-     * @param ackType
-     *            the type of ACK to be sent
+     * @param msg the received message object
+     * @param ackType the type of ACK to be sent
      *
      * @return true if the ACK was sent or false if not
      */
@@ -256,43 +316,31 @@ public class PowermaxCommDriver {
     /**
      * Send a message to the Powermax alarm panel to change arm mode
      *
-     * @param armMode
-     *            the arm mode. Allowed values are: Disarmed, Stay, Armed,
-     *            StayInstant, ArmedInstant, Night, NightInstant
-     * @param pinCode
-     *            the PIN code. A string of 4 characters is expected
+     * @param armMode the arm mode
+     * @param pinCode the PIN code. A string of 4 characters is expected
      *
      * @return true if the message was sent or false if not
      */
-    public boolean requestArmMode(String armMode, String pinCode) {
-        logger.debug("requestArmMode(): armMode = {}", armMode);
+    public boolean requestArmMode(PowermaxArmMode armMode, String pinCode) {
+        logger.debug("requestArmMode(): armMode = {}", armMode.getShortName());
 
         boolean done = false;
-
-        HashMap<String, Byte> codes = new HashMap<String, Byte>();
-        codes.put("Disarmed", (byte) 0x00);
-        codes.put("Stay", (byte) 0x04);
-        codes.put("Armed", (byte) 0x05);
-        codes.put("StayInstant", (byte) 0x14);
-        codes.put("ArmedInstant", (byte) 0x15);
-        codes.put("Night", (byte) 0x04);
-        codes.put("NightInstant", (byte) 0x14);
-
-        Byte code = codes.get(armMode);
-        if (code == null) {
-            logger.info("Powermax alarm binding: invalid requested arm mode: {}", armMode);
+        if (!armMode.isAllowedCommand()) {
+            logger.info("Powermax alarm binding: requested arm mode {} rejected", armMode.getShortName());
         } else if ((pinCode == null) || (pinCode.length() != 4)) {
-            logger.info("Powermax alarm binding: requested arm mode rejected due to invalid PIN code: {}", armMode);
+            logger.info("Powermax alarm binding: requested arm mode {} rejected due to invalid PIN code",
+                    armMode.getShortName());
         } else {
             try {
                 byte[] dynPart = new byte[3];
-                dynPart[0] = code;
+                dynPart[0] = armMode.getCommandCode();
                 dynPart[1] = (byte) Integer.parseInt(pinCode.substring(0, 2), 16);
                 dynPart[2] = (byte) Integer.parseInt(pinCode.substring(2, 4), 16);
 
                 done = sendMessage(new PowermaxBaseMessage(PowermaxSendType.ARM, dynPart), false, 0);
             } catch (NumberFormatException e) {
-                logger.info("Powermax alarm binding: requested arm mode rejected due to invalid PIN code: {}", armMode);
+                logger.info("Powermax alarm binding: requested arm mode {} rejected due to invalid PIN code",
+                        armMode.getShortName());
             }
         }
         return done;
@@ -301,29 +349,26 @@ public class PowermaxCommDriver {
     /**
      * Send a message to the Powermax alarm panel to change PGM or X10 zone state
      *
-     * @param action
-     *            the requested action. Allowed values are: OFF, ON, DIM, BRIGHT
-     * @param device
-     *            the X10 device number. null is expected for PGM
+     * @param action the requested action. Allowed values are: OFF, ON, DIM, BRIGHT
+     * @param device the X10 device number. null is expected for PGM
      *
      * @return true if the message was sent or false if not
      */
-    public boolean sendPGMX10(String action, Byte device) {
+    public boolean sendPGMX10(Command action, Byte device) {
         logger.debug("sendPGMX10(): action = {}, device = {}", action, device);
 
         boolean done = false;
 
-        HashMap<String, Byte> codes = new HashMap<String, Byte>();
+        Map<String, Byte> codes = new HashMap<>();
         codes.put("OFF", (byte) 0x00);
         codes.put("ON", (byte) 0x01);
         codes.put("DIM", (byte) 0x0A);
         codes.put("BRIGHT", (byte) 0x0B);
 
-        Byte code = codes.get(action);
+        Byte code = codes.get(action.toString());
         if (code == null) {
             logger.info("Powermax alarm binding: invalid PGM/X10 command: {}", action);
-        } else if ((device != null)
-                && ((device < 1) || (device >= PowermaxPanelSettings.getThePanelSettings().getNbPGMX10Devices()))) {
+        } else if ((device != null) && ((device < 1) || (device >= panelSettings.getNbPGMX10Devices()))) {
             logger.info("Powermax alarm binding: invalid X10 device id: {}", device);
         } else {
             int val = (device == null) ? 1 : (1 << device);
@@ -340,12 +385,9 @@ public class PowermaxCommDriver {
     /**
      * Send a message to the Powermax alarm panel to bypass a zone or to not bypass a zone
      *
-     * @param bypass
-     *            true to bypass the zone; false to not bypass the zone
-     * @param zone
-     *            the zone number (first zone is number 1)
-     * @param pinCode
-     *            the PIN code. A string of 4 characters is expected
+     * @param bypass true to bypass the zone; false to not bypass the zone
+     * @param zone the zone number (first zone is number 1)
+     * @param pinCode the PIN code. A string of 4 characters is expected
      *
      * @return true if the message was sent or false if not
      */
@@ -356,7 +398,7 @@ public class PowermaxCommDriver {
 
         if ((pinCode == null) || (pinCode.length() != 4)) {
             logger.info("Powermax alarm binding: zone bypass rejected due to invalid PIN code");
-        } else if ((zone < 1) || (zone > PowermaxPanelSettings.getThePanelSettings().getNbZones())) {
+        } else if ((zone < 1) || (zone > panelSettings.getNbZones())) {
             logger.info("Powermax alarm binding: invalid zone number: {}", zone);
         } else {
             try {
@@ -396,28 +438,32 @@ public class PowermaxCommDriver {
 
         boolean done = false;
 
-        GregorianCalendar cal = new GregorianCalendar();
-        if (cal.get(Calendar.YEAR) >= 2000) {
-            logger.debug("sendSetTime(): sync time {}",
-                    String.format("%02d/%02d/%04d %02d:%02d:%02d", cal.get(Calendar.DAY_OF_MONTH),
-                            cal.get(Calendar.MONTH) + 1, cal.get(Calendar.YEAR), cal.get(Calendar.HOUR_OF_DAY),
-                            cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND)));
+        if (autoSyncTime) {
+            GregorianCalendar cal = new GregorianCalendar();
+            if (cal.get(Calendar.YEAR) >= 2000) {
+                logger.debug("sendSetTime(): sync time {}",
+                        String.format("%02d/%02d/%04d %02d:%02d:%02d", cal.get(Calendar.DAY_OF_MONTH),
+                                cal.get(Calendar.MONTH) + 1, cal.get(Calendar.YEAR), cal.get(Calendar.HOUR_OF_DAY),
+                                cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND)));
 
-            byte[] dynPart = new byte[6];
-            dynPart[0] = (byte) cal.get(Calendar.SECOND);
-            dynPart[1] = (byte) cal.get(Calendar.MINUTE);
-            dynPart[2] = (byte) cal.get(Calendar.HOUR_OF_DAY);
-            dynPart[3] = (byte) cal.get(Calendar.DAY_OF_MONTH);
-            dynPart[4] = (byte) (cal.get(Calendar.MONTH) + 1);
-            dynPart[5] = (byte) (cal.get(Calendar.YEAR) - 2000);
+                byte[] dynPart = new byte[6];
+                dynPart[0] = (byte) cal.get(Calendar.SECOND);
+                dynPart[1] = (byte) cal.get(Calendar.MINUTE);
+                dynPart[2] = (byte) cal.get(Calendar.HOUR_OF_DAY);
+                dynPart[3] = (byte) cal.get(Calendar.DAY_OF_MONTH);
+                dynPart[4] = (byte) (cal.get(Calendar.MONTH) + 1);
+                dynPart[5] = (byte) (cal.get(Calendar.YEAR) - 2000);
 
-            done = sendMessage(new PowermaxBaseMessage(PowermaxSendType.SETTIME, dynPart), false, 0);
+                done = sendMessage(new PowermaxBaseMessage(PowermaxSendType.SETTIME, dynPart), false, 0);
 
-            cal.set(Calendar.MILLISECOND, 0);
-            syncTimeCheck = cal.getTimeInMillis();
+                cal.set(Calendar.MILLISECOND, 0);
+                syncTimeCheck = cal.getTimeInMillis();
+            } else {
+                logger.info(
+                        "Powermax alarm binding: time not synchronized; please correct the date/time of your openHAB server");
+                syncTimeCheck = null;
+            }
         } else {
-            logger.info(
-                    "Powermax alarm binding: time not synchronized; please correct the date/time of your openHAB server");
             syncTimeCheck = null;
         }
         return done;
@@ -426,8 +472,7 @@ public class PowermaxCommDriver {
     /**
      * Send a message to the Powermax alarm panel to get all the event logs
      *
-     * @param pinCode
-     *            the PIN code. A string of 4 characters is expected
+     * @param pinCode the PIN code. A string of 4 characters is expected
      *
      * @return true if the message was sent or false if not
      */
@@ -474,6 +519,26 @@ public class PowermaxCommDriver {
         downloadRunning = false;
     }
 
+    public void retryDownloadSetup(int remainingAttempts) {
+        long now = System.currentTimeMillis();
+        if ((remainingAttempts > 0) && !isDownloadRunning() && ((lastTimeDownloadRequested == null)
+                || ((now - lastTimeDownloadRequested) >= DELAY_BETWEEN_SETUP_DOWNLOADS))) {
+            // We wait at least 45 seconds before each retry to download the panel setup
+            logger.info("Powermax alarm binding: try again downloading setup");
+            startDownload();
+        }
+    }
+
+    public void getInfosWhenInStandardMode() {
+        sendMessage(PowermaxSendType.ZONESNAME);
+        sendMessage(PowermaxSendType.ZONESTYPE);
+        sendMessage(PowermaxSendType.STATUS);
+    }
+
+    public void sendRestoreMessage() {
+        sendMessage(PowermaxSendType.RESTORE);
+    }
+
     /**
      * @return true if a download of the panel setup is in progress
      */
@@ -500,8 +565,7 @@ public class PowermaxCommDriver {
     /**
      * Send a message or delay the sending if time frame for receiving response is not ended
      *
-     * @param msgType
-     *            the message type to be sent
+     * @param msgType the message type to be sent
      *
      * @return true if the message was sent or the sending is delayed; false in other cases
      */
@@ -512,11 +576,8 @@ public class PowermaxCommDriver {
     /**
      * Delay the sending of a message
      *
-     * @param msgType
-     *            the message type to be sent
-     *
-     * @param waitTime
-     *            the delay in seconds to wait
+     * @param msgType the message type to be sent
+     * @param waitTime the delay in seconds to wait
      *
      * @return true if the sending is delayed; false in other cases
      */
@@ -527,22 +588,21 @@ public class PowermaxCommDriver {
     /**
      * Send a message or delay the sending if time frame for receiving response is not ended
      *
-     * @param msg
-     *            the message to be sent
-     * @param immediate
-     *            true if the message has to be send without considering timing
-     * @param waitTime
-     *            the delay in seconds to wait
+     * @param msg the message to be sent
+     * @param immediate true if the message has to be send without considering timing
+     * @param waitTime the delay in seconds to wait
      *
      * @return true if the message was sent or the sending is delayed; false in other cases
      */
     private synchronized boolean sendMessage(PowermaxBaseMessage msg, boolean immediate, int waitTime) {
         if ((waitTime > 0) && (msg != null)) {
-            logger.debug("sendMessage(): delay ({} s) sending message (type {})", waitTime,
-                    msg.getSendType().toString());
-            Timer timer = new Timer();
+            logger.debug("sendMessage(): delay ({} s) sending message (type {})", waitTime, msg.getSendType());
             // Don't queue the message
-            timer.schedule(new DelayedSendTask(msg), waitTime * 1000);
+            PowermaxBaseMessage msgToSendLater = new PowermaxBaseMessage(msg.getRawData());
+            msgToSendLater.setSendType(msg.getSendType());
+            scheduler.schedule(() -> {
+                sendMessage(msgToSendLater, false, 0);
+            }, waitTime, TimeUnit.SECONDS);
             return true;
         }
 
@@ -562,7 +622,7 @@ public class PowermaxCommDriver {
         if (!immediate) {
             msgToSend = msgQueue.peek();
             if (msgToSend != msg) {
-                logger.debug("sendMessage(): add message in queue (type {})", msg.getSendType().toString());
+                logger.debug("sendMessage(): add message in queue (type {})", msg.getSendType());
                 msgQueue.offer(msg);
                 msgToSend = msgQueue.peek();
             }
@@ -572,10 +632,10 @@ public class PowermaxCommDriver {
                 if (delay < 100) {
                     delay = 100;
                 }
-                logger.debug("sendMessage(): delay ({} ms) sending message (type {})", delay,
-                        msgToSend.getSendType().toString());
-                Timer timer = new Timer();
-                timer.schedule(new DelayedSendTask(null), delay);
+                logger.debug("sendMessage(): delay ({} ms) sending message (type {})", delay, msgToSend.getSendType());
+                scheduler.schedule(() -> {
+                    sendMessage(null, false, 0);
+                }, delay, TimeUnit.MILLISECONDS);
                 return true;
             } else {
                 msgToSend = msgQueue.poll();
@@ -583,7 +643,7 @@ public class PowermaxCommDriver {
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("sendMessage(): sending {} message {}", msgToSend.getSendType().toString(),
+            logger.debug("sendMessage(): sending {} message {}", msgToSend.getSendType(),
                     DatatypeConverter.printHexBinary(msgToSend.getRawData()));
         }
         boolean done = sendMessage(msgToSend.getRawData());
@@ -592,10 +652,10 @@ public class PowermaxCommDriver {
             connector.setWaitingForResponse(System.currentTimeMillis());
 
             if (!immediate && (msgQueue.peek() != null)) {
-                logger.debug("sendMessage(): delay sending next message (type {})",
-                        msgQueue.peek().getSendType().toString());
-                Timer timer = new Timer();
-                timer.schedule(new DelayedSendTask(null), WAITING_DELAY_FOR_RESPONSE);
+                logger.debug("sendMessage(): delay sending next message (type {})", msgQueue.peek().getSendType());
+                scheduler.schedule(() -> {
+                    sendMessage(null, false, 0);
+                }, WAITING_DELAY_FOR_RESPONSE, TimeUnit.MILLISECONDS);
             }
         } else {
             logger.debug("sendMessage(): failed");
@@ -607,8 +667,7 @@ public class PowermaxCommDriver {
     /**
      * Send a message to the Powermax alarm panel
      *
-     * @param data
-     *            the data buffer containing the message to be sent
+     * @param data the data buffer containing the message to be sent
      *
      * @return true if the message was sent or false if not
      */
@@ -622,26 +681,6 @@ public class PowermaxCommDriver {
             logger.debug("sendMessage(): aborted (not connected)");
         }
         return done;
-    }
-
-    /**
-     * A class used to delay the sending of a message
-     */
-    private class DelayedSendTask extends TimerTask {
-
-        private PowermaxBaseMessage msg;
-
-        private DelayedSendTask(PowermaxBaseMessage msg) {
-            super();
-            this.msg = msg;
-        }
-
-        @Override
-        public void run() {
-            // logger.debug("Time to send next message");
-            sendMessage(msg, false, 0);
-        }
-
     }
 
 }

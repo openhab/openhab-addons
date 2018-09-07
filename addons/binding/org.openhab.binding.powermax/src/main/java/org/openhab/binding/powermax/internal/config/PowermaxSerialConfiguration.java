@@ -12,7 +12,7 @@ package org.openhab.binding.powermax.internal.config;
  * The {@link PowermaxSerialConfiguration} is responsible for holding
  * configuration informations associated to a Powermax serial thing type
  *
- * @author Laurent Garnier
+ * @author Laurent Garnier - Initial contribution
  */
 public class PowermaxSerialConfiguration {
 

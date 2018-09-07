@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.powermax.internal.message;
 
+import org.openhab.binding.powermax.internal.state.PowermaxArmMode;
 import org.openhab.binding.powermax.internal.state.PowermaxPanelSettings;
 import org.openhab.binding.powermax.internal.state.PowermaxState;
 import org.openhab.binding.powermax.internal.state.PowermaxZoneSettings;
@@ -15,16 +16,9 @@ import org.openhab.binding.powermax.internal.state.PowermaxZoneSettings;
 /**
  * A class for STATUS message handling
  *
- * @author Laurent Garnier
- * @since 1.9.0
+ * @author Laurent Garnier - Initial contribution
  */
 public class PowermaxStatusMessage extends PowermaxBaseMessage {
-
-    private static final String[] SYS_STATUS_TABLE = new String[] { "Disarmed", "Home Exit Delay", "Away Exit Delay",
-            "Entry Delay", "Armed Home", "Armed Away", "User Test", "Downloading", "Programming", "Installer",
-            "Home Bypass", "Away Bypass", "Ready", "Not Ready", "??", "??", "Disarmed Instant",
-            "Home Instant Exit Delay", "Away Instant Exit Delay", "Entry Delay Instant", "Armed Home Instant",
-            "Armed Away Instant" };
 
     private static final String[] EVENT_TYPE_TABLE = new String[] { "None", "Tamper Alarm", "Tamper Restore", "Open",
             "Closed", "Violated (Motion)", "Panic Alarm", "RF Jamming", "Tamper Open", "Communication Failure",
@@ -42,10 +36,15 @@ public class PowermaxStatusMessage extends PowermaxBaseMessage {
     }
 
     @Override
-    public PowermaxState handleMessage() {
-        super.handleMessage();
+    public PowermaxState handleMessage(PowermaxCommManager commManager) {
+        super.handleMessage(commManager);
 
-        PowermaxState updatedState = new PowermaxState();
+        if (commManager == null) {
+            return null;
+        }
+
+        PowermaxPanelSettings panelSettings = commManager.getPanelSettings();
+        PowermaxState updatedState = commManager.createNewState();
 
         byte[] message = getRawData();
         byte eventType = message[3];
@@ -56,7 +55,7 @@ public class PowermaxStatusMessage extends PowermaxBaseMessage {
             int batteryStatus = (message[8] & 0x000000FF) | ((message[9] << 8) & 0x0000FF00)
                     | ((message[10] << 16) & 0x00FF0000) | ((message[11] << 24) & 0xFF000000);
 
-            for (int i = 1; i <= PowermaxPanelSettings.getThePanelSettings().getNbZones(); i++) {
+            for (int i = 1; i <= panelSettings.getNbZones(); i++) {
                 updatedState.setSensorTripped(i, ((zoneStatus >> (i - 1)) & 0x1) > 0);
                 updatedState.setSensorLowBattery(i, ((batteryStatus >> (i - 1)) & 0x1) > 0);
             }
@@ -77,7 +76,7 @@ public class PowermaxStatusMessage extends PowermaxBaseMessage {
             } else if (zoneEType == 0x04) {
                 updatedState.setSensorTripped(eventZone, Boolean.FALSE);
             } else if (zoneEType == 0x05) {
-                PowermaxZoneSettings zone = PowermaxPanelSettings.getThePanelSettings().getZoneSettings(eventZone);
+                PowermaxZoneSettings zone = panelSettings.getZoneSettings(eventZone);
                 if ((zone != null) && zone.getSensorType().equalsIgnoreCase("unknown")) {
                     zone.setSensorType("Motion");
                 }
@@ -86,7 +85,7 @@ public class PowermaxStatusMessage extends PowermaxBaseMessage {
             }
 
             // PGM & X10 devices
-            for (int i = 0; i < PowermaxPanelSettings.getThePanelSettings().getNbPGMX10Devices(); i++) {
+            for (int i = 0; i < panelSettings.getNbPGMX10Devices(); i++) {
                 updatedState.setPGMX10DeviceStatus(i, ((x10Status >> i) & 0x1) > 0);
             }
 
@@ -115,7 +114,7 @@ public class PowermaxStatusMessage extends PowermaxBaseMessage {
                 updatedState.setBypass(true);
             } else {
                 updatedState.setBypass(false);
-                for (int i = 1; i <= PowermaxPanelSettings.getThePanelSettings().getNbZones(); i++) {
+                for (int i = 1; i <= panelSettings.getNbZones(); i++) {
                     updatedState.setSensorBypassed(i, false);
                 }
             }
@@ -142,15 +141,18 @@ public class PowermaxStatusMessage extends PowermaxBaseMessage {
                 updatedState.setAlarmActive(false);
             }
             sysStatusStr = sysStatusStr.substring(0, sysStatusStr.length() - 2);
-            String statusStr = ((sysStatus & 0x000000FF) < SYS_STATUS_TABLE.length)
-                    ? SYS_STATUS_TABLE[sysStatus & 0x000000FF]
-                    : "UNKNOWN";
-
+            String statusStr;
+            try {
+                PowermaxArmMode armMode = PowermaxArmMode.fromCode(sysStatus & 0x000000FF);
+                statusStr = armMode.getName();
+            } catch (IllegalArgumentException e) {
+                statusStr = "UNKNOWN";
+            }
             updatedState.setArmMode(statusStr);
             updatedState.setStatusStr(statusStr + ", " + sysStatusStr);
 
-            for (int i = 1; i <= PowermaxPanelSettings.getThePanelSettings().getNbZones(); i++) {
-                PowermaxZoneSettings zone = PowermaxPanelSettings.getThePanelSettings().getZoneSettings(i);
+            for (int i = 1; i <= panelSettings.getNbZones(); i++) {
+                PowermaxZoneSettings zone = panelSettings.getZoneSettings(i);
                 if (zone != null) {
                     // mode: armed or not: 4=armed home; 5=armed away
                     int mode = sysStatus & 0x0000000F;
@@ -168,7 +170,7 @@ public class PowermaxStatusMessage extends PowermaxBaseMessage {
             int zoneBypass = (message[8] & 0x000000FF) | ((message[9] << 8) & 0x0000FF00)
                     | ((message[10] << 16) & 0x00FF0000) | ((message[11] << 24) & 0xFF000000);
 
-            for (int i = 1; i <= PowermaxPanelSettings.getThePanelSettings().getNbZones(); i++) {
+            for (int i = 1; i <= panelSettings.getNbZones(); i++) {
                 updatedState.setSensorBypassed(i, ((zoneBypass >> (i - 1)) & 0x1) > 0);
             }
         }

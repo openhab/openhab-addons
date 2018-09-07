@@ -15,8 +15,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A class for DENIED message handling
  *
- * @author Laurent Garnier
- * @since 1.9.0
+ * @author Laurent Garnier - Initial contribution
  */
 public class PowermaxDeniedMessage extends PowermaxBaseMessage {
 
@@ -33,18 +32,22 @@ public class PowermaxDeniedMessage extends PowermaxBaseMessage {
     }
 
     @Override
-    public PowermaxState handleMessage() {
-        super.handleMessage();
+    public PowermaxState handleMessage(PowermaxCommManager commManager) {
+        super.handleMessage(commManager);
+
+        if (commManager == null) {
+            return null;
+        }
 
         PowermaxState updatedState = null;
 
-        PowermaxSendType lastSendType = PowermaxCommDriver.getTheCommDriver().getLastSendMsg().getSendType();
+        PowermaxSendType lastSendType = commManager.getLastSendMsg().getSendType();
         if (lastSendType == PowermaxSendType.EVENTLOG || lastSendType == PowermaxSendType.ARM
                 || lastSendType == PowermaxSendType.BYPASS) {
             logger.info("Powermax alarm binding: invalid PIN code");
         } else if (lastSendType == PowermaxSendType.DOWNLOAD) {
             logger.info("Powermax alarm binding: openHAB Powerlink not enrolled");
-            updatedState = new PowermaxState();
+            updatedState = commManager.createNewState();
             updatedState.setPowerlinkMode(false);
         }
 

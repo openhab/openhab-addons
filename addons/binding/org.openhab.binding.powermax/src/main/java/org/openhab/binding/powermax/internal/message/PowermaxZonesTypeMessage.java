@@ -13,8 +13,7 @@ import org.openhab.binding.powermax.internal.state.PowermaxState;
 /**
  * A class for ZONESTYPE message handling
  *
- * @author Laurent Garnier
- * @since 1.9.0
+ * @author Laurent Garnier - Initial contribution
  */
 public class PowermaxZonesTypeMessage extends PowermaxBaseMessage {
 
@@ -29,10 +28,14 @@ public class PowermaxZonesTypeMessage extends PowermaxBaseMessage {
     }
 
     @Override
-    public PowermaxState handleMessage() {
-        super.handleMessage();
+    public PowermaxState handleMessage(PowermaxCommManager commManager) {
+        super.handleMessage(commManager);
 
-        PowermaxState updatedState = new PowermaxState();
+        if (commManager == null) {
+            return null;
+        }
+
+        PowermaxState updatedState = commManager.createNewState();
 
         byte[] message = getRawData();
         int rowCnt = message[3] & 0x000000FF;

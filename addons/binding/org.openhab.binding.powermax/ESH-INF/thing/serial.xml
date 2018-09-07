@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="powermax" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="powermax"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
 	<bridge-type id="serial">
-		<label>Serial connection to the alarm system</label>
+		<label>Serial Connection</label>
 		<description>This bridge represents the serial connection to the alarm system.</description>
 
 		<channels>
@@ -39,38 +39,38 @@
 
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">
-				<label>Serial port</label>
+				<label>Serial Port</label>
 				<description>The serial port to use for connecting to the serial interface of the alarm system e.g. COM1 for Windows and /dev/ttyS0 or /dev/ttyUSB0 for Linux.</description>
 			</parameter>
 			<parameter name="motionOffDelay" type="integer" min="1" unit="min" required="false">
-				<label>Motion reset delay</label>
+				<label>Motion Reset Delay</label>
 				<description>The delay in minutes to reset a motion detection.</description>
 				<default>3</default>
 			</parameter>
 			<parameter name="allowArming" type="boolean" required="false">
-				<label>Allow arming</label>
+				<label>Allow Arming</label>
 				<description>Enable or disable arming the alarm system from openHAB.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="allowDisarming" type="boolean" required="false">
-				<label>Allow disarming</label>
+				<label>Allow Disarming</label>
 				<description>Enable or disable disarming the alarm system from openHAB.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="pinCode" type="text" required="false">
 				<context>password</context>
-				<label>PIN code</label>
+				<label>PIN Code</label>
 				<description>The PIN code to use for arming/disarming the alarm system from openHAB. Not required except when Powerlink mode cannot be used.</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="forceStandardMode" type="boolean" required="false">
-				<label>Force standard mode</label>
+				<label>Force Standard Mode</label>
 				<description>Force the standard mode rather than trying using the Powerlink mode.</description>
 				<default>false</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="panelType" type="text" required="false">
-				<label>Panel type</label>
+				<label>Panel Type</label>
 				<description>Define the panel type. Only required when forcing the standard mode.</description>
 				<limitToOptions>true</limitToOptions>
 				<options>
@@ -88,7 +88,7 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="autoSyncTime" type="boolean" required="false">
-				<label>Sync time</label>
+				<label>Sync Time</label>
 				<description>Automatic sync time at openHAB startup.</description>
 				<default>false</default>
 				<advanced>true</advanced>

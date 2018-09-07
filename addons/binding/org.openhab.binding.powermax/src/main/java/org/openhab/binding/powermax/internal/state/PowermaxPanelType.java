@@ -11,8 +11,7 @@ package org.openhab.binding.powermax.internal.state;
 /**
  * Used to store main characteristics of each Visonic alarm panel type in an ENUM
  *
- * @author Laurent Garnier
- * @since 1.9.0
+ * @author Laurent Garnier - Initial contribution
  */
 public enum PowermaxPanelType {
 
@@ -155,15 +154,13 @@ public enum PowermaxPanelType {
     /**
      * Get the ENUM value from its code number
      *
-     * @param panelCode
-     *            the code stored by the panel
+     * @param panelCode the code stored by the panel
      *
      * @return the corresponding ENUM value
      *
-     * @throws IllegalArgumentException
-     *             if no ENUM value corresponds to this code
+     * @throws IllegalArgumentException if no ENUM value corresponds to this code
      */
-    public static PowermaxPanelType fromCode(byte panelCode) {
+    public static PowermaxPanelType fromCode(byte panelCode) throws IllegalArgumentException {
         for (PowermaxPanelType panelType : PowermaxPanelType.values()) {
             if (panelType.getCode() == panelCode) {
                 return panelType;
@@ -176,15 +173,13 @@ public enum PowermaxPanelType {
     /**
      * Get the ENUM value from its label
      *
-     * @param label
-     *            the label
+     * @param label the label
      *
      * @return the corresponding ENUM value
      *
-     * @throws IllegalArgumentException
-     *             if no ENUM value corresponds to this label
+     * @throws IllegalArgumentException if no ENUM value corresponds to this label
      */
-    public static PowermaxPanelType fromLabel(String label) {
+    public static PowermaxPanelType fromLabel(String label) throws IllegalArgumentException {
         for (PowermaxPanelType panelType : PowermaxPanelType.values()) {
             if (panelType.getLabel().equalsIgnoreCase(label)) {
                 return panelType;

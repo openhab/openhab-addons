@@ -12,7 +12,7 @@ package org.openhab.binding.powermax.internal.config;
  * The {@link PowermaxZoneConfiguration} is responsible for holding
  * configuration informations associated to a Powermax IP thing type
  *
- * @author Laurent Garnier
+ * @author Laurent Garnier - Initial contribution
  */
 public class PowermaxZoneConfiguration {
 

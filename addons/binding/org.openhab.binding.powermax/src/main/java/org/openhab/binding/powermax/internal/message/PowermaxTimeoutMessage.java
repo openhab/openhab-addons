@@ -13,8 +13,7 @@ import org.openhab.binding.powermax.internal.state.PowermaxState;
 /**
  * A class for TIMEOUT message handling
  *
- * @author Laurent Garnier
- * @since 1.9.0
+ * @author Laurent Garnier - Initial contribution
  */
 public class PowermaxTimeoutMessage extends PowermaxBaseMessage {
 
@@ -29,10 +28,12 @@ public class PowermaxTimeoutMessage extends PowermaxBaseMessage {
     }
 
     @Override
-    public PowermaxState handleMessage() {
-        super.handleMessage();
+    public PowermaxState handleMessage(PowermaxCommManager commManager) {
+        super.handleMessage(commManager);
 
-        PowermaxCommDriver.getTheCommDriver().sendMessage(PowermaxSendType.EXIT);
+        if (commManager != null) {
+            commManager.sendMessage(PowermaxSendType.EXIT);
+        }
 
         return null;
     }

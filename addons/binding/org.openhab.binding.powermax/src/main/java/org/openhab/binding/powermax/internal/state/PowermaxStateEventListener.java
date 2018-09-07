@@ -6,25 +6,23 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.powermax.internal.connector;
+package org.openhab.binding.powermax.internal.state;
 
 import java.util.EventListener;
 import java.util.EventObject;
 
 /**
- * Powermax Alarm Event Listener interface. Handles incoming Powermax Alarm events
+ * Powermax Alarm state Listener interface. Handles Powermax Alarm state events
  *
- * @author Laurent Garnier
- * @since 1.9.0
+ * @author Laurent Garnier - Initial contribution
  */
-public interface PowermaxEventListener extends EventListener {
+public interface PowermaxStateEventListener extends EventListener {
 
     /**
-     * Event handler method for incoming Powermax Alarm events
+     * Event handler method for Powermax Alarm state events
      *
-     * @param event
-     *            the event object
+     * @param event the event object
      */
-    public void powermaxEventReceived(EventObject event);
+    public void onNewStateEvent(EventObject event);
 
 }

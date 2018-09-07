@@ -9,63 +9,14 @@
 package org.openhab.binding.powermax.internal.state;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A class to store the state of the alarm system
  *
- * @author Laurent Garnier
- * @since 1.9.0
+ * @author Laurent Garnier - Initial contribution
  */
 public class PowermaxState {
-
-    private static final HashMap<String, Boolean> ARMED_TABLE;
-    static {
-        ARMED_TABLE = new HashMap<String, Boolean>();
-        ARMED_TABLE.put("Disarmed", false);
-        ARMED_TABLE.put("Home Exit Delay", false);
-        ARMED_TABLE.put("Away Exit Delay", false);
-        ARMED_TABLE.put("Entry Delay", true);
-        ARMED_TABLE.put("Armed Home", true);
-        ARMED_TABLE.put("Armed Away", true);
-        ARMED_TABLE.put("User Test", false);
-        ARMED_TABLE.put("Downloading", false);
-        ARMED_TABLE.put("Programming", false);
-        ARMED_TABLE.put("Installer", false);
-        ARMED_TABLE.put("Home Bypass", true);
-        ARMED_TABLE.put("Away Bypass", true);
-        ARMED_TABLE.put("Ready", false);
-        ARMED_TABLE.put("Not Ready", false);
-        ARMED_TABLE.put("Disarmed Instant", false);
-        ARMED_TABLE.put("Home Instant Exit Delay", false);
-        ARMED_TABLE.put("Away Instant Exit Delay", false);
-        ARMED_TABLE.put("Entry Delay Instant", true);
-        ARMED_TABLE.put("Armed Home Instant", true);
-        ARMED_TABLE.put("Armed Away Instant", true);
-    }
-    private static final HashMap<String, String> ARM_MODE_TABLE;
-    static {
-        ARM_MODE_TABLE = new HashMap<String, String>();
-        ARM_MODE_TABLE.put("Disarmed", "Disarmed");
-        ARM_MODE_TABLE.put("Home Exit Delay", "ExitDelay");
-        ARM_MODE_TABLE.put("Away Exit Delay", "Disarmed");
-        ARM_MODE_TABLE.put("Entry Delay", "EntryDelay");
-        ARM_MODE_TABLE.put("Armed Home", "Stay");
-        ARM_MODE_TABLE.put("Armed Away", "Armed");
-        ARM_MODE_TABLE.put("User Test", "UserTest");
-        ARM_MODE_TABLE.put("Downloading", "NotReady");
-        ARM_MODE_TABLE.put("Programming", "NotReady");
-        ARM_MODE_TABLE.put("Installer", "NotReady");
-        ARM_MODE_TABLE.put("Home Bypass", "Force");
-        ARM_MODE_TABLE.put("Away Bypass", "Force");
-        ARM_MODE_TABLE.put("Ready", "Ready");
-        ARM_MODE_TABLE.put("Not Ready", "NotReady");
-        ARM_MODE_TABLE.put("Disarmed Instant", "Disarmed");
-        ARM_MODE_TABLE.put("Home Instant Exit Delay", "ExitDelay");
-        ARM_MODE_TABLE.put("Away Instant Exit Delay", "ExitDelay");
-        ARM_MODE_TABLE.put("Entry Delay Instant", "EntryDelay");
-        ARM_MODE_TABLE.put("Armed Home Instant", "StayInstant");
-        ARM_MODE_TABLE.put("Armed Away Instant", "ArmedInstant");
-    }
 
     private Boolean powerlinkMode;
     private Boolean downloadMode;
@@ -85,40 +36,20 @@ public class PowermaxState {
     private String alarmType;
     private String troubleType;
     private String[] eventLog;
-    private HashMap<Integer, Byte> updatedZoneNames;
-    private HashMap<Integer, Integer> updatedZoneInfos;
+    private Map<Integer, Byte> updatedZoneNames;
+    private Map<Integer, Integer> updatedZoneInfos;
 
     /**
      * Constructor (default values)
      */
-    public PowermaxState() {
-        PowermaxPanelSettings settings = PowermaxPanelSettings.getThePanelSettings();
-        powerlinkMode = null;
-        downloadMode = null;
-        zones = new PowermaxZoneState[settings.getNbZones()];
-        for (int i = 0; i < settings.getNbZones(); i++) {
+    public PowermaxState(PowermaxPanelSettings panelSettings) {
+        zones = new PowermaxZoneState[panelSettings.getNbZones()];
+        for (int i = 0; i < panelSettings.getNbZones(); i++) {
             zones[i] = new PowermaxZoneState();
         }
-        pgmX10DevicesStatus = new Boolean[settings.getNbPGMX10Devices()];
-        for (int i = 0; i < settings.getNbPGMX10Devices(); i++) {
-            pgmX10DevicesStatus[i] = null;
-        }
-        ready = null;
-        bypass = null;
-        alarmActive = null;
-        trouble = null;
-        alertInMemory = null;
-        statusStr = null;
-        armMode = null;
-        downloadSetupRequired = null;
-        lastKeepAlive = null;
-        updateSettings = null;
-        panelStatus = null;
-        alarmType = null;
-        troubleType = null;
-        eventLog = null;
-        updatedZoneNames = new HashMap<Integer, Byte>();
-        updatedZoneInfos = new HashMap<Integer, Integer>();
+        pgmX10DevicesStatus = new Boolean[panelSettings.getNbPGMX10Devices()];
+        updatedZoneNames = new HashMap<>();
+        updatedZoneInfos = new HashMap<>();
     }
 
     /**
@@ -133,8 +64,7 @@ public class PowermaxState {
     /**
      * Set the current mode (standard or Powerlink)
      *
-     * @param powerlinkMode
-     *            true for Powerlink or false for standard
+     * @param powerlinkMode true for Powerlink or false for standard
      */
     public void setPowerlinkMode(Boolean powerlinkMode) {
         this.powerlinkMode = powerlinkMode;
@@ -152,8 +82,7 @@ public class PowermaxState {
     /**
      * Set whether or not the setup is being downloaded
      *
-     * @param downloadMode
-     *            true when downloading the setup
+     * @param downloadMode true when downloading the setup
      */
     public void setDownloadMode(Boolean downloadMode) {
         this.downloadMode = downloadMode;
@@ -162,8 +91,7 @@ public class PowermaxState {
     /**
      * Get whether or not the zone sensor is tripped
      *
-     * @param zone
-     *            the index of the zone (first zone is index 1)
+     * @param zone the index of the zone (first zone is index 1)
      *
      * @return true when the zone sensor is tripped
      */
@@ -174,10 +102,8 @@ public class PowermaxState {
     /**
      * Set whether or not the zone sensor is tripped
      *
-     * @param zone
-     *            the index of the zone (first zone is index 1)
-     * @param tripped
-     *            true if tripped
+     * @param zone the index of the zone (first zone is index 1)
+     * @param tripped true if tripped
      */
     public void setSensorTripped(int zone, Boolean tripped) {
         if ((zone >= 1) && (zone <= zones.length)) {
@@ -188,8 +114,7 @@ public class PowermaxState {
     /**
      * Get the timestamp when the zone sensor was last tripped
      *
-     * @param zone
-     *            the index of the zone (first zone is index 1)
+     * @param zone the index of the zone (first zone is index 1)
      *
      * @return the timestamp
      */
@@ -200,10 +125,8 @@ public class PowermaxState {
     /**
      * Set the timestamp when the zone sensor was last tripped
      *
-     * @param zone
-     *            the index of the zone (first zone is index 1)
-     * @param lastTripped
-     *            the timestamp
+     * @param zone the index of the zone (first zone is index 1)
+     * @param lastTripped the timestamp
      */
     public void setSensorLastTripped(int zone, Long lastTripped) {
         if ((zone >= 1) && (zone <= zones.length)) {
@@ -212,10 +135,21 @@ public class PowermaxState {
     }
 
     /**
+     * Compare the sensor last trip with a given time
+     *
+     * @param zone the index of the zone (first zone is index 1)
+     * @param refTime the time in ms to compare with
+     *
+     * @return true if the sensor is tripped and last trip is older than the given time
+     */
+    public boolean isLastTripBeforeTime(int zone, long refTime) {
+        return ((zone < 1) || (zone > zones.length)) ? false : zones[zone - 1].isLastTripBeforeTime(refTime);
+    }
+
+    /**
      * Get whether or not the battery of the zone sensor is low
      *
-     * @param zone
-     *            the index of the zone (first zone is index 1)
+     * @param zone the index of the zone (first zone is index 1)
      *
      * @return true when the battery is low
      */
@@ -226,10 +160,8 @@ public class PowermaxState {
     /**
      * Set whether or not the battery of the zone sensor is low
      *
-     * @param zone
-     *            the index of the zone (first zone is index 1)
-     * @param lowBattery
-     *            true if battery is low
+     * @param zone the index of the zone (first zone is index 1)
+     * @param lowBattery true if battery is low
      */
     public void setSensorLowBattery(int zone, Boolean lowBattery) {
         if ((zone >= 1) && (zone <= zones.length)) {
@@ -240,8 +172,7 @@ public class PowermaxState {
     /**
      * Get whether or not the zone sensor is bypassed
      *
-     * @param zone
-     *            the index of the zone (first zone is index 1)
+     * @param zone the index of the zone (first zone is index 1)
      *
      * @return true if bypassed
      */
@@ -252,10 +183,8 @@ public class PowermaxState {
     /**
      * Set whether or not the zone sensor is bypassed
      *
-     * @param zone
-     *            the index of the zone (first zone is index 1)
-     * @param bypassed
-     *            true if bypassed
+     * @param zone the index of the zone (first zone is index 1)
+     * @param bypassed true if bypassed
      */
     public void setSensorBypassed(int zone, Boolean bypassed) {
         if ((zone >= 1) && (zone <= zones.length)) {
@@ -266,8 +195,7 @@ public class PowermaxState {
     /**
      * Get whether or not the zone sensor is armed
      *
-     * @param zone
-     *            the index of the zone (first zone is index 1)
+     * @param zone the index of the zone (first zone is index 1)
      *
      * @return true if armed
      */
@@ -278,10 +206,8 @@ public class PowermaxState {
     /**
      * Set whether or not the zone sensor is armed
      *
-     * @param zone
-     *            the index of the zone (first zone is index 1)
-     * @param armed
-     *            true if armed
+     * @param zone the index of the zone (first zone is index 1)
+     * @param armed true if armed
      */
     public void setSensorArmed(int zone, Boolean armed) {
         if ((zone >= 1) && (zone <= zones.length)) {
@@ -292,8 +218,7 @@ public class PowermaxState {
     /**
      * Get the status of a PGM or X10 device
      *
-     * @param device
-     *            the index of the PGM/X10 device (0 s for PGM; for X10 device is index 1)
+     * @param device the index of the PGM/X10 device (0 s for PGM; for X10 device is index 1)
      *
      * @return the status (true or false)
      */
@@ -304,10 +229,8 @@ public class PowermaxState {
     /**
      * Set the status of a PGM or X10 device
      *
-     * @param device
-     *            the index of the PGM/X10 device (0 s for PGM; for X10 device is index 1)
-     * @param status
-     *            true or false
+     * @param device the index of the PGM/X10 device (0 s for PGM; for X10 device is index 1)
+     * @param status true or false
      */
     public void setPGMX10DeviceStatus(int device, Boolean status) {
         if ((device >= 0) && (device < pgmX10DevicesStatus.length)) {
@@ -327,8 +250,7 @@ public class PowermaxState {
     /**
      * Set whether or not the panel is ready
      *
-     * @param ready
-     *            true if ready
+     * @param ready true if ready
      */
     public void setReady(Boolean ready) {
         this.ready = ready;
@@ -346,8 +268,7 @@ public class PowermaxState {
     /**
      * Set whether or not at least one zone is bypassed
      *
-     * @param bypass
-     *            true if at least one zone is bypassed
+     * @param bypass true if at least one zone is bypassed
      */
     public void setBypass(Boolean bypass) {
         this.bypass = bypass;
@@ -365,8 +286,7 @@ public class PowermaxState {
     /**
      * Set whether or not the alarm is active
      *
-     * @param alarmActive
-     *            true if the alarm is active
+     * @param alarmActive true if the alarm is active
      */
     public void setAlarmActive(Boolean alarmActive) {
         this.alarmActive = alarmActive;
@@ -384,8 +304,7 @@ public class PowermaxState {
     /**
      * Set whether or not the panel is identifying a trouble
      *
-     * @param trouble
-     *            the zone name
+     * @param trouble true if trouble is identified
      */
     public void setTrouble(Boolean trouble) {
         this.trouble = trouble;
@@ -403,8 +322,7 @@ public class PowermaxState {
     /**
      * Set whether or not the panel has saved an alert in memory
      *
-     * @param alertInMemory
-     *            true if an alert is saved in memory
+     * @param alertInMemory true if an alert is saved in memory
      */
     public void setAlertInMemory(Boolean alertInMemory) {
         this.alertInMemory = alertInMemory;
@@ -422,8 +340,7 @@ public class PowermaxState {
     /**
      * Set the partition status
      *
-     * @param statusStr
-     *            the status as a short string
+     * @param statusStr the status as a short string
      */
     public void setStatusStr(String statusStr) {
         this.statusStr = statusStr;
@@ -441,8 +358,7 @@ public class PowermaxState {
     /**
      * Set the arming name
      *
-     * @param armMode
-     *            the arming name
+     * @param armMode the arming name
      */
     public void setArmMode(String armMode) {
         this.armMode = armMode;
@@ -460,8 +376,7 @@ public class PowermaxState {
     /**
      * Set whether or not the setup downloading is required
      *
-     * @param downloadSetupRequired
-     *            true when downloading setup is required
+     * @param downloadSetupRequired true when downloading setup is required
      */
     public void setDownloadSetupRequired(Boolean downloadSetupRequired) {
         this.downloadSetupRequired = downloadSetupRequired;
@@ -479,8 +394,7 @@ public class PowermaxState {
     /**
      * Set the timestamp of the last received "keep alive" message
      *
-     * @param lastKeepAlive
-     *            the timestamp
+     * @param lastKeepAlive the timestamp
      */
     public void setLastKeepAlive(Long lastKeepAlive) {
         this.lastKeepAlive = lastKeepAlive;
@@ -498,8 +412,7 @@ public class PowermaxState {
     /**
      * Set the raw buffer containing all the settings
      *
-     * @param updateSettings
-     *            the raw buffer as a table of bytes
+     * @param updateSettings the raw buffer as a table of bytes
      */
     public void setUpdateSettings(byte[] updateSettings) {
         this.updateSettings = updateSettings;
@@ -517,8 +430,7 @@ public class PowermaxState {
     /**
      * Set the panel status
      *
-     * @param panelStatus
-     *            the status as a short string
+     * @param panelStatus the status as a short string
      */
     public void setPanelStatus(String panelStatus) {
         this.panelStatus = panelStatus;
@@ -536,8 +448,7 @@ public class PowermaxState {
     /**
      * Set the kind of the current alarm identified by the panel
      *
-     * @param alarmType
-     *            the kind of alarm (set it to null if no alarm)
+     * @param alarmType the kind of alarm (set it to null if no alarm)
      */
     public void setAlarmType(String alarmType) {
         this.alarmType = alarmType;
@@ -555,8 +466,7 @@ public class PowermaxState {
     /**
      * Set the kind of the current trouble identified by the panel
      *
-     * @param troubleType
-     *            the kind of trouble (set it to null if no trouble)
+     * @param troubleType the kind of trouble (set it to null if no trouble)
      */
     public void setTroubleType(String troubleType) {
         this.troubleType = troubleType;
@@ -574,21 +484,16 @@ public class PowermaxState {
     /**
      * Set the number of entries in the event log
      *
-     * @param size
-     *            the number of entries
+     * @param size the number of entries
      */
     public void setEventLogSize(int size) {
         eventLog = new String[size];
-        for (int i = 0; i < eventLog.length; i++) {
-            eventLog[i] = null;
-        }
     }
 
     /**
      * Get one entry from the event logs
      *
-     * @param index
-     *            the entry index (1 for the most recent entry)
+     * @param index the entry index (1 for the most recent entry)
      *
      * @return the entry value (event)
      */
@@ -599,10 +504,8 @@ public class PowermaxState {
     /**
      * Set one entry from the event logs
      *
-     * @param index
-     *            the entry index (1 for the most recent entry)
-     * @param event
-     *            the entry value (event)
+     * @param index the entry index (1 for the most recent entry)
+     * @param event the entry value (event)
      */
     public void setEventLog(int index, String event) {
         if ((index >= 1) && (index <= getEventLogSize())) {
@@ -610,7 +513,7 @@ public class PowermaxState {
         }
     }
 
-    public HashMap<Integer, Byte> getUpdatedZoneNames() {
+    public Map<Integer, Byte> getUpdatedZoneNames() {
         return updatedZoneNames;
     }
 
@@ -618,7 +521,7 @@ public class PowermaxState {
         this.updatedZoneNames.put(zoneIdx, zoneNameIdx);
     }
 
-    public HashMap<Integer, Integer> getUpdatedZoneInfos() {
+    public Map<Integer, Integer> getUpdatedZoneInfos() {
         return updatedZoneInfos;
     }
 
@@ -655,16 +558,17 @@ public class PowermaxState {
     /**
      * Get whether or not an arming mode is considered as armed
      *
-     * @param armMode
-     *            the arming mode
+     * @param armMode the arming mode
      *
      * @return true or false; null if mode is unexpected
      */
     private static Boolean isArmed(String armMode) {
         Boolean result = null;
         if (armMode != null) {
-            result = ARMED_TABLE.get(armMode);
-            if (result == null) {
+            try {
+                PowermaxArmMode mode = PowermaxArmMode.fromName(armMode);
+                result = mode.isArmed();
+            } catch (IllegalArgumentException e) {
                 result = Boolean.FALSE;
             }
         }
@@ -681,18 +585,19 @@ public class PowermaxState {
     }
 
     /**
-     * Get the short description associated to an arming mode
+     * Get the short name associated to an arming mode
      *
-     * @param armMode
-     *            the arming mode
+     * @param armMode the arming mode
      *
-     * @return the short description or null if mode is unexpected
+     * @return the short name or null if mode is unexpected
      */
     private static String getShortArmMode(String armMode) {
         String result = null;
         if (armMode != null) {
-            result = ARM_MODE_TABLE.get(armMode);
-            if (result == null) {
+            try {
+                PowermaxArmMode mode = PowermaxArmMode.fromName(armMode);
+                result = mode.getShortName();
+            } catch (IllegalArgumentException e) {
                 result = armMode;
             }
         }
@@ -702,8 +607,7 @@ public class PowermaxState {
     /**
      * Keep only data that are different from another state and reset all others data to undefined
      *
-     * @param otherState
-     *            the other state
+     * @param otherState the other state
      */
     public void keepOnlyDifferencesWith(PowermaxState otherState) {
         for (int i = 1; i <= zones.length; i++) {
@@ -769,8 +673,7 @@ public class PowermaxState {
      * Update (override) the current state data from another state, ignoring in this other state
      * the undefined data
      *
-     * @param update
-     *            the other state to consider for the update
+     * @param update the other state to consider for the update
      */
     public void merge(PowermaxState update) {
         if (update.isPowerlinkMode() != null) {

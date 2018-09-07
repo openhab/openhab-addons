@@ -16,13 +16,17 @@ import org.eclipse.smarthome.core.thing.ThingRegistry;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.io.console.Console;
 import org.eclipse.smarthome.io.console.extensions.AbstractConsoleCommandExtension;
+import org.eclipse.smarthome.io.console.extensions.ConsoleCommandExtension;
 import org.openhab.binding.powermax.handler.PowermaxBridgeHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link PowermaxCommandExtension} is responsible for handling console commands
  *
  * @author Laurent Garnier - Initial contribution
  */
+@Component(service = ConsoleCommandExtension.class, configurationPid = "binding.powermax.console")
 public class PowermaxCommandExtension extends AbstractConsoleCommandExtension {
 
     private static final String INFO_SETUP = "info_setup";
@@ -79,6 +83,7 @@ public class PowermaxCommandExtension extends AbstractConsoleCommandExtension {
                 buildCommandUsage("<bridgeUID> " + DOWNLOAD_SETUP, "download setup") });
     }
 
+    @Reference
     protected void setThingRegistry(ThingRegistry thingRegistry) {
         this.thingRegistry = thingRegistry;
     }

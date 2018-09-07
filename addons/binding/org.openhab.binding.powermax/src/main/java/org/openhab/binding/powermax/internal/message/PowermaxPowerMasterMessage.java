@@ -13,8 +13,7 @@ import org.openhab.binding.powermax.internal.state.PowermaxState;
 /**
  * A class for PowerMaster message handling
  *
- * @author Laurent Garnier
- * @since 1.9.0
+ * @author Laurent Garnier - Initial contribution
  */
 public class PowermaxPowerMasterMessage extends PowermaxBaseMessage {
 
@@ -29,17 +28,20 @@ public class PowermaxPowerMasterMessage extends PowermaxBaseMessage {
     }
 
     @Override
-    public PowermaxState handleMessage() {
-        super.handleMessage();
+    public PowermaxState handleMessage(PowermaxCommManager commManager) {
+        super.handleMessage(commManager);
+
+        if (commManager == null) {
+            return null;
+        }
 
         byte[] message = getRawData();
         byte msgType = message[2];
         byte subType = message[3];
 
         if ((msgType == 0x03) && (subType == 0x39)) {
-            PowermaxCommDriver comm = PowermaxCommDriver.getTheCommDriver();
-            comm.sendMessage(PowermaxSendType.POWERMASTER_ZONE_STAT1);
-            comm.sendMessage(PowermaxSendType.POWERMASTER_ZONE_STAT2);
+            commManager.sendMessage(PowermaxSendType.POWERMASTER_ZONE_STAT1);
+            commManager.sendMessage(PowermaxSendType.POWERMASTER_ZONE_STAT2);
         }
 
         return null;

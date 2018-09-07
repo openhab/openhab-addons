@@ -14,7 +14,7 @@ import java.util.Arrays;
 
 import javax.xml.bind.DatatypeConverter;
 
-import org.openhab.binding.powermax.internal.message.PowermaxCommDriver;
+import org.openhab.binding.powermax.internal.message.PowermaxCommManager;
 import org.openhab.binding.powermax.internal.message.PowermaxReceiveType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,8 +22,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A class that reads messages from the Visonic alarm panel in a dedicated thread
  *
- * @author Laurent Garnier
- * @since 1.9.0
+ * @author Laurent Garnier - Initial contribution
  */
 public class PowermaxReaderThread extends Thread {
 
@@ -37,10 +36,8 @@ public class PowermaxReaderThread extends Thread {
     /**
      * Constructor
      *
-     * @param in
-     *            the input stream
-     * @param connector
-     *            the object that should handle the received message
+     * @param in the input stream
+     * @param connector the object that should handle the received message
      */
     public PowermaxReaderThread(PowermaxConnector connector) {
         this.connector = connector;
@@ -50,7 +47,7 @@ public class PowermaxReaderThread extends Thread {
     public void run() {
         logger.debug("Data listener started");
 
-        byte[] tmpData = new byte[READ_BUFFER_SIZE];
+        byte[] readDataBuffer = new byte[READ_BUFFER_SIZE];
         byte[] dataBuffer = new byte[MAX_MSG_SIZE];
         int index = 0;
         int msgLen = 0;
@@ -58,7 +55,7 @@ public class PowermaxReaderThread extends Thread {
 
         try {
             while (!Thread.interrupted()) {
-                int len = connector.read(tmpData);
+                int len = connector.read(readDataBuffer);
                 if (len > 0) {
                     for (int i = 0; i < len; i++) {
                         if (index >= MAX_MSG_SIZE) {
@@ -70,28 +67,28 @@ public class PowermaxReaderThread extends Thread {
                             index = 0;
                         }
 
-                        if (index == 0 && tmpData[i] == 0x0D) {
+                        if (index == 0 && readDataBuffer[i] == 0x0D) {
                             // Preamble
 
-                            dataBuffer[index++] = tmpData[i];
+                            dataBuffer[index++] = readDataBuffer[i];
                         } else if (index > 0) {
-                            dataBuffer[index++] = tmpData[i];
+                            dataBuffer[index++] = readDataBuffer[i];
 
                             if (index == 2) {
                                 try {
-                                    PowermaxReceiveType msgType = PowermaxReceiveType.fromCode(tmpData[i]);
+                                    PowermaxReceiveType msgType = PowermaxReceiveType.fromCode(readDataBuffer[i]);
                                     msgLen = msgType.getLength();
-                                    variableLen = ((tmpData[i] & 0x000000FF) > 0x10) && (msgLen == 0);
+                                    variableLen = ((readDataBuffer[i] & 0x000000FF) > 0x10) && (msgLen == 0);
                                 } catch (IllegalArgumentException arg0) {
                                     msgLen = 0;
                                     variableLen = false;
                                 }
                             } else if (index == 5 && variableLen) {
-                                msgLen = (tmpData[i] & 0x000000FF) + 7;
-                            } else if ((msgLen == 0 && tmpData[i] == 0x0A) || (index == msgLen)) {
+                                msgLen = (readDataBuffer[i] & 0x000000FF) + 7;
+                            } else if ((msgLen == 0 && readDataBuffer[i] == 0x0A) || (index == msgLen)) {
                                 // Postamble
 
-                                if (tmpData[i] != 0x0A && dataBuffer[index - 1] == 0x43) {
+                                if (readDataBuffer[i] != 0x0A && dataBuffer[index - 1] == 0x43) {
                                     // adjust message length for 0x43
                                     msgLen++;
                                 } else if (checkCRC(dataBuffer, index)) {
@@ -135,15 +132,13 @@ public class PowermaxReaderThread extends Thread {
     /**
      * Check if the CRC inside a received message is valid or not
      *
-     * @param data
-     *            the buffer containing the message
-     * @param len
-     *            the size of the message in the buffer
+     * @param data the buffer containing the message
+     * @param len the size of the message in the buffer
      *
      * @return true if the CRC is valid or false if not
      */
     private boolean checkCRC(byte[] data, int len) {
-        byte checksum = PowermaxCommDriver.computeCRC(data, len);
+        byte checksum = PowermaxCommManager.computeCRC(data, len);
         byte expected = data[len - 2];
         if (checksum != expected) {
             byte[] logData = Arrays.copyOf(data, len);

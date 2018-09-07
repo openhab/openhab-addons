@@ -23,8 +23,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A class for the communication with the Visonic alarm panel through a TCP connection
  *
- * @author Laurent Garnier
- * @since 1.9.0
+ * @author Laurent Garnier - Initial contribution
  */
 public class PowermaxTcpConnector extends PowermaxConnector {
 
@@ -38,18 +37,14 @@ public class PowermaxTcpConnector extends PowermaxConnector {
     /**
      * Constructor.
      *
-     * @param ip
-     *            IP address
-     * @param port
-     *            TCP port number
-     * @param timeout
-     *            timeout for socket communications
+     * @param ip the IP address
+     * @param port the TCP port number
+     * @param timeout the timeout for socket communications
      */
     public PowermaxTcpConnector(String ip, int port, int timeout) {
         ipAddress = ip;
         tcpPort = port;
         connectTimeout = timeout;
-        tcpSocket = null;
     }
 
     @Override

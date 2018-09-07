@@ -11,8 +11,7 @@ package org.openhab.binding.powermax.internal.state;
 /**
  * A class to store the settings of a zone
  *
- * @author Laurent Garnier
- * @since 1.9.0
+ * @author Laurent Garnier - Initial contribution
  */
 public class PowermaxZoneSettings {
 
@@ -49,8 +48,7 @@ public class PowermaxZoneSettings {
     /**
      * Set the zone name
      *
-     * @param name
-     *            the zone name
+     * @param name the zone name
      */
     public void setName(String name) {
         this.name = name;
@@ -66,8 +64,7 @@ public class PowermaxZoneSettings {
     /**
      * Set the zone type
      *
-     * @param type
-     *            the zone type as an internal code
+     * @param type the zone type as an internal code
      */
     public void setType(byte type) {
         this.type = ((type & 0x000000FF) < ZONE_TYPES.length) ? ZONE_TYPES[type & 0x000000FF] : null;
@@ -89,16 +86,21 @@ public class PowermaxZoneSettings {
     /**
      * Set the sensor type of this zone
      *
-     * @param sensorType
-     *            the sensor type
+     * @param sensorType the sensor type
      */
     public void setSensorType(String sensorType) {
         this.sensorType = sensorType;
     }
 
     /**
-     * @param number
-     *            the partition number (first partition is number 1)
+     * @return true if the sensor type of this zone is a motion sensor
+     */
+    public boolean isMotionSensor() {
+        return PowermaxSensorType.MOTION_SENSOR_1.getLabel().equalsIgnoreCase(getSensorType());
+    }
+
+    /**
+     * @param number the partition number (first partition is number 1)
      *
      * @return true if the zone is attached to this partition; false if not
      */

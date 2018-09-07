@@ -10,11 +10,12 @@ package org.openhab.binding.powermax.internal.connector;
 
 import java.io.IOException;
 
+import org.openhab.binding.powermax.internal.message.PowermaxMessageEventListener;
+
 /**
  * Interface for communication with the Visonic alarm panel
  *
- * @author Laurent Garnier
- * @since 1.9.0
+ * @author Laurent Garnier - Initial contribution
  */
 public interface PowermaxConnectorInterface {
 
@@ -38,33 +39,29 @@ public interface PowermaxConnectorInterface {
     /**
      * Method for sending a message to the Visonic alarm panel
      *
-     * @param data
-     *            the message as a table of bytes
+     * @param data the message as a table of bytes
      **/
     public void sendMessage(byte[] data);
 
     /**
      * Method for reading data from the Visonic alarm panel
      *
-     * @param buffer
-     *            the buffer into which the data is read
+     * @param buffer the buffer into which the data is read
      **/
     public int read(byte[] buffer) throws IOException;
 
     /**
      * Method for registering an event listener
      *
-     * @param listener
-     *            the listener to be registered
+     * @param listener the listener to be registered
      */
-    public void addEventListener(PowermaxEventListener listener);
+    public void addEventListener(PowermaxMessageEventListener listener);
 
     /**
      * Method for removing an event listener
      *
-     * @param listener
-     *            the listener to be removed
+     * @param listener the listener to be removed
      */
-    public void removeEventListener(PowermaxEventListener listener);
+    public void removeEventListener(PowermaxMessageEventListener listener);
 
 }

@@ -20,10 +20,10 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.powermax.PowermaxBindingConstants;
 import org.openhab.binding.powermax.handler.PowermaxBridgeHandler;
 import org.openhab.binding.powermax.handler.PowermaxThingHandler;
-import org.openhab.binding.powermax.internal.PowermaxPanelSettingsListener;
 import org.openhab.binding.powermax.internal.config.PowermaxX10Configuration;
 import org.openhab.binding.powermax.internal.config.PowermaxZoneConfiguration;
 import org.openhab.binding.powermax.internal.state.PowermaxPanelSettings;
+import org.openhab.binding.powermax.internal.state.PowermaxPanelSettingsListener;
 import org.openhab.binding.powermax.internal.state.PowermaxX10Settings;
 import org.openhab.binding.powermax.internal.state.PowermaxZoneSettings;
 import org.slf4j.Logger;
@@ -69,7 +69,7 @@ public class PowermaxDiscoveryService extends AbstractDiscoveryService implement
     @Override
     protected void startScan() {
         logger.debug("Updating discovered things (new scan)");
-        updateFromSettings(PowermaxPanelSettings.getThePanelSettings());
+        updateFromSettings(bridgeHandler.getPanelSettings());
     }
 
     @Override
@@ -79,9 +79,10 @@ public class PowermaxDiscoveryService extends AbstractDiscoveryService implement
     }
 
     @Override
-    public void onZoneSettingsUpdated(int zoneNumber, PowermaxZoneSettings settings) {
+    public void onZoneSettingsUpdated(int zoneNumber, PowermaxPanelSettings settings) {
         logger.debug("Updating discovered things (zone {} updated)", zoneNumber);
-        updateFromZoneSettings(zoneNumber, settings);
+        PowermaxZoneSettings zoneSettings = (settings == null) ? null : settings.getZoneSettings(zoneNumber);
+        updateFromZoneSettings(zoneNumber, zoneSettings);
     }
 
     private void updateFromSettings(PowermaxPanelSettings settings) {
@@ -121,11 +122,11 @@ public class PowermaxDiscoveryService extends AbstractDiscoveryService implement
             ThingUID thingUID = new ThingUID(PowermaxBindingConstants.THING_TYPE_ZONE, bridgeUID,
                     String.valueOf(zoneNumber));
             String sensorType = zoneSettings.getSensorType();
-            if (sensorType.equalsIgnoreCase("Unknown")) {
+            if ("unknown".equalsIgnoreCase(sensorType)) {
                 sensorType = "Sensor";
             }
             String name = zoneSettings.getName();
-            if (name.equalsIgnoreCase("Unknown")) {
+            if ("unknown".equalsIgnoreCase(name)) {
                 name = "Alarm Zone " + zoneNumber;
             }
             name = sensorType + " " + name;

@@ -13,8 +13,7 @@ import org.openhab.binding.powermax.internal.state.PowermaxState;
 /**
  * A class for ACK message handling
  *
- * @author Laurent Garnier
- * @since 1.9.0
+ * @author Laurent Garnier - Initial contribution
  */
 public class PowermaxAckMessage extends PowermaxBaseMessage {
 
@@ -29,13 +28,17 @@ public class PowermaxAckMessage extends PowermaxBaseMessage {
     }
 
     @Override
-    public PowermaxState handleMessage() {
-        super.handleMessage();
+    public PowermaxState handleMessage(PowermaxCommManager commManager) {
+        super.handleMessage(commManager);
+
+        if (commManager == null) {
+            return null;
+        }
 
         PowermaxState updatedState = null;
 
-        if (PowermaxCommDriver.getTheCommDriver().getLastSendMsg().getSendType() == PowermaxSendType.EXIT) {
-            updatedState = new PowermaxState();
+        if (commManager.getLastSendMsg().getSendType() == PowermaxSendType.EXIT) {
+            updatedState = commManager.createNewState();
             updatedState.setPowerlinkMode(true);
             updatedState.setDownloadMode(false);
         }

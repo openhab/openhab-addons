@@ -16,6 +16,8 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.openhab.binding.powermax.internal.message.PowermaxBaseMessage;
+import org.openhab.binding.powermax.internal.message.PowermaxMessageEvent;
+import org.openhab.binding.powermax.internal.message.PowermaxMessageEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,8 +25,7 @@ import org.slf4j.LoggerFactory;
  * An abstract class for the communication with the Visonic alarm panel that
  * handles stuff common to all communication types
  *
- * @author Laurent Garnier
- * @since 1.9.0
+ * @author Laurent Garnier - Initial contribution
  */
 public abstract class PowermaxConnector implements PowermaxConnectorInterface {
 
@@ -32,10 +33,10 @@ public abstract class PowermaxConnector implements PowermaxConnectorInterface {
 
     private InputStream input;
     private OutputStream output;
-    private boolean connected = false;
+    private boolean connected;
     private Thread readerThread;
-    private long waitingForResponse = 0;
-    private List<PowermaxEventListener> listeners = new ArrayList<PowermaxEventListener>();
+    private long waitingForResponse;
+    private List<PowermaxMessageEventListener> listeners = new ArrayList<>();
 
     @Override
     public abstract void open();
@@ -75,15 +76,15 @@ public abstract class PowermaxConnector implements PowermaxConnectorInterface {
     /**
      * Handles an incoming message
      *
-     * @param incomingMessage
-     *            the received message as a table of bytes
+     * @param incomingMessage the received message as a table of bytes
      */
     public void handleIncomingMessage(byte[] incomingMessage) {
-        PowermaxEvent event = new PowermaxEvent(this, PowermaxBaseMessage.getMessageObject(incomingMessage));
+        PowermaxMessageEvent event = new PowermaxMessageEvent(this,
+                PowermaxBaseMessage.getMessageHandler(incomingMessage));
 
         // send message to event listeners
         for (int i = 0; i < listeners.size(); i++) {
-            listeners.get(i).powermaxEventReceived(event);
+            listeners.get(i).onNewMessageEvent(event);
         }
     }
 
@@ -95,9 +96,6 @@ public abstract class PowermaxConnector implements PowermaxConnectorInterface {
         } catch (IOException e) {
             logger.debug("sendMessage(): Writing error: {}", e.getMessage(), e);
             setConnected(false);
-        } catch (Exception e) {
-            logger.debug("sendMessage(): Writing error: {}", e.getMessage(), e);
-            setConnected(false);
         }
     }
 
@@ -107,12 +105,12 @@ public abstract class PowermaxConnector implements PowermaxConnectorInterface {
     }
 
     @Override
-    public void addEventListener(PowermaxEventListener listener) {
+    public void addEventListener(PowermaxMessageEventListener listener) {
         listeners.add(listener);
     }
 
     @Override
-    public void removeEventListener(PowermaxEventListener listener) {
+    public void removeEventListener(PowermaxMessageEventListener listener) {
         listeners.remove(listener);
     }
 
@@ -126,8 +124,7 @@ public abstract class PowermaxConnector implements PowermaxConnectorInterface {
     /**
      * Set the input stream
      *
-     * @param input
-     *            the input stream
+     * @param input the input stream
      */
     public void setInput(InputStream input) {
         this.input = input;
@@ -143,8 +140,7 @@ public abstract class PowermaxConnector implements PowermaxConnectorInterface {
     /**
      * Set the output stream
      *
-     * @param output
-     *            the output stream
+     * @param output the output stream
      */
     public void setOutput(OutputStream output) {
         this.output = output;
@@ -161,8 +157,7 @@ public abstract class PowermaxConnector implements PowermaxConnectorInterface {
     /**
      * Set the connection state
      *
-     * @param connected
-     *            true if connected or false if not
+     * @param connected true if connected or false if not
      */
     public void setConnected(boolean connected) {
         this.connected = connected;
@@ -178,8 +173,7 @@ public abstract class PowermaxConnector implements PowermaxConnectorInterface {
     /**
      * Set the thread that handles the message reading
      *
-     * @param readerThread
-     *            the thread
+     * @param readerThread the thread
      */
     public void setReaderThread(Thread readerThread) {
         this.readerThread = readerThread;
@@ -195,8 +189,7 @@ public abstract class PowermaxConnector implements PowermaxConnectorInterface {
     /**
      * Set the start time of the time frame to receive a response
      *
-     * @param timeLastReceive
-     *            the time in milliseconds
+     * @param timeLastReceive the time in milliseconds
      */
     public synchronized void setWaitingForResponse(long waitingForResponse) {
         this.waitingForResponse = waitingForResponse;

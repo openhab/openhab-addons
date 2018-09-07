@@ -15,8 +15,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A class for POWERLINK message handling
  *
- * @author Laurent Garnier
- * @since 1.9.0
+ * @author Laurent Garnier - Initial contribution
  */
 public class PowermaxPowerlinkMessage extends PowermaxBaseMessage {
 
@@ -33,27 +32,30 @@ public class PowermaxPowerlinkMessage extends PowermaxBaseMessage {
     }
 
     @Override
-    public PowermaxState handleMessage() {
-        super.handleMessage();
+    public PowermaxState handleMessage(PowermaxCommManager commManager) {
+        super.handleMessage(commManager);
+
+        if (commManager == null) {
+            return null;
+        }
 
         PowermaxState updatedState = null;
 
         byte[] message = getRawData();
         byte subType = message[2];
 
-        PowermaxCommDriver comm = PowermaxCommDriver.getTheCommDriver();
         if (subType == 0x03) {
             // keep alive message
-            comm.sendAck(this, (byte) 0x02);
-            updatedState = new PowermaxState();
+            commManager.sendAck(this, (byte) 0x02);
+            updatedState = commManager.createNewState();
             updatedState.setLastKeepAlive(System.currentTimeMillis());
         } else if (subType == 0x0A && message[4] == 0x01) {
             logger.info("Powermax alarm binding: Enrolling Powerlink");
-            comm.enrollPowerlink();
-            updatedState = new PowermaxState();
+            commManager.enrollPowerlink();
+            updatedState = commManager.createNewState();
             updatedState.setDownloadSetupRequired(true);
         } else {
-            comm.sendAck(this, (byte) 0x02);
+            commManager.sendAck(this, (byte) 0x02);
         }
 
         return updatedState;

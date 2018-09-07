@@ -27,8 +27,7 @@ import gnu.io.UnsupportedCommOperationException;
 /**
  * A class for the communication with the Visonic alarm panel through a serial connection
  *
- * @author Laurent Garnier
- * @since 1.9.0
+ * @author Laurent Garnier - Initial contribution
  */
 public class PowermaxSerialConnector extends PowermaxConnector implements SerialPortEventListener {
 
@@ -41,10 +40,8 @@ public class PowermaxSerialConnector extends PowermaxConnector implements Serial
     /**
      * Constructor
      *
-     * @param serialPortName
-     *            the serial port name
-     * @param baudRate
-     *            the baud rate to be used
+     * @param serialPortName the serial port name
+     * @param baudRate the baud rate to be used
      */
     public PowermaxSerialConnector(String serialPortName, int baudRate) {
         this.serialPortName = serialPortName;

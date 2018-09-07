@@ -22,10 +22,12 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.powermax.handler.PowermaxBridgeHandler;
 import org.openhab.binding.powermax.handler.PowermaxThingHandler;
 import org.openhab.binding.powermax.internal.discovery.PowermaxDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * The {@link PowermaxHandlerFactory} is responsible for creating things and thing
@@ -33,6 +35,7 @@ import org.osgi.framework.ServiceRegistration;
  *
  * @author Laurent Garnier - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.powermax")
 public class PowermaxHandlerFactory extends BaseThingHandlerFactory {
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
@@ -49,7 +52,7 @@ public class PowermaxHandlerFactory extends BaseThingHandlerFactory {
             return super.createThing(thingTypeUID, configuration, thingUID, null);
         } else if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             ThingUID newThingUID;
-            if (bridgeUID != null) {
+            if (bridgeUID != null && thingUID != null) {
                 newThingUID = new ThingUID(thingTypeUID, bridgeUID, thingUID.getId());
             } else {
                 newThingUID = thingUID;
@@ -81,24 +84,24 @@ public class PowermaxHandlerFactory extends BaseThingHandlerFactory {
             // remove discovery service, if bridge handler is removed
             unregisterDiscoveryService((PowermaxBridgeHandler) thingHandler);
         }
-        super.removeHandler(thingHandler);
     }
 
-    private void registerDiscoveryService(PowermaxBridgeHandler bridgeHandler) {
+    private synchronized void registerDiscoveryService(PowermaxBridgeHandler bridgeHandler) {
         PowermaxDiscoveryService discoveryService = new PowermaxDiscoveryService(bridgeHandler);
         discoveryService.activate();
         discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
     }
 
-    private void unregisterDiscoveryService(PowermaxBridgeHandler bridgeHandler) {
-        ServiceRegistration<?> serviceReg = discoveryServiceRegs.get(bridgeHandler.getThing().getUID());
+    private synchronized void unregisterDiscoveryService(PowermaxBridgeHandler bridgeHandler) {
+        ServiceRegistration<?> serviceReg = discoveryServiceRegs.remove(bridgeHandler.getThing().getUID());
         if (serviceReg != null) {
-            PowermaxDiscoveryService discoveryService = (PowermaxDiscoveryService) bundleContext
+            PowermaxDiscoveryService service = (PowermaxDiscoveryService) bundleContext
                     .getService(serviceReg.getReference());
-            discoveryService.deactivate();
             serviceReg.unregister();
-            discoveryServiceRegs.remove(bridgeHandler.getThing().getUID());
+            if (service != null) {
+                service.deactivate();
+            }
         }
     }
 }

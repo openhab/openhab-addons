@@ -11,8 +11,7 @@ package org.openhab.binding.powermax.internal.message;
 /**
  * Used to map messages to be sent to the Visonic alarm panel to a ENUM value
  *
- * @author Laurent Garnier
- * @since 1.9.0
+ * @author Laurent Garnier - Initial contribution
  */
 public enum PowermaxSendType {
 

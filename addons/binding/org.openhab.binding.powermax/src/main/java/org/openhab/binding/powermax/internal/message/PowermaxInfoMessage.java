@@ -16,18 +16,11 @@ import org.slf4j.LoggerFactory;
 /**
  * A class for INFO message handling
  *
- * @author Laurent Garnier
- * @since 1.9.0
+ * @author Laurent Garnier - Initial contribution
  */
 public class PowermaxInfoMessage extends PowermaxBaseMessage {
 
     private final Logger logger = LoggerFactory.getLogger(PowermaxInfoMessage.class);
-
-    /**
-     * Whether an automatic sync time is requested when handling the INFO
-     * message
-     */
-    private boolean autoSyncTime = false;
 
     /**
      * Constructor
@@ -39,29 +32,15 @@ public class PowermaxInfoMessage extends PowermaxBaseMessage {
         super(message);
     }
 
-    /**
-     * @return true if automatic sync time is requested; false if not
-     */
-    public boolean isAutoSyncTime() {
-        return autoSyncTime;
-    }
-
-    /**
-     * Set whether an automatic sync time is requested when handling the INFO
-     * message
-     *
-     * @param autoSyncTime
-     *            true if automatic sync time is requested; false if not
-     */
-    public void setAutoSyncTime(boolean autoSyncTime) {
-        this.autoSyncTime = autoSyncTime;
-    }
-
     @Override
-    public PowermaxState handleMessage() {
-        super.handleMessage();
+    public PowermaxState handleMessage(PowermaxCommManager commManager) {
+        super.handleMessage(commManager);
 
-        PowermaxState updatedState = new PowermaxState();
+        if (commManager == null) {
+            return null;
+        }
+
+        PowermaxState updatedState = commManager.createNewState();
 
         byte[] message = getRawData();
 
@@ -75,18 +54,15 @@ public class PowermaxInfoMessage extends PowermaxBaseMessage {
 
         logger.debug("Reading panel settings");
         updatedState.setDownloadMode(true);
-        PowermaxCommDriver comm = PowermaxCommDriver.getTheCommDriver();
-        comm.sendMessage(PowermaxSendType.DL_PANELFW);
-        comm.sendMessage(PowermaxSendType.DL_SERIAL);
-        comm.sendMessage(PowermaxSendType.DL_ZONESTR);
-        if (isAutoSyncTime()) {
-            comm.sendSetTime();
-        }
+        commManager.sendMessage(PowermaxSendType.DL_PANELFW);
+        commManager.sendMessage(PowermaxSendType.DL_SERIAL);
+        commManager.sendMessage(PowermaxSendType.DL_ZONESTR);
+        commManager.sendSetTime();
         if ((panelType != null) && panelType.isPowerMaster()) {
-            comm.sendMessage(PowermaxSendType.DL_MR_SIRKEYZON);
+            commManager.sendMessage(PowermaxSendType.DL_MR_SIRKEYZON);
         }
-        comm.sendMessage(PowermaxSendType.START);
-        comm.sendMessage(PowermaxSendType.EXIT);
+        commManager.sendMessage(PowermaxSendType.START);
+        commManager.sendMessage(PowermaxSendType.EXIT);
 
         return updatedState;
     }

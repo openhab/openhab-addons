@@ -12,7 +12,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 
 import org.openhab.binding.powermax.internal.message.PowermaxSendType;
 import org.slf4j.Logger;
@@ -21,8 +20,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A class to store all the settings of the alarm system
  *
- * @author Laurent Garnier
- * @since 1.9.0
+ * @author Laurent Garnier - Initial contribution
  */
 public class PowermaxPanelSettings {
 
@@ -31,15 +29,10 @@ public class PowermaxPanelSettings {
     /** Number of PGM and X10 devices managed by the system */
     private static final int NB_PGM_X10_DEVICES = 16;
 
-    /** The unique instance of this class */
-    private static PowermaxPanelSettings thePanelSettings = null;
-
     /** Raw buffers for settings */
     private Byte[][] rawSettings;
 
     private PowermaxPanelType panelType;
-    private HashMap<Byte, String> sensorTypes;
-    private String[] zoneNames;
     private String[] phoneNumbers;
     private int bellTime;
     private boolean silentPanic;
@@ -59,78 +52,16 @@ public class PowermaxPanelSettings {
     /**
      * Constructor
      *
-     * @param defaultPanelType
-     *            the default panel type to consider
+     * @param defaultPanelType the default panel type to consider
      */
-    private PowermaxPanelSettings(PowermaxPanelType defaultPanelType) {
+    public PowermaxPanelSettings(PowermaxPanelType defaultPanelType) {
         rawSettings = new Byte[0x100][];
-        for (int i = 0; i < 0x100; i++) {
-            rawSettings[i] = null;
-        }
         panelType = defaultPanelType;
-        sensorTypes = new HashMap<Byte, String>();
-        if (panelType.isPowerMaster()) {
-            sensorTypes.put((byte) 0x01, "Motion");
-            sensorTypes.put((byte) 0x04, "Camera");
-            sensorTypes.put((byte) 0x16, "Smoke");
-            sensorTypes.put((byte) 0x1A, "Temperature");
-            sensorTypes.put((byte) 0x2A, "Magnet");
-            sensorTypes.put((byte) 0xFE, "Wired");
-        } else {
-            sensorTypes.put((byte) 0x03, "Motion");
-            sensorTypes.put((byte) 0x04, "Motion");
-            sensorTypes.put((byte) 0x05, "Magnet");
-            sensorTypes.put((byte) 0x06, "Magnet");
-            sensorTypes.put((byte) 0x07, "Magnet");
-            sensorTypes.put((byte) 0x0A, "Smoke");
-            sensorTypes.put((byte) 0x0B, "Gas");
-            sensorTypes.put((byte) 0x0C, "Motion");
-            sensorTypes.put((byte) 0x0F, "Wired");
-        }
-        zoneNames = new String[] { "Attic", "Back door", "Basement", "Bathroom", "Bedroom", "Child room", "Closet",
-                "Den", "Dining room", "Downstairs", "Emergency", "Fire", "Front door", "Garage", "Garage door",
-                "Guest room", "Hall", "Kitchen", "Laundry room", "Living room", "Master bathroom", "Master bedroom",
-                "Office", "Upstairs", "Utility room", "Yard", "Custom 1", "Custom 2", "Custom 3", "Custom4", "Custom 5",
-                "Not Installed" };
-        phoneNumbers = new String[] { null, null, null, null };
+        phoneNumbers = new String[4];
         bellTime = 4;
-        silentPanic = false;
-        quickArm = false;
-        bypassEnabled = false;
-        partitionsEnabled = false;
-        pinCodes = null;
-        panelEprom = null;
-        panelSoftware = null;
-        panelSerial = null;
         int zoneCnt = panelType.getWireless() + panelType.getWired();
         zoneSettings = new PowermaxZoneSettings[zoneCnt];
-        for (int i = 0; i < zoneCnt; i++) {
-            zoneSettings[i] = null;
-        }
         x10Settings = new PowermaxX10Settings[NB_PGM_X10_DEVICES];
-        for (int i = 0; i < NB_PGM_X10_DEVICES; i++) {
-            x10Settings[i] = null;
-        }
-        keypad1wEnrolled = null;
-        keypad2wEnrolled = null;
-        sirensEnrolled = null;
-    }
-
-    /**
-     * Initialize new panel settings
-     * Has to be called before using the class
-     */
-    public static void initPanelSettings(PowermaxPanelType panelType) {
-        thePanelSettings = new PowermaxPanelSettings(panelType);
-    }
-
-    /**
-     * Get the panel settings
-     *
-     * @return the unique instance of class PowermaxPanelSettings
-     */
-    public static PowermaxPanelSettings getThePanelSettings() {
-        return thePanelSettings;
     }
 
     /**
@@ -185,8 +116,7 @@ public class PowermaxPanelSettings {
     /**
      * Get the settings relative to a zone
      *
-     * @param zone
-     *            the zone index (from 1 to NumberOfZones)
+     * @param zone the zone index (from 1 to NumberOfZones)
      *
      * @return the settings of the zone
      */
@@ -213,8 +143,7 @@ public class PowermaxPanelSettings {
     /**
      * Get the settings relative to a X10 device
      *
-     * @param idx
-     *            the index (from 1 to 15)
+     * @param idx the index (from 1 to 15)
      *
      * @return the settings of the X10 device
      */
@@ -223,8 +152,7 @@ public class PowermaxPanelSettings {
     }
 
     /**
-     * @param idx
-     *            the keypad index (first is 1)
+     * @param idx the keypad index (first is 1)
      *
      * @return true if the 1 way keypad is enrolled; false if not
      */
@@ -234,8 +162,7 @@ public class PowermaxPanelSettings {
     }
 
     /**
-     * @param idx
-     *            the keypad index (first is 1)
+     * @param idx the keypad index (first is 1)
      *
      * @return true if the 2 way keypad is enrolled; false if not
      */
@@ -245,8 +172,7 @@ public class PowermaxPanelSettings {
     }
 
     /**
-     * @param idx
-     *            the siren index (first is 1)
+     * @param idx the siren index (first is 1)
      *
      * @return true if the siren is enrolled; false if not
      */
@@ -286,9 +212,6 @@ public class PowermaxPanelSettings {
             }
             if (rawSettings[i] == null) {
                 rawSettings[i] = new Byte[0x100];
-                for (int j = 0; j < 0x100; j++) {
-                    rawSettings[i][j] = null;
-                }
             }
             for (int j = start; j <= end; j++) {
                 rawSettings[i][j] = data[index++];
@@ -399,12 +322,9 @@ public class PowermaxPanelSettings {
     /**
      * Process and store all the panel settings from the raw buffers
      *
-     * @param PowerlinkMode
-     *            true if in Powerlink mode or false if in standard mode
-     * @param defaultPanelType
-     *            the default panel type to consider if not found in the raw buffers
-     * @param timeSet
-     *            the time in milliseconds used to set time and date; null if no sync time requested
+     * @param PowerlinkMode true if in Powerlink mode or false if in standard mode
+     * @param defaultPanelType the default panel type to consider if not found in the raw buffers
+     * @param timeSet the time in milliseconds used to set time and date; null if no sync time requested
      *
      * @return true if no problem encountered to get all the settings; false if not
      */
@@ -433,26 +353,6 @@ public class PowermaxPanelSettings {
             }
         }
 
-        sensorTypes = new HashMap<Byte, String>();
-        if (panelType.isPowerMaster()) {
-            sensorTypes.put((byte) 0x01, "Motion");
-            sensorTypes.put((byte) 0x04, "Camera");
-            sensorTypes.put((byte) 0x16, "Smoke");
-            sensorTypes.put((byte) 0x1A, "Temperature");
-            sensorTypes.put((byte) 0x2A, "Magnet");
-            sensorTypes.put((byte) 0xFE, "Wired");
-        } else {
-            sensorTypes.put((byte) 0x03, "Motion");
-            sensorTypes.put((byte) 0x04, "Motion");
-            sensorTypes.put((byte) 0x05, "Magnet");
-            sensorTypes.put((byte) 0x06, "Magnet");
-            sensorTypes.put((byte) 0x07, "Magnet");
-            sensorTypes.put((byte) 0x0A, "Smoke");
-            sensorTypes.put((byte) 0x0B, "Gas");
-            sensorTypes.put((byte) 0x0C, "Motion");
-            sensorTypes.put((byte) 0x0F, "Wired");
-        }
-
         int zoneCnt = panelType.getWireless() + panelType.getWired();
         int customCnt = panelType.getCustomZones();
         int userCnt = panelType.getUserCodes();
@@ -461,44 +361,21 @@ public class PowermaxPanelSettings {
         int keypad1wCnt = panelType.getKeypads1w();
         int keypad2wCnt = panelType.getKeypads2w();
 
-        zoneNames = new String[] { "Attic", "Back door", "Basement", "Bathroom", "Bedroom", "Child room", "Closet",
-                "Den", "Dining room", "Downstairs", "Emergency", "Fire", "Front door", "Garage", "Garage door",
-                "Guest room", "Hall", "Kitchen", "Laundry room", "Living room", "Master bathroom", "Master bedroom",
-                "Office", "Upstairs", "Utility room", "Yard", "Custom 1", "Custom 2", "Custom 3", "Custom 4",
-                "Custom 5", "Not Installed" };
-        phoneNumbers = new String[] { null, null, null, null };
+        phoneNumbers = new String[4];
         bellTime = 4;
         silentPanic = false;
         quickArm = false;
         bypassEnabled = false;
         partitionsEnabled = false;
         pinCodes = new String[userCnt];
-        for (int i = 0; i < userCnt; i++) {
-            pinCodes[i] = null;
-        }
         panelEprom = null;
         panelSoftware = null;
         panelSerial = null;
         zoneSettings = new PowermaxZoneSettings[zoneCnt];
-        for (int i = 0; i < zoneCnt; i++) {
-            zoneSettings[i] = null;
-        }
         x10Settings = new PowermaxX10Settings[NB_PGM_X10_DEVICES];
-        for (int i = 0; i < NB_PGM_X10_DEVICES; i++) {
-            x10Settings[i] = null;
-        }
         keypad1wEnrolled = new boolean[keypad1wCnt];
-        for (int i = 0; i < keypad1wCnt; i++) {
-            keypad1wEnrolled[i] = false;
-        }
         keypad2wEnrolled = new boolean[keypad2wCnt];
-        for (int i = 0; i < keypad2wCnt; i++) {
-            keypad2wEnrolled[i] = false;
-        }
         sirensEnrolled = new boolean[sirenCnt];
-        for (int i = 0; i < sirenCnt; i++) {
-            sirensEnrolled[i] = false;
-        }
 
         if (PowerlinkMode) {
             // Check time and date
@@ -537,7 +414,12 @@ public class PowermaxPanelSettings {
             for (int i = 0; i < (26 + customCnt); i++) {
                 String str = readSettingsAsString(PowermaxSendType.DL_ZONESTR, i * 16, (i + 1) * 16 - 1);
                 if (str != null) {
-                    zoneNames[i] = str;
+                    try {
+                        PowermaxZoneName zoneName = PowermaxZoneName.fromId(i);
+                        zoneName.setName(str);
+                    } catch (IllegalArgumentException e) {
+                        logger.debug("Zone id out of bounds {}", i);
+                    }
                 } else {
                     result2 = false;
                 }
@@ -653,22 +535,40 @@ public class PowermaxPanelSettings {
                 byte[] zero5 = new byte[] { 0, 0, 0, 0, 0 };
 
                 for (int i = 0; i < zoneCnt; i++) {
-                    String zoneName = zoneNames[zoneNr[i] & 0x0000001F];
+                    String zoneName;
+                    try {
+                        PowermaxZoneName zone = PowermaxZoneName.fromId(zoneNr[i] & 0x0000001F);
+                        zoneName = zone.getName();
+                    } catch (IllegalArgumentException e) {
+                        logger.debug("Zone id out of bounds {}", zoneNr[i] & 0x0000001F);
+                        zoneName = null;
+                    }
 
                     boolean zoneEnrolled;
                     byte zoneInfo;
-                    byte sensorId;
-                    String sensorType;
+                    byte sensorTypeCode;
+                    String sensorTypeStr;
                     if (panelType.isPowerMaster()) {
                         zoneEnrolled = !Arrays.equals(Arrays.copyOfRange(dataMr, i * 10 + 4, i * 10 + 9), zero5);
                         zoneInfo = data[i];
-                        sensorId = dataMr[i * 10 + 5];
-                        sensorType = sensorTypes.get(sensorId);
+                        sensorTypeCode = dataMr[i * 10 + 5];
+                        try {
+                            PowermasterSensorType sensorType = PowermasterSensorType.fromCode(sensorTypeCode);
+                            sensorTypeStr = sensorType.getLabel();
+                        } catch (IllegalArgumentException e) {
+                            sensorTypeStr = null;
+                        }
                     } else {
                         zoneEnrolled = !Arrays.equals(Arrays.copyOfRange(data, i * 4, i * 4 + 3), zero3);
                         zoneInfo = data[i * 4 + 3];
-                        sensorId = data[i * 4 + 2];
-                        sensorType = sensorTypes.get((byte) (sensorId & 0x0000000F));
+                        sensorTypeCode = data[i * 4 + 2];
+                        try {
+                            PowermaxSensorType sensorType = PowermaxSensorType
+                                    .fromCode((byte) (sensorTypeCode & 0x0000000F));
+                            sensorTypeStr = sensorType.getLabel();
+                        } catch (IllegalArgumentException e) {
+                            sensorTypeStr = null;
+                        }
                     }
                     if (zoneEnrolled) {
                         byte zoneType = (byte) (zoneInfo & 0x0000000F);
@@ -683,7 +583,7 @@ public class PowermaxPanelSettings {
                             part[0] = true;
                         }
 
-                        zoneSettings[i] = new PowermaxZoneSettings(zoneName, zoneType, zoneChime, sensorType, part);
+                        zoneSettings[i] = new PowermaxZoneSettings(zoneName, zoneType, zoneChime, sensorTypeStr, part);
                     }
                 }
             } else {
@@ -704,7 +604,13 @@ public class PowermaxPanelSettings {
                         }
                     }
                     if (i > 0) {
-                        zoneName = zoneNames[zoneNr[i - 1] & 0x0000001F];
+                        try {
+                            PowermaxZoneName zone = PowermaxZoneName.fromId(zoneNr[i - 1] & 0x0000001F);
+                            zoneName = zone.getName();
+                        } catch (IllegalArgumentException e) {
+                            logger.debug("Zone id out of bounds {}", zoneNr[i - 1] & 0x0000001F);
+                            zoneName = null;
+                        }
                     }
                     x10Settings[i] = new PowermaxX10Settings(zoneName, enabled);
                 }
@@ -798,25 +704,29 @@ public class PowermaxPanelSettings {
     /**
      * Update the name of a zone
      *
-     * @param zoneIdx
-     *            the zone index (first zone is index 1)
-     * @param zoneNameIdx
-     *            the index in the table of zone names
+     * @param zoneIdx the zone index (first zone is index 1)
+     * @param zoneNameIdx the index in the table of zone names
      */
     public void updateZoneName(int zoneIdx, byte zoneNameIdx) {
         PowermaxZoneSettings zone = getZoneSettings(zoneIdx);
         if (zone != null) {
-            zone.setName(zoneNames[zoneNameIdx & 0x0000001F]);
+            String name;
+            try {
+                PowermaxZoneName zoneName = PowermaxZoneName.fromId(zoneNameIdx & 0x0000001F);
+                name = zoneName.getName();
+            } catch (IllegalArgumentException e) {
+                logger.debug("Zone id out of bounds {}", zoneNameIdx & 0x0000001F);
+                name = null;
+            }
+            zone.setName(name);
         }
     }
 
     /**
      * Update the type of a zone
      *
-     * @param zoneIdx
-     *            the zone index (first zone is index 1)
-     * @param zoneInfo
-     *            the zone info as an internal code
+     * @param zoneIdx the zone index (first zone is index 1)
+     * @param zoneInfo the zone info as an internal code
      */
     public void updateZoneInfo(int zoneIdx, int zoneInfo) {
         PowermaxZoneSettings zone = getZoneSettings(zoneIdx);
@@ -833,13 +743,22 @@ public class PowermaxPanelSettings {
         int sirenCnt = panelType.getSirens();
         int keypad1wCnt = panelType.getKeypads1w();
         int keypad2wCnt = panelType.getKeypads2w();
+        // int customCnt = panelType.getCustomZones();
 
         if (!partitionsEnabled) {
             partitionCnt = 1;
         }
 
         // for (int i = 0; i < (26 + customCnt); i++) {
-        // str += String.format("zone name %d; %s", i + 1, zoneNames[i]);
+        // String name;
+        // try {
+        // PowermaxZoneName zoneName = PowermaxZoneName.fromId(i);
+        // name = zoneName.getName();
+        // } catch (IllegalArgumentException e) {
+        // logger.debug("Zone id out of bounds {}", i);
+        // name = null;
+        // }
+        // str += String.format("\nZone name %d; %s", i + 1, name);
         // }
         for (int i = 0; i < phoneNumbers.length; i++) {
             if (phoneNumbers[i] != null) {

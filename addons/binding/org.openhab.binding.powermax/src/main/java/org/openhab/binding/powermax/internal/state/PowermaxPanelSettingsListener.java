@@ -6,10 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.powermax.internal;
-
-import org.openhab.binding.powermax.internal.state.PowermaxPanelSettings;
-import org.openhab.binding.powermax.internal.state.PowermaxZoneSettings;
+package org.openhab.binding.powermax.internal.state;
 
 /**
  * The {@link PowermaxPanelSettingsListener} is a listener for updated
@@ -23,8 +20,7 @@ public interface PowermaxPanelSettingsListener {
      * This method is called when the bridge thing handler identifies
      * a change in the alarm panel settings
      *
-     * @param settings
-     *            The updated alarm panel settings.
+     * @param settings the updated alarm panel settings or null if the panel settings are unknown
      */
     public void onPanelSettingsUpdated(PowermaxPanelSettings settings);
 
@@ -32,10 +28,8 @@ public interface PowermaxPanelSettingsListener {
      * This method is called when the bridge thing handler identifies
      * a change in one zone settings
      *
-     * @param zoneNumber
-     *            The zone number.
-     * @param settings
-     *            The updated zone settings.
+     * @param zoneNumber the zone number
+     * @param settings the updated alarm panel settings or null if the panel settings are unknown
      */
-    public void onZoneSettingsUpdated(int zoneNumber, PowermaxZoneSettings settings);
+    public void onZoneSettingsUpdated(int zoneNumber, PowermaxPanelSettings settings);
 }

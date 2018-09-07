@@ -17,8 +17,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A class for SETTINGS and SETTINGS_ITEM messages handling
  *
- * @author Laurent Garnier
- * @since 1.9.0
+ * @author Laurent Garnier - Initial contribution
  */
 public class PowermaxSettingsMessage extends PowermaxBaseMessage {
 
@@ -35,10 +34,14 @@ public class PowermaxSettingsMessage extends PowermaxBaseMessage {
     }
 
     @Override
-    public PowermaxState handleMessage() {
-        super.handleMessage();
+    public PowermaxState handleMessage(PowermaxCommManager commManager) {
+        super.handleMessage(commManager);
 
-        PowermaxState updatedState = new PowermaxState();
+        if (commManager == null) {
+            return null;
+        }
+
+        PowermaxState updatedState = commManager.createNewState();
 
         byte[] message = getRawData();
         int index = message[2] & 0x000000FF;
