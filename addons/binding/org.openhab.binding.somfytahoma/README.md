@@ -14,6 +14,7 @@ This binding integrates the [Somfy Tahoma](https://www.somfy.fr/produits/domotiq
 - garage doors (UP, DOWN, STOP control of a garage door). IO Homecontrol devices are allowed to set exact position of a garage door (0-100%)
 - awnings (UP, DOWN, STOP control of an awning). IO Homecontrol devices are allowed to set exact position of an awning (0-100%)
 - windows (UP, DOWN, STOP control of a window). IO Homecontrol devices are allowed to set exact position of a window (0-100%)
+- pergolas (UP, DOWN, STOP control of a pergola). IO Homecontrol devices are allowed to set exact position of a pergola (0-100%)
 - on/off switches (connected by RTS, IO protocol or supported by USB stick - z-wave, enocean, ..)
 - light switches (similar to on/off)
 - light sensors (luminance value)
@@ -53,7 +54,7 @@ Please see the example below.
 | ------------- |:-------------:| -----:|
 | bridge        | N.A |  bridge does not expose any channel |
 | gateway       | status  | status of your Tahoma gateway |
-| roller shutter, screen, venetian blind, garage door, awning & window | control |  device controller which reacts to commands UP/DOWN/STOP + closure 0-100 |
+| roller shutter, screen, venetian blind, garage door, awning, window, pergola | control |  device controller which reacts to commands UP/DOWN/STOP + closure 0-100 |
 | venetian blind | orientation | percentual orientation of the blind's slats, it can have value 0-100). For IO Homecontrol devices only (non RTS)|
 | action group | execute_action | switch which reacts to ON command and triggers the predefined Tahoma action |
 | onoff, light | switch | reacts to standard ON/OFF commands |
@@ -168,11 +169,11 @@ Switch item=DoorLockOpenClose
 ## Alexa compatibility
 
 This binding is compatible with the official Alexa Smart Home Skill. 
-Since Rolleshutter items are unsupported, only Dimmer with position channel can be used.
+Since Rolleshutter items are unsupported, only Dimmer with control channel can be used.
 Syntax in .item file is as follows:
 
 ```
-Dimmer RollerShutterLivingD "Roller shutter living [%.1f]"  [ "Lighting" ] {channel="somfytahoma:rollershutter:237dbae7:87bf0403-a45d-4037-b874-28f4ece30004:position"}
+Dimmer RollerShutterLivingD "Roller shutter living [%.1f]"  [ "Lighting" ] {channel="somfytahoma:rollershutter:237dbae7:87bf0403-a45d-4037-b874-28f4ece30004:control"}
 ```
 
 Alexa can set the roller shutter (awning, blind, ...) to a specific position as well as send ON (interpretted as UP) and OFF commands (interpretted as DOWN).
