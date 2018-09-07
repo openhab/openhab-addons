@@ -87,7 +87,7 @@ public class GPSTrackerBindingConfiguration {
         }
         //add primary region if defined
         if (location != null ) {
-            this.regions.put(name, new Region(name, location, radius));
+            this.regions.put(name, new Region(name, location.toFullString(), radius));
         }
     }
 

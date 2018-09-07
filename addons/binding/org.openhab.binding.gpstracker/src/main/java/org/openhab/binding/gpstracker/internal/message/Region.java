@@ -24,14 +24,14 @@ public class Region {
     /**
      * Location coordinates
      */
-    private PointType location;
+    private String location;
 
     /**
      * Region radius
      */
     private Integer radius;
 
-    public Region(String name, PointType location, Integer radius) {
+    public Region(String name, String location, Integer radius) {
         this.name = name;
         this.location = location;
         this.radius = radius;
@@ -57,6 +57,6 @@ public class Region {
     }
 
     public PointType getLocation() {
-        return location != null && radius != null ? location: null;
+        return location != null && radius != null ? new PointType(location): null;
     }
 }
