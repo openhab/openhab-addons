@@ -57,8 +57,7 @@ public class LGHomBotHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(LGHomBotHandler.class);
 
-    @Nullable
-    private LGHomBotConfiguration config;
+    private LGHomBotConfiguration config = getConfigAs(LGHomBotConfiguration.class);
 
     @Nullable
     private ScheduledFuture<?> refreshTimer;
@@ -69,14 +68,12 @@ public class LGHomBotHandler extends BaseThingHandler {
     private String currentSrvMem = "";
     private DecimalType currentBattery = DecimalType.ZERO;
     private DecimalType currentCPULoad = DecimalType.ZERO;
-    @Nullable
-    private Boolean currentTurbo = null;
-    @Nullable
-    private Boolean currentRepeat = null;
+    private OnOffType currentTurbo = OnOffType.OFF;
+    private OnOffType currentRepeat = OnOffType.OFF;
     private State currentImage = UnDefType.UNDEF;
     private DateTimeType currentLastClean = new DateTimeType();
-    private final DateTimeFormatter formatterLG = DateTimeFormatter.ofPattern("yyyy/MM/dd/HH/mm/ss");
 
+    private final DateTimeFormatter formatterLG = DateTimeFormatter.ofPattern("yyyy/MM/dd/HH/mm/ss");
     private boolean disposed = false;
     private int refreshCounter = 0;
 
@@ -177,7 +174,7 @@ public class LGHomBotHandler extends BaseThingHandler {
                     }
                     break;
                 default:
-                    logger.debug("Command received for an unknown channel {}: {}", channelUID.getId(), command);
+                    logger.debug("Command received for unknown channel {}: {}", channelUID.getId(), command);
                     break;
             }
         }
@@ -187,7 +184,6 @@ public class LGHomBotHandler extends BaseThingHandler {
     public void initialize() {
         disposed = false;
         logger.debug("Initializing handler for LG-HomBot");
-        config = getConfigAs(LGHomBotConfiguration.class);
 
         // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
         // Long running initialization should be done asynchronously in background.
@@ -262,10 +258,10 @@ public class LGHomBotHandler extends BaseThingHandler {
                 updateState(channelUID, StringType.valueOf(currentSrvMem));
                 break;
             case CHANNEL_TURBO:
-                updateState(channelUID, currentTurbo ? OnOffType.ON : OnOffType.OFF);
+                updateState(channelUID, currentTurbo);
                 break;
             case CHANNEL_REPEAT:
-                updateState(channelUID, currentRepeat ? OnOffType.ON : OnOffType.OFF);
+                updateState(channelUID, currentRepeat);
                 break;
             case CHANNEL_MODE:
                 updateState(channelUID, StringType.valueOf(currentMode));
@@ -274,6 +270,7 @@ public class LGHomBotHandler extends BaseThingHandler {
                 updateState(channelUID, StringType.valueOf(currentNickname));
                 break;
             case CHANNEL_CAMERA:
+                parseImage();
                 updateState(channelUID, currentImage);
                 break;
             case CHANNEL_LAST_CLEAN:
@@ -288,11 +285,13 @@ public class LGHomBotHandler extends BaseThingHandler {
         if (disposed) {
             return;
         }
-        refreshCounter++;
-        if (refreshCounter % 5 == 0) {
-            parseImage();
-            updateState(new ChannelUID(getThing().getUID(), CHANNEL_CAMERA), currentImage);
-            return;
+        if (refreshCounter > 0) {
+            refreshCounter--;
+            if (refreshCounter % 5 == 0) {
+                parseImage();
+                updateState(new ChannelUID(getThing().getUID(), CHANNEL_CAMERA), currentImage);
+                return;
+            }
         }
         String status = null;
         String url = buildHttpAddress("/status.txt");
@@ -359,18 +358,20 @@ public class LGHomBotHandler extends BaseThingHandler {
                         updateState(channel, StringType.valueOf(srvMem));
                     }
                 } else if (row.startsWith("JSON_TURBO=")) {
-                    Boolean turbo = (row.substring(11).replace("\"", "").equalsIgnoreCase("true"));
+                    OnOffType turbo = row.substring(11).replace("\"", "").equalsIgnoreCase("true") ? OnOffType.ON
+                            : OnOffType.OFF;
                     if (!turbo.equals(currentTurbo)) {
                         currentTurbo = turbo;
                         channel = new ChannelUID(getThing().getUID(), CHANNEL_TURBO);
-                        updateState(channel, turbo ? OnOffType.ON : OnOffType.OFF);
+                        updateState(channel, turbo);
                     }
                 } else if (row.startsWith("JSON_REPEAT=")) {
-                    Boolean repeat = (row.substring(12).replace("\"", "").equalsIgnoreCase("true"));
+                    OnOffType repeat = row.substring(12).replace("\"", "").equalsIgnoreCase("true") ? OnOffType.ON
+                            : OnOffType.OFF;
                     if (!repeat.equals(currentRepeat)) {
                         currentRepeat = repeat;
                         channel = new ChannelUID(getThing().getUID(), CHANNEL_REPEAT);
-                        updateState(channel, repeat ? OnOffType.ON : OnOffType.OFF);
+                        updateState(channel, repeat);
                     }
                 } else if (row.startsWith("JSON_MODE=")) {
                     String mode = row.substring(10).replace("\"", "");
