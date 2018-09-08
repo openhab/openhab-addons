@@ -57,13 +57,14 @@ import com.google.gson.JsonSyntaxException;
  */
 public abstract class XiaomiDeviceBaseHandler extends BaseThingHandler implements XiaomiItemUpdateListener {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_GATEWAY,
-            THING_TYPE_SENSOR_HT, THING_TYPE_SENSOR_AQARA_WEATHER_V1, THING_TYPE_SENSOR_MOTION,
-            THING_TYPE_SENSOR_AQARA_MOTION, THING_TYPE_SENSOR_SWITCH, THING_TYPE_SENSOR_AQARA_SWITCH,
-            THING_TYPE_SENSOR_MAGNET, THING_TYPE_SENSOR_AQARA_MAGNET, THING_TYPE_SENSOR_CUBE, THING_TYPE_SENSOR_AQARA1,
-            THING_TYPE_SENSOR_AQARA2, THING_TYPE_SENSOR_GAS, THING_TYPE_SENSOR_SMOKE, THING_TYPE_SENSOR_WATER,
-            THING_TYPE_ACTOR_AQARA1, THING_TYPE_ACTOR_AQARA2, THING_TYPE_ACTOR_PLUG, THING_TYPE_ACTOR_AQARA_ZERO1,
-            THING_TYPE_ACTOR_AQARA_ZERO2, THING_TYPE_ACTOR_CURTAIN));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
+            Arrays.asList(THING_TYPE_GATEWAY, THING_TYPE_SENSOR_HT, THING_TYPE_SENSOR_AQARA_WEATHER_V1,
+                    THING_TYPE_SENSOR_MOTION, THING_TYPE_SENSOR_AQARA_MOTION, THING_TYPE_SENSOR_SWITCH,
+                    THING_TYPE_SENSOR_AQARA_SWITCH, THING_TYPE_SENSOR_MAGNET, THING_TYPE_SENSOR_AQARA_MAGNET,
+                    THING_TYPE_SENSOR_CUBE, THING_TYPE_SENSOR_AQARA_VIBRATION, THING_TYPE_SENSOR_AQARA1,
+                    THING_TYPE_SENSOR_AQARA2, THING_TYPE_SENSOR_GAS, THING_TYPE_SENSOR_SMOKE, THING_TYPE_SENSOR_WATER,
+                    THING_TYPE_ACTOR_AQARA1, THING_TYPE_ACTOR_AQARA2, THING_TYPE_ACTOR_PLUG,
+                    THING_TYPE_ACTOR_AQARA_ZERO1, THING_TYPE_ACTOR_AQARA_ZERO2, THING_TYPE_ACTOR_CURTAIN));
 
     protected static final Unit<Temperature> TEMPERATURE_UNIT = SIUnits.CELSIUS;
     protected static final Unit<Pressure> PRESSURE_UNIT = KILO(SIUnits.PASCAL);
@@ -71,7 +72,7 @@ public abstract class XiaomiDeviceBaseHandler extends BaseThingHandler implement
     protected static final Unit<Angle> ANGLE_UNIT = SmartHomeUnits.DEGREE_ANGLE;
     protected static final Unit<Time> TIME_UNIT = MILLI(SmartHomeUnits.SECOND);
 
-    private static final long ONLINE_TIMEOUT_MILLIS = 2 * 60 * 60 * 1000; // 2 hours
+    private static final long ONLINE_TIMEOUT_MILLIS = TimeUnit.HOURS.toMillis(2);
     private ScheduledFuture<?> onlineCheckTask;
 
     private JsonParser parser = new JsonParser();
