@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.openthermgateway.internal;
 
-import java.util.Collections;
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -30,25 +27,22 @@ import org.osgi.service.component.annotations.Component;
  * The {@link OpenThermGatewayHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author Arjen Korevaar - Initial contribution
+ * @author Arjen Korevaar - Updated channels
  */
 @Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.openthermgateway")
 @NonNullByDefault
 public class OpenThermGatewayHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .singleton(OpenThermGatewayBindingConstants.OPENTHERMGATEWAY_THING_TYPE);
-
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return thingTypeUID.equals(OpenThermGatewayBindingConstants.MAIN_THING_TYPE);
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(OpenThermGatewayBindingConstants.OPENTHERMGATEWAY_THING_TYPE)) {
+        if (thingTypeUID.equals(OpenThermGatewayBindingConstants.MAIN_THING_TYPE)) {
             return new OpenThermGatewayHandler(thing);
         }
 

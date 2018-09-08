@@ -12,14 +12,18 @@
  */
 package org.openhab.binding.openthermgateway;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+
+import com.google.common.collect.ImmutableSet;
 
 /**
  * The {@link OpenThermGatewayBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Arjen Korevaar - Initial contribution
+ * @author Arjen Korevaar - Updated channels
  */
 @NonNullByDefault
 public class OpenThermGatewayBindingConstants {
@@ -27,18 +31,21 @@ public class OpenThermGatewayBindingConstants {
     private static final String BINDING_ID = "openthermgateway";
 
     // List of all Thing Type UIDs
-    // public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "sample");
-
-    public static final ThingTypeUID OPENTHERMGATEWAY_THING_TYPE = new ThingTypeUID(BINDING_ID, "main");
+    public static final ThingTypeUID MAIN_THING_TYPE = new ThingTypeUID(BINDING_ID, "main");
 
     // List of all Channel ids
-    public static final String CHANNEL_CENTRAL_HEATING_ENABLE = "ch_enable";
-    public static final String CHANNEL_DOMESTIC_HOT_WATER_ENABLE = "dhw_enable";
-    public static final String CHANNEL_COOLING_ENABLED = "cooling_enabled";
-    public static final String CHANNEL_4 = "otc_active";
-    public static final String CHANNEL_CENTRAL_HEATING_2_ENABLED = "ch2_enable";
+    public static final String CHANNEL_ROOM_TEMPERATURE = "roomtemp";
+    public static final String CHANNEL_ROOM_SETPOINT = "roomsetpoint";
+    public static final String CHANNEL_FLOW_TEMPERATURE = "flowtemp";
+    public static final String CHANNEL_OUTSIDE_TEMPERATURE = "outsidetemp";
+    public static final String CHANNEL_CENTRAL_HEATING_ENABLED = "ch_enable";
     public static final String CHANNEL_CENTRAL_HEATING_MODE = "ch_mode";
-
+    public static final String CHANNEL_DOMESTIC_HOT_WATER_ENABLED = "dhw_enable";
     public static final String CHANNEL_DOMESTIC_HOT_WATER_MODE = "dhw_mode";
+    public static final String CHANNEL_FLAME = "flame";
 
+    public static final Set<String> SUPPORTED_CHANNEL_IDS = ImmutableSet.of(CHANNEL_ROOM_TEMPERATURE,
+            CHANNEL_ROOM_SETPOINT, CHANNEL_FLOW_TEMPERATURE, CHANNEL_OUTSIDE_TEMPERATURE,
+            CHANNEL_CENTRAL_HEATING_ENABLED, CHANNEL_CENTRAL_HEATING_MODE, CHANNEL_DOMESTIC_HOT_WATER_ENABLED,
+            CHANNEL_DOMESTIC_HOT_WATER_MODE, CHANNEL_FLAME);
 }

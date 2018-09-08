@@ -20,6 +20,8 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.openthermgateway.OpenThermGatewayBindingConstants;
+import org.openhab.binding.openthermgateway.internal.CommandType;
 import org.openhab.binding.openthermgateway.internal.DataItem;
 import org.openhab.binding.openthermgateway.internal.DataItemGroup;
 import org.openhab.binding.openthermgateway.internal.Message;
@@ -34,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * The {@link OpenThermGatewayHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Arjen Korevaar - Initial contribution
+ * @author Arjen Korevaar - Updated channels
  */
 @NonNullByDefault
 public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThermGatewayCallback {
@@ -58,6 +60,18 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received channel: {}, command: {}", channelUID, command);
 
+        String channel = channelUID.getId();
+
+        if (channel.equals(OpenThermGatewayBindingConstants.CHANNEL_ROOM_SETPOINT)) {
+            connector.sendCommand(CommandType.TemperatureTemporary, command.toFullString());
+        }
+
+        if (channel.equals(OpenThermGatewayBindingConstants.CHANNEL_OUTSIDE_TEMPERATURE)) {
+            connector.sendCommand(CommandType.TemperatureOutside, command.toFullString());
+        }
+
+        // updateState(OpenThermGatewayBindingConstants.CHANNEL_ROOM_TEMPERATURE, TypeConverter.toDecimalType(10));
+
         // switch (channelUID.getId()) {
         // case OpenThermGatewayBindingConstants.CHANNEL_CENTRAL_HEATING_ENABLE:
         // // updateState(channelUID, getTemperature());
@@ -80,7 +94,7 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
     public void initialize() {
         logger.debug("Initializing OpenTherm Gateway handler for uid '{}'", getThing().getUID());
 
-        updateStatus(ThingStatus.INITIALIZING);
+        updateStatus(ThingStatus.OFFLINE);
 
         config = getConfigAs(OpenThermGatewayConfiguration.class);
 
@@ -94,7 +108,7 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
 
     @Override
     public void connecting() {
-        updateStatus(ThingStatus.INITIALIZING);
+        updateStatus(ThingStatus.OFFLINE);
     }
 
     @Override
@@ -109,6 +123,9 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
 
     @Override
     public void receiveMessage(@Nullable Message message) {
+        if (message == null) {
+            return;
+        }
 
         if (DataItemGroup.dataItemGroups.containsKey(message.getID())) {
             DataItem[] dataItems = DataItemGroup.dataItemGroups.get(message.getID());
@@ -118,12 +135,17 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
 
                 String channelId = dataItem.getSubject();
 
+                logger.debug("Received update for channel '{}'", channelId);
+
+                if (!OpenThermGatewayBindingConstants.SUPPORTED_CHANNEL_IDS.contains(channelId)) {
+                    continue;
+                }
+
                 State state = null;
 
                 switch (dataItem.getDataType()) {
                     case Flags:
-                        state = TypeConverter
-                                .toOnOffType(message.getBit(dataItem.getByteType(), dataItem.getBitPos()));
+                        state = TypeConverter.toOnOffType(message.getBit(dataItem.getByteType(), dataItem.getBitPos()));
                         break;
                     case Uint8:
                     case Uint16:

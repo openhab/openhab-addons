@@ -3,22 +3,20 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="openthermgateway">
+	<thing-type id="main">
 		<label>OpenTherm Gateway</label>
-		<description>OpenTherm Gateway</description>
+		<description>OpenTherm Gateway</description>	
 		<channels>
-			<channel id="roomtemp" typeId="roomtemp" />
-			<channel id="roomsetpoint" typeId="roomsetpoint" />
-			<channel id="ch_enable" typeId="ch_enable" />
-			<channel id="ch_mode" typeId="ch_mode" />
-			<channel id="modulevel" typeId="modulevel" />
-			<channel id="dhw_enable" typeId="dhw_enable" />
-			<channel id="dhw_mode" typeId="dhw_mode" />
-			<channel id="dhwtemp" typeId="dhwtemp" />
-			<channel id="flowtemp" typeId="flowtemp" />
-			<channel id="flame" typeId="flame" />
-			<channel id="outsidetemp" typeId="outsidetemp" />
-		</channels>
+            <channel id="roomtemp" typeId="roomtemp" />
+            <channel id="roomsetpoint" typeId="roomsetpoint" />
+            <channel id="flowtemp" typeId="flowtemp" />            
+            <channel id="outsidetemp" typeId="outsidetemp" />            
+            <channel id="ch_enable" typeId="ch_enable" />
+            <channel id="ch_mode" typeId="ch_mode" />
+            <channel id="dhw_enable" typeId="dhw_enable" />
+            <channel id="dhw_mode" typeId="dhw_mode" />
+            <channel id="flame" typeId="flame" />
+        </channels>	
 		<config-description>
 			<parameter name="ipaddress" type="text" required="true">
 				<label>Hostname or IP address</label>
@@ -30,107 +28,76 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-
+		
 	<channel-type id="roomtemp">
-		<item-type>Number</item-type>
-		<label>Room Temperature</label>
-		<description>Current room temperature.</description>
-		<state readOnly="true" pattern="%.1f °C"></state>
+	    <item-type>Number</item-type>
+	    <label>Room temperature</label>
+	    <description>Current sensed room temperature</description>
+	    <category>temperature</category>
+	    <state readOnly="true" pattern="%.1f °C">
+	    </state>
 	</channel-type>
-
+	
 	<channel-type id="roomsetpoint">
-		<item-type>Number</item-type>
-		<label>Room Setpoint</label>
-		<description>Room setpoint temperature.</description>
-		<state readOnly="true" pattern="%.1f °C"></state>
-	</channel-type>
-
-	<channel-type id="ch_enable">
-		<item-type>Switch</item-type>
-		<label>Central Heating Enable</label>
-		<description>Indicates whether the Central Heating system is enabled.</description>
-		<state readOnly="true">
-			<options>
-				<option value="ON">On</option>
-				<option value="OFF">Off</option>
-			</options>
-		</state>
-	</channel-type>
-	
-    <channel-type id="ch_mode">
-        <item-type>Switch</item-type>
-        <label>Central Heating Active</label>
-        <description>Indicates whether the Central Heating system is currently active.</description>
-        <state readOnly="true">
-            <options>
-                <option value="ON">On</option>
-                <option value="OFF">Off</option>
-            </options>
-        </state>
-    </channel-type>
-
-	<channel-type id="modulevel">
-        <item-type>Number</item-type>
-        <label>Modulation Level</label>
-        <description>Current modulation level.</description>
-        <state readOnly="true" pattern="% %"></state>
-    </channel-type>
-
-	<channel-type id="dhw_enable">
-		<item-type>Switch</item-type>
-		<label>Domestic Hot Water Enable</label>
-		<description>Indicates whether Domestic Hot Water is enabled.</description>
-		<state readOnly="true">
-			<options>
-				<option value="ON">On</option>
-				<option value="OFF">Off</option>
-			</options>
-		</state>
-	</channel-type>
-	
-	<channel-type id="dhw_mode">
-        <item-type>Switch</item-type>
-        <label>Domestic Hot Water Active</label>
-        <description>Indicates whether Domestic Hot Water is currently active.</description>
-        <state readOnly="true">
-            <options>
-                <option value="ON">On</option>
-                <option value="OFF">Off</option>
-            </options>
-        </state>
-    </channel-type>
-
-	<channel-type id="dhwtemp">
-		<item-type>Number</item-type>
-		<label>DHW Temperature</label>
-		<description>Domestic Hot Water temperature</description>
-		<state readOnly="true" pattern="%.1f °C"></state>
+	    <item-type>Number</item-type>
+	    <label>Room setpoint</label>
+	    <description>Current room temperature setpoint</description>
+	    <category>temperature</category>
+	    <state readOnly="false" pattern="%.1f °C">
+	    </state>
 	</channel-type>
 	
 	<channel-type id="flowtemp">
+	    <item-type>Number</item-type>
+	    <label>Boiler water temperature</label>
+	    <description>Boiler water temperature</description>
+	    <category>temperature</category>
+	    <state readOnly="true" pattern="%.1f °C">
+	    </state>
+	</channel-type>
+
+    <channel-type id="outsidetemp">
         <item-type>Number</item-type>
-        <label>Boiler Temperature</label>
-        <description>Boiler water temperature</description>
-        <state readOnly="true" pattern="%.1f °C"></state>
-    </channel-type>	
+        <label>Outside temperature</label>
+        <description>Outside temperature</description>
+        <category>temperature</category>
+        <state readOnly="false" pattern="%.1f °C">
+        </state>
+    </channel-type>
+    
+    <channel-type id="ch_enable">
+        <item-type>Switch</item-type>
+        <label>CH enabled</label>
+        <description>Central heating enabled</description>
+        <state readOnly="true"></state>
+    </channel-type>
 
-	<channel-type id="flame">
-		<item-type>Switch</item-type>
-		<label>Flame</label>
-		<description>Indicates whether the burner is active.</description>
-		<state readOnly="true">
-			<options>
-				<option value="ON">On</option>
-				<option value="OFF">Off</option>
-			</options>
-		</state>
-	</channel-type>
-
-	<channel-type id="outsidetemp">
-		<item-type>Number</item-type>
-		<label>Outside Temperature</label>
-		<description>Outside Temperature</description>
-		<state readOnly="true" pattern="%.1f °C"></state>
-	</channel-type>
-	
+    <channel-type id="ch_mode">
+        <item-type>Switch</item-type>
+        <label>CH active</label>
+        <description>Central heating active</description>
+        <state readOnly="true"></state>
+    </channel-type>         
+    
+    <channel-type id="dhw_enable">
+        <item-type>Switch</item-type>
+        <label>DHW enabled</label>
+        <description>Domestic hot water enabled</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    
+    <channel-type id="dhw_mode">
+        <item-type>Switch</item-type>
+        <label>DHW active</label>
+        <description>Domestic hot water active</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    
+    <channel-type id="flame">
+        <item-type>Switch</item-type>
+        <label>Burner active</label>
+        <description>Burner active</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    
 </thing:thing-descriptions>

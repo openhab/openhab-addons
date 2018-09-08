@@ -99,6 +99,11 @@ public class Message {
         return false;
     }
 
+    @Override
+    public String toString() {
+        return String.format("%s - %s - %s", this.code, this.id, this.data);
+    }
+
     public Message(String code, MessageType messageType, int id, String data) {
         this.code = code;
         this.messageType = messageType;

@@ -22,6 +22,7 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
     private boolean stopping;
     private Message previousMessage;
 
+    // TODO: logging doesnt work, runs on different thread, use callback ?
     private final Logger logger = LoggerFactory.getLogger(OpenThermGatewaySocketConnector.class);
 
     public OpenThermGatewaySocketConnector(OpenThermGatewayCallback callback, String ipaddress, int port) {
@@ -89,18 +90,25 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
         Message msg = Message.parse(message);
 
         if (msg != null) {
-            if (msg.overrides(previousMessage)) {
-                previousMessage = null;
+            if (msg.getCode().equals("B")) {
+                // Dont handle messages received from the thermostat
                 receiveMessage(msg);
-            } else {
-                receiveMessage(previousMessage);
-                previousMessage = msg;
             }
         }
+        // if (msg != null) {
+        // if (msg.overrides(previousMessage)) {
+        // previousMessage = null;
+        // receiveMessage(msg);
+        // } else {
+        // receiveMessage(previousMessage);
+        // previousMessage = msg;
+        // }
+        // }
     }
 
     private void receiveMessage(Message message) {
         if (message != null) {
+            logger.debug(message.toString());
             callback.receiveMessage(message);
         }
     }
