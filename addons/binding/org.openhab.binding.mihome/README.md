@@ -111,15 +111,15 @@ Switch Gateway_SoundSwitch <soundvolume_mute> { channel="mihome:gateway:<ID>:ena
 Dimmer Gateway_SoundVolume <soundvolume> { channel="mihome:gateway:<ID>:volume" }
 
 // Xiaomi Temperature and Humidity Sensor
-Number HT_Temperature <temperature> { channel="mihome:sensor_ht:<ID>:temperature" }
-Number HT_Humidity <humidity> { channel="mihome:sensor_ht:<ID>:humidity" }
+Number:Temperature HT_Temperature <temperature> { channel="mihome:sensor_ht:<ID>:temperature" }
+Number:Dimensionless HT_Humidity <humidity> { channel="mihome:sensor_ht:<ID>:humidity" }
 Number HT_Battery <battery> { channel="mihome:sensor_ht:<ID>:batteryLevel" }
 Switch HT_BatteryLow <energy> { channel="mihome:sensor_ht:<ID>:lowBattery" }
 
 // Xiaomi Aqara Temperature, Humidity and pressure Sensor
-Number HTP_Temperature <temperature> { channel="mihome:sensor_weather_v1:<ID>:temperature" }
-Number HTP_Humidity <humidity> { channel="mihome:sensor_weather_v1:<ID>:humidity" }
-Number HTP_Pressure <pressure> { channel="mihome:sensor_weather_v1:<ID>:pressure" }
+Number:Temperature HTP_Temperature <temperature> { channel="mihome:sensor_weather_v1:<ID>:temperature" }
+Number:Dimensionless HTP_Humidity <humidity> { channel="mihome:sensor_weather_v1:<ID>:humidity" }
+Number:Pressure HTP_Pressure <pressure> { channel="mihome:sensor_weather_v1:<ID>:pressure" }
 Number HTP_Battery <battery> { channel="mihome:sensor_weather_v1:<ID>:batteryLevel" }
 Switch HTP_BatteryLow <energy> { channel="mihome:sensor_weather_v1:<ID>:lowBattery" }
 
@@ -155,8 +155,8 @@ Number WindowSwitch_Battery <battery> { channel="mihome:sensor_magnet:<ID>:batte
 Switch WindowSwitch_BatteryLow <energy> { channel="mihome:sensor_magnet:<ID>:lowBattery" }
 
 // Xiaomi Cube - see "xiaomi.rules" for action triggers
-Number Cube_RotationAngle { channel="mihome:sensor_cube:<ID>:rotationAngle" }
-Number Cube_RotationTime { channel="mihome:sensor_cube:<ID>:rotationTime" }
+Number:Angle Cube_RotationAngle { channel="mihome:sensor_cube:<ID>:rotationAngle" }
+Number:Time Cube_RotationTime { channel="mihome:sensor_cube:<ID>:rotationTime" }
 Number Cube_Battery <battery> { channel="mihome:sensor_cube:<ID>:batteryLevel" }
 Switch Cube_BatteryLow <energy> { channel="mihome:sensor_cube:<ID>:lowBattery" }
 

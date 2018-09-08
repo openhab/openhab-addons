@@ -10,7 +10,7 @@ package org.openhab.binding.mihome.handler;
 
 import static org.openhab.binding.mihome.XiaomiGatewayBindingConstants.*;
 
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,8 +54,8 @@ public class XiaomiSensorCubeHandler extends XiaomiSensorBaseHandler {
                 logger.error("Could not parse rotation time", e);
             }
             triggerChannel(CHANNEL_CUBE_ACTION, rot < 0 ? "ROTATE_LEFT" : "ROTATE_RIGHT");
-            updateState(CHANNEL_CUBE_ROTATION_ANGLE, new DecimalType(rot));
-            updateState(CHANNEL_CUBE_ROTATION_TIME, new DecimalType(time));
+            updateState(CHANNEL_CUBE_ROTATION_ANGLE, new QuantityType<>(rot, ANGLE_UNIT));
+            updateState(CHANNEL_CUBE_ROTATION_TIME, new QuantityType<>(time, TIME_UNIT));
         }
     }
 }

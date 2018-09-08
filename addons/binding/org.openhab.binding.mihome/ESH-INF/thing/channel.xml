@@ -80,15 +80,15 @@
 	</channel-type>
 
 	<channel-type id="rotationAngle">
-		<item-type>Number</item-type>
-		<label>Cube rotation angle in degrees</label>
-		<state readOnly="true" step="1" pattern="%d°"></state>
+		<item-type>Number:Angle</item-type>
+		<label>Cube rotation angle</label>
+		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
 
 	<channel-type id="rotationTime">
-		<item-type>Number</item-type>
-		<label>Cube rotation time in milliseconds</label>
-		<state readOnly="false" step="1" pattern="%d ms"></state>
+		<item-type>Number:Time</item-type>
+		<label>Cube rotation time</label>
+		<state readOnly="false" pattern="%d %unit%"></state>
 	</channel-type>
 
 	<channel-type id="gas_alarm">
@@ -111,26 +111,26 @@
 	</channel-type>
 
 	<channel-type id="temperature">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<category>Temperature</category>
-		<state min="-50" max="60" step="0.1" pattern="%.1f °C" readOnly="true">
+		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 
 	<channel-type id="humidity">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<category>Humidity</category>
-		<state min="0" max="100" step="0.1" pattern="%.1f %%" readOnly="true">
+		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 
 	<channel-type id="pressure">
-		<item-type>Number</item-type>
+		<item-type>Number:Pressure</item-type>
 		<label>Pressure</label>
 		<category>Pressure</category>
-		<state pattern="%.1f kPa" readOnly="true">
+		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 

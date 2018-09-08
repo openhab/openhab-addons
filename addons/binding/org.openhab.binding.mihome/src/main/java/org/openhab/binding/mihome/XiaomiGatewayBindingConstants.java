@@ -55,7 +55,7 @@ public class XiaomiGatewayBindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_BATTERY_LEVEL = "batteryLevel";
     public static final String CHANNEL_LOW_BATTERY = "lowBattery";
-    // TH sensor
+    // HT sensor
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_HUMIDITY = "humidity";
     public static final String CHANNEL_PRESSURE = "pressure";
