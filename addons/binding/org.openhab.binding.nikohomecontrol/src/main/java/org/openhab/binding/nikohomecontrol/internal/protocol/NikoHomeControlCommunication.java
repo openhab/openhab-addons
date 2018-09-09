@@ -284,7 +284,7 @@ public final class NikoHomeControlCommunication {
         sendMessage(new NhcMessageCmd(command));
         BufferedReader reader = this.nhcIn;
         if (reader == null) {
-            throw new IOException();
+            throw new IOException("Cannot read from socket, reader not connected.");
         }
         readMessage(reader.readLine());
     }

@@ -56,8 +56,13 @@ public class NikoHomeControlActionHandler extends BaseThingHandler {
     static final int NHCUP = 255;
     static final int NHCSTOP = 253;
 
+    @FunctionalInterface
+    private interface Action {
+        abstract void execute();
+    }
+
     @Nullable
-    private volatile Runnable rollershutterTask;
+    private volatile Action rollershutterTask;
     @Nullable
     private volatile ScheduledFuture<?> rollershutterStopTask;
     @Nullable
@@ -297,9 +302,9 @@ public class NikoHomeControlActionHandler extends BaseThingHandler {
         }
         this.waitForEvent = false;
 
-        Runnable runnable = this.rollershutterTask;
-        if (runnable != null) {
-            runnable.run();
+        Action action = this.rollershutterTask;
+        if (action != null) {
+            action.execute();
             this.rollershutterTask = null;
         }
     }
