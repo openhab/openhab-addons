@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: ., lib/ondus-api-0.0.2.jar
+Bundle-ClassPath: ., lib/ondus-api-0.0.3.jar
 Bundle-ManifestVersion: 2
 Bundle-Name: GROHE ONDUS Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
