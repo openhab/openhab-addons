@@ -1,12 +1,8 @@
 package org.openhab.binding.openthermgateway.internal;
 
-import org.openhab.binding.openthermgateway.handler.OpenThermGatewayHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class Message {
     /*
-     * The code field is not part of OpenTherm spec, but added by OpenTherm Gateway.
+     * The code field is not part of OpenTherm specification, but added by OpenTherm Gateway.
      * It can be any of the following:
      *
      * T: Message received from the thermostat
@@ -20,8 +16,6 @@ public class Message {
     private MessageType messageType;
     private int id;
     private String data;
-
-    private final Logger logger = LoggerFactory.getLogger(OpenThermGatewayHandler.class);
 
     public String getCode() {
         return this.code;
@@ -112,17 +106,15 @@ public class Message {
     }
 
     public static Message parse(String message) {
-        if (message != null && message.length() == 9) {
-            String code = message.substring(0, 1);
+        if (message != null && message.matches("[TBRA]{1}[A-F0-9]{8}")) {
 
             // For now, only parse TBRA codes
-            if ("TBRA".indexOf(code) > -1) {
-                MessageType messageType = getMessageType(message.substring(1, 3));
-                int id = Integer.valueOf(message.substring(3, 5), 16);
-                String data = message.substring(5);
+            String code = message.substring(0, 1);
+            MessageType messageType = getMessageType(message.substring(1, 3));
+            int id = Integer.valueOf(message.substring(3, 5), 16);
+            String data = message.substring(5);
 
-                return new Message(code, messageType, id, data);
-            }
+            return new Message(code, messageType, id, data);
         }
 
         return null;

@@ -7,9 +7,6 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnector {
     private OpenThermGatewayCallback callback;
     private String ipaddress;
@@ -21,9 +18,6 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
 
     private boolean stopping;
     private Message previousMessage;
-
-    // TODO: logging doesnt work, runs on different thread, use callback ?
-    private final Logger logger = LoggerFactory.getLogger(OpenThermGatewaySocketConnector.class);
 
     public OpenThermGatewaySocketConnector(OpenThermGatewayCallback callback, String ipaddress, int port) {
         this.callback = callback;
@@ -37,8 +31,10 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
 
     @Override
     public void run() {
+        stopping = false;
+
         try {
-            logger.debug("Starting OpenThermGatewaySocketConnector");
+            callback.log(LogLevel.Debug, "Starting OpenThermGatewaySocketConnector");
 
             callback.connecting();
 
@@ -47,7 +43,8 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
             callback.connected();
-            logger.debug("OpenThermGatewaySocketConnector connected");
+
+            callback.log(LogLevel.Debug, "OpenThermGatewaySocketConnector connected");
 
             sendCommand(CommandType.PrintSummary, "0");
 
@@ -58,18 +55,24 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
                 handleMessage(message);
             }
 
-            logger.debug("Stopping OpenThermGatewaySocketConnector");
+            callback.log(LogLevel.Debug, "Stopping OpenThermGatewaySocketConnector");
 
             reader.close();
             writer.close();
             socket.close();
         } catch (UnknownHostException e) {
-            logger.error("An error occured in OpenThermGatewaySocketConnector", e);
+            callback.log(LogLevel.Error, "An error occured in OpenThermGatewaySocketConnector", e);
         } catch (IOException e) {
-            logger.error("An error occured in OpenThermGatewaySocketConnector", e);
+            callback.log(LogLevel.Error, "An error occured in OpenThermGatewaySocketConnector", e);
         }
 
+        socket = null;
         callback.disconnected();
+    }
+
+    @Override
+    public boolean isConnected() {
+        return (socket != null && socket.isConnected());
     }
 
     @Override
@@ -79,10 +82,10 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
 
             String msg = command.getMessage(message);
 
-            logger.debug("Sending command {0}", msg);
+            callback.log(LogLevel.Debug, "Sending command to OpenTherm Gateway: %s", msg);
             writer.println(msg);
         } else {
-            logger.debug("No command found for commandType {0}", commandType.toString());
+            callback.log(LogLevel.Debug, "No command found for commandType %s", commandType.toString());
         }
     }
 
@@ -90,25 +93,16 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
         Message msg = Message.parse(message);
 
         if (msg != null) {
-            if (msg.getCode().equals("B")) {
-                // Dont handle messages received from the thermostat
+            // Only handle ReadAck messages, since ReadData messages are empty and only used to request values
+            if (msg.getCode().equals("B")
+                    && (msg.getMessageType() == MessageType.ReadAck || msg.getMessageType() == MessageType.WriteAck)) {
                 receiveMessage(msg);
             }
         }
-        // if (msg != null) {
-        // if (msg.overrides(previousMessage)) {
-        // previousMessage = null;
-        // receiveMessage(msg);
-        // } else {
-        // receiveMessage(previousMessage);
-        // previousMessage = msg;
-        // }
-        // }
     }
 
     private void receiveMessage(Message message) {
-        if (message != null) {
-            logger.debug(message.toString());
+        if (message != null && callback != null) {
             callback.receiveMessage(message);
         }
     }

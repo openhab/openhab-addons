@@ -9,7 +9,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
  * The {@link TypeConverter} is used to convert simple values to SmartHome types
  * sent to one of the channels.
  *
- * @author Arjen Korevaar - Initial contribution
+ * @author Arjen Korevaar
  */
 public class TypeConverter {
     /*

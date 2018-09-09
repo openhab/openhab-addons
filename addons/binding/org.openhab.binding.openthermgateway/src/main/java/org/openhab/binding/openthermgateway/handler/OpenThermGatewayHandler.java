@@ -24,6 +24,7 @@ import org.openhab.binding.openthermgateway.OpenThermGatewayBindingConstants;
 import org.openhab.binding.openthermgateway.internal.CommandType;
 import org.openhab.binding.openthermgateway.internal.DataItem;
 import org.openhab.binding.openthermgateway.internal.DataItemGroup;
+import org.openhab.binding.openthermgateway.internal.LogLevel;
 import org.openhab.binding.openthermgateway.internal.Message;
 import org.openhab.binding.openthermgateway.internal.OpenThermGatewayCallback;
 import org.openhab.binding.openthermgateway.internal.OpenThermGatewayConfiguration;
@@ -36,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * The {@link OpenThermGatewayHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Arjen Korevaar - Updated channels
+ * @author Arjen Korevaar
  */
 @NonNullByDefault
 public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThermGatewayCallback {
@@ -57,40 +58,6 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Received channel: {}, command: {}", channelUID, command);
-
-        String channel = channelUID.getId();
-
-        if (channel.equals(OpenThermGatewayBindingConstants.CHANNEL_ROOM_SETPOINT)) {
-            connector.sendCommand(CommandType.TemperatureTemporary, command.toFullString());
-        }
-
-        if (channel.equals(OpenThermGatewayBindingConstants.CHANNEL_OUTSIDE_TEMPERATURE)) {
-            connector.sendCommand(CommandType.TemperatureOutside, command.toFullString());
-        }
-
-        // updateState(OpenThermGatewayBindingConstants.CHANNEL_ROOM_TEMPERATURE, TypeConverter.toDecimalType(10));
-
-        // switch (channelUID.getId()) {
-        // case OpenThermGatewayBindingConstants.CHANNEL_CENTRAL_HEATING_ENABLE:
-        // // updateState(channelUID, getTemperature());
-        // break;
-        // }
-
-        // if (channelUID.getId().equals(OpenThermGatewayBindingConstants.CHANNEL_CENTRAL_HEATING_ENABLE)) {
-        // TODO: handle command
-
-        // Note: if communication with thing fails for some reason,
-        // indicate that by setting the status with detail information
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-        // "Could not control device at IP address x.x.x.x");
-
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "");
-        // }
-    }
-
-    @Override
     public void initialize() {
         logger.debug("Initializing OpenTherm Gateway handler for uid '{}'", getThing().getUID());
 
@@ -104,6 +71,25 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
 
         connectorThread = new Thread(connector);
         connectorThread.start();
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug("Received channel: {}, command: {}", channelUID, command);
+
+        try {
+            if (connector != null && connector.isConnected()) {
+                String channel = channelUID.getId();
+
+                if (channel.equals(OpenThermGatewayBindingConstants.CHANNEL_ROOM_SETPOINT)) {
+                    connector.sendCommand(CommandType.TemperatureTemporary, command.toFullString());
+                } else if (channel.equals(OpenThermGatewayBindingConstants.CHANNEL_OUTSIDE_TEMPERATURE)) {
+                    connector.sendCommand(CommandType.TemperatureOutside, command.toFullString());
+                }
+            }
+        } catch (Exception ex) {
+            logger.error("error", ex);
+        }
     }
 
     @Override
@@ -122,11 +108,7 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
     }
 
     @Override
-    public void receiveMessage(@Nullable Message message) {
-        if (message == null) {
-            return;
-        }
-
+    public void receiveMessage(Message message) {
         if (DataItemGroup.dataItemGroups.containsKey(message.getID())) {
             DataItem[] dataItems = DataItemGroup.dataItemGroups.get(message.getID());
 
@@ -134,8 +116,6 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
                 DataItem dataItem = dataItems[i];
 
                 String channelId = dataItem.getSubject();
-
-                logger.debug("Received update for channel '{}'", channelId);
 
                 if (!OpenThermGatewayBindingConstants.SUPPORTED_CHANNEL_IDS.contains(channelId)) {
                     continue;
@@ -163,9 +143,60 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
                 }
 
                 if (state != null) {
-                    updateState(channelId, state);
+                    logger.debug("Received update for channel '{}': {}", channelId, state.toFullString());
+                    try {
+                        updateState(channelId, state);
+                    } catch (IllegalStateException e) {
+                        // Missing callback, possibly due to incorrect initialization. how to handle correctly ?
+                    }
                 }
             }
+        }
+    }
+
+    @Override
+    public void log(LogLevel loglevel, String format, String arg) {
+        String message = String.format(format, arg);
+        log(loglevel, message);
+    }
+
+    @Override
+    public void log(LogLevel loglevel, String message, Throwable t) {
+        switch (loglevel) {
+            case Debug:
+                logger.debug(message, t);
+                break;
+            case Info:
+                logger.info(message, t);
+                break;
+            case Warning:
+                logger.warn(message, t);
+                break;
+            case Error:
+                logger.error(message, t);
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void log(LogLevel loglevel, String message) {
+        switch (loglevel) {
+            case Debug:
+                logger.debug(message);
+                break;
+            case Info:
+                logger.info(message);
+                break;
+            case Warning:
+                logger.warn(message);
+                break;
+            case Error:
+                logger.error(message);
+                break;
+            default:
+                break;
         }
     }
 }

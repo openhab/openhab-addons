@@ -23,17 +23,17 @@ import com.google.common.collect.ImmutableSet;
  * The {@link OpenThermGatewayBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Arjen Korevaar - Updated channels
+ * @author Arjen Korevaar
  */
 @NonNullByDefault
 public class OpenThermGatewayBindingConstants {
 
     private static final String BINDING_ID = "openthermgateway";
 
-    // List of all Thing Type UIDs
+    // List of all Thing Type UID's
     public static final ThingTypeUID MAIN_THING_TYPE = new ThingTypeUID(BINDING_ID, "main");
 
-    // List of all Channel ids
+    // List of all Channel id's
     public static final String CHANNEL_ROOM_TEMPERATURE = "roomtemp";
     public static final String CHANNEL_ROOM_SETPOINT = "roomsetpoint";
     public static final String CHANNEL_FLOW_TEMPERATURE = "flowtemp";
@@ -43,9 +43,12 @@ public class OpenThermGatewayBindingConstants {
     public static final String CHANNEL_DOMESTIC_HOT_WATER_ENABLED = "dhw_enable";
     public static final String CHANNEL_DOMESTIC_HOT_WATER_MODE = "dhw_mode";
     public static final String CHANNEL_FLAME = "flame";
+    public static final String CHANNEL_RELATIVE_MODULATION_LEVEL = "modulevel";
+    public static final String CHANNEL_MAXIMUM_MODULATION_LEVEL = "maxrelmdulevel";
 
     public static final Set<String> SUPPORTED_CHANNEL_IDS = ImmutableSet.of(CHANNEL_ROOM_TEMPERATURE,
             CHANNEL_ROOM_SETPOINT, CHANNEL_FLOW_TEMPERATURE, CHANNEL_OUTSIDE_TEMPERATURE,
             CHANNEL_CENTRAL_HEATING_ENABLED, CHANNEL_CENTRAL_HEATING_MODE, CHANNEL_DOMESTIC_HOT_WATER_ENABLED,
-            CHANNEL_DOMESTIC_HOT_WATER_MODE, CHANNEL_FLAME);
+            CHANNEL_DOMESTIC_HOT_WATER_MODE, CHANNEL_FLAME, CHANNEL_RELATIVE_MODULATION_LEVEL,
+            CHANNEL_MAXIMUM_MODULATION_LEVEL);
 }

@@ -1,11 +1,19 @@
 package org.openhab.binding.openthermgateway.internal;
 
+import org.eclipse.jdt.annotation.NonNull;
+
 public interface OpenThermGatewayCallback {
-    void connecting();
+    public void connecting();
 
-    void connected();
+    public void connected();
 
-    void disconnected();
+    public void disconnected();
 
-    void receiveMessage(Message message);
+    public void receiveMessage(@NonNull Message message);
+
+    public void log(@NonNull LogLevel loglevel, @NonNull String message);
+
+    public void log(@NonNull LogLevel loglevel, @NonNull String format, @NonNull String arg);
+
+    public void log(@NonNull LogLevel loglevel, @NonNull String format, @NonNull Throwable t);
 }
