@@ -62,8 +62,9 @@ and the `locationId`. Once the account bridge is configured, the appliances in y
 | Channel                  | Type                     | Description                                           |
 |--------------------------|--------------------------|-------------------------------------------------------|
 | name                     | String                   | The name of the appliance                             |
-| humidity                 | Number                   | The humidity measured by the device                   |
+| humidity                 | Number                   | The humidity measured by the appliance                |
 | temperature              | Number:Temperature       | The ambient temperature of the appliance              |
+| battery                  | Number:Percent           | The battery level of the appliance                    |
 
 ## Full Example
 

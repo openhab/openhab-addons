@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -28,6 +29,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.grohe.ondus.api.OndusService;
+import org.grohe.ondus.api.model.ApplianceStatus;
 import org.grohe.ondus.api.model.BaseApplianceData;
 import org.grohe.ondus.api.model.SenseAppliance;
 import org.grohe.ondus.api.model.SenseApplianceData;
@@ -106,6 +108,9 @@ public class GroheOndusSenseHandler<T> extends GroheOndusBaseHandler<SenseApplia
             case CHANNEL_HUMIDITY:
                 newState = new QuantityType<>(measurement.getHumidity(), SmartHomeUnits.PERCENT);
                 break;
+            case CHANNEL_BATTERY:
+                newState = new QuantityType<>(getBatteryStatus(appliance), SmartHomeUnits.PERCENT);
+                break;
             default:
                 throw new IllegalArgumentException("Channel " + channel + " not supported.");
         }
@@ -129,6 +134,30 @@ public class GroheOndusSenseHandler<T> extends GroheOndusBaseHandler<SenseApplia
         List<Measurement> measurementList = applianceData.getData().getMeasurement();
 
         return measurementList.isEmpty() ? new Measurement() : measurementList.get(measurementList.size() - 1);
+    }
+
+    private int getBatteryStatus(SenseAppliance appliance) {
+        OndusService ondusService = getOndusService();
+        if (ondusService == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                    "No initialized OndusService available from bridge.");
+            return -1;
+        }
+
+        Optional<ApplianceStatus> applianceStatusOptional;
+        try {
+            applianceStatusOptional = ondusService.getApplianceStatus(appliance);
+            if (!applianceStatusOptional.isPresent()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Could not load data from API.");
+                return -1;
+            }
+
+            return applianceStatusOptional.get().getBatteryStatus();
+        } catch (IOException e) {
+            logger.debug("Could not load appliance status", e);
+        }
+        return -1;
     }
 
     private @Nullable SenseApplianceData getApplianceData(SenseAppliance appliance) {
