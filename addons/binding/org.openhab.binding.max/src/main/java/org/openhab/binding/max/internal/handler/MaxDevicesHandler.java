@@ -198,7 +198,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
 
     private void sendPropertyUpdate(Map<String, Object> configurationParameters, Map<String, Object> deviceProperties) {
         if (getMaxCubeBridgeHandler() == null) {
-            logger.warn("MAX! Cube LAN gateway bridge handler not found. Cannot handle update without bridge.");
+            logger.debug("MAX! Cube LAN gateway bridge handler not found. Cannot handle update without bridge.");
             return;
         }
 
@@ -260,7 +260,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
         try {
             final Device device = getMaxCubeBridgeHandler().getDevice(maxDeviceSerial);
             if (device == null) {
-                logger.warn("MAX! Cube LAN gateway bridge handler not found. Cannot handle update without bridge.");
+                logger.debug("MAX! Cube LAN gateway bridge handler not found. Cannot handle update without bridge.");
                 return;
             }
             switch (configurationParameter.getKey()) {
@@ -278,7 +278,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
                 case PROPERTY_ROOMNAME:
                     final int roomId = ((BigDecimal) configurationParameter.getValue()).intValue();
                     if (roomId != device.getRoomId()) {
-                        logger.info("Updating room for {} to {}", getThing().getUID().getAsString(), roomId);
+                        logger.debug("Updating room for {} to {}", getThing().getUID().getAsString(), roomId);
                         device.setRoomId(roomId);
                         // TODO: handle if a room has no more devices, probably should be deleted. Also handle if room
                         // rfId
@@ -326,7 +326,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
     public void handleCommand(ChannelUID channelUID, Command command) {
         final MaxCubeBridgeHandler maxCubeBridge = getMaxCubeBridgeHandler();
         if (maxCubeBridge == null) {
-            logger.warn("MAX! Cube LAN gateway bridge handler not found. Cannot handle command without bridge.");
+            logger.debug("MAX! Cube LAN gateway bridge handler not found. Cannot handle command without bridge.");
             return;
         }
         if (command instanceof RefreshType) {
@@ -434,7 +434,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
             Calendar t = Calendar.getInstance();
             t.add(Calendar.MINUTE, REFRESH_ACTUAL_MIN_RATE * -1);
             device.setActualTempLastUpdated(t.getTime());
-            logger.info("Actual date reset for {} {} ({}) id: {}", device.getType(), device.getName(),
+            logger.debug("Actual date reset for {} {} ({}) id: {}", device.getType(), device.getName(),
                     device.getSerialNumber(), getThing().getUID());
         }
         long timediff = Calendar.getInstance().getTime().getTime() - device.getActualTempLastUpdated().getTime();

@@ -199,7 +199,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
                             } catch (IOException e) {
                                 logger.debug("IO error during MAX! Cube discovery: {}", e.getMessage());
                             } catch (Exception e) {
-                                logger.info("{}", e.getMessage(), e);
+                                logger.debug("{}", e.getMessage(), e);
                             }
                             logger.trace("Request packet sent to: {} Interface: {}", bc.getHostAddress(),
                                     networkInterface.getDisplayName());

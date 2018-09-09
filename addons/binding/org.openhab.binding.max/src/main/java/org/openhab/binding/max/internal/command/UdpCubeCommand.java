@@ -84,7 +84,7 @@ public class UdpCubeCommand {
         } else if (commandType.equals(UdpCommandType.DEFAULTNET)) {
             commandString = MAXCUBE_COMMAND_STRING + serialNumber + "c";
         } else {
-            logger.info("Unknown Command {}", commandType);
+            logger.debug("Unknown Command {}", commandType);
             return false;
         }
         commandResponse.clear();
@@ -196,7 +196,7 @@ public class UdpCubeCommand {
                             } catch (IOException e) {
                                 logger.debug("IO error during MAX! Cube UDP command sending: {}", e.getMessage());
                             } catch (Exception e) {
-                                logger.info("{}", e.getMessage(), e);
+                                logger.debug("{}", e.getMessage(), e);
                             }
                             logger.trace("Request packet sent to: {} Interface: {}", bc.getHostAddress(),
                                     networkInterface.getDisplayName());

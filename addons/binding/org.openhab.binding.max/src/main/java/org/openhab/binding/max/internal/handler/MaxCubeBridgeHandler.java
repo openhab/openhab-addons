@@ -298,7 +298,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                 logger.debug("Timeout during MAX! inclusion mode");
             }
         } else {
-            logger.warn("Need to be online to start inclusion mode");
+            logger.debug("Need to be online to start inclusion mode");
         }
     }
 
@@ -358,13 +358,13 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                         if (sendCubeCommand(cmd)) {
                             logger.trace("Command {} completed for MAX! Cube at IP: {}", sendCommand, ipAddress);
                         } else {
-                            logger.warn("Error sending command {} to MAX! Cube at IP: {}", sendCommand, ipAddress);
+                            logger.debug("Error sending command {} to MAX! Cube at IP: {}", sendCommand, ipAddress);
                         }
                     }
                     Thread.sleep(50);
                 }
             } catch (InterruptedException e) {
-                logger.info("Stopping queueConsumer");
+                logger.debug("Stopping queueConsumer");
             } catch (Exception e) {
                 logger.error("Unexpected exception occurred during run of queueConsumer", e);
             }
@@ -379,7 +379,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                             socket.close();
                         }
                     } catch (IOException e) {
-                        logger.warn("Could not close socket", e);
+                        logger.debug("Could not close socket", e);
                     }
                     logger.debug("Found to have excess duty cycle, waiting for better times...");
                     excessDutyCycle.await(1, TimeUnit.MINUTES);
@@ -580,19 +580,19 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
             return true;
 
         } catch (ConnectException e) {
-            logger.warn("Connection timed out on {} port {}", ipAddress, port);
+            logger.debug("Connection timed out on {} port {}", ipAddress, port);
             socketClose(); // reconnect on next execution
             return false;
         } catch (UnknownHostException e) {
-            logger.warn("Host error occurred during execution: {}", e.getMessage());
+            logger.debug("Host error occurred during execution: {}", e.getMessage());
             socketClose(); // reconnect on next execution
             return false;
         } catch (IOException e) {
-            logger.warn("IO error occurred during execution: {}", e.getMessage());
+            logger.debug("IO error occurred during execution: {}", e.getMessage());
             socketClose(); // reconnect on next execution
             return false;
         } catch (Exception e) {
-            logger.warn("Exception occurred during execution", e);
+            logger.debug("Exception occurred during execution", e);
             socketClose(); // reconnect on next execution
             return false;
         } finally {
@@ -634,7 +634,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                         this.messageProcessor.reset();
                     }
                 } catch (Exception e) {
-                    logger.info("Error while handling message block: '{}' from MAX! Cube lan gateway: {}:", raw,
+                    logger.debug("Error while handling message block: '{}' from MAX! Cube lan gateway: {}:", raw,
                             ipAddress, e.getMessage(), e);
                     this.messageProcessor.reset();
                 }
@@ -716,7 +716,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                         deviceStatusListener.onDeviceConfigUpdate(getThing(), di);
                     }
                 } catch (NullPointerException e) {
-                    logger.warn("Unexpected NPE cought. Please report stacktrace", e);
+                    logger.debug("Unexpected NPE cought. Please report stacktrace", e);
                     // ignore
                 } catch (Exception e) {
                     logger.error("An exception occurred while calling the DeviceStatusListener", e);

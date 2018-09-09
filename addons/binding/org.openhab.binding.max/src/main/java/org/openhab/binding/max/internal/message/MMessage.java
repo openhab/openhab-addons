@@ -40,7 +40,7 @@ public final class MMessage extends Message {
         String[] tokens = this.getPayload().split(Message.DELIMETER);
 
         if (tokens.length <= 1) {
-            logger.info("No rooms defined. Configure your Max! Cube");
+            logger.debug("No rooms defined. Configure your Max! Cube");
             hasConfiguration = false;
             return;
         }
@@ -107,7 +107,7 @@ public final class MMessage extends Message {
                         roomId));
             }
         } catch (Exception e) {
-            logger.info("Unknown error parsing the M Message: {}", e.getMessage(), e);
+            logger.debug("Unknown error parsing the M Message: {}", e.getMessage(), e);
             logger.debug("\tRAW : {}", this.getPayload());
         }
     }
