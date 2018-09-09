@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2010-2018 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.groheondus.internal.handler;
 
 import java.io.IOException;
@@ -17,9 +25,12 @@ import org.openhab.binding.groheondus.internal.GroheOndusApplianceConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author Florian Schmidt - Initial contribution
+ */
 public abstract class GroheOndusBaseHandler<T extends BaseAppliance> extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(GroheOndusSenseGuardHandler.class);
-    
+
     protected @Nullable GroheOndusApplianceConfiguration config;
 
     public GroheOndusBaseHandler(Thing thing) {
@@ -43,7 +54,7 @@ public abstract class GroheOndusBaseHandler<T extends BaseAppliance> extends Bas
             return;
         }
         int pollingInterval = getPollingInterval(appliance);
-        scheduler.scheduleAtFixedRate(this::updateChannels, 0, pollingInterval, TimeUnit.SECONDS);
+        scheduler.scheduleWithFixedDelay(this::updateChannels, 0, pollingInterval, TimeUnit.SECONDS);
 
         updateStatus(ThingStatus.UNKNOWN);
     }
