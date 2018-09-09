@@ -23,17 +23,17 @@ public class KM200CommObject {
     private Integer writeable;
     private Integer recordable;
     private Integer virtual;
-    private Boolean updated = false;
+    private Boolean updated;
     private String parent;
-    private String fullServiceName = "";
-    private String serviceType = "";
-    private String jsonData = "";
-    private Object value = null;
-    private Object valueParameter = null;
+    private String fullServiceName;
+    private String serviceType;
+    private String jsonData;
+    private Object value;
+    private Object valueParameter;
 
     /* Device services */
-    public HashMap<String, KM200CommObject> serviceTreeMap = null;
-    KM200CommObject parentObject = null;
+    public HashMap<String, KM200CommObject> serviceTreeMap;
+    KM200CommObject parentObject;
 
     public KM200CommObject(String fullServiceName, String serviceType, Integer readable, Integer writeable,
             Integer recordable, Integer virtual, String parent, KM200CommObject parentObject) {
@@ -46,6 +46,7 @@ public class KM200CommObject {
         this.virtual = virtual;
         this.parent = parent;
         this.parentObject = parentObject;
+        updated = false;
     }
 
     /* Sets */

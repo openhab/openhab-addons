@@ -31,17 +31,17 @@
 				<context>password</context>
 				<description>Option 2: Private Password for the building of the private key (Set in the App)</description>
 			</parameter>
-			<parameter name="refreshinterval" type="integer" required="true">
+			<parameter name="refreshInterval" type="integer" required="true">
 				<label>Auto refresh interval</label>
 				<description>Auto refresh interval in seconds</description>
 				<default>30</default>
 			</parameter>
-			<parameter name="readdelay" type="integer" required="true">
+			<parameter name="readDelay" type="integer" required="true">
 				<label>Read delay</label>
 				<description>Delay between two read attempts in ms</description>
 				<default>100</default>
 			</parameter>
-			<parameter name="maxnbrrepeats" type="integer" required="true">
+			<parameter name="maxNbrRepeats" type="integer" required="true">
 				<label>Maximum number of repeats</label>
 				<description>Maximum number of repeats in case of a communication error (like HTTP 500 error)</description>
 				<default>10</default>

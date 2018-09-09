@@ -31,13 +31,14 @@ import com.google.gson.JsonParser;
  */
 public class KM200SwitchProgramService {
     private final Logger logger = LoggerFactory.getLogger(KM200SwitchProgramService.class);
+    private final JsonParser jsonParser = new JsonParser();
 
     protected int maxNbOfSwitchPoints = 8;
     protected int maxNbOfSwitchPointsPerDay = 8;
     protected int switchPointTimeRaster = 10;
-    protected String setpointProperty = null;
-    protected String positiveSwitch = null;
-    protected String negativeSwitch = null;
+    protected String setpointProperty;
+    protected String positiveSwitch;
+    protected String negativeSwitch;
 
     protected final Integer MIN_TIME = 0;
     protected final Integer MAX_TIME = 1430;
@@ -54,13 +55,13 @@ public class KM200SwitchProgramService {
     protected Integer activeCycle = 1;
 
     /* Night- and daylist for all weekdays */
-    public HashMap<String, HashMap<String, ArrayList<Integer>>> switchMap = null;
+    public HashMap<String, HashMap<String, ArrayList<Integer>>> switchMap;
 
     /* List with all days */
-    private ArrayList<String> days = null;
-    public static List<StateOption> daysList = null;
+    private ArrayList<String> days;
+    public static List<StateOption> daysList;
     /* List with setpoints */
-    ArrayList<String> setpoints = null;
+    ArrayList<String> setpoints;
 
     KM200SwitchProgramService() {
         switchMap = new HashMap<String, HashMap<String, ArrayList<Integer>>>();
@@ -416,7 +417,6 @@ public class KM200SwitchProgramService {
         synchronized (switchMap) {
             Boolean prepareNewOnly = false;
             JsonArray sPoints = new JsonArray();
-            JsonParser jsonParser = new JsonParser();
             for (String day : days) {
                 if (switchMap.get(getPositiveSwitch()).containsKey(day)
                         && switchMap.get(getNegativeSwitch()).containsKey(day)) {

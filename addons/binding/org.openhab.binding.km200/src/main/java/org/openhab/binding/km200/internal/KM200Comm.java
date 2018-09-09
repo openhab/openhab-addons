@@ -57,9 +57,10 @@ import com.google.gson.JsonParser;
 public class KM200Comm<KM200BindingProvider> {
 
     private final Logger logger = LoggerFactory.getLogger(KM200Comm.class);
-    private HttpClient client = null;
+    private HttpClient client;
     private final KM200Device device;
-    public Integer maxNbrRepeats;
+    private Integer maxNbrRepeats;
+    private final JsonParser jsonParser = new JsonParser();
 
     public KM200Comm(KM200Device device) {
         this.device = device;
@@ -70,10 +71,18 @@ public class KM200Comm<KM200BindingProvider> {
     }
 
     /**
+     * This function sets the maximum number of repeats.
+     *
+     */
+    public void setMaxNbrRepeats(Integer maxNbrRepeats) {
+        this.maxNbrRepeats = maxNbrRepeats;
+    }
+
+    /**
      * This function removes zero padding from a byte array.
      *
      */
-    private static byte[] removeZeroPadding(byte[] bytes) {
+    private byte[] removeZeroPadding(byte[] bytes) {
         int i = bytes.length - 1;
         while (i >= 0 && bytes[i] == 0) {
             --i;
@@ -85,7 +94,7 @@ public class KM200Comm<KM200BindingProvider> {
      * This function adds zero padding to a byte array.
      *
      */
-    private static byte[] addZeroPadding(byte[] bdata, int bSize, String cSet) throws UnsupportedEncodingException {
+    private byte[] addZeroPadding(byte[] bdata, int bSize, String cSet) throws UnsupportedEncodingException {
         int encrypt_padchar = bSize - (bdata.length % bSize);
         byte[] padchars = new String(new char[encrypt_padchar]).getBytes(cSet);
         byte[] padded_data = new byte[bdata.length + padchars.length];
@@ -254,7 +263,6 @@ public class KM200Comm<KM200BindingProvider> {
         Integer writeable = 0;
         Integer recordable = 0;
         Integer readable = 1;
-        JsonParser jsonParser = new JsonParser();
         JsonObject nodeRoot = null;
         KM200CommObject newObject = null;
         logger.debug("Init: {}", service);
@@ -442,7 +450,6 @@ public class KM200Comm<KM200BindingProvider> {
      */
     public void initVirtualObjects() {
         KM200CommObject newObject = null;
-        JsonParser jsonParser = new JsonParser();
         try {
             for (KM200CommObject object : device.virtualList) {
                 logger.debug("Full Servicename: {}", object.getFullServiceName());
@@ -577,7 +584,6 @@ public class KM200Comm<KM200BindingProvider> {
     private State parseJSONData(String decodedData, String type, String service, String itemType, Object itemPara) {
         JsonObject nodeRoot = null;
         State state = null;
-        JsonParser jsonParser = new JsonParser();
         KM200CommObject object = device.getServiceObject(service);
         logger.debug("parseJSONData service: {}, data: {}", service, decodedData);
         /* Now parsing of the JSON String depending on its type and the type of binding item */
@@ -905,7 +911,6 @@ public class KM200Comm<KM200BindingProvider> {
             String type = null;
             String dataToSend = null;
             KM200CommObject object = null;
-            JsonParser jsonParser = new JsonParser();
 
             logger.debug("Prepare item for send: {} type: {} item: {}", service, type, itemType);
             if (device.blacklistMap.contains(service)) {

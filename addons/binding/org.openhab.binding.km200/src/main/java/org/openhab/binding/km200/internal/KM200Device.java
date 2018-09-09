@@ -33,31 +33,31 @@ public class KM200Device {
     private final Logger logger = LoggerFactory.getLogger(KM200Device.class);
 
     /* valid IPv4 address of the KMxxx. */
-    protected String ip4Address = null;
+    protected String ip4Address;
 
     /* The gateway password which is provided on the type sign of the KMxxx. */
-    protected String gatewayPassword = null;
+    protected String gatewayPassword;
 
     /* The private password which has been defined by the user via EasyControl. */
-    protected String privatePassword = null;
+    protected String privatePassword;
 
     /* The returned device charset for communication */
-    protected String charSet = null;
+    protected String charSet;
 
     /* Needed keys for the communication */
-    protected byte[] cryptKeyInit = null;
-    protected byte[] cryptKeyPriv = null;
+    protected byte[] cryptKeyInit;
+    protected byte[] cryptKeyPriv;
 
     /* Buderus_MD5Salt */
-    protected byte[] MD5Salt = null;
+    protected byte[] MD5Salt;
 
     /* Device services */
-    public HashMap<String, KM200CommObject> serviceTreeMap = null;
+    public HashMap<String, KM200CommObject> serviceTreeMap;
 
     /* Device services blacklist */
-    List<String> blacklistMap = null;
+    List<String> blacklistMap;
     /* List of virtual services */
-    List<KM200CommObject> virtualList = null;
+    List<KM200CommObject> virtualList;
 
     /* Is the first INIT done */
     protected Boolean inited = false;
@@ -77,8 +77,6 @@ public class KM200Device {
      * This function creates the private key from the MD5Salt, the device and the private password
      *
      * @author Markus Eckhardt
-     *
-     * @since 1.9.0
      */
     private void recreateKeys() {
         if (StringUtils.isNotBlank(gatewayPassword) && StringUtils.isNotBlank(privatePassword) && MD5Salt != null) {
@@ -169,11 +167,11 @@ public class KM200Device {
      */
     public void listAllServices() {
         if (serviceTreeMap != null) {
-            logger.info("##################################################################");
-            logger.info("List of avalible services");
-            logger.info("readable;writeable;recordable;virtual;type;service;value;allowed;min;max;unit");
+            logger.debug("##################################################################");
+            logger.debug("List of avalible services");
+            logger.debug("readable;writeable;recordable;virtual;type;service;value;allowed;min;max;unit");
             printAllServices(serviceTreeMap);
-            logger.info("##################################################################");
+            logger.debug("##################################################################");
         }
 
     }
@@ -229,7 +227,7 @@ public class KM200Device {
                         val = "";
                         valPara = ";";
                     }
-                    logger.info("{};{};{};{};{};{};{};{}", object.getReadable().toString(),
+                    logger.debug("{};{};{};{};{};{};{};{}", object.getReadable().toString(),
                             object.getWriteable().toString(), object.getRecordable().toString(),
                             object.getVirtual().toString(), type, object.getFullServiceName(), val, valPara);
                     printAllServices(object.serviceTreeMap);

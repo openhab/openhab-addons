@@ -13,7 +13,7 @@ This Binding is tested on a KM200 but it should work on KM50 and KM100, too.
 
 ### Discovery and services
 
-This binding is discovering the kmdevice with a MDNS search method in the local network. After adding of the discovered device to the things the configuration of the device has to be completed (In the settings of this thing). 
+This binding is discovering the kmdevice with a MDNS search method in the local network. After adding of the discovered device to the Things the configuration of the device has to be completed (In the settings of this Thing). 
 
 ## Binding configuration
 
@@ -36,23 +36,24 @@ The *kmdevice* bridge thing requires the following configuration parameters:
 | Gateway Password        | GatewayPassword | The gateway password.                                                       | true     |                      | AAAABBBBCCCCDDDD                                                 |
 | Private Password        | PrivatePassword | The private password.                                                       | true     |                      | MYPASSWORD                                                       |
 
-
 ### Other Things
 
-The other things are available after the bridge device connected successfully. They don't need any configuration parameters.
+The other things are available after the bridge device connected successfully and they don't need any configuration parameters.
 This binding is creating things depending on the connected heating system full automatically.
-There is no way for a manual configuration. (because they are always a bit different). Take a look to the inbox for the valid things.
+There is no way for a manual configuration. (because they are always a bit different). 
+Take a look to the inbox for the valid Things.
 
 ### Channels
 
-This binding is creating the channels depending on the connected heating system full automatically.  Take a look to the things in the PaperUI for valid channels.
+This binding is creating the channels depending on the connected heating system full automatically. 
+Take a look at the Things in the PaperUI for valid channels.
 
 ### Items
+
 In the items file it's possible to map the services. You can take the correct names from the channels in the PaperUI.
 Example:
 
 ```
-
 String  budFirmware  "Firmware version [%s]"        {channel="km200:gateway:123456789:gateway:versionFirmware"}
 Number  budWater  "Water temperature  [%.1f °C]"    {channel="km200:dhwCircuit:123456789:dhw1:actualTemp"}
 ```
