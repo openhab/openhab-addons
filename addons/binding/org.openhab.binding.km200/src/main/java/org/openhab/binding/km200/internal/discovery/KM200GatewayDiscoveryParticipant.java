@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 @Component(immediate = true, configurationPid = "binding.km200")
 public class KM200GatewayDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
-    private static final Logger logger = LoggerFactory.getLogger(KM200GatewayDiscoveryParticipant.class);
+    private final Logger logger = LoggerFactory.getLogger(KM200GatewayDiscoveryParticipant.class);
 
     public static final Set<ThingTypeUID> SUPPORTED_ALL_THING_TYPES_UIDS = KM200GatewayHandler.SUPPORTED_THING_TYPES_UIDS;
 

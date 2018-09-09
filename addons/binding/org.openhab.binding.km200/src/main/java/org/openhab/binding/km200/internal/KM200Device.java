@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 
 public class KM200Device {
 
-    private static final Logger logger = LoggerFactory.getLogger(KM200Device.class);
+    private final Logger logger = LoggerFactory.getLogger(KM200Device.class);
 
     /* valid IPv4 address of the KMxxx. */
     protected String ip4Address = null;

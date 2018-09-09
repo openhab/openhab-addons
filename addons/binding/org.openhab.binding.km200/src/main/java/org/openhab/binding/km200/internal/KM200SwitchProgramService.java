@@ -30,7 +30,7 @@ import com.google.gson.JsonParser;
  *
  */
 public class KM200SwitchProgramService {
-    private static final Logger logger = LoggerFactory.getLogger(KM200SwitchProgramService.class);
+    private final Logger logger = LoggerFactory.getLogger(KM200SwitchProgramService.class);
 
     protected int maxNbOfSwitchPoints = 8;
     protected int maxNbOfSwitchPointsPerDay = 8;

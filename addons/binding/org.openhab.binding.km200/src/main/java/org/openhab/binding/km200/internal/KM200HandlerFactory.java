@@ -43,7 +43,7 @@ import com.google.common.collect.Sets;
 @Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.km200", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class KM200HandlerFactory extends BaseThingHandlerFactory {
 
-    public static final Set<ThingTypeUID> SUPPORTED_ALL_THING_TYPES_UIDS = Sets
+    public final Set<ThingTypeUID> SUPPORTED_ALL_THING_TYPES_UIDS = Sets
             .union(KM200GatewayHandler.SUPPORTED_THING_TYPES_UIDS, KM200ThingHandler.SUPPORTED_THING_TYPES_UIDS);
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();

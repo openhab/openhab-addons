@@ -59,7 +59,7 @@ import com.google.common.collect.Sets;
  */
 public class KM200ThingHandler extends BaseThingHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(KM200ThingHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(KM200ThingHandler.class);
     private static URI configDescriptionUriChannel;
 
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_DHW_CIRCUIT,

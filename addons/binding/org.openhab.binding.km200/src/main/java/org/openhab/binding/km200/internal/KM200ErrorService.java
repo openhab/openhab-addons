@@ -29,7 +29,7 @@ import com.google.gson.JsonObject;
  */
 public class KM200ErrorService {
 
-    private static final Logger logger = LoggerFactory.getLogger(KM200ErrorService.class);
+    private final Logger logger = LoggerFactory.getLogger(KM200ErrorService.class);
 
     private Integer activeError = 1;
 

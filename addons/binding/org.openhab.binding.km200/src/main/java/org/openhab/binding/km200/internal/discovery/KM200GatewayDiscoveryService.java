@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  */
 public class KM200GatewayDiscoveryService extends AbstractDiscoveryService implements KM200GatewayStatusListener {
 
-    private static final Logger logger = LoggerFactory.getLogger(KM200GatewayDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(KM200GatewayDiscoveryService.class);
 
     private static int TIMEOUT = 120;
 

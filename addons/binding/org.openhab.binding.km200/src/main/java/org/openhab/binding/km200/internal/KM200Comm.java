@@ -56,14 +56,14 @@ import com.google.gson.JsonParser;
 
 public class KM200Comm<KM200BindingProvider> {
 
-    private static final Logger logger = LoggerFactory.getLogger(KM200Comm.class);
+    private final Logger logger = LoggerFactory.getLogger(KM200Comm.class);
     private HttpClient client = null;
     private final KM200Device device;
-    public BigDecimal maxNbrRepeats;
+    public Integer maxNbrRepeats;
 
     public KM200Comm(KM200Device device) {
         this.device = device;
-        maxNbrRepeats = BigDecimal.valueOf(10);
+        maxNbrRepeats = Integer.valueOf(10);
         if (client == null) {
             client = new HttpClient();
         }

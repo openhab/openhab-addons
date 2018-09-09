@@ -60,7 +60,7 @@ import com.google.gson.JsonParser;
  */
 public class KM200GatewayHandler extends BaseBridgeHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(KM200GatewayHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(KM200GatewayHandler.class);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_KMDEVICE);
 
@@ -73,11 +73,11 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
     private final KM200Device device;
     private final KM200Comm<KM200Device> comm;
     private SendKM200Thread sThread;
-    private static BigDecimal readDelay;
+    private static Integer readDelay;
 
     public KM200GatewayHandler(Bridge bridge) {
         super(bridge);
-        readDelay = BigDecimal.valueOf(100);
+        readDelay = Integer.valueOf(100);
         thing.setStatusInfo(
                 new ThingStatusInfo(ThingStatus.UNINITIALIZED, ThingStatusDetail.CONFIGURATION_PENDING, ""));
 
@@ -153,11 +153,11 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
                         logger.debug("Set refresh interval to: {} seconds.", refreshInterval);
                         break;
                     case "readdelay":
-                        readDelay = (BigDecimal) configuration.get("readdelay");
+                        readDelay = (Integer) configuration.get("readdelay");
                         logger.debug("Set read delay to: {} seconds.", readDelay);
                         break;
                     case "maxnbrrepeats":
-                        comm.maxNbrRepeats = (BigDecimal) configuration.get("maxnbrrepeats");
+                        comm.maxNbrRepeats = (Integer) configuration.get("maxnbrrepeats");
                         logger.debug("Set max. number of repeats to: {} seconds.", comm.maxNbrRepeats);
                         break;
                 }
@@ -396,7 +396,7 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
      *
      * @param channel
      */
-    public static Map<String, String> getChannelConfigurationStrings(Channel channel) {
+    public Map<String, String> getChannelConfigurationStrings(Channel channel) {
         Map<String, String> paraNames = new HashMap<String, String>();
         if (channel.getConfiguration().containsKey("on")) {
             paraNames.put("on", channel.getConfiguration().get("on").toString());
@@ -470,8 +470,8 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
      */
     // Every thing has here a handler
     @SuppressWarnings("null")
-    private static void updateChildren(KM200GatewayHandler gatewayHandler, KM200Device device,
-            KM200Comm<KM200Device> comm, String parent) {
+    private void updateChildren(KM200GatewayHandler gatewayHandler, KM200Device device, KM200Comm<KM200Device> comm,
+            String parent) {
         synchronized (device) {
             if (parent != null) {
                 device.getServiceObject(parent).setUpdated(false);
@@ -523,7 +523,7 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
      *
      * @since 2.1.0
      */
-    private static class GetKM200Runnable implements Runnable {
+    private class GetKM200Runnable implements Runnable {
 
         private final KM200GatewayHandler gatewayHandler;
         private final KM200Device device;
@@ -555,7 +555,7 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
      *
      * @since 2.1.0
      */
-    private static class GetSingleKM200Runnable implements Runnable {
+    private class GetSingleKM200Runnable implements Runnable {
 
         private final Logger logger = LoggerFactory.getLogger(GetSingleKM200Runnable.class);
         private final KM200GatewayHandler gatewayHandler;
@@ -607,7 +607,7 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
      *
      * @since 2.1.0
      */
-    private static class SendKM200Thread extends Thread {
+    private class SendKM200Thread extends Thread {
 
         private final Map<Channel, byte[]> sendMap;
         private final KM200GatewayHandler gatewayHandler;
