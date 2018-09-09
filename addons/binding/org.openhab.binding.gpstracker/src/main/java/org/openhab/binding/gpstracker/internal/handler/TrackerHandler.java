@@ -181,13 +181,9 @@ public class TrackerHandler extends BaseThingHandler implements TrackerRecorder 
                     Integer radius = r.getRadius();
 
                     logger.trace("Existing new location: {}", newLocation.toString());
-                    int newDistance = newLocation.distanceFrom(center).intValue();
+                    double newDistance = newLocation.distanceFrom(center).doubleValue();
                     updateState(CHANNEL_DISTANCE + "_" + r.getId(), new QuantityType<>(newDistance/1000, MetricPrefix.KILO(SIUnits.METRE)));
-                    logger.trace("Region center distance from new {} is {} with radius {}", newLocation.toString(), newDistance, radius);
-
-                    logger.trace("Existing old location: {}", oldLocation.toString());
-                    int oldDistance = oldLocation.distanceFrom(center).intValue();
-                    logger.trace("Region center distance from old {} is {} with radius {}", oldLocation.toString(), oldDistance, radius);
+                    logger.trace("Region center distance from new {} is {}m with radius {}m", newLocation.toString(), newDistance, radius);
 
                     if (newDistance < radius) {
                         updateRegionSwitchChannel(true, r);
