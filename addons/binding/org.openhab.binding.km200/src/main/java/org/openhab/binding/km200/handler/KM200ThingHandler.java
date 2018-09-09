@@ -13,6 +13,7 @@ import static org.openhab.binding.km200.KM200BindingConstants.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,6 +47,7 @@ import org.openhab.binding.km200.KM200ThingType;
 import org.openhab.binding.km200.internal.KM200ChannelTypeProvider;
 import org.openhab.binding.km200.internal.KM200CommObject;
 import org.openhab.binding.km200.internal.KM200SwitchProgramService;
+import org.openhab.binding.km200.internal.KM200Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +79,7 @@ public class KM200ThingHandler extends BaseThingHandler {
         thing.setStatusInfo(new ThingStatusInfo(ThingStatus.UNINITIALIZED, ThingStatusDetail.NONE, ""));
         try {
             configDescriptionUriChannel = new URI(CONFIG_DESCRIPTION_URI_CHANNEL);
-        } catch (Exception ex) {
+        } catch (URISyntaxException ex) {
             logger.warn("Can't create ConfigDescription URI '{}', ConfigDescription for channels not avilable!",
                     CONFIG_DESCRIPTION_URI_CHANNEL);
         }
@@ -94,12 +96,11 @@ public class KM200ThingHandler extends BaseThingHandler {
             return;
         }
         Channel channel = getThing().getChannel(channelUID.getId());
-        Class<?> commandType = command.getClass();
 
-        if (commandType.isAssignableFrom(DateTimeType.class) || commandType.isAssignableFrom(DecimalType.class)
-                || commandType.isAssignableFrom(StringType.class) || commandType.isAssignableFrom(OnOffType.class)) {
+        if (command instanceof DateTimeType || command instanceof DecimalType || command instanceof StringType
+                || command instanceof OnOffType) {
             gateway.prepareMessage(this.getThing(), channel, command);
-        } else if (commandType.isAssignableFrom(RefreshType.class)) {
+        } else if (command instanceof RefreshType) {
             gateway.refreshChannel(channel);
         } else {
             logger.warn("Unsupported Command: {} Class: {}", command.toFullString(), command.getClass());
@@ -164,13 +165,13 @@ public class KM200ThingHandler extends BaseThingHandler {
             String currentPathName, String description, String label, Boolean addProperties, Boolean switchProgram,
             StateDescription state, String unitOfMeasure) {
         Channel newChannel = null;
-        Map<String, String> chProperties = new HashMap<>(1);
+        Map<String, String> chProperties = new HashMap<>();
         String itemType = "";
         String category = null;
-        if ("Number".compareTo(type) == 0) {
+        if ("Number".equals(type)) {
             itemType = "NumberType";
             category = "Number";
-        } else if ("String".compareTo(type) == 0) {
+        } else if ("String".equals(type)) {
             itemType = "StringType";
             category = "Text";
         }
@@ -179,7 +180,7 @@ public class KM200ThingHandler extends BaseThingHandler {
                 checkTag(unitOfMeasure, state.isReadOnly()), state, null, configDescriptionUriChannel);
         channelTypeProvider.addChannelType(channelType);
 
-        chProperties.put("root", KM200GatewayHandler.translatesPathToName(root));
+        chProperties.put("root", KM200Utils.translatesPathToName(root));
         if (switchProgram) {
             chProperties.put(SWITCH_PROGRAM_CURRENT_PATH_NAME, currentPathName);
         }
@@ -205,9 +206,9 @@ public class KM200ThingHandler extends BaseThingHandler {
         if (gateway == null) {
             return;
         }
-        String service = KM200GatewayHandler.translatesNameToPath(thing.getProperties().get("root"));
+        String service = KM200Utils.translatesNameToPath(thing.getProperties().get("root"));
         synchronized (gateway.getDevice()) {
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.CONFIGURATION_PENDING);
             if (!gateway.getDevice().getInited()) {
                 logger.debug("Bridge: not inited");
                 isInited = false;
@@ -266,18 +267,9 @@ public class KM200ThingHandler extends BaseThingHandler {
     }
 
     @Override
-    public void handleRemoval() {
-        logger.debug("Handle removed");
-        this.updateStatus(ThingStatus.REMOVED);
-    }
-
-    @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        if (bridgeStatusInfo.getStatus().equals(ThingStatus.ONLINE)) {
-            initialize();
-        } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-        } else if (bridgeStatusInfo.getStatus() == ThingStatus.UNKNOWN) {
+        super.bridgeStatusChanged(bridgeStatusInfo);
+        if (bridgeStatusInfo.getStatus() == ThingStatus.UNKNOWN) {
             updateStatus(ThingStatus.UNKNOWN);
         }
     }
@@ -326,7 +318,7 @@ public class KM200ThingHandler extends BaseThingHandler {
             }
             Map<String, String> properties = new HashMap<>(1);
             String root = service + "/" + subKey;
-            properties.put("root", KM200GatewayHandler.translatesPathToName(root));
+            properties.put("root", KM200Utils.translatesPathToName(root));
             String subKeyType = serObj.serviceTreeMap.get(subKey).getServiceType();
             Boolean readOnly;
             String unitOfMeasure = "";

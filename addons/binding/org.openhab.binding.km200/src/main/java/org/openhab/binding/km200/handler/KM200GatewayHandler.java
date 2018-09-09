@@ -40,12 +40,14 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.km200.KM200ThingType;
 import org.openhab.binding.km200.internal.KM200Comm;
 import org.openhab.binding.km200.internal.KM200CommObject;
 import org.openhab.binding.km200.internal.KM200Device;
+import org.openhab.binding.km200.internal.KM200Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,10 +78,12 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
     private final KM200Device remoteDevice;
     private final KM200Comm<KM200Device> deviceCommunicator;
     private Integer readDelay;
+    private Integer refreshInterval;
     private final JsonParser jsonParser = new JsonParser();
 
     public KM200GatewayHandler(Bridge bridge) {
         super(bridge);
+        refreshInterval = Integer.valueOf(30);
         readDelay = Integer.valueOf(100);
         updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.CONFIGURATION_PENDING);
         remoteDevice = new KM200Device();
@@ -98,134 +102,17 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        Integer refreshInterval = Integer.valueOf(30);
         if (!getDevice().getInited() && !isInitialized()) {
             logger.info("Update KM50/100/200 gateway configuration, it takes a minute....");
             updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.CONFIGURATION_PENDING);
-            Configuration configuration = getConfig();
-            for (String key : configuration.keySet()) {
-                logger.debug("initialize Key: {} Value: {}", key, configuration.get(key));
-                switch (key) {
-                    case "ip4Address":
-                        String ip = (String) configuration.get("ip4Address");
-                        if (StringUtils.isNotBlank(ip)) {
-                            try {
-                                InetAddresses.forString(ip);
-                            } catch (IllegalArgumentException e) {
-                                logger.debug("IP4_address is not valid!: {}", ip);
-                            }
-                            getDevice().setIP4Address(ip);
-                        } else {
-                            logger.debug("No ip4_address configured!");
-                        }
-                        break;
-                    case "privateKey":
-                        String privateKey = (String) configuration.get("privateKey");
-                        if (StringUtils.isNotBlank(privateKey)) {
-                            getDevice().setCryptKeyPriv(privateKey);
-                        }
-                        break;
-                    case "md5Salt":
-                        String md5Salt = (String) configuration.get("md5Salt");
-                        if (StringUtils.isNotBlank(md5Salt)) {
-                            getDevice().setMD5Salt(md5Salt);
-                        }
-                        break;
-                    case "gatewayPassword":
-                        String gatewayPassword = (String) configuration.get("gatewayPassword");
-                        if (StringUtils.isNotBlank(gatewayPassword)) {
-                            getDevice().setGatewayPassword(gatewayPassword);
-                        }
-                        break;
-                    case "privatePassword":
-                        String privatePassword = (String) configuration.get("privatePassword");
-                        if (StringUtils.isNotBlank(privatePassword)) {
-                            getDevice().setPrivatePassword(privatePassword);
-                        }
-                        break;
-                    case "refreshInterval":
-                        refreshInterval = ((BigDecimal) configuration.get("refreshInterval")).intValue();
-                        logger.debug("Set refresh interval to: {} seconds.", refreshInterval);
-                        break;
-                    case "readDelay":
-                        readDelay = ((BigDecimal) configuration.get("readDelay")).intValue();
-                        logger.debug("Set read delay to: {} seconds.", readDelay);
-                        break;
-                    case "maxNbrRepeats":
-                        Integer maxNbrRepeats = ((BigDecimal) configuration.get("maxNbrRepeats")).intValue();
-                        logger.debug("Set max. number of repeats to: {} seconds.", maxNbrRepeats);
-                        deviceCommunicator.setMaxNbrRepeats(maxNbrRepeats);
-                        break;
-                }
-            }
+            getConfiguration();
 
             if (getDevice().isConfigured()) {
-                /* Get HTTP Data from device */
-                byte[] recData = deviceCommunicator.getDataFromService("/gateway/DateTime");
-                if (recData == null) {
-                    logger.debug("Communication is not possible!");
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "No communication possible with gateway");
+                if (!checkConfiguration()) {
                     return;
                 }
-                if (recData.length == 0) {
-                    logger.debug("No reply from KM200!");
-                    updateStatus(ThingStatus.OFFLINE);
-                    return;
-                }
-                logger.info("Received data..");
-                /* Decrypt the message */
-                String decodedData = deviceCommunicator.decodeMessage(recData);
-                if (decodedData == null) {
-                    logger.debug("Decoding of the KM200 message is not possible!");
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Decoding of the KM200 message is not possible!");
-                    return;
-                }
-
-                if ("SERVICE NOT AVAILABLE".equals(decodedData)) {
-                    logger.debug("/gateway/DateTime: SERVICE NOT AVAILABLE");
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "No communication possible with gateway");
-                    return;
-                } else {
-                    logger.info("Test of the communication to the gateway was successful..");
-                }
-                /* Testing the received data, is decryption working? */
-                try {
-                    JsonObject nodeRoot = (JsonObject) jsonParser.parse(decodedData);
-                    nodeRoot.get("type").getAsString();
-                    nodeRoot.get("id").getAsString();
-                } catch (JsonParseException e) {
-                    logger.debug("The data is not readable, check the key and password configuration! {} {}",
-                            e.getMessage(), decodedData);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Wrong gateway configuration");
-                    return;
-                }
-                logger.debug("Init services..");
-                /* communication is working */
-                /* Checking of the device specific services and creating of a service list */
-                for (KM200ThingType thing : KM200ThingType.values()) {
-                    String rootPath = thing.getRootPath();
-                    logger.debug("Rootpath: {}", rootPath);
-                    if (!rootPath.isEmpty()
-                            && (rootPath.indexOf("/", 0) == rootPath.lastIndexOf("/", rootPath.length() - 1))) {
-                        // Init the main services only
-                        deviceCommunicator.initObjects(thing.getRootPath(), null);
-                    }
-                }
-                /* Now init the virtual services */
-                logger.debug("init Virtual Objects");
-                deviceCommunicator.initVirtualObjects();
-                /* Output all available services in the log file */
-                /* Now init the virtual services */
-                logger.debug("list All Services");
-                getDevice().listAllServices();
-                logger.debug("... Update of the KM200 Binding configuration completed");
-
-                updateBridgeProperties();
-                getDevice().setInited(true);
+                /* configuration and communication seems to be ok */
+                readCapabilities();
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
@@ -245,22 +132,18 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
                 executor.scheduleWithFixedDelay(sendRunnable, 60, 30, TimeUnit.SECONDS);
             }
         }
-        if (pollingJob == null) {
-            receivingRunnable = new GetKM200Runnable(this, getDevice(), deviceCommunicator);
-            logger.debug("starting runnable.");
-            pollingJob = scheduler.scheduleWithFixedDelay(receivingRunnable, 30, refreshInterval.longValue(),
-                    TimeUnit.SECONDS);
-        } else if (pollingJob.isCancelled()) {
-            logger.debug("restarting runnable.");
-            pollingJob = scheduler.scheduleWithFixedDelay(receivingRunnable, 30, refreshInterval.longValue(),
-                    TimeUnit.SECONDS);
-        }
+        receivingRunnable = new GetKM200Runnable(this, getDevice(), deviceCommunicator);
+        logger.debug("starting runnable.");
+        pollingJob = scheduler.scheduleWithFixedDelay(receivingRunnable, 30, refreshInterval.longValue(),
+                TimeUnit.SECONDS);
+
     }
 
     @Override
     public void dispose() {
         if (pollingJob != null) {
             pollingJob.cancel(true);
+            pollingJob = null;
         }
 
         logger.debug("Shutdown send executor");
@@ -281,10 +164,150 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
 
     @Override
     public void handleRemoval() {
-        for (Thing tmpThing : getThing().getThings()) {
-            tmpThing.setStatusInfo(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, ""));
+        for (Thing actThing : getThing().getThings()) {
+            actThing.setStatusInfo(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, ""));
         }
         this.updateStatus(ThingStatus.REMOVED);
+    }
+
+    /**
+     * Gets bridges configuration
+     *
+     */
+    private void getConfiguration() {
+        Configuration configuration = getConfig();
+        for (String key : configuration.keySet()) {
+            logger.debug("initialize Key: {} Value: {}", key, configuration.get(key));
+            switch (key) {
+                case "ip4Address":
+                    String ip = (String) configuration.get("ip4Address");
+                    if (StringUtils.isNotBlank(ip)) {
+                        try {
+                            InetAddresses.forString(ip);
+                        } catch (IllegalArgumentException e) {
+                            logger.debug("IP4_address is not valid!: {}", ip);
+                        }
+                        getDevice().setIP4Address(ip);
+                    } else {
+                        logger.debug("No ip4_address configured!");
+                    }
+                    break;
+                case "privateKey":
+                    String privateKey = (String) configuration.get("privateKey");
+                    if (StringUtils.isNotBlank(privateKey)) {
+                        getDevice().setCryptKeyPriv(privateKey);
+                    }
+                    break;
+                case "md5Salt":
+                    String md5Salt = (String) configuration.get("md5Salt");
+                    if (StringUtils.isNotBlank(md5Salt)) {
+                        getDevice().setMD5Salt(md5Salt);
+                    }
+                    break;
+                case "gatewayPassword":
+                    String gatewayPassword = (String) configuration.get("gatewayPassword");
+                    if (StringUtils.isNotBlank(gatewayPassword)) {
+                        getDevice().setGatewayPassword(gatewayPassword);
+                    }
+                    break;
+                case "privatePassword":
+                    String privatePassword = (String) configuration.get("privatePassword");
+                    if (StringUtils.isNotBlank(privatePassword)) {
+                        getDevice().setPrivatePassword(privatePassword);
+                    }
+                    break;
+                case "refreshInterval":
+                    refreshInterval = ((BigDecimal) configuration.get("refreshInterval")).intValue();
+                    logger.debug("Set refresh interval to: {} seconds.", refreshInterval);
+                    break;
+                case "readDelay":
+                    readDelay = ((BigDecimal) configuration.get("readDelay")).intValue();
+                    logger.debug("Set read delay to: {} seconds.", readDelay);
+                    break;
+                case "maxNbrRepeats":
+                    Integer maxNbrRepeats = ((BigDecimal) configuration.get("maxNbrRepeats")).intValue();
+                    logger.debug("Set max. number of repeats to: {} seconds.", maxNbrRepeats);
+                    deviceCommunicator.setMaxNbrRepeats(maxNbrRepeats);
+                    break;
+            }
+        }
+    }
+
+    /**
+     * Checks bridges configuration
+     *
+     */
+    private boolean checkConfiguration() {
+        /* Get HTTP Data from device */
+        byte[] recData = deviceCommunicator.getDataFromService("/gateway/DateTime");
+        if (recData == null) {
+            logger.debug("Communication is not possible!");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "No communication possible with gateway");
+            return false;
+        }
+        if (recData.length == 0) {
+            logger.debug("No reply from KM200!");
+            updateStatus(ThingStatus.OFFLINE);
+            return false;
+        }
+        logger.info("Received data..");
+        /* Decrypt the message */
+        String decodedData = deviceCommunicator.decodeMessage(recData);
+        if (decodedData == null) {
+            logger.debug("Decoding of the KM200 message is not possible!");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Decoding of the KM200 message is not possible!");
+            return false;
+        }
+
+        if ("SERVICE NOT AVAILABLE".equals(decodedData)) {
+            logger.debug("/gateway/DateTime: SERVICE NOT AVAILABLE");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "No communication possible with gateway");
+            return false;
+        } else {
+            logger.info("Test of the communication to the gateway was successful..");
+        }
+        /* Testing the received data, is decryption working? */
+        try {
+            JsonObject nodeRoot = (JsonObject) jsonParser.parse(decodedData);
+            nodeRoot.get("type").getAsString();
+            nodeRoot.get("id").getAsString();
+        } catch (JsonParseException e) {
+            logger.debug("The data is not readable, check the key and password configuration! {} {}", e.getMessage(),
+                    decodedData);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Wrong gateway configuration");
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Reads the devices capabilities and sets the data structures
+     *
+     */
+    private void readCapabilities() {
+        logger.debug("Init services..");
+        /* Checking of the device specific services and creating of a service list */
+        for (KM200ThingType thing : KM200ThingType.values()) {
+            String rootPath = thing.getRootPath();
+            logger.debug("Rootpath: {}", rootPath);
+            if (!rootPath.isEmpty() && (rootPath.indexOf("/", 0) == rootPath.lastIndexOf("/", rootPath.length() - 1))) {
+                // Init the main services only
+                deviceCommunicator.initObjects(thing.getRootPath(), null);
+            }
+        }
+        /* Now init the virtual services */
+        logger.debug("init Virtual Objects");
+        deviceCommunicator.initVirtualObjects();
+        /* Output all available services in the log file */
+        /* Now init the virtual services */
+        logger.debug("list All Services");
+        getDevice().listAllServices();
+        logger.debug("... Update of the KM200 Binding configuration completed");
+        updateBridgeProperties();
+        getDevice().setInited(true);
     }
 
     /**
@@ -307,24 +330,6 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Translates a service name to a service path (Replaces # through /)
-     *
-     * @param name
-     */
-    public static String translatesNameToPath(String name) {
-        return name.replace("#", "/");
-    }
-
-    /**
-     * Translates a service path to a service name (Replaces / through #)
-     *
-     * @param name
-     */
-    public static String translatesPathToName(String path) {
-        return path.replace("/", "#");
-    }
-
-    /**
      * Refreshes a channel
      *
      * @param channel
@@ -332,7 +337,7 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
     public void refreshChannel(Channel channel) {
         GetSingleKM200Runnable runnable = new GetSingleKM200Runnable(this, getDevice(), deviceCommunicator, channel);
         logger.debug("starting single runnable.");
-        scheduler.schedule(runnable, 0, TimeUnit.SECONDS);
+        scheduler.submit(runnable);
     }
 
     /**
@@ -356,7 +361,7 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
             for (String subKey : asProperties) {
                 if (serObj.serviceTreeMap.containsKey(subKey)) {
                     String subKeyType = serObj.serviceTreeMap.get(subKey).getServiceType();
-                    if ("stringValue".compareTo(subKeyType) != 0 && "floatValue".compareTo(subKeyType) != 0) {
+                    if (!"stringValue".equals(subKeyType) && !"floatValue".equals(subKeyType)) {
                         continue;
                     }
                     if (bridgeProperties.containsKey(subKey)) {
@@ -378,9 +383,10 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
      * @param device
      */
     public static String checkParameterReplacement(Channel channel, KM200Device device) {
-        String service = translatesNameToPath(channel.getProperties().get("root"));
+        String service = KM200Utils.translatesNameToPath(channel.getProperties().get("root"));
         if (service.contains(SWITCH_PROGRAM_REPLACEMENT)) {
-            String currentService = translatesNameToPath(channel.getProperties().get(SWITCH_PROGRAM_CURRENT_PATH_NAME));
+            String currentService = KM200Utils
+                    .translatesNameToPath(channel.getProperties().get(SWITCH_PROGRAM_CURRENT_PATH_NAME));
             if (device.containsService(currentService)) {
                 if ("stringValue".equals(device.getServiceObject(currentService).getServiceType())) {
                     String val = (String) device.getServiceObject(currentService).getValue();
@@ -430,25 +436,23 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
             synchronized (getDevice()) {
                 if (sendData != null) {
                     sendMap.put(channel, sendData);
-                } else if (getDevice().containsService(service)) {
-                    if (getDevice().getServiceObject(service).getVirtual() == 1) {
-                        String parent = getDevice().getServiceObject(service).getParent();
-                        for (Thing tmpThing : getThing().getThings()) {
-                            logger.debug("Checking: {}", tmpThing.getUID().getAsString());
-                            for (Channel tmpChannel : tmpThing.getChannels()) {
-                                String tmpService = checkParameterReplacement(tmpChannel, getDevice());
-                                logger.debug("tmpService: {}", tmpService);
-                                String tmpParent = getDevice().getServiceObject(tmpService).getParent();
-                                if (tmpParent != null && tmpParent.equals(parent)) {
-                                    state = deviceCommunicator.getProvidersState(tmpService,
-                                            tmpChannel.getAcceptedItemType(),
-                                            getChannelConfigurationStrings(tmpChannel));
-                                    if (state != null) {
-                                        try {
-                                            updateState(tmpChannel.getUID(), state);
-                                        } catch (IllegalStateException e) {
-                                            logger.error("Could not get updated item state, Error: {}", e);
-                                        }
+                } else if (getDevice().containsService(service)
+                        && getDevice().getServiceObject(service).getVirtual() == 1) {
+                    String parent = getDevice().getServiceObject(service).getParent();
+                    for (Thing actThing : getThing().getThings()) {
+                        logger.debug("Checking: {}", actThing.getUID().getAsString());
+                        for (Channel tmpChannel : actThing.getChannels()) {
+                            String actService = checkParameterReplacement(tmpChannel, getDevice());
+                            logger.debug("tmpService: {}", actService);
+                            String actParent = getDevice().getServiceObject(actService).getParent();
+                            if (actParent != null && actParent.equals(parent)) {
+                                state = deviceCommunicator.getProvidersState(actService,
+                                        tmpChannel.getAcceptedItemType(), getChannelConfigurationStrings(tmpChannel));
+                                if (state != null) {
+                                    try {
+                                        updateState(tmpChannel.getUID(), state);
+                                    } catch (IllegalStateException e) {
+                                        logger.error("Could not get updated item state, Error: {}", e);
                                     }
                                 }
                             }
@@ -478,20 +482,20 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
             if (parent != null) {
                 remoteDevice.getServiceObject(parent).setUpdated(false);
             }
-            for (Thing tmpThing : gatewayHandler.getThing().getThings()) {
-                for (Channel tmpChannel : tmpThing.getChannels()) {
-                    logger.debug("Checking: {} Root: {}", tmpChannel.getUID().getAsString(),
-                            tmpChannel.getProperties().get("root"));
-                    if (!((KM200ThingHandler) tmpThing.getHandler()).checkLinked(tmpChannel)) {
+            for (Thing actThing : gatewayHandler.getThing().getThings()) {
+                for (Channel actChannel : actThing.getChannels()) {
+                    logger.debug("Checking: {} Root: {}", actChannel.getUID().getAsString(),
+                            actChannel.getProperties().get("root"));
+                    if (!((KM200ThingHandler) actThing.getHandler()).checkLinked(actChannel)) {
                         continue;
                     }
-                    String tmpService = checkParameterReplacement(tmpChannel, remoteDevice);
+                    String tmpService = checkParameterReplacement(actChannel, remoteDevice);
                     if (parent == null || parent.equals(remoteDevice.getServiceObject(tmpService).getParent())) {
-                        State state = deviceCommunicator.getProvidersState(tmpService, tmpChannel.getAcceptedItemType(),
-                                getChannelConfigurationStrings(tmpChannel));
+                        State state = deviceCommunicator.getProvidersState(tmpService, actChannel.getAcceptedItemType(),
+                                getChannelConfigurationStrings(actChannel));
                         if (state != null) {
                             try {
-                                gatewayHandler.updateState(tmpChannel.getUID(), state);
+                                gatewayHandler.updateState(actChannel.getUID(), state);
                             } catch (IllegalStateException e) {
                                 logger.error("Could not get updated item state, Error: {}", e);
                             }
@@ -664,19 +668,20 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
                             logger.error("Could not get updated item state, Error: {}", e);
                         }
                     }
-                    for (Thing tmpThing : gatewayHandler.getThing().getThings()) {
-                        for (Channel tmpChannel : tmpThing.getChannels()) {
-                            if (!((KM200ThingHandler) tmpThing.getHandler()).checkLinked(tmpChannel)) {
+                    for (Thing actThing : gatewayHandler.getThing().getThings()) {
+                        for (Channel actChannel : actThing.getChannels()) {
+                            ThingHandler thingHandler = actThing.getHandler();
+                            if (thingHandler != null && !((KM200ThingHandler) thingHandler).checkLinked(actChannel)) {
                                 continue;
                             }
-                            String tempPName = tmpChannel.getProperties().get(SWITCH_PROGRAM_CURRENT_PATH_NAME);
-                            String tmpService = checkParameterReplacement(tmpChannel, remoteDevice);
-                            if (tempPName.equals(service) || tmpService.equals(service)) {
-                                state = deviceCommunicator.getProvidersState(tmpService,
-                                        tmpChannel.getAcceptedItemType(), getChannelConfigurationStrings(tmpChannel));
+                            String pathName = actChannel.getProperties().get(SWITCH_PROGRAM_CURRENT_PATH_NAME);
+                            String actService = checkParameterReplacement(actChannel, remoteDevice);
+                            if (pathName.equals(service) || pathName.equals(service)) {
+                                state = deviceCommunicator.getProvidersState(actService,
+                                        actChannel.getAcceptedItemType(), getChannelConfigurationStrings(actChannel));
                                 if (state != null) {
                                     try {
-                                        gatewayHandler.updateState(tmpChannel.getUID(), state);
+                                        gatewayHandler.updateState(actChannel.getUID(), state);
                                     } catch (IllegalStateException e) {
                                         logger.error("Could not get updated item state, Error: {}", e);
                                     }

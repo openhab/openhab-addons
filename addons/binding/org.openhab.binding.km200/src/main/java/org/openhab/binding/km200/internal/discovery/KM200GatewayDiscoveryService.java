@@ -24,6 +24,7 @@ import org.openhab.binding.km200.handler.KM200GatewayHandler;
 import org.openhab.binding.km200.handler.KM200GatewayStatusListener;
 import org.openhab.binding.km200.internal.KM200CommObject;
 import org.openhab.binding.km200.internal.KM200SwitchProgramService;
+import org.openhab.binding.km200.internal.KM200Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,7 +117,7 @@ public class KM200GatewayDiscoveryService extends AbstractDiscoveryService imple
                         }
                         thingUID = new ThingUID(tType.getThingTypeUID(), bridgeUID, key);
                         Map<String, Object> properties = new HashMap<>(1);
-                        properties.put("root", KM200GatewayHandler.translatesPathToName(root) + "#" + key);
+                        properties.put("root", KM200Utils.translatesPathToName(root) + "#" + key);
                         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
                                 .withLabel(key).withProperties(properties).build();
                         thingDiscovered(discoveryResult);
@@ -148,10 +149,10 @@ public class KM200GatewayDiscoveryService extends AbstractDiscoveryService imple
                             ThingUID subThingUID = new ThingUID(tType.getThingTypeUID(), bridgeUID,
                                     key + "-switchprogram");
                             Map<String, Object> subProperties = new HashMap<>(4);
-                            subProperties.put("root", KM200GatewayHandler.translatesPathToName(
+                            subProperties.put("root", KM200Utils.translatesPathToName(
                                     root + "/" + key + "/" + SWITCH_PROGRAM_PATH_NAME + "/" + currParaRepl));
                             subProperties.put(SWITCH_PROGRAM_CURRENT_PATH_NAME,
-                                    KM200GatewayHandler.translatesPathToName(currentPathName));
+                                    KM200Utils.translatesPathToName(currentPathName));
                             subProperties.put(SWITCH_PROGRAM_POSITIVE, posName);
                             subProperties.put(SWITCH_PROGRAM_NEGATIVE, negName);
                             DiscoveryResult subDiscoveryResult = DiscoveryResultBuilder.create(subThingUID)
@@ -165,7 +166,7 @@ public class KM200GatewayDiscoveryService extends AbstractDiscoveryService imple
                     String key = sParts[sParts.length - 1];
                     thingUID = new ThingUID(tType.getThingTypeUID(), bridgeUID, key);
                     Map<String, Object> properties = new HashMap<>(1);
-                    properties.put("root", KM200GatewayHandler.translatesPathToName(root));
+                    properties.put("root", KM200Utils.translatesPathToName(root));
                     DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
                             .withLabel(key).withProperties(properties).build();
                     thingDiscovered(discoveryResult);
