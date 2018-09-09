@@ -92,29 +92,29 @@ Thing hyperion:serverNG:myServer [ host="192.168.0.10", port=19444, priority=50,
 ### Hyperion Server (V1):
 
 ```
-Dimmer	Brightness	"Brightness [%s]"	{channel="hyperion:serverV1:myServer:brightness"}
-Color	MyColor		"Color"			{channel="hyperion:serverV1:myServer:color"}
-String	Effect		"Current effect [%s]"	{channel="hyperion:serverV1:myServer:effect"}
-String	Clear		"Clear priority"	{channel="hyperion:serverV1:myServer:clear"}
+Dimmer Brightness "Brightness [%s]" {channel="hyperion:serverV1:myServer:brightness"}
+Color MyColor "Color" {channel="hyperion:serverV1:myServer:color"}
+String Effect "Current effect [%s]" {channel="hyperion:serverV1:myServer:effect"}
+String lear "Clear priority" {channel="hyperion:serverV1:myServer:clear"}
 ```
 
 ### Hyperion.ng Server
 
 ```
-Dimmer	Brightness		"Brightness [%s]"	{channel="hyperion:serverNG:myServer:brightness"}
-Color	MyColor			"Color"			{channel="hyperion:serverNG:myServer:color"}
-String	Effect			"Current effect [%s]"	{channel="hyperion:serverNG:myServer:effect"}
-String	Clear			"Clear priority"	{channel="hyperion:serverNG:myServer:clear"}
-Switch	HyperionEnabled		"Hyperion Enabled"	{channel="hyperion:serverNG:myServer:hyperionenabled"}
-Switch	BlackBorderEnabled	"Black Border"		{channel="hyperion:serverNG:myServer:blackborder"}
-Switch	SmoothingEnabled	"Smooting"		{channel="hyperion:serverNG:myServer:smoothing"}
-Switch	KodiCheckerEnabled	"Kodi Checker"		{channel="hyperion:serverNG:myServer:kodichecker"}
-Switch	ForwarderEnabled	"Forwarder"		{channel="hyperion:serverNG:myServer:forwarder"}
-Switch	UdpListenerEnabled	"UDP Listener"		{channel="hyperion:serverNG:myServer:udplistener"}
-Switch	BoblightEnabled		"Boblight"		{channel="hyperion:serverNG:myServer:boblightserver"}
-Switch	GrabberEnabled		"Grabber"		{channel="hyperion:serverNG:myServer:grabber"}
-Switch	V4lEnabled		"V4L"			{channel="hyperion:serverNG:myServer:v4l"}
-Switch	LedDeviceEnabled	"LED Device"		{channel="hyperion:serverNG:myServer:leddevice"}
+Dimmer Brightness "Brightness [%s]" {channel="hyperion:serverNG:myServer:brightness"}
+Color MyColor "Color" {channel="hyperion:serverNG:myServer:color"}
+String Effect "Current effect [%s]" {channel="hyperion:serverNG:myServer:effect"}
+String Clear "Clear priority" {channel="hyperion:serverNG:myServer:clear"}
+Switch HyperionEnabled "Hyperion Enabled" {channel="hyperion:serverNG:myServer:hyperionenabled"}
+Switch BlackBorderEnabled "Black Border" {channel="hyperion:serverNG:myServer:blackborder"}
+Switch SmoothingEnabled "Smooting" {channel="hyperion:serverNG:myServer:smoothing"}
+Switch KodiCheckerEnabled "Kodi Checker" {channel="hyperion:serverNG:myServer:kodichecker"}
+Switch ForwarderEnabled "Forwarder" {channel="hyperion:serverNG:myServer:forwarder"}
+Switch UdpListenerEnabled "UDP Listener" {channel="hyperion:serverNG:myServer:udplistener"}
+Switch BoblightEnabled "Boblight" {channel="hyperion:serverNG:myServer:boblightserver"}
+Switch GrabberEnabled "Grabber" {channel="hyperion:serverNG:myServer:grabber"}
+Switch V4lEnabled "V4L" {channel="hyperion:serverNG:myServer:v4l"}
+Switch LedDeviceEnabled	"LED Device" {channel="hyperion:serverNG:myServer:leddevice"}
 ```
 
 ## Example Sitemap
@@ -124,24 +124,24 @@ Sitemap:
 
 ```
 sitemap demo label="Main Menu" {
-        Frame  {
-               	// serverV1 & serverNG
-		Slider item=Brightness
-		Colorpicker item=MyColor
-		Selection item=Effect mappings=['Knight rider'='Knight rider', 'Red mood blobs'='Red mood blobs']
-		Switch item=Clear mappings=[50="Clear"]
-		
-		// only serverNG
-		Switch item=HyperionEnabled
-		Switch item=BlackBorderEnabled
-		Switch item=SmoothingEnabled
-		Switch item=KodiCheckerEnabled
-		Switch item=ForwarderEnabled
-		Switch item=UdpListenerEnabled
-		Switch item=BoblightEnabled
-		Switch item=GrabberEnabled
-		Switch item=V4lEnabled
-		Switch item=LedDeviceEnabled
-        }
+ Frame  {
+  // serverV1 & serverNG
+  Slider item=Brightness
+  Colorpicker item=MyColor
+  Selection item=Effect mappings=['Knight rider'='Knight rider', 'Red mood blobs'='Red mood blobs']
+  Switch item=Clear mappings=[50="Clear"]
+  
+  // only serverNG
+  Switch item=HyperionEnabled
+  Switch item=BlackBorderEnabled
+  Switch item=SmoothingEnabled
+  Switch item=KodiCheckerEnabled
+  Switch item=ForwarderEnabled
+  Switch item=UdpListenerEnabled
+  Switch item=BoblightEnabled
+  Switch item=GrabberEnabled
+  Switch item=V4lEnabled
+  Switch item=LedDeviceEnabled
+ }
 }
 ```
