@@ -58,7 +58,7 @@ public class NikoHomeControlActionHandler extends BaseThingHandler {
 
     @FunctionalInterface
     private interface Action {
-        abstract void execute();
+        void execute();
     }
 
     @Nullable
