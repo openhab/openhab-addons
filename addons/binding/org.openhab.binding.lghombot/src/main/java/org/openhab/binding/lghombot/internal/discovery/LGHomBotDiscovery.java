@@ -26,6 +26,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.net.CidrAddress;
 import org.eclipse.smarthome.core.net.NetUtil;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
@@ -253,7 +254,8 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
 
             Map<String, Object> properties = new HashMap<>(3);
             properties.put(LGHomBotConfiguration.IP_ADDRESS, ipAddress);
-            properties.put("firmwareVersion", fwVersion);
+            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, fwVersion);
+            properties.put(Thing.PROPERTY_MODEL_ID, model);
             properties.put("server", srvVersion);
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
                     .withLabel(model + " (" + nickName + ")").build();

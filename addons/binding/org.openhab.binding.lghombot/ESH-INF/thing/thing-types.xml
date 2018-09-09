@@ -29,8 +29,6 @@
 
         <properties>
             <property name="vendor">LG</property>
-            <property name="firmwareVersion">0</property>
-            <property name="server">0</property>
         </properties>
         <representation-property>deviceId</representation-property>
 

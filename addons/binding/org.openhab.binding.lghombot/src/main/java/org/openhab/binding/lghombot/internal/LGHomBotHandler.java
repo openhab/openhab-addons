@@ -304,8 +304,10 @@ public class LGHomBotHandler extends BaseThingHandler {
             String[] rows = status.split("\\r?\\n");
             ChannelUID channel;
             for (String row : rows) {
-                if (row.startsWith("JSON_ROBOT_STATE=")) {
-                    String state = row.substring(17).replace("\"", "");
+                int idx = row.indexOf('=');
+                String name = row.substring(0, idx);
+                String state = row.substring(idx + 1).replace("\"", "");
+                if (name.equals("JSON_ROBOT_STATE")) {
                     if (!state.equals(currentState)) {
                         if (state.isEmpty()) {
                             state = "ERROR";
@@ -335,59 +337,53 @@ public class LGHomBotHandler extends BaseThingHandler {
                             updateState(channel, OnOffType.OFF);
                         }
                     }
-                } else if (row.startsWith("JSON_BATTPERC=")) {
-                    DecimalType battery = DecimalType.valueOf(row.substring(14).replace("\"", ""));
+                } else if (name.equals("JSON_BATTPERC")) {
+                    DecimalType battery = DecimalType.valueOf(state);
                     if (!battery.equals(currentBattery)) {
                         currentBattery = battery;
                         channel = new ChannelUID(getThing().getUID(), CHANNEL_BATTERY);
                         updateState(channel, battery);
                     }
-                } else if (row.startsWith("CPU_IDLE=")) {
-                    DecimalType cpuLoad = new DecimalType(
-                            100 - Double.valueOf(row.substring(9).replace("\"", "")).intValue());
+                } else if (name.equals("CPU_IDLE")) {
+                    DecimalType cpuLoad = new DecimalType(100 - Double.valueOf(state).intValue());
                     if (!cpuLoad.equals(currentCPULoad)) {
                         currentCPULoad = cpuLoad;
                         channel = new ChannelUID(getThing().getUID(), CHANNEL_CPU_LOAD);
                         updateState(channel, cpuLoad);
                     }
-                } else if (row.startsWith("LGSRV_MEMUSAGE=")) {
-                    String srvMem = row.substring(15).replace("\"", "");
-                    if (!srvMem.equals(currentSrvMem)) {
-                        currentSrvMem = srvMem;
+                } else if (name.equals("LGSRV_MEMUSAGE")) {
+                    if (!state.equals(currentSrvMem)) {
+                        currentSrvMem = state;
                         channel = new ChannelUID(getThing().getUID(), CHANNEL_SRV_MEM);
-                        updateState(channel, StringType.valueOf(srvMem));
+                        updateState(channel, StringType.valueOf(state));
                     }
-                } else if (row.startsWith("JSON_TURBO=")) {
-                    OnOffType turbo = row.substring(11).replace("\"", "").equalsIgnoreCase("true") ? OnOffType.ON
-                            : OnOffType.OFF;
+                } else if (name.equals("JSON_TURBO")) {
+                    OnOffType turbo = state.equalsIgnoreCase("true") ? OnOffType.ON : OnOffType.OFF;
                     if (!turbo.equals(currentTurbo)) {
                         currentTurbo = turbo;
                         channel = new ChannelUID(getThing().getUID(), CHANNEL_TURBO);
                         updateState(channel, turbo);
                     }
-                } else if (row.startsWith("JSON_REPEAT=")) {
-                    OnOffType repeat = row.substring(12).replace("\"", "").equalsIgnoreCase("true") ? OnOffType.ON
-                            : OnOffType.OFF;
+                } else if (name.equals("JSON_REPEAT")) {
+                    OnOffType repeat = state.equalsIgnoreCase("true") ? OnOffType.ON : OnOffType.OFF;
                     if (!repeat.equals(currentRepeat)) {
                         currentRepeat = repeat;
                         channel = new ChannelUID(getThing().getUID(), CHANNEL_REPEAT);
                         updateState(channel, repeat);
                     }
-                } else if (row.startsWith("JSON_MODE=")) {
-                    String mode = row.substring(10).replace("\"", "");
-                    if (!mode.equals(currentMode)) {
-                        currentMode = mode;
+                } else if (name.equals("JSON_MODE")) {
+                    if (!state.equals(currentMode)) {
+                        currentMode = state;
                         channel = new ChannelUID(getThing().getUID(), CHANNEL_MODE);
-                        updateState(channel, StringType.valueOf(mode));
+                        updateState(channel, StringType.valueOf(state));
                     }
-                } else if (row.startsWith("JSON_NICKNAME=")) {
-                    String nickname = row.substring(14).replace("\"", "");
-                    if (!nickname.equals(currentNickname)) {
-                        currentNickname = nickname;
+                } else if (name.equals("JSON_NICKNAME")) {
+                    if (!state.equals(currentNickname)) {
+                        currentNickname = state;
                         channel = new ChannelUID(getThing().getUID(), CHANNEL_NICKNAME);
-                        updateState(channel, StringType.valueOf(nickname));
+                        updateState(channel, StringType.valueOf(state));
                     }
-                } else if (row.startsWith("CLREC_LAST_CLEAN=")) {
+                } else if (name.equals("CLREC_LAST_CLEAN")) {
                     final String stringDate = row.substring(17, 37).replace("\"", "");
                     ZonedDateTime date = ZonedDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneId.systemDefault());
                     try {
@@ -408,6 +404,9 @@ public class LGHomBotHandler extends BaseThingHandler {
     }
 
     private void parseImage() {
+        if (!super.isLinked(CHANNEL_CAMERA)) {
+            return;
+        }
         final int width = 320;
         final int height = 240;
         final int size = width * height;
@@ -433,7 +432,7 @@ public class LGHomBotHandler extends BaseThingHandler {
         try {
             ImageIO.write(image, "jpg", baos);
         } catch (IOException e) {
-            logger.error("IOException {}", e);
+            logger.error("IOException creating JPEG image. {}", e);
         }
         byte[] byteArray = baos.toByteArray();
         if (byteArray != null && byteArray.length > 0) {
