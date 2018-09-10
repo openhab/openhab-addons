@@ -71,11 +71,9 @@ public class SleepIQHandlerFactory extends BaseThingHandlerFactory {
     protected void removeHandler(final ThingHandler thingHandler) {
         logger.debug("Removing SleepIQ thing handler");
 
-        if (!(thingHandler instanceof SleepIQCloudHandler)) {
-            return;
+        if (thingHandler instanceof SleepIQCloudHandler) {
+            unregisterBedDiscoveryService((SleepIQCloudHandler) thingHandler);
         }
-
-        unregisterBedDiscoveryService((SleepIQCloudHandler) thingHandler);
     }
 
     /**
@@ -97,13 +95,10 @@ public class SleepIQHandlerFactory extends BaseThingHandlerFactory {
      */
     private synchronized void unregisterBedDiscoveryService(final SleepIQCloudHandler cloudHandler) {
         ThingUID thingUID = cloudHandler.getThing().getUID();
-        ServiceRegistration<?> serviceReg = discoveryServiceReg.get(thingUID);
-        if (serviceReg == null) {
-            return;
+        ServiceRegistration<?> serviceReg = discoveryServiceReg.remove(thingUID);
+        if (serviceReg != null) {
+            logger.debug("Unregistering bed discovery service");
+            serviceReg.unregister();
         }
-
-        logger.debug("Unregistering bed discovery service");
-        serviceReg.unregister();
-        discoveryServiceReg.remove(thingUID);
     }
 }

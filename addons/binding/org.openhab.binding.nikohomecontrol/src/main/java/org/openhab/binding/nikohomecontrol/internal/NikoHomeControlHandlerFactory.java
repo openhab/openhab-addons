@@ -58,7 +58,7 @@ public class NikoHomeControlHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 
-    private void registerNikoHomeControlDiscoveryService(NikoHomeControlBridgeHandler bridgeHandler) {
+    private synchronized void registerNikoHomeControlDiscoveryService(NikoHomeControlBridgeHandler bridgeHandler) {
         NikoHomeControlDiscoveryService nhcDiscoveryService = new NikoHomeControlDiscoveryService(bridgeHandler);
         this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext.registerService(
                 DiscoveryService.class.getName(), nhcDiscoveryService, new Hashtable<String, Object>()));
@@ -68,14 +68,15 @@ public class NikoHomeControlHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof NikoHomeControlBridgeHandler) {
-            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
+            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.remove(thingHandler.getThing().getUID());
             if (serviceReg != null) {
                 // remove discovery service, if bridge handler is removed
-                NikoHomeControlDiscoveryService nhcDiscoveryService = (NikoHomeControlDiscoveryService) bundleContext
+                NikoHomeControlDiscoveryService service = (NikoHomeControlDiscoveryService) bundleContext
                         .getService(serviceReg.getReference());
-                nhcDiscoveryService.deactivate();
                 serviceReg.unregister();
-                this.discoveryServiceRegs.remove(thingHandler.getThing().getUID());
+                if (service != null) {
+                    service.deactivate();
+                }
             }
         }
     }
