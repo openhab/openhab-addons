@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="benqprojector"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="projector">
+		<label>Benq Projector</label>
+		<description>BenqProjector defines the projector device to be controlled</description>
+
+        <channels>
+            <channel id="aspect" typeId="aspect" />
+            <channel id="model" typeId="model" />
+            <channel id="serial" typeId="serial" />
+            <channel id="swversion" typeId="swversion" />
+            <channel id="bqversion" typeId="bqversion" />
+            <channel id="blank" typeId="blank" />
+            <channel id="power" typeId="power" />
+            <channel id="mute" typeId="mute" />
+            <channel id="source" typeId="source" />
+            <channel id="gamma" typeId="gamma" />
+            <channel id="picturemode" typeId="picturemode" />
+            <channel id="contrast" typeId="contrast" />
+            <channel id="brightness" typeId="brightness" />
+            <channel id="sharpness" typeId="sharpness" />
+            <channel id="saturation" typeId="saturation" />
+            <channel id="hue" typeId="hue" />
+            <channel id="colortemp" typeId="colortemp" />
+            <channel id="volume" typeId="volume" />
+        </channels>
+
+		<config-description>
+			<parameter name="serialPort" type="text" required="true">
+				<label>Serial port</label>
+				<description>Serial port used to communicate with the projector.</description>
+			</parameter>
+            <parameter name="serialSpeed" type="text">
+                <label>Serial port speed</label>
+                <description>The baudrate used to communicate with the projector</description>
+                <default>115200</default>
+            </parameter>
+			<parameter name="refresh" type="integer" min="1">
+			     <label>Refresh interval</label>
+			     <description>Specifies the refresh interval in seconds.</description>
+			     <default>60</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+    <channel-type id="model">
+        <item-type>String</item-type>
+        <label>Model name</label>
+        <description>Projector model name</description>
+        <state readOnly="true"></state>
+    </channel-type>
+
+    <channel-type id="serial">
+        <item-type>String</item-type>
+        <label>Serial</label>
+        <description>Projector serial number</description>
+        <state readOnly="true"></state>
+    </channel-type>
+
+    <channel-type id="swversion">
+        <item-type>String</item-type>
+        <label>Software version</label>
+        <description>Projector firmware version</description>
+        <state readOnly="true"></state>
+    </channel-type>
+
+    <channel-type id="bqversion">
+        <item-type>String</item-type>
+        <label>BenQ Version</label>
+        <description>Projector firmware version (as identified by BenQ)</description>
+        <state readOnly="true"></state>
+    </channel-type>
+
+    <channel-type id="blank">
+        <item-type>Switch</item-type>
+        <label>Blank State</label>
+        <description>Blanking On/Off status of the projector</description>
+    </channel-type>
+
+    <channel-type id="power">
+        <item-type>Switch</item-type>
+        <label>Power State</label>
+        <description>On/Off status of the projector</description>
+    </channel-type>
+
+    <channel-type id="contrast">
+        <item-type>Dimmer</item-type>
+        <label>Contrast</label>
+        <description>Picture contrast</description>
+    </channel-type>
+
+    <channel-type id="brightness">
+        <item-type>Dimmer</item-type>
+        <label>Brightness</label>
+        <description>Picture brightness</description>
+    </channel-type>
+
+    <channel-type id="sharpness">
+        <item-type>Dimmer</item-type>
+        <label>Sharpness</label>
+        <description>Picture sharpness</description>
+    </channel-type>
+
+    <channel-type id="saturation">
+        <item-type>Dimmer</item-type>
+        <label>Saturation</label>
+        <description>Picture saturation</description>
+    </channel-type>
+
+    <channel-type id="hue">
+        <item-type>Dimmer</item-type>
+        <label>Hue</label>
+        <description>Hue</description>
+    </channel-type>
+
+    <channel-type id="colortemp">
+        <item-type>String</item-type>
+        <label>Color temperature</label>
+        <description>Color temperature of the projector picture</description>
+        <state pattern="%s">
+            <options>
+                <option value="WARMER">Warmer</option>
+                <option value="WARM">Warm</option>
+                <option value="NATIVE">Lamp default</option>
+                <option value="NORMAL">Normal</option>
+                <option value="COLD">Cold</option>
+                <option value="COLDER">Colder</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <channel-type id="gamma">
+        <item-type>String</item-type>
+        <label>Gamma</label>
+        <description>Gamma curve</description>
+        <state pattern="%s">
+            <options>
+                <option value="1.0">1.0</option>
+                <option value="1.8">1.8</option>
+                <option value="2.0">2.0</option>
+                <option value="2.2">2.2</option>
+                <option value="2.35">2.35</option>
+                <option value="2.5">2.5</option>
+                <option value="benq">BenQ</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <channel-type id="aspect">
+        <item-type>String</item-type>
+        <label>Aspect</label>
+        <description>Aspect ratio</description>
+        <state pattern="%s">
+            <options>
+                <option value="4:3">4:3</option>
+                <option value="16:6">16:6</option>
+                <option value="16:9">16:9</option>
+                <option value="16:10">16:10</option>
+                <option value="5:4">5:4</option>
+                <option value="1.88">1.88</option>
+                <option value="2.35">2.35</option>
+                <option value="AUTO">Automatic (source)</option>
+                <option value="REAL">Real</option>
+                <option value="LBOX">Letterbox</option>
+                <option value="THEA">Theater</option>
+                <option value="WIDE">Wide</option>
+                <option value="ANAM">Anamorphic</option>
+                <option value="ANAM2.35:1">Anamorphic 2.35:1</option>
+                <option value="ANAM16:9">Anamorphic 16:9</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <channel-type id="source">
+        <item-type>String</item-type>
+        <label>Source</label>
+        <description>Video source</description>
+        <state pattern="%s">
+            <options>
+                <option value="RGB">VGA</option>
+                <option value="RGB2">VGA 2</option>
+                <option value="RGB3">VGA 3</option>
+                <option value="YPbr">Component</option>
+                <option value="ypbr2">Component 2</option>
+                <option value="dviA">DVI A</option>
+                <option value="dviD">DVI D</option>
+                <option value="hdmi">HDMI</option>
+                <option value="hdmi2">HDMI 2</option>
+                <option value="vid">Composite</option>
+                <option value="svid">S-Video</option>
+                <option value="network">Network</option>
+                <option value="usbdisplay">USB Display</option>
+                <option value="usbreader">USB Reader</option>
+                <option value="wireless">Wireless</option>
+                <option value="dp">DisplayPort</option>
+                <option value="sdi">3G-SDI</option>
+                <option value="hdconnect">HD Connect</option>
+                <option value="hdbaset">HDBaseT</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <channel-type id="picturemode">
+        <item-type>String</item-type>
+        <label>Picture mode</label>
+        <description>Picture mode preset</description>
+        <state pattern="%s">
+            <options>
+                <option value="dynamic">Dynamic</option>
+                <option value="preset">Presentation</option>
+                <option value="srgb">sRGB</option>
+                <option value="bright">Bright</option>
+                <option value="football">Football</option>
+                <option value="footballbt">Football Bright</option>
+                <option value="livingroom">Living Room</option>
+                <option value="game">Game</option>
+                <option value="phot">Photo</option>
+                <option value="mov">Movie</option>
+                <option value="cine">Cinema</option>
+                <option value="dicom">Dicom SIM</option>
+                <option value="dci-p3">DCI-P3</option>
+                <option value="vivid">Vivid</option>
+                <option value="std">Standard</option>
+                <option value="silence">Silence</option>
+                <option value="thx">THX</option>
+                <option value="user1">User 1</option>
+                <option value="user2">User 2</option>
+                <option value="user3">User 3</option>
+                <option value="isfday">ISF Day</option>
+                <option value="isfnight">ISF Night</option>
+                <option value="threed">3D</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <channel-type id="volume">
+        <item-type>Dimmer</item-type>
+        <label>Volume</label>
+        <description>Audio volume</description>
+    </channel-type>
+
+    <channel-type id="mute">
+        <item-type>Switch</item-type>
+        <label>Mute</label>
+        <description>Mute audio</description>
+    </channel-type>
+
+</thing:thing-descriptions>
