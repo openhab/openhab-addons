@@ -1,0 +1,36 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.panasonictv
+Bundle-ClassPath: .
+Bundle-ManifestVersion: 2
+Bundle-Name: Panasonic Tv Binding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.binding.panasonictv;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.5.0.qualifier
+Export-Package: 
+ org.openhab.binding.panasonictv,
+ org.openhab.binding.panasonictv.handler
+Import-Package: 
+ com.google.common.collect,
+ org.apache.commons.net.util,
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.config.discovery.upnp,
+ org.eclipse.smarthome.io.transport.upnp,
+ org.jupnp,
+ org.jupnp.binding.xml,
+ org.jupnp.controlpoint,
+ org.jupnp.model,
+ org.jupnp.model.action,
+ org.jupnp.model.meta,
+ org.jupnp.model.types,
+ org.jupnp.registry,
+ org.openhab.binding.panasonictv,
+ org.openhab.binding.panasonictv.handler,
+ org.slf4j
+Service-Component: OSGI-INF/*.xml
