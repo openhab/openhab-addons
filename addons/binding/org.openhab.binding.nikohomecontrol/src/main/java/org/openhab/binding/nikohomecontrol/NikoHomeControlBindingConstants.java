@@ -36,16 +36,24 @@ public class NikoHomeControlBindingConstants {
     public static final ThingTypeUID THING_TYPE_ON_OFF_LIGHT = new ThingTypeUID(BINDING_ID, "onOff");
     public static final ThingTypeUID THING_TYPE_DIMMABLE_LIGHT = new ThingTypeUID(BINDING_ID, "dimmer");
     public static final ThingTypeUID THING_TYPE_BLIND = new ThingTypeUID(BINDING_ID, "blind");
+    public static final ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
 
     // thing type sets
     public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Collections.singleton(BRIDGE_THING_TYPE);
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_ON_OFF_LIGHT,
+    public static final Set<ThingTypeUID> ACTION_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_ON_OFF_LIGHT,
             THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_BLIND);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_ON_OFF_LIGHT,
+            THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_BLIND, THING_TYPE_THERMOSTAT);
 
     // List of all Channel ids
     public static final String CHANNEL_SWITCH = "switch";
     public static final String CHANNEL_BRIGHTNESS = "brightness";
     public static final String CHANNEL_ROLLERSHUTTER = "rollershutter";
+
+    public static final String CHANNEL_MEASURED = "measured";
+    public static final String CHANNEL_SETPOINT = "setpoint";
+    public static final String CHANNEL_OVERRULETIME = "overruletime";
+    public static final String CHANNEL_MODE = "mode";
 
     public static final String CHANNEL_ALARM = "alarm";
     public static final String CHANNEL_NOTICE = "notice";
@@ -58,4 +66,7 @@ public class NikoHomeControlBindingConstants {
     // Thing config properties
     public static final String CONFIG_ACTION_ID = "actionId";
     public static final String CONFIG_STEP_VALUE = "step";
+
+    public static final String CONFIG_THERMOSTAT_ID = "thermostatId";
+    public static final String CONFIG_OVERRULETIME = "overruleTime";
 }

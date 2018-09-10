@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.nikohomecontrol")
 public class NikoHomeControlBridgeDiscoveryService extends AbstractDiscoveryService {
 
-    private Logger logger = LoggerFactory.getLogger(NikoHomeControlBridgeDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(NikoHomeControlBridgeDiscoveryService.class);
 
     private ScheduledFuture<?> nhcDiscoveryJob;
 

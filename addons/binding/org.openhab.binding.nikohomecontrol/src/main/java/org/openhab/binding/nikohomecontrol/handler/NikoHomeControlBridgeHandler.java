@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  */
 public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
 
-    private Logger logger = LoggerFactory.getLogger(NikoHomeControlBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(NikoHomeControlBridgeHandler.class);
 
     private NikoHomeControlCommunication nhcComm;
 
@@ -107,7 +107,7 @@ public class NikoHomeControlBridgeHandler extends BaseBridgeHandler {
             if (nhcDiscovery != null) {
                 nhcDiscovery.discoverDevices();
             } else {
-                logger.debug("Niko Home Control: cannot discover actions, discovery service not started");
+                logger.debug("Niko Home Control: cannot discover devices, discovery service not started");
             }
         });
     }
