@@ -8,7 +8,9 @@
  */
 package org.openhab.binding.nikohomecontrol.internal.protocol;
 
-import org.openhab.binding.nikohomecontrol.handler.NikoHomeControlHandler;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.nikohomecontrol.handler.NikoHomeControlActionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,23 +21,29 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mark Herwege - Initial Contribution
  */
+@NonNullByDefault
 public final class NhcAction {
 
     private final Logger logger = LoggerFactory.getLogger(NhcAction.class);
 
+    @Nullable
     private NikoHomeControlCommunication nhcComm;
 
     private int id;
     private String name;
     private Integer type;
     private String location;
-    private Integer state;
+    private Integer state = 0;
+    @Nullable
     private Integer closeTime;
+    @Nullable
     private Integer openTime;
 
-    private NikoHomeControlHandler thingHandler;
+    @Nullable
+    private NikoHomeControlActionHandler thingHandler;
 
-    NhcAction(int id, String name, Integer type, String location, Integer closeTime, Integer openTime) {
+    NhcAction(int id, String name, Integer type, String location, @Nullable Integer closeTime,
+            @Nullable Integer openTime) {
         this.id = id;
         this.name = name;
         this.type = type;
@@ -51,7 +59,7 @@ public final class NhcAction {
      *
      * @param handler
      */
-    public void setThingHandler(NikoHomeControlHandler handler) {
+    public void setThingHandler(NikoHomeControlActionHandler handler) {
         this.thingHandler = handler;
     }
 
@@ -115,7 +123,7 @@ public final class NhcAction {
      *
      * @return action openTime
      */
-    public Integer getOpenTime() {
+    public @Nullable Integer getOpenTime() {
         return this.openTime;
     }
 
@@ -126,7 +134,7 @@ public final class NhcAction {
      *
      * @return action closeTime
      */
-    public Integer getCloseTime() {
+    public @Nullable Integer getCloseTime() {
         return this.closeTime;
     }
 
@@ -143,9 +151,10 @@ public final class NhcAction {
      */
     void setState(int state) {
         this.state = state;
-        if (thingHandler != null) {
+        NikoHomeControlActionHandler handler = thingHandler;
+        if (handler != null) {
             logger.debug("Niko Home Control: update channel state for {} with {}", id, state);
-            thingHandler.handleStateUpdate(this);
+            handler.handleStateUpdate(this);
         }
     }
 
@@ -153,15 +162,18 @@ public final class NhcAction {
      * Sends action to Niko Home Control.
      *
      * @param percent - The allowed values depend on the action type.
-     *            switch action: 0 or 100
-     *            dimmer action: between 0 and 100, 254 for on, 255 for off
-     *            rollershutter action: 254 to close, 255 to open, 253 to stop
+     *                    switch action: 0 or 100
+     *                    dimmer action: between 0 and 100, 254 for on, 255 for off
+     *                    rollershutter action: 254 to close, 255 to open, 253 to stop
      */
     public void execute(int percent) {
         logger.debug("Niko Home Control: execute action {} of type {} for {}", percent, this.type, this.id);
 
         NhcMessageCmd nhcCmd = new NhcMessageCmd("executeactions", this.id, percent);
 
-        nhcComm.sendMessage(nhcCmd);
+        NikoHomeControlCommunication comm = nhcComm;
+        if (comm != null) {
+            comm.sendMessage(nhcCmd);
+        }
     }
 }

@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.nikohomecontrol.handler;
 
+import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
 import static org.openhab.binding.nikohomecontrol.NikoHomeControlBindingConstants.*;
 
 import java.util.HashMap;
@@ -36,15 +37,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link NikoHomeControlHandler} is responsible for handling commands, which are
+ * The {@link NikoHomeControlActionHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Mark Herwege - Initial Contribution
  */
 @NonNullByDefault
-public class NikoHomeControlHandler extends BaseThingHandler {
+public class NikoHomeControlActionHandler extends BaseThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(NikoHomeControlHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(NikoHomeControlActionHandler.class);
 
     // dimmer constants
     static final int NHCON = 254;
@@ -55,8 +56,13 @@ public class NikoHomeControlHandler extends BaseThingHandler {
     static final int NHCUP = 255;
     static final int NHCSTOP = 253;
 
+    @FunctionalInterface
+    private interface Action {
+        void execute();
+    }
+
     @Nullable
-    private volatile Runnable rollershutterTask;
+    private volatile Action rollershutterTask;
     @Nullable
     private volatile ScheduledFuture<?> rollershutterStopTask;
     @Nullable
@@ -70,7 +76,7 @@ public class NikoHomeControlHandler extends BaseThingHandler {
 
     private volatile int prevActionState;
 
-    public NikoHomeControlHandler(Thing thing) {
+    public NikoHomeControlActionHandler(Thing thing) {
         super(thing);
     }
 
@@ -102,7 +108,7 @@ public class NikoHomeControlHandler extends BaseThingHandler {
         NhcAction nhcAction = nhcComm.getActions().get(actionId);
         if (nhcAction == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Niko Home Control: actionId does not match an action in the controller " + actionId);
+                    "Niko Home Control: actionId " + actionId + " does not match an action in the controller");
             return;
         }
 
@@ -131,6 +137,11 @@ public class NikoHomeControlHandler extends BaseThingHandler {
 
     private void handleCommandSelection(NhcAction nhcAction, ChannelUID channelUID, Command command) {
         logger.debug("Niko Home Control: handle command {} for {}", command, channelUID);
+
+        if (command == REFRESH) {
+            handleStateUpdate(nhcAction);
+            return;
+        }
 
         switch (channelUID.getId()) {
             case CHANNEL_SWITCH:
@@ -291,8 +302,9 @@ public class NikoHomeControlHandler extends BaseThingHandler {
         }
         this.waitForEvent = false;
 
-        if (this.rollershutterTask != null) {
-            this.rollershutterTask.run();
+        Action action = this.rollershutterTask;
+        if (action != null) {
+            action.execute();
             this.rollershutterTask = null;
         }
     }
@@ -301,9 +313,9 @@ public class NikoHomeControlHandler extends BaseThingHandler {
      * Method used to schedule a rollershutter stop when moving. This allows stopping the rollershutter at a percent
      * position.
      *
-     * @param nhcAction Niko Home Control action
+     * @param nhcAction    Niko Home Control action
      * @param currentValue current percent position
-     * @param newValue new percent position
+     * @param newValue     new percent position
      *
      */
     private void scheduleRollershutterStop(NhcAction nhcAction, int currentValue, int newValue) {
@@ -359,8 +371,9 @@ public class NikoHomeControlHandler extends BaseThingHandler {
                     this.getConfig().get(CONFIG_ACTION_ID));
         }
         this.rollershutterMoving = false;
-        if (this.rollershutterMovingFlagTask != null) {
-            this.rollershutterMovingFlagTask.cancel(true);
+        ScheduledFuture<?> future = this.rollershutterMovingFlagTask;
+        if (future != null) {
+            future.cancel(true);
             this.rollershutterMovingFlagTask = null;
         }
     }
