@@ -47,9 +47,9 @@ public abstract class XiaomiSensorBaseAlarmHandler extends XiaomiSensorBaseHandl
             // status shows faults
             String status = ALARM_STATUS_MAP.get(alarm);
             if (status != null) {
-                updateState(CHANNEL_ALARM_STATUS, StringType.valueOf(status));
+                updateState(CHANNEL_STATUS, StringType.valueOf(status));
             } else {
-                updateState(CHANNEL_ALARM_STATUS, StringType.valueOf(UNKNOWN));
+                updateState(CHANNEL_STATUS, StringType.valueOf(UNKNOWN));
             }
         }
     }
