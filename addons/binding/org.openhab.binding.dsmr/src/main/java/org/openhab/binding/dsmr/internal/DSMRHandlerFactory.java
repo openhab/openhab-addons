@@ -121,18 +121,15 @@ public class DSMRHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof DSMRBridgeHandler) {
-            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
-
+            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.remove(thingHandler.getThing().getUID());
             if (serviceReg != null) {
                 DSMRMeterDiscoveryService service = (DSMRMeterDiscoveryService) getBundleContext()
                         .getService(serviceReg.getReference());
+                serviceReg.unregister();
                 if (service != null) {
                     service.unsetLocaleProvider();
                     service.unsetTranslationProvider();
                 }
-                // remove discovery service, if bridge handler is removed
-                serviceReg.unregister();
-                discoveryServiceRegs.remove(thingHandler.getThing().getUID());
             }
         }
     }

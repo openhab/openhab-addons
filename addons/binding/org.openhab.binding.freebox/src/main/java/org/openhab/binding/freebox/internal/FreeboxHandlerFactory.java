@@ -116,35 +116,35 @@ public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected synchronized void removeHandler(ThingHandler thingHandler) {
+    protected void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof FreeboxHandler) {
             unregisterDiscoveryService(thingHandler.getThing());
         } else if (thingHandler instanceof FreeboxThingHandler) {
             unregisterAudioSink(thingHandler.getThing());
         }
-        super.removeHandler(thingHandler);
     }
 
-    private void registerDiscoveryService(FreeboxHandler bridgeHandler) {
+    private synchronized void registerDiscoveryService(FreeboxHandler bridgeHandler) {
         FreeboxDiscoveryService discoveryService = new FreeboxDiscoveryService(bridgeHandler);
         discoveryService.activate(null);
         discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
     }
 
-    private void unregisterDiscoveryService(Thing thing) {
-        ServiceRegistration<?> serviceReg = discoveryServiceRegs.get(thing.getUID());
+    private synchronized void unregisterDiscoveryService(Thing thing) {
+        ServiceRegistration<?> serviceReg = discoveryServiceRegs.remove(thing.getUID());
         if (serviceReg != null) {
             // remove discovery service, if bridge handler is removed
             FreeboxDiscoveryService service = (FreeboxDiscoveryService) bundleContext
                     .getService(serviceReg.getReference());
-            service.deactivate();
             serviceReg.unregister();
-            discoveryServiceRegs.remove(thing.getUID());
+            if (service != null) {
+                service.deactivate();
+            }
         }
     }
 
-    private void registerAudioSink(FreeboxThingHandler thingHandler) {
+    private synchronized void registerAudioSink(FreeboxThingHandler thingHandler) {
         String callbackUrl = createCallbackUrl();
         FreeboxAirPlayAudioSink audioSink = new FreeboxAirPlayAudioSink(thingHandler, audioHTTPServer, callbackUrl);
         @SuppressWarnings("unchecked")
@@ -153,8 +153,8 @@ public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
         audioSinkRegistrations.put(thingHandler.getThing().getUID(), reg);
     }
 
-    private void unregisterAudioSink(Thing thing) {
-        ServiceRegistration<AudioSink> reg = audioSinkRegistrations.get(thing.getUID());
+    private synchronized void unregisterAudioSink(Thing thing) {
+        ServiceRegistration<AudioSink> reg = audioSinkRegistrations.remove(thing.getUID());
         if (reg != null) {
             reg.unregister();
         }

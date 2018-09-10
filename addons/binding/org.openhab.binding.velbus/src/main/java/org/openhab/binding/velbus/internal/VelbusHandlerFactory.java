@@ -22,11 +22,11 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.velbus.handler.VelbusBridgeHandler;
-import org.openhab.binding.velbus.handler.VelbusSensorHandler;
 import org.openhab.binding.velbus.handler.VelbusBlindsHandler;
+import org.openhab.binding.velbus.handler.VelbusBridgeHandler;
 import org.openhab.binding.velbus.handler.VelbusDimmerHandler;
 import org.openhab.binding.velbus.handler.VelbusRelayHandler;
+import org.openhab.binding.velbus.handler.VelbusSensorHandler;
 import org.openhab.binding.velbus.handler.VelbusVMBGPHandler;
 import org.openhab.binding.velbus.handler.VelbusVMBGPOHandler;
 import org.openhab.binding.velbus.handler.VelbusVMBPIROHandler;
@@ -78,30 +78,28 @@ public class VelbusHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected synchronized void removeHandler(ThingHandler thingHandler) {
+    protected void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof VelbusBridgeHandler) {
             unregisterDiscoveryService((VelbusBridgeHandler) thingHandler);
         }
-        super.removeHandler(thingHandler);
     }
 
-    private void registerDiscoveryService(VelbusBridgeHandler bridgeHandler) {
+    private synchronized void registerDiscoveryService(VelbusBridgeHandler bridgeHandler) {
         VelbusThingDiscoveryService discoveryService = new VelbusThingDiscoveryService(bridgeHandler);
         discoveryService.activate();
         this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
     }
 
-    private void unregisterDiscoveryService(VelbusBridgeHandler bridgeHandler) {
-        ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(bridgeHandler.getThing().getUID());
+    private synchronized void unregisterDiscoveryService(VelbusBridgeHandler bridgeHandler) {
+        ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.remove(bridgeHandler.getThing().getUID());
         if (serviceReg != null) {
             VelbusThingDiscoveryService service = (VelbusThingDiscoveryService) bundleContext
-                .getService(serviceReg.getReference());
+                    .getService(serviceReg.getReference());
+            serviceReg.unregister();
             if (service != null) {
                 service.deactivate();
             }
-            serviceReg.unregister();
-            discoveryServiceRegs.remove(bridgeHandler.getThing().getUID());
         }
     }
 }

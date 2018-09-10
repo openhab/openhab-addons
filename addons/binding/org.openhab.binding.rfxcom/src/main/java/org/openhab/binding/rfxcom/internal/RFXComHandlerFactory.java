@@ -67,19 +67,27 @@ public class RFXComHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected void removeHandler(ThingHandler thingHandler) {
-        if (this.discoveryServiceRegs != null) {
-            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
-            if (serviceReg != null) {
-                serviceReg.unregister();
-                discoveryServiceRegs.remove(thingHandler.getThing().getUID());
-            }
+        if (thingHandler instanceof RFXComBridgeHandler) {
+            unregisterDeviceDiscoveryService(thingHandler.getThing());
         }
     }
 
-    private void registerDeviceDiscoveryService(RFXComBridgeHandler handler) {
+    private synchronized void registerDeviceDiscoveryService(RFXComBridgeHandler handler) {
         RFXComDeviceDiscoveryService discoveryService = new RFXComDeviceDiscoveryService(handler);
         discoveryService.activate();
         this.discoveryServiceRegs.put(handler.getThing().getUID(), bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+    }
+
+    private synchronized void unregisterDeviceDiscoveryService(Thing thing) {
+        ServiceRegistration<?> serviceReg = discoveryServiceRegs.remove(thing.getUID());
+        if (serviceReg != null) {
+            RFXComDeviceDiscoveryService service = (RFXComDeviceDiscoveryService) bundleContext
+                    .getService(serviceReg.getReference());
+            serviceReg.unregister();
+            if (service != null) {
+                service.deactivate();
+            }
+        }
     }
 }

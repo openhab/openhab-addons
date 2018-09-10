@@ -121,14 +121,11 @@ public class LaMetricTimeHandlerFactory extends BaseThingHandlerFactory {
      */
     private synchronized void unregisterAppDiscoveryService(final LaMetricTimeHandler deviceHandler) {
         ThingUID thingUID = deviceHandler.getThing().getUID();
-        ServiceRegistration<?> serviceReg = discoveryServiceReg.get(thingUID);
-        if (serviceReg == null) {
-            return;
+        ServiceRegistration<?> serviceReg = discoveryServiceReg.remove(thingUID);
+        if (serviceReg != null) {
+            logger.debug("Unregistering app discovery service");
+            serviceReg.unregister();
         }
-
-        logger.debug("Unregistering app discovery service");
-        serviceReg.unregister();
-        discoveryServiceReg.remove(thingUID);
     }
 
     @Reference

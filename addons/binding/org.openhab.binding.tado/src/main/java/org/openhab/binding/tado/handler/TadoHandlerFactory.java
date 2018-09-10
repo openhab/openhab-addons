@@ -66,7 +66,7 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 
-    private void registerTadoDiscoveryService(TadoHomeHandler tadoHomeHandler) {
+    private synchronized void registerTadoDiscoveryService(TadoHomeHandler tadoHomeHandler) {
         TadoDiscoveryService discoveryService = new TadoDiscoveryService(tadoHomeHandler);
         ServiceRegistration<?> serviceRegistration = bundleContext.registerService(DiscoveryService.class.getName(),
                 discoveryService, new Hashtable<String, Object>());
@@ -77,16 +77,14 @@ public class TadoHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof TadoHomeHandler) {
-            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
+            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.remove(thingHandler.getThing().getUID());
             if (serviceReg != null) {
                 TadoDiscoveryService service = (TadoDiscoveryService) bundleContext
                         .getService(serviceReg.getReference());
+                serviceReg.unregister();
                 if (service != null) {
                     service.deactivate();
                 }
-
-                serviceReg.unregister();
-                discoveryServiceRegs.remove(thingHandler.getThing().getUID());
             }
         }
     }

@@ -79,7 +79,7 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
         return thingUID;
     }
 
-    private void registerDeviceDiscoveryService(MaxCubeBridgeHandler maxCubeBridgeHandler) {
+    private synchronized void registerDeviceDiscoveryService(MaxCubeBridgeHandler maxCubeBridgeHandler) {
         MaxDeviceDiscoveryService discoveryService = new MaxDeviceDiscoveryService(maxCubeBridgeHandler);
         discoveryService.activate();
 
@@ -90,17 +90,17 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof MaxCubeBridgeHandler) {
-            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
+            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.remove(thingHandler.getThing().getUID());
             if (serviceReg != null) {
                 // remove discovery service, if bridge handler is removed
                 MaxDeviceDiscoveryService service = (MaxDeviceDiscoveryService) bundleContext
                         .getService(serviceReg.getReference());
-                service.deactivate();
                 serviceReg.unregister();
-                discoveryServiceRegs.remove(thingHandler.getThing().getUID());
+                if (service != null) {
+                    service.deactivate();
+                }
             }
         }
-        super.removeHandler(thingHandler);
     }
 
     @Override
