@@ -50,8 +50,10 @@ public class ModelMapper {
         THING_MAP.put("sensor_motion.aq2", THING_TYPE_SENSOR_AQARA_MOTION);
         THING_MAP.put("sensor_wleak.aq1", THING_TYPE_SENSOR_WATER);
         THING_MAP.put("sensor_switch.aq2", THING_TYPE_SENSOR_AQARA_SWITCH);
+        THING_MAP.put("sensor_switch.aq3", THING_TYPE_SENSOR_AQARA_SWITCH);
         THING_MAP.put("smoke", THING_TYPE_SENSOR_SMOKE);
         THING_MAP.put("switch", THING_TYPE_SENSOR_SWITCH);
+        THING_MAP.put("vibration", THING_TYPE_SENSOR_AQARA_VIBRATION);
         THING_MAP.put("weather.v1", THING_TYPE_SENSOR_AQARA_WEATHER_V1);
 
         LABEL_MAP.put("curtain", "Xiaomi Aqara Intelligent Curtain Motor");
@@ -75,8 +77,10 @@ public class ModelMapper {
         LABEL_MAP.put("sensor_motion.aq2", "Xiaomi Aqara Motion Sensor");
         LABEL_MAP.put("sensor_wleak.aq1", "Xiaomi Aqara Water Leak Sensor");
         LABEL_MAP.put("sensor_switch.aq2", "Xiaomi Aqara Wireless Switch");
+        LABEL_MAP.put("sensor_switch.aq3", "Xiaomi Aqara Wireless Switch with Accelerometer");
         LABEL_MAP.put("smoke", "Xiaomi Mijia Honeywell Fire Alarm Detector");
         LABEL_MAP.put("switch", "Xiaomi Mi Wireless Switch");
+        LABEL_MAP.put("vibration", "Xiaomi Aqara Smart Motion Sensor");
         LABEL_MAP.put("weather.v1", "Xiaomi Aqara Temperature, Humidity & Pressure Sensor");
     }
 

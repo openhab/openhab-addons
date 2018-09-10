@@ -23,6 +23,7 @@ import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.mihome.handler.XiaomiBridgeHandler;
 import org.openhab.binding.mihome.internal.socket.XiaomiDiscoverySocket;
 import org.openhab.binding.mihome.internal.socket.XiaomiSocketListener;
@@ -121,8 +122,9 @@ public class XiaomiBridgeDiscoveryService extends AbstractDiscoveryService
             logger.debug("Bridge {} already exists - asking it for devices", thingUID);
             // "Thing " + thingUID.toString() + " already exists"
             // Ask this bridge for connected devices
-            if (existing.getHandler() instanceof XiaomiBridgeHandler) {
-                ((XiaomiBridgeHandler) existing.getHandler()).discoverItems();
+            ThingHandler bridgeHandler = existing.getHandler();
+            if (bridgeHandler instanceof XiaomiBridgeHandler) {
+                ((XiaomiBridgeHandler) bridgeHandler).discoverItems();
             }
         } else {
             thingDiscovered(

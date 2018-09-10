@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="mihome" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="mihome"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
@@ -185,6 +186,13 @@
 		<item-type>DateTime</item-type>
 		<label>Last Activity (Date/Time)</label>
 		<description>Date/time when last motion was detected</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="lastAction">
+		<item-type>DateTime</item-type>
+		<label>Last Activity (Date/Time)</label>
+		<description>Date/time when last action was detected</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
