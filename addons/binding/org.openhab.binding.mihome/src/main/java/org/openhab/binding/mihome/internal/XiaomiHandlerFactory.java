@@ -40,6 +40,7 @@ import org.openhab.binding.mihome.handler.XiaomiSensorMagnetHandler;
 import org.openhab.binding.mihome.handler.XiaomiSensorMotionHandler;
 import org.openhab.binding.mihome.handler.XiaomiSensorSmokeHandler;
 import org.openhab.binding.mihome.handler.XiaomiSensorSwitchHandler;
+import org.openhab.binding.mihome.handler.XiaomiSensorVibrationHandler;
 import org.openhab.binding.mihome.handler.XiaomiSensorWaterHandler;
 import org.openhab.binding.mihome.internal.discovery.XiaomiItemDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
@@ -86,16 +87,17 @@ public class XiaomiHandlerFactory extends BaseThingHandlerFactory {
     private ThingUID getBridgeThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration) {
         if (thingUID == null) {
             String serialNumber = (String) configuration.get(SERIAL_NUMBER);
-            thingUID = new ThingUID(thingTypeUID, serialNumber);
+            return new ThingUID(thingTypeUID, serialNumber);
         }
         return thingUID;
     }
 
     private ThingUID getThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration,
             ThingUID bridgeUID) {
+
         if (thingUID == null) {
             String itemId = (String) configuration.get(ITEM_ID);
-            thingUID = new ThingUID(thingTypeUID, itemId, bridgeUID.getId());
+            return new ThingUID(thingTypeUID, itemId, bridgeUID.getId());
         }
         return thingUID;
     }
@@ -150,6 +152,8 @@ public class XiaomiHandlerFactory extends BaseThingHandlerFactory {
             return new XiaomiSensorMagnetHandler(thing);
         } else if (THING_TYPE_SENSOR_AQARA_MOTION.equals(thingTypeUID)) {
             return new XiaomiSensorMotionHandler(thing);
+        } else if (THING_TYPE_SENSOR_AQARA_VIBRATION.equals(thingTypeUID)) {
+            return new XiaomiSensorVibrationHandler(thing);
         } else {
             return null;
         }
