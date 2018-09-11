@@ -95,7 +95,6 @@ public class GardenaSmartImpl implements GardenaSmart {
     private static final String PROPERTY_POWER_TIMER = "power_timer";
     private static final String PROPERTY_WATERING_TIMER = "watering_timer_";
     private static final String PROPERTY_MANUAL_WATERING_TIMER = "manual_watering_timer";
-    private static final String PROPERTY_PUMP_ON_OFF = "pump_on_off";
 
     private static final String DEVICE_CATEGORY_MOWER = "mower";
     private static final String DEVICE_CATEGORY_GATEWAY = "gateway";
@@ -243,12 +242,8 @@ public class GardenaSmartImpl implements GardenaSmart {
                 for (Property property : ability.getProperties()) {
                     property.setAbility(ability);
 
-                    // special conversion for pump, convert on/off to boolean
                     if (device.getCategory().equals(DEVICE_CATEGORY_PUMP)) {
-                        if (property.getName().equals(PROPERTY_PUMP_ON_OFF)) {
-                            property.setValue(new PropertyValue(
-                                    String.valueOf("on".equalsIgnoreCase(property.getValueAsString()))));
-                        } else if (property.getName().equals(PROPERTY_MANUAL_WATERING_TIMER)) {
+                        if (property.getName().equals(PROPERTY_MANUAL_WATERING_TIMER)) {
                             Integer duration = getIntegerValue(property.getValueAsString());
                             if (duration != null) {
                                 property.setValue(new PropertyValue(String.valueOf(duration / 60)));

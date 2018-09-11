@@ -167,7 +167,9 @@ public class GardenaThingHandler extends BaseThingHandler {
                     }
                     return new DecimalType(value);
                 case "Switch":
-                    return Boolean.TRUE.toString().equalsIgnoreCase(value) ? OnOffType.ON : OnOffType.OFF;
+                    return Boolean.TRUE.toString().equalsIgnoreCase(value) || "on".equalsIgnoreCase(value)
+                            ? OnOffType.ON
+                            : OnOffType.OFF;
                 case "DateTime":
                     Calendar cal = DateUtils.parseToCalendar(value);
                     if (cal != null && !cal.before(VALID_DATE_START)) {
