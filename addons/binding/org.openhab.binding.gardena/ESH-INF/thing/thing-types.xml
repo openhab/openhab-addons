@@ -781,7 +781,7 @@
 		<item-type>Number</item-type>
 		<label>Manual Watering Timer</label>
 		<description>The manual watering timer</description>
-		<state pattern="%d min" min="1" max="59" step="1">
+		<state pattern="%d min" min="0" max="59" step="1">
 			<options>
 				<option value="0">Off</option>
 				<option value="1">1 min</option>
