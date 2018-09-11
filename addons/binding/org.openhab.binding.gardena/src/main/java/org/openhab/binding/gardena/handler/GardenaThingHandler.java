@@ -80,12 +80,22 @@ public class GardenaThingHandler extends BaseThingHandler {
     protected void updateSettings(Device device) throws GardenaException {
         if (GardenaSmartImpl.DEVICE_CATEGORY_PUMP.equals(device.getCategory())) {
             Configuration config = editConfiguration();
-            config.put(SETTING_LEAKAGE_DETECTION, device.getSetting(SETTING_LEAKAGE_DETECTION).getValue());
-            config.put(SETTING_OPERATION_MODE, device.getSetting(SETTING_OPERATION_MODE).getValue());
-            config.put(SETTING_TURN_ON_PRESSURE,
-                    ObjectUtils.toString(device.getSetting(SETTING_TURN_ON_PRESSURE).getValue()));
-            updateConfiguration(config);
+
+            if (!equalsSetting(config, device, SETTING_LEAKAGE_DETECTION)
+                    || !equalsSetting(config, device, SETTING_OPERATION_MODE)
+                    || !equalsSetting(config, device, SETTING_TURN_ON_PRESSURE)) {
+                config.put(SETTING_LEAKAGE_DETECTION, device.getSetting(SETTING_LEAKAGE_DETECTION).getValue());
+                config.put(SETTING_OPERATION_MODE, device.getSetting(SETTING_OPERATION_MODE).getValue());
+                config.put(SETTING_TURN_ON_PRESSURE,
+                        ObjectUtils.toString(device.getSetting(SETTING_TURN_ON_PRESSURE).getValue()));
+                updateConfiguration(config);
+            }
         }
+    }
+
+    private boolean equalsSetting(Configuration config, Device device, String key) throws GardenaException {
+        return config.get(key) != null
+                && config.get(key).equals(ObjectUtils.toString(device.getSetting(key).getValue()));
     }
 
     /**
@@ -157,7 +167,9 @@ public class GardenaThingHandler extends BaseThingHandler {
                     }
                     return new DecimalType(value);
                 case "Switch":
-                    return Boolean.TRUE.toString().equalsIgnoreCase(value) ? OnOffType.ON : OnOffType.OFF;
+                    return Boolean.TRUE.toString().equalsIgnoreCase(value) || "on".equalsIgnoreCase(value)
+                            ? OnOffType.ON
+                            : OnOffType.OFF;
                 case "DateTime":
                     Calendar cal = DateUtils.parseToCalendar(value);
                     if (cal != null && !cal.before(VALID_DATE_START)) {
@@ -254,6 +266,10 @@ public class GardenaThingHandler extends BaseThingHandler {
                 return WATERING_TIMER_VALVE_5;
             case "watering#watering_timer_6":
                 return WATERING_TIMER_VALVE_6;
+
+            case "manual_watering#manual_watering_timer":
+                return PUMP_MANUAL_WATERING_TIMER;
+
             default:
                 return null;
         }
