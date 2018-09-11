@@ -114,7 +114,7 @@ public class LGHomBotHandler extends BaseThingHandler {
                         }
                     }
                     break;
-                case CHANNEL_STOP:
+                case CHANNEL_PAUSE:
                     if (command instanceof OnOffType) {
                         sendHomBotCommand("PAUSE");
                     }
@@ -185,18 +185,9 @@ public class LGHomBotHandler extends BaseThingHandler {
         disposed = false;
         logger.debug("Initializing handler for LG-HomBot");
 
-        // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
-        // Long running initialization should be done asynchronously in background.
         updateAllChannels();
         setupRefreshTimer(config.getPollingPeriod());
-        updateStatus(ThingStatus.ONLINE);
 
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work
-        // as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
     }
 
     /**
@@ -237,6 +228,9 @@ public class LGHomBotHandler extends BaseThingHandler {
         String status = null;
         try {
             status = HttpUtil.executeUrl("GET", url, 1000);
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
+            }
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
@@ -297,6 +291,9 @@ public class LGHomBotHandler extends BaseThingHandler {
         String url = buildHttpAddress("/status.txt");
         try {
             status = HttpUtil.executeUrl("GET", url, 1000);
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
+            }
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }

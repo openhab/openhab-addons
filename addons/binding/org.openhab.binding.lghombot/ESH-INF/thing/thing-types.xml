@@ -16,7 +16,7 @@
             <channel id="srvMem" typeId="srvMemType" />
             <channel id="start" typeId="startType" />
             <channel id="home" typeId="homeType" />
-            <channel id="stop" typeId="stopType" />
+            <channel id="pause" typeId="pauseType" />
             <channel id="turbo" typeId="turboType" />
             <channel id="repeat" typeId="repeatType" />
             <channel id="mode" typeId="modeType" />
@@ -32,7 +32,7 @@
         </properties>
         <representation-property>deviceId</representation-property>
 
-		<config-description uri="thing-type:lghombot:config">
+		<config-description>
         <parameter name="ipAddress" type="text" required="true">
             <label>Network Address</label>
             <description>The IP or host name of the HomBot</description>
@@ -61,7 +61,7 @@
         <state pattern="%s" readOnly="true">
             <options>
                 <option value="UNKNOWN">Unknown</option>
-                <option value="WORKING">Working</option>
+                <option value="WORKING">Cleaning</option>
                 <option value="BACKMOVING">Backmoving</option>
                 <option value="BACKMOVING_INIT">Backmoving Init</option>
                 <option value="BACKMOVING_JOY">Backmoving Joy</option>
@@ -92,7 +92,7 @@
     <channel-type id="srvMemType" advanced="true">
         <item-type>String</item-type>
         <label>Used Memory</label>
-        <description>Memory used by Webserver</description>
+        <description>Memory used by webserver on HomBot</description>
         <state pattern="%s" readOnly="true"/>
     </channel-type>
     <channel-type id="startType">
@@ -111,7 +111,7 @@
             <tag>Switchable</tag>
         </tags>
     </channel-type>
-    <channel-type id="stopType" advanced="true">
+    <channel-type id="pauseType" advanced="true">
         <item-type>Switch</item-type>
         <label>Pause</label>
         <description>Pause cleaning</description>
@@ -124,7 +124,7 @@
     <channel-type id="repeatType">
         <item-type>Switch</item-type>
         <label>Repeat</label>
-        <description>Repeat mode On, OFF</description>
+        <description>Repeat mode ON, OFF</description>
     </channel-type>
     <channel-type id="modeType">
         <item-type>String</item-type>
@@ -179,7 +179,7 @@
         <item-type>DateTime</item-type>
         <label>Last clean</label>
         <description>Last time the robot cleaned</description>
-        <state readOnly="true" pattern="%1$tF %1$tR" />
+        <state pattern="%1$tF %1$tR" readOnly="true" />
     </channel-type>
 
 </thing:thing-descriptions>

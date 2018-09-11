@@ -45,7 +45,7 @@ public class LGHomBotBindingConstants {
     public static final String CHANNEL_SRV_MEM = "srvMem";
     public static final String CHANNEL_START = "start";
     public static final String CHANNEL_HOME = "home";
-    public static final String CHANNEL_STOP = "stop";
+    public static final String CHANNEL_PAUSE = "pause";
     public static final String CHANNEL_MODE = "mode";
     public static final String CHANNEL_TURBO = "turbo";
     public static final String CHANNEL_REPEAT = "repeat";
