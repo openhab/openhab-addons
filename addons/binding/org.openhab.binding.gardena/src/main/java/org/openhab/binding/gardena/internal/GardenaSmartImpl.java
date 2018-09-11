@@ -384,7 +384,7 @@ public class GardenaSmartImpl implements GardenaSmart {
     private Integer getIntegerValue(Object value) {
         try {
             return Integer.valueOf(ObjectUtils.toString(value));
-        } catch (Exception ex) {
+        } catch (NumberFormatException ex) {
             return null;
         }
     }
