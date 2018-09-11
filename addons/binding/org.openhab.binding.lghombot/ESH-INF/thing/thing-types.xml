@@ -6,7 +6,7 @@
 
 	<thing-type id="LGHomBot">
 		<label>LG-HomBot</label>
-		<description>LG-HomBot Vacuum robot</description>
+		<description>HomBot vacuum robot.</description>
         <category>CleaningRobot</category>
 
 		<channels>
@@ -29,18 +29,19 @@
 
         <properties>
             <property name="vendor">LG</property>
+            <property name="modelId">HomBot</property>
         </properties>
         <representation-property>deviceId</representation-property>
 
 		<config-description>
         <parameter name="ipAddress" type="text" required="true">
             <label>Network Address</label>
-            <description>The IP or host name of the HomBot</description>
+            <description>The IP or host name of the HomBot.</description>
             <context>network-address</context>
         </parameter>
         <parameter name="port" type="integer" min="1000" max="65335">
             <label>Port</label>
-            <description>Port of the HomBot to control</description>
+            <description>Port of the HomBot to control.</description>
             <default>6260</default>
             <advanced>true</advanced>
         </parameter>
@@ -57,20 +58,20 @@
     <channel-type id="stateType">
         <item-type>String</item-type>
         <label>State</label>
-        <description>Current state</description>
+        <description>Current state.</description>
         <state pattern="%s" readOnly="true">
             <options>
                 <option value="UNKNOWN">Unknown</option>
                 <option value="WORKING">Cleaning</option>
                 <option value="BACKMOVING">Backmoving</option>
-                <option value="BACKMOVING_INIT">Backmoving Init</option>
-                <option value="BACKMOVING_JOY">Backmoving Joy</option>
+                <option value="BACKMOVING_INIT">Backmoving init</option>
+                <option value="BACKMOVING_JOY">Backmoving joy</option>
                 <option value="PAUSE">Pause</option>
                 <option value="STANDBY">Standby</option>
                 <option value="HOMING">Homing</option>
                 <option value="DOCKING">Docking</option>
                 <option value="CHARGING">Charging</option>
-                <option value="DIAGNOSIS">Diagnosis running</option>
+                <option value="DIAGNOSIS">Running diagnosis</option>
                 <option value="RESERVATION">Changing settings</option>
                 <option value="ERROR">Error</option>
             </options>
@@ -79,26 +80,26 @@
     <channel-type id="batteryType">
         <item-type>Number</item-type>
         <label>Battery</label>
-        <description>Current battery charge</description>
+        <description>Current battery charge.</description>
         <category>BatteryLevel</category>
         <state pattern="%d%%" readOnly="true"/>
     </channel-type>
     <channel-type id="cpuLoadType" advanced="true">
         <item-type>Number</item-type>
         <label>CPU Load</label>
-        <description>Current CPU load</description>
+        <description>Current CPU load.</description>
         <state pattern="%d%%" readOnly="true"/>
     </channel-type>
     <channel-type id="srvMemType" advanced="true">
         <item-type>String</item-type>
         <label>Used Memory</label>
-        <description>Memory used by webserver on HomBot</description>
+        <description>Memory used by webserver on HomBot.</description>
         <state pattern="%s" readOnly="true"/>
     </channel-type>
     <channel-type id="startType">
         <item-type>Switch</item-type>
         <label>Clean</label>
-        <description>Start cleaning</description>
+        <description>Start cleaning.</description>
         <tags>
             <tag>Switchable</tag>
         </tags>
@@ -106,7 +107,7 @@
     <channel-type id="homeType">
         <item-type>Switch</item-type>
         <label>Home</label>
-        <description>Return home</description>
+        <description>Return home.</description>
         <tags>
             <tag>Switchable</tag>
         </tags>
@@ -114,22 +115,22 @@
     <channel-type id="pauseType" advanced="true">
         <item-type>Switch</item-type>
         <label>Pause</label>
-        <description>Pause cleaning</description>
+        <description>Pause the HomBot.</description>
     </channel-type>
     <channel-type id="turboType">
         <item-type>Switch</item-type>
         <label>Turbo</label>
-        <description>Turbo mode ON, OFF</description>
+        <description>Turbo mode ON, OFF.</description>
     </channel-type>
     <channel-type id="repeatType">
         <item-type>Switch</item-type>
         <label>Repeat</label>
-        <description>Repeat mode ON, OFF</description>
+        <description>Repeat cleaning ON, OFF.</description>
     </channel-type>
     <channel-type id="modeType">
         <item-type>String</item-type>
         <label>Mode</label>
-        <description>Cleaning mode</description>
+        <description>Cleaning mode.</description>
         <state>
             <options>
                 <option value="ZZ">Zigzag mode</option>
@@ -142,25 +143,25 @@
     <channel-type id="nicknameType">
         <item-type>String</item-type>
         <label>Nickname</label>
-        <description>The nickname of the HomBot</description>
+        <description>Nickname of the HomBot.</description>
         <state pattern="%s" readOnly="true"/>
     </channel-type>
     <channel-type id="cameraType">
         <item-type>Image</item-type>
         <label>Camera</label>
-        <description>Image feed from the top camera</description>
+        <description>Image feed from the top camera.</description>
         <state readOnly="true"/>
     </channel-type>
     <channel-type id="mapType" advanced="true">
         <item-type>Image</item-type>
         <label>Map</label>
-        <description>Map of last cleaned area</description>
+        <description>Map of last cleaned area.</description>
         <state readOnly="true"/>
     </channel-type>
     <channel-type id="moveType" advanced="true">
         <item-type>String</item-type>
         <label>Move</label>
-        <description>Move direction</description>
+        <description>Move direction.</description>
         <state>
             <options>
                 <option value="FORWARD">Forward</option>
@@ -177,8 +178,8 @@
     </channel-type>
     <channel-type id="lastCleanType">
         <item-type>DateTime</item-type>
-        <label>Last clean</label>
-        <description>Last time the robot cleaned</description>
+        <label>Last Clean</label>
+        <description>Last time the HomBot cleaned.</description>
         <state pattern="%1$tF %1$tR" readOnly="true" />
     </channel-type>
 

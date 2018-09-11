@@ -401,7 +401,7 @@ public class LGHomBotHandler extends BaseThingHandler {
     }
 
     private void parseImage() {
-        if (!super.isLinked(CHANNEL_CAMERA)) {
+        if (!isLinked(CHANNEL_CAMERA)) {
             return;
         }
         final int width = 320;
