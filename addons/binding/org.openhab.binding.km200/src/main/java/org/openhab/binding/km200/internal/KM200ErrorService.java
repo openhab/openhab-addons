@@ -11,6 +11,7 @@ package org.openhab.binding.km200.internal;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -34,10 +35,10 @@ public class KM200ErrorService {
     private Integer activeError = 1;
 
     /* List for all errors */
-    private final ArrayList<HashMap<String, String>> errorMap;
+    private final List<Map<String, String>> errorMap;
 
     KM200ErrorService() {
-        errorMap = new ArrayList<HashMap<String, String>>();
+        errorMap = new ArrayList<Map<String, String>>();
     }
 
     /**
@@ -59,21 +60,17 @@ public class KM200ErrorService {
     void updateErrors(JsonObject nodeRoot) {
         synchronized (errorMap) {
             /* Update the list of errors */
-            try {
-                removeAllErrors();
-                JsonArray sPoints = nodeRoot.get("values").getAsJsonArray();
-                for (int i = 0; i < sPoints.size(); i++) {
-                    JsonObject subJSON = sPoints.get(i).getAsJsonObject();
-                    HashMap<String, String> valMap = new HashMap<String, String>();
-                    Set<Map.Entry<String, JsonElement>> oMap = subJSON.entrySet();
-                    oMap.forEach(item -> {
-                        logger.debug("Set: {} val: {}", item.getKey(), item.getValue().getAsString());
-                        valMap.put(item.getKey(), item.getValue().getAsString());
-                    });
-                    errorMap.add(valMap);
-                }
-            } catch (Exception e) {
-                logger.error("Error in parsing of the errorlist: {}", e.getMessage());
+            removeAllErrors();
+            JsonArray sPoints = nodeRoot.get("values").getAsJsonArray();
+            for (int i = 0; i < sPoints.size(); i++) {
+                JsonObject subJSON = sPoints.get(i).getAsJsonObject();
+                Map<String, String> valMap = new HashMap<String, String>();
+                Set<Map.Entry<String, JsonElement>> oMap = subJSON.entrySet();
+                oMap.forEach(item -> {
+                    logger.debug("Set: {} val: {}", item.getKey(), item.getValue().getAsString());
+                    valMap.put(item.getKey(), item.getValue().getAsString());
+                });
+                errorMap.add(valMap);
             }
         }
     }
@@ -82,7 +79,7 @@ public class KM200ErrorService {
      * This function returns the number of errors
      *
      */
-    Integer getNbrErrors() {
+    int getNbrErrors() {
         synchronized (errorMap) {
             return errorMap.size();
         }
@@ -92,8 +89,8 @@ public class KM200ErrorService {
      * This function sets the actual errors
      *
      */
-    void setActiveError(Integer error) {
-        Integer actError;
+    void setActiveError(int error) {
+        int actError;
         if (error < 1) {
             actError = 1;
         } else if (error > getNbrErrors()) {
@@ -110,9 +107,13 @@ public class KM200ErrorService {
      * This function returns the selected error
      *
      */
-    Integer getActiveError() {
+    int getActiveError() {
         synchronized (activeError) {
-            return activeError;
+            if (activeError == null) {
+                return 0;
+            } else {
+                return activeError;
+            }
         }
     }
 
@@ -123,11 +124,11 @@ public class KM200ErrorService {
     String getErrorString() {
         String value = "";
         synchronized (errorMap) {
-            Integer actN = getActiveError();
+            int actN = getActiveError();
             if (errorMap.size() < actN || errorMap.size() == 0) {
                 return null;
             }
-            /* is the time value existing ("t") the use it on the begin */
+            /* is the time value existing ("t") then use it on the begin */
             if (errorMap.get(actN - 1).containsKey("t")) {
                 value = errorMap.get(actN - 1).get("t");
                 for (String para : errorMap.get(actN - 1).keySet()) {

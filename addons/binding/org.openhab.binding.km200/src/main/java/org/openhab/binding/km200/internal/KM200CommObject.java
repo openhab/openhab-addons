@@ -19,11 +19,11 @@ import java.util.HashMap;
  */
 
 public class KM200CommObject {
-    private Integer readable;
-    private Integer writeable;
-    private Integer recordable;
-    private Integer virtual;
-    private Boolean updated;
+    private int readable;
+    private int writeable;
+    private int recordable;
+    private int virtual;
+    private boolean updated;
     private String parent;
     private String fullServiceName;
     private String serviceType;
@@ -35,8 +35,8 @@ public class KM200CommObject {
     public HashMap<String, KM200CommObject> serviceTreeMap;
     KM200CommObject parentObject;
 
-    public KM200CommObject(String fullServiceName, String serviceType, Integer readable, Integer writeable,
-            Integer recordable, Integer virtual, String parent, KM200CommObject parentObject) {
+    public KM200CommObject(String fullServiceName, String serviceType, int readable, int writeable, int recordable,
+            int virtual, String parent, KM200CommObject parentObject) {
         serviceTreeMap = new HashMap<String, KM200CommObject>();
         this.fullServiceName = fullServiceName;
         this.serviceType = serviceType;
@@ -54,7 +54,7 @@ public class KM200CommObject {
         value = val;
     }
 
-    public void setUpdated(Boolean updt) {
+    public void setUpdated(boolean updt) {
         updated = updt;
     }
 
@@ -67,15 +67,15 @@ public class KM200CommObject {
     }
 
     /* gets */
-    public Integer getReadable() {
+    public int getReadable() {
         return readable;
     }
 
-    public Integer getWriteable() {
+    public int getWriteable() {
         return writeable;
     }
 
-    public Integer getRecordable() {
+    public int getRecordable() {
         return recordable;
     }
 
@@ -99,11 +99,11 @@ public class KM200CommObject {
         return parent;
     }
 
-    public Integer getVirtual() {
+    public int getVirtual() {
         return virtual;
     }
 
-    public Boolean getUpdated() {
+    public boolean getUpdated() {
         return updated;
     }
 

@@ -92,7 +92,7 @@ public class KM200GatewayDiscoveryService extends AbstractDiscoveryService imple
             String checkService = tType.getActiveCheckSubPath();
             logger.debug("root: {}", root);
             if (gateway.getDevice().containsService(root)) {
-                Boolean enumOnly = true;
+                boolean enumOnly = true;
                 KM200CommObject object = gateway.getDevice().getServiceObject(root);
                 Set<String> keys = object.serviceTreeMap.keySet();
                 /* Check whether all sub services are refEnum */

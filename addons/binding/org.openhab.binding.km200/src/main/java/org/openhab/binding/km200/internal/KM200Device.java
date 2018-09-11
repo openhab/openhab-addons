@@ -60,7 +60,7 @@ public class KM200Device {
     List<KM200CommObject> virtualList;
 
     /* Is the first INIT done */
-    protected Boolean inited = false;
+    protected boolean isIited;
 
     public KM200Device() {
         serviceTreeMap = new HashMap<String, KM200CommObject>();
@@ -71,6 +71,65 @@ public class KM200Device {
 
     public Boolean isConfigured() {
         return StringUtils.isNotBlank(ip4Address) && cryptKeyPriv != null;
+    }
+
+    public String getIP4Address() {
+        return ip4Address;
+    }
+
+    public String getGatewayPassword() {
+        return gatewayPassword;
+    }
+
+    public String getPrivatePassword() {
+        return privatePassword;
+    }
+
+    public byte[] getCryptKeyInit() {
+        return cryptKeyInit;
+    }
+
+    public byte[] getCryptKeyPriv() {
+        return cryptKeyPriv;
+    }
+
+    public String getCharSet() {
+        return charSet;
+    }
+
+    public boolean getInited() {
+        return isIited;
+    }
+
+    public void setIP4Address(String ip) {
+        ip4Address = ip;
+    }
+
+    public void setGatewayPassword(String password) {
+        gatewayPassword = password;
+        recreateKeys();
+    }
+
+    public void setPrivatePassword(String password) {
+        privatePassword = password;
+        recreateKeys();
+    }
+
+    public void setMD5Salt(String salt) {
+        MD5Salt = DatatypeConverter.parseHexBinary(salt);
+        recreateKeys();
+    }
+
+    public void setCryptKeyPriv(String key) {
+        cryptKeyPriv = DatatypeConverter.parseHexBinary(key);
+    }
+
+    public void setCharSet(String charset) {
+        charSet = charset;
+    }
+
+    public void setInited(boolean inited) {
+        isIited = inited;
     }
 
     /**
@@ -132,35 +191,6 @@ public class KM200Device {
         }
     }
 
-    // getter
-    public String getIP4Address() {
-        return ip4Address;
-    }
-
-    public String getGatewayPassword() {
-        return gatewayPassword;
-    }
-
-    public String getPrivatePassword() {
-        return privatePassword;
-    }
-
-    public byte[] getCryptKeyInit() {
-        return cryptKeyInit;
-    }
-
-    public byte[] getCryptKeyPriv() {
-        return cryptKeyPriv;
-    }
-
-    public String getCharSet() {
-        return charSet;
-    }
-
-    public Boolean getInited() {
-        return inited;
-    }
-
     /**
      * This function prepares a list of all on the device available services with its capabilities
      *
@@ -181,7 +211,6 @@ public class KM200Device {
      *
      * @param actTreeMap
      */
-
     public void printAllServices(HashMap<String, KM200CommObject> actTreeMap) {
         if (actTreeMap != null) {
             for (KM200CommObject object : actTreeMap.values()) {
@@ -227,9 +256,9 @@ public class KM200Device {
                         val = "";
                         valPara = ";";
                     }
-                    logger.debug("{};{};{};{};{};{};{};{}", object.getReadable().toString(),
-                            object.getWriteable().toString(), object.getRecordable().toString(),
-                            object.getVirtual().toString(), type, object.getFullServiceName(), val, valPara);
+                    logger.debug("{};{};{};{};{};{};{};{}", object.getReadable(), object.getWriteable(),
+                            object.getRecordable(), object.getVirtual(), type, object.getFullServiceName(), val,
+                            valPara);
                     printAllServices(object.serviceTreeMap);
                 }
             }
@@ -314,37 +343,4 @@ public class KM200Device {
         }
         return object;
     }
-
-    // setter
-    public void setIP4Address(String ip) {
-        ip4Address = ip;
-    }
-
-    public void setGatewayPassword(String password) {
-        gatewayPassword = password;
-        recreateKeys();
-    }
-
-    public void setPrivatePassword(String password) {
-        privatePassword = password;
-        recreateKeys();
-    }
-
-    public void setMD5Salt(String salt) {
-        MD5Salt = DatatypeConverter.parseHexBinary(salt);
-        recreateKeys();
-    }
-
-    public void setCryptKeyPriv(String key) {
-        cryptKeyPriv = DatatypeConverter.parseHexBinary(key);
-    }
-
-    public void setCharSet(String charset) {
-        charSet = charset;
-    }
-
-    public void setInited(Boolean Init) {
-        inited = Init;
-    }
-
 }

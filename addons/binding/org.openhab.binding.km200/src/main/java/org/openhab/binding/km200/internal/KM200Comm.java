@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -138,9 +139,9 @@ public class KM200Comm<KM200BindingProvider> {
                             Thread.sleep(100L * i + 1);
                             continue;
                         case HttpStatus.SC_FORBIDDEN:
-                            /* Service is available but not readable */
-                            byte[] test = new byte[1];
-                            return test;
+                            /* Service is available but not readable, return a byte array with a size of 1 as code */
+                            byte[] serviceIsProtected = new byte[1];
+                            return serviceIsProtected;
                         case HttpStatus.SC_NOT_FOUND:
                             /* Should only happen on discovery */
                             return null;
@@ -158,8 +159,6 @@ public class KM200Comm<KM200BindingProvider> {
                 logger.debug("Sleep was interrupted: {}", e.getMessage());
             } catch (IOException e) {
                 logger.debug("Fatal transport error: {}", e.getMessage());
-            } catch (NullPointerException e) {
-                logger.debug("No valid response:", e.getMessage());
             } finally {
                 // Release the connection.
                 method.releaseConnection();
@@ -310,7 +309,6 @@ public class KM200Comm<KM200BindingProvider> {
                 }
                 if (nodeRoot.has("recordable")) {
                     Integer val = nodeRoot.get("recordable").getAsInt();
-                    ;
                     logger.debug("recordable: {}", val);
                     recordable = val;
                 }
@@ -604,7 +602,7 @@ public class KM200Comm<KM200BindingProvider> {
                     if ("Switch".equals(itemType)) {
                         // type is definitely correct here
                         @SuppressWarnings("unchecked")
-                        HashMap<String, String> switchNames = (HashMap<String, String>) itemPara;
+                        Map<String, String> switchNames = (HashMap<String, String>) itemPara;
                         if (switchNames.containsKey("on")) {
                             if (sVal.equals(switchNames.get("off"))) {
                                 state = OnOffType.OFF;
@@ -684,7 +682,7 @@ public class KM200Comm<KM200BindingProvider> {
                         sPService = ((KM200SwitchProgramService) device.getServiceObject(object.getParent())
                                 .getValueParameter());
                     }
-                    /* Update the switches insode the KM200SwitchProgramService */
+                    /* Update the switches inside the KM200SwitchProgramService */
                     sPService.updateSwitches(nodeRoot, device);
 
                     /* the parsing of switch program-services have to be outside, using json in strings */
@@ -713,7 +711,7 @@ public class KM200Comm<KM200BindingProvider> {
                         eService = ((KM200ErrorService) device.getServiceObject(object.getParent())
                                 .getValueParameter());
                     }
-                    /* Update the switches insode the KM200SwitchProgramService */
+                    /* Update the switches inside the KM200SwitchProgramService */
                     eService.updateErrors(nodeRoot);
 
                     /* the parsing of switch program-services have to be outside, using json in strings */
@@ -862,9 +860,6 @@ public class KM200Comm<KM200BindingProvider> {
                     case "nbrErrors":
                         if ("Number".equals(itemType)) {
                             Integer val = eService.getNbrErrors();
-                            if (val == null) {
-                                return null;
-                            }
                             state = new DecimalType(val);
                         } else {
                             logger.warn("Bindingtype not supported for error number service: {}", itemType.getClass());
@@ -874,9 +869,6 @@ public class KM200Comm<KM200BindingProvider> {
                     case "error":
                         if ("Number".equals(itemType)) {
                             Integer val = eService.getActiveError();
-                            if (val == null) {
-                                return null;
-                            }
                             state = new DecimalType(val);
                         } else {
                             logger.warn("Bindingtype not supported for error service: {}", itemType.getClass());
@@ -1021,7 +1013,7 @@ public class KM200Comm<KM200BindingProvider> {
                 JsonObject newObject = new JsonObject();
                 // type is definitely correct here
                 @SuppressWarnings("unchecked")
-                HashMap<String, String> switchNames = (HashMap<String, String>) itemPara;
+                Map<String, String> switchNames = (HashMap<String, String>) itemPara;
                 if (switchNames.containsKey("on")) {
                     if (command == OnOffType.OFF) {
                         val = switchNames.get("off");

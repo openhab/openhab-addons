@@ -77,14 +77,14 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
     private ScheduledFuture<?> pollingJob;
     private final KM200Device remoteDevice;
     private final KM200Comm<KM200Device> deviceCommunicator;
-    private Integer readDelay;
-    private Integer refreshInterval;
+    private int readDelay;
+    private int refreshInterval;
     private final JsonParser jsonParser = new JsonParser();
 
     public KM200GatewayHandler(Bridge bridge) {
         super(bridge);
-        refreshInterval = Integer.valueOf(30);
-        readDelay = Integer.valueOf(100);
+        refreshInterval = 30;
+        readDelay = 100;
         updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.CONFIGURATION_PENDING);
         remoteDevice = new KM200Device();
         deviceCommunicator = new KM200Comm<KM200Device>(getDevice());
@@ -104,7 +104,7 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
     public void initialize() {
         if (!getDevice().getInited() && !isInitialized()) {
             logger.info("Update KM50/100/200 gateway configuration, it takes a minute....");
-            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.CONFIGURATION_PENDING);
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING);
             getConfiguration();
 
             if (getDevice().isConfigured()) {
@@ -134,8 +134,7 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
         }
         receivingRunnable = new GetKM200Runnable(this, getDevice(), deviceCommunicator);
         logger.debug("starting runnable.");
-        pollingJob = scheduler.scheduleWithFixedDelay(receivingRunnable, 30, refreshInterval.longValue(),
-                TimeUnit.SECONDS);
+        pollingJob = scheduler.scheduleWithFixedDelay(receivingRunnable, 30, refreshInterval, TimeUnit.SECONDS);
 
     }
 
@@ -502,7 +501,7 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
                         }
                     }
                     try {
-                        Thread.sleep(readDelay.longValue());
+                        Thread.sleep(readDelay);
                     } catch (InterruptedException e) {
                         continue;
                     }

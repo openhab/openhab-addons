@@ -69,14 +69,14 @@ public class KM200ThingHandler extends BaseThingHandler {
             THING_TYPE_SYSTEM_HOLIDAYMODES, THING_TYPE_SYSTEM_SENSOR, THING_TYPE_GATEWAY, THING_TYPE_NOTIFICATION,
             THING_TYPE_SYSTEM);
 
-    private Boolean isInited = false;
+    private boolean isInited;
 
     private KM200ChannelTypeProvider channelTypeProvider;
 
     public KM200ThingHandler(Thing thing, KM200ChannelTypeProvider channelTypeProvider) {
         super(thing);
         this.channelTypeProvider = channelTypeProvider;
-        thing.setStatusInfo(new ThingStatusInfo(ThingStatus.UNINITIALIZED, ThingStatusDetail.NONE, ""));
+        thing.setStatusInfo(new ThingStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, ""));
         try {
             configDescriptionUriChannel = new URI(CONFIG_DESCRIPTION_URI_CHANNEL);
         } catch (URISyntaxException ex) {
@@ -111,7 +111,7 @@ public class KM200ThingHandler extends BaseThingHandler {
      * Choose a tag for a channel
      *
      */
-    Set<String> checkTag(String unitOfMeasure, Boolean readOnly) {
+    Set<String> checkTag(String unitOfMeasure, boolean readOnly) {
         Set<String> tags = new HashSet<String>();
         if (unitOfMeasure.indexOf("°C") == 0 || unitOfMeasure.indexOf("K") == 0) {
             if (readOnly) {
@@ -127,7 +127,7 @@ public class KM200ThingHandler extends BaseThingHandler {
      * Choose a category for a channel
      *
      */
-    String checkCategory(String unitOfMeasure, String topCategory, Boolean readOnly) {
+    String checkCategory(String unitOfMeasure, String topCategory, boolean readOnly) {
         String category = null;
         if (unitOfMeasure.indexOf("°C") == 0 || unitOfMeasure.indexOf("K") == 0) {
             if (unitOfMeasure.indexOf("°C") == 0 || unitOfMeasure.indexOf("K") == 0) {
@@ -162,7 +162,7 @@ public class KM200ThingHandler extends BaseThingHandler {
      *
      */
     Channel createChannel(ChannelTypeUID channelTypeUID, ChannelUID channelUID, String root, String type,
-            String currentPathName, String description, String label, Boolean addProperties, Boolean switchProgram,
+            String currentPathName, String description, String label, boolean addProperties, boolean switchProgram,
             StateDescription state, String unitOfMeasure) {
         Channel newChannel = null;
         Map<String, String> chProperties = new HashMap<>();
@@ -284,7 +284,7 @@ public class KM200ThingHandler extends BaseThingHandler {
      *
      * @param channel
      */
-    public Boolean checkLinked(Channel channel) {
+    public boolean checkLinked(Channel channel) {
         return isLinked(channel.getUID().getId());
     }
 
@@ -320,7 +320,7 @@ public class KM200ThingHandler extends BaseThingHandler {
             String root = service + "/" + subKey;
             properties.put("root", KM200Utils.translatesPathToName(root));
             String subKeyType = serObj.serviceTreeMap.get(subKey).getServiceType();
-            Boolean readOnly;
+            boolean readOnly;
             String unitOfMeasure = "";
             StateDescription state = null;
             ChannelTypeUID channelTypeUID = new ChannelTypeUID(
@@ -400,7 +400,7 @@ public class KM200ThingHandler extends BaseThingHandler {
 
                 case "refEnum":
                     /* Check whether the sub service should be ignored */
-                    Boolean ignoreIt = false;
+                    boolean ignoreIt = false;
                     for (KM200ThingType tType : KM200ThingType.values()) {
                         if (tType.getThingTypeUID().equals(thing.getThingTypeUID())) {
                             for (String ignore : tType.ignoreSubService()) {
@@ -418,20 +418,15 @@ public class KM200ThingHandler extends BaseThingHandler {
                     break;
 
                 case "errorList":
-                    switch (subKey) {
-                        case "nbrErrors":
-                        case "error":
-                            state = new StateDescription(null, null, null, "%.0f ", readOnly, null);
-                            newChannel = createChannel(new ChannelTypeUID(thing.getUID().getAsString() + ":" + subKey),
-                                    channelUID, root, "Number", null, subKey, subKey, true, false, state,
-                                    unitOfMeasure);
-                            break;
-                        case "errorString":
-                            state = new StateDescription(null, null, null, "%s", readOnly, null);
-                            newChannel = createChannel(new ChannelTypeUID(thing.getUID().getAsString() + ":" + subKey),
-                                    channelUID, root, "String", null, "Error message", "Text", true, false, state,
-                                    unitOfMeasure);
-                            break;
+                    if ("nbrErrors".equals(subKey) || "error".equals(subKey)) {
+                        state = new StateDescription(null, null, null, "%.0f ", readOnly, null);
+                        newChannel = createChannel(new ChannelTypeUID(thing.getUID().getAsString() + ":" + subKey),
+                                channelUID, root, "Number", null, subKey, subKey, true, false, state, unitOfMeasure);
+                    } else if ("errorString".equals(subKey)) {
+                        state = new StateDescription(null, null, null, "%s", readOnly, null);
+                        newChannel = createChannel(new ChannelTypeUID(thing.getUID().getAsString() + ":" + subKey),
+                                channelUID, root, "String", null, "Error message", "Text", true, false, state,
+                                unitOfMeasure);
                     }
                     break;
             }
