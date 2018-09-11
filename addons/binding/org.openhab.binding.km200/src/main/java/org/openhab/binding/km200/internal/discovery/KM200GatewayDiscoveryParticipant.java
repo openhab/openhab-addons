@@ -96,7 +96,7 @@ public class KM200GatewayDiscoveryParticipant implements MDNSDiscoveryParticipan
             String hardwareID;
             hardwareID = info.getPropertyString("hwversion");
             logger.debug("hardwareID: {}", hardwareID);
-            if (hardwareID.contains("iCom_Low")) {
+            if (hardwareID != null && hardwareID.contains("iCom_Low")) {
                 return THING_TYPE_KMDEVICE;
             }
         }
