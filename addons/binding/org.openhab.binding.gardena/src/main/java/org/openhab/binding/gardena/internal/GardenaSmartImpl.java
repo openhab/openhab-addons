@@ -245,9 +245,10 @@ public class GardenaSmartImpl implements GardenaSmart {
                     if (device.getCategory().equals(DEVICE_CATEGORY_PUMP)) {
                         if (property.getName().equals(PROPERTY_MANUAL_WATERING_TIMER)) {
                             Integer duration = getIntegerValue(property.getValueAsString());
-                            if (duration != null) {
-                                property.setValue(new PropertyValue(String.valueOf(duration / 60)));
+                            if (duration == null) {
+                                duration = 0;
                             }
+                            property.setValue(new PropertyValue(String.valueOf(duration / 60)));
                         }
                     }
                 }
