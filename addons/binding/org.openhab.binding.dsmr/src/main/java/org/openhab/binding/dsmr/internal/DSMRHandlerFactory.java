@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.dsmr.DSMRBindingConstants;
 import org.openhab.binding.dsmr.handler.DSMRBridgeHandler;
 import org.openhab.binding.dsmr.handler.DSMRMeterHandler;
@@ -49,8 +50,8 @@ public class DSMRHandlerFactory extends BaseThingHandlerFactory {
 
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
+    private @NonNullByDefault({}) SerialPortManager serialPortManager;
     private @NonNullByDefault({}) LocaleProvider localeProvider;
-
     private @NonNullByDefault({}) TranslationProvider i18nProvider;
 
     /**
@@ -94,7 +95,7 @@ public class DSMRHandlerFactory extends BaseThingHandlerFactory {
         logger.debug("Searching for thingTypeUID {}", thingTypeUID);
 
         if (DSMRBindingConstants.THING_TYPE_DSMR_BRIDGE.equals(thingTypeUID)) {
-            DSMRBridgeHandler handler = new DSMRBridgeHandler((Bridge) thing);
+            DSMRBridgeHandler handler = new DSMRBridgeHandler((Bridge) thing, serialPortManager);
             registerDiscoveryService(handler);
             return handler;
         } else if (DSMRMeterType.METER_THING_TYPES.contains(thingTypeUID)) {
@@ -132,6 +133,15 @@ public class DSMRHandlerFactory extends BaseThingHandlerFactory {
                 }
             }
         }
+    }
+
+    @Reference
+    protected void setSerialPortManager(final SerialPortManager serialPortManager) {
+        this.serialPortManager = serialPortManager;
+    }
+
+    protected void unsetSerialPortManager(final SerialPortManager serialPortManager) {
+        this.serialPortManager = null;
     }
 
     @Reference

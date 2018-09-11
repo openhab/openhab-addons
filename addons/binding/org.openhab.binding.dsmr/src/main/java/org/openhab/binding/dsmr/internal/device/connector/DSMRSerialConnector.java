@@ -9,23 +9,23 @@
 package org.openhab.binding.dsmr.internal.device.connector;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.TooManyListenersException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.io.transport.serial.PortInUseException;
+import org.eclipse.smarthome.io.transport.serial.SerialPort;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEventListener;
+import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
+import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
 import org.openhab.binding.dsmr.DSMRBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gnu.io.CommPortIdentifier;
-import gnu.io.NoSuchPortException;
-import gnu.io.PortInUseException;
-import gnu.io.SerialPort;
-import gnu.io.SerialPortEvent;
-import gnu.io.SerialPortEventListener;
-import gnu.io.UnsupportedCommOperationException;
 
 /**
  * Class that implements the DSMR port functionality that comply to the Dutch Smart Meter Requirements.
@@ -106,68 +106,78 @@ public class DSMRSerialConnector extends DSMRBaseConnector implements SerialPort
         DSMRConnectorErrorEvent errorEvent = null;
 
         synchronized (portLock) {
-            try {
-                logger.trace("Opening port {}", serialPortName);
-                SerialPort oldSerialPort = serialPortReference.get();
-
-                // Opening Operating System Serial Port
-                CommPortIdentifier portIdentifier = portManager.getIdentifier(serialPortName);
-                SerialPort serialPort = portIdentifier.open(DSMRBindingConstants.DSMR_PORT_NAME,
-                        SERIAL_PORT_READ_TIMEOUT_MILLISECONDS);
-
-                // Configure Serial Port based on specified port speed
-                logger.trace("Configure serial port parameters: {}", portSettings);
-                serialPort.setSerialPortParams(portSettings.getBaudrate(), portSettings.getDataBits(),
-                        portSettings.getStopbits(), portSettings.getParity());
-
-                // SerialPort is ready, open the reader
-                logger.trace("SerialPort opened successful on {}", serialPortName);
-                open(serialPort.getInputStream());
-
-                serialPort.addEventListener(this);
-
-                // Start listening for events
-                serialPort.notifyOnDataAvailable(true);
-                serialPort.notifyOnBreakInterrupt(true);
-                serialPort.notifyOnFramingError(true);
-                serialPort.notifyOnOverrunError(true);
-                serialPort.notifyOnParityError(true);
-
-                serialPort.enableReceiveThreshold(SERIAL_TIMEOUT_MILLISECONDS);
-                serialPort.enableReceiveTimeout(SERIAL_TIMEOUT_MILLISECONDS);
-                // The binding is ready, let the meter know we want to receive values
-                serialPort.setRTS(true);
-                if (!serialPortReference.compareAndSet(oldSerialPort, serialPort)) {
-                    logger.warn("Possible bug because a new serial port value was set during opening new port.");
-                    errorEvent = DSMRConnectorErrorEvent.INTERNAL_ERROR;
-                }
-            } catch (IOException ioe) {
-                logger.debug("Failed to get inputstream for serialPort", ioe);
-
-                errorEvent = DSMRConnectorErrorEvent.READ_ERROR;
-            } catch (TooManyListenersException tmle) {
-                logger.warn("Possible bug because a listener was added while one already set.", tmle);
-
-                errorEvent = DSMRConnectorErrorEvent.INTERNAL_ERROR;
-            } catch (NoSuchPortException nspe) {
-                logger.debug("Port {} does not exists", serialPortName, nspe);
+            SerialPortIdentifier portIdentifier = portManager.getIdentifier(serialPortName);
+            if (portIdentifier == null) {
+                logger.debug("Port {} does not exists", serialPortName);
 
                 errorEvent = DSMRConnectorErrorEvent.DONT_EXISTS;
-            } catch (PortInUseException piue) {
-                logger.debug("Port already in use: {}", serialPortName, piue);
-
-                errorEvent = DSMRConnectorErrorEvent.IN_USE;
-            } catch (UnsupportedCommOperationException ucoe) {
-                logger.debug("Port does not support requested port settings (invalid dsmr:portsettings parameter?): {}",
-                        serialPortName, ucoe);
-
-                errorEvent = DSMRConnectorErrorEvent.NOT_COMPATIBLE;
+            } else {
+                errorEvent = open(portSettings, portIdentifier);
             }
             if (errorEvent != null) {
                 // handle event within lock
                 dsmrConnectorListener.handleErrorEvent(errorEvent);
             }
         }
+    }
+
+    private @Nullable DSMRConnectorErrorEvent open(DSMRSerialSettings portSettings,
+            SerialPortIdentifier portIdentifier) {
+        DSMRConnectorErrorEvent errorEvent = null;
+
+        try {
+            logger.trace("Opening port {}", serialPortName);
+            SerialPort oldSerialPort = serialPortReference.get();
+
+            // Opening Operating System Serial Port
+            SerialPort serialPort = portIdentifier.open(DSMRBindingConstants.DSMR_PORT_NAME,
+                    SERIAL_PORT_READ_TIMEOUT_MILLISECONDS);
+
+            // Configure Serial Port based on specified port speed
+            logger.trace("Configure serial port parameters: {}", portSettings);
+            serialPort.setSerialPortParams(portSettings.getBaudrate(), portSettings.getDataBits(),
+                    portSettings.getStopbits(), portSettings.getParity());
+
+            // SerialPort is ready, open the reader
+            logger.trace("SerialPort opened successful on {}", serialPortName);
+            open(serialPort.getInputStream());
+
+            serialPort.addEventListener(this);
+
+            // Start listening for events
+            serialPort.notifyOnDataAvailable(true);
+            serialPort.notifyOnBreakInterrupt(true);
+            serialPort.notifyOnFramingError(true);
+            serialPort.notifyOnOverrunError(true);
+            serialPort.notifyOnParityError(true);
+
+            serialPort.enableReceiveThreshold(SERIAL_TIMEOUT_MILLISECONDS);
+            serialPort.enableReceiveTimeout(SERIAL_TIMEOUT_MILLISECONDS);
+            // The binding is ready, let the meter know we want to receive values
+            serialPort.setRTS(true);
+            if (!serialPortReference.compareAndSet(oldSerialPort, serialPort)) {
+                logger.warn("Possible bug because a new serial port value was set during opening new port.");
+                errorEvent = DSMRConnectorErrorEvent.INTERNAL_ERROR;
+            }
+        } catch (IOException ioe) {
+            logger.debug("Failed to get inputstream for serialPort", ioe);
+
+            errorEvent = DSMRConnectorErrorEvent.READ_ERROR;
+        } catch (TooManyListenersException tmle) {
+            logger.warn("Possible bug because a listener was added while one already set.", tmle);
+
+            errorEvent = DSMRConnectorErrorEvent.INTERNAL_ERROR;
+        } catch (PortInUseException piue) {
+            logger.debug("Port already in use: {}", serialPortName, piue);
+
+            errorEvent = DSMRConnectorErrorEvent.IN_USE;
+        } catch (UnsupportedCommOperationException ucoe) {
+            logger.debug("Port does not support requested port settings (invalid dsmr:portsettings parameter?): {}",
+                    serialPortName, ucoe);
+
+            errorEvent = DSMRConnectorErrorEvent.NOT_COMPATIBLE;
+        }
+        return errorEvent;
     }
 
     /**
@@ -186,7 +196,11 @@ public class DSMRSerialConnector extends DSMRBaseConnector implements SerialPort
                 serialPort.setRTS(false);
                 serialPort.removeEventListener();
                 try {
-                    serialPort.getInputStream().close();
+                    InputStream inputStream = serialPort.getInputStream();
+
+                    if (inputStream != null) {
+                        inputStream.close();
+                    }
                 } catch (IOException ioe) {
                     logger.debug("Failed to close serial port inputstream", ioe);
                 }

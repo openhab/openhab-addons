@@ -19,8 +19,15 @@ import java.io.InputStream;
 import java.util.TooManyListenersException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.smarthome.io.transport.serial.PortInUseException;
+import org.eclipse.smarthome.io.transport.serial.SerialPort;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEventListener;
+import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -28,15 +35,7 @@ import org.openhab.binding.dsmr.DSMRBindingConstants;
 import org.openhab.binding.dsmr.internal.TelegramReaderUtil;
 import org.openhab.binding.dsmr.internal.device.DSMRSerialAutoDevice.DeviceState;
 import org.openhab.binding.dsmr.internal.device.connector.DSMRConnectorErrorEvent;
-import org.openhab.binding.dsmr.internal.device.connector.SerialPortManager;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram;
-
-import gnu.io.CommPortIdentifier;
-import gnu.io.NoSuchPortException;
-import gnu.io.PortInUseException;
-import gnu.io.RXTXPort;
-import gnu.io.SerialPortEvent;
-import gnu.io.SerialPortEventListener;
 
 /**
  * Test class for {@link DSMRSerialAutoDevice}.
@@ -49,17 +48,22 @@ public class DSMRSerialAutoDeviceTest {
     private static final String TELEGRAM_NAME = "dsmr_50";
 
     @Mock
-    private CommPortIdentifier mockIdentifier;
+    private SerialPortIdentifier mockIdentifier;
     @Mock
     private ScheduledExecutorService scheduler;
     @Mock
-    private RXTXPort mockSerialPort;
+    private SerialPort mockSerialPort;
 
     private SerialPortManager serialPortManager = new SerialPortManager() {
         @Override
-        public CommPortIdentifier getIdentifier(String name) throws NoSuchPortException {
+        public SerialPortIdentifier getIdentifier(String name) {
             assertEquals("Expect the passed serial port name", DUMMY_PORTNAME, name);
             return mockIdentifier;
+        }
+
+        @Override
+        public @NonNull Stream<@NonNull SerialPortIdentifier> getIdentifiers() {
+            return Stream.empty();
         }
     };
     private SerialPortEventListener serialPortEventListener;
@@ -94,10 +98,11 @@ public class DSMRSerialAutoDeviceTest {
                     scheduler, 1);
             device.start();
             assertSame("Expect to be starting discovery state", DeviceState.DISCOVER_SETTINGS, device.getState());
-            serialPortEventListener.serialEvent(new SerialPortEvent(mockSerialPort, SerialPortEvent.BI, false, true));
+            serialPortEventListener
+                    .serialEvent(new MockSerialPortEvent(mockSerialPort, SerialPortEvent.BI, false, true));
             assertSame("Expect to be still in discovery state", DeviceState.DISCOVER_SETTINGS, device.getState());
             serialPortEventListener
-                    .serialEvent(new SerialPortEvent(mockSerialPort, SerialPortEvent.DATA_AVAILABLE, false, true));
+                    .serialEvent(new MockSerialPortEvent(mockSerialPort, SerialPortEvent.DATA_AVAILABLE, false, true));
             assertSame("Expect to be in normal state", DeviceState.NORMAL, device.getState());
             device.restart();
             assertSame("Expect not to start rediscovery when in normal state", DeviceState.NORMAL, device.getState());
@@ -122,23 +127,53 @@ public class DSMRSerialAutoDeviceTest {
         };
         try (InputStream inputStream = new ByteArrayInputStream(new byte[] {})) {
             when(mockSerialPort.getInputStream()).thenReturn(inputStream);
-            // Trigger device to go into error stage.
+            // Trigger device to go into error stage with port in use.
             doAnswer(a -> {
-                throw new NoSuchPortException();
+                throw new PortInUseException();
             }).when(mockIdentifier).open(eq(DSMRBindingConstants.DSMR_PORT_NAME), anyInt());
             DSMRSerialAutoDevice device = new DSMRSerialAutoDevice(serialPortManager, DUMMY_PORTNAME, listener,
                     scheduler, 1);
             device.start();
-            assertSame("Expected an error", DSMRConnectorErrorEvent.DONT_EXISTS, eventRef.get());
+            assertSame("Expected an error", DSMRConnectorErrorEvent.IN_USE, eventRef.get());
             assertSame("Expect to be in error state", DeviceState.ERROR, device.getState());
             // Trigger device to restart
             mockValidSerialPort();
             device.restart();
             assertSame("Expect to be starting discovery state", DeviceState.DISCOVER_SETTINGS, device.getState());
+            // Trigger device to go into error stage with port doesn't exist.
+            mockIdentifier = null;
+            device = new DSMRSerialAutoDevice(serialPortManager, DUMMY_PORTNAME, listener, scheduler, 1);
+            device.start();
+            assertSame("Expected an error", DSMRConnectorErrorEvent.DONT_EXISTS, eventRef.get());
+            assertSame("Expect to be in error state", DeviceState.ERROR, device.getState());
         }
     }
 
     private void mockValidSerialPort() throws PortInUseException {
         doReturn(mockSerialPort).when(mockIdentifier).open(anyString(), anyInt());
+    }
+
+    /**
+     * Mock class implementing {@link SerialPortEvent}.
+     */
+    private static class MockSerialPortEvent implements SerialPortEvent {
+
+        private final int eventType;
+        private final boolean newValue;
+
+        public MockSerialPortEvent(SerialPort mockSerialPort, int eventType, boolean oldValue, boolean newValue) {
+            this.eventType = eventType;
+            this.newValue = newValue;
+        }
+
+        @Override
+        public int getEventType() {
+            return eventType;
+        }
+
+        @Override
+        public boolean getNewValue() {
+            return newValue;
+        }
     }
 }

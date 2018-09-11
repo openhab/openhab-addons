@@ -9,9 +9,8 @@
 package org.openhab.binding.dsmr.internal.device.connector;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.io.transport.serial.SerialPort;
 import org.openhab.binding.dsmr.internal.device.DSMRDeviceConfiguration;
-
-import gnu.io.SerialPort;
 
 /**
  * Class for storing port settings

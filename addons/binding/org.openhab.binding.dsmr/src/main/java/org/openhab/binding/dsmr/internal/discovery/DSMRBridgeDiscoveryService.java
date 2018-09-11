@@ -8,10 +8,10 @@
  */
 package org.openhab.binding.dsmr.internal.discovery;
 
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -21,20 +21,19 @@ import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.i18n.LocaleProvider;
 import org.eclipse.smarthome.core.i18n.TranslationProvider;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.dsmr.DSMRBindingConstants;
 import org.openhab.binding.dsmr.internal.device.DSMRDeviceRunnable;
 import org.openhab.binding.dsmr.internal.device.DSMREventListener;
 import org.openhab.binding.dsmr.internal.device.DSMRSerialAutoDevice;
 import org.openhab.binding.dsmr.internal.device.connector.DSMRConnectorErrorEvent;
-import org.openhab.binding.dsmr.internal.device.connector.SerialPortManager;
 import org.openhab.binding.dsmr.internal.device.cosem.CosemObject;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gnu.io.CommPortIdentifier;
 
 /**
  * This implements the discovery service for detecting new DSMR Meters.
@@ -67,8 +66,7 @@ public class DSMRBridgeDiscoveryService extends DSMRDiscoveryService implements 
     /**
      * Serial Port Manager.
      */
-    private final SerialPortManager serialPortManager = new SerialPortManager() {
-    };
+    private @NonNullByDefault({}) SerialPortManager serialPortManager;
 
     /**
      * DSMR Device that is scanned when discovery process in progress.
@@ -94,14 +92,12 @@ public class DSMRBridgeDiscoveryService extends DSMRDiscoveryService implements 
     protected void startScan() {
         logger.debug("Started DSMR discovery scan");
         scanning = true;
-        Enumeration<CommPortIdentifier> portEnum = serialPortManager.getPortIdentifiers();
+        Stream<SerialPortIdentifier> portEnum = serialPortManager.getIdentifiers();
 
         // Traverse each available serial port
-        while (scanning && portEnum.hasMoreElements()) {
-            CommPortIdentifier portIdentifier = portEnum.nextElement();
-
-            currentScannedPortName = portIdentifier.getName();
-            if (portIdentifier.getPortType() == CommPortIdentifier.PORT_SERIAL) {
+        portEnum.forEach(portIdentifier -> {
+            if (scanning) {
+                currentScannedPortName = portIdentifier.getName();
                 if (portIdentifier.isCurrentlyOwned()) {
                     logger.trace("Possible port to check:{}, owned:{} by:{}", currentScannedPortName,
                             portIdentifier.isCurrentlyOwned(), portIdentifier.getCurrentOwner());
@@ -119,7 +115,7 @@ public class DSMRBridgeDiscoveryService extends DSMRDiscoveryService implements 
                     currentScannedDevice.run();
                 }
             }
-        }
+        });
     }
 
     @Override
@@ -191,6 +187,15 @@ public class DSMRBridgeDiscoveryService extends DSMRDiscoveryService implements 
     public void handleErrorEvent(DSMRConnectorErrorEvent portEvent) {
         logger.debug("[{}] Error on port during discovery: {}", currentScannedPortName, portEvent);
         stopSerialPortScan();
+    }
+
+    @Reference
+    protected void setSerialPortManager(final SerialPortManager serialPortManager) {
+        this.serialPortManager = serialPortManager;
+    }
+
+    protected void unsetSerialPortManager(final SerialPortManager serialPortManager) {
+        this.serialPortManager = null;
     }
 
     @Reference

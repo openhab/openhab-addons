@@ -14,10 +14,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.dsmr.internal.device.connector.DSMRConnectorErrorEvent;
 import org.openhab.binding.dsmr.internal.device.connector.DSMRSerialConnector;
 import org.openhab.binding.dsmr.internal.device.connector.DSMRSerialSettings;
-import org.openhab.binding.dsmr.internal.device.connector.SerialPortManager;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

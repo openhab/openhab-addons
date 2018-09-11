@@ -62,8 +62,12 @@ class DSMRBaseConnector {
      * Opens the connector with the given stream to read data from.
      *
      * @param inputStream input stream to read data from
+     * @throws IOException throws exception in case input stream is null
      */
-    protected void open(InputStream inputStream) {
+    protected void open(@Nullable InputStream inputStream) throws IOException {
+        if (inputStream == null) {
+            throw new IOException("Inputstream is null");
+        }
         this.inputStream = new BufferedInputStream(inputStream);
         open = true;
     }

@@ -21,6 +21,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.dsmr.internal.device.DSMRDevice;
 import org.openhab.binding.dsmr.internal.device.DSMRDeviceConfiguration;
 import org.openhab.binding.dsmr.internal.device.DSMRDeviceRunnable;
@@ -29,7 +30,6 @@ import org.openhab.binding.dsmr.internal.device.DSMRFixedConfigDevice;
 import org.openhab.binding.dsmr.internal.device.DSMRSerialAutoDevice;
 import org.openhab.binding.dsmr.internal.device.connector.DSMRConnectorErrorEvent;
 import org.openhab.binding.dsmr.internal.device.connector.DSMRSerialSettings;
-import org.openhab.binding.dsmr.internal.device.connector.SerialPortManager;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1TelegramListener;
 import org.slf4j.Logger;
@@ -61,8 +61,7 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
     /**
      * Serial Port Manager.
      */
-    private final SerialPortManager serialPortManager = new SerialPortManager() {
-    };
+    private final SerialPortManager serialPortManager;
 
     /**
      * The dsmrDevice managing the connection and handling telegrams.
@@ -99,9 +98,11 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
      * Constructor
      *
      * @param bridge the Bridge ThingType
+     * @param serialPortManager The Serial port manager
      */
-    public DSMRBridgeHandler(Bridge bridge) {
+    public DSMRBridgeHandler(Bridge bridge, SerialPortManager serialPortManager) {
         super(bridge);
+        this.serialPortManager = serialPortManager;
     }
 
     /**
