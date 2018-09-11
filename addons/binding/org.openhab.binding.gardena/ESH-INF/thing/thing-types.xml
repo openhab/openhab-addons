@@ -698,6 +698,7 @@
 		<item-type>Switch</item-type>
 		<label>Pump</label>
 		<description>Pump</description>
+		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="turnOnPressure">
@@ -804,11 +805,29 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-type id="manualWateringTimer" advanced="true">
+	<channel-type id="manualWateringTimer">
 		<item-type>Number</item-type>
 		<label>Manual Watering Timer</label>
 		<description>The manual watering timer</description>
-		<state readOnly="true" pattern="%d sec" />
+		<state pattern="%d min" min="0" max="59" step="1">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">1 min</option>
+				<option value="3">3 min</option>
+				<option value="5">5 min</option>
+				<option value="10">10 min</option>
+				<option value="15">15 min</option>
+				<option value="20">20 min</option>
+				<option value="25">25 min</option>
+				<option value="30">30 min</option>
+				<option value="35">35 min</option>
+				<option value="40">40 min</option>
+				<option value="45">45 min</option>
+				<option value="50">50 min</option>
+				<option value="55">55 min</option>
+				<option value="59">59 min</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="lastManualOverrideTime" advanced="true">
@@ -996,7 +1015,7 @@
 		<state pattern="%d min">
 			<options>
 				<option value="0">Off</option>
-				<option value="1">1</option>
+				<option value="1">1 min</option>
 				<option value="3">3 min</option>
 				<option value="5">5 min</option>
 				<option value="10">10 min</option>
