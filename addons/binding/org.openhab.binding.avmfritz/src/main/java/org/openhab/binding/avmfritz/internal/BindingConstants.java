@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.avmfritz;
+package org.openhab.binding.avmfritz.internal;
 
 import java.util.Collections;
 import java.util.Set;
