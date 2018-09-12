@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.atlona.handler;
+package org.openhab.binding.atlona.internal.handler;
 
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
@@ -27,7 +27,7 @@ public abstract class AtlonaHandler<C extends AtlonaCapabilities> extends BaseTh
      * Constructs the handler from the specified thing and capabilities
      *
      * @param thing a non-null {@link org.eclipse.smarthome.core.thing.Thing}
-     * @param capabilities a non-null {@link org.openhab.binding.atlona.handler.AtlonaCapabilities}
+     * @param capabilities a non-null {@link org.openhab.binding.atlona.internal.handler.AtlonaCapabilities}
      */
     public AtlonaHandler(Thing thing, C capabilities) {
         super(thing);
@@ -41,7 +41,7 @@ public abstract class AtlonaHandler<C extends AtlonaCapabilities> extends BaseTh
     /**
      * Returns the model specific capabilities
      *
-     * @return a non-null {@link org.openhab.binding.atlona.handler.AtlonaCapabilities}
+     * @return a non-null {@link org.openhab.binding.atlona.internal.handler.AtlonaCapabilities}
      */
     protected C getCapabilities() {
         return capabilities;

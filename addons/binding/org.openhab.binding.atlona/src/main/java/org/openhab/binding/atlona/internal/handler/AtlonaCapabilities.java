@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.atlona.handler;
+package org.openhab.binding.atlona.internal.handler;
 
 /**
  * Any model specific capabilities class should inherit from this base class. Currently doesn't provide any generic
