@@ -33,9 +33,7 @@ public final class KNXChannelTypes {
             new TypeContact(), //
             new TypeDateTime(), //
             new TypeDimmer(), //
-            // new TypeLocation(), //
             new TypeNumber(), //
-            // new TypePlayer(), //
             new TypeRollershutter(), //
             new TypeString(), //
             new TypeSwitch() //

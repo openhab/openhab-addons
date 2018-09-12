@@ -11,7 +11,6 @@ package org.openhab.binding.knx.internal.channel;
 import static java.util.stream.Collectors.toSet;
 import static org.openhab.binding.knx.KNXBindingConstants.*;
 
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -25,8 +24,7 @@ import tuwien.auto.calimero.dptxlator.DPTXlatorRGB;
 /**
  * color channel type description
  *
- * @author Simon Kaufmann - initial contribution and API.
- * @author Helmut Lehmeyer
+ * @author Helmut Lehmeyer - initial contribution
  *
  */
 @NonNullByDefault
@@ -43,16 +41,16 @@ class TypeColor extends KNXChannelType {
 
     @Override
     protected String getDefaultDPT(String gaConfigKey) {
-        if (Objects.equals(gaConfigKey, HSB_GA)) {
+        if (gaConfigKey.equals(HSB_GA)) {
             return DPTXlatorRGB.DPT_RGB.getID();
         }
-        if (Objects.equals(gaConfigKey, INCREASE_DECREASE_GA)) {
+        if (gaConfigKey.equals(INCREASE_DECREASE_GA)) {
             return DPTXlator3BitControlled.DPT_CONTROL_DIMMING.getID();
         }
-        if (Objects.equals(gaConfigKey, SWITCH_GA)) {
+        if (gaConfigKey.equals(SWITCH_GA)) {
             return DPTXlatorBoolean.DPT_SWITCH.getID();
         }
-        if (Objects.equals(gaConfigKey, POSITION_GA)) {
+        if (gaConfigKey.equals(POSITION_GA)) {
             return DPTXlator8BitUnsigned.DPT_SCALING.getID();
         }
         throw new IllegalArgumentException("GA configuration '" + gaConfigKey + "' is not supported");
