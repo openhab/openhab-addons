@@ -9,6 +9,7 @@
 package org.openhab.binding.icloud.handler;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -24,6 +25,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.icloud.internal.ICloudConnection;
 import org.openhab.binding.icloud.internal.ICloudDeviceInformationListener;
 import org.openhab.binding.icloud.internal.ICloudDeviceInformationParser;
@@ -39,15 +41,18 @@ import org.slf4j.LoggerFactory;
  * information to {@link DeviceDiscover} and to the {@link ICloudDeviceHandler}s.
  *
  * @author Patrik Gfeller - Initial Contribution
- * @author Hans-Jörg Merk
+ * @author Hans-Jörg Merk - Extended support with initial Contribution
  */
 public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ICloudAccountBridgeHandler.class);
+
+    private static final int CACHE_EXPIRY = (int) TimeUnit.SECONDS.toMillis(5);
+
     private final ICloudDeviceInformationParser deviceInformationParser = new ICloudDeviceInformationParser();
+    private final HttpClientFactory httpClientFactory;
     private ICloudConnection connection;
     private ICloudAccountThingConfiguration config;
-    private final int CACHE_EXPIRY = 5 * 1000; // 5s
     private ExpiringCache<String> iCloudDeviceInformationCache;
 
     ServiceRegistration<?> service;
@@ -59,8 +64,9 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
     ScheduledFuture<?> refreshJob;
 
-    public ICloudAccountBridgeHandler(@NonNull Bridge bridge) {
+    public ICloudAccountBridgeHandler(@NonNull Bridge bridge, HttpClientFactory httpClientFactory) {
         super(bridge);
+        this.httpClientFactory = httpClientFactory;
     }
 
     @Override
@@ -77,9 +83,9 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
         logger.debug("iCloud bridge handler initializing ...");
         iCloudDeviceInformationCache = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
             try {
-                connection = new ICloudConnection(config.appleId, config.password);
+                connection = new ICloudConnection(httpClientFactory, config.appleId, config.password);
                 return connection.requestDeviceStatusJSON();
-            } catch (IOException e) {
+            } catch (IOException | URISyntaxException e) {
                 logger.warn("Unable to refresh device data", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 return null;
@@ -99,6 +105,9 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
     public void dispose() {
         if (refreshJob != null) {
             refreshJob.cancel(true);
+        }
+        if (connection != null) {
+            connection.disconnect();
         }
         super.dispose();
     }

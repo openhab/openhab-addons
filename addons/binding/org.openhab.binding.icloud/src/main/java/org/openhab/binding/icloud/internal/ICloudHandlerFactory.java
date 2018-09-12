@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.icloud.handler.ICloudAccountBridgeHandler;
 import org.openhab.binding.icloud.handler.ICloudDeviceHandler;
 import org.openhab.binding.icloud.internal.discovery.ICloudDeviceDiscovery;
@@ -43,6 +44,7 @@ public class ICloudHandlerFactory extends BaseThingHandlerFactory {
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<>();
     private LocaleProvider localeProvider;
     private TranslationProvider i18nProvider;
+    private HttpClientFactory httpClientFactory;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -54,7 +56,8 @@ public class ICloudHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_ICLOUD)) {
-            ICloudAccountBridgeHandler bridgeHandler = new ICloudAccountBridgeHandler((Bridge) thing);
+            ICloudAccountBridgeHandler bridgeHandler = new ICloudAccountBridgeHandler((Bridge) thing,
+                    httpClientFactory);
             registerDeviceDiscoveryService(bridgeHandler);
             return bridgeHandler;
         }
@@ -95,11 +98,20 @@ public class ICloudHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Reference
-    protected void setLocaleProvider(final LocaleProvider localeProvider) {
+    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
+        this.httpClientFactory = httpClientFactory;
+    }
+
+    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
+        this.httpClientFactory = null;
+    }
+
+    @Reference
+    protected void setLocaleProvider(LocaleProvider localeProvider) {
         this.localeProvider = localeProvider;
     }
 
-    protected void unsetLocaleProvider(final LocaleProvider localeProvider) {
+    protected void unsetLocaleProvider(LocaleProvider localeProvider) {
         this.localeProvider = null;
     }
 
