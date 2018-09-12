@@ -19,7 +19,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.openhab.binding.amazonechocontrol.AmazonEchoControlBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
