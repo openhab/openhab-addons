@@ -20,7 +20,7 @@ import org.openhab.binding.nibeuplink.internal.model.ChannelList;
 import org.openhab.binding.nibeuplink.internal.model.CustomChannels;
 
 /**
- * F1145 specific implementation part of handler logic
+ * generic implementation of handler logic
  *
  * @author Alexander Friese - initial contribution
  */

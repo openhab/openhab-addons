@@ -103,7 +103,7 @@ nibeuplink:vvm320:mynibe     [ user="nibe@my-domain.de", password="secret123", n
 ### Items
 
 As the binding supports UoM you might define units in the item's label. An automatic conversion is applied e.g. from °C to °F then.
-Channels which represent states two states (such as on/off) are represented as Switch.
+Channels which represent two states (such as on/off) are represented as Switch.
 Channels which have more than two states are internally represented as number.
 You need to define a map file which also gives you the opportunity to translate the state into your preferred language.
 

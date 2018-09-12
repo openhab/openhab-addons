@@ -40,7 +40,7 @@ public class UplinkPolling implements Runnable {
     }
 
     /**
-     * Poll the FRITZ!Box websevice one time.
+     * Poll the Nibe Uplink webservice one time.
      */
     @Override
     public void run() {
