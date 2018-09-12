@@ -10,7 +10,7 @@ package org.openhab.binding.avmfritz.internal.discovery;
 
 import static org.eclipse.smarthome.core.thing.Thing.*;
 import static org.junit.Assert.*;
-import static org.openhab.binding.avmfritz.BindingConstants.*;
+import static org.openhab.binding.avmfritz.internal.BindingConstants.*;
 
 import java.io.StringReader;
 import java.util.Collection;
@@ -28,7 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.binding.avmfritz.handler.AVMFritzThingHandlerOSGiTest;
+import org.openhab.binding.avmfritz.internal.handler.AVMFritzThingHandlerOSGiTest;
 import org.openhab.binding.avmfritz.internal.ahamodel.AVMFritzBaseModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.DevicelistModel;
 import org.openhab.binding.avmfritz.internal.util.JAXBUtils;

@@ -6,11 +6,11 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.avmfritz.handler;
+package org.openhab.binding.avmfritz.internal.handler;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
-import static org.openhab.binding.avmfritz.BindingConstants.*;
+import static org.openhab.binding.avmfritz.internal.BindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;

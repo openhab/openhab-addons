@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.avmfritz.internal;
 
-import static org.openhab.binding.avmfritz.BindingConstants.*;
+import static org.openhab.binding.avmfritz.internal.BindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -25,12 +25,12 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
-import org.openhab.binding.avmfritz.handler.AVMFritzBaseBridgeHandler;
-import org.openhab.binding.avmfritz.handler.BoxHandler;
-import org.openhab.binding.avmfritz.handler.DeviceHandler;
-import org.openhab.binding.avmfritz.handler.GroupHandler;
-import org.openhab.binding.avmfritz.handler.Powerline546EHandler;
 import org.openhab.binding.avmfritz.internal.discovery.AVMFritzDiscoveryService;
+import org.openhab.binding.avmfritz.internal.handler.AVMFritzBaseBridgeHandler;
+import org.openhab.binding.avmfritz.internal.handler.BoxHandler;
+import org.openhab.binding.avmfritz.internal.handler.DeviceHandler;
+import org.openhab.binding.avmfritz.internal.handler.GroupHandler;
+import org.openhab.binding.avmfritz.internal.handler.Powerline546EHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
