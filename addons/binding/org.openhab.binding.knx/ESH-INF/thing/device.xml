@@ -78,19 +78,19 @@
 		<config-description-ref uri="channel-type:knx:rollershutter" />
 	</channel-type>
 
-    <!-- Color -->
-    <channel-type id="color">
-        <item-type>Color</item-type>
-        <label>Color</label>
-        <description>A channel to control color information (RGB)</description>
-        <config-description-ref uri="channel-type:knx:color" />
-    </channel-type>
-    <channel-type id="color-control">
-        <item-type>Color</item-type>
-        <label>Color Control</label>
-        <description>Control a color item (i.e. the status is not owned by KNX)</description>
-        <config-description-ref uri="channel-type:knx:color-control" />
-    </channel-type>
+	<!-- Color -->
+	<channel-type id="color">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<description>A channel to control color information (RGB)</description>
+		<config-description-ref uri="channel-type:knx:color" />
+	</channel-type>
+	<channel-type id="color-control">
+		<item-type>Color</item-type>
+		<label>Color Control</label>
+		<description>Control a color item (i.e. the status is not owned by KNX)</description>
+		<config-description-ref uri="channel-type:knx:color-control" />
+	</channel-type>
 
 	<!-- Contact -->
 	<channel-type id="contact">
