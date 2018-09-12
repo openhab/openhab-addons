@@ -11,14 +11,11 @@ package org.openhab.binding.gpstracker.internal.message;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Transition message POJO
+ * TransitionMessage message POJO
  *
  * @author Gabor Bicskei - Initial contribution
  */
-public class Transition extends AbstractBaseMessage {
-    //events
-    private static final String EVENT_ENTER = "enter";
-    private static final String EVENT_LEAVE = "leave";
+public class TransitionMessage extends LocationMessage {
 
     /**
      * Event that triggered the transition (iOS,Android/string/required)
@@ -38,11 +35,7 @@ public class Transition extends AbstractBaseMessage {
         return regionName;
     }
 
-    public boolean isEntering() {
-        return EVENT_ENTER.equals(event);
-    }
-
-    public boolean isLeaving() {
-        return EVENT_LEAVE.equals(event);
+    public String getEvent() {
+        return event;
     }
 }

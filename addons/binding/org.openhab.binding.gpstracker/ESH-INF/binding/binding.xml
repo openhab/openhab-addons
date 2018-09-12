@@ -4,8 +4,7 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
 	<name>GPSTracker Binding</name>
-	<description>GPSTracker binding with support of OwnTracks and GPSLogger trackers over HTTP</description>
+	<description>GPS tracking with OwnTracks and GPSLogger support over HTTP</description>
 	<author>Gabor Bicskei</author>
 
-	<config-description-ref uri="binding:gpstracker"/>
 </binding:binding>

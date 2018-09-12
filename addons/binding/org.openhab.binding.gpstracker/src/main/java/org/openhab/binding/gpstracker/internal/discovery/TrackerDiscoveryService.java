@@ -29,13 +29,12 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
 
 /**
- * Tracker discovery service.
+ * The {@link TrackerDiscoveryService} class provides discovery service for the binding to discover trackers.
  *
  * @author Gabor Bicskei - Initial contribution
  */
 @NonNullByDefault
-@Component(service = { DiscoveryService.class,
-        TrackerDiscoveryService.class }, immediate = true, configurationPid = "discovery.gsptracker")
+@Component(service = { DiscoveryService.class, TrackerDiscoveryService.class }, immediate = true, configurationPid = "discovery.gsptracker")
 public class TrackerDiscoveryService extends AbstractDiscoveryService {
     /**
      * Discovery timeout
@@ -79,9 +78,7 @@ public class TrackerDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        trackersToDiscover.forEach(trackerId -> {
-            createDiscoveryResult(trackerId);
-        });
+        trackersToDiscover.forEach(this::createDiscoveryResult);
     }
 
     private void createDiscoveryResult(String trackerId) {

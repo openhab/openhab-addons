@@ -8,34 +8,19 @@
  */
 package org.openhab.binding.gpstracker.internal;
 
-import static org.openhab.binding.gpstracker.internal.GPSTrackerBindingConstants.*;
-
-import java.util.Collections;
-import java.util.Dictionary;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import javax.servlet.ServletException;
-
-import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.i18n.LocationProvider;
+import org.eclipse.smarthome.config.core.ConfigOptionProvider;
+import org.eclipse.smarthome.config.core.ParameterOption;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.gpstracker.internal.config.GPSTrackerBindingConfiguration;
 import org.openhab.binding.gpstracker.internal.discovery.TrackerDiscoveryService;
 import org.openhab.binding.gpstracker.internal.handler.TrackerHandler;
-import org.openhab.binding.gpstracker.internal.handler.TranslationUtil;
 import org.openhab.binding.gpstracker.internal.message.NotificationBroker;
 import org.openhab.binding.gpstracker.internal.provider.TrackerRegistry;
 import org.openhab.binding.gpstracker.internal.provider.gpslogger.GPSLoggerCallbackServlet;
 import org.openhab.binding.gpstracker.internal.provider.owntracks.OwnTracksCallbackServlet;
-import org.osgi.framework.ServiceReference;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -44,13 +29,24 @@ import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.ServletException;
+import java.net.URI;
+import java.util.*;
+
+import static org.openhab.binding.gpstracker.internal.GPSTrackerBindingConstants.*;
+
 /**
  * Main component
  *
  * @author Gabor Bicskei - Initial contribution
  */
-@Component(configurationPid = CONFIG_PID, immediate = true, service = ThingHandlerFactory.class)
-public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements TrackerRegistry {
+@Component(configurationPid = CONFIG_PID, service = {ThingHandlerFactory.class, ConfigOptionProvider.class})
+public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements TrackerRegistry, ConfigOptionProvider {
+    /**
+     * Config URI
+     */
+    private static final String URI_STR = "profile:gpstracker:triggerPresenceSwitch";
+
     /**
      * Class logger
      */
@@ -60,11 +56,6 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
      * Discovery service instance
      */
     private TrackerDiscoveryService discoveryService;
-
-    /**
-     * Binding configuration
-     */
-    private GPSTrackerBindingConfiguration config = new GPSTrackerBindingConfiguration();
 
     /**
      * HTTP service reference
@@ -87,14 +78,14 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
     private NotificationBroker notificationBroker = new NotificationBroker();
 
     /**
-     * Translation helper
-     */
-    private TranslationUtil translationUtil;
-
-    /**
      * Handler registry
      */
     private Map<String, TrackerHandler> trackerHandlers = new HashMap<>();
+
+    /**
+     * All regions.
+     */
+    private Set<String> regions = new HashSet<>();
 
     /**
      * Called by the framework to find out if thing type is supported by the handler factory.
@@ -118,7 +109,7 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (GPSTrackerBindingConstants.THING_TYPE_TRACKER.equals(thingTypeUID)
                 && thing.getConfiguration().get(CONFIG_TRACKER_ID) != null) {
-            TrackerHandler trackerHandler = new TrackerHandler(thing, this.config, notificationBroker, translationUtil);
+            TrackerHandler trackerHandler = new TrackerHandler(thing, notificationBroker, regions);
             discoveryService.removeTracker(trackerHandler.getTrackerId());
             trackerHandlers.put(trackerHandler.getTrackerId(), trackerHandler);
             return trackerHandler;
@@ -129,7 +120,8 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
 
     @Override
     protected void removeHandler(ThingHandler thingHandler) {
-        trackerHandlers.remove(thingHandler.getThing().getConfiguration().get(CONFIG_TRACKER_ID));
+        String trackerId = (String) thingHandler.getThing().getConfiguration().get(CONFIG_TRACKER_ID);
+        trackerHandlers.remove(trackerId);
     }
 
     /**
@@ -140,10 +132,6 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
     @Override
     protected void activate(ComponentContext componentContext) {
         super.activate(componentContext);
-        logger.debug("Initializing the configuration.");
-        updateConfiguration(componentContext.getProperties());
-
-        this.translationUtil = new TranslationUtil(getBundleContext());
 
         logger.debug("Initializing callback servlets");
         try {
@@ -169,7 +157,6 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
     @Override
     protected void deactivate(ComponentContext componentContext) {
         logger.debug("Deactivating GPSTracker Binding");
-        logger.debug("Stopping callback servlets");
 
         this.httpService.unregister(otHTTPEndpoint.getPath());
         logger.debug("GPSTracker callback servlet stopped on {}", otHTTPEndpoint.getPath());
@@ -178,6 +165,16 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
         logger.debug("GPSTracker callback servlet stopped on {}", glHTTPEndpoint.getPath());
 
         super.deactivate(componentContext);
+    }
+
+    @Override
+    public Collection<ParameterOption> getParameterOptions(URI uri, String param, Locale locale) {
+        if (URI_STR.equals(uri.toString()) && CONFIG_REGION_NAME.equals(param)) {
+            Set<ParameterOption> ret = new HashSet<>();
+            regions.forEach(r->ret.add(new ParameterOption(r, r)));
+            return ret;
+        }
+        return Collections.emptyList();
     }
 
     @Reference
@@ -201,20 +198,5 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
     @Override
     public TrackerHandler getTrackerHandler(String trackerId) {
         return trackerHandlers.get(trackerId);
-    }
-
-    private void updateConfiguration(Dictionary<String, ?> dictionary) {
-        List<String> keys = Collections.list(dictionary.keys());
-        Map<String, Object> map = keys.stream().collect(Collectors.toMap(Function.identity(), dictionary::get));
-        Configuration newConfig = new Configuration(map);
-        config = newConfig.as(GPSTrackerBindingConfiguration.class);
-
-        ServiceReference<LocationProvider> serviceReference = bundleContext.getServiceReference(LocationProvider.class);
-        if (serviceReference != null) {
-            LocationProvider locationProv = bundleContext.getService(serviceReference);
-            config.setLocation(locationProv.getLocation());
-        }
-
-        config.init();
     }
 }

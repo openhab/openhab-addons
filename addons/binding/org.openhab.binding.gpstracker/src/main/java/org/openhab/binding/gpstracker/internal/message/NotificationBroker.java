@@ -22,11 +22,17 @@ public class NotificationBroker {
      */
     private Map<String, NotificationHandler> handlers = new HashMap<>();
 
+    /**
+     * Register new handler.
+     *
+     * @param trackerId Tracker id
+     * @param handler Notification handler
+     */
     public void registerHandler(String trackerId, NotificationHandler handler) {
         handlers.put(trackerId, handler);
     }
 
-    public void sendNotification(AbstractBaseMessage msg) {
+    public void sendNotification(LocationMessage msg) {
         String trackerId = msg.getTrackerId();
         handlers.entrySet().stream().filter(e->!e.getKey().equals(trackerId))
                 .forEach(e->e.getValue().handleNotification(msg));

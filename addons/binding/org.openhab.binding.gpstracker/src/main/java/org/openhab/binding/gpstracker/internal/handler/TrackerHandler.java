@@ -9,7 +9,10 @@
 package org.openhab.binding.gpstracker.internal.handler;
 
 
-import org.eclipse.smarthome.core.library.types.*;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.PointType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.MetricPrefix;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -17,44 +20,34 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.gpstracker.internal.config.GPSTrackerBindingConfiguration;
-import org.openhab.binding.gpstracker.internal.message.*;
+import org.openhab.binding.gpstracker.internal.config.Region;
+import org.openhab.binding.gpstracker.internal.message.LocationMessage;
+import org.openhab.binding.gpstracker.internal.message.NotificationBroker;
+import org.openhab.binding.gpstracker.internal.message.NotificationHandler;
+import org.openhab.binding.gpstracker.internal.message.TransitionMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.openhab.binding.gpstracker.internal.GPSTrackerBindingConstants.*;
 
 /**
- * Tracker thing handler.
+ * The {@link TrackerHandler} class is a tracker thing handler.
  *
  * @author Gabor Bicskei - Initial contribution
  */
-public class TrackerHandler extends BaseThingHandler implements TrackerRecorder {
+public class TrackerHandler extends BaseThingHandler {
     /**
      * Class logger
      */
     private final Logger logger = LoggerFactory.getLogger(TrackerHandler.class);
-
-    /**
-     * Binding configuration
-     */
-    private GPSTrackerBindingConfiguration bindingConfig;
-
-    /**
-     * Previous location of the tracker. It is initialized with zeros so the first location report from a tracker
-     * will trigger events if the newly received location is inside a region.
-     */
-    private PointType oldLocation = new PointType();
-
-    /**
-     * Channel helper
-     */
-    private ChannelUtil channelUtil;
 
     /**
      * Notification handler
@@ -72,23 +65,32 @@ public class TrackerHandler extends BaseThingHandler implements TrackerRecorder 
     private String trackerId;
 
     /**
+     * Map of regionName/distance channels
+     */
+    private Map<String, Channel> distanceChannelMap = new HashMap<>();
+
+    /**
+     * All regions
+     */
+    private Set<String> regions;
+
+    /**
      * Constructor.
      *
      * @param thing Thing.
-     * @param bindingConfig Binding level configuration.
      * @param notificationBroker Notification broker
-     * @param translationUtil Tranlation helper
+     * @param regions Global region set
      */
-    public TrackerHandler(Thing thing, GPSTrackerBindingConfiguration bindingConfig, NotificationBroker notificationBroker, TranslationUtil translationUtil) {
+    public TrackerHandler(Thing thing, NotificationBroker notificationBroker, Set<String> regions) {
         super(thing);
-        this.bindingConfig = bindingConfig;
 
         this.notificationBroker = notificationBroker;
-        notificationHandler = new NotificationHandler();
+        this.notificationHandler = new NotificationHandler();
+        this.regions = regions;
+
         trackerId = (String) thing.getConfiguration().get(CONFIG_TRACKER_ID);
         notificationBroker.registerHandler(trackerId, notificationHandler);
 
-        channelUtil = new ChannelUtil(thing, bindingConfig, translationUtil);
         logger.debug("Tracker handler created: {}", trackerId);
     }
 
@@ -98,8 +100,15 @@ public class TrackerHandler extends BaseThingHandler implements TrackerRecorder 
 
     @Override
     public void initialize() {
-        updateThingChannels();
+        mapDistanceChannels();
         updateStatus(ThingStatus.ONLINE);
+    }
+
+    private void mapDistanceChannels() {
+        distanceChannelMap = thing.getChannels().stream()
+                .filter(c -> CHANNEL_TYPE_DISTANCE.equals(c.getChannelTypeUID()))
+                .collect(Collectors.toMap(c -> (String) c.getConfiguration().get(CONFIG_REGION_NAME), Function.identity()));
+        regions.addAll(distanceChannelMap.keySet());
     }
 
     @Override
@@ -107,110 +116,55 @@ public class TrackerHandler extends BaseThingHandler implements TrackerRecorder 
         //no command handling
     }
 
-    @Override
-    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
-        super.handleConfigurationUpdate(configurationParameters);
-        updateThingChannels();
-    }
-
-    /**
-     * Update the thing with dynamic channels.
-     */
-    private void updateThingChannels() {
-        Map<String, Channel> updatedChannels = channelUtil.updateChannels();
-        if (updatedChannels != null) {
-            logger.debug("Update the thing after all channel modifications {}.", trackerId);
-            ThingBuilder thingBuilder = editThing();
-            Thing newThing = thingBuilder.withChannels((Channel[]) updatedChannels.values().toArray(new Channel[0])).withLabel(thing.getLabel()).build();
-            updateThing(newThing);
-            logger.debug("Thing update executed: {}", trackerId);
-        } else {
-            logger.debug("Skip thing channel update. No change.");
-        }
-    }
-
     /**
      * If the message is a transition report update the affected trigger channels
      *
-     * @param message Transition message.
+     * @param message TransitionMessage message.
      */
-    private void updateTriggerChannelsWithTransition(Transition message) {
+    private void updateTriggerChannelsWithTransition(TransitionMessage message) {
         String regionName = message.getRegionName();
-        Region affectedRegion = bindingConfig.getRegionByName(regionName);
-        if (affectedRegion != null) {
-            updateRegionSwitchChannel(message.isEntering(), affectedRegion);
-        } else {
-            String payload = ">";
-            if (message.isLeaving()) {
-                payload = "<";
-            }
-            payload += regionName;
-            triggerChannel(CHANNEL_REGION_TRIGGER, payload);
-            logger.trace("Triggering {} for {}/{}", regionName, trackerId, payload);
-        }
-    }
-
-    private void updateRegionSwitchChannel(boolean isInside, Region region) {
-        OnOffType value = OnOffType.OFF;
-        if (isInside) {
-            value = OnOffType.ON;
-        }
-        logger.trace("Turning {} region switch for {}/{}", value, trackerId, region.getName());
-        String switchChannelId = CHANNEL_REGION_PRESENCE + "_" + region.getId();
-        updateState(switchChannelId, value);
+        String payload = regionName + "/" + message.getEvent();
+        triggerChannel(CHANNEL_REGION_TRIGGER, payload);
+        logger.trace("Triggering {} for {}/{}", regionName, trackerId, payload);
     }
 
     /**
-     * Update presence channels on internal regions by new location.
+     * Update distance channels with new location.
      *
      * @param message Message.
      */
-    private void updateRegionChannelsWithLocation(AbstractBaseMessage message) {
+    private void updateChannelsWithLocation(LocationMessage message) {
         String trackerId = message.getTrackerId();
-        logger.debug("Updating channel for tracker {} by new received location.", trackerId);
-        PointType newLocation = updateBaseChannels(message);
+        updateBaseChannels(message);
 
-        if (oldLocation != null) {
-            logger.debug("Updating region channel states for tracker {}", trackerId);
-            for (Region r : bindingConfig.getRegions()) {
-                String regionName = r.getName();
-                logger.trace("Updating region channel states: {}", regionName);
+        logger.debug("Updating distance channels tracker {}", trackerId);
+        distanceChannelMap.values()
+                .forEach(c -> {
+                    Region r = c.getConfiguration().as(Region.class);
 
-                PointType center = r.getLocation();
-                if (newLocation != null && center != null) {
-                    Integer radius = r.getRadius();
+                    PointType center = r.getLocation();
+                    PointType newLocation = message.getTrackerLocation();
 
-                    logger.trace("Existing new location: {}", newLocation.toString());
                     double newDistance = newLocation.distanceFrom(center).doubleValue();
-                    updateState(CHANNEL_DISTANCE + "_" + r.getId(), new QuantityType<>(newDistance/1000, MetricPrefix.KILO(SIUnits.METRE)));
-                    logger.trace("Region center distance from new {} is {}m with radius {}m", newLocation.toString(), newDistance, radius);
-
-                    if (newDistance < radius) {
-                        updateRegionSwitchChannel(true, r);
-                    } else if (newDistance > radius) {
-                        updateRegionSwitchChannel(false, r);
-                    }
-                }
-            }
-        }
-        oldLocation = newLocation;
+                    updateState(c.getUID(), new QuantityType<>(newDistance / 1000, MetricPrefix.KILO(SIUnits.METRE)));
+                    logger.trace("Region center distance from tracker location {} is {}m", newLocation.toString(), newDistance);
+                });
     }
 
     /**
      * Update base channels: battery, location, last report
      *
      * @param message Received message.
-     * @return New location extracted from the message.
      */
-    private PointType updateBaseChannels(AbstractBaseMessage message) {
-        logger.debug("Update channels for tracker from message: {}", trackerId, message);
+    private void updateBaseChannels(LocationMessage message) {
+        logger.debug("Update base channels for tracker {} from message: {}", trackerId, message);
         DateTimeType timestamp = message.getTimestamp();
         if (timestamp != null) {
             updateState(CHANNEL_LAST_REPORT, timestamp);
             logger.trace("{} -> {}", CHANNEL_LAST_REPORT, timestamp);
         }
 
-        PointType newLocation = message.getPoint();
+        PointType newLocation = message.getTrackerLocation();
         if (newLocation != null) {
             updateState(CHANNEL_LOCATION, newLocation);
             logger.trace("{} -> {}", CHANNEL_LOCATION, newLocation);
@@ -221,30 +175,42 @@ public class TrackerHandler extends BaseThingHandler implements TrackerRecorder 
             updateState(CHANNEL_BATTERY_LEVEL, batteryLevel);
             logger.trace("{} -> {}", CHANNEL_BATTERY_LEVEL, batteryLevel);
         }
-
-        return newLocation;
     }
 
-    @Override
-    public void updateLocation(Location lm) {
+    /**
+     * Location message handling.
+     *
+     * @param lm Location message
+     */
+    public void updateLocation(LocationMessage lm) {
         updateStatus(ThingStatus.ONLINE);
-        updateRegionChannelsWithLocation(lm);
+        updateChannelsWithLocation(lm);
         notificationBroker.sendNotification(lm);
     }
 
-    @Override
-    public void doTransition(Transition tm) {
+    /**
+     * Transition message handling
+     *
+     * @param tm Transition message
+     */
+    public void doTransition(TransitionMessage tm) {
         updateStatus(ThingStatus.ONLINE);
         String regionName = tm.getRegionName();
-        logger.debug("External region event received: {}", regionName);
+        logger.debug("Region transition event received: {}", regionName);
+        regions.add(regionName);
 
+        updateChannelsWithLocation(tm);
         updateTriggerChannelsWithTransition(tm);
-        updateBaseChannels(tm);
+
         notificationBroker.sendNotification(tm);
     }
 
-    @Override
-    public List<AbstractBaseMessage> getNotifications() {
+    /**
+     * Get notification to return to the tracker (supported by OwnTracks only)
+     *
+     * @return List of notifications received from other trackers
+     */
+    public List<LocationMessage> getNotifications() {
         return notificationHandler.getNotifications();
     }
 }

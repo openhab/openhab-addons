@@ -4,23 +4,18 @@
 		xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
 		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
 		http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
-	<config-description uri="thing-type:gpstracker:tracker">
-		<parameter name="trackerId" type="text" required="true">
-			<label>Tracker Id</label>
-			<description>Id configured in tracker application.</description>
+	<config-description uri="profile:gpstracker:triggerPresenceSwitch">
+		<parameter name="regionName" type="text" required="true">
+			<label>Region Name</label>
+			<description>Region name to trigger the switch</description>
 			<advanced>false</advanced>
 		</parameter>
 	</config-description>
-	<config-description uri="channel-type:gpstracker:distance">
-		<parameter name="regionName" type="text" required="true">
-			<label>Region Name</label>
-			<description>Name of the region</description>
-			<advanced>false</advanced>
-		</parameter>
-		<parameter name="regionCenterLocation" type="text" required="true">
-			<context>location</context>
-			<label>Region Center</label>
-			<description>Location of the region center</description>
+	<config-description uri="profile:gpstracker:distancePresenceSwitch">
+		<parameter name="regionRadius" type="integer" required="true">
+			<label>Region Radius</label>
+			<description>Region circle radius</description>
+			<default>100</default>
 			<advanced>false</advanced>
 		</parameter>
 	</config-description>

@@ -23,27 +23,27 @@ public class NotificationHandler {
      * Location notifications need to be sent to the own tracker. Only the last location is saved for each tracker
      * in the group.
      */
-    private Map<String, Location> locationNotifications = new HashMap<>();
+    private Map<String, LocationMessage> locationNotifications = new HashMap<>();
 
     /**
-     * Transition notification to send out to the own tracker. Notifications are saved in order they were received.
+     * TransitionMessage notification to send out to the own tracker. Notifications are saved in order they were received.
      */
-    private Map<String, List<Transition>> transitionNotifications = new HashMap<>();
+    private Map<String, List<TransitionMessage>> transitionNotifications = new HashMap<>();
 
     /**
      * Handling notification sent by other trackers.
      *
      * @param msg Notification message.
      */
-    void handleNotification(AbstractBaseMessage msg) {
+    public void handleNotification(LocationMessage msg) {
         synchronized (this) {
             String trackerId = msg.getTrackerId();
-            if (msg instanceof Location) {
-                locationNotifications.put(trackerId, (Location) msg);
-            } else {
-                List<Transition> transitions = transitionNotifications
+            if (msg instanceof TransitionMessage) {
+                List<TransitionMessage> transitionMessages = transitionNotifications
                         .computeIfAbsent(trackerId, k -> new ArrayList<>());
-                transitions.add((Transition) msg);
+                transitionMessages.add((TransitionMessage) msg);
+            } else {
+                locationNotifications.put(trackerId, msg);
             }
         }
     }
@@ -53,8 +53,8 @@ public class NotificationHandler {
      *
      * @return List of notification messages from friend trackers need to sent out
      */
-    public List<AbstractBaseMessage> getNotifications() {
-        List<AbstractBaseMessage> ret;
+    public List<LocationMessage> getNotifications() {
+        List<LocationMessage> ret;
         synchronized (this) {
             ret = new ArrayList<>(locationNotifications.values());
             transitionNotifications.values().forEach(ret::addAll);

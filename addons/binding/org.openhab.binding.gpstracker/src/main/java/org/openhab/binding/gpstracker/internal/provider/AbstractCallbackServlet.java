@@ -8,23 +8,20 @@
  */
 package org.openhab.binding.gpstracker.internal.provider;
 
-import java.io.BufferedReader;
-import java.util.Collections;
-import java.util.List;
+import org.openhab.binding.gpstracker.internal.discovery.TrackerDiscoveryService;
+import org.openhab.binding.gpstracker.internal.handler.TrackerHandler;
+import org.openhab.binding.gpstracker.internal.message.LocationMessage;
+import org.openhab.binding.gpstracker.internal.message.MessageUtil;
+import org.openhab.binding.gpstracker.internal.message.TransitionMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.openhab.binding.gpstracker.internal.discovery.TrackerDiscoveryService;
-import org.openhab.binding.gpstracker.internal.handler.TrackerHandler;
-import org.openhab.binding.gpstracker.internal.handler.TrackerRecorder;
-import org.openhab.binding.gpstracker.internal.message.AbstractBaseMessage;
-import org.openhab.binding.gpstracker.internal.message.Location;
-import org.openhab.binding.gpstracker.internal.message.MessageUtil;
-import org.openhab.binding.gpstracker.internal.message.Transition;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.BufferedReader;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Abstract callback servlet used by the trackers.
@@ -89,16 +86,14 @@ public abstract class AbstractCallbackServlet extends HttpServlet {
             String json = jb.toString().replaceAll("\\p{Z}", "");
             logger.debug("Post message received from {} tracker: {}", getProvider(), json);
 
-            AbstractBaseMessage message = messageUtil.fromJson(json);
+            LocationMessage message = messageUtil.fromJson(json);
             if (message != null) {
-                List<? extends AbstractBaseMessage> response = processMessage(message);
+                List<? extends LocationMessage> response = processMessage(message);
                 if (response != null) {
                     resp.getWriter().append(messageUtil.toJson(response)).flush();
                 }
-                resp.setStatus(HttpServletResponse.SC_OK);
-            } else {
-                resp.setStatus(HttpServletResponse.SC_OK);
             }
+            resp.setStatus(HttpServletResponse.SC_OK);
         } catch (Exception e) {
             logger.error("Error processing location report:", e);
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -112,17 +107,16 @@ public abstract class AbstractCallbackServlet extends HttpServlet {
      * @param message The message
      * @return Response message.
      */
-    private List<? extends AbstractBaseMessage> processMessage(AbstractBaseMessage message) {
+    private List<? extends LocationMessage> processMessage(LocationMessage message) {
         String trackerId = message.getTrackerId();
         if (trackerId != null) {
-            TrackerRecorder recorder = getHandlerById(trackerId);
+            TrackerHandler recorder = getHandlerById(trackerId);
             if (recorder != null) {
-                if (message instanceof Location) {
-                    Location lm = (Location) message;
-                    recorder.updateLocation(lm);
-                } else if (message instanceof Transition) {
-                    Transition tm = (Transition) message;
+                if (message instanceof TransitionMessage) {
+                    TransitionMessage tm = (TransitionMessage) message;
                     recorder.doTransition(tm);
+                } else {
+                    recorder.updateLocation(message);
                 }
                 return recorder.getNotifications();
             } else {
@@ -140,7 +134,7 @@ public abstract class AbstractCallbackServlet extends HttpServlet {
      * @param trackerId Tracker id.
      * @return Handler for tracker.
      */
-    private TrackerRecorder getHandlerById(String trackerId) {
+    private TrackerHandler getHandlerById(String trackerId) {
         if (trackerId != null) {
             TrackerHandler handler = trackerRegistry.getTrackerHandler(trackerId);
             if (handler == null) {

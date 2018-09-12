@@ -30,11 +30,11 @@ public class MessageUtil {
     /**
      * Supported message types
      */
-    private static final Map<String, Class<? extends AbstractBaseMessage>> MESSAGE_TYPES = new HashMap<>();
+    private static final Map<String, Class<? extends LocationMessage>> MESSAGE_TYPES = new HashMap<>();
 
     static {
-        MESSAGE_TYPES.put(PATTERNS[0], Transition.class);
-        MESSAGE_TYPES.put(PATTERNS[1], Location.class);
+        MESSAGE_TYPES.put(PATTERNS[0], TransitionMessage.class);
+        MESSAGE_TYPES.put(PATTERNS[1], LocationMessage.class);
     }
 
     private final Gson gson = new Gson();
@@ -45,9 +45,9 @@ public class MessageUtil {
      * @param json JSON string.
      * @return Parsed message POJO or null without pattern match
      */
-    public AbstractBaseMessage fromJson(String json) {
+    public LocationMessage fromJson(String json) {
         for (String pattern : PATTERNS) {
-            Class<? extends AbstractBaseMessage> c = MESSAGE_TYPES.get(pattern);
+            Class<? extends LocationMessage> c = MESSAGE_TYPES.get(pattern);
             if (json.matches(pattern)) {
                 return gson.fromJson(json, c);
             }

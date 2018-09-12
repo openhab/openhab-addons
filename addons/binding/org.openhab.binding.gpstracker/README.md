@@ -1,7 +1,6 @@
 # GPSTracker Binding
 
-This binding allows you to connect mobile GPS tracking applications to an openHAB installation and detect 
-presence based on GPS location reports. 
+This binding allows you to connect mobile GPS tracker applications to openHAB and process GPS location reports. 
 Currently two applications are supported:
 
 * [OwnTracks](https://owntracks.org/booklet/) - iOS, Android
@@ -16,47 +15,7 @@ The binding can process two message types received from trackers:
 * **Location** - This is a simple location report with coordinates extended with some extra information about the tracker (e.g. tracker device battery level). [OwnTracks, GPSLogger]
 * **Transition** - This report is based on regions defined in tracker application. A message is sent every time the tracker enters or leaves a region. [OwnTracks only]
 
-## Regions
-
-Regions are predefined waypoints with a center location and a radius. 
-The binding defines two region types:
-
-* **External** - region is defined in tracker application. 
-These regions are usually user specific (e.g. family members can have their own waypoints like school or work) and the tracker is responsible to send transition messages related to external regions. [supported by OwnTracks]
-* **Internal** - defined centrally in the binding config which regions are shared between all users connected to the openHAB installation. For these regions it is the binding's responsibility to fire the entering or leaving events (the distance of the tracker is calculated after each location report). The best example for this region type is Home. The openHAB installation location can be set on **System/Regional Settings** configuration screen. This location is interpreted by the binding as the **primary region**. [supported by both OwnTracks and GPSLogger]
-
 ## Configuration
-
-### Binding in openHAB
-
-After installing the binding the main configuration task is to define the **Internal** regions. 
-There is one primary region which is the location of the openHAB installation.
-Details for the primary region can be defined on binding's configuration dialog while additional internal regions can be defined in advanced JSON field.
-
-Parameter | Type | Description | Default value
-:--- |:---|:---|:---
-Name | String | Region name
-Location | Location | Region center defined by System/Regional Settings |
-Radius | Integer | Radius of the region circle in meters. The value should be set based on the tracker application used and its settings (location update interval and displacement) | 100m
-Additional region definitions | JSON String | 
-
-Example for additional region definition (parameters are the same as for the primary region above):
-
- ```
- [
-    {
-        "name": "ExtraRegion1",
-        "location": "xx.xxxx,yy.yyyy",
-        "radius": 100
-    },
-    {
-        "name": "ExtraRegion2",
-        "location": "xx.xxxx,yy.yyyy",
-        "radius": 100
-    },
-    ...
- ]
- ```
 
 ### OwnTracks
 
@@ -118,40 +77,70 @@ It is possible to define things manually or to use the discovery feature of the 
 An important detail for both methods is that a tracker is identified by a **tracker id** configured on mobile devices. 
 Make sure these tracker ids are unique in group of trackers connected to a single openHAB instance.
 
-#### Manual setup
-
-```
-//phones
-Thing gpstracker:tracker:1   "XY tracker" [trackerId="XY"]
-Thing gpstracker:tracker:2   "PQ tracker" [trackerId="PQ"]
-...
-```
-
 #### Discovery
 
 If the things are not defined in **.things** files the first time the tracker sends a GPS log record the binding recognizes it as new tracker and inserts an entry into the Inbox as new tracker with name **GPS Tracker ??**.
 
 ### Channels
 
-The binding creates dynamic channels based on the configuration for internal regions only:
-
-* **Region presence channels** - ON state of the switch channels indicate the presence within region radius. Dynamic channel id format for these channels is **regionPresence_%regionId%**.
-* **Distance** - Distance from region center is calculated after every location report received. Dynamic channel id format for these channels is **distance_%regionId%**.
-
-Static channels provided by the tracker things:
+Basic channels provided by the tracker things:
 
 * **Location** - Current location of the tracker
 * **Last Report** - Timestamp of the last location report
 * **Battery Level** - Battery level of the device running the tracker application
-* **Region trigger channel** - Used by external regions only. Event is fired with payload of the region name when the binding receives a **transition** log record. Payload is prefixed with `>` for entering and with `<` for leaving events.
+* **Region trigger channel** - Used by regions defined in tracker application. Event is fired with payload of the region name when the binding receives a **transition** log record. Payload is suffixed with `/enter` for entering and with `/leave` for leaving events.
+
+#### Distance calculation
+
+Tracker thing can be extended with **Distance** channels if a distance calculation is needed for a region. 
+These dynamic channels require the following parameters:
+
+| Parameter | Type |Description |
+| --- | --- | --- |
+| Region Name | String | Region name. If the region is configured in the tracker app as well use the same name. Distance channels can also be defined as binding only regions (not configured in trackers) | 
+| Region center | Location | Region center location |
+
+Distance values will be updated each time a GPS log record is received from the tracker.
+
+#### Presence switch items
+
+Switch type items can be linked to **regionTrigger** and **regionDistance** channels with the flolwing parameters:
+
+| Channel | Parameter | Type |Description |
+| --- | --- | --- | --- |
+| Region Trigger | Region Name | String | Region name which should be the same as used in the tracker application |
+| Region Distance | Region Circle Radius | Number | Region radius |
+
+Each time the **Region Trigger** channel is triggered by an entering transition message the binding turns ON the linked switch and turns if OFF in case the region is left.
+For distance channels if the distance is less than the preset radius for the link the binding turns ON the switch and turns it OFF otherwise.
+ 
+## Manual Configuration
+
+### Things
 
 ```
-Number		distanceEX	"Distance [%.2f km]"	{channel="gpstracker:tracker:1:distance"}
-Switch		atWorkEX	"EX @ Work"		{channel="gpstracker:tracker:1:regionPresence_Work"}
-Switch		atHomeEX	"EX @ Home"		{channel="gpstracker:tracker:1:regionPresence_Home"}
-Location	locationEX	"Location"		{channel="gpstracker:tracker:1:location"}
+//trackers
+Thing gpstracker:tracker:1   "XY tracker" [trackerId="XY"]
+Thing gpstracker:tracker:EX   "EX tracker" [trackerId="EX"] 
+
+//TODO
+Example for manual distance channel definition
+...
+```
+
+### Items
+
+```
+//items for basic channels
+Location	locationEX	"Location"		{channel="gpstracker:tracker:1:lastLocation"}
 DateTime	lastSeenEX	"Last seen"		{channel="gpstracker:tracker:1:lastReport"}
 Number		batteryEX	"Battery level"		{channel="gpstracker:tracker:1:batteryLevel"}
+
+//linking to the trigger channel
+Switch atWorkEX "Work presence" {channel="gpstracker:tracker:EX:regionTrigger", profile="gpstracker:triggerPresenceSwitch", regionName="Work"}
+
+//linking to the distance channel
+Switch atHomeEX "Home presence" {channel="gpstracker:tracker:EX:regionDistance", profile="gpstracker:distancePresenceSwitch", regionRadius="100"}
 ```
 
 ### Sitemaps

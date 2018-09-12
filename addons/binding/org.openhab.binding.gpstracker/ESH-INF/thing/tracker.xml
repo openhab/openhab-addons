@@ -4,34 +4,33 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 	<!-- Thing Types -->
-	<thing-type id="tracker">
+	<thing-type id="tracker" extensible="regionDistance">
 		<label>Tracker Device</label>
 		<description>Device running tracker application</description>
+
 		<channels>
-			<channel id="lastReport" typeId="lastReport"/>
-			<channel id="location" typeId="system.location"/>
+			<channel id="lastLocation" typeId="system.location"/>
 			<channel id="batteryLevel" typeId="system.battery-level"/>
 			<channel id="regionTrigger" typeId="regionTrigger"/>
+			<channel id="lastReport" typeId="lastReport"/>
 		</channels>
+
 		<config-description-ref uri="thing-type:gpstracker:tracker"/>
 	</thing-type>
+	
 	<!-- Channel Types -->
+	<channel-type id="regionDistance">
+		<item-type>Number:Length</item-type>
+		<label>Distance</label>
+		<description>Distance from region</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+		<config-description-ref uri="channel-type:gpstracker:distance"/>
+	</channel-type>
 	<channel-type id="lastReport">
 		<item-type>DateTime</item-type>
 		<label>Last Seen</label>
 		<description>Last report timestamp</description>
 		<state pattern="%1$tF %1$tR" readOnly="true"/>
-	</channel-type>
-	<channel-type id="distance">
-		<item-type>Number:Length</item-type>
-		<label>Distance</label>
-		<description>Distance from primary location</description>
-		<state pattern="%.2f %unit%" readOnly="true"/>
-	</channel-type>
-	<channel-type id="regionPresence">
-		<item-type>Switch</item-type>
-		<label>Region Switch</label>
-		<description>Shows if the device is at this location</description>
 	</channel-type>
 	<channel-type id="regionTrigger">
 		<kind>trigger</kind>

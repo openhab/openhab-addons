@@ -19,52 +19,46 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 
 /**
- * Common part of tracker messages.
+ * The {@link LocationMessage} is a POJO for location messages sent bz trackers.
  *
  * @author Gabor Bicskei - Initial contribution
  */
-public abstract class AbstractBaseMessage {
+public class LocationMessage {
     /**
      * Message type
      */
     @SerializedName("_type")
-    String type;
+    private String type;
 
     /**
      * Tracker ID used to display the initials of a user (iOS,Android/string/optional) required for http mode
      */
     @SerializedName("tid")
-    String trackerId;
+    private String trackerId;
 
     /**
      * Latitude (iOS, Android/float/meters/required)
      */
     @SerializedName("lat")
-    BigDecimal latitude;
+    private BigDecimal latitude;
 
     /**
      * Longitude (iOS,Android/float/meters/required)
      */
     @SerializedName("lon")
-    BigDecimal longitude;
-
-    /**
-     *  Accuracy of the reported location in meters without unit (iOS,Android/integer/meters/optional)
-     */
-    @SerializedName("acc")
-    BigDecimal accuracy;
+    private BigDecimal longitude;
 
     /**
      * Battery level (iOS,Android/integer/percent/optional)
      */
     @SerializedName("batt")
-    Integer batteryLevel;
+    private Integer batteryLevel;
 
     /**
      * Timestamp at which the event occurred (iOS,Android/integer/epoch/required)
      */
     @SerializedName("tst")
-    Long timestampMillis;
+    private Long timestampMillis;
 
     public String getTrackerId() {
         return trackerId.replaceAll("[^a-zA-Z0-9_]", "");
@@ -85,11 +79,11 @@ public abstract class AbstractBaseMessage {
     }
 
     /**
-     * Converts coordinates into PointType
+     * Converts tracker coordinates into PointType
      *
      * @return Conversion result
      */
-    public PointType getPoint() {
+    public PointType getTrackerLocation() {
         if (latitude != null && longitude != null) {
             return new PointType(new DecimalType(latitude), new DecimalType(longitude));
         }
