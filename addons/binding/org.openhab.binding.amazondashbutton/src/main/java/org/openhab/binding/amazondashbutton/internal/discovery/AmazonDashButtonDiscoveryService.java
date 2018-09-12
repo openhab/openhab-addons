@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.amazondashbutton.internal.discovery;
 
-import static org.openhab.binding.amazondashbutton.AmazonDashButtonBindingConstants.*;
+import static org.openhab.binding.amazondashbutton.internal.AmazonDashButtonBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.util.Collections;
