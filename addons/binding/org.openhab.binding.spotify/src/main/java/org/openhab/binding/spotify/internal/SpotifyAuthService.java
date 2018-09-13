@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.spotify.internal;
 
-import static org.openhab.binding.spotify.SpotifyBindingConstants.*;
+import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.*;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

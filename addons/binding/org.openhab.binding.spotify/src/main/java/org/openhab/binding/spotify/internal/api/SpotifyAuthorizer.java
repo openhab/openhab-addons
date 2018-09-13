@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.spotify.internal.api;
 
-import static org.openhab.binding.spotify.SpotifyBindingConstants.*;
+import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.*;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;

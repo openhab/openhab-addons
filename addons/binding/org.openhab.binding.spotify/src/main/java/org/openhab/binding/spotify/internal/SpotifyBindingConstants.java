@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.spotify;
+package org.openhab.binding.spotify.internal;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;

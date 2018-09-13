@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.spotify.internal.discovery;
 
-import static org.openhab.binding.spotify.SpotifyBindingConstants.*;
+import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.*;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,8 +26,8 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.spotify.SpotifyBindingConstants;
 import org.openhab.binding.spotify.internal.SpotifyAccountHandler;
+import org.openhab.binding.spotify.internal.SpotifyBindingConstants;
 import org.openhab.binding.spotify.internal.api.model.Device;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

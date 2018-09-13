@@ -9,7 +9,7 @@
 package org.openhab.binding.spotify.internal.api;
 
 import static org.eclipse.jetty.http.HttpMethod.*;
-import static org.openhab.binding.spotify.SpotifyBindingConstants.*;
+import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.*;
 
 import java.util.Collections;
 import java.util.List;

@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.spotify.internal;
 
-import static org.openhab.binding.spotify.SpotifyBindingConstants.*;
+import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -19,8 +19,8 @@ import org.eclipse.smarthome.core.library.types.PlayPauseType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.spotify.handler.SpotifyDeviceHandler;
 import org.openhab.binding.spotify.internal.api.SpotifyApi;
+import org.openhab.binding.spotify.internal.handler.SpotifyDeviceHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

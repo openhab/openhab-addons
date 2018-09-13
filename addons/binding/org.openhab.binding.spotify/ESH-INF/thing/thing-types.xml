@@ -11,7 +11,7 @@
 		<label>Spotify Player Bridge</label>
 		<description>Bridge representing the Spotify Player in the context of a user account. The bridge is associated with
 one specific Spotify account. If you want to control your devices in the context of different accounts you have to
-register a bridge for each account.</description>
+register a bridge for each account. Go to http://your openHAB address::8080/connectspotify to authorize.</description>
 
 		<channels>
 			<channel id="accessToken" typeId="accessToken" />
