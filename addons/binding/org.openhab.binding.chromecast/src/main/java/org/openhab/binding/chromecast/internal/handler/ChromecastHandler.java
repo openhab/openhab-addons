@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.chromecast.handler;
+package org.openhab.binding.chromecast.internal.handler;
 
-import static org.openhab.binding.chromecast.ChromecastBindingConstants.*;
+import static org.openhab.binding.chromecast.internal.ChromecastBindingConstants.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
