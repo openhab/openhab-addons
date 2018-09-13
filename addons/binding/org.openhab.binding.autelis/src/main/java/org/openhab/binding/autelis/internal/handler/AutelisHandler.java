@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.autelis.handler;
+package org.openhab.binding.autelis.internal.handler;
 
 import java.io.StringReader;
 import java.util.Collections;
@@ -45,7 +45,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.autelis.AutelisBindingConstants;
+import org.openhab.binding.autelis.internal.AutelisBindingConstants;
 import org.openhab.binding.autelis.internal.config.AutelisConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
