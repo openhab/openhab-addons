@@ -30,17 +30,12 @@ public abstract class GPSTrackerBindingConstants {
     //channels
     public static final String CHANNEL_REGION_TRIGGER = "regionTrigger";
     public static final String CHANNEL_LAST_REPORT = "lastReport";
-    public static final String CHANNEL_LOCATION = "location";
+    public static final String CHANNEL_LAST_LOCATION = "lastLocation";
     public static final String CHANNEL_BATTERY_LEVEL = "batteryLevel";
     private static final String CHANNEL_REGION_DISTANCE = "regionDistance";
 
     public static final ChannelTypeUID CHANNEL_TYPE_DISTANCE = new ChannelTypeUID(BINDING_ID, CHANNEL_REGION_DISTANCE);
     public static final ChannelTypeUID CHANNEL_TYPE_REGION = new ChannelTypeUID(BINDING_ID, CHANNEL_REGION_TRIGGER);
-
-    //config
-    public static final String CONFIG_TRACKER_ID = "trackerId";
-    public static final String CONFIG_REGION_NAME = "regionName";
-    public static final String CONFIG_REGION_RADIUS = "regionRadius";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream.of(THING_TYPE_TRACKER).collect(Collectors.toSet());
 }

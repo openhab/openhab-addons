@@ -15,10 +15,9 @@ import org.eclipse.smarthome.core.thing.profiles.ProfileContext;
 import org.eclipse.smarthome.core.thing.profiles.ProfileTypeUID;
 import org.eclipse.smarthome.core.thing.profiles.TriggerProfile;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.gpstracker.internal.config.ConfigHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.openhab.binding.gpstracker.internal.GPSTrackerBindingConstants.CONFIG_REGION_NAME;
 
 /**
  * The {@link GPSTrackerTriggerSwitchProfile} class implements the behavior when being linked to a Switch item.
@@ -50,7 +49,7 @@ public class GPSTrackerTriggerSwitchProfile implements TriggerProfile {
      */
     GPSTrackerTriggerSwitchProfile(ProfileCallback callback, ProfileContext context) {
         this.callback = callback;
-        this.regionName = (String) context.getConfiguration().get(CONFIG_REGION_NAME);
+        this.regionName = ConfigHelper.getRegionName(context.getConfiguration());
         logger.debug("Trigger switch profile created for region {}", regionName);
     }
 

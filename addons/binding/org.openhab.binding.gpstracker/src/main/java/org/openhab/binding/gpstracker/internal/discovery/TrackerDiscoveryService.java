@@ -8,13 +8,6 @@
  */
 package org.openhab.binding.gpstracker.internal.discovery;
 
-import static org.openhab.binding.gpstracker.internal.GPSTrackerBindingConstants.CONFIG_TRACKER_ID;
-
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
@@ -23,18 +16,26 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.gpstracker.internal.GPSTrackerBindingConstants;
+import org.openhab.binding.gpstracker.internal.config.ConfigHelper;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
 
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 /**
- * The {@link TrackerDiscoveryService} class provides discovery service for the binding to discover trackers.
+ * The {@link TrackerDiscoveryService} class provides discovery service for the binding to discover trackers. Discovery
+ * process is initiated by the tracker by sending a GPS log record. Based on the tracker id received in thin record an
+ * entry is created in the Inbox for the thing representing the tracker.
  *
  * @author Gabor Bicskei - Initial contribution
  */
 @NonNullByDefault
-@Component(service = { DiscoveryService.class, TrackerDiscoveryService.class }, immediate = true, configurationPid = "discovery.gsptracker")
+@Component(service = { DiscoveryService.class, TrackerDiscoveryService.class }, immediate = true, configurationPid = "discovery.gpstracker")
 public class TrackerDiscoveryService extends AbstractDiscoveryService {
     /**
      * Discovery timeout
@@ -56,7 +57,7 @@ public class TrackerDiscoveryService extends AbstractDiscoveryService {
     }
 
     /**
-     * Called when the source tracker is not registered as a thing. These undiscovered tracker will be registered by
+     * Called when the source tracker is not registered as a thing. These undiscovered trackers will be registered by
      * the discovery service.
      *
      * @param trackerId Tracker id.
@@ -68,12 +69,13 @@ public class TrackerDiscoveryService extends AbstractDiscoveryService {
         }
     }
 
+    /**
+     * Unregister the tracker after the thing handles is created.
+     *
+     * @param trackerId Tracker id to unregister
+     */
     public void removeTracker(String trackerId) {
         trackersToDiscover.remove(trackerId);
-    }
-
-    private String getTrackerLabel(String trackerId) {
-        return String.format("GPS Tracker %s", trackerId);
     }
 
     @Override
@@ -81,10 +83,15 @@ public class TrackerDiscoveryService extends AbstractDiscoveryService {
         trackersToDiscover.forEach(this::createDiscoveryResult);
     }
 
+    /**
+     * Create discovery result form the tracker id.
+     *
+     * @param trackerId Tracker id.
+     */
     private void createDiscoveryResult(String trackerId) {
         ThingUID id = new ThingUID(GPSTrackerBindingConstants.THING_TYPE_TRACKER, trackerId);
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(id).withLabel(getTrackerLabel(trackerId))
-                .withProperty(CONFIG_TRACKER_ID, trackerId).build();
+        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(id)
+                .withProperty(ConfigHelper.CONFIG_TRACKER_ID, trackerId).build();
         this.thingDiscovered(discoveryResult);
     }
 

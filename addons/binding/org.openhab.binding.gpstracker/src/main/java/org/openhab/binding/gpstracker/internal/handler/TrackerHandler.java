@@ -21,7 +21,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.gpstracker.internal.config.Region;
+import org.openhab.binding.gpstracker.internal.config.ConfigHelper;
 import org.openhab.binding.gpstracker.internal.message.LocationMessage;
 import org.openhab.binding.gpstracker.internal.message.NotificationBroker;
 import org.openhab.binding.gpstracker.internal.message.NotificationHandler;
@@ -70,7 +70,7 @@ public class TrackerHandler extends BaseThingHandler {
     private Map<String, Channel> distanceChannelMap = new HashMap<>();
 
     /**
-     * All regions
+     * Set of all regions referenced by distance channels and extended by the received transition messages.
      */
     private Set<String> regions;
 
@@ -88,12 +88,17 @@ public class TrackerHandler extends BaseThingHandler {
         this.notificationHandler = new NotificationHandler();
         this.regions = regions;
 
-        trackerId = (String) thing.getConfiguration().get(CONFIG_TRACKER_ID);
+        trackerId = ConfigHelper.getTrackerId(thing.getConfiguration());
         notificationBroker.registerHandler(trackerId, notificationHandler);
 
         logger.debug("Tracker handler created: {}", trackerId);
     }
 
+    /**
+     * Returns tracker id configuration of the thing.
+     *
+     * @return Tracker id
+     */
     public String getTrackerId() {
         return trackerId;
     }
@@ -104,10 +109,14 @@ public class TrackerHandler extends BaseThingHandler {
         updateStatus(ThingStatus.ONLINE);
     }
 
+    /**
+     * Create a map of all configured distance channels to handle channel updates easily.
+     */
     private void mapDistanceChannels() {
         distanceChannelMap = thing.getChannels().stream()
                 .filter(c -> CHANNEL_TYPE_DISTANCE.equals(c.getChannelTypeUID()))
-                .collect(Collectors.toMap(c -> (String) c.getConfiguration().get(CONFIG_REGION_NAME), Function.identity()));
+                .collect(Collectors.toMap(c -> ConfigHelper.getRegionName(c.getConfiguration()), Function.identity()));
+        //register the collected regions
         regions.addAll(distanceChannelMap.keySet());
     }
 
@@ -117,7 +126,7 @@ public class TrackerHandler extends BaseThingHandler {
     }
 
     /**
-     * If the message is a transition report update the affected trigger channels
+     * Handle transition messages by firing the trigger channel with regionName/event payload.
      *
      * @param message TransitionMessage message.
      */
@@ -129,7 +138,7 @@ public class TrackerHandler extends BaseThingHandler {
     }
 
     /**
-     * Update distance channels with new location.
+     * Update state channels from location message. This includes basic channel updates and recalculations of all distances.
      *
      * @param message Message.
      */
@@ -140,19 +149,18 @@ public class TrackerHandler extends BaseThingHandler {
         logger.debug("Updating distance channels tracker {}", trackerId);
         distanceChannelMap.values()
                 .forEach(c -> {
-                    Region r = c.getConfiguration().as(Region.class);
-
-                    PointType center = r.getLocation();
+                    PointType center = ConfigHelper.getRegionCenterLocation(c.getConfiguration());
                     PointType newLocation = message.getTrackerLocation();
-
-                    double newDistance = newLocation.distanceFrom(center).doubleValue();
-                    updateState(c.getUID(), new QuantityType<>(newDistance / 1000, MetricPrefix.KILO(SIUnits.METRE)));
-                    logger.trace("Region center distance from tracker location {} is {}m", newLocation.toString(), newDistance);
+                    if (center != null) {
+                        double newDistance = newLocation.distanceFrom(center).doubleValue();
+                        updateState(c.getUID(), new QuantityType<>(newDistance / 1000, MetricPrefix.KILO(SIUnits.METRE)));
+                        logger.trace("Region center distance from tracker location {} is {}m", newLocation.toString(), newDistance);
+                    }
                 });
     }
 
     /**
-     * Update base channels: battery, location, last report
+     * Update basic channels: batteryLevel, lastLocation, lastReport
      *
      * @param message Received message.
      */
@@ -166,8 +174,8 @@ public class TrackerHandler extends BaseThingHandler {
 
         PointType newLocation = message.getTrackerLocation();
         if (newLocation != null) {
-            updateState(CHANNEL_LOCATION, newLocation);
-            logger.trace("{} -> {}", CHANNEL_LOCATION, newLocation);
+            updateState(CHANNEL_LAST_LOCATION, newLocation);
+            logger.trace("{} -> {}", CHANNEL_LAST_LOCATION, newLocation);
         }
 
         DecimalType batteryLevel = message.getBatteryLevel();
@@ -196,7 +204,7 @@ public class TrackerHandler extends BaseThingHandler {
     public void doTransition(TransitionMessage tm) {
         updateStatus(ThingStatus.ONLINE);
         String regionName = tm.getRegionName();
-        logger.debug("Region transition event received: {}", regionName);
+        logger.debug("ConfigHelper transition event received: {}", regionName);
         regions.add(regionName);
 
         updateChannelsWithLocation(tm);

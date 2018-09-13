@@ -17,12 +17,9 @@ import org.eclipse.smarthome.core.thing.profiles.ProfileTypeUID;
 import org.eclipse.smarthome.core.thing.profiles.StateProfile;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.gpstracker.internal.config.ConfigHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.math.BigDecimal;
-
-import static org.openhab.binding.gpstracker.internal.GPSTrackerBindingConstants.CONFIG_REGION_RADIUS;
 
 /**
  * The {@link GPSTrackerDistanceSwitchProfile} class implements the behavior when being linked to a Switch item.
@@ -54,7 +51,7 @@ public class GPSTrackerDistanceSwitchProfile implements StateProfile {
      */
     GPSTrackerDistanceSwitchProfile(ProfileCallback callback, ProfileContext context) {
         this.callback = callback;
-        this.regionRadius = ((BigDecimal) context.getConfiguration().get(CONFIG_REGION_RADIUS)).intValue();
+        this.regionRadius = ConfigHelper.getRegionRadius(context.getConfiguration());
         logger.debug("Distance switch profile created for region with radius {}", regionRadius);
     }
 

@@ -15,6 +15,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.openhab.binding.gpstracker.internal.config.ConfigHelper;
 import org.openhab.binding.gpstracker.internal.discovery.TrackerDiscoveryService;
 import org.openhab.binding.gpstracker.internal.handler.TrackerHandler;
 import org.openhab.binding.gpstracker.internal.message.NotificationBroker;
@@ -108,7 +109,7 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (GPSTrackerBindingConstants.THING_TYPE_TRACKER.equals(thingTypeUID)
-                && thing.getConfiguration().get(CONFIG_TRACKER_ID) != null) {
+                && ConfigHelper.getTrackerId(thing.getConfiguration()) != null) {
             TrackerHandler trackerHandler = new TrackerHandler(thing, notificationBroker, regions);
             discoveryService.removeTracker(trackerHandler.getTrackerId());
             trackerHandlers.put(trackerHandler.getTrackerId(), trackerHandler);
@@ -120,7 +121,7 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
 
     @Override
     protected void removeHandler(ThingHandler thingHandler) {
-        String trackerId = (String) thingHandler.getThing().getConfiguration().get(CONFIG_TRACKER_ID);
+        String trackerId = ConfigHelper.getTrackerId(thingHandler.getThing().getConfiguration());
         trackerHandlers.remove(trackerId);
     }
 
@@ -169,7 +170,7 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
 
     @Override
     public Collection<ParameterOption> getParameterOptions(URI uri, String param, Locale locale) {
-        if (URI_STR.equals(uri.toString()) && CONFIG_REGION_NAME.equals(param)) {
+        if (URI_STR.equals(uri.toString()) && ConfigHelper.CONFIG_REGION_NAME.equals(param)) {
             Set<ParameterOption> ret = new HashSet<>();
             regions.forEach(r->ret.add(new ParameterOption(r, r)));
             return ret;
