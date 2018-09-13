@@ -12,6 +12,7 @@ import static org.eclipse.smarthome.core.library.unit.SIUnits.CELSIUS;
 import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
 import static org.openhab.binding.avmfritz.internal.BindingConstants.*;
 import static org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel.Etsiunitinfo.*;
+import static org.openhab.binding.avmfritz.internal.ahamodel.HeatingModel.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -51,9 +52,7 @@ import org.openhab.binding.avmfritz.internal.BindingConstants;
 import org.openhab.binding.avmfritz.internal.ahamodel.AVMFritzBaseModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.AlertModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel;
-import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel.Etsiunitinfo;
 import org.openhab.binding.avmfritz.internal.ahamodel.GroupModel;
-import org.openhab.binding.avmfritz.internal.ahamodel.HeatingModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.SwitchModel;
 import org.openhab.binding.avmfritz.internal.config.AVMFritzConfiguration;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaWebInterface;
@@ -255,13 +254,13 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
                     BigDecimal.ZERO.equals(device.getHkr().getDevicelock()) ? OpenClosedType.OPEN
                             : OpenClosedType.CLOSED);
             updateThingChannelState(thing, CHANNEL_ACTUALTEMP,
-                    new QuantityType<>(HeatingModel.toCelsius(device.getHkr().getTist()), CELSIUS));
+                    new QuantityType<>(toCelsius(device.getHkr().getTist()), CELSIUS));
             updateThingChannelState(thing, CHANNEL_SETTEMP,
-                    new QuantityType<>(HeatingModel.toCelsius(device.getHkr().getTsoll()), CELSIUS));
+                    new QuantityType<>(toCelsius(device.getHkr().getTsoll()), CELSIUS));
             updateThingChannelState(thing, CHANNEL_ECOTEMP,
-                    new QuantityType<>(HeatingModel.toCelsius(device.getHkr().getAbsenk()), CELSIUS));
+                    new QuantityType<>(toCelsius(device.getHkr().getAbsenk()), CELSIUS));
             updateThingChannelState(thing, CHANNEL_COMFORTTEMP,
-                    new QuantityType<>(HeatingModel.toCelsius(device.getHkr().getKomfort()), CELSIUS));
+                    new QuantityType<>(toCelsius(device.getHkr().getKomfort()), CELSIUS));
             updateThingChannelState(thing, CHANNEL_RADIATOR_MODE, new StringType(device.getHkr().getRadiatorMode()));
             if (device.getHkr().getNextchange() != null) {
                 if (device.getHkr().getNextchange().getEndperiod() == 0) {
@@ -272,11 +271,11 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
                                     Instant.ofEpochSecond(device.getHkr().getNextchange().getEndperiod()),
                                     ZoneId.systemDefault())));
                 }
-                if (HeatingModel.TEMP_FRITZ_UNDEFINED.equals(device.getHkr().getNextchange().getTchange())) {
+                if (TEMP_FRITZ_UNDEFINED.equals(device.getHkr().getNextchange().getTchange())) {
                     updateThingChannelState(thing, CHANNEL_NEXTTEMP, UnDefType.UNDEF);
                 } else {
-                    updateThingChannelState(thing, CHANNEL_NEXTTEMP, new QuantityType<>(
-                            HeatingModel.toCelsius(device.getHkr().getNextchange().getTchange()), CELSIUS));
+                    updateThingChannelState(thing, CHANNEL_NEXTTEMP,
+                            new QuantityType<>(toCelsius(device.getHkr().getNextchange().getTchange()), CELSIUS));
                 }
             }
             if (device.getHkr().getBattery() == null) {
@@ -288,7 +287,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
                 updateThingChannelState(thing, CHANNEL_BATTERY_LOW, UnDefType.UNDEF);
             } else {
                 updateThingChannelState(thing, CHANNEL_BATTERY_LOW,
-                        HeatingModel.BATTERY_ON.equals(device.getHkr().getBatterylow()) ? OnOffType.ON : OnOffType.OFF);
+                        BATTERY_ON.equals(device.getHkr().getBatterylow()) ? OnOffType.ON : OnOffType.OFF);
             }
         }
         if (device instanceof DeviceModel && device.isAlarmSensor() && ((DeviceModel) device).getAlert() != null) {
@@ -426,8 +425,6 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
                     return DEVICE_HAN_FUN_CONTACT;
                 case HAN_FUN_SWITCH_UNITTYPE:
                     return DEVICE_HAN_FUN_SWITCH;
-                case Etsiunitinfo.HAN_FUN_CONTACT_UNITTYPE:
-                    return DEVICE_HAN_FUN_CONTACT;
             }
         }
         return device.getProductName().replaceAll(INVALID_PATTERN, "_");
