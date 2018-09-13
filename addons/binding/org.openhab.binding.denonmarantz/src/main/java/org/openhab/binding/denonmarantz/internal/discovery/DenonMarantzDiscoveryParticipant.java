@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.denonmarantz.internal.discovery;
 
-import static org.openhab.binding.denonmarantz.DenonMarantzBindingConstants.THING_TYPE_AVR;
+import static org.openhab.binding.denonmarantz.internal.DenonMarantzBindingConstants.THING_TYPE_AVR;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,7 +25,7 @@ import org.eclipse.smarthome.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.denonmarantz.DenonMarantzBindingConstants;
+import org.openhab.binding.denonmarantz.internal.DenonMarantzBindingConstants;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.denonmarantz.handler;
+package org.openhab.binding.denonmarantz.internal.handler;
 
-import static org.openhab.binding.denonmarantz.DenonMarantzBindingConstants.*;
+import static org.openhab.binding.denonmarantz.internal.DenonMarantzBindingConstants.*;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -44,7 +44,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.denonmarantz.DenonMarantzBindingConstants;
+import org.openhab.binding.denonmarantz.internal.DenonMarantzBindingConstants;
 import org.openhab.binding.denonmarantz.internal.DenonMarantzState;
 import org.openhab.binding.denonmarantz.internal.DenonMarantzStateChangedListener;
 import org.openhab.binding.denonmarantz.internal.UnsupportedCommandTypeException;

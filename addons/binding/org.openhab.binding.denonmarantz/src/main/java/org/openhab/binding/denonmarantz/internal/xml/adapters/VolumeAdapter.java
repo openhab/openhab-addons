@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-import org.openhab.binding.denonmarantz.DenonMarantzBindingConstants;
+import org.openhab.binding.denonmarantz.internal.DenonMarantzBindingConstants;
 
 /**
  * Maps Denon volume values in db to percentage
