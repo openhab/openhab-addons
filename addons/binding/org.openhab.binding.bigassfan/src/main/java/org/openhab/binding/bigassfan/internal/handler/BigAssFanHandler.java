@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.bigassfan.handler;
+package org.openhab.binding.bigassfan.internal.handler;
 
-import static org.openhab.binding.bigassfan.BigAssFanBindingConstants.*;
+import static org.openhab.binding.bigassfan.internal.BigAssFanBindingConstants.*;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
