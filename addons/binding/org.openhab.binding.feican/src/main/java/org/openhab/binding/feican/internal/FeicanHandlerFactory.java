@@ -8,14 +8,14 @@
  */
 package org.openhab.binding.feican.internal;
 
-import static org.openhab.binding.feican.FeicanBindingConstants.*;
+import static org.openhab.binding.feican.internal.FeicanBindingConstants.*;
 
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.feican.handler.FeicanHandler;
+import org.openhab.binding.feican.internal.handler.FeicanHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**

@@ -16,10 +16,6 @@ Import-Package: org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.openhab.binding.feican,
- org.openhab.binding.feican.handler,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.feican,
- org.openhab.binding.feican.handler
 Bundle-ActivationPolicy: lazy
