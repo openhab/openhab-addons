@@ -6,14 +6,15 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.dscalarm.handler;
+package org.openhab.binding.dscalarm.internal.handler;
 
 /**
- * Enum class for the different DSC Alarm Protocol types.
+ * Enum class for the different bridge types.
  *
  * @author Russell Stephens - Initial Contribution
  */
-public enum DSCAlarmProtocol {
-    ENVISALINK_TPI,
-    IT100_API;
+public enum DSCAlarmBridgeType {
+    Envisalink,
+    IT100,
+    TCPServer;
 }

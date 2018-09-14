@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.dscalarm.internal.factory;
 
-import static org.openhab.binding.dscalarm.DSCAlarmBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+import static org.openhab.binding.dscalarm.internal.DSCAlarmBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -23,21 +23,21 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.dscalarm.DSCAlarmBindingConstants;
-import org.openhab.binding.dscalarm.handler.DSCAlarmBaseBridgeHandler;
-import org.openhab.binding.dscalarm.handler.EnvisalinkBridgeHandler;
-import org.openhab.binding.dscalarm.handler.IT100BridgeHandler;
-import org.openhab.binding.dscalarm.handler.KeypadThingHandler;
-import org.openhab.binding.dscalarm.handler.PanelThingHandler;
-import org.openhab.binding.dscalarm.handler.PartitionThingHandler;
-import org.openhab.binding.dscalarm.handler.TCPServerBridgeHandler;
-import org.openhab.binding.dscalarm.handler.ZoneThingHandler;
+import org.openhab.binding.dscalarm.internal.DSCAlarmBindingConstants;
 import org.openhab.binding.dscalarm.internal.config.DSCAlarmPartitionConfiguration;
 import org.openhab.binding.dscalarm.internal.config.DSCAlarmZoneConfiguration;
 import org.openhab.binding.dscalarm.internal.config.EnvisalinkBridgeConfiguration;
 import org.openhab.binding.dscalarm.internal.config.IT100BridgeConfiguration;
 import org.openhab.binding.dscalarm.internal.config.TCPServerBridgeConfiguration;
 import org.openhab.binding.dscalarm.internal.discovery.DSCAlarmDiscoveryService;
+import org.openhab.binding.dscalarm.internal.handler.DSCAlarmBaseBridgeHandler;
+import org.openhab.binding.dscalarm.internal.handler.EnvisalinkBridgeHandler;
+import org.openhab.binding.dscalarm.internal.handler.IT100BridgeHandler;
+import org.openhab.binding.dscalarm.internal.handler.KeypadThingHandler;
+import org.openhab.binding.dscalarm.internal.handler.PanelThingHandler;
+import org.openhab.binding.dscalarm.internal.handler.PartitionThingHandler;
+import org.openhab.binding.dscalarm.internal.handler.TCPServerBridgeHandler;
+import org.openhab.binding.dscalarm.internal.handler.ZoneThingHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;

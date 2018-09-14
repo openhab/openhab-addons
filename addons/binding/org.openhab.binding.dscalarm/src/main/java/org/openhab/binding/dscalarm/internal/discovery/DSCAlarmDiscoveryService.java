@@ -16,13 +16,13 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.dscalarm.DSCAlarmBindingConstants;
-import org.openhab.binding.dscalarm.handler.DSCAlarmBaseBridgeHandler;
-import org.openhab.binding.dscalarm.handler.DSCAlarmThingType;
+import org.openhab.binding.dscalarm.internal.DSCAlarmBindingConstants;
 import org.openhab.binding.dscalarm.internal.DSCAlarmEvent;
 import org.openhab.binding.dscalarm.internal.DSCAlarmMessage.DSCAlarmMessageInfoType;
 import org.openhab.binding.dscalarm.internal.config.DSCAlarmPartitionConfiguration;
 import org.openhab.binding.dscalarm.internal.config.DSCAlarmZoneConfiguration;
+import org.openhab.binding.dscalarm.internal.handler.DSCAlarmBaseBridgeHandler;
+import org.openhab.binding.dscalarm.internal.handler.DSCAlarmThingType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

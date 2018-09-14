@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.dscalarm.handler;
+package org.openhab.binding.dscalarm.internal.handler;
 
-import static org.openhab.binding.dscalarm.DSCAlarmBindingConstants.*;
+import static org.openhab.binding.dscalarm.internal.DSCAlarmBindingConstants.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
