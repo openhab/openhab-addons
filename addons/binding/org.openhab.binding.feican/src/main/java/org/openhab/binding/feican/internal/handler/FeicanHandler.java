@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.feican.handler;
+package org.openhab.binding.feican.internal.handler;
 
-import static org.openhab.binding.feican.FeicanBindingConstants.*;
+import static org.openhab.binding.feican.internal.FeicanBindingConstants.*;
 
 import java.io.IOException;
 import java.net.SocketException;
