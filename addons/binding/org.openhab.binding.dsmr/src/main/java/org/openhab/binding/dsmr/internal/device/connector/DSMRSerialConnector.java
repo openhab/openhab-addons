@@ -23,7 +23,7 @@ import org.eclipse.smarthome.io.transport.serial.SerialPortEventListener;
 import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
-import org.openhab.binding.dsmr.DSMRBindingConstants;
+import org.openhab.binding.dsmr.internal.DSMRBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
