@@ -47,8 +47,8 @@ public class BaseChannels extends AbstractChannels {
     /**
      * returns the matching channel, null if no match was found.
      *
-     * @param id
-     * @return
+     * @param channelCode the channelCode which identifies the channel
+     * @return channel which belongs to the code. might be null if there is no channel found.
      */
     @Override
     public Channel fromCode(String channelCode) {
@@ -123,11 +123,11 @@ public class BaseChannels extends AbstractChannels {
 
     // heat meters
     public static final Channel CH_44308 = INSTANCE
-            .addChannel(new QuantityChannel("44308", "Heat Meter - Heat Cpr EP14", ChannelGroup.BASE, ScaleFactor.DIV_10,
-                    MetricPrefix.KILO(SmartHomeUnits.WATT_HOUR)));
+            .addChannel(new QuantityChannel("44308", "Heat Meter - Heat Cpr EP14", ChannelGroup.BASE,
+                    ScaleFactor.DIV_10, MetricPrefix.KILO(SmartHomeUnits.WATT_HOUR)));
     public static final Channel CH_44304 = INSTANCE
-            .addChannel(new QuantityChannel("44304", "Heat Meter - Pool Cpr EP14", ChannelGroup.BASE, ScaleFactor.DIV_10,
-                    MetricPrefix.KILO(SmartHomeUnits.WATT_HOUR)));
+            .addChannel(new QuantityChannel("44304", "Heat Meter - Pool Cpr EP14", ChannelGroup.BASE,
+                    ScaleFactor.DIV_10, MetricPrefix.KILO(SmartHomeUnits.WATT_HOUR)));
     public static final Channel CH_44300 = INSTANCE
             .addChannel(new QuantityChannel("44300", "Heat Meter - Heat Cpr and Add EP14", ChannelGroup.BASE,
                     ScaleFactor.DIV_10, MetricPrefix.KILO(SmartHomeUnits.WATT_HOUR)));

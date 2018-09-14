@@ -27,7 +27,7 @@ public abstract class AbstractChannels implements ChannelList {
     /**
      * returns an unmodifiable set containing all available channels.
      *
-     * @return
+     * @return set of unique channels
      */
     @Override
     public Set<Channel> getChannels() {
@@ -37,8 +37,8 @@ public abstract class AbstractChannels implements ChannelList {
     /**
      * returns the matching channel, null if no match was found.
      *
-     * @param id
-     * @return
+     * @param channelCode the channelCode which identifies the channel
+     * @return channel which belongs to the code. might be null if there is no channel found.
      */
     @Override
     public Channel fromCode(String channelCode) {

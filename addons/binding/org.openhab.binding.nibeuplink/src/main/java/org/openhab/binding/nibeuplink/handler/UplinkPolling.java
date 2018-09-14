@@ -19,9 +19,6 @@ import org.slf4j.LoggerFactory;
  * @author Alexander Friese - initial contribution
  */
 public class UplinkPolling implements Runnable {
-    /**
-     * Logger
-     */
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
@@ -32,8 +29,7 @@ public class UplinkPolling implements Runnable {
     /**
      * Constructor.
      *
-     * @param handler
-     * @param config
+     * @param handler instance of the thing handler
      */
     public UplinkPolling(NibeUplinkHandler handler) {
         this.handler = handler;

@@ -26,9 +26,15 @@ import org.openhab.binding.nibeuplink.internal.model.CustomChannels;
  */
 @NonNullByDefault
 public class GenericHandler extends UplinkBaseHandler {
-
     private final ChannelList channelList;
 
+    /**
+     * constructor, called by the factory
+     *
+     * @param thing       instance of the thing, passed in by the factory
+     * @param httpClient  the httpclient that communicates with the API
+     * @param channelList the specific channellist
+     */
     public GenericHandler(Thing thing, HttpClient httpClient, ChannelList channelList) {
         super(thing, httpClient);
         this.channelList = channelList;

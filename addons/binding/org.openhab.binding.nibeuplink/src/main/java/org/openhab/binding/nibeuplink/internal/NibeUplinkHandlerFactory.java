@@ -37,7 +37,6 @@ import org.slf4j.LoggerFactory;
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.nibeuplink")
 public class NibeUplinkHandlerFactory extends BaseThingHandlerFactory {
-
     private final Logger logger = LoggerFactory.getLogger(NibeUplinkHandlerFactory.class);
 
     /**

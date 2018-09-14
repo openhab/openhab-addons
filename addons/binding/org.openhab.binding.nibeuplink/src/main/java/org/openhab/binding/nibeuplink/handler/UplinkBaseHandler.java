@@ -112,7 +112,7 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
     /**
      * initialize the custom channels out of the configuration
      *
-     * @param config
+     * @param config the active configuration
      */
     private void setupCustomChannels(NibeUplinkConfiguration config) {
         CustomChannels.CH_CH01.setCode(config.getCustomChannel01());
@@ -156,6 +156,8 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
 
     /**
      * will update all channels provided in the map
+     *
+     * @param values map containing the data updates
      */
     @Override
     public void updateChannelStatus(Map<Channel, State> values) {

@@ -40,12 +40,12 @@ public class ScaledChannel extends Channel {
     /**
      * constructor for channels with write access enabled + unit
      *
-     * @param id
-     * @param name
-     * @param channelGroup
-     * @param unit
-     * @param writeApiUrl
-     * @param validationExpression
+     * @param id                   identifier of the channel
+     * @param name                 human readable name
+     * @param channelGroup         group of the channel
+     * @param factor               scaling factor
+     * @param writeApiUrl          API URL for channel updates
+     * @param validationExpression expression to validate values before sent to the API
      */
     ScaledChannel(String id, String name, ChannelGroup channelGroup, ScaleFactor factor, @Nullable String writeApiUrl,
             @Nullable String validationExpression) {
@@ -56,10 +56,10 @@ public class ScaledChannel extends Channel {
     /**
      * constructor for channels without write access
      *
-     * @param id
-     * @param name
-     * @param channelGroup
-     * @param unit
+     * @param id           identifier of the channel
+     * @param name         human readable name
+     * @param channelGroup group of the channel
+     * @param factor       scaling factor
      */
     ScaledChannel(String id, String name, ChannelGroup channelGroup, ScaleFactor factor) {
         this(id, name, channelGroup, factor, null, null);

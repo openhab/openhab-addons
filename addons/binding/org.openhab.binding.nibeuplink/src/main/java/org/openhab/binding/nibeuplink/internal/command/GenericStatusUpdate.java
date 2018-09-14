@@ -37,7 +37,6 @@ import org.openhab.binding.nibeuplink.internal.model.VVM320Channels;
  */
 @NonNullByDefault
 public class GenericStatusUpdate extends AbstractUplinkCommandCallback implements NibeUplinkCommand {
-
     private final NibeUplinkHandler handler;
     private final DataResponseTransformer transformer;
     private int retries = 0;

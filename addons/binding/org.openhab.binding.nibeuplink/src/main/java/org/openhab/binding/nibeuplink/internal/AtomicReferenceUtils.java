@@ -26,16 +26,32 @@ import org.slf4j.LoggerFactory;
 public interface AtomicReferenceUtils {
     final Logger logger = LoggerFactory.getLogger(AtomicReferenceUtils.class);
 
+    /**
+     * this should usually not called directly. use updateJobReference or cancelJobReference instead
+     *
+     * @param job job to cancel.
+     */
     default void cancelJob(@Nullable Future<?> job) {
         if (job != null) {
             job.cancel(true);
         }
     }
 
+    /**
+     * updates a job reference with a new job. the old job will be cancelled if there is one.
+     *
+     * @param jobReference reference to be updated
+     * @param newJob       job to be assigned
+     */
     default void updateJobReference(AtomicReference<@Nullable Future<?>> jobReference, Future<?> newJob) {
         cancelJob(jobReference.getAndSet(newJob));
     }
 
+    /**
+     * updates a job reference to null and cancels any existing job which might be assigned to the reference.
+     *
+     * @param jobReference to be updated to null.
+     */
     default void cancelJobReference(AtomicReference<@Nullable Future<?>> jobReference) {
         cancelJob(jobReference.getAndSet(null));
     }

@@ -29,12 +29,12 @@ public class SwitchChannel extends Channel {
     /**
      * constructor for channels with write access enabled. custom on/off mapping
      *
-     * @param id
-     * @param name
-     * @param channelGroup
-     * @param offValue
-     * @param onValue
-     * @param writeApiUrl
+     * @param id           identifier of the channel
+     * @param name         human readable name
+     * @param channelGroup group of the channel
+     * @param offValue     value which represents OFF state
+     * @param onValue      value which represents ON state
+     * @param writeApiUrl  API URL for channel updates
      */
     SwitchChannel(String id, String name, ChannelGroup channelGroup, double offValue, double onValue,
             @Nullable String writeApiUrl) {
@@ -46,11 +46,11 @@ public class SwitchChannel extends Channel {
     /**
      * constructor for channels without write access. custom on/off mapping
      *
-     * @param id
-     * @param name
-     * @param channelGroup
-     * @param offValue
-     * @param onValue
+     * @param id           identifier of the channel
+     * @param name         human readable name
+     * @param channelGroup group of the channel
+     * @param offValue     value which represents OFF state
+     * @param onValue      value which represents ON state
      */
     SwitchChannel(String id, String name, ChannelGroup channelGroup, double offValue, double onValue) {
         this(id, name, channelGroup, offValue, onValue, null);
@@ -59,10 +59,10 @@ public class SwitchChannel extends Channel {
     /**
      * constructor for channels with write access enabled
      *
-     * @param id
-     * @param name
-     * @param channelGroup
-     * @param writeApiUrl
+     * @param id           identifier of the channel
+     * @param name         human readable name
+     * @param channelGroup group of the channel
+     * @param writeApiUrl  API URL for channel updates
      */
     SwitchChannel(String id, String name, ChannelGroup channelGroup, @Nullable String writeApiUrl) {
         this(id, name, channelGroup, DEFAULT_OFF, DEFAULT_ON, writeApiUrl);
@@ -71,9 +71,9 @@ public class SwitchChannel extends Channel {
     /**
      * constructor for channels without write access
      *
-     * @param id
-     * @param name
-     * @param channelGroup
+     * @param id           identifier of the channel
+     * @param name         human readable name
+     * @param channelGroup group of the channel
      */
     SwitchChannel(String id, String name, ChannelGroup channelGroup) {
         this(id, name, channelGroup, null);

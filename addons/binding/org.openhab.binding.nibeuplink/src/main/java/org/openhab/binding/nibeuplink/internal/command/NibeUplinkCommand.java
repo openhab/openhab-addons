@@ -30,14 +30,14 @@ public interface NibeUplinkCommand extends SuccessListener, FailureListener, Con
     /**
      * this method is to be called by the UplinkWebinterface class
      *
-     * @param asyncclient
+     * @param asyncclient client which will handle the command
      */
     void performAction(HttpClient asyncclient);
 
     /**
      * get the current listener
      *
-     * @return
+     * @return instance of the listener, might be null.
      */
     @Nullable
     StatusUpdateListener getListener();
@@ -45,7 +45,7 @@ public interface NibeUplinkCommand extends SuccessListener, FailureListener, Con
     /**
      * register a listener
      *
-     * @param listener
+     * @param listener the listener to be registered.
      */
     void setListener(StatusUpdateListener listener);
 

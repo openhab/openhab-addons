@@ -27,8 +27,8 @@ public interface ChannelList {
     /**
      * returns the matching channel, null if no match was found
      *
-     * @param channelCode
-     * @return
+     * @param channelCode the channelCode which identifies the channel
+     * @return channel which belongs to the code. might be null if there is no channel found.
      */
     Channel fromCode(String channelCode);
 }

@@ -26,7 +26,7 @@ public class CustomChannel extends Channel {
     /**
      * used to set the channelcode obtained from configuration file
      *
-     * @param channelCode
+     * @param channelCode the channelCode to be set
      */
     public final void setCode(Integer channelCode) {
         if (getChannelGroup().equals(ChannelGroup.CUSTOM)) {

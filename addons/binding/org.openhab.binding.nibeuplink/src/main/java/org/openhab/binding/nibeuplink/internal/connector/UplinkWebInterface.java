@@ -104,7 +104,7 @@ public class UplinkWebInterface implements AtomicReferenceUtils {
         /**
          * puts a command into the queue
          *
-         * @param command
+         * @param command the command which will be queued
          */
         void enqueue(NibeUplinkCommand command) {
             commandQueue.add(command);
@@ -147,7 +147,7 @@ public class UplinkWebInterface implements AtomicReferenceUtils {
     /**
      * Constructor to set up interface
      *
-     * @param config Bridge configuration
+     * @param config the Bridge configuration
      */
     public UplinkWebInterface(NibeUplinkConfiguration config, ScheduledExecutorService scheduler,
             NibeUplinkHandler handler, HttpClient httpClient) {
@@ -169,7 +169,7 @@ public class UplinkWebInterface implements AtomicReferenceUtils {
     /**
      * queues any command for execution
      *
-     * @param command
+     * @param command the command which will be put into the queue
      */
     public void enqueueCommand(NibeUplinkCommand command) {
         requestExecutor.enqueue(command);
@@ -216,7 +216,7 @@ public class UplinkWebInterface implements AtomicReferenceUtils {
     /**
      * performs some pre cheks on configuration before attempting to login
      *
-     * @return error message or SUCCESS
+     * @return true on success, false otherwise
      */
     private boolean preCheck() {
         String preCheckStatusMessage = "";
