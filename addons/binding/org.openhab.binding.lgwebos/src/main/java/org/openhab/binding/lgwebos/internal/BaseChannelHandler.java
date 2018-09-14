@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgwebos.handler.LGWebOSHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,17 +28,28 @@ import com.connectsdk.service.command.ServiceSubscription;
  *
  * @author Sebastian Prehn - initial contribution
  */
-abstract class BaseChannelHandler<T> implements ChannelHandler {
+@NonNullByDefault
+abstract class BaseChannelHandler<T, R> implements ChannelHandler {
     private final Logger logger = LoggerFactory.getLogger(BaseChannelHandler.class);
 
+    private final ResponseListener<R> defaultResponseListener = new ResponseListener<R>() {
+
+        @Override
+        public void onError(@Nullable ServiceCommandError error) {
+            logger.warn("{}: received error response: ", getClass().getName(), error);
+        }
+
+        @Override
+        public void onSuccess(R object) {
+            logger.debug("{}: {}.", getClass().getName(), object);
+        }
+    };
+
     // IP to Subscriptions map
-    private Map<String, ServiceSubscription<T>> subscriptions;
+    private Map<String, ServiceSubscription<T>> subscriptions = new ConcurrentHashMap<>();
 
     // lazy init
     private synchronized Map<String, ServiceSubscription<T>> getSubscriptions() {
-        if (subscriptions == null) {
-            subscriptions = new ConcurrentHashMap<>();
-        }
         return subscriptions;
     }
 
@@ -56,6 +69,7 @@ abstract class BaseChannelHandler<T> implements ChannelHandler {
         removeAnySubscription(device);
         if (handler.isChannelInUse(channelId)) { // only listen if least one item is configured for this channel
             Optional<ServiceSubscription<T>> listener = getSubscription(device, channelId, handler);
+
             if (listener.isPresent()) {
                 logger.debug("Subscribed {} on IP: {}", this.getClass().getName(), device.getIpAddress());
                 getSubscriptions().put(device.getIpAddress(), listener.get());
@@ -79,28 +93,15 @@ abstract class BaseChannelHandler<T> implements ChannelHandler {
 
     @Override
     public final synchronized void removeAnySubscription(ConnectableDevice device) {
-        if (subscriptions != null) { // only if subscriptions was initialized (lazy loading)
-            ServiceSubscription<T> l = subscriptions.remove(device.getIpAddress());
-            if (l != null) {
-                l.unsubscribe();
-                logger.debug("Unsubscribed {} on IP: {}", this.getClass().getName(), device.getIpAddress());
-            }
+        ServiceSubscription<T> l = subscriptions.remove(device.getIpAddress());
+
+        if (l != null) {
+            l.unsubscribe();
+            logger.debug("Unsubscribed {} on IP: {}", this.getClass().getName(), device.getIpAddress());
         }
     }
 
-    protected <O> ResponseListener<O> createDefaultResponseListener() {
-        return new ResponseListener<O>() {
-
-            @Override
-            public void onError(ServiceCommandError error) {
-                logger.warn("{}: received error response: ", BaseChannelHandler.this.getClass().getName(), error);
-            }
-
-            @Override
-            public void onSuccess(O object) {
-                logger.debug("{}: {}.", BaseChannelHandler.this.getClass().getName(), object);
-            }
-        };
+    protected ResponseListener<R> getDefaultResponseListener() {
+        return defaultResponseListener;
     }
-
 }

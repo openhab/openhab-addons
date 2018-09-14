@@ -10,6 +10,8 @@ package org.openhab.binding.lgwebos.internal;
 
 import java.util.Optional;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.lgwebos.handler.LGWebOSHandler;
@@ -27,7 +29,8 @@ import com.connectsdk.service.command.ServiceSubscription;
  *
  * @author Sebastian Prehn - initial contribution
  */
-public class VolumeControlMute extends BaseChannelHandler<MuteListener> {
+@NonNullByDefault
+public class VolumeControlMute extends BaseChannelHandler<MuteListener, Object> {
     private final Logger logger = LoggerFactory.getLogger(VolumeControlMute.class);
 
     private VolumeControl getControl(ConnectableDevice device) {
@@ -35,16 +38,17 @@ public class VolumeControlMute extends BaseChannelHandler<MuteListener> {
     }
 
     @Override
-    public void onReceiveCommand(ConnectableDevice device, String channelId, LGWebOSHandler handler, Command command) {
+    public void onReceiveCommand(@Nullable ConnectableDevice device, String channelId, LGWebOSHandler handler,
+            Command command) {
         if (device == null) {
             return;
         }
         if (OnOffType.ON == command || OnOffType.OFF == command) {
             if (device.hasCapabilities(VolumeControl.Mute_Set)) {
-                getControl(device).setMute(OnOffType.ON == command, createDefaultResponseListener());
+                getControl(device).setMute(OnOffType.ON == command, getDefaultResponseListener());
             }
         } else {
-            logger.warn("only accept OnOffType");
+            logger.warn("Only accept OnOffType");
         }
     }
 
@@ -55,17 +59,17 @@ public class VolumeControlMute extends BaseChannelHandler<MuteListener> {
             return Optional.of(getControl(device).subscribeMute(new MuteListener() {
 
                 @Override
-                public void onError(ServiceCommandError error) {
+                public void onError(@Nullable ServiceCommandError error) {
                     logger.debug("{} {} {}", error.getCode(), error.getPayload(), error.getMessage());
                 }
 
                 @Override
-                public void onSuccess(Boolean value) {
-                    handler.postUpdate(channelId, value ? OnOffType.ON : OnOffType.OFF);
+                public void onSuccess(@Nullable Boolean value) {
+                    handler.postUpdate(channelId, OnOffType.from(value));
                 }
             }));
         } else {
-            return null;
+            return Optional.empty();
         }
     }
 }

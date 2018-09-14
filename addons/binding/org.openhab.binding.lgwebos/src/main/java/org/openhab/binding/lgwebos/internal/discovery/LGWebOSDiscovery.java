@@ -40,7 +40,7 @@ import com.connectsdk.service.command.ServiceCommandError;
 /**
  * This class provides the bridges between openhab thing discovery and connect sdk device discovery.
  *
- * @author Sebastian Prehn
+ * @author Sebastian Prehn - initial contribution
  */
 @Component(service = { DiscoveryService.class,
         LGWebOSDiscovery.class }, immediate = true, configurationPid = "binding.lgwebos")
@@ -71,7 +71,8 @@ public class LGWebOSDiscovery extends AbstractDiscoveryService implements Discov
     @Override
     protected void activate(Map<String, Object> configProperties) {
         logger.debug("Config Parameters: {}", configProperties);
-        localInetAddressesOverride = evaluateConfigPropertyLocalIP((String) configProperties.get("localIP"));
+        localInetAddressesOverride = evaluateConfigPropertyLocalIP(
+                (String) configProperties.get(BINDING_CONFIGURATION_LOCALIP));
         Util.init(scheduler);
         discoveryManager = DiscoveryManager.getInstance();
         discoveryManager.setPairingLevel(DiscoveryManager.PairingLevel.ON);

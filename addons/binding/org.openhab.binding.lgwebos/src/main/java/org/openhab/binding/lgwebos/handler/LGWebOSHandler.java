@@ -58,6 +58,7 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
 
     // ChannelID to CommandHandler Map
     private final Map<String, ChannelHandler> channelHandlers;
+    private String deviceId;
 
     public LGWebOSHandler(@NonNull Thing thing, DiscoveryManager discoveryManager) {
         super(thing);
@@ -88,35 +89,36 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
         Optional<ConnectableDevice> device = getDevice();
         if (!device.isPresent()) {
             logger.debug("Device {} not found - most likely is is currently offline. Details: Channel {}, Command {}.",
-                    getDeviceId(), channelUID.getId(), command);
+                    deviceId, channelUID.getId(), command);
         }
         handler.onReceiveCommand(device.orElse(null), channelUID.getId(), this, command);
     }
 
     private Optional<ConnectableDevice> getDevice() {
-        String id = getDeviceId();
-        return discoveryManager.getCompatibleDevices().values().stream().filter(device -> id.equals(device.getId()))
-                .findFirst();
+        return discoveryManager.getCompatibleDevices().values().stream()
+                .filter(device -> deviceId.equals(device.getId())).findFirst();
     }
 
     @Override
     public void initialize() {
         discoveryManager.addListener(this);
+        deviceId = getConfig().get(PROPERTY_DEVICE_ID).toString();
 
-        Optional<ConnectableDevice> device = getDevice();
-        if (!device.isPresent()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "TV is off");
-        } else {
-            device.get().addListener(this);
-            if (device.get().isConnected()) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Connected");
+        Optional<ConnectableDevice> deviceOpt = getDevice();
+        if (deviceOpt.isPresent()) {
+            ConnectableDevice device = deviceOpt.get();
+            device.addListener(this);
+            if (device.isConnected()) {
+                onDeviceReady(device);
             } else {
                 updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Connecting ...");
-                device.get().connect();
+                device.connect();
                 // on success onDeviceReady will be called,
                 // if pairing is required onPairingRequired,
                 // otherwise onConnectionFailed
             }
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "TV is off");
         }
     }
 
@@ -164,8 +166,8 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
     }
 
     // callback methods for commandHandlers
-    public void postUpdate(String channelUID, State state) {
-        updateState(channelUID, state);
+    public void postUpdate(String channelId, State state) {
+        updateState(channelId, state);
     }
 
     public boolean isChannelInUse(String channelId) {
@@ -193,6 +195,7 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
      */
     private void refreshChannelSubscription(ChannelUID channelUID) {
         String channelId = channelUID.getId();
+
         getDevice().ifPresent(device -> {
             // may be called even if the device is not currently connected
             if (device.isConnected()) {
@@ -213,8 +216,8 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
     // just to make sure, this device is registered, if it was powered off during initialization
     @Override
     public void onDeviceAdded(DiscoveryManager manager, ConnectableDevice device) {
-        String id = getDeviceId();
-        if (device.getId().equals(id)) {
+        if (device.getId().equals(deviceId)) {
+            device.removeListener(this);
             device.addListener(this);
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Device Ready");
             device.connect();
@@ -223,14 +226,10 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
 
     @Override
     public void onDeviceUpdated(DiscoveryManager manager, ConnectableDevice device) {
-        String id = getDeviceId();
-        if (device.getId().equals(id)) {
+        if (device.getId().equals(deviceId)) {
+            device.removeListener(this);
             device.addListener(this);
         }
-    }
-
-    private String getDeviceId() {
-        return getConfig().get(PROPERTY_DEVICE_ID).toString();
     }
 
     @Override

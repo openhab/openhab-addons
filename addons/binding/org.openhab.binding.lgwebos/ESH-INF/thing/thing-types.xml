@@ -34,11 +34,13 @@
 		<item-type>Switch</item-type>
 		<label>Mute</label>
 		<description>Current Mute Setting</description>
+		<category>SoundVolume</category>
 	</channel-type>
 	<channel-type id="volumeType">
 		<item-type>Dimmer</item-type>
 		<label>Volume</label>
 		<description>Current Volume Setting</description>
+		<category>SoundVolume</category>
 		<state min="0" max="100" step="1"></state>
 	</channel-type>
 	<channel-type id="channelType">
@@ -62,6 +64,7 @@
 		<item-type>Player</item-type>
 		<label>Media Control</label>
 		<description>Control media (e.g. audio or video) playback</description>
+		<category>MediaControl</category>
 	</channel-type>
 	<channel-type id="mediaStopType">
 		<item-type>Switch</item-type>

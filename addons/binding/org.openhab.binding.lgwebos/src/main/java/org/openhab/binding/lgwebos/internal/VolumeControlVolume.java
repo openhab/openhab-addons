@@ -10,6 +10,7 @@ package org.openhab.binding.lgwebos.internal;
 
 import java.util.Optional;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -32,7 +33,7 @@ import com.connectsdk.service.command.ServiceSubscription;
  *
  * @author Sebastian Prehn - initial contribution
  */
-public class VolumeControlVolume extends BaseChannelHandler<VolumeListener> {
+public class VolumeControlVolume extends BaseChannelHandler<VolumeListener, Object> {
     private final Logger logger = LoggerFactory.getLogger(VolumeControlVolume.class);
 
     private VolumeControl getControl(ConnectableDevice device) {
@@ -40,7 +41,8 @@ public class VolumeControlVolume extends BaseChannelHandler<VolumeListener> {
     }
 
     @Override
-    public void onReceiveCommand(ConnectableDevice device, String channelId, LGWebOSHandler handler, Command command) {
+    public void onReceiveCommand(@Nullable ConnectableDevice device, String channelId, LGWebOSHandler handler,
+            Command command) {
         if (device == null) {
             return;
         }
@@ -54,23 +56,22 @@ public class VolumeControlVolume extends BaseChannelHandler<VolumeListener> {
         }
         if (percent != null) {
             if (device.hasCapabilities(VolumeControl.Volume_Set)) {
-                getControl(device).setVolume(percent.floatValue() / 100.0f, createDefaultResponseListener());
+                getControl(device).setVolume(percent.floatValue() / 100.0f, getDefaultResponseListener());
             }
         } else if (IncreaseDecreaseType.INCREASE == command) {
             if (device.hasCapabilities(VolumeControl.Volume_Up_Down)) {
-                getControl(device).volumeUp(createDefaultResponseListener());
+                getControl(device).volumeUp(getDefaultResponseListener());
             }
         } else if (IncreaseDecreaseType.DECREASE == command) {
             if (device.hasCapabilities(VolumeControl.Volume_Up_Down)) {
-                getControl(device).volumeDown(createDefaultResponseListener());
+                getControl(device).volumeDown(getDefaultResponseListener());
             }
         } else if (OnOffType.OFF == command || OnOffType.ON == command) {
             if (device.hasCapabilities(VolumeControl.Mute_Set)) {
-                getControl(device).setMute(OnOffType.OFF == command, createDefaultResponseListener());
+                getControl(device).setMute(OnOffType.OFF == command, getDefaultResponseListener());
             }
         } else {
-            logger.warn(
-                    "Only accept PercentType, DecimalType, StringType, OnOffType, IncreaseDecreaseType. Type was {}.",
+            logger.warn("Only accept PercentType, DecimalType, StringType command. Command was {}({}).", command,
                     command.getClass());
         }
     }
@@ -92,7 +93,7 @@ public class VolumeControlVolume extends BaseChannelHandler<VolumeListener> {
                 }
             }));
         } else {
-            return null;
+            return Optional.empty();
         }
     }
 }
