@@ -31,7 +31,7 @@ import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.openhab.binding.dsmr.DSMRBindingConstants;
+import org.openhab.binding.dsmr.internal.DSMRBindingConstants;
 import org.openhab.binding.dsmr.internal.TelegramReaderUtil;
 import org.openhab.binding.dsmr.internal.device.DSMRSerialAutoDevice.DeviceState;
 import org.openhab.binding.dsmr.internal.device.connector.DSMRConnectorErrorEvent;
