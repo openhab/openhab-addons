@@ -23,7 +23,7 @@ import org.eclipse.smarthome.core.i18n.TranslationProvider;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
-import org.openhab.binding.dsmr.DSMRBindingConstants;
+import org.openhab.binding.dsmr.internal.DSMRBindingConstants;
 import org.openhab.binding.dsmr.internal.device.DSMRDeviceRunnable;
 import org.openhab.binding.dsmr.internal.device.DSMREventListener;
 import org.openhab.binding.dsmr.internal.device.DSMRSerialAutoDevice;

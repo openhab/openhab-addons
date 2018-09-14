@@ -11,9 +11,9 @@ package org.openhab.binding.dsmr.internal.discovery;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.i18n.LocaleProvider;
 import org.eclipse.smarthome.core.i18n.TranslationProvider;
-import org.openhab.binding.dsmr.handler.DSMRBridgeHandler;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1TelegramListener;
+import org.openhab.binding.dsmr.internal.handler.DSMRBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
