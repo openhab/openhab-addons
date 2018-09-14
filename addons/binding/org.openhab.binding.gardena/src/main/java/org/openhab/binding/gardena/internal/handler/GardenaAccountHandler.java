@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.gardena.handler;
+package org.openhab.binding.gardena.internal.handler;
 
 import java.util.Hashtable;
 import java.util.concurrent.TimeUnit;

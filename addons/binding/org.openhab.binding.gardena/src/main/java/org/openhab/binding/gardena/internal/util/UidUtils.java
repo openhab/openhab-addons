@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.gardena.internal.util;
 
-import static org.openhab.binding.gardena.GardenaBindingConstants.BINDING_ID;
+import static org.openhab.binding.gardena.internal.GardenaBindingConstants.BINDING_ID;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.gardena.handler.GardenaDeviceConfig;
+import org.openhab.binding.gardena.internal.handler.GardenaDeviceConfig;
 import org.openhab.binding.gardena.internal.model.Device;
 
 /**

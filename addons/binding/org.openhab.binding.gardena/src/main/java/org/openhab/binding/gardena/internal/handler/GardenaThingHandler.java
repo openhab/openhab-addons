@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.gardena.handler;
+package org.openhab.binding.gardena.internal.handler;
 
-import static org.openhab.binding.gardena.GardenaBindingConstants.*;
+import static org.openhab.binding.gardena.internal.GardenaBindingConstants.*;
 import static org.openhab.binding.gardena.internal.GardenaSmartCommandName.*;
 
 import java.util.Calendar;

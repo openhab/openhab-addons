@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.gardena.internal.discovery;
 
-import static org.openhab.binding.gardena.GardenaBindingConstants.BINDING_ID;
+import static org.openhab.binding.gardena.internal.GardenaBindingConstants.BINDING_ID;
 
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.Future;
@@ -19,9 +19,9 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.gardena.handler.GardenaAccountHandler;
 import org.openhab.binding.gardena.internal.GardenaSmart;
 import org.openhab.binding.gardena.internal.exception.GardenaException;
+import org.openhab.binding.gardena.internal.handler.GardenaAccountHandler;
 import org.openhab.binding.gardena.internal.model.Device;
 import org.openhab.binding.gardena.internal.model.Location;
 import org.openhab.binding.gardena.internal.util.UidUtils;
