@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.ftpupload.handler;
+package org.openhab.binding.ftpupload.internal.handler;
 
-import static org.openhab.binding.ftpupload.FtpUploadBindingConstants.*;
+import static org.openhab.binding.ftpupload.internal.FtpUploadBindingConstants.*;
 
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
