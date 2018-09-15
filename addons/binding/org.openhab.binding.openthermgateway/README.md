@@ -12,7 +12,7 @@ The OpenTherm Gateway binding currently only supports one thing, and that's the 
 
 ## Discovery
 
-This binding doesn't support auto discovery features.
+The binding supports auto discovery.
 
 ## Binding Configuration
 
@@ -32,8 +32,48 @@ The thing currently supports the follow channels:
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+### demo.things:
 
-## Any custom content here!
+```
+Thing openthermgateway:main:1 [ipaddress="192.168.1.100", port="8000"]
+```
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+### demo.items:
+
+```
+Number:Temperature RoomTemperature {channel="openthermgateway:main:1:roomtemp"}
+Number:Temperature RoomSetpoint {channel="openthermgateway:main:1:roomsetpoint"}
+Number:Temperature BoilerWaterTemperature {channel="openthermgateway:main:1:flowtemp"}
+Number:Temperature ReturnWaterTemperature {channel="openthermgateway:main:1:returntemp"}
+Number:Temperature OutsideTemperature {channel="openthermgateway:main:1:outsidetemp"}
+Switch CentralHeatingEnabled {channel="openthermgateway:main:1:ch_enable"}
+Switch CentralHeatingActive {channel="openthermgateway:main:1:ch_mode"}
+Switch DomesticHotWaterEnabled {channel="openthermgateway:main:1:dhw_enable"}
+Switch DomesticHotWaterActive {channel="openthermgateway:main:1:dhw_mode"}
+Switch BurnerActive {channel="openthermgateway:main:1:flame"}
+Number RelativeModulationLevel {channel="openthermgateway:main:1:modulevel"}
+Number MaximumRelativeModulationLevel {channel="openthermgateway:main:1:maxrelmdulevel"}
+```
+
+### demo.sitemap:
+
+```
+sitemap demo label="Main Menu" {
+    Frame label="OpenTherm Gateway" {
+        Text item=RoomTemperature icon="temperature" label="Room temperature [%.1f °C]"        
+        Setpoint item=RoomSetpoint minValue=0.0 maxValue=99.0 step=0.5 icon="heating" label="Room setpoint [%.1f °C]"
+        Text item=BoilerWaterTemperature icon="temperature" label="Boiler water temperature [%.1f °C]"
+        Text item=ReturnWaterTemperature icon="temperature" label="Return water temperature [%.1f °C]"
+        Setpoint item=OutsideTemperature minValue=0.0 maxValue=99.0 step=0.5 icon="temperature" label="Outside temperature [%.1f °C]"
+        
+        Switch item=CentralHeatingEnabled icon="radiator" label="Central heating enabled"
+        Switch item=CentralHeatingActive icon="radiator" label="Central heating active"
+        Switch item=DomesticHotWaterEnabled icon="faucet" label="Domestic hot water enabled"
+        Switch item=DomesticHotWaterActive icon="faucet" label="Domestic hot water active"
+        Switch item=BurnerActive icon="fire" label="Burner active"
+        
+        Text item=RelativeModulationLevel icon="heating" label="Relative modulation level"
+        Text item=MaximumRelativeModulationLevel icon="heating" label="Maximum relative modulation level"
+    }
+}
+```
