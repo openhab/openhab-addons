@@ -4,7 +4,7 @@ This binding is used to integrate the OpenTherm Gateway into OpenHAB2. The OpenT
 
 This binding is still under development. Please visit https://github.com/ArjenKorevaar/openhab2-openthermgateway-binary to download the lastest compiled test version.
 
-More info on the OpenTherm Gateway can be found at [http://otgw.tclcode.com/]
+More info on the OpenTherm Gateway can be found at http://otgw.tclcode.com/
 
 ## Supported Things
 
