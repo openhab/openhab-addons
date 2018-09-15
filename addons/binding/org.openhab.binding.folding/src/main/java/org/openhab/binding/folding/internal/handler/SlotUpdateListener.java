@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.folding.handler;
+package org.openhab.binding.folding.internal.handler;
 
 /**
  * Interface for callback from Client handler to Slot handler.
