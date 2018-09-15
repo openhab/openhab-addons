@@ -8,9 +8,6 @@ Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
-Export-Package: 
- org.openhab.binding.cm11a,
- org.openhab.binding.cm11a.handler
 Import-Package: gnu.io,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
@@ -22,8 +19,6 @@ Import-Package: gnu.io,
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.openhab.binding.cm11a,
- org.openhab.binding.cm11a.handler,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
