@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.dlinksmarthome.handler;
+package org.openhab.binding.dlinksmarthome.internal.handler;
 
-import static org.openhab.binding.dlinksmarthome.DLinkSmartHomeBindingConstants.MOTION;
+import static org.openhab.binding.dlinksmarthome.internal.DLinkSmartHomeBindingConstants.MOTION;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
