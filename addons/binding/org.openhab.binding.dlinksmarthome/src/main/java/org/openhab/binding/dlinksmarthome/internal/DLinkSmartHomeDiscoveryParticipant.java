@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.dlinksmarthome.internal;
 
-import static org.openhab.binding.dlinksmarthome.DLinkSmartHomeBindingConstants.*;
+import static org.openhab.binding.dlinksmarthome.internal.DLinkSmartHomeBindingConstants.*;
 import static org.openhab.binding.dlinksmarthome.internal.motionsensor.DLinkMotionSensorConfig.IP_ADDRESS;
 
 import java.util.HashMap;
