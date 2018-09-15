@@ -100,7 +100,7 @@ public class PowermaxDiscoveryService extends AbstractDiscoveryService implement
             }
 
             // Remove not updated discovered things
-            removeOlderResults(beforeUpdate);
+            removeOlderResults(beforeUpdate, bridgeHandler.getThing().getUID());
         }
     }
 

@@ -251,7 +251,7 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
                 commManager.startDownload();
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "reconnection failed");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Reconnection failed");
         }
     }
 

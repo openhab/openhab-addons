@@ -105,9 +105,10 @@ public class PowermaxThingHandler extends BaseThingHandler implements PowermaxPa
         if (bridgeHandler != null && bridgeStatus != null) {
             if (bridgeStatus == ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.UNKNOWN);
+                logger.debug("Set handler status to UNKNOWN for thing {} (bridge ONLINE)", getThing().getUID());
                 this.bridgeHandler = (PowermaxBridgeHandler) bridgeHandler;
                 this.bridgeHandler.registerPanelSettingsListener(this);
-                logger.debug("Set handler status to ONLINE for thing {} (bridge ONLINE)", getThing().getUID());
+                onPanelSettingsUpdated(this.bridgeHandler.getPanelSettings());
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
                 logger.debug("Set handler status to OFFLINE for thing {} (bridge OFFLINE)", getThing().getUID());
@@ -211,7 +212,7 @@ public class PowermaxThingHandler extends BaseThingHandler implements PowermaxPa
                 }
             } else if (deviceSettings == null || !deviceSettings.isEnabled()) {
                 if (getThing().getStatus() != ThingStatus.OFFLINE) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "X10 device is disabled");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Disabled device");
                     logger.debug("Set handler status to OFFLINE for thing {} (X10 device {} disabled)",
                             getThing().getUID(), config.deviceNumber);
                 }
@@ -241,13 +242,13 @@ public class PowermaxThingHandler extends BaseThingHandler implements PowermaxPa
                     }
                 } else if (zoneSettings == null) {
                     if (getThing().getStatus() != ThingStatus.OFFLINE) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Zone not setup");
-                        logger.debug("Set handler status to ONLINE for thing {} (zone number {} not setup)",
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Zone not paired");
+                        logger.debug("Set handler status to OFFLINE for thing {} (zone number {} not paired)",
                                 getThing().getUID(), config.zoneNumber);
                     }
                 } else if (getThing().getStatus() != ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.ONLINE);
-                    logger.debug("Set handler status to ONLINE for thing {} (zone number {} setup)",
+                    logger.debug("Set handler status to ONLINE for thing {} (zone number {} paired)",
                             getThing().getUID(), config.zoneNumber);
                 }
             }
