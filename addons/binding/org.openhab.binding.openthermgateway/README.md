@@ -1,6 +1,6 @@
 # OpenTherm Gateway Binding
 
-This binding is used to integrate the OpenTherm Gateway into OpenHAB2. The OpenTherm Gateway is module designed by Schelte Bron that is connected in between a boiler and a thermostat that communicates using the OpenTherm protocol. 
+This binding is used to integrate the OpenTherm Gateway into OpenHAB2. The OpenTherm Gateway is a module designed by Schelte Bron that is connected in between a boiler and a thermostat that communicates using the OpenTherm protocol.
 
 This binding is still under development. Please visit https://github.com/ArjenKorevaar/openhab2-openthermgateway-binary to download the lastest compiled test version.
 
