@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.feed.internal;
 
-import static org.openhab.binding.feed.FeedBindingConstants.FEED_THING_TYPE_UID;
+import static org.openhab.binding.feed.internal.FeedBindingConstants.FEED_THING_TYPE_UID;
 
 import java.util.Collections;
 import java.util.Set;
@@ -18,7 +18,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.feed.handler.FeedHandler;
+import org.openhab.binding.feed.internal.handler.FeedHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**
