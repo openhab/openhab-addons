@@ -25,9 +25,9 @@ import java.util.TooManyListenersException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import org.openhab.binding.cm11a.handler.Cm11aAbstractHandler;
-import org.openhab.binding.cm11a.handler.Cm11aBridgeHandler;
-import org.openhab.binding.cm11a.handler.ReceivedDataListener;
+import org.openhab.binding.cm11a.internal.handler.Cm11aAbstractHandler;
+import org.openhab.binding.cm11a.internal.handler.Cm11aBridgeHandler;
+import org.openhab.binding.cm11a.internal.handler.ReceivedDataListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.cm11a.internal;
 
-import static org.openhab.binding.cm11a.CM11ABindingConstants.*;
+import static org.openhab.binding.cm11a.internal.CM11ABindingConstants.*;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,9 +21,9 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.cm11a.handler.Cm11aApplianceHandler;
-import org.openhab.binding.cm11a.handler.Cm11aBridgeHandler;
-import org.openhab.binding.cm11a.handler.Cm11aLampHandler;
+import org.openhab.binding.cm11a.internal.handler.Cm11aApplianceHandler;
+import org.openhab.binding.cm11a.internal.handler.Cm11aBridgeHandler;
+import org.openhab.binding.cm11a.internal.handler.Cm11aLampHandler;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
