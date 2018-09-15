@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.coolmasternet.handler;
+package org.openhab.binding.coolmasternet.internal.handler;
 
-import static org.openhab.binding.coolmasternet.CoolMasterNetBindingConstants.*;
+import static org.openhab.binding.coolmasternet.internal.CoolMasterNetBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
