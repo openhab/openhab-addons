@@ -71,6 +71,7 @@ public class LGHomBotHandler extends BaseThingHandler {
     private OnOffType currentTurbo = OnOffType.OFF;
     private OnOffType currentRepeat = OnOffType.OFF;
     private State currentImage = UnDefType.UNDEF;
+    private State currentMap = UnDefType.UNDEF;
     private DateTimeType currentLastClean = new DateTimeType();
 
     private final DateTimeFormatter formatterLG = DateTimeFormatter.ofPattern("yyyy/MM/dd/HH/mm/ss");
@@ -267,6 +268,10 @@ public class LGHomBotHandler extends BaseThingHandler {
                 parseImage();
                 updateState(channelUID, currentImage);
                 break;
+            case CHANNEL_MAP:
+                parseMap();
+                updateState(channelUID, currentMap);
+                break;
             case CHANNEL_LAST_CLEAN:
                 updateState(channelUID, currentLastClean);
                 break;
@@ -436,6 +441,99 @@ public class LGHomBotHandler extends BaseThingHandler {
             currentImage = new RawType(byteArray, "image/jpeg");
         } else {
             currentImage = UnDefType.UNDEF;
+        }
+    }
+
+    /** Parse the maps.html file to find the black-box filename. */
+    private String findBlackBoxFile() {
+        String url = buildHttpAddress("/sites/maps.html");
+        try {
+            String htmlString = HttpUtil.executeUrl("GET", url, 1000);
+            int idx = htmlString.indexOf("blkfiles");
+            return "/.../usr/data/blackbox/" + htmlString.substring(idx + 13, idx + 50);
+        } catch (IOException e1) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e1.getMessage());
+        }
+        return "";
+    }
+
+    private void parseMap() {
+        if (!isLinked(CHANNEL_MAP)) {
+            return;
+        }
+        final int TILE_SIZE = 10;
+        final int TILE_AREA = TILE_SIZE * TILE_SIZE;
+        final int ROW_LENGTH = 100;
+        final int SCALE = 1;
+
+        String blackBox = findBlackBoxFile();
+        String url = buildHttpAddress(blackBox);
+        byte[] mapData = HttpUtil.downloadData(url, null, false, -1).getBytes();
+
+        final int tileCount = mapData[32];
+        int maxX = 0;
+        int maxY = 0;
+        int minX = 0x10000;
+        int minY = 0x10000;
+        int pixPos;
+
+        for (int i = 0; i < tileCount; i++) {
+            pixPos = (mapData[52 + i * 16] & 0xFF) + (mapData[52 + 1 + i * 16] << 8);
+            int xPos = (pixPos % ROW_LENGTH) * TILE_SIZE;
+            int yPos = (pixPos / ROW_LENGTH) * TILE_SIZE;
+            if (xPos < minX) {
+                minX = xPos;
+            }
+            if (xPos > maxX) {
+                maxX = xPos;
+            }
+            if (yPos > maxY) {
+                maxY = yPos;
+            }
+            if (yPos < minY) {
+                minY = yPos;
+            }
+        }
+
+        final int width = (TILE_SIZE + maxX - minX) * SCALE;
+        final int height = (TILE_SIZE + maxY - minY) * SCALE;
+
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                image.setRGB(j, i, 0xFFFFFF);
+            }
+        }
+        for (int i = 0; i < tileCount; i++) {
+            pixPos = (mapData[52 + i * 16] & 0xFF) + (mapData[52 + 1 + i * 16] << 8);
+            int xPos = ((pixPos % ROW_LENGTH) * TILE_SIZE - minX) * SCALE;
+            int yPos = (maxY - (pixPos / ROW_LENGTH) * TILE_SIZE) * SCALE;
+            int indexTab = 16044 + i * TILE_AREA;
+            for (int j = 0; j < TILE_SIZE; j++) {
+                for (int k = 0; k < TILE_SIZE; k++) {
+                    int p = 0xFFFFFF;
+                    if ((mapData[indexTab] & 0xF0) != 0) {
+                        p = 0xFF0000;
+                    } else if (mapData[indexTab] != 0) {
+                        p = 0xBFBFBF;
+                    }
+                    image.setRGB(xPos + k * SCALE, yPos + (9 - j) * SCALE, p);
+                    indexTab++;
+                }
+            }
+        }
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(image, "png", baos);
+        } catch (IOException e) {
+            logger.error("IOException creating PNG image. {}", e);
+        }
+        byte[] byteArray = baos.toByteArray();
+        if (byteArray != null && byteArray.length > 0) {
+            currentMap = new RawType(byteArray, "image/png");
+        } else {
+            currentMap = UnDefType.UNDEF;
         }
     }
 }
