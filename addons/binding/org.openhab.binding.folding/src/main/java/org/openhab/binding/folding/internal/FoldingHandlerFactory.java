@@ -18,9 +18,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.folding.FoldingBindingConstants;
-import org.openhab.binding.folding.handler.FoldingClientHandler;
-import org.openhab.binding.folding.handler.SlotHandler;
+import org.openhab.binding.folding.internal.handler.FoldingClientHandler;
+import org.openhab.binding.folding.internal.handler.SlotHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**
