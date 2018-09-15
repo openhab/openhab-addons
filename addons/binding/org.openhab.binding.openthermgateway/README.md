@@ -20,7 +20,7 @@ The binding itself does not require any configuration.
 
 ## Thing Configuration
 
-The binding is designed to support various ways of connecting to the OpenTherm Gateway, but currently only supports a socket connection. The configuration settings for the thing are Hostname and Port, which are used to open the socket to the gateway.
+The binding is designed to support various ways of connecting to the OpenTherm Gateway, but currently only supports a TCP socket connection. The configuration settings for the thing are Hostname and Port, which are used to open the socket to the gateway.
 
 Future types of connections may require other settings, such as a COM port.
 
