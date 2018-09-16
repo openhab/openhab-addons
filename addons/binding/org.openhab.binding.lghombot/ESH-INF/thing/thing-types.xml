@@ -21,10 +21,10 @@
             <channel id="repeat" typeId="repeatType" />
             <channel id="mode" typeId="modeType" />
             <channel id="nickname" typeId="nicknameType" />
-            <channel id="camera" typeId="cameraType" />
-            <channel id="map" typeId="mapType" />
             <channel id="move" typeId="moveType" />
+            <channel id="camera" typeId="cameraType" />
             <channel id="lastClean" typeId="lastCleanType" />
+            <channel id="map" typeId="mapType" />
             <channel id="monday" typeId="mondayType" />
             <channel id="tuesday" typeId="tuesdayType" />
             <channel id="wednesday" typeId="wednesdayType" />
@@ -153,18 +153,6 @@
         <description>Nickname of the HomBot.</description>
         <state pattern="%s" readOnly="true"/>
     </channel-type>
-    <channel-type id="cameraType">
-        <item-type>Image</item-type>
-        <label>Camera</label>
-        <description>Image feed from the top camera.</description>
-        <state readOnly="true"/>
-    </channel-type>
-    <channel-type id="mapType" advanced="true">
-        <item-type>Image</item-type>
-        <label>Map</label>
-        <description>Map of last cleaned area.</description>
-        <state readOnly="true"/>
-    </channel-type>
     <channel-type id="moveType" advanced="true">
         <item-type>String</item-type>
         <label>Move</label>
@@ -183,11 +171,23 @@
             </options>
         </state>
     </channel-type>
+    <channel-type id="cameraType">
+        <item-type>Image</item-type>
+        <label>Camera</label>
+        <description>Image feed from the top camera.</description>
+        <state readOnly="true"/>
+    </channel-type>
     <channel-type id="lastCleanType">
         <item-type>DateTime</item-type>
         <label>Last Clean</label>
         <description>Last time the HomBot cleaned.</description>
         <state pattern="%1$tF %1$tR" readOnly="true" />
+    </channel-type>
+    <channel-type id="mapType" advanced="true">
+        <item-type>Image</item-type>
+        <label>Map</label>
+        <description>Map of last cleaned area.</description>
+        <state readOnly="true"/>
     </channel-type>
     <channel-type id="mondayType" advanced="true">
         <item-type>String</item-type>

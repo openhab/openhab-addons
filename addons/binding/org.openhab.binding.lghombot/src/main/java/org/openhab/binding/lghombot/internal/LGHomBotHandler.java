@@ -276,12 +276,12 @@ public class LGHomBotHandler extends BaseThingHandler {
                 parseImage();
                 updateState(channelUID, currentImage);
                 break;
+            case CHANNEL_LAST_CLEAN:
+                updateState(channelUID, currentLastClean);
+                break;
             case CHANNEL_MAP:
                 parseMap();
                 updateState(channelUID, currentMap);
-                break;
-            case CHANNEL_LAST_CLEAN:
-                updateState(channelUID, currentLastClean);
                 break;
             case CHANNEL_MONDAY:
             case CHANNEL_TUESDAY:
@@ -442,7 +442,7 @@ public class LGHomBotHandler extends BaseThingHandler {
 
     private void fetchSchedule() {
         String status = null;
-        String url = buildHttpAddress(".../usr/data/htdocs/timer.txt");
+        String url = buildHttpAddress("/.../usr/data/htdocs/timer.txt");
         try {
             status = HttpUtil.executeUrl("GET", url, 1000);
             if (getThing().getStatus() != ThingStatus.ONLINE) {
@@ -450,6 +450,10 @@ public class LGHomBotHandler extends BaseThingHandler {
             }
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            return;
+        } catch (IllegalArgumentException e) {
+            logger.info("Schedule file not found, probably nothing set. {}", e);
+            return;
         }
         if (status != null && !status.isEmpty()) {
             String monday = "";

@@ -50,10 +50,10 @@ public class LGHomBotBindingConstants {
     public static final String CHANNEL_TURBO = "turbo";
     public static final String CHANNEL_REPEAT = "repeat";
     public static final String CHANNEL_NICKNAME = "nickname";
-    public static final String CHANNEL_CAMERA = "camera";
-    public static final String CHANNEL_MAP = "map";
     public static final String CHANNEL_MOVE = "move";
+    public static final String CHANNEL_CAMERA = "camera";
     public static final String CHANNEL_LAST_CLEAN = "lastClean";
+    public static final String CHANNEL_MAP = "map";
     public static final String CHANNEL_MONDAY = "monday";
     public static final String CHANNEL_TUESDAY = "tuesday";
     public static final String CHANNEL_WEDNESDAY = "wednesday";
