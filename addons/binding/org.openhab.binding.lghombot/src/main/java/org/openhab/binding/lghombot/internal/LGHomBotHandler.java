@@ -347,11 +347,13 @@ public class LGHomBotHandler extends BaseThingHandler {
                         updateState(channel, battery);
                     }
                 } else if (name.equals("CPU_IDLE")) {
-                    DecimalType cpuLoad = new DecimalType(100 - Double.valueOf(state).intValue());
-                    if (!cpuLoad.equals(currentCPULoad)) {
-                        currentCPULoad = cpuLoad;
-                        channel = new ChannelUID(getThing().getUID(), CHANNEL_CPU_LOAD);
-                        updateState(channel, cpuLoad);
+                    if (isLinked(CHANNEL_CPU_LOAD)) {
+                        DecimalType cpuLoad = new DecimalType(100 - Double.valueOf(state).intValue());
+                        if (!cpuLoad.equals(currentCPULoad)) {
+                            currentCPULoad = cpuLoad;
+                            channel = new ChannelUID(getThing().getUID(), CHANNEL_CPU_LOAD);
+                            updateState(channel, cpuLoad);
+                        }
                     }
                 } else if (name.equals("LGSRV_MEMUSAGE")) {
                     if (!state.equals(currentSrvMem)) {
