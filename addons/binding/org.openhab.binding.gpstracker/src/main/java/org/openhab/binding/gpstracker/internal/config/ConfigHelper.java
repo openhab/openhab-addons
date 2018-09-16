@@ -22,8 +22,8 @@ public class ConfigHelper {
     //configuration constants
     public static final String CONFIG_TRACKER_ID = "trackerId";
     public static final String CONFIG_REGION_NAME = "regionName";
-    private static final String CONFIG_REGION_RADIUS = "regionRadius";
-    private static final String CONFIG_REGION_CENTER_LOCATION = "regionCenterLocation";
+    public static final String CONFIG_REGION_RADIUS = "regionRadius";
+    public static final String CONFIG_REGION_CENTER_LOCATION = "regionCenterLocation";
 
     /**
      * Constructor.

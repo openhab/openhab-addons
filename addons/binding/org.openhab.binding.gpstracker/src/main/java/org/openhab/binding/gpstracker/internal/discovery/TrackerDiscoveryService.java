@@ -91,7 +91,10 @@ public class TrackerDiscoveryService extends AbstractDiscoveryService {
     private void createDiscoveryResult(String trackerId) {
         ThingUID id = new ThingUID(GPSTrackerBindingConstants.THING_TYPE_TRACKER, trackerId);
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(id)
-                .withProperty(ConfigHelper.CONFIG_TRACKER_ID, trackerId).build();
+                .withProperty(ConfigHelper.CONFIG_TRACKER_ID, trackerId)
+                .withThingType(GPSTrackerBindingConstants.THING_TYPE_TRACKER)
+                .withLabel("GPS tracker " + trackerId)
+                .build();
         this.thingDiscovered(discoveryResult);
     }
 

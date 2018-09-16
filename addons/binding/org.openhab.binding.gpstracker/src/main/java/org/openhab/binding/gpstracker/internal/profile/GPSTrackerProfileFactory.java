@@ -23,7 +23,6 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.openhab.binding.gpstracker.internal.GPSTrackerBindingConstants.CHANNEL_TYPE_DISTANCE;
 import static org.openhab.binding.gpstracker.internal.GPSTrackerBindingConstants.CHANNEL_TYPE_REGION;
 
 /**
@@ -37,37 +36,24 @@ public class GPSTrackerProfileFactory implements ProfileFactory, ProfileAdvisor,
     /**
      * Profile UID for trigger events
      */
-    static final ProfileTypeUID UID_TRIGGER_SWITCH = new ProfileTypeUID(GPSTrackerBindingConstants.BINDING_ID, "triggerPresenceSwitch");
-
-    /**
-     * Profile UID for distance calculation
-     */
-    static final ProfileTypeUID UID_DISTANCE_SWITCH = new ProfileTypeUID(GPSTrackerBindingConstants.BINDING_ID, "distancePresenceSwitch");
+    static final ProfileTypeUID UID_TRIGGER_SWITCH = new ProfileTypeUID(GPSTrackerBindingConstants.BINDING_ID, "trigger-geofence");
 
     /**
      * Profile type for trigger events
      */
-    private static final TriggerProfileType TRIGGER_SWITCH_TYPE = ProfileTypeBuilder.newTrigger(UID_TRIGGER_SWITCH, "Presence Switch for Trigger")
+    private static final TriggerProfileType TRIGGER_SWITCH_TYPE = ProfileTypeBuilder.newTrigger(UID_TRIGGER_SWITCH, "Geofence")
             .withSupportedItemTypes(CoreItemFactory.SWITCH)
             .withSupportedChannelTypeUIDs(CHANNEL_TYPE_REGION)
             .build();
 
-    /**
-     * Profile type for distance calculation
-     */
-    private static final StateProfileType DISTANCE_SWITCH_TYPE = ProfileTypeBuilder.newState(UID_DISTANCE_SWITCH, "Presence Switch for Distance")
-            .withSupportedItemTypes(CoreItemFactory.SWITCH)
-            .withSupportedChannelTypeUIDs(CHANNEL_TYPE_DISTANCE)
-            .build();
-
     @Override
     public Collection<ProfileTypeUID> getSupportedProfileTypeUIDs() {
-        return Stream.of(UID_TRIGGER_SWITCH, UID_DISTANCE_SWITCH).collect(Collectors.toSet());
+        return Stream.of(UID_TRIGGER_SWITCH).collect(Collectors.toSet());
     }
 
     @Override
     public Collection<ProfileType> getProfileTypes(@Nullable Locale locale) {
-        return Stream.of(TRIGGER_SWITCH_TYPE, DISTANCE_SWITCH_TYPE).collect(Collectors.toSet());
+        return Stream.of(TRIGGER_SWITCH_TYPE).collect(Collectors.toSet());
     }
 
     @Override
@@ -80,11 +66,9 @@ public class GPSTrackerProfileFactory implements ProfileFactory, ProfileAdvisor,
         return getSuggestedProfileTypeUID(channelType.getUID(), itemType);
     }
 
-    private @Nullable ProfileTypeUID getSuggestedProfileTypeUID(ChannelTypeUID channelTypeUID, @Nullable String itemType) {
+    private @Nullable ProfileTypeUID getSuggestedProfileTypeUID(@Nullable ChannelTypeUID channelTypeUID, @Nullable String itemType) {
         if (CoreItemFactory.SWITCH.equals(itemType) && CHANNEL_TYPE_REGION.equals(channelTypeUID)) {
             return UID_TRIGGER_SWITCH;
-        } else if (CoreItemFactory.NUMBER.equals(itemType) && CHANNEL_TYPE_DISTANCE.equals(channelTypeUID)) {
-            return UID_DISTANCE_SWITCH;
         }
         return null;
     }
@@ -94,11 +78,6 @@ public class GPSTrackerProfileFactory implements ProfileFactory, ProfileAdvisor,
         if (UID_TRIGGER_SWITCH.equals(profileTypeUID)) {
             return new GPSTrackerTriggerSwitchProfile(callback, profileContext);
         }
-        if (UID_DISTANCE_SWITCH.equals(profileTypeUID)) {
-            return new GPSTrackerDistanceSwitchProfile(callback, profileContext);
-        } else {
-            return null;
-        }
+        return null;
     }
-
 }

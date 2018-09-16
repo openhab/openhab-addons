@@ -4,19 +4,12 @@
 		xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
 		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
 		http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
-	<config-description uri="profile:gpstracker:triggerPresenceSwitch">
+	<config-description uri="profile:gpstracker:trigger-geofence">
 		<parameter name="regionName" type="text" required="true">
 			<label>Region Name</label>
 			<description>Region name to trigger the switch</description>
 			<advanced>false</advanced>
-		</parameter>
-	</config-description>
-	<config-description uri="profile:gpstracker:distancePresenceSwitch">
-		<parameter name="regionRadius" type="integer" required="true">
-			<label>Region Radius</label>
-			<description>Region circle radius</description>
-			<default>100</default>
-			<advanced>false</advanced>
+			<limitToOptions>false</limitToOptions>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

@@ -37,7 +37,7 @@ Go to Preferences/Connection and set:
 
 Install [GPSLogger for Android](https://play.google.com/store/apps/details?id=com.mendhak.gpslogger) on your device. 
 After the launch, go to General Options. 
-Enable Start on bootup and Start on app launch.
+Enable Start on boot-up and Start on app launch.
 
 ![Image](./docs/gpslogger_1.png)
 
@@ -48,7 +48,7 @@ Enable Log to custom URL.
 
 Right after enabling, the app takes you to the Log to custom URL settings and modify:
 
-* **URL** - Set URL to **https://<username>:<password>@<your.ip.address>/gpstracker/gpslogger** by replacing <???> with values matching your setup. It’s HIGHLY recommended to use SSL/TLS.
+* **URL** - Set URL to **https://\<username\>:\<password\>@<your.ip.address>/gpstracker/gpslogger** by replacing <???> with values matching your setup. It’s HIGHLY recommended to use SSL/TLS.
 * **HTTP Body** - Type in the following JSON:
 
 ```
@@ -88,9 +88,9 @@ Basic channels provided by the tracker things:
 * **Location** - Current location of the tracker
 * **Last Report** - Timestamp of the last location report
 * **Battery Level** - Battery level of the device running the tracker application
-* **Region trigger channel** - Used by regions defined in tracker application. Event is fired with payload of the region name when the binding receives a **transition** log record. Payload is suffixed with `/enter` for entering and with `/leave` for leaving events.
+* **Region trigger channel** - Used by regions defined in tracker application. Event is fired with payload of the region name when the binding receives a **transition** log record or a distance calculation for a **location** record indicates that the tracker is outside of the region circle. Payload is suffixed with `/enter` for entering and with `/leave` for leaving events.
 
-#### Distance calculation
+#### Distance Calculation
 
 Tracker thing can be extended with **Distance** channels if a distance calculation is needed for a region. 
 These dynamic channels require the following parameters:
@@ -102,9 +102,9 @@ These dynamic channels require the following parameters:
 
 Distance values will be updated each time a GPS log record is received from the tracker.
 
-#### Presence switch items
+#### Geofences
 
-Switch type items can be linked to **regionTrigger** and **regionDistance** channels with the flolwing parameters:
+Switch type items can be linked to **regionTrigger** and **regionDistance** channels with the following parameters:
 
 | Channel | Parameter | Type |Description |
 | --- | --- | --- | --- |

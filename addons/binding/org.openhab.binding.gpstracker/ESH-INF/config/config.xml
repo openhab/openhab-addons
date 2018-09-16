@@ -14,7 +14,14 @@
 	<config-description uri="channel-type:gpstracker:distance">
 		<parameter name="regionName" type="text" required="true">
 			<label>Region Name</label>
-			<description>Name of the region</description>
+			<description>Region name payload for trigger channel event</description>
+			<advanced>false</advanced>
+			<limitToOptions>false</limitToOptions>
+		</parameter>
+		<parameter name="regionRadius" type="integer" required="true" unit="m">
+			<label>Region Radius</label>
+			<description>Region circle radius in m or yd</description>
+			<default>100</default>
 			<advanced>false</advanced>
 		</parameter>
 		<parameter name="regionCenterLocation" type="text" required="true">

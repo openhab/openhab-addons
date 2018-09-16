@@ -11,6 +11,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: 
  com.google.gson,
  com.google.gson.annotations,
+ javax.measure.quantity,
  javax.servlet,
  javax.servlet.http,
  org.apache.commons.lang,

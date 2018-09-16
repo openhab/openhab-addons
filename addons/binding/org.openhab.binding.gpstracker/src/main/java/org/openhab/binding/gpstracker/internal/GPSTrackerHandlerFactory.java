@@ -10,6 +10,8 @@ package org.openhab.binding.gpstracker.internal;
 
 import org.eclipse.smarthome.config.core.ConfigOptionProvider;
 import org.eclipse.smarthome.config.core.ParameterOption;
+import org.eclipse.smarthome.core.i18n.LocationProvider;
+import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -22,6 +24,7 @@ import org.openhab.binding.gpstracker.internal.message.NotificationBroker;
 import org.openhab.binding.gpstracker.internal.provider.TrackerRegistry;
 import org.openhab.binding.gpstracker.internal.provider.gpslogger.GPSLoggerCallbackServlet;
 import org.openhab.binding.gpstracker.internal.provider.owntracks.OwnTracksCallbackServlet;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -46,7 +49,7 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
     /**
      * Config URI
      */
-    private static final String URI_STR = "profile:gpstracker:triggerPresenceSwitch";
+    private static final String URI_STR = "profile:gpstracker:trigger-geofence";
 
     /**
      * Class logger
@@ -89,6 +92,11 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
     private Set<String> regions = new HashSet<>();
 
     /**
+     * System location
+     */
+    private PointType sysLocation;
+
+    /**
      * Called by the framework to find out if thing type is supported by the handler factory.
      *
      * @param thingTypeUID Thing type UID
@@ -110,7 +118,7 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (GPSTrackerBindingConstants.THING_TYPE_TRACKER.equals(thingTypeUID)
                 && ConfigHelper.getTrackerId(thing.getConfiguration()) != null) {
-            TrackerHandler trackerHandler = new TrackerHandler(thing, notificationBroker, regions);
+            TrackerHandler trackerHandler = new TrackerHandler(thing, notificationBroker, regions, sysLocation);
             discoveryService.removeTracker(trackerHandler.getTrackerId());
             trackerHandlers.put(trackerHandler.getTrackerId(), trackerHandler);
             return trackerHandler;
@@ -133,6 +141,13 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
     @Override
     protected void activate(ComponentContext componentContext) {
         super.activate(componentContext);
+
+        //get system location
+        ServiceReference<LocationProvider> locServiceReference = bundleContext.getServiceReference(LocationProvider.class);
+        if (locServiceReference != null) {
+            LocationProvider service = bundleContext.getService(locServiceReference);
+            sysLocation = service.getLocation();
+        }
 
         logger.debug("Initializing callback servlets");
         try {
