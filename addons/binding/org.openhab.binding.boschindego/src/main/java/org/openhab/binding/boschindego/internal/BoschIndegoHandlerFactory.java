@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.boschindego.internal;
 
-import static org.openhab.binding.boschindego.BoschIndegoBindingConstants.THING_TYPE_INDEGO;
+import static org.openhab.binding.boschindego.internal.BoschIndegoBindingConstants.THING_TYPE_INDEGO;
 
 import java.util.Collections;
 import java.util.Set;
@@ -18,7 +18,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.boschindego.handler.BoschIndegoHandler;
+import org.openhab.binding.boschindego.internal.handler.BoschIndegoHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**

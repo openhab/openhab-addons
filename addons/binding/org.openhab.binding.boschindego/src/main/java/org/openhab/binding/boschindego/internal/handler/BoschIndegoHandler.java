@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.boschindego.handler;
+package org.openhab.binding.boschindego.internal.handler;
 
-import static org.openhab.binding.boschindego.BoschIndegoBindingConstants.*;
+import static org.openhab.binding.boschindego.internal.BoschIndegoBindingConstants.*;
 import static org.openhab.binding.boschindego.internal.IndegoStateConstants.*;
 
 import java.math.BigDecimal;
