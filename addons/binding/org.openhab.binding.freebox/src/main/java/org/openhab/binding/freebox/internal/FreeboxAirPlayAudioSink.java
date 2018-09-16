@@ -27,8 +27,8 @@ import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.util.ThingHandlerHelper;
-import org.openhab.binding.freebox.handler.FreeboxThingHandler;
 import org.openhab.binding.freebox.internal.config.FreeboxAirPlayDeviceConfiguration;
+import org.openhab.binding.freebox.internal.handler.FreeboxThingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
