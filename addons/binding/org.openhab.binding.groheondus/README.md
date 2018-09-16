@@ -33,7 +33,7 @@ Both parameters, `username` as well as `password`, are required arguments and re
 
 ### Appliance
 
-The `groheondus:sense` and `groheondus:senseguard` thing is used to retrieve information of a specific appliance from GROHE.
+The `groheondus:sense` and `groheondus:senseguard` things are used to retrieve information of a specific appliance from GROHE.
 This appliance needs to be connected with your GROHE ONDUS account as configured in the corresponding Account Bridge.
 The appliance needs to be configured with the unique appliance ID (with the `applianceId` configuration) as well as the `roomId`
 and the `locationId`. Once the account bridge is configured, the appliances in your account will be discovered as Appliance things.

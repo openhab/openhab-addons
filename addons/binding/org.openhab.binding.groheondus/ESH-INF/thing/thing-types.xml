@@ -72,7 +72,7 @@
 			<channel id="name" typeId="name" />
 			<channel id="humidity" typeId="humidity" />
 			<channel id="temperature" typeId="temperature" />
-			<channel id="battery" typeId="battery" />
+			<channel id="battery" typeId="system.battery-level" />
 		</channels>
 
 		<representation-property>applianceId</representation-property>
@@ -128,12 +128,6 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>The temperature reported by the device</description>
-		<state readOnly="true" pattern="%.1f %unit%" />
-	</channel-type>
-	<channel-type id="battery">
-		<item-type>Number:Percent</item-type>
-		<label>Battery level</label>
-		<description>The battery level of the device</description>
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 </thing:thing-descriptions>

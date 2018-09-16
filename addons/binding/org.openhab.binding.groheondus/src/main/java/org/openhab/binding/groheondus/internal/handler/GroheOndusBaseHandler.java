@@ -11,12 +11,15 @@ package org.openhab.binding.groheondus.internal.handler;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.grohe.ondus.api.OndusService;
 import org.grohe.ondus.api.model.BaseAppliance;
 import org.grohe.ondus.api.model.Location;
@@ -28,8 +31,9 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Florian Schmidt - Initial contribution
  */
-public abstract class GroheOndusBaseHandler<T extends BaseAppliance> extends BaseThingHandler {
-    private final Logger logger = LoggerFactory.getLogger(GroheOndusSenseGuardHandler.class);
+@NonNullByDefault
+public abstract class GroheOndusBaseHandler<T extends BaseAppliance, M> extends BaseThingHandler {
+    private final Logger logger = LoggerFactory.getLogger(GroheOndusBaseHandler.class);
 
     protected @Nullable GroheOndusApplianceConfiguration config;
 
@@ -48,6 +52,7 @@ public abstract class GroheOndusBaseHandler<T extends BaseAppliance> extends Bas
             return;
         }
 
+        @Nullable
         T appliance = getAppliance(ondusService);
         if (appliance == null) {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR, "Could not load appliance");
@@ -59,18 +64,60 @@ public abstract class GroheOndusBaseHandler<T extends BaseAppliance> extends Bas
         updateStatus(ThingStatus.UNKNOWN);
     }
 
+    @Override
+    public void channelLinked(ChannelUID channelUID) {
+        super.channelLinked(channelUID);
+
+        OndusService ondusService = getOndusService();
+        if (ondusService == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                    "No initialized OndusService available from bridge.");
+            return;
+        }
+
+        @Nullable
+        T appliance = getAppliance(ondusService);
+        if (appliance == null) {
+            return;
+        }
+        updateChannel(channelUID, appliance, getLastMeasurement(appliance));
+    }
+
+    public void updateChannels() {
+        OndusService ondusService = getOndusService();
+        if (ondusService == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                    "No initialized OndusService available from bridge.");
+            return;
+        }
+
+        @Nullable
+        T appliance = getAppliance(ondusService);
+        if (appliance == null) {
+            return;
+        }
+
+        M measurement = getLastMeasurement(appliance);
+        getThing().getChannels().forEach(channel -> updateChannel(channel.getUID(), appliance, measurement));
+
+        updateStatus(ThingStatus.ONLINE);
+    }
+
+    protected abstract M getLastMeasurement(T appliance);
+
+    protected abstract void updateChannel(ChannelUID channelUID, T appliance, M measurement);
+
     public @Nullable OndusService getOndusService() {
-        if (getBridge() == null) {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
             return null;
         }
-        if (getBridge().getHandler() == null) {
-            return null;
-        }
-        if (!(getBridge().getHandler() instanceof GroheOndusAccountHandler)) {
+        BridgeHandler handler = bridge.getHandler();
+        if (!(handler instanceof GroheOndusAccountHandler)) {
             return null;
         }
         try {
-            return ((GroheOndusAccountHandler) getBridge().getHandler()).getService();
+            return ((GroheOndusAccountHandler) handler).getService();
         } catch (IllegalStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             return null;
@@ -85,7 +132,7 @@ public abstract class GroheOndusBaseHandler<T extends BaseAppliance> extends Bas
         return new Location(config.locationId);
     }
 
-    protected @Nullable T getAppliance(@NonNull OndusService ondusService) {
+    protected @Nullable T getAppliance(OndusService ondusService) {
         try {
             BaseAppliance appliance = ondusService.getAppliance(getRoom(), config.applianceId).orElse(null);
             if (appliance.getType() != getType()) {
@@ -102,8 +149,6 @@ public abstract class GroheOndusBaseHandler<T extends BaseAppliance> extends Bas
     }
 
     protected abstract int getPollingInterval(T appliance);
-
-    public abstract void updateChannels();
 
     protected abstract int getType();
 }

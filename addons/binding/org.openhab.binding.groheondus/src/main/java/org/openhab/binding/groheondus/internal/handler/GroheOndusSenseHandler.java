@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * @author Florian Schmidt - Initial contribution
  */
 @NonNullByDefault
-public class GroheOndusSenseHandler<T> extends GroheOndusBaseHandler<SenseAppliance> {
+public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<SenseAppliance, Measurement> {
 
     private static final int DEFAULT_POLLING_INTERVAL = 900;
 
@@ -69,25 +69,6 @@ public class GroheOndusSenseHandler<T> extends GroheOndusBaseHandler<SenseApplia
     }
 
     @Override
-    public void updateChannels() {
-        OndusService ondusService = getOndusService();
-        if (ondusService == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                    "No initialized OndusService available from bridge.");
-            return;
-        }
-        SenseAppliance appliance = getAppliance(ondusService);
-        if (appliance == null) {
-            return;
-        }
-
-        Measurement measurement = getLastMeasurement(appliance);
-        getThing().getChannels().forEach(channel -> updateChannel(channel.getUID(), appliance, measurement));
-
-        updateStatus(ThingStatus.ONLINE);
-    }
-
-    @Override
     protected int getPollingInterval(SenseAppliance appliance) {
         if (config.pollingInterval > 0) {
             return config.pollingInterval;
@@ -95,8 +76,9 @@ public class GroheOndusSenseHandler<T> extends GroheOndusBaseHandler<SenseApplia
         return DEFAULT_POLLING_INTERVAL;
     }
 
-    private void updateChannel(ChannelUID channel, SenseAppliance appliance, Measurement measurement) {
-        String channelId = channel.getIdWithoutGroup();
+    @Override
+    protected void updateChannel(ChannelUID channelUID, SenseAppliance appliance, Measurement measurement) {
+        String channelId = channelUID.getIdWithoutGroup();
         State newState;
         switch (channelId) {
             case CHANNEL_NAME:
@@ -112,14 +94,15 @@ public class GroheOndusSenseHandler<T> extends GroheOndusBaseHandler<SenseApplia
                 newState = new QuantityType<>(getBatteryStatus(appliance), SmartHomeUnits.PERCENT);
                 break;
             default:
-                throw new IllegalArgumentException("Channel " + channel + " not supported.");
+                throw new IllegalArgumentException("Channel " + channelUID + " not supported.");
         }
         if (newState != null) {
-            updateState(channel, newState);
+            updateState(channelUID, newState);
         }
     }
 
-    private Measurement getLastMeasurement(SenseAppliance appliance) {
+    @Override
+    protected Measurement getLastMeasurement(SenseAppliance appliance) {
         if (getOndusService() == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                     "No initialized OndusService available from bridge.");
@@ -183,7 +166,6 @@ public class GroheOndusSenseHandler<T> extends GroheOndusBaseHandler<SenseApplia
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        return;
     }
 
     @Override
