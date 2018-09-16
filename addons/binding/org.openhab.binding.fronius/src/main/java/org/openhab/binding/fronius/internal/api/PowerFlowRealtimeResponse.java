@@ -16,24 +16,9 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Thomas Rokohl - Initial contribution
  */
-public class PowerFlowRealtimeResponse implements IBaseFroniusResponse {
-    @SerializedName("Head")
-    private Head head;
-
+public class PowerFlowRealtimeResponse extends BaseFroniusResponse {
     @SerializedName("Body")
     private PowerFlowRealtimeBody body;
-
-    @Override
-    public Head getHead() {
-        if (head == null) {
-            head = new Head();
-        }
-        return head;
-    }
-
-    public void setHead(Head head) {
-        this.head = head;
-    }
 
     public PowerFlowRealtimeBody getBody() {
         if (body == null) {

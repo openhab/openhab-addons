@@ -18,7 +18,7 @@ import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.fronius.FroniusBaseDeviceConfiguration;
 import org.openhab.binding.fronius.FroniusBindingConstants;
 import org.openhab.binding.fronius.FroniusBridgeConfiguration;
-import org.openhab.binding.fronius.internal.api.IBaseFroniusResponse;
+import org.openhab.binding.fronius.internal.api.BaseFroniusResponse;
 import org.openhab.binding.fronius.internal.api.InverterRealtimeResponse;
 import org.openhab.binding.fronius.internal.api.PowerFlowRealtimeResponse;
 import org.openhab.binding.fronius.internal.api.ValueUnit;
@@ -141,7 +141,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      * @param url to request
      * @return the object representation of the json response
      */
-    private <T extends IBaseFroniusResponse> T collectDataFormUrl(Class<T> type, String url) {
+    private <T extends BaseFroniusResponse> T collectDataFormUrl(Class<T> type, String url) {
         T result = null;
         boolean resultOk = false;
         String errorMsg = null;
@@ -158,14 +158,10 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
             if (result == null) {
                 errorMsg = "no data returned";
             } else {
-                if (result.getHead() == null) {
-                    errorMsg = "no header";
+                if (result.getHead().getStatus().getCode() == 0) {
+                    resultOk = true;
                 } else {
-                    if (result.getHead().getStatus().getCode() == 0) {
-                        resultOk = true;
-                    } else {
-                        errorMsg = result.getHead().getStatus().getReason();
-                    }
+                    errorMsg = result.getHead().getStatus().getReason();
                 }
             }
             if (!resultOk) {
@@ -202,14 +198,14 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      * Make the InverterRealtimeDataRequest
      *
      * @param ip address of the device
+     * @param deviceId of the device
      * @return {InverterRealtimeResponse} the object representation of the json response
      */
     private InverterRealtimeResponse getRealtimeData(String ip, int deviceId) {
         String location = FroniusBindingConstants.INVERTER_REALTIME_DATA_URL.replace("%IP%",
                 StringUtils.trimToEmpty(ip));
         location = location.replace("%DEVICEID%", Integer.toString(deviceId));
-        InverterRealtimeResponse result = collectDataFormUrl(InverterRealtimeResponse.class, location);
-        return result;
+        return collectDataFormUrl(InverterRealtimeResponse.class, location);
     }
 
 }
