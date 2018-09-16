@@ -26,13 +26,13 @@ import org.matmaul.freeboxos.airmedia.AirMediaReceiver;
 import org.matmaul.freeboxos.lan.LanHostConfig;
 import org.matmaul.freeboxos.lan.LanHostL3Connectivity;
 import org.matmaul.freeboxos.lan.LanHostsConfig;
-import org.openhab.binding.freebox.FreeboxBindingConstants;
-import org.openhab.binding.freebox.FreeboxDataListener;
-import org.openhab.binding.freebox.handler.FreeboxHandler;
+import org.openhab.binding.freebox.internal.FreeboxBindingConstants;
+import org.openhab.binding.freebox.internal.FreeboxDataListener;
 import org.openhab.binding.freebox.internal.config.FreeboxAirPlayDeviceConfiguration;
 import org.openhab.binding.freebox.internal.config.FreeboxNetDeviceConfiguration;
 import org.openhab.binding.freebox.internal.config.FreeboxNetInterfaceConfiguration;
 import org.openhab.binding.freebox.internal.config.FreeboxServerConfiguration;
+import org.openhab.binding.freebox.internal.handler.FreeboxHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

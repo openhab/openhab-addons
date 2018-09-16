@@ -16,9 +16,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.freebox;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
-Export-Package: 
- org.openhab.binding.freebox,
- org.openhab.binding.freebox.handler
 Import-Package: 
  com.google.common.base,
  com.google.common.collect,
@@ -41,8 +38,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.util,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.io.net.http,
- org.openhab.binding.freebox,
- org.openhab.binding.freebox.handler,
  org.osgi.framework,
  org.osgi.service.component,
  org.slf4j

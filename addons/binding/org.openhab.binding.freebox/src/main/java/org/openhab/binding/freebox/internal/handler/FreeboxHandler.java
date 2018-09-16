@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.freebox.handler;
+package org.openhab.binding.freebox.internal.handler;
 
-import static org.openhab.binding.freebox.FreeboxBindingConstants.*;
+import static org.openhab.binding.freebox.internal.FreeboxBindingConstants.*;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -55,8 +55,8 @@ import org.matmaul.freeboxos.netshare.SambaConfig;
 import org.matmaul.freeboxos.system.SystemConfiguration;
 import org.matmaul.freeboxos.upnpav.UPnPAVConfig;
 import org.matmaul.freeboxos.wifi.WifiGlobalConfig;
-import org.openhab.binding.freebox.FreeboxBindingConstants;
-import org.openhab.binding.freebox.FreeboxDataListener;
+import org.openhab.binding.freebox.internal.FreeboxBindingConstants;
+import org.openhab.binding.freebox.internal.FreeboxDataListener;
 import org.openhab.binding.freebox.internal.config.FreeboxServerConfiguration;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
