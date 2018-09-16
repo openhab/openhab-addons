@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.bigassfan.internal.discovery;
 
-import static org.openhab.binding.bigassfan.BigAssFanBindingConstants.*;
+import static org.openhab.binding.bigassfan.internal.BigAssFanBindingConstants.*;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
