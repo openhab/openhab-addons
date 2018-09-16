@@ -11,6 +11,7 @@ package org.openhab.binding.gpstracker.internal;
 import org.eclipse.smarthome.config.core.ConfigOptionProvider;
 import org.eclipse.smarthome.config.core.ParameterOption;
 import org.eclipse.smarthome.core.i18n.LocationProvider;
+import org.eclipse.smarthome.core.i18n.UnitProvider;
 import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -60,6 +61,11 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
      * Discovery service instance
      */
     private TrackerDiscoveryService discoveryService;
+
+    /**
+     * Unit provider
+     */
+    private UnitProvider unitProvider;
 
     /**
      * HTTP service reference
@@ -118,7 +124,7 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (GPSTrackerBindingConstants.THING_TYPE_TRACKER.equals(thingTypeUID)
                 && ConfigHelper.getTrackerId(thing.getConfiguration()) != null) {
-            TrackerHandler trackerHandler = new TrackerHandler(thing, notificationBroker, regions, sysLocation);
+            TrackerHandler trackerHandler = new TrackerHandler(thing, notificationBroker, regions, sysLocation, unitProvider);
             discoveryService.removeTracker(trackerHandler.getTrackerId());
             trackerHandlers.put(trackerHandler.getTrackerId(), trackerHandler);
             return trackerHandler;
@@ -209,6 +215,15 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
 
     protected void unsetTrackerDiscoveryService(TrackerDiscoveryService discoveryService) {
         this.discoveryService = null;
+    }
+
+    @Reference
+    protected void setUnitProvider(UnitProvider unitProvider) {
+        this.unitProvider = unitProvider;
+    }
+
+    protected void unsetUnitProvider(UnitProvider unitProvider) {
+        this.unitProvider = null;
     }
 
     @Override

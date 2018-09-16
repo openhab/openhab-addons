@@ -12,10 +12,12 @@ package org.openhab.binding.gpstracker.internal.handler;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.i18n.UnitProvider;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.ImperialUnits;
 import org.eclipse.smarthome.core.library.unit.MetricPrefix;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -34,6 +36,8 @@ import org.openhab.binding.gpstracker.internal.message.TransitionMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.measure.Unit;
+import javax.measure.quantity.Length;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -93,20 +97,26 @@ public class TrackerHandler extends BaseThingHandler {
     private PointType sysLocation;
 
     /**
+     * Unit provider
+     */
+    private UnitProvider unitProvider;
+
+    /**
      * Constructor.
-     *
-     * @param thing Thing.
+     *  @param thing Thing.
      * @param notificationBroker Notification broker
      * @param regions Global region set
      * @param sysLocation Location of the system
+     * @param unitProvider Unit provider
      */
-    public TrackerHandler(Thing thing, NotificationBroker notificationBroker, Set<String> regions, PointType sysLocation) {
+    public TrackerHandler(Thing thing, NotificationBroker notificationBroker, Set<String> regions, PointType sysLocation, UnitProvider unitProvider) {
         super(thing);
 
         this.notificationBroker = notificationBroker;
         this.notificationHandler = new NotificationHandler();
         this.regions = regions;
         this.sysLocation = sysLocation;
+        this.unitProvider = unitProvider;
 
         trackerId = ConfigHelper.getTrackerId(thing.getConfiguration());
         notificationBroker.registerHandler(trackerId, notificationHandler);
@@ -227,9 +237,10 @@ public class TrackerHandler extends BaseThingHandler {
 
                         //fire trigger based on distance calculation only in case of pure location message
                         if (!(message instanceof TransitionMessage)) {
-                            Integer regionRadius = ConfigHelper.getRegionRadius(c.getConfiguration());
+                            //convert into meters which is the unit of the calculated distance
+                            double radiusMeter = convertRadiusToMeters(ConfigHelper.getRegionRadius(c.getConfiguration()));
                             String regionName = ConfigHelper.getRegionName(c.getConfiguration());
-                            if (regionRadius > newDistance) {
+                            if (radiusMeter > newDistance) {
                                 triggerRegionChannel(regionName, EVENT_ENTER);
                             } else {
                                 triggerRegionChannel(regionName, EVENT_LEAVE);
@@ -237,6 +248,22 @@ public class TrackerHandler extends BaseThingHandler {
                         }
                     }
                 });
+    }
+
+    private double convertRadiusToMeters(double radius) {
+        if (unitProvider != null) {
+            @Nullable Unit<Length> unit = unitProvider.getUnit(Length.class);
+            if (unit != null && !SIUnits.METRE.equals(unit)) {
+                double value = ImperialUnits.YARD.getConverterTo(SIUnits.METRE).convert(radius);
+                logger.trace("Region radius converted: {}yd->{}m", radius, value);
+                return value;
+            } else {
+                logger.trace("System uses SI measurement units. No conversion is needed.");
+            }
+        } else {
+            logger.trace("No unit provider. Considering region radius {} in metres.", radius);
+        }
+        return radius;
     }
 
     /**

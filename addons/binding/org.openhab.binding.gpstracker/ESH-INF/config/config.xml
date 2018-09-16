@@ -18,7 +18,7 @@
 			<advanced>false</advanced>
 			<limitToOptions>false</limitToOptions>
 		</parameter>
-		<parameter name="regionRadius" type="integer" required="true" unit="m">
+		<parameter name="regionRadius" type="decimal" required="true" min="0">
 			<label>Region Radius</label>
 			<description>Region circle radius in m or yd</description>
 			<default>100</default>

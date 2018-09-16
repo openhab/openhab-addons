@@ -30,8 +30,8 @@ public class ConfigHelper {
      */
     private ConfigHelper() {}
 
-    public static Integer getRegionRadius(Configuration config) {
-        return ((BigDecimal) config.get(CONFIG_REGION_RADIUS)).intValue();
+    public static double getRegionRadius(Configuration config) {
+        return ((BigDecimal) config.get(CONFIG_REGION_RADIUS)).doubleValue();
     }
 
     public static String getRegionName(Configuration config) {
