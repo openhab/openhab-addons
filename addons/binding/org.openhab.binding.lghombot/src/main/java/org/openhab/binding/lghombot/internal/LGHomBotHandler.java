@@ -62,6 +62,7 @@ public class LGHomBotHandler extends BaseThingHandler {
     @Nullable
     private ScheduledFuture<?> refreshTimer;
 
+    // State of HomBot
     private String currentState = "";
     private String currentMode = "";
     private String currentNickname = "";
@@ -73,6 +74,13 @@ public class LGHomBotHandler extends BaseThingHandler {
     private State currentImage = UnDefType.UNDEF;
     private State currentMap = UnDefType.UNDEF;
     private DateTimeType currentLastClean = new DateTimeType();
+    private String currentMonday = "";
+    private String currentTuesday = "";
+    private String currentWednesday = "";
+    private String currentThursday = "";
+    private String currentFriday = "";
+    private String currentSaturday = "";
+    private String currentSunday = "";
 
     private final DateTimeFormatter formatterLG = DateTimeFormatter.ofPattern("yyyy/MM/dd/HH/mm/ss");
     private boolean disposed = false;
@@ -275,6 +283,15 @@ public class LGHomBotHandler extends BaseThingHandler {
             case CHANNEL_LAST_CLEAN:
                 updateState(channelUID, currentLastClean);
                 break;
+            case CHANNEL_MONDAY:
+            case CHANNEL_TUESDAY:
+            case CHANNEL_WEDNESDAY:
+            case CHANNEL_THURSDAY:
+            case CHANNEL_FRIDAY:
+            case CHANNEL_SATURDAY:
+            case CHANNEL_SUNDAY:
+                refreshCounter = 1;
+                break;
             default:
                 logger.warn("Channel refresh for {} not implemented!", channelUID.getId());
         }
@@ -286,7 +303,11 @@ public class LGHomBotHandler extends BaseThingHandler {
         }
         if (refreshCounter > 0) {
             refreshCounter--;
-            if (refreshCounter % 5 == 0) {
+            if (refreshCounter == 0) {
+                fetchSchedule();
+                return;
+            }
+            if (refreshCounter % 5 == 1) {
                 parseImage();
                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_CAMERA), currentImage);
                 return;
@@ -309,100 +330,202 @@ public class LGHomBotHandler extends BaseThingHandler {
                 int idx = row.indexOf('=');
                 String name = row.substring(0, idx);
                 String state = row.substring(idx + 1).replace("\"", "");
-                if (name.equals("JSON_ROBOT_STATE")) {
-                    if (!state.equals(currentState)) {
-                        if (state.isEmpty()) {
-                            state = "ERROR";
-                        }
-                        currentState = state;
-                        channel = new ChannelUID(getThing().getUID(), CHANNEL_STATE);
-                        updateState(channel, StringType.valueOf(state));
+                switch (name) {
+                    case "JSON_ROBOT_STATE":
+                        if (!state.equals(currentState)) {
+                            if (state.isEmpty()) {
+                                state = "ERROR";
+                            }
+                            currentState = state;
+                            channel = new ChannelUID(getThing().getUID(), CHANNEL_STATE);
+                            updateState(channel, StringType.valueOf(state));
 
-                        if (state.equals(HBSTATE_WORKING) || state.equals(HBSTATE_BACKMOVING)
-                                || state.equals(HBSTATE_BACKMOVING_INIT)) {
-                            channel = new ChannelUID(getThing().getUID(), CHANNEL_START);
-                            updateState(channel, OnOffType.ON);
-                            channel = new ChannelUID(getThing().getUID(), CHANNEL_HOME);
-                            updateState(channel, OnOffType.OFF);
+                            if (state.equals(HBSTATE_WORKING) || state.equals(HBSTATE_BACKMOVING)
+                                    || state.equals(HBSTATE_BACKMOVING_INIT)) {
+                                channel = new ChannelUID(getThing().getUID(), CHANNEL_START);
+                                updateState(channel, OnOffType.ON);
+                                channel = new ChannelUID(getThing().getUID(), CHANNEL_HOME);
+                                updateState(channel, OnOffType.OFF);
+                            }
+                            if (state.equals(HBSTATE_HOMING) || state.equals(HBSTATE_DOCKING)) {
+                                channel = new ChannelUID(getThing().getUID(), CHANNEL_START);
+                                updateState(channel, OnOffType.OFF);
+                                channel = new ChannelUID(getThing().getUID(), CHANNEL_HOME);
+                                updateState(channel, OnOffType.ON);
+                            }
+                            if (state.equals(HBSTATE_PAUSE) || state.equals(HBSTATE_CHARGING)
+                                    || state.equals(HBSTATE_DIAGNOSIS) || state.equals(HBSTATE_RESERVATION)) {
+                                channel = new ChannelUID(getThing().getUID(), CHANNEL_START);
+                                updateState(channel, OnOffType.OFF);
+                                channel = new ChannelUID(getThing().getUID(), CHANNEL_HOME);
+                                updateState(channel, OnOffType.OFF);
+                            }
                         }
-                        if (state.equals(HBSTATE_HOMING) || state.equals(HBSTATE_DOCKING)) {
-                            channel = new ChannelUID(getThing().getUID(), CHANNEL_START);
-                            updateState(channel, OnOffType.OFF);
-                            channel = new ChannelUID(getThing().getUID(), CHANNEL_HOME);
-                            updateState(channel, OnOffType.ON);
+                        break;
+                    case "JSON_BATTPERC":
+                        DecimalType battery = DecimalType.valueOf(state);
+                        if (!battery.equals(currentBattery)) {
+                            currentBattery = battery;
+                            channel = new ChannelUID(getThing().getUID(), CHANNEL_BATTERY);
+                            updateState(channel, battery);
                         }
-                        if (state.equals(HBSTATE_PAUSE) || state.equals(HBSTATE_CHARGING)
-                                || state.equals(HBSTATE_DIAGNOSIS) || state.equals(HBSTATE_RESERVATION)) {
-                            channel = new ChannelUID(getThing().getUID(), CHANNEL_START);
-                            updateState(channel, OnOffType.OFF);
-                            channel = new ChannelUID(getThing().getUID(), CHANNEL_HOME);
-                            updateState(channel, OnOffType.OFF);
+                        break;
+                    case "CPU_IDLE":
+                        if (isLinked(CHANNEL_CPU_LOAD)) {
+                            DecimalType cpuLoad = new DecimalType(100 - Double.valueOf(state).intValue());
+                            if (!cpuLoad.equals(currentCPULoad)) {
+                                currentCPULoad = cpuLoad;
+                                channel = new ChannelUID(getThing().getUID(), CHANNEL_CPU_LOAD);
+                                updateState(channel, cpuLoad);
+                            }
                         }
-                    }
-                } else if (name.equals("JSON_BATTPERC")) {
-                    DecimalType battery = DecimalType.valueOf(state);
-                    if (!battery.equals(currentBattery)) {
-                        currentBattery = battery;
-                        channel = new ChannelUID(getThing().getUID(), CHANNEL_BATTERY);
-                        updateState(channel, battery);
-                    }
-                } else if (name.equals("CPU_IDLE")) {
-                    if (isLinked(CHANNEL_CPU_LOAD)) {
-                        DecimalType cpuLoad = new DecimalType(100 - Double.valueOf(state).intValue());
-                        if (!cpuLoad.equals(currentCPULoad)) {
-                            currentCPULoad = cpuLoad;
-                            channel = new ChannelUID(getThing().getUID(), CHANNEL_CPU_LOAD);
-                            updateState(channel, cpuLoad);
+                        break;
+                    case "LGSRV_MEMUSAGE":
+                        if (!state.equals(currentSrvMem)) {
+                            currentSrvMem = state;
+                            channel = new ChannelUID(getThing().getUID(), CHANNEL_SRV_MEM);
+                            updateState(channel, StringType.valueOf(state));
                         }
-                    }
-                } else if (name.equals("LGSRV_MEMUSAGE")) {
-                    if (!state.equals(currentSrvMem)) {
-                        currentSrvMem = state;
-                        channel = new ChannelUID(getThing().getUID(), CHANNEL_SRV_MEM);
-                        updateState(channel, StringType.valueOf(state));
-                    }
-                } else if (name.equals("JSON_TURBO")) {
-                    OnOffType turbo = state.equalsIgnoreCase("true") ? OnOffType.ON : OnOffType.OFF;
-                    if (!turbo.equals(currentTurbo)) {
-                        currentTurbo = turbo;
-                        channel = new ChannelUID(getThing().getUID(), CHANNEL_TURBO);
-                        updateState(channel, turbo);
-                    }
-                } else if (name.equals("JSON_REPEAT")) {
-                    OnOffType repeat = state.equalsIgnoreCase("true") ? OnOffType.ON : OnOffType.OFF;
-                    if (!repeat.equals(currentRepeat)) {
-                        currentRepeat = repeat;
-                        channel = new ChannelUID(getThing().getUID(), CHANNEL_REPEAT);
-                        updateState(channel, repeat);
-                    }
-                } else if (name.equals("JSON_MODE")) {
-                    if (!state.equals(currentMode)) {
-                        currentMode = state;
-                        channel = new ChannelUID(getThing().getUID(), CHANNEL_MODE);
-                        updateState(channel, StringType.valueOf(state));
-                    }
-                } else if (name.equals("JSON_NICKNAME")) {
-                    if (!state.equals(currentNickname)) {
-                        currentNickname = state;
-                        channel = new ChannelUID(getThing().getUID(), CHANNEL_NICKNAME);
-                        updateState(channel, StringType.valueOf(state));
-                    }
-                } else if (name.equals("CLREC_LAST_CLEAN")) {
-                    final String stringDate = row.substring(17, 37).replace("\"", "");
-                    ZonedDateTime date = ZonedDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneId.systemDefault());
-                    try {
-                        LocalDateTime localDateTime = LocalDateTime.parse(stringDate, formatterLG);
-                        date = ZonedDateTime.of(localDateTime, ZoneId.systemDefault());
-                    } catch (Exception e) {
-                        logger.info("Couldn't parse DateTime {}", e);
-                    }
-                    DateTimeType lastClean = new DateTimeType(date);
-                    if (!lastClean.equals(currentLastClean)) {
-                        currentLastClean = lastClean;
-                        channel = new ChannelUID(getThing().getUID(), CHANNEL_LAST_CLEAN);
-                        updateState(channel, lastClean);
-                    }
+                        break;
+                    case "JSON_TURBO":
+                        OnOffType turbo = state.equalsIgnoreCase("true") ? OnOffType.ON : OnOffType.OFF;
+                        if (!turbo.equals(currentTurbo)) {
+                            currentTurbo = turbo;
+                            channel = new ChannelUID(getThing().getUID(), CHANNEL_TURBO);
+                            updateState(channel, turbo);
+                        }
+                        break;
+                    case "JSON_REPEAT":
+                        OnOffType repeat = state.equalsIgnoreCase("true") ? OnOffType.ON : OnOffType.OFF;
+                        if (!repeat.equals(currentRepeat)) {
+                            currentRepeat = repeat;
+                            channel = new ChannelUID(getThing().getUID(), CHANNEL_REPEAT);
+                            updateState(channel, repeat);
+                        }
+                        break;
+                    case "JSON_MODE":
+                        if (!state.equals(currentMode)) {
+                            currentMode = state;
+                            channel = new ChannelUID(getThing().getUID(), CHANNEL_MODE);
+                            updateState(channel, StringType.valueOf(state));
+                        }
+                        break;
+                    case "JSON_NICKNAME":
+                        if (!state.equals(currentNickname)) {
+                            currentNickname = state;
+                            channel = new ChannelUID(getThing().getUID(), CHANNEL_NICKNAME);
+                            updateState(channel, StringType.valueOf(state));
+                        }
+                        break;
+                    case "CLREC_LAST_CLEAN":
+                        final String stringDate = row.substring(17, 37).replace("\"", "");
+                        ZonedDateTime date = ZonedDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneId.systemDefault());
+                        try {
+                            LocalDateTime localDateTime = LocalDateTime.parse(stringDate, formatterLG);
+                            date = ZonedDateTime.of(localDateTime, ZoneId.systemDefault());
+                        } catch (Exception e) {
+                            logger.info("Couldn't parse DateTime {}", e);
+                        }
+                        DateTimeType lastClean = new DateTimeType(date);
+                        if (!lastClean.equals(currentLastClean)) {
+                            currentLastClean = lastClean;
+                            channel = new ChannelUID(getThing().getUID(), CHANNEL_LAST_CLEAN);
+                            updateState(channel, lastClean);
+                        }
+                        break;
+                    default:
+                        break;
                 }
+            }
+        }
+    }
+
+    private void fetchSchedule() {
+        String status = null;
+        String url = buildHttpAddress(".../usr/data/htdocs/timer.txt");
+        try {
+            status = HttpUtil.executeUrl("GET", url, 1000);
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
+            }
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+        if (status != null && !status.isEmpty()) {
+            String monday = "";
+            String tuesday = "";
+            String wednesday = "";
+            String thursday = "";
+            String friday = "";
+            String saturday = "";
+            String sunday = "";
+            String[] rows = status.split("\\r?\\n");
+            ChannelUID channel;
+            for (String row : rows) {
+                int idx = row.indexOf('=');
+                String name = row.substring(0, idx);
+                String state = row.substring(idx + 1);
+                switch (name) {
+                    case "MONDAY":
+                        monday = state;
+                        break;
+                    case "TUESDAY":
+                        tuesday = state;
+                        break;
+                    case "WEDNESDAY":
+                        wednesday = state;
+                        break;
+                    case "THURSDAY":
+                        thursday = state;
+                        break;
+                    case "FRIDAY":
+                        friday = state;
+                        break;
+                    case "SATURDAY":
+                        saturday = state;
+                        break;
+                    case "SUNDAY":
+                        sunday = state;
+                        break;
+                    default:
+                        break;
+                }
+
+            }
+            if (!currentMonday.equals(monday)) {
+                currentMonday = monday;
+                channel = new ChannelUID(getThing().getUID(), CHANNEL_MONDAY);
+                updateState(channel, StringType.valueOf(monday));
+            }
+            if (!currentTuesday.equals(tuesday)) {
+                currentTuesday = tuesday;
+                channel = new ChannelUID(getThing().getUID(), CHANNEL_TUESDAY);
+                updateState(channel, StringType.valueOf(tuesday));
+            }
+            if (!currentWednesday.equals(wednesday)) {
+                currentWednesday = wednesday;
+                channel = new ChannelUID(getThing().getUID(), CHANNEL_WEDNESDAY);
+                updateState(channel, StringType.valueOf(wednesday));
+            }
+            if (!currentThursday.equals(thursday)) {
+                currentThursday = thursday;
+                channel = new ChannelUID(getThing().getUID(), CHANNEL_THURSDAY);
+                updateState(channel, StringType.valueOf(thursday));
+            }
+            if (!currentFriday.equals(friday)) {
+                currentFriday = friday;
+                channel = new ChannelUID(getThing().getUID(), CHANNEL_FRIDAY);
+                updateState(channel, StringType.valueOf(friday));
+            }
+            if (!currentSaturday.equals(saturday)) {
+                currentSaturday = saturday;
+                channel = new ChannelUID(getThing().getUID(), CHANNEL_SATURDAY);
+                updateState(channel, StringType.valueOf(saturday));
+            }
+            if (!currentSunday.equals(sunday)) {
+                currentSunday = sunday;
+                channel = new ChannelUID(getThing().getUID(), CHANNEL_SUNDAY);
+                updateState(channel, StringType.valueOf(sunday));
             }
         }
     }

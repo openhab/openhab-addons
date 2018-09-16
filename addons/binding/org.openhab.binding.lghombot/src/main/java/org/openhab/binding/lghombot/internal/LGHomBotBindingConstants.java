@@ -54,6 +54,13 @@ public class LGHomBotBindingConstants {
     public static final String CHANNEL_MAP = "map";
     public static final String CHANNEL_MOVE = "move";
     public static final String CHANNEL_LAST_CLEAN = "lastClean";
+    public static final String CHANNEL_MONDAY = "monday";
+    public static final String CHANNEL_TUESDAY = "tuesday";
+    public static final String CHANNEL_WEDNESDAY = "wednesday";
+    public static final String CHANNEL_THURSDAY = "thursday";
+    public static final String CHANNEL_FRIDAY = "friday";
+    public static final String CHANNEL_SATURDAY = "saturday";
+    public static final String CHANNEL_SUNDAY = "sunday";
 
     // List of all HomBot states
     public static final String HBSTATE_UNKNOWN = "UNKNOWN";
