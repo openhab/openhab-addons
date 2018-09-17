@@ -33,6 +33,9 @@ public class ValueUnit {
     }
 
     public String getUnit() {
+        if (unit == null) {
+            unit = "";
+        }
         return unit;
     }
 
