@@ -16,21 +16,15 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Thomas Rokohl - Initial contribution
  */
-public class InverterRealtimeResponse {
-    @SerializedName("Head")
-    private Head head;
+public class InverterRealtimeResponse extends BaseFroniusResponse {
+
     @SerializedName("Body")
     private InverterRealtimeBody body;
 
-    public Head getHead() {
-        return head;
-    }
-
-    public void setHead(Head head) {
-        this.head = head;
-    }
-
     public InverterRealtimeBody getBody() {
+        if (body == null) {
+            body = new InverterRealtimeBody();
+        }
         return body;
     }
 

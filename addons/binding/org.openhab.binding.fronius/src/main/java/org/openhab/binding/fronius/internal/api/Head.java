@@ -28,6 +28,9 @@ public class Head {
     private String timestamp;
 
     public HeadRequestArguments getRequestArguments() {
+        if (requestArguments == null) {
+            requestArguments = new HeadRequestArguments();
+        }
         return requestArguments;
     }
 
@@ -36,6 +39,11 @@ public class Head {
     }
 
     public HeadStatus getStatus() {
+        if (status == null) {
+            status = new HeadStatus();
+            status.setCode(255);
+            status.setReason("undefined runtime error");
+        }
         return status;
     }
 
@@ -44,6 +52,9 @@ public class Head {
     }
 
     public String getTimestamp() {
+        if (timestamp == null) {
+            timestamp = "";
+        }
         return timestamp;
     }
 

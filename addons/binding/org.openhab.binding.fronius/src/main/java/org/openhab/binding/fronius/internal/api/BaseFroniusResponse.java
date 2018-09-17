@@ -11,24 +11,23 @@ package org.openhab.binding.fronius.internal.api;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link InverterRealtimeBody} is responsible for storing
- * the "body" node of the JSON response
+ * base class for a response-object from the API
  *
  * @author Thomas Rokohl - Initial contribution
  */
-public class InverterRealtimeBody {
-    @SerializedName("Data")
-    private InverterRealtimeBodyData data;
+public class BaseFroniusResponse {
+    @SerializedName("Head")
+    private Head head;
 
-    public InverterRealtimeBodyData getData() {
-        if (data == null) {
-            data = new InverterRealtimeBodyData();
+    public Head getHead() {
+        if (head == null) {
+            head = new Head();
         }
-        return data;
+        return head;
     }
 
-    public void setData(InverterRealtimeBodyData data) {
-        this.data = data;
+    public void setHead(Head head) {
+        this.head = head;
     }
 
 }

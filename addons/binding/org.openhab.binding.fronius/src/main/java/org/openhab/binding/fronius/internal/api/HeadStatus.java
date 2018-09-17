@@ -33,6 +33,9 @@ public class HeadStatus {
     }
 
     public String getReason() {
+        if (reason == null) {
+            reason = "";
+        }
         return reason;
     }
 
@@ -41,6 +44,9 @@ public class HeadStatus {
     }
 
     public String getUserMessage() {
+        if (userMessage == null) {
+            userMessage = "";
+        }
         return userMessage;
     }
 
