@@ -8,15 +8,15 @@
  */
 package org.openhab.binding.airvisualnode.internal;
 
-import static org.openhab.binding.airvisualnode.AirVisualNodeBindingConstants.*;
+import static org.openhab.binding.airvisualnode.internal.AirVisualNodeBindingConstants.*;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.airvisualnode.handler.AirVisualNodeHandler;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.openhab.binding.airvisualnode.internal.handler.AirVisualNodeHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**

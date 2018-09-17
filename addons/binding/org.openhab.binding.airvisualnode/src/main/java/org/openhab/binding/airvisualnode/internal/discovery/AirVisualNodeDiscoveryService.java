@@ -23,7 +23,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
 import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.airvisualnode.AirVisualNodeBindingConstants;
+import org.openhab.binding.airvisualnode.internal.AirVisualNodeBindingConstants;
 import org.openhab.binding.airvisualnode.internal.config.AirVisualNodeConfig;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
