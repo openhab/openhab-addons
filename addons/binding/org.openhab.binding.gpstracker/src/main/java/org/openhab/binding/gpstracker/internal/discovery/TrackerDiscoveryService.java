@@ -93,7 +93,7 @@ public class TrackerDiscoveryService extends AbstractDiscoveryService {
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(id)
                 .withProperty(ConfigHelper.CONFIG_TRACKER_ID, trackerId)
                 .withThingType(GPSTrackerBindingConstants.THING_TYPE_TRACKER)
-                .withLabel("GPS tracker " + trackerId)
+                .withLabel("GPS Tracker " + trackerId)
                 .build();
         this.thingDiscovered(discoveryResult);
     }

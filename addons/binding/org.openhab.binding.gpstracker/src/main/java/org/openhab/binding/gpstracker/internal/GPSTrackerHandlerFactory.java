@@ -12,7 +12,6 @@ import org.eclipse.smarthome.config.core.ConfigOptionProvider;
 import org.eclipse.smarthome.config.core.ParameterOption;
 import org.eclipse.smarthome.core.i18n.LocationProvider;
 import org.eclipse.smarthome.core.i18n.UnitProvider;
-import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -25,7 +24,6 @@ import org.openhab.binding.gpstracker.internal.message.NotificationBroker;
 import org.openhab.binding.gpstracker.internal.provider.TrackerRegistry;
 import org.openhab.binding.gpstracker.internal.provider.gpslogger.GPSLoggerCallbackServlet;
 import org.openhab.binding.gpstracker.internal.provider.owntracks.OwnTracksCallbackServlet;
-import org.osgi.framework.ServiceReference;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -38,7 +36,7 @@ import javax.servlet.ServletException;
 import java.net.URI;
 import java.util.*;
 
-import static org.openhab.binding.gpstracker.internal.GPSTrackerBindingConstants.*;
+import static org.openhab.binding.gpstracker.internal.GPSTrackerBindingConstants.CONFIG_PID;
 
 /**
  * Main component
@@ -66,6 +64,11 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
      * Unit provider
      */
     private UnitProvider unitProvider;
+
+    /**
+     * Location provider
+     */
+    private LocationProvider locationProvider;
 
     /**
      * HTTP service reference
@@ -98,11 +101,6 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
     private Set<String> regions = new HashSet<>();
 
     /**
-     * System location
-     */
-    private PointType sysLocation;
-
-    /**
      * Called by the framework to find out if thing type is supported by the handler factory.
      *
      * @param thingTypeUID Thing type UID
@@ -124,7 +122,8 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (GPSTrackerBindingConstants.THING_TYPE_TRACKER.equals(thingTypeUID)
                 && ConfigHelper.getTrackerId(thing.getConfiguration()) != null) {
-            TrackerHandler trackerHandler = new TrackerHandler(thing, notificationBroker, regions, sysLocation, unitProvider);
+            TrackerHandler trackerHandler = new TrackerHandler(thing, notificationBroker, regions,
+                    locationProvider != null ? locationProvider.getLocation(): null, unitProvider);
             discoveryService.removeTracker(trackerHandler.getTrackerId());
             trackerHandlers.put(trackerHandler.getTrackerId(), trackerHandler);
             return trackerHandler;
@@ -147,13 +146,6 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
     @Override
     protected void activate(ComponentContext componentContext) {
         super.activate(componentContext);
-
-        //get system location
-        ServiceReference<LocationProvider> locServiceReference = bundleContext.getServiceReference(LocationProvider.class);
-        if (locServiceReference != null) {
-            LocationProvider service = bundleContext.getService(locServiceReference);
-            sysLocation = service.getLocation();
-        }
 
         logger.debug("Initializing callback servlets");
         try {
@@ -224,6 +216,15 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
 
     protected void unsetUnitProvider(UnitProvider unitProvider) {
         this.unitProvider = null;
+    }
+
+    @Reference
+    protected void setLocationProvider(LocationProvider locationProvider) {
+        this.locationProvider = locationProvider;
+    }
+
+    protected void unsetLocationProvider(LocationProvider locationProvider) {
+        this.locationProvider = null;
     }
 
     @Override

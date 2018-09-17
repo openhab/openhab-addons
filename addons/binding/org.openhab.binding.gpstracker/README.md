@@ -121,11 +121,14 @@ For distance channels if the distance is less than the preset radius for the lin
 ```
 //trackers
 Thing gpstracker:tracker:1   "XY tracker" [trackerId="XY"]
-Thing gpstracker:tracker:EX   "EX tracker" [trackerId="EX"] 
-
-//TODO
-Example for manual distance channel definition
-...
+Thing gpstracker:tracker:EX   "EX tracker" [trackerId="EX"] {
+    Channels:
+            Type regionDistance : homeDistance "Distance from Home" [
+                regionName="Home",
+                regionCenterLocation="11.1111,22.2222",
+                regionRadius=100
+            ]
+}
 ```
 
 ### Items
@@ -136,11 +139,8 @@ Location	locationEX	"Location"		{channel="gpstracker:tracker:1:lastLocation"}
 DateTime	lastSeenEX	"Last seen"		{channel="gpstracker:tracker:1:lastReport"}
 Number		batteryEX	"Battery level"		{channel="gpstracker:tracker:1:batteryLevel"}
 
-//linking to the trigger channel
-Switch atWorkEX "Work presence" {channel="gpstracker:tracker:EX:regionTrigger", profile="gpstracker:triggerPresenceSwitch", regionName="Work"}
-
 //linking to the distance channel
-Switch atHomeEX "Home presence" {channel="gpstracker:tracker:EX:regionDistance", profile="gpstracker:distancePresenceSwitch", regionRadius="100"}
+Switch atHomeEX "Home presence" {channel="gpstracker:tracker:EX:homeDistance", profile="gpstracker:trigger-geofence"}
 ```
 
 ### Sitemaps

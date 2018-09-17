@@ -34,6 +34,11 @@ public abstract class GPSTrackerBindingConstants {
     public static final String CHANNEL_BATTERY_LEVEL = "batteryLevel";
     private static final String CHANNEL_REGION_DISTANCE = "regionDistance";
 
+    //system distance channel
+    public static final String CHANNEL_DISTANCE_SYSTEM_ID = "distanceSystem";
+    public static final String CHANNEL_DISTANCE_SYSTEM_NAME = "System";
+    public static final Integer CHANNEL_DISTANCE_SYSTEM_RADIUS = 100;
+
     public static final ChannelTypeUID CHANNEL_TYPE_DISTANCE = new ChannelTypeUID(BINDING_ID, CHANNEL_REGION_DISTANCE);
     public static final ChannelTypeUID CHANNEL_TYPE_REGION = new ChannelTypeUID(BINDING_ID, CHANNEL_REGION_TRIGGER);
 
