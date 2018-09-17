@@ -15,7 +15,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.atlona.AtlonaBindingConstants;
 import org.openhab.binding.atlona.internal.pro3.AtlonaPro3Capabilities;
 import org.openhab.binding.atlona.internal.pro3.AtlonaPro3Handler;
 import org.osgi.service.component.annotations.Component;
