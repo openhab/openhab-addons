@@ -91,9 +91,9 @@
 				<label>Integration ID</label>
 				<description>Address of CCO in the Lutron control system</description>
 			</parameter>
-			<parameter name="defaultPulse" type="decimal" min="0" max="100">
+			<parameter name="pulseLength" type="decimal" min="0.25" max="99.00" unit="s" step="0.25">
 				<label>Pulse Length</label>
-				<description>Pulse length in seconds (0.1 - 100)</description>
+				<description>Pulse length in seconds (0.25 - 99.00)</description>
 				<default>0.5</default>
 			</parameter>
 			<parameter name="outputType" type="text" required="true">
@@ -126,9 +126,9 @@
 				<label>Integration ID</label>
 				<description>Address of CCO in the Lutron control system</description>
 			</parameter>
-			<parameter name="defaultPulse" type="decimal"  min="0" max="100">
+			<parameter name="pulseLength" type="decimal" min="0.25" max="99.00" unit="s" step="0.25">
 				<label>Pulse Length</label>
-				<description>Pulse length in seconds (0.1 - 100)</description>
+				<description>Pulse length in seconds (0.25 - 99.00)</description>
 				<default>0.5</default>
 			</parameter>
 		</config-description>

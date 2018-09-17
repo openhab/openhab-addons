@@ -74,12 +74,12 @@ Thing lutron:switch:porch (lutron:ipbridge:radiora2) [ integrationId=8 ]
 
 ### CCO Modules
 
-Contact closure output (cco) things accept outputType and defaultPulse parameters.
+Contact closure output (cco) things accept outputType and pulseLength parameters.
 The outputType parameter is a string that should be set to "Pulsed" for pulsed CCOs or "Maintained" for non-pulsed CCOs.
 The default is "Pulsed", since this is generally the safer wrong setting.
-The defaultPulse parameter sets the pulse length in seconds for a pulsed output.
-It can range from 0.1 to 100 and defaults to 0.5. It is ignored if outputType="Maintained".
-Be aware that the Lutron controller may round the pulse length to the nearest 0.25 seconds.
+The pulseLength parameter sets the pulse length in seconds for a pulsed output.
+It can range from 0.25 to 99.0 seconds and defaults to 0.5. It is ignored if outputType="Maintained".
+Be aware that the Lutron controller may round the pulse length down to the nearest 0.25 seconds.
 
 The ccopulsed and ccomaintained things are just cco things with the outputType fixed.
 They are used by autodiscovery to automatically set the correct output type.
@@ -89,8 +89,8 @@ This may be a good idea if you are interfacing to sensitive equipment where acci
 Example:
 
 ```
-Thing lutron:cco:garage (lutron:ipbridge:radiora2) [ integrationId=5, outputType="Pulsed", defaultPulse=0.5 ]
-Thing lutron:ccopulsed:gate (lutron:ipbridge:radiora2) [ integrationId=6, defaultPulse=0.25 ]
+Thing lutron:cco:garage (lutron:ipbridge:radiora2) [ integrationId=5, outputType="Pulsed", pulseLength=0.5 ]
+Thing lutron:ccopulsed:gate (lutron:ipbridge:radiora2) [ integrationId=6, pulseLength=0.25 ]
 Thing lutron:ccomaintained:relay1 (lutron:ipbridge:radiora2) [ integrationId=7 ]
 ```
 

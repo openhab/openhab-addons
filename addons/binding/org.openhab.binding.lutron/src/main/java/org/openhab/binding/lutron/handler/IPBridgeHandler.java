@@ -317,7 +317,7 @@ public class IPBridgeHandler extends BaseBridgeHandler {
                 Integer integrationId;
 
                 try {
-                    integrationId = new Integer(matcher.group(2));
+                    integrationId = Integer.valueOf(matcher.group(2));
                 } catch (NumberFormatException e1) {
                     logger.warn("Integer conversion error parsing update: {}", line);
                     continue;

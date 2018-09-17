@@ -51,9 +51,9 @@ public abstract class BaseKeypadHandler extends LutronHandler {
 
     private final Logger logger = LoggerFactory.getLogger(BaseKeypadHandler.class);
 
-    protected List<KeypadComponent> buttonList;
-    protected List<KeypadComponent> ledList;
-    protected List<KeypadComponent> cciList;
+    protected List<KeypadComponent> buttonList = new ArrayList<>();
+    protected List<KeypadComponent> ledList = new ArrayList<>();
+    protected List<KeypadComponent> cciList = new ArrayList<>();
 
     protected int integrationId;
     protected String model;
@@ -173,16 +173,12 @@ public abstract class BaseKeypadHandler extends LutronHandler {
         autoRelease = arParam == null ? true : arParam;
 
         // schedule a thread to finish initialization asynchronously since it can take several seconds
-        this.scheduler.schedule(this::asyncInitialize, 0, TimeUnit.SECONDS);
+        scheduler.schedule(this::asyncInitialize, 0, TimeUnit.SECONDS);
     }
 
     private void asyncInitialize() {
         synchronized (asyncInitLock) {
             logger.debug("Async init thread staring for keypad handler {}", integrationId);
-
-            buttonList = new ArrayList<KeypadComponent>();
-            ledList = new ArrayList<KeypadComponent>();
-            cciList = new ArrayList<KeypadComponent>();
 
             configureComponents(model);
 
@@ -211,15 +207,13 @@ public abstract class BaseKeypadHandler extends LutronHandler {
 
         Channel channel = getThing().getChannel(channelUID.getId());
         if (channel == null) {
-            logger.warn("Command received on invalid channel {} for device {}", channelUID,
-                    getThing().getUID());
+            logger.warn("Command received on invalid channel {} for device {}", channelUID, getThing().getUID());
             return;
         }
 
         Integer componentID = componentFromChannel(channelUID);
         if (componentID == null) {
-            logger.warn("Command received on invalid channel {} for device {}", channelUID,
-                    getThing().getUID());
+            logger.warn("Command received on invalid channel {} for device {}", channelUID, getThing().getUID());
             return;
         }
 
