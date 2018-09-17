@@ -21,7 +21,7 @@ import org.eclipse.smarthome.core.audio.URLAudioStream;
 import org.eclipse.smarthome.core.audio.UnsupportedAudioFormatException;
 import org.eclipse.smarthome.core.audio.UnsupportedAudioStreamException;
 import org.eclipse.smarthome.core.library.types.PercentType;
-import org.openhab.binding.allplay.handler.AllPlayHandler;
+import org.openhab.binding.allplay.internal.handler.AllPlayHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
