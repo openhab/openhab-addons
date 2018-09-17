@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.allplay.handler;
+package org.openhab.binding.allplay.internal.handler;
 
-import static org.openhab.binding.allplay.AllPlayBindingConstants.*;
+import static org.openhab.binding.allplay.internal.AllPlayBindingConstants.*;
 
 import java.net.URL;
 import java.net.URLConnection;
@@ -38,7 +38,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.allplay.AllPlayBindingConstants;
+import org.openhab.binding.allplay.internal.AllPlayBindingConstants;
 import org.openhab.binding.allplay.internal.AllPlayBindingProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

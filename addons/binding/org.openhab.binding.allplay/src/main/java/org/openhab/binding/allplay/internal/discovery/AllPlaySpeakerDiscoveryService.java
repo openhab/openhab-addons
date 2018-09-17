@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.allplay.internal.discovery;
 
-import static org.openhab.binding.allplay.AllPlayBindingConstants.SPEAKER_THING_TYPE;
+import static org.openhab.binding.allplay.internal.AllPlayBindingConstants.SPEAKER_THING_TYPE;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,7 +21,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.allplay.AllPlayBindingConstants;
+import org.openhab.binding.allplay.internal.AllPlayBindingConstants;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
