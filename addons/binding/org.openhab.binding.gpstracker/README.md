@@ -39,7 +39,7 @@ Install [GPSLogger for Android](https://play.google.com/store/apps/details?id=co
 After the launch, go to General Options. 
 Enable Start on boot-up and Start on app launch.
 
-![Image](./docs/gpslogger_1.png)
+![Image](docs/gpslogger_1.png)
 
 Go to Logging details and disable Log to GPX, Log to KML and Log to NMEA. 
 Enable Log to custom URL.
