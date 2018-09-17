@@ -6,9 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.airvisualnode.handler;
-
-import static org.openhab.binding.airvisualnode.AirVisualNodeBindingConstants.*;
+package org.openhab.binding.airvisualnode.internal.handler;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -30,6 +28,7 @@ import static org.eclipse.smarthome.core.library.unit.SIUnits.GRAM;
 import static org.eclipse.smarthome.core.library.unit.SIUnits.CUBIC_METRE;
 import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.ONE;
 import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.PERCENT;
+import static org.openhab.binding.airvisualnode.internal.AirVisualNodeBindingConstants.*;
 import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.PARTS_PER_MILLION;
 import static org.eclipse.smarthome.core.library.unit.MetricPrefix.MICRO;
 import org.eclipse.smarthome.core.thing.Channel;

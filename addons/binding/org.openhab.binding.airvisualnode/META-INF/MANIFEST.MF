@@ -10,12 +10,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.airvisualnode;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
-Export-Package: 
- org.openhab.binding.airvisualnode,
- org.openhab.binding.airvisualnode.handler
 Import-Package: 
- org.openhab.binding.airvisualnode,
- org.openhab.binding.airvisualnode.handler,
  com.google.gson,
  com.google.gson.annotations,
  javax.measure,
