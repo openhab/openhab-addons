@@ -43,7 +43,11 @@ public class ChannelTypeUtils {
     }
 
     public static State toDateTimeType(@Nullable LocalDateTime netatmoTS) {
-        return netatmoTS == null ? UnDefType.NULL : new DateTimeType(netatmoTS.atZone(ZoneId.systemDefault()));
+        if (LocalDateTime.MIN.equals(netatmoTS)) {
+            return UnDefType.UNDEF;
+        }
+        ZoneId id = ZoneId.systemDefault();
+        return netatmoTS == null ? UnDefType.NULL : new DateTimeType(ZonedDateTime.of(netatmoTS, id));
     }
 
     public static State toDateTimeType(@Nullable ZonedDateTime zonedDateTime) {

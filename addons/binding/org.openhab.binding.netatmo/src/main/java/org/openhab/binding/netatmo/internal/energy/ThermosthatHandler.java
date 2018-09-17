@@ -111,11 +111,11 @@ public class ThermosthatHandler extends NetatmoModuleHandler<ThermostatModule> {
             case CHANNEL_TEMPERATURE:
                 return module != null ? toQuantityType(module.getMeasure().getTemperature(), API_TEMPERATURE_UNIT)
                         : UnDefType.UNDEF;
-            case CHANNEL_SETPOINT_TEMP:
+            case CHANNEL_ROOM_SETPOINT_TEMPERATURE:
                 return getCurrentSetpoint();
             case CHANNEL_TIMEUTC:
                 return module != null ? toDateTimeType((int) module.getMeasure().getTime().toEpochSecond(ZoneOffset.UTC)) : UnDefType.UNDEF;
-            case CHANNEL_SETPOINT_END_TIME: {
+            case CHANNEL_ROOM_SETPOINT_END_TIME: {
                 if (module != null) {
                     SetPoint setpoint = module.getSetPoint();
                     if (setpoint != null) {
@@ -132,7 +132,7 @@ public class ThermosthatHandler extends NetatmoModuleHandler<ThermostatModule> {
                 }
                 return UnDefType.UNDEF;
             }
-            case CHANNEL_SETPOINT_MODE:
+            case CHANNEL_ROOM_SETPOINT_MODE:
                 return getSetPoint();
             case CHANNEL_PLANNING: {
                 String currentPlanning = "-";
@@ -246,7 +246,7 @@ public class ThermosthatHandler extends NetatmoModuleHandler<ThermostatModule> {
         if (!(command instanceof RefreshType)) {
             try {
                 switch (channelUID.getId()) {
-                    case CHANNEL_SETPOINT_MODE: {
+                    case CHANNEL_ROOM_SETPOINT_MODE: {
                         String target_mode = command.toString();
                         if (CHANNEL_SETPOINT_MODE_MANUAL.equals(target_mode)) {
                             logger.info(
@@ -257,7 +257,7 @@ public class ThermosthatHandler extends NetatmoModuleHandler<ThermostatModule> {
                         }
                         break;
                     }
-                    case CHANNEL_SETPOINT_TEMP: {
+                    case CHANNEL_ROOM_SETPOINT_TEMPERATURE: {
                         BigDecimal spTemp = null;
                         if (command instanceof QuantityType) {
                             QuantityType<Temperature> quantity = ((QuantityType<Temperature>) command)

@@ -15,20 +15,24 @@ import io.rudolph.netatmo.api.energy.model.HomesDataBody;
 import io.rudolph.netatmo.api.energy.model.Room;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.CHANNEL_REACHABLE;
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.CHANNEL_TEMPERATURE;
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.CHANNEL_WINDOW_OPEN;
+import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 
 /**
  * {@link NetatmoRoomHandler} is the handler for a given
@@ -65,7 +69,6 @@ public class NetatmoRoomHandler extends AbstractNetatmoThingHandler {
 
     @Override
     protected void updateChannels() {
-        super.updateChannels();
 
         EnergyConnector api = getBridgeHandler().api
                 .getEnergyApi();
@@ -76,21 +79,23 @@ public class NetatmoRoomHandler extends AbstractNetatmoThingHandler {
         if (body == null
                 || body.getHomes().get(0) == null
                 || body.getHomes().get(0).getRooms().size() == 0) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "home not found");
             return;
         }
 
         BaseRoom baseRoom = null;
-        for (BaseRoom base: body.getHomes()
+        List<BaseRoom> rooms = body.getHomes()
                 .get(0)
-                .getRooms()) {
+                .getRooms();
+        for (BaseRoom base : rooms) {
             if (getId().equals(base.getId())) {
                 baseRoom = base;
-            } else {
                 break;
             }
         }
 
         if (baseRoom == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "room status not found");
             return;
         }
 
@@ -100,6 +105,8 @@ public class NetatmoRoomHandler extends AbstractNetatmoThingHandler {
         if (statusBody == null
                 || statusBody.getHomes().get(0) == null
                 || statusBody.getHomes().get(0).getRooms().size() == 0) {
+
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "room status not found");
             return;
         }
 
@@ -109,14 +116,31 @@ public class NetatmoRoomHandler extends AbstractNetatmoThingHandler {
                 .getRooms()) {
             if (getId().equals(base.getId())) {
                 room = base;
-            } else {
                 break;
             }
         }
 
+        if (room == null) {
+            return;
+        }
+
         updateStatus(ThingStatus.ONLINE);
         this.room = room;
+
         super.updateChannels();
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command == RefreshType.REFRESH) {
+            logger.debug("Refreshing {}", channelUID);
+            updateChannels();
+            return;
+        }
+        switch (channelUID.getId()) {
+
+        }
+
     }
 
     @Override
@@ -129,14 +153,37 @@ public class NetatmoRoomHandler extends AbstractNetatmoThingHandler {
         }
 
         if (channelId.equalsIgnoreCase(CHANNEL_TEMPERATURE)) {
-            return ChannelTypeUtils.toDecimalType(room.getThermMeasuredTemperature());
+            return ChannelTypeUtils.toQuantityType(room.getThermMeasuredTemperature(), API_TEMPERATURE_UNIT);
         }
 
-        if (channelId.equalsIgnoreCase(CHANNEL_WINDOW_OPEN)) {
+        if (channelId.equalsIgnoreCase(CHANNEL_ROOM_WINDOW_OPEN)) {
             return ChannelTypeUtils.toOnOffType(room.getOpenWindow());
         }
 
-        return super.getNAThingProperty(channelId);
+        if (channelId.equalsIgnoreCase(CHANNEL_ROOM_HEATING_POWER_REQUEST)) {
+            return ChannelTypeUtils.toQuantityType(room.getHeatingPowerRequest(), API_TEMPERATURE_UNIT);
+        }
+
+        if (channelId.equalsIgnoreCase(CHANNEL_ROOM_SETPOINT_TEMPERATURE)) {
+            return ChannelTypeUtils.toQuantityType(room.getThermSetpointTemperature(), API_TEMPERATURE_UNIT);
+        }
+
+        if (channelId.equalsIgnoreCase(CHANNEL_ROOM_SETPOINT_MODE)) {
+            return ChannelTypeUtils.toStringType(room.getThermSetpointMode().getValue());
+        }
+
+        if (channelId.equalsIgnoreCase(CHANNEL_ROOM_SETPOINT_START_TIME)) {
+            return ChannelTypeUtils.toDateTimeType(room.getThermSetpointStartTime());
+        }
+
+        if (channelId.equalsIgnoreCase(CHANNEL_ROOM_SETPOINT_END_TIME)) {
+            return ChannelTypeUtils.toDateTimeType(room.getThermSetpointEndTime());
+        }
+
+
+        Optional<State> result = measurableChannels.getNAThingProperty(channelId);
+
+        return result.orElse(UnDefType.UNDEF);
     }
 
 

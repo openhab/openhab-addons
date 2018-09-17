@@ -10,6 +10,7 @@ package org.openhab.binding.netatmo.internal.discovery;
 
 import io.rudolph.netatmo.api.common.model.*;
 import io.rudolph.netatmo.api.energy.model.BaseRoom;
+import io.rudolph.netatmo.api.energy.model.Home;
 import io.rudolph.netatmo.api.energy.model.HomesDataBody;
 import io.rudolph.netatmo.api.energy.model.module.ThermostatModule;
 import io.rudolph.netatmo.api.energy.model.module.ValveModule;
@@ -86,6 +87,8 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
                     .executeSync();
             if (energyDataBody != null) {
                 energyDataBody.getHomes().forEach(home -> {
+                    discoverHome(home);
+
                     home.getModules()
                         .forEach(module -> discoverModule(module, home.getId()));
 
@@ -132,6 +135,14 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
             PresenceHome home = (PresenceHome) data;
             discoverWelcomeHome(home);
         }
+    }
+
+    private void discoverHome(Home home) {
+        onDeviceAddedInternal(home.getId(),
+                null,
+                HOME_PROPERTY,
+                home.getName(),
+                null);
     }
 
     private void discoverRoom(BaseRoom room, String parentId) {

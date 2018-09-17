@@ -5,6 +5,30 @@
                           xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
     <!-- Netatmo Thermostat and Relay/Plug -->
+    <thing-type id="Home">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="netatmoapi"/>
+        </supported-bridge-type-refs>
+
+        <label>Home</label>
+        <description>A home which contains rooms, modules and schedules.</description>
+
+        <channels>
+            <channel id="ThermMode" typeId="ThermMode"/>
+            <channel id="therm_setpoint_default_duration" typeId="therm_setpoint_default_duration"/>
+            <channel id="room_count" typeId="room_count"/>
+            <channel id="therm_schedule" typeId="therm_schedule"/>
+        </channels>
+
+        <properties>
+            <property name="refreshPeriod">3600000</property>
+        </properties>
+
+        <representation-property>id</representation-property>
+        <config-description-ref uri="thing-type:netatmo:home"/>
+    </thing-type>
+
+
     <thing-type id="Room">
         <supported-bridge-type-refs>
             <bridge-type-ref id="netatmoapi" />
@@ -17,6 +41,11 @@
             <channel id="Reachable" typeId="reachable" />
             <channel id="Temperature" typeId="temperature" />
             <channel id="WindowOpen" typeId="WindowOpen" />
+            <channel id="HeatingPowerRequest" typeId="HeatingPowerRequest"/>
+            <channel id="SetpointTemperature" typeId="SetpointTemperature"/>
+            <channel id="SetpointMode" typeId="SetpointMode"/>
+            <channel id="SetpointStartTime" typeId="SetpointStartTime"/>
+            <channel id="SetpointEndTime" typeId="SetpointEndTime"/>
         </channels>
 
         <properties>

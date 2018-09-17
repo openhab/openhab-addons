@@ -8,29 +8,11 @@
  */
 package org.openhab.binding.netatmo.handler;
 
-import static org.eclipse.smarthome.core.library.unit.MetricPrefix.*;
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
-
-import java.util.Map;
-import java.util.Optional;
-
-import javax.measure.Unit;
-import javax.measure.quantity.Angle;
-import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.Length;
-import javax.measure.quantity.Pressure;
-import javax.measure.quantity.Speed;
-import javax.measure.quantity.Temperature;
-
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
-import org.eclipse.smarthome.core.thing.Bridge;
-import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.types.Command;
@@ -41,6 +23,15 @@ import org.openhab.binding.netatmo.internal.channelhelper.BatteryHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.RadioHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.measure.Unit;
+import javax.measure.quantity.*;
+import java.util.Map;
+import java.util.Optional;
+
+import static org.eclipse.smarthome.core.library.unit.MetricPrefix.HECTO;
+import static org.eclipse.smarthome.core.library.unit.MetricPrefix.MILLI;
+import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 
 /**
  * {@link AbstractNetatmoThingHandler} is the abstract class that handles
@@ -54,6 +45,7 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
 
     // Units of measurement of the data delivered by the API
     public static final Unit<Temperature> API_TEMPERATURE_UNIT = SIUnits.CELSIUS;
+    public static final Unit<Time> API_TIME_UNIT_SECOND = SIUnits.SECOND;
     public static final Unit<Dimensionless> API_HUMIDITY_UNIT = SmartHomeUnits.PERCENT;
     public static final Unit<Pressure> API_PRESSURE_UNIT = HECTO(SIUnits.PASCAL);
     public static final Unit<Speed> API_WIND_SPEED_UNIT = SIUnits.KILOMETRE_PER_HOUR;

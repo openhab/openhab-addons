@@ -19,6 +19,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.type.ThingType;
 import org.openhab.binding.netatmo.handler.NetatmoBridgeHandler;
+import org.openhab.binding.netatmo.handler.NetatmoHomeHandler;
 import org.openhab.binding.netatmo.handler.NetatmoRoomHandler;
 import org.openhab.binding.netatmo.internal.discovery.NetatmoModuleDiscoveryService;
 import org.openhab.binding.netatmo.internal.energy.RelayHandler;
@@ -101,6 +102,8 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
             return new NAWelcomeCameraHandler(thing);
         } else if (thingTypeUID.equals(WELCOME_PERSON_THING_TYPE)) {
             return new NAWelcomePersonHandler(thing);
+        } else if (thingTypeUID.equals(HOME)) {
+            return new NetatmoHomeHandler(thing);
         } else if (thingTypeUID.equals(ROOM)) {
             return new NetatmoRoomHandler(thing);
         } else {

@@ -36,6 +36,7 @@ public class NetatmoBindingConstants {
     public static final String REFRESH_INTERVAL = "refreshInterval";
     public static final String SETPOINT_DEFAULT_DURATION = "setpointDefaultDuration";
     public static final String ROOM_PROPERTY = "Room";
+    public static final String HOME_PROPERTY = "Home";
 
     public static final String WEBHOOK_APP = "app_security";
 
@@ -58,6 +59,7 @@ public class NetatmoBindingConstants {
     public static final ThingTypeUID THERMOSTAT = new ThingTypeUID(BINDING_ID, DeviceType.THERMOSTAT.getValue());
     public static final ThingTypeUID VALVE = new ThingTypeUID(BINDING_ID, DeviceType.VALVE.getValue());
     public static final ThingTypeUID ROOM = new ThingTypeUID(BINDING_ID, ROOM_PROPERTY);
+    public static final ThingTypeUID HOME = new ThingTypeUID(BINDING_ID, HOME_PROPERTY);
 
     // List of Welcome Home Things Type UIDs
     public static final ThingTypeUID WELCOME_HOME_THING_TYPE = new ThingTypeUID(BINDING_ID, "NAWelcomeHome");
@@ -99,25 +101,36 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_BATTERY_LEVEL = "BatteryVP";
     public static final String CHANNEL_WIFI_STATUS = "WifiStatus";
     public static final String CHANNEL_RF_STATUS = "RfStatus";
-    public static final String CHANNEL_WINDOW_OPEN = "WindowOpen";
+    public static final String CHANNEL_ROOM_WINDOW_OPEN = "WindowOpen";
+
+    // Room specific channels
+
+    public static final String CHANNEL_ROOM_HEATING_POWER_REQUEST = "HeatingPowerRequest";
+    public static final String CHANNEL_ROOM_SETPOINT_TEMPERATURE = "SetpointTemperature";
+    public static final String CHANNEL_ROOM_SETPOINT_MODE = "SetpointMode";
+    public static final String CHANNEL_ROOM_SETPOINT_START_TIME = "SetpointStartTime";
+    public static final String CHANNEL_ROOM_SETPOINT_END_TIME = "SetpointEndTime";
 
     // Healthy Home Coach specific channel
     public static final String CHANNEL_HEALTH_INDEX = "HealthIndex";
 
     // Thermostat specific channels
-    public static final String CHANNEL_SETPOINT_MODE = "SetpointMode";
-    public static final String CHANNEL_SETPOINT_END_TIME = "SetpointEndTime";
-    public static final String CHANNEL_SETPOINT_TEMP = "Sp_Temperature";
     public static final String CHANNEL_THERM_RELAY = "ThermRelayCmd";
     public static final String CHANNEL_THERM_ORIENTATION = "ThermOrientation";
     public static final String CHANNEL_CONNECTED_BOILER = "ConnectedBoiler";
     public static final String CHANNEL_LAST_PLUG_SEEN = "LastPlugSeen";
     public static final String CHANNEL_LAST_BILAN = "LastBilan";
 
+    // Home specific
+    public static final String CHANNEL_THERM_MODE = "ThermMode";
+    public static final String CHANNEL_THERM_SETPOINT_DURATION = "therm_setpoint_default_duration";
+    public static final String CHANNEL_ROOM_COUNT = "room_count";
+    public static final String CHANNEL_ACTIVE_SCHEDULE = "therm_schedules";
+
+
     // Valve specific channels
     public static final String CHANNEL_ANTICIPATION = "Anticipation";
     public static final String CHANNEL_REACHABLE = "Reachable";
-
 
     public static final String CHANNEL_PLANNING = "Planning";
 
@@ -178,7 +191,7 @@ public class NetatmoBindingConstants {
     // List of all supported physical devices and modules
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Stream
             .of(BASESTATION, OUTDOORMODULE, WINDMODULE, RAINGAUGEMODULE, INDOORMODULE, HOMECOACH, RELAY, THERMOSTAT,
-                    WELCOME_HOME_THING_TYPE, WELCOME_CAMERA, WELCOME_PERSON_THING_TYPE, VALVE, ROOM)
+                    WELCOME_HOME_THING_TYPE, WELCOME_CAMERA, WELCOME_PERSON_THING_TYPE, VALVE, ROOM, HOME)
             .collect(Collectors.toSet());
 
     // List of all adressable things in OH = SUPPORTED_DEVICE_THING_TYPES_UIDS + the virtual bridge
