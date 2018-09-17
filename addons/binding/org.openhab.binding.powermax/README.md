@@ -107,7 +107,7 @@ The following channels are available:
 | zone        | low_battery                  | Switch    | R           | Whether or not the sensor battery is low              |
 | zone        | bypassed                     | Switch    | RW          | Whether or not the zone is bypassed                   |
 
-## Console commands
+## Console Commands
 
 The binding provides few specific commands you can use in the console. Enter the command `smarthome:powermax` to get the usage of each available command.
 

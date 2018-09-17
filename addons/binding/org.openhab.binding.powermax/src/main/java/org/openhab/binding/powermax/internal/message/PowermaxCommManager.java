@@ -19,11 +19,10 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.powermax.internal.connector.PowermaxConnector;
 import org.openhab.binding.powermax.internal.connector.PowermaxSerialConnector;
 import org.openhab.binding.powermax.internal.connector.PowermaxTcpConnector;
@@ -304,7 +303,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("sendAck(): sending message {}", DatatypeConverter.printHexBinary(ackData));
+            logger.debug("sendAck(): sending message {}", HexUtils.bytesToHex(ackData));
         }
         boolean done = sendMessage(ackData);
         if (!done) {
@@ -326,9 +325,9 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
 
         boolean done = false;
         if (!armMode.isAllowedCommand()) {
-            logger.info("Powermax alarm binding: requested arm mode {} rejected", armMode.getShortName());
+            logger.debug("Powermax alarm binding: requested arm mode {} rejected", armMode.getShortName());
         } else if ((pinCode == null) || (pinCode.length() != 4)) {
-            logger.info("Powermax alarm binding: requested arm mode {} rejected due to invalid PIN code",
+            logger.debug("Powermax alarm binding: requested arm mode {} rejected due to invalid PIN code",
                     armMode.getShortName());
         } else {
             try {
@@ -339,7 +338,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
 
                 done = sendMessage(new PowermaxBaseMessage(PowermaxSendType.ARM, dynPart), false, 0);
             } catch (NumberFormatException e) {
-                logger.info("Powermax alarm binding: requested arm mode {} rejected due to invalid PIN code",
+                logger.debug("Powermax alarm binding: requested arm mode {} rejected due to invalid PIN code",
                         armMode.getShortName());
             }
         }
@@ -367,9 +366,9 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
 
         Byte code = codes.get(action.toString());
         if (code == null) {
-            logger.info("Powermax alarm binding: invalid PGM/X10 command: {}", action);
+            logger.debug("Powermax alarm binding: invalid PGM/X10 command: {}", action);
         } else if ((device != null) && ((device < 1) || (device >= panelSettings.getNbPGMX10Devices()))) {
-            logger.info("Powermax alarm binding: invalid X10 device id: {}", device);
+            logger.debug("Powermax alarm binding: invalid X10 device id: {}", device);
         } else {
             int val = (device == null) ? 1 : (1 << device);
             byte[] dynPart = new byte[3];
@@ -397,9 +396,9 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
         boolean done = false;
 
         if ((pinCode == null) || (pinCode.length() != 4)) {
-            logger.info("Powermax alarm binding: zone bypass rejected due to invalid PIN code");
+            logger.debug("Powermax alarm binding: zone bypass rejected due to invalid PIN code");
         } else if ((zone < 1) || (zone > panelSettings.getNbZones())) {
-            logger.info("Powermax alarm binding: invalid zone number: {}", zone);
+            logger.debug("Powermax alarm binding: invalid zone number: {}", zone);
         } else {
             try {
                 int val = (1 << (zone - 1));
@@ -422,7 +421,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
                     done = sendMessage(new PowermaxBaseMessage(PowermaxSendType.BYPASSTAT), false, 0);
                 }
             } catch (NumberFormatException e) {
-                logger.info("Powermax alarm binding: zone bypass rejected due to invalid PIN code");
+                logger.debug("Powermax alarm binding: zone bypass rejected due to invalid PIN code");
             }
         }
         return done;
@@ -482,7 +481,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
         boolean done = false;
 
         if ((pinCode == null) || (pinCode.length() != 4)) {
-            logger.info("Powermax alarm binding: requested event log rejected due to invalid PIN code");
+            logger.debug("Powermax alarm binding: requested event log rejected due to invalid PIN code");
         } else {
             try {
                 byte[] dynPart = new byte[3];
@@ -491,7 +490,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
 
                 done = sendMessage(new PowermaxBaseMessage(PowermaxSendType.EVENTLOG, dynPart), false, 0);
             } catch (NumberFormatException e) {
-                logger.info("Powermax alarm binding: requested event log rejected due to invalid PIN code");
+                logger.debug("Powermax alarm binding: requested event log rejected due to invalid PIN code");
             }
         }
         return done;
@@ -524,7 +523,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
         if ((remainingAttempts > 0) && !isDownloadRunning() && ((lastTimeDownloadRequested == null)
                 || ((now - lastTimeDownloadRequested) >= DELAY_BETWEEN_SETUP_DOWNLOADS))) {
             // We wait at least 45 seconds before each retry to download the panel setup
-            logger.info("Powermax alarm binding: try again downloading setup");
+            logger.debug("Powermax alarm binding: try again downloading setup");
             startDownload();
         }
     }
@@ -644,7 +643,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
 
         if (logger.isDebugEnabled()) {
             logger.debug("sendMessage(): sending {} message {}", msgToSend.getSendType(),
-                    DatatypeConverter.printHexBinary(msgToSend.getRawData()));
+                    HexUtils.bytesToHex(msgToSend.getRawData()));
         }
         boolean done = sendMessage(msgToSend.getRawData());
         if (done) {

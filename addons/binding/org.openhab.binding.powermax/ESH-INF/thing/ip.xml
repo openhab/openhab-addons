@@ -39,7 +39,7 @@
 
 		<config-description>
 			<parameter name="ip" type="text" required="true">
-				<context>network_address</context>
+				<context>network-address</context>
 				<label>IP Address</label>
 				<description>The IP address to use for connecting to the Ethernet interface of the alarm system.</description>
 			</parameter>

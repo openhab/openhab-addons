@@ -298,7 +298,7 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
                         PowermaxArmMode armMode = PowermaxArmMode.fromShortName(command.toString());
                         armCommand(armMode);
                     } catch (IllegalArgumentException e) {
-                        logger.info("Powermax alarm binding: invalid command {}", command);
+                        logger.debug("Powermax alarm binding: invalid command {}", command);
                     }
                     break;
                 case SYSTEM_ARMED:
@@ -328,7 +328,7 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
 
     private void armCommand(PowermaxArmMode armMode) {
         if (!isConnected()) {
-            logger.info("Powermax alarm binding not connected. Arm command is ignored.");
+            logger.debug("Powermax alarm binding not connected. Arm command is ignored.");
         } else {
             commManager.requestArmMode(armMode,
                     currentState.isPowerlinkMode() ? getPanelSettings().getFirstPinCode() : pinCode);
@@ -337,7 +337,7 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
 
     private void pgmCommand(Command command) {
         if (!isConnected()) {
-            logger.info("Powermax alarm binding not connected. PGM command is ignored.");
+            logger.debug("Powermax alarm binding not connected. PGM command is ignored.");
         } else {
             commManager.sendPGMX10(command, null);
         }
@@ -345,7 +345,7 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
 
     public void x10Command(Byte deviceNr, Command command) {
         if (!isConnected()) {
-            logger.info("Powermax alarm binding not connected. X10 command is ignored.");
+            logger.debug("Powermax alarm binding not connected. X10 command is ignored.");
         } else {
             commManager.sendPGMX10(command, deviceNr);
         }
@@ -353,11 +353,11 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
 
     public void zoneBypassed(byte zoneNr, boolean bypassed) {
         if (!isConnected()) {
-            logger.info("Powermax alarm binding not connected. Zone bypass command is ignored.");
+            logger.debug("Powermax alarm binding not connected. Zone bypass command is ignored.");
         } else if (!Boolean.TRUE.equals(currentState.isPowerlinkMode())) {
-            logger.info("Powermax alarm binding: Bypass option only supported in Powerlink mode");
+            logger.debug("Powermax alarm binding: Bypass option only supported in Powerlink mode");
         } else if (!getPanelSettings().isBypassEnabled()) {
-            logger.info("Powermax alarm binding: Bypass option not enabled in panel settings");
+            logger.debug("Powermax alarm binding: Bypass option not enabled in panel settings");
         } else {
             commManager.sendZoneBypass(bypassed, zoneNr, getPanelSettings().getFirstPinCode());
         }
@@ -365,7 +365,7 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
 
     private void downloadEventLog() {
         if (!isConnected()) {
-            logger.info("Powermax alarm binding not connected. Event logs command is ignored.");
+            logger.debug("Powermax alarm binding not connected. Event logs command is ignored.");
         } else {
             commManager
                     .requestEventLog(currentState.isPowerlinkMode() ? getPanelSettings().getFirstPinCode() : pinCode);
@@ -374,11 +374,11 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
 
     public void downloadSetup() {
         if (!isConnected()) {
-            logger.info("Powermax alarm binding not connected. Download setup command is ignored.");
+            logger.debug("Powermax alarm binding not connected. Download setup command is ignored.");
         } else if (!Boolean.TRUE.equals(currentState.isPowerlinkMode())) {
-            logger.info("Powermax alarm binding: download setup only supported in Powerlink mode");
+            logger.debug("Powermax alarm binding: download setup only supported in Powerlink mode");
         } else if (commManager.isDownloadRunning()) {
-            logger.info("Powermax alarm binding: download setup not started as one is in progress");
+            logger.debug("Powermax alarm binding: download setup not started as one is in progress");
         } else {
             commManager.startDownload();
             if (currentState.getLastKeepAlive() != null) {
@@ -399,7 +399,7 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
         if (Boolean.TRUE.equals(currentState.isPowerlinkMode())
                 && Boolean.TRUE.equals(updateState.isDownloadSetupRequired())) {
             // After Enrolling Powerlink or if a reset is required
-            logger.info("Powermax alarm binding: Reset");
+            logger.debug("Powermax alarm binding: Reset");
             commManager.startDownload();
             if (currentState.getLastKeepAlive() != null) {
                 currentState.setLastKeepAlive(System.currentTimeMillis());
@@ -407,7 +407,7 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
         } else if (Boolean.FALSE.equals(currentState.isPowerlinkMode()) && updateState.getLastKeepAlive() != null) {
             // Were are in standard mode but received a keep alive message
             // so we switch in PowerLink mode
-            logger.info("Powermax alarm binding: Switching to Powerlink mode");
+            logger.debug("Powermax alarm binding: Switching to Powerlink mode");
             commManager.startDownload();
         }
 
@@ -449,7 +449,7 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
             }
             remainingDownloadAttempts = 0;
         } else {
-            logger.warn("Powermax alarm binding: setup download failed!");
+            logger.info("Powermax alarm binding: setup download failed!");
             for (PowermaxPanelSettingsListener listener : listeners) {
                 listener.onPanelSettingsUpdated(null);
             }
@@ -457,10 +457,10 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
         }
         updatePropertiesFromPanelSettings();
         if (currentState.isPowerlinkMode()) {
-            logger.info("Powermax alarm binding: running in Powerlink mode");
+            logger.debug("Powermax alarm binding: running in Powerlink mode");
             commManager.sendRestoreMessage();
         } else {
-            logger.info("Powermax alarm binding: running in Standard mode");
+            logger.debug("Powermax alarm binding: running in Standard mode");
             commManager.getInfosWhenInStandardMode();
         }
     }
@@ -630,7 +630,7 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
                 result = PowermaxPanelType.fromLabel(value);
             } catch (IllegalArgumentException e) {
                 result = defaultValue;
-                logger.info("Powermax alarm binding: panel type not configured correctly");
+                logger.debug("Powermax alarm binding: panel type not configured correctly");
             }
         } else {
             result = defaultValue;

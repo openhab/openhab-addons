@@ -50,7 +50,7 @@ public class PowermaxPowerlinkMessage extends PowermaxBaseMessage {
             updatedState = commManager.createNewState();
             updatedState.setLastKeepAlive(System.currentTimeMillis());
         } else if (subType == 0x0A && message[4] == 0x01) {
-            logger.info("Powermax alarm binding: Enrolling Powerlink");
+            logger.debug("Powermax alarm binding: Enrolling Powerlink");
             commManager.enrollPowerlink();
             updatedState = commManager.createNewState();
             updatedState.setDownloadSetupRequired(true);

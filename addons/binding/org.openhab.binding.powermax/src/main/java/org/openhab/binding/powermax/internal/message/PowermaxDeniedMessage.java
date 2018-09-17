@@ -44,9 +44,9 @@ public class PowermaxDeniedMessage extends PowermaxBaseMessage {
         PowermaxSendType lastSendType = commManager.getLastSendMsg().getSendType();
         if (lastSendType == PowermaxSendType.EVENTLOG || lastSendType == PowermaxSendType.ARM
                 || lastSendType == PowermaxSendType.BYPASS) {
-            logger.info("Powermax alarm binding: invalid PIN code");
+            logger.debug("Powermax alarm binding: invalid PIN code");
         } else if (lastSendType == PowermaxSendType.DOWNLOAD) {
-            logger.info("Powermax alarm binding: openHAB Powerlink not enrolled");
+            logger.debug("Powermax alarm binding: openHAB Powerlink not enrolled");
             updatedState = commManager.createNewState();
             updatedState.setPowerlinkMode(false);
         }

@@ -12,8 +12,7 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.util.Arrays;
 
-import javax.xml.bind.DatatypeConverter;
-
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.powermax.internal.message.PowermaxCommManager;
 import org.openhab.binding.powermax.internal.message.PowermaxReceiveType;
 import org.slf4j.Logger;
@@ -62,7 +61,7 @@ public class PowermaxReaderThread extends Thread {
                             // too many bytes received, try to find new start
                             if (logger.isDebugEnabled()) {
                                 byte[] logData = Arrays.copyOf(dataBuffer, index);
-                                logger.debug("Truncating message {}", DatatypeConverter.printHexBinary(logData));
+                                logger.debug("Truncating message {}", HexUtils.bytesToHex(logData));
                             }
                             index = 0;
                         }
@@ -143,8 +142,7 @@ public class PowermaxReaderThread extends Thread {
         if (checksum != expected) {
             byte[] logData = Arrays.copyOf(data, len);
             logger.warn("Powermax alarm binding: message CRC check failed (expected {}, got {}, message {})",
-                    String.format("%02X", expected), String.format("%02X", checksum),
-                    DatatypeConverter.printHexBinary(logData));
+                    String.format("%02X", expected), String.format("%02X", checksum), HexUtils.bytesToHex(logData));
         }
         return (checksum == expected);
     }

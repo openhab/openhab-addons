@@ -8,8 +8,7 @@
  */
 package org.openhab.binding.powermax.internal.message;
 
-import javax.xml.bind.DatatypeConverter;
-
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.powermax.internal.state.PowermaxState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -146,7 +145,7 @@ public class PowermaxBaseMessage {
 
     @Override
     public String toString() {
-        String str = "\n - Raw data = " + DatatypeConverter.printHexBinary(rawData);
+        String str = "\n - Raw data = " + HexUtils.bytesToHex(rawData);
         str += "\n - type = " + String.format("%02X", code);
         if (sendType != null) {
             str += " ( " + sendType.toString() + " )";

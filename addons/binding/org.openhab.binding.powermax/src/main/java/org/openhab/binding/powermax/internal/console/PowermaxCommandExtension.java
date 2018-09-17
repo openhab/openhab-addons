@@ -26,7 +26,7 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Laurent Garnier - Initial contribution
  */
-@Component(service = ConsoleCommandExtension.class, configurationPid = "binding.powermax.console")
+@Component(service = ConsoleCommandExtension.class)
 public class PowermaxCommandExtension extends AbstractConsoleCommandExtension {
 
     private static final String INFO_SETUP = "info_setup";
