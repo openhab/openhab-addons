@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.harmonyhub.handler;
+package org.openhab.binding.harmonyhub.internal.handler;
 
-import static org.openhab.binding.harmonyhub.HarmonyHubBindingConstants.*;
+import static org.openhab.binding.harmonyhub.internal.HarmonyHubBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
