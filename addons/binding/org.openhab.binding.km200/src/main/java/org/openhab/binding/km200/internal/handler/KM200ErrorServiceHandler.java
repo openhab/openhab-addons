@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.openhab.binding.km200.internal;
+package org.openhab.binding.km200.internal.handler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,16 +28,16 @@ import com.google.gson.JsonObject;
  * @author Markus Eckhardt - Initial contribution
  *
  */
-public class KM200ErrorService {
+public class KM200ErrorServiceHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(KM200ErrorService.class);
+    private final Logger logger = LoggerFactory.getLogger(KM200ErrorServiceHandler.class);
 
     private Integer activeError = 1;
 
     /* List for all errors */
     private final List<Map<String, String>> errorMap;
 
-    KM200ErrorService() {
+    public KM200ErrorServiceHandler() {
         errorMap = new ArrayList<Map<String, String>>();
     }
 
@@ -57,7 +57,7 @@ public class KM200ErrorService {
      * This function updates the errors
      *
      */
-    void updateErrors(JsonObject nodeRoot) {
+    public void updateErrors(JsonObject nodeRoot) {
         synchronized (errorMap) {
             /* Update the list of errors */
             removeAllErrors();
@@ -79,7 +79,7 @@ public class KM200ErrorService {
      * This function returns the number of errors
      *
      */
-    int getNbrErrors() {
+    public int getNbrErrors() {
         synchronized (errorMap) {
             return errorMap.size();
         }
@@ -89,7 +89,7 @@ public class KM200ErrorService {
      * This function sets the actual errors
      *
      */
-    void setActiveError(int error) {
+    public void setActiveError(int error) {
         int actError;
         if (error < 1) {
             actError = 1;
@@ -107,7 +107,7 @@ public class KM200ErrorService {
      * This function returns the selected error
      *
      */
-    int getActiveError() {
+    public int getActiveError() {
         synchronized (activeError) {
             if (activeError == null) {
                 return 0;
@@ -121,7 +121,7 @@ public class KM200ErrorService {
      * This function returns a error string with all parameters
      *
      */
-    String getErrorString() {
+    public String getErrorString() {
         String value = "";
         synchronized (errorMap) {
             int actN = getActiveError();

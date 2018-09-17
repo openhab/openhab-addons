@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.openhab.binding.km200.internal;
+package org.openhab.binding.km200.internal.handler;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -17,12 +17,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.smarthome.core.types.StateOption;
+import org.openhab.binding.km200.internal.KM200Device;
+import org.openhab.binding.km200.internal.KM200ServiceObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 /**
  * The KM200SwitchProgramService representing a switch program service with its all capabilities
@@ -30,9 +31,8 @@ import com.google.gson.JsonParser;
  * @author Markus Eckhardt - Initial contribution
  *
  */
-public class KM200SwitchProgramService {
-    private final Logger logger = LoggerFactory.getLogger(KM200SwitchProgramService.class);
-    private final JsonParser jsonParser = new JsonParser();
+public class KM200SwitchProgramServiceHandler {
+    private final Logger logger = LoggerFactory.getLogger(KM200SwitchProgramServiceHandler.class);
 
     private int maxNbOfSwitchPoints = 8;
     private int maxNbOfSwitchPointsPerDay = 8;
@@ -63,7 +63,7 @@ public class KM200SwitchProgramService {
     /* List with setpoints */
     ArrayList<String> setpoints;
 
-    KM200SwitchProgramService() {
+    public KM200SwitchProgramServiceHandler() {
         switchMap = new HashMap<String, HashMap<String, ArrayList<Integer>>>();
         days = new ArrayList<String>();
         days.add(TYPE_MONDAY);
@@ -142,25 +142,25 @@ public class KM200SwitchProgramService {
         }
     }
 
-    void setMaxNbOfSwitchPoints(Integer nbr) {
+    public void setMaxNbOfSwitchPoints(Integer nbr) {
         if (nbr != null) {
             maxNbOfSwitchPoints = nbr;
         }
     }
 
-    void setMaxNbOfSwitchPointsPerDay(Integer nbr) {
+    public void setMaxNbOfSwitchPointsPerDay(Integer nbr) {
         if (nbr != null) {
             maxNbOfSwitchPointsPerDay = nbr;
         }
     }
 
-    void setSwitchPointTimeRaster(Integer raster) {
+    public void setSwitchPointTimeRaster(Integer raster) {
         if (raster != null) {
             switchPointTimeRaster = raster;
         }
     }
 
-    void setSetpointProperty(String property) {
+    public void setSetpointProperty(String property) {
         setpointProperty = property;
     }
 
@@ -168,7 +168,7 @@ public class KM200SwitchProgramService {
      * This function sets the day
      *
      */
-    void setActiveDay(String day) {
+    public void setActiveDay(String day) {
         if (!days.contains(day)) {
             logger.error("This type of weekday is not supported, get day: {}", day);
             throw new IllegalArgumentException("This type of weekday is not supported, get day: " + day);
@@ -180,7 +180,7 @@ public class KM200SwitchProgramService {
      * This function sets the cycle
      *
      */
-    void setActiveCycle(Integer cycle) {
+    public void setActiveCycle(Integer cycle) {
         if (cycle > this.getMaxNbOfSwitchPoints() / 2 || cycle > this.getMaxNbOfSwitchPointsPerDay() / 2 || cycle < 1) {
             logger.error("The value of cycle is not valid, get cycle: {}", cycle);
             throw new IllegalArgumentException("The value of cycle is not valid, get cycle: " + cycle.toString());
@@ -197,7 +197,7 @@ public class KM200SwitchProgramService {
      * This function sets the positive switch to the selected day and cycle
      *
      */
-    void setActivePositiveSwitch(Integer time) {
+    public void setActivePositiveSwitch(Integer time) {
         Integer actTime;
         if (time < MIN_TIME) {
             actTime = MIN_TIME;
@@ -255,7 +255,7 @@ public class KM200SwitchProgramService {
      * This function sets the negative switch to the selected day and cycle
      *
      */
-    void setActiveNegativeSwitch(Integer time) {
+    public void setActiveNegativeSwitch(Integer time) {
         Integer actTime;
         if (time < MIN_TIME) {
             actTime = MIN_TIME;
@@ -322,10 +322,10 @@ public class KM200SwitchProgramService {
     /**
      * This function determines the positive and negative switch point names
      */
-    boolean determineSwitchNames(KM200Device device) {
+    public boolean determineSwitchNames(KM200Device device) {
         if (setpointProperty != null) {
             logger.debug("Determine switch names..");
-            KM200CommObject setpObject = device.getServiceObject(setpointProperty);
+            KM200ServiceObject setpObject = device.getServiceObject(setpointProperty);
             if (setpObject.serviceTreeMap.keySet().isEmpty()) {
                 return false;
             }
@@ -341,7 +341,7 @@ public class KM200SwitchProgramService {
      * This function updates objects the switching points
      *
      */
-    void updateSwitches(JsonObject nodeRoot, KM200Device device) {
+    public void updateSwitches(JsonObject nodeRoot, KM200Device device) {
         synchronized (switchMap) {
             /* Update the list of switching points */
             removeAllSwitches();
@@ -366,7 +366,7 @@ public class KM200SwitchProgramService {
                 } else {
                     if (setpointProperty != null) {
                         BigDecimal firstVal = null;
-                        KM200CommObject setpObject = device.getServiceObject(setpointProperty);
+                        KM200ServiceObject setpObject = device.getServiceObject(setpointProperty);
                         logger.debug("No switch points set. Use alternative way. {}", nodeRoot);
                         for (String key : setpoints) {
                             if (positiveSwitch == null || negativeSwitch == null) {
@@ -413,7 +413,7 @@ public class KM200SwitchProgramService {
      * This function updates objects JSONData on the actual set switch points.
      *
      */
-    String getUpdatedJSONData(KM200CommObject parObject) {
+    public JsonObject getUpdatedJSONData(KM200ServiceObject parObject) {
         synchronized (switchMap) {
             boolean prepareNewOnly = false;
             JsonArray sPoints = new JsonArray();
@@ -455,15 +455,15 @@ public class KM200SwitchProgramService {
                 }
             }
             logger.debug("New switching points: {}", sPoints);
-            JsonObject switchRoot = (JsonObject) jsonParser.parse(parObject.getJSONData());
+            JsonObject switchRoot = parObject.getJSONData();
             switchRoot.remove("switchPoints");
             switchRoot.add("switchPoints", sPoints);
-            parObject.setJSONData(switchRoot.toString());
+            parObject.setJSONData(switchRoot);
             /* Preparation for are new cycle, don't sent it to the device */
             if (prepareNewOnly) {
                 return null;
             } else {
-                return sPoints.toString();
+                return switchRoot;
             }
         }
     }
@@ -476,7 +476,7 @@ public class KM200SwitchProgramService {
         return maxNbOfSwitchPointsPerDay;
     }
 
-    int getSwitchPointTimeRaster() {
+    public int getSwitchPointTimeRaster() {
         return switchPointTimeRaster;
     }
 
@@ -496,7 +496,7 @@ public class KM200SwitchProgramService {
      * This function returns the number of cycles
      *
      */
-    Integer getNbrCycles() {
+    public Integer getNbrCycles() {
         synchronized (switchMap) {
             HashMap<String, ArrayList<Integer>> weekP = switchMap.get(getPositiveSwitch());
             HashMap<String, ArrayList<Integer>> weekN = switchMap.get(getNegativeSwitch());
@@ -516,7 +516,7 @@ public class KM200SwitchProgramService {
      * This function returns the selected day
      *
      */
-    String getActiveDay() {
+    public String getActiveDay() {
         return activeDay;
     }
 
@@ -524,7 +524,7 @@ public class KM200SwitchProgramService {
      * This function returns the selected cycle
      *
      */
-    Integer getActiveCycle() {
+    public Integer getActiveCycle() {
         return activeCycle;
     }
 
@@ -532,7 +532,7 @@ public class KM200SwitchProgramService {
      * This function returns the positive switch to the selected day and cycle
      *
      */
-    Integer getActivePositiveSwitch() {
+    public Integer getActivePositiveSwitch() {
         synchronized (switchMap) {
             HashMap<String, ArrayList<Integer>> week = switchMap.get(getPositiveSwitch());
             if (week != null) {
@@ -552,7 +552,7 @@ public class KM200SwitchProgramService {
      * This function returns the negative switch to the selected day and cycle
      *
      */
-    Integer getActiveNegativeSwitch() {
+    public Integer getActiveNegativeSwitch() {
         synchronized (switchMap) {
             HashMap<String, ArrayList<Integer>> week = switchMap.get(getNegativeSwitch());
             if (week != null) {

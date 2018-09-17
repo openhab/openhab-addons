@@ -11,6 +11,8 @@ package org.openhab.binding.km200.internal;
 
 import java.util.HashMap;
 
+import com.google.gson.JsonObject;
+
 /**
  * The KM200CommObject representing a service on a device with its all capabilities
  *
@@ -18,7 +20,7 @@ import java.util.HashMap;
  *
  */
 
-public class KM200CommObject {
+public class KM200ServiceObject {
     private int readable;
     private int writeable;
     private int recordable;
@@ -27,17 +29,17 @@ public class KM200CommObject {
     private String parent;
     private String fullServiceName;
     private String serviceType;
-    private String jsonData;
+    private JsonObject jsonData;
     private Object value;
     private Object valueParameter;
 
     /* Device services */
-    public HashMap<String, KM200CommObject> serviceTreeMap;
-    KM200CommObject parentObject;
+    public HashMap<String, KM200ServiceObject> serviceTreeMap;
+    KM200ServiceObject parentObject;
 
-    public KM200CommObject(String fullServiceName, String serviceType, int readable, int writeable, int recordable,
-            int virtual, String parent, KM200CommObject parentObject) {
-        serviceTreeMap = new HashMap<String, KM200CommObject>();
+    public KM200ServiceObject(String fullServiceName, String serviceType, int readable, int writeable, int recordable,
+            int virtual, String parent, KM200ServiceObject parentObject) {
+        serviceTreeMap = new HashMap<String, KM200ServiceObject>();
         this.fullServiceName = fullServiceName;
         this.serviceType = serviceType;
         this.readable = readable;
@@ -62,7 +64,7 @@ public class KM200CommObject {
         valueParameter = val;
     }
 
-    public void setJSONData(String data) {
+    public void setJSONData(JsonObject data) {
         jsonData = data;
     }
 
@@ -107,7 +109,7 @@ public class KM200CommObject {
         return updated;
     }
 
-    public String getJSONData() {
+    public JsonObject getJSONData() {
         return jsonData;
     }
 }

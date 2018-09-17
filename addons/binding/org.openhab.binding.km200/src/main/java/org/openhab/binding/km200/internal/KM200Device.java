@@ -8,9 +8,6 @@
  */
 package org.openhab.binding.km200.internal;
 
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +17,10 @@ import javax.xml.bind.DatatypeConverter;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 
 /**
  * The KM200Device representing the device with its all capabilities
@@ -31,6 +32,9 @@ import org.slf4j.LoggerFactory;
 public class KM200Device {
 
     private final Logger logger = LoggerFactory.getLogger(KM200Device.class);
+    private final JsonParser jsonParser = new JsonParser();
+    private final KM200Cryption comCryption;
+    private final KM200Comm<KM200Device> deviceCommunicator;
 
     /* valid IPv4 address of the KMxxx. */
     protected String ip4Address;
@@ -52,21 +56,23 @@ public class KM200Device {
     protected byte[] MD5Salt;
 
     /* Device services */
-    public HashMap<String, KM200CommObject> serviceTreeMap;
+    public HashMap<String, KM200ServiceObject> serviceTreeMap;
 
     /* Device services blacklist */
-    List<String> blacklistMap;
+    private List<String> blacklistMap;
     /* List of virtual services */
-    List<KM200CommObject> virtualList;
+    public List<KM200ServiceObject> virtualList;
 
     /* Is the first INIT done */
     protected boolean isIited;
 
     public KM200Device() {
-        serviceTreeMap = new HashMap<String, KM200CommObject>();
-        blacklistMap = new ArrayList<String>();
-        blacklistMap.add("/gateway/firmware");
-        virtualList = new ArrayList<KM200CommObject>();
+        serviceTreeMap = new HashMap<String, KM200ServiceObject>();
+        setBlacklistMap(new ArrayList<String>());
+        getBlacklistMap().add("/gateway/firmware");
+        virtualList = new ArrayList<KM200ServiceObject>();
+        comCryption = new KM200Cryption(this);
+        deviceCommunicator = new KM200Comm<KM200Device>(this);
     }
 
     public Boolean isConfigured() {
@@ -85,6 +91,10 @@ public class KM200Device {
         return privatePassword;
     }
 
+    public byte[] getMD5Salt() {
+        return MD5Salt;
+    }
+
     public byte[] getCryptKeyInit() {
         return cryptKeyInit;
     }
@@ -101,27 +111,43 @@ public class KM200Device {
         return isIited;
     }
 
+    public List<String> getBlacklistMap() {
+        return blacklistMap;
+    }
+
+    public void setBlacklistMap(List<String> blacklistMap) {
+        this.blacklistMap = blacklistMap;
+    }
+
     public void setIP4Address(String ip) {
         ip4Address = ip;
     }
 
     public void setGatewayPassword(String password) {
         gatewayPassword = password;
-        recreateKeys();
+        comCryption.recreateKeys();
     }
 
     public void setPrivatePassword(String password) {
         privatePassword = password;
-        recreateKeys();
+        comCryption.recreateKeys();
     }
 
     public void setMD5Salt(String salt) {
         MD5Salt = DatatypeConverter.parseHexBinary(salt);
-        recreateKeys();
+        comCryption.recreateKeys();
     }
 
     public void setCryptKeyPriv(String key) {
         cryptKeyPriv = DatatypeConverter.parseHexBinary(key);
+    }
+
+    public void setCryptKeyPriv(byte[] key) {
+        cryptKeyPriv = key;
+    }
+
+    public void setCryptKeyInit(byte[] key) {
+        cryptKeyInit = key;
     }
 
     public void setCharSet(String charset) {
@@ -132,63 +158,8 @@ public class KM200Device {
         isIited = inited;
     }
 
-    /**
-     * This function creates the private key from the MD5Salt, the device and the private password
-     *
-     * @author Markus Eckhardt
-     */
-    private void recreateKeys() {
-        if (StringUtils.isNotBlank(gatewayPassword) && StringUtils.isNotBlank(privatePassword) && MD5Salt != null) {
-            byte[] MD5_K1 = null;
-            byte[] MD5_K2_Init = null;
-            byte[] MD5_K2_Private = null;
-            byte[] bytesOfGatewayPassword = null;
-            byte[] bytesOfPrivatePassword = null;
-            MessageDigest md = null;
-            try {
-                md = MessageDigest.getInstance("MD5");
-            } catch (NoSuchAlgorithmException e) {
-                logger.error("No such algorithm, MD5: {}", e.getMessage());
-                return;
-            }
-
-            /* First half of the key: MD5 of (GatewayPassword . Salt) */
-            try {
-                bytesOfGatewayPassword = gatewayPassword.getBytes("UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                logger.error("No such encoding, UTF-8: {}", e.getMessage());
-                return;
-            }
-            byte[] CombParts1 = new byte[bytesOfGatewayPassword.length + MD5Salt.length];
-            System.arraycopy(bytesOfGatewayPassword, 0, CombParts1, 0, bytesOfGatewayPassword.length);
-            System.arraycopy(MD5Salt, 0, CombParts1, bytesOfGatewayPassword.length, MD5Salt.length);
-            MD5_K1 = md.digest(CombParts1);
-
-            /* Second half of the key: - Initial: MD5 of ( Salt) */
-            MD5_K2_Init = md.digest(MD5Salt);
-
-            /* Second half of the key: - private: MD5 of ( Salt . PrivatePassword) */
-            try {
-                bytesOfPrivatePassword = privatePassword.getBytes("UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                logger.error("No such encoding, UTF-8: {}", e.getMessage());
-                return;
-            }
-            byte[] CombParts2 = new byte[bytesOfPrivatePassword.length + MD5Salt.length];
-            System.arraycopy(MD5Salt, 0, CombParts2, 0, MD5Salt.length);
-            System.arraycopy(bytesOfPrivatePassword, 0, CombParts2, MD5Salt.length, bytesOfPrivatePassword.length);
-            MD5_K2_Private = md.digest(CombParts2);
-
-            /* Create Keys */
-            cryptKeyInit = new byte[MD5_K1.length + MD5_K2_Init.length];
-            System.arraycopy(MD5_K1, 0, cryptKeyInit, 0, MD5_K1.length);
-            System.arraycopy(MD5_K2_Init, 0, cryptKeyInit, MD5_K1.length, MD5_K2_Init.length);
-
-            cryptKeyPriv = new byte[MD5_K1.length + MD5_K2_Private.length];
-            System.arraycopy(MD5_K1, 0, cryptKeyPriv, 0, MD5_K1.length);
-            System.arraycopy(MD5_K2_Private, 0, cryptKeyPriv, MD5_K1.length, MD5_K2_Private.length);
-
-        }
+    public void setMaxNbrRepeats(Integer maxNbrRepeats) {
+        this.deviceCommunicator.setMaxNbrRepeats(maxNbrRepeats);
     }
 
     /**
@@ -211,9 +182,9 @@ public class KM200Device {
      *
      * @param actTreeMap
      */
-    public void printAllServices(HashMap<String, KM200CommObject> actTreeMap) {
+    public void printAllServices(HashMap<String, KM200ServiceObject> actTreeMap) {
         if (actTreeMap != null) {
-            for (KM200CommObject object : actTreeMap.values()) {
+            for (KM200ServiceObject object : actTreeMap.values()) {
                 if (object != null) {
                     String val = "", type, valPara = "";
                     logger.debug("List type: {} service: {}", object.getServiceType(), object.getFullServiceName());
@@ -263,7 +234,6 @@ public class KM200Device {
                 }
             }
         }
-
     }
 
     /**
@@ -271,9 +241,9 @@ public class KM200Device {
      *
      * @param actTreeMap
      */
-    public void resetAllUpdates(HashMap<String, KM200CommObject> actTreeMap) {
+    public void resetAllUpdates(HashMap<String, KM200ServiceObject> actTreeMap) {
         if (actTreeMap != null) {
-            for (KM200CommObject stmObject : actTreeMap.values()) {
+            for (KM200ServiceObject stmObject : actTreeMap.values()) {
                 if (stmObject != null) {
                     stmObject.setUpdated(false);
                     resetAllUpdates(stmObject.serviceTreeMap);
@@ -289,7 +259,7 @@ public class KM200Device {
      */
     public Boolean containsService(String service) {
         String[] servicePath = service.split("/");
-        KM200CommObject object = null;
+        KM200ServiceObject object = null;
         int len = servicePath.length;
         if (len == 0) {
             return false;
@@ -318,9 +288,9 @@ public class KM200Device {
      *
      * @param service
      */
-    public KM200CommObject getServiceObject(String service) {
+    public KM200ServiceObject getServiceObject(String service) {
         String[] servicePath = service.split("/");
-        KM200CommObject object = null;
+        KM200ServiceObject object = null;
         int len = servicePath.length;
         if (len == 0) {
             return null;
@@ -342,5 +312,74 @@ public class KM200Device {
             }
         }
         return object;
+    }
+
+    /**
+     * This function checks the communication to a service on the device. It returns null if the communication is not
+     * possible and a JSON node in opposide case.
+     *
+     */
+    public JsonObject getServiceNode(String service) {
+        String decodedData = null;
+        JsonObject nodeRoot = null;
+        byte[] recData = deviceCommunicator.getDataFromService(service.toString());
+        try {
+            if (recData == null) {
+                logger.error("Communication to {} is not possible!", service);
+                return null;
+            }
+            if (recData.length == 0) {
+                logger.error("No reply from KM200!");
+                return null;
+            }
+            /* Look whether the communication was forbidden */
+            if (recData.length == 1) {
+                logger.debug("{}: recData.length == 1", service);
+                nodeRoot = new JsonObject();
+                decodedData = new String();
+                return nodeRoot;
+            } else {
+                decodedData = comCryption.decodeMessage(recData);
+                if (decodedData == null) {
+                    logger.error("Decoding of the KM200 message is not possible!");
+                    return null;
+                }
+            }
+            if (decodedData.length() > 0) {
+                if ("SERVICE NOT AVAILABLE".equals(decodedData)) {
+                    logger.debug("{}: SERVICE NOT AVAILABLE", service);
+                    return null;
+                } else {
+                    nodeRoot = (JsonObject) jsonParser.parse(decodedData);
+                }
+            } else {
+                logger.warn("Get empty reply");
+                return null;
+            }
+        } catch (JsonParseException e) {
+            logger.error("Parsingexception in JSON: {} service: {}", e.getMessage(), service);
+            return null;
+        }
+        return nodeRoot;
+    }
+
+    /**
+     * This function checks the communication to a service on the device. It returns null if the communication is not
+     * possible and a JSON node in opposide case.
+     *
+     */
+    public void setServiceNode(String service, JsonObject newObject) {
+        logger.debug("Encoding: {}", newObject);
+        int retVal;
+        byte[] encData = comCryption.encodeMessage(newObject.toString());
+        if (encData == null) {
+            logger.error("Couldn't encrypt data");
+            return;
+        }
+        logger.debug("Send: {}", service);
+        retVal = deviceCommunicator.sendDataToService(service, encData);
+        if (retVal == 0) {
+            logger.error("Send to device failed!: {}: {}", service, newObject);
+        }
     }
 }

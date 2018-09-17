@@ -48,7 +48,7 @@ public class KM200HandlerFactory extends BaseThingHandlerFactory {
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
-    private static final Logger logger = LoggerFactory.getLogger(KM200HandlerFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(KM200HandlerFactory.class);
 
     private KM200ChannelTypeProvider channelTypeProvider;
 
@@ -77,10 +77,12 @@ public class KM200HandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         logger.debug("Create thing handler for: {}", thingTypeUID.getAsString());
         if (KM200GatewayHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
+            logger.debug("It's a gataway: {}", thingTypeUID.getAsString());
             KM200GatewayHandler gatewayHandler = new KM200GatewayHandler((Bridge) thing);
             registerKM200GatewayDiscoveryService(gatewayHandler);
             return gatewayHandler;
         } else if (KM200ThingHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
+            logger.debug("It's a thing: {}", thingTypeUID.getAsString());
             return new KM200ThingHandler(thing, channelTypeProvider);
         } else {
             return null;

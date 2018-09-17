@@ -31,7 +31,6 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
@@ -45,9 +44,9 @@ import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.km200.KM200ThingType;
 import org.openhab.binding.km200.internal.KM200ChannelTypeProvider;
-import org.openhab.binding.km200.internal.KM200CommObject;
-import org.openhab.binding.km200.internal.KM200SwitchProgramService;
+import org.openhab.binding.km200.internal.KM200ServiceObject;
 import org.openhab.binding.km200.internal.KM200Utils;
+import org.openhab.binding.km200.internal.handler.KM200SwitchProgramServiceHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,14 +68,11 @@ public class KM200ThingHandler extends BaseThingHandler {
             THING_TYPE_SYSTEM_HOLIDAYMODES, THING_TYPE_SYSTEM_SENSOR, THING_TYPE_GATEWAY, THING_TYPE_NOTIFICATION,
             THING_TYPE_SYSTEM);
 
-    private boolean isInited;
-
     private KM200ChannelTypeProvider channelTypeProvider;
 
     public KM200ThingHandler(Thing thing, KM200ChannelTypeProvider channelTypeProvider) {
         super(thing);
         this.channelTypeProvider = channelTypeProvider;
-        thing.setStatusInfo(new ThingStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, ""));
         try {
             configDescriptionUriChannel = new URI(CONFIG_DESCRIPTION_URI_CHANNEL);
         } catch (URISyntaxException ex) {
@@ -197,31 +193,38 @@ public class KM200ThingHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        if (isInitialized()) {
+            return;
+        }
         Bridge bridge = this.getBridge();
-        if (isInited || bridge == null) {
+        if (bridge == null) {
+            logger.debug("Bridge not existing");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
         logger.debug("initialize, Bridge: {}", bridge);
         KM200GatewayHandler gateway = (KM200GatewayHandler) bridge.getHandler();
         if (gateway == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            logger.debug("Gateway not existing: {}", bridge);
             return;
         }
         String service = KM200Utils.translatesNameToPath(thing.getProperties().get("root"));
         synchronized (gateway.getDevice()) {
-            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.CONFIGURATION_PENDING);
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING);
             if (!gateway.getDevice().getInited()) {
-                logger.debug("Bridge: not inited");
-                isInited = false;
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                logger.debug("Bridge: not inited: {}", bridge);
                 return;
             }
             List<Channel> subChannels = new ArrayList<Channel>();
             if (gateway.getDevice().containsService(service)) {
-                KM200CommObject serObj = gateway.getDevice().getServiceObject(service);
+                KM200ServiceObject serObj = gateway.getDevice().getServiceObject(service);
                 addChannels(serObj, thing, subChannels, "");
             } else if (service.contains(SWITCH_PROGRAM_PATH_NAME)) {
                 String currentPathName = thing.getProperties().get(SWITCH_PROGRAM_CURRENT_PATH_NAME);
                 StateDescription state = new StateDescription(null, null, null, "%s", false,
-                        KM200SwitchProgramService.daysList);
+                        KM200SwitchProgramServiceHandler.daysList);
                 Channel newChannel = createChannel(new ChannelTypeUID(thing.getUID().getAsString() + ":" + "weekday"),
                         new ChannelUID(thing.getUID(), "weekday"), service + "/" + "weekday", "String", currentPathName,
                         "Current selected weekday for cycle selection", "Weekday", true, true, state, "");
@@ -261,16 +264,7 @@ public class KM200ThingHandler extends BaseThingHandler {
             }
             thingBuilder.withChannels(subChannels);
             updateThing(thingBuilder.build());
-            isInited = true;
             updateStatus(ThingStatus.ONLINE);
-        }
-    }
-
-    @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        super.bridgeStatusChanged(bridgeStatusInfo);
-        if (bridgeStatusInfo.getStatus() == ThingStatus.UNKNOWN) {
-            updateStatus(ThingStatus.UNKNOWN);
         }
     }
 
@@ -282,7 +276,6 @@ public class KM200ThingHandler extends BaseThingHandler {
     /**
      * Checks whether a channel is linked to an item
      *
-     * @param channel
      */
     public boolean checkLinked(Channel channel) {
         return isLinked(channel.getUID().getId());
@@ -291,12 +284,8 @@ public class KM200ThingHandler extends BaseThingHandler {
     /**
      * Search for services and add them to a list
      *
-     * @param serObj
-     * @param thing
-     * @param subChannels
-     * @param subNameAddon
      */
-    private void addChannels(KM200CommObject serObj, Thing thing, List<Channel> subChannels, String subNameAddon) {
+    private void addChannels(KM200ServiceObject serObj, Thing thing, List<Channel> subChannels, String subNameAddon) {
         String service = serObj.getFullServiceName();
         Set<String> subKeys = serObj.serviceTreeMap.keySet();
         List<String> asProperties = null;

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="km200"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="floatValue">
+		<item-type>Number</item-type>
+		<label>Float value</label>
+		<description>Name of a float value service</description>
+		<state pattern="%.2f" readOnly="true" />
+
+	</channel-type>
+	<channel-type id="stringValue">
+		<item-type>String</item-type>
+		<label>String value</label>
+		<description>Name of a string value service</description>
+		<state pattern="%s" readOnly="true" />
+
+	</channel-type>
+	<channel-type id="switchStringValue">
+		<item-type>Switch</item-type>
+		<label>Switch string value</label>
+		<description>Name of switch for a string value service</description>
+		<state pattern="%s" readOnly="false" />
+
+		<config-description>
+			<parameter name="on" type="text" required="true">
+				<label>ON string</label>
+				<context>text</context>
+				<description>ON string for this service</description>
+			</parameter>
+			<parameter name="off" type="text" required="true">
+				<label>OFF string</label>
+				<context>text</context>
+				<description>OFF string for this service</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<channel-type id="dynamicString">
+		<item-type>String</item-type>
+		<label>dynamic</label>
+		<description>Dummy for auto-created channels</description>
+	</channel-type>
+	<channel-type id="dynamicNumber">
+		<item-type>Number</item-type>
+		<label>dynamic</label>
+		<description>Dummy for auto-created channels</description>
+	</channel-type>
+
+</thing:thing-descriptions>
