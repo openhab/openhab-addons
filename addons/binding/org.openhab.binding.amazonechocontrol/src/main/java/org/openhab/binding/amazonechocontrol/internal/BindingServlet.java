@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.amazonechocontrol.internal;
 
-import static org.openhab.binding.amazonechocontrol.AmazonEchoControlBindingConstants.BINDING_NAME;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.BINDING_NAME;
 
 import java.io.IOException;
 import java.net.URLEncoder;

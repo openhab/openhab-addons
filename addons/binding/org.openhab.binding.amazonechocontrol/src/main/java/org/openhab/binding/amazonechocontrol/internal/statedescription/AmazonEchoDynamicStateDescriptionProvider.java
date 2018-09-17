@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.statedescription;
 
-import static org.openhab.binding.amazonechocontrol.AmazonEchoControlBindingConstants.*;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -28,12 +28,12 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.type.DynamicStateDescriptionProvider;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateOption;
-import org.openhab.binding.amazonechocontrol.handler.AccountHandler;
-import org.openhab.binding.amazonechocontrol.handler.EchoHandler;
-import org.openhab.binding.amazonechocontrol.handler.FlashBriefingProfileHandler;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.ConnectionException;
 import org.openhab.binding.amazonechocontrol.internal.HttpException;
+import org.openhab.binding.amazonechocontrol.internal.handler.AccountHandler;
+import org.openhab.binding.amazonechocontrol.internal.handler.EchoHandler;
+import org.openhab.binding.amazonechocontrol.internal.handler.FlashBriefingProfileHandler;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates.BluetoothState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates.PairedDevice;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;

@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.discovery;
 
-import static org.openhab.binding.amazonechocontrol.AmazonEchoControlBindingConstants.*;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.*;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -27,8 +27,8 @@ import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
 import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.amazonechocontrol.handler.AccountHandler;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
+import org.openhab.binding.amazonechocontrol.internal.handler.AccountHandler;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 import org.osgi.service.component.annotations.Activate;
 import org.slf4j.Logger;

@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.amazonechocontrol.handler;
+package org.openhab.binding.amazonechocontrol.internal.handler;
 
-import static org.openhab.binding.amazonechocontrol.AmazonEchoControlBindingConstants.*;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
