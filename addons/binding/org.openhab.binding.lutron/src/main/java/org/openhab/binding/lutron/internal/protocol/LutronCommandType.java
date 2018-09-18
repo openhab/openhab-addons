@@ -15,8 +15,12 @@ package org.openhab.binding.lutron.internal.protocol;
  *
  */
 public enum LutronCommandType {
-    OUTPUT,
+    AREA,
     DEVICE,
+    GROUP,
+    MODE,
     MONITORING,
-    SYSTEM
+    OUTPUT,
+    SYSTEM,
+    TIMECLOCK
 }

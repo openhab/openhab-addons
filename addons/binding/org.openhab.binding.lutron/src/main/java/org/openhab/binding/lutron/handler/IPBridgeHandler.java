@@ -60,7 +60,7 @@ public class IPBridgeHandler extends BaseBridgeHandler {
     private static final String DEFAULT_USER = "lutron";
     private static final String DEFAULT_PASSWORD = "integration";
 
-    private Logger logger = LoggerFactory.getLogger(IPBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(IPBridgeHandler.class);
 
     private IPBridgeConfig config;
 
@@ -139,7 +139,7 @@ public class IPBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        this.logger.debug("Connecting to bridge at {}", config.getIpAddress());
+        logger.debug("Connecting to bridge at {}", config.getIpAddress());
 
         try {
             if (!login(config)) {
@@ -192,12 +192,12 @@ public class IPBridgeHandler extends BaseBridgeHandler {
             while (true) {
                 LutronCommand command = this.sendQueue.take();
 
-                this.logger.debug("Sending command {}", command);
+                logger.debug("Sending command {}", command);
 
                 try {
                     this.session.writeLine(command.toString());
                 } catch (IOException e) {
-                    this.logger.error("Communication error, will try to reconnect", e);
+                    logger.error("Communication error, will try to reconnect", e);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
 
                     // Requeue command
@@ -215,7 +215,7 @@ public class IPBridgeHandler extends BaseBridgeHandler {
     }
 
     private synchronized void disconnect() {
-        this.logger.debug("Disconnecting from bridge");
+        logger.debug("Disconnecting from bridge");
 
         if (this.keepAlive != null) {
             this.keepAlive.cancel(true);
@@ -234,12 +234,12 @@ public class IPBridgeHandler extends BaseBridgeHandler {
         try {
             this.session.close();
         } catch (IOException e) {
-            this.logger.error("Error disconnecting", e);
+            logger.error("Error disconnecting", e);
         }
     }
 
     private synchronized void reconnect() {
-        this.logger.debug("Keepalive timeout, attempting to reconnect to the bridge");
+        logger.debug("Keepalive timeout, attempting to reconnect to the bridge");
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE);
         disconnect();
@@ -261,7 +261,7 @@ public class IPBridgeHandler extends BaseBridgeHandler {
                 return true;
             }
 
-            this.logger.debug("got another login prompt, logging in again");
+            logger.debug("got another login prompt, logging in again");
             // we already got the login prompt so go straight to sending user
         }
         return false;
@@ -286,13 +286,15 @@ public class IPBridgeHandler extends BaseBridgeHandler {
     }
 
     private void parseUpdates() {
+        String paramString;
+
         for (String line : this.session.readLines()) {
             if (line.trim().equals("")) {
                 // Sometimes we get an empty line (possibly only when prompts are disabled). Ignore them.
                 continue;
             }
 
-            this.logger.debug("Received message {}", line);
+            logger.debug("Received message {}", line);
 
             // System is alive, cancel reconnect task.
             if (this.keepAliveReconnect != null) {
@@ -312,22 +314,30 @@ public class IPBridgeHandler extends BaseBridgeHandler {
                     continue;
                 }
 
-                Integer integrationId = new Integer(matcher.group(2));
+                Integer integrationId;
+
+                try {
+                    integrationId = Integer.valueOf(matcher.group(2));
+                } catch (NumberFormatException e1) {
+                    logger.warn("Integer conversion error parsing update: {}", line);
+                    continue;
+                }
+                paramString = matcher.group(3);
+
+                // Now dispatch update to the proper thing handler
                 LutronHandler handler = findThingHandler(integrationId);
 
                 if (handler != null) {
-                    String paramString = matcher.group(3);
-
                     try {
                         handler.handleUpdate(type, paramString.split(","));
                     } catch (Exception e) {
-                        this.logger.error("Error processing update", e);
+                        logger.error("Error processing update", e);
                     }
                 } else {
-                    this.logger.info("No thing configured for integration ID {}", integrationId);
+                    logger.debug("No thing configured for integration ID {}", integrationId);
                 }
             } else {
-                this.logger.info("Ignoring message {}", line);
+                logger.debug("Ignoring message {}", line);
             }
         }
     }
