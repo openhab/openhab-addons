@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.irtrans;
+package org.openhab.binding.irtrans.internal;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
