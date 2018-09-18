@@ -431,6 +431,12 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.plugwise/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-powermax" description="Powermax Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-serial</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.powermax/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-pulseaudio" description="Pulseaudio Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mdns</feature>
