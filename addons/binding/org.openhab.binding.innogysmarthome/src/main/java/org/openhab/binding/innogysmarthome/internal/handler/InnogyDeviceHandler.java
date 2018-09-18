@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.innogysmarthome.handler;
+package org.openhab.binding.innogysmarthome.internal.handler;
 
-import static org.openhab.binding.innogysmarthome.InnogyBindingConstants.*;
+import static org.openhab.binding.innogysmarthome.internal.InnogyBindingConstants.*;
 
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
