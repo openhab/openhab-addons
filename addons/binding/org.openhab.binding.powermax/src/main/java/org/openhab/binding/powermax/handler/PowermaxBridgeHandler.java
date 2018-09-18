@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.powermax.internal.config.PowermaxIpConfiguration;
 import org.openhab.binding.powermax.internal.config.PowermaxSerialConfiguration;
 import org.openhab.binding.powermax.internal.message.PowermaxCommManager;
@@ -84,9 +85,11 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
     private PowermaxCommManager commManager;
 
     private int remainingDownloadAttempts;
+    private SerialPortManager serialPortManager;
 
-    public PowermaxBridgeHandler(Bridge thing) {
+    public PowermaxBridgeHandler(Bridge thing, SerialPortManager serialPortManager) {
         super(thing);
+        this.serialPortManager = serialPortManager;
     }
 
     public PowermaxState getCurrentState() {
@@ -154,7 +157,8 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
             PowermaxArmMode.ARMED_NIGHT.setAllowedCommand(allowArming);
             PowermaxArmMode.ARMED_NIGHT_INSTANT.setAllowedCommand(allowArming);
 
-            commManager = new PowermaxCommManager(config.serialPort, panelType, forceStandardMode, autoSyncTime);
+            commManager = new PowermaxCommManager(config.serialPort, panelType, forceStandardMode, autoSyncTime,
+                    serialPortManager);
         } else {
             errorMsg = "serialPort setting must be defined in thing configuration";
         }
