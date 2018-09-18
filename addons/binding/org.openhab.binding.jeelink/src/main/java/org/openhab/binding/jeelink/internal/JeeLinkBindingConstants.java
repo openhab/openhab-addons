@@ -6,14 +6,13 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.jeelink;
+package org.openhab.binding.jeelink.internal;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.openhab.binding.jeelink.internal.SensorDefinition;
 
 /**
  * Defines common constants, which are used across the whole binding.
