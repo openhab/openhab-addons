@@ -22,9 +22,5 @@ Import-Package:
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.io.net.http,
- org.openhab.binding.fronius,
- org.openhab.binding.fronius.handler,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.fronius,
- org.openhab.binding.fronius.handler

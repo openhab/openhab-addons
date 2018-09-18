@@ -6,15 +6,15 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.fronius;
+package org.openhab.binding.fronius.internal;
 
 /**
- * The {@link FroniusBridgeConfiguration} is the class used to match the
- * bridge configuration.
+ * The {@link FroniusBaseDeviceConfiguration} is the class used to match the
+ * thing configuration.
  *
  * @author Thomas Rokohl - Initial contribution
  */
-public class FroniusBridgeConfiguration {
-    public String hostname;
-    public Integer refreshInterval;
+public class FroniusBaseDeviceConfiguration {
+    public Integer deviceId;
+
 }

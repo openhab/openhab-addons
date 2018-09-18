@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.fronius.internal;
 
-import static org.openhab.binding.fronius.FroniusBindingConstants.*;
+import static org.openhab.binding.fronius.internal.FroniusBindingConstants.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -19,8 +19,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.fronius.handler.FroniusBridgeHandler;
-import org.openhab.binding.fronius.handler.FroniusSymoInverterHandler;
+import org.openhab.binding.fronius.internal.handler.FroniusBridgeHandler;
+import org.openhab.binding.fronius.internal.handler.FroniusSymoInverterHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**

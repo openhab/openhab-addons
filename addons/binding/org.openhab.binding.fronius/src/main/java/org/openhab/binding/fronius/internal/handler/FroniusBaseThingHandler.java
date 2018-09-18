@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.fronius.handler;
+package org.openhab.binding.fronius.internal.handler;
 
 import java.math.BigDecimal;
 
@@ -21,7 +21,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.fronius.FroniusBridgeConfiguration;
+import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
 import org.openhab.binding.fronius.internal.api.ValueUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
