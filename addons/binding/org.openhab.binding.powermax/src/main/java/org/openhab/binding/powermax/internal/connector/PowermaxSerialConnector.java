@@ -12,17 +12,15 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.TooManyListenersException;
 
+import org.eclipse.smarthome.io.transport.serial.PortInUseException;
+import org.eclipse.smarthome.io.transport.serial.SerialPort;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEventListener;
+import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
+import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gnu.io.CommPort;
-import gnu.io.CommPortIdentifier;
-import gnu.io.NoSuchPortException;
-import gnu.io.PortInUseException;
-import gnu.io.SerialPort;
-import gnu.io.SerialPortEvent;
-import gnu.io.SerialPortEventListener;
-import gnu.io.UnsupportedCommOperationException;
 
 /**
  * A class for the communication with the Visonic alarm panel through a serial connection
@@ -36,14 +34,17 @@ public class PowermaxSerialConnector extends PowermaxConnector implements Serial
     private final String serialPortName;
     private final int baudRate;
     private SerialPort serialPort;
+    private SerialPortManager serialPortManager;
 
     /**
      * Constructor
      *
-     * @param serialPortName the serial port name
-     * @param baudRate the baud rate to be used
+     * @param serialPortManager the serial port manager
+     * @param serialPortName    the serial port name
+     * @param baudRate          the baud rate to be used
      */
-    public PowermaxSerialConnector(String serialPortName, int baudRate) {
+    public PowermaxSerialConnector(SerialPortManager serialPortManager, String serialPortName, int baudRate) {
+        this.serialPortManager = serialPortManager;
         this.serialPortName = serialPortName;
         this.baudRate = baudRate;
         this.serialPort = null;
@@ -54,40 +55,42 @@ public class PowermaxSerialConnector extends PowermaxConnector implements Serial
         logger.debug("open(): Opening Serial Connection");
 
         try {
-            CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(serialPortName);
-            CommPort commPort = portIdentifier.open(this.getClass().getName(), 2000);
+            SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(serialPortName);
+            if (portIdentifier != null) {
+                SerialPort commPort = portIdentifier.open(this.getClass().getName(), 2000);
 
-            serialPort = (SerialPort) commPort;
-            serialPort.setSerialPortParams(baudRate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
-                    SerialPort.PARITY_NONE);
-            serialPort.enableReceiveThreshold(1);
-            serialPort.enableReceiveTimeout(250);
+                serialPort = commPort;
+                serialPort.setSerialPortParams(baudRate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+                        SerialPort.PARITY_NONE);
+                serialPort.enableReceiveThreshold(1);
+                serialPort.enableReceiveTimeout(250);
 
-            setInput(serialPort.getInputStream());
-            setOutput(serialPort.getOutputStream());
+                setInput(serialPort.getInputStream());
+                setOutput(serialPort.getOutputStream());
 
-            getOutput().flush();
-            if (getInput().markSupported()) {
-                getInput().reset();
+                getOutput().flush();
+                if (getInput().markSupported()) {
+                    getInput().reset();
+                }
+
+                // RXTX serial port library causes high CPU load
+                // Start event listener, which will just sleep and slow down event
+                // loop
+                try {
+                    serialPort.addEventListener(this);
+                    serialPort.notifyOnDataAvailable(true);
+                } catch (TooManyListenersException e) {
+                    logger.debug("Too Many Listeners Exception: {}", e.getMessage(), e);
+                }
+
+                setReaderThread(new PowermaxReaderThread(this));
+                getReaderThread().start();
+
+                setConnected(true);
+            } else {
+                logger.debug("open(): No Such Port: {}", serialPortName);
+                setConnected(false);
             }
-
-            // RXTX serial port library causes high CPU load
-            // Start event listener, which will just sleep and slow down event
-            // loop
-            try {
-                serialPort.addEventListener(this);
-                serialPort.notifyOnDataAvailable(true);
-            } catch (TooManyListenersException e) {
-                logger.debug("Too Many Listeners Exception: {}", e.getMessage(), e);
-            }
-
-            setReaderThread(new PowermaxReaderThread(this));
-            getReaderThread().start();
-
-            setConnected(true);
-        } catch (NoSuchPortException e) {
-            logger.debug("open(): No Such Port Exception: {}", e.getMessage(), e);
-            setConnected(false);
         } catch (PortInUseException e) {
             logger.debug("open(): Port in Use Exception: {}", e.getMessage(), e);
             setConnected(false);

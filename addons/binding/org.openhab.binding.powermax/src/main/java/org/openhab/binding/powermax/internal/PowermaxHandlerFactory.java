@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -23,11 +25,13 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.powermax.handler.PowermaxBridgeHandler;
 import org.openhab.binding.powermax.handler.PowermaxThingHandler;
 import org.openhab.binding.powermax.internal.discovery.PowermaxDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link PowermaxHandlerFactory} is responsible for creating things and thing
@@ -35,10 +39,22 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.powermax")
 public class PowermaxHandlerFactory extends BaseThingHandlerFactory {
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+
+    private @NonNullByDefault({}) SerialPortManager serialPortManager;
+
+    @Reference
+    protected void setSerialPortManager(final SerialPortManager serialPortManager) {
+        this.serialPortManager = serialPortManager;
+    }
+
+    protected void unsetSerialPortManager(final SerialPortManager serialPortManager) {
+        this.serialPortManager = null;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -46,8 +62,8 @@ public class PowermaxHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,
-            ThingUID bridgeUID) {
+    public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
+            @Nullable ThingUID thingUID, @Nullable ThingUID bridgeUID) {
         if (SUPPORTED_BRIDGE_TYPES_UIDS.contains(thingTypeUID)) {
             return super.createThing(thingTypeUID, configuration, thingUID, null);
         } else if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
@@ -64,11 +80,11 @@ public class PowermaxHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SUPPORTED_BRIDGE_TYPES_UIDS.contains(thingTypeUID)) {
-            PowermaxBridgeHandler handler = new PowermaxBridgeHandler((Bridge) thing);
+            PowermaxBridgeHandler handler = new PowermaxBridgeHandler((Bridge) thing, serialPortManager);
             registerDiscoveryService(handler);
             return handler;
         } else if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
