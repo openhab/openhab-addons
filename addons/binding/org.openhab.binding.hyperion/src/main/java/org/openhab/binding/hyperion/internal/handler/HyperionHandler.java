@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.hyperion.handler;
+package org.openhab.binding.hyperion.internal.handler;
 
-import static org.openhab.binding.hyperion.HyperionBindingConstants.*;
+import static org.openhab.binding.hyperion.internal.HyperionBindingConstants.*;
 
 import java.awt.Color;
 import java.io.IOException;
