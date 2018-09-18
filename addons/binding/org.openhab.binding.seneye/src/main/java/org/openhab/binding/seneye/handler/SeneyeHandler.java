@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -74,6 +75,10 @@ public final class SeneyeHandler extends BaseThingHandler implements ReadingsUpd
             updateState(CHANNEL_KELVIN, new DecimalType(readings.kelvin.curr));
             updateState(CHANNEL_LASTREADING, new DateTimeType(readings.status.getLast_experimentDate()));
             updateState(CHANNEL_SLIDEEXPIRES, new DateTimeType(readings.status.getSlide_expiresDate()));
+            updateState(CHANNEL_WRONGSLIDE, new StringType(readings.status.getWrong_slideString()));
+            updateState(CHANNEL_SLIDESERIAL, new StringType(readings.status.getSlide_serialString()));
+            updateState(CHANNEL_OUTOFWATER, new StringType(readings.status.getOut_of_waterString()));
+            updateState(CHANNEL_DISCONNECTED, new StringType(readings.status.getDisconnectedString()));
         }
     }
 
