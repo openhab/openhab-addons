@@ -21,7 +21,6 @@ Import-Package:
  org.junit,
  org.junit.runner,
  org.junit.runners,
- org.openhab.binding.max,
  org.openhab.binding.max.test,
  org.osgi.service.device,
  org.slf4j

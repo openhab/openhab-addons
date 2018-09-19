@@ -9,7 +9,7 @@
 package org.openhab.binding.max.internal.discovery;
 
 import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_SERIAL_NUMBER;
-import static org.openhab.binding.max.MaxBindingConstants.*;
+import static org.openhab.binding.max.internal.MaxBindingConstants.*;
 
 import java.io.IOException;
 import java.net.DatagramPacket;

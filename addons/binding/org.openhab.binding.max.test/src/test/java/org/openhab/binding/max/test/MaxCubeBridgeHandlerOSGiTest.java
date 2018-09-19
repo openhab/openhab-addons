@@ -10,7 +10,7 @@ package org.openhab.binding.max.test;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
-import static org.openhab.binding.max.MaxBindingConstants.*;
+import static org.openhab.binding.max.internal.MaxBindingConstants.*;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -25,7 +25,7 @@ import org.eclipse.smarthome.test.storage.VolatileStorageService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.binding.max.MaxBindingConstants;
+import org.openhab.binding.max.internal.MaxBindingConstants;
 import org.openhab.binding.max.internal.handler.MaxCubeBridgeHandler;
 
 /**

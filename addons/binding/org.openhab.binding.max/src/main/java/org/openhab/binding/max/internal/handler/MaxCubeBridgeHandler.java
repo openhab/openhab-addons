@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.max.internal.handler;
 
-import static org.openhab.binding.max.MaxBindingConstants.*;
+import static org.openhab.binding.max.internal.MaxBindingConstants.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -47,7 +47,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.max.MaxBindingConstants;
+import org.openhab.binding.max.internal.MaxBindingConstants;
 import org.openhab.binding.max.internal.command.ACommand;
 import org.openhab.binding.max.internal.command.CCommand;
 import org.openhab.binding.max.internal.command.CubeCommand;
