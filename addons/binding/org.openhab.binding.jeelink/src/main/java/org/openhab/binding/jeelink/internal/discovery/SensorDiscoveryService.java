@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.jeelink.internal.discovery;
 
-import static org.openhab.binding.jeelink.JeeLinkBindingConstants.*;
+import static org.openhab.binding.jeelink.internal.JeeLinkBindingConstants.*;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;

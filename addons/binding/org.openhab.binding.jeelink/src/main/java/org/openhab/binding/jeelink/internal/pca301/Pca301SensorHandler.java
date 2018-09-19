@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.jeelink.internal.pca301;
 
-import static org.openhab.binding.jeelink.JeeLinkBindingConstants.*;
+import static org.openhab.binding.jeelink.internal.JeeLinkBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

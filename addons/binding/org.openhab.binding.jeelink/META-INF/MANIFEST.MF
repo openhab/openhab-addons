@@ -8,7 +8,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.jeelink;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
-Export-Package: org.openhab.binding.jeelink
 Import-Package: 
  gnu.io,
  javax.measure.quantity,
@@ -24,7 +23,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.openhab.binding.jeelink,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
