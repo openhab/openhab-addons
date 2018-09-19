@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.leapmotion.handler;
+package org.openhab.binding.leapmotion.internal.handler;
 
-import static org.openhab.binding.leapmotion.LeapMotionBindingConstants.*;
+import static org.openhab.binding.leapmotion.internal.LeapMotionBindingConstants.*;
 
 import java.util.concurrent.TimeUnit;
 

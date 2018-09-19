@@ -14,7 +14,6 @@ import org.eclipse.smarthome.core.thing.profiles.ProfileCallback;
 import org.eclipse.smarthome.core.thing.profiles.ProfileTypeUID;
 import org.eclipse.smarthome.core.thing.profiles.TriggerProfile;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.leapmotion.LeapMotionBindingConstants;
 
 /**
  * The {@link LeapMotionSwitchProfile} class implements the behavior when being linked to a Switch item.
