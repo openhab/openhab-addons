@@ -31,7 +31,7 @@ Go to Preferences/Connection and set:
   * Device ID is not important. Set it to e.g. phone
   * Tracker ID - This id identifies the tracker as a thing. I use initials here.
   
-![Image](docs/owntracks_setup.png)
+![Image](doc/owntracks_setup.png)
 
 ### GPSLogger
 
@@ -39,12 +39,12 @@ Install [GPSLogger for Android](https://play.google.com/store/apps/details?id=co
 After the launch, go to General Options. 
 Enable Start on boot-up and Start on app launch.
 
-![Image](docs/gpslogger_1.png)
+![Image](doc/gpslogger_1.png)
 
 Go to Logging details and disable Log to GPX, Log to KML and Log to NMEA. 
 Enable Log to custom URL.
 
-![Image](docs/gpslogger_2.png)
+![Image](doc/gpslogger_2.png)
 
 Right after enabling, the app takes you to the Log to custom URL settings and modify:
 
@@ -69,7 +69,7 @@ This must be unique for each tracker connected to the same openHAB instance (e.g
 * **HTTP Method** - type in: **POST**
 * **HTTP Headers** - type in: **Content-Type: application/json**
 
-![Image](docs/gpslogger_3.png)
+![Image](doc/gpslogger_3.png)
 
 ### Things
 
