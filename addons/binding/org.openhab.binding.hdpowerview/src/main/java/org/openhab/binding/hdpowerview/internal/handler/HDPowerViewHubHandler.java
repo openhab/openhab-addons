@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.hdpowerview.handler;
+package org.openhab.binding.hdpowerview.internal.handler;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.hdpowerview.HDPowerViewBindingConstants;
+import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes.Scene;

@@ -18,7 +18,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.hdpowerview.HDPowerViewBindingConstants;
+import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewHubConfiguration;
 import org.osgi.service.component.annotations.Component;
 
