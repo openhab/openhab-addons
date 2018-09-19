@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.harmonyhub.internal.discovery;
 
-import static org.openhab.binding.harmonyhub.HarmonyHubBindingConstants.*;
+import static org.openhab.binding.harmonyhub.internal.HarmonyHubBindingConstants.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -36,7 +36,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.harmonyhub.handler.HarmonyHubHandler;
+import org.openhab.binding.harmonyhub.internal.handler.HarmonyHubHandler;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
