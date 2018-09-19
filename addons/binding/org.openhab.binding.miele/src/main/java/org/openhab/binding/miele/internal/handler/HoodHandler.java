@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.miele.handler;
+package org.openhab.binding.miele.internal.handler;
 
-import static org.openhab.binding.miele.MieleBindingConstants.APPLIANCE_ID;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.APPLIANCE_ID;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -20,18 +20,18 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonElement;
 
 /**
- * The {@link FridgeFreezerHandler} is responsible for handling commands,
+ * The {@link HoodHandler} is responsible for handling commands,
  * which are sent to one of the channels
  *
  * @author Karel Goderis - Initial contribution
  * @author Kai Kreuzer - fixed handling of REFRESH commands
  */
-public class FridgeFreezerHandler extends MieleApplianceHandler<FridgeFreezerChannelSelector> {
+public class HoodHandler extends MieleApplianceHandler<HoodChannelSelector> {
 
-    private final Logger logger = LoggerFactory.getLogger(FridgeFreezerHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(HoodHandler.class);
 
-    public FridgeFreezerHandler(Thing thing) {
-        super(thing, FridgeFreezerChannelSelector.class, "FridgeFreezer");
+    public HoodHandler(Thing thing) {
+        super(thing, HoodChannelSelector.class, "Hood");
     }
 
     @Override
@@ -42,25 +42,23 @@ public class FridgeFreezerHandler extends MieleApplianceHandler<FridgeFreezerCha
         String channelID = channelUID.getId();
         String uid = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
 
-        FridgeFreezerChannelSelector selector = (FridgeFreezerChannelSelector) getValueSelectorFromChannelID(channelID);
+        HoodChannelSelector selector = (HoodChannelSelector) getValueSelectorFromChannelID(channelID);
         JsonElement result = null;
 
         try {
             if (selector != null) {
                 switch (selector) {
-                    case SUPERCOOL: {
+                    case LIGHT: {
                         if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "startSuperCooling");
+                            result = bridgeHandler.invokeOperation(uid, modelID, "startLighting");
                         } else if (command.equals(OnOffType.OFF)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "stopSuperCooling");
+                            result = bridgeHandler.invokeOperation(uid, modelID, "stopLighting");
                         }
                         break;
                     }
-                    case SUPERFREEZE: {
+                    case STOP: {
                         if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "startSuperFreezing");
-                        } else if (command.equals(OnOffType.OFF)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "stopSuperFreezing");
+                            result = bridgeHandler.invokeOperation(uid, modelID, "stop");
                         }
                         break;
                     }

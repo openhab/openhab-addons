@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.miele.handler;
+package org.openhab.binding.miele.internal.handler;
 
-import static org.openhab.binding.miele.MieleBindingConstants.APPLIANCE_ID;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.APPLIANCE_ID;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -21,18 +21,18 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonElement;
 
 /**
- * The {@link WashingMachineHandler} is responsible for handling commands,
+ * The {@link TumbleDryerHandler} is responsible for handling commands,
  * which are sent to one of the channels
  *
  * @author Karel Goderis - Initial contribution
  * @author Kai Kreuzer - fixed handling of REFRESH commands
  */
-public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineChannelSelector> {
+public class TumbleDryerHandler extends MieleApplianceHandler<TumbleDryerChannelSelector> {
 
-    private final Logger logger = LoggerFactory.getLogger(WashingMachineHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(TumbleDryerHandler.class);
 
-    public WashingMachineHandler(Thing thing) {
-        super(thing, WashingMachineChannelSelector.class, "WashingMachine");
+    public TumbleDryerHandler(Thing thing) {
+        super(thing, TumbleDryerChannelSelector.class, "TumbleDryer");
     }
 
     @Override
@@ -43,8 +43,7 @@ public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineC
         String channelID = channelUID.getId();
         String uid = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
 
-        WashingMachineChannelSelector selector = (WashingMachineChannelSelector) getValueSelectorFromChannelID(
-                channelID);
+        TumbleDryerChannelSelector selector = (TumbleDryerChannelSelector) getValueSelectorFromChannelID(channelID);
         JsonElement result = null;
 
         try {

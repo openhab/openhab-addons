@@ -6,99 +6,68 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.miele.handler;
+package org.openhab.binding.miele.internal.handler;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Map.Entry;
-import java.util.TimeZone;
 
-import org.eclipse.smarthome.core.library.types.DateTimeType;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.miele.handler.MieleBridgeHandler.DeviceMetaData;
+import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
 
 /**
- * The {@link ApplianceChannelSelector} for dishwashers
+ * The {@link ApplianceChannelSelector} for fridges with
+ * a freezer compartment
  *
  * @author Karel Goderis - Initial contribution
- * @author Kai Kreuzer - Changed START_TIME to DateTimeType
  */
-public enum DishwasherChannelSelector implements ApplianceChannelSelector {
+public enum FridgeFreezerChannelSelector implements ApplianceChannelSelector {
 
     PRODUCT_TYPE("productTypeId", "productType", StringType.class, true),
     DEVICE_TYPE("mieleDeviceType", "deviceType", StringType.class, true),
     BRAND_ID("brandId", "brandId", StringType.class, true),
     COMPANY_ID("companyId", "companyId", StringType.class, true),
     STATE("state", "state", StringType.class, false),
-    PROGRAMID("programId", "program", StringType.class, false),
-    PROGRAMPHASE("phase", "phase", StringType.class, false),
-    START_TIME("startTime", "start", DateTimeType.class, false) {
+    FREEZERSTATE("freezerState", "freezerstate", StringType.class, false),
+    FRIDGESTATE("fridgeState", "fridgestate", StringType.class, false),
+    SUPERCOOL(null, "supercool", OnOffType.class, false),
+    SUPERFREEZE(null, "superfreeze", OnOffType.class, false),
+    FREEZERCURRENTTEMP("freezerCurrentTemperature", "freezercurrent", DecimalType.class, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
-            Date date = new Date();
-            SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            DATE_FORMATTER.setTimeZone(TimeZone.getTimeZone("GMT+0"));
-            try {
-                date.setTime(Long.valueOf(s) * 60000);
-            } catch (Exception e) {
-                date.setTime(0);
-            }
-            return getState(DATE_FORMATTER.format(date));
+            return getState(s);
         }
     },
-    DURATION("duration", "duration", DateTimeType.class, false) {
+    FREEZERTARGETTEMP("freezerTargetTemperature", "freezertarget", DecimalType.class, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
-            Date date = new Date();
-            SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            DATE_FORMATTER.setTimeZone(TimeZone.getTimeZone("GMT+0"));
-            try {
-                date.setTime(Long.valueOf(s) * 60000);
-            } catch (Exception e) {
-                date.setTime(0);
-            }
-            return getState(DATE_FORMATTER.format(date));
+            return getState(s);
         }
     },
-    ELAPSED_TIME("elapsedTime", "elapsed", DateTimeType.class, false) {
+    FRIDGECURRENTTEMP("fridgeCurrentTemperature", "fridgecurrent", DecimalType.class, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
-            Date date = new Date();
-            SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            DATE_FORMATTER.setTimeZone(TimeZone.getTimeZone("GMT+0"));
-            try {
-                date.setTime(Long.valueOf(s) * 60000);
-            } catch (Exception e) {
-                date.setTime(0);
-            }
-            return getState(DATE_FORMATTER.format(date));
+            return getState(s);
         }
     },
-    FINISH_TIME("finishTime", "finish", DateTimeType.class, false) {
+    FRIDGETARGETTEMP("fridgeTargetTemperature", "fridgetarget", DecimalType.class, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
-            Date date = new Date();
-            SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            DATE_FORMATTER.setTimeZone(TimeZone.getTimeZone("GMT+0"));
-            try {
-                date.setTime(Long.valueOf(s) * 60000);
-            } catch (Exception e) {
-                date.setTime(0);
-            }
-            return getState(DATE_FORMATTER.format(date));
+            return getState(s);
         }
     },
     DOOR("signalDoor", "door", OpenClosedType.class, false) {
         @Override
+
         public State getState(String s, DeviceMetaData dmd) {
             if ("true".equals(s)) {
                 return getState("OPEN");
@@ -111,14 +80,16 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
             return UnDefType.UNDEF;
         }
     },
-    SWITCH(null, "switch", OnOffType.class, false);
+    START(null, "start", OnOffType.class, false);
+
+    private final Logger logger = LoggerFactory.getLogger(FridgeFreezerChannelSelector.class);
 
     private final String mieleID;
     private final String channelID;
     private final Class<? extends Type> typeClass;
     private final boolean isProperty;
 
-    DishwasherChannelSelector(String propertyID, String channelID, Class<? extends Type> typeClass,
+    FridgeFreezerChannelSelector(String propertyID, String channelID, Class<? extends Type> typeClass,
             boolean isProperty) {
         this.mieleID = propertyID;
         this.channelID = channelID;
@@ -175,10 +146,8 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
             if (state != null) {
                 return state;
             }
-        } catch (NoSuchMethodException e) {
-        } catch (IllegalArgumentException e) {
-        } catch (IllegalAccessException e) {
-        } catch (InvocationTargetException e) {
+        } catch (Exception e) {
+            logger.error("An exception occurred while converting '{}' into a State", s);
         }
 
         return null;
@@ -195,5 +164,4 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
 
         return null;
     }
-
 }
