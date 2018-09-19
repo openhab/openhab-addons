@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.hdanywhere.handler;
+package org.openhab.binding.hdanywhere.internal.handler;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
@@ -28,7 +28,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.hdanywhere.HDanywhereBindingConstants.Port;
+import org.openhab.binding.hdanywhere.internal.HDanywhereBindingConstants.Port;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
