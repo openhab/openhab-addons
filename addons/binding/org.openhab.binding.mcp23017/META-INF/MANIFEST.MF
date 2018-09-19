@@ -10,9 +10,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
  lib/pi4j-core.jar,
  lib/pi4j-gpio-extension.jar
-Export-Package: 
- org.openhab.binding.mcp23017,
- org.openhab.binding.mcp23017.handler
 Import-Package: 
  com.google.common.collect,
  org.apache.commons.lang,
@@ -24,8 +21,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.openhab.binding.mcp23017,
- org.openhab.binding.mcp23017.handler,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

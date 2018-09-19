@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mcp23017.handler;
+package org.openhab.binding.mcp23017.internal.handler;
 
-import static org.openhab.binding.mcp23017.Mcp23017BindingConstants.*;
+import static org.openhab.binding.mcp23017.internal.Mcp23017BindingConstants.*;
 
 import java.io.IOException;
 
