@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.lgtvserial.handler;
+package org.openhab.binding.lgtvserial.internal.handler;
 
 import java.io.IOException;
 import java.math.BigDecimal;
