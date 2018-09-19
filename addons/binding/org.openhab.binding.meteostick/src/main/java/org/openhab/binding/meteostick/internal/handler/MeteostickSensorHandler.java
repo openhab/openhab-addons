@@ -6,12 +6,12 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.meteostick.handler;
+package org.openhab.binding.meteostick.internal.handler;
 
 import static org.eclipse.smarthome.core.library.unit.MetricPrefix.MILLI;
 import static org.eclipse.smarthome.core.library.unit.SIUnits.*;
 import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.*;
-import static org.openhab.binding.meteostick.MeteostickBindingConstants.*;
+import static org.openhab.binding.meteostick.internal.MeteostickBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
