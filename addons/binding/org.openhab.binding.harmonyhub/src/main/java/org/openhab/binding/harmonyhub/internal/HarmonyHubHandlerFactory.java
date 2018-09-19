@@ -35,10 +35,9 @@ import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeProvider;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
-import org.openhab.binding.harmonyhub.HarmonyHubBindingConstants;
-import org.openhab.binding.harmonyhub.handler.HarmonyDeviceHandler;
-import org.openhab.binding.harmonyhub.handler.HarmonyHubHandler;
 import org.openhab.binding.harmonyhub.internal.discovery.HarmonyDeviceDiscoveryService;
+import org.openhab.binding.harmonyhub.internal.handler.HarmonyDeviceHandler;
+import org.openhab.binding.harmonyhub.internal.handler.HarmonyHubHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 
