@@ -74,8 +74,12 @@ public class IPBridgeHandler extends BaseBridgeHandler {
     private Date lastDbUpdateDate;
     private ServiceRegistration<DiscoveryService> discoveryServiceRegistration;
 
-    private class LutronSafemodeException extends Exception {
+    public class LutronSafemodeException extends Exception {
         private static final long serialVersionUID = 1L;
+
+        public LutronSafemodeException(String message) {
+            super(message);
+        }
     }
 
     public IPBridgeHandler(Bridge bridge) {
@@ -271,7 +275,7 @@ public class IPBridgeHandler extends BaseBridgeHandler {
                 return true;
             } else if ("SAFE>".equals(matchResult.group())) {
                 logger.warn("Lutron repeater is in safe mode. Unable to connect.");
-                throw new LutronSafemodeException();
+                throw new LutronSafemodeException("Lutron repeater in safe mode");
             }
 
             else {
