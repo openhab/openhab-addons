@@ -6,48 +6,38 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.lutron.handler;
+package org.openhab.binding.lutron.internal.handler;
 
-import static org.openhab.binding.lutron.LutronBindingConstants.CHANNEL_SHADELEVEL;
+import static org.openhab.binding.lutron.internal.LutronBindingConstants.CHANNEL_SWITCH;
 
 import java.math.BigDecimal;
 
-import org.eclipse.smarthome.core.library.types.PercentType;
-import org.eclipse.smarthome.core.library.types.StopMoveType;
-import org.eclipse.smarthome.core.library.types.UpDownType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.lutron.internal.protocol.LutronCommandType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Handler responsible for communicating with a Lutron Sivoia QS shade
+ * Handler responsible for communicating with a switch.
  *
- * @author Bob Adair - Initial contribution based on Alan Tong's DimmerHandler
+ * @author Allan Tong - Initial contribution
+ * @author Bob Adair - Added initDeviceState method
  */
-public class ShadeHandler extends LutronHandler {
+public class SwitchHandler extends LutronHandler {
     private static final Integer ACTION_ZONELEVEL = 1;
-    private static final Integer ACTION_STARTRAISING = 2;
-    private static final Integer ACTION_STARTLOWERING = 3;
-    private static final Integer ACTION_STOP = 4;
 
-    private final Logger logger = LoggerFactory.getLogger(ShadeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SwitchHandler.class);
 
-    protected int integrationId;
+    private int integrationId;
 
-    public ShadeHandler(Thing thing) {
+    public SwitchHandler(Thing thing) {
         super(thing);
-    }
-
-    @Override
-    public int getIntegrationId() {
-        return integrationId;
     }
 
     @Override
@@ -58,14 +48,14 @@ public class ShadeHandler extends LutronHandler {
             return;
         }
         integrationId = id.intValue();
-        logger.debug("Initializing Shade handler for integration ID {}", id);
+        logger.debug("Initializing Switch handler for integration ID {}", id);
 
         initDeviceState();
     }
 
     @Override
     protected void initDeviceState() {
-        logger.debug("Initializing device state for Shade {}", getIntegrationId());
+        logger.debug("Initializing device state for Switch {}", getIntegrationId());
         Bridge bridge = getBridge();
         if (bridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
@@ -78,40 +68,38 @@ public class ShadeHandler extends LutronHandler {
     }
 
     @Override
-    public void channelLinked(ChannelUID channelUID) {
-        // Refresh state when new item is linked.
-        if (channelUID.getId().equals(CHANNEL_SHADELEVEL)) {
-            queryOutput(ACTION_ZONELEVEL);
-        }
-    }
-
-    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (channelUID.getId().equals(CHANNEL_SHADELEVEL)) {
-            if (command instanceof PercentType) {
-                int level = ((PercentType) command).intValue();
-                output(ACTION_ZONELEVEL, level, 0);
-            } else if (command.equals(UpDownType.UP)) {
-                output(ACTION_STARTRAISING);
-            } else if (command.equals(UpDownType.DOWN)) {
-                output(ACTION_STARTLOWERING);
-            } else if (command.equals(StopMoveType.STOP)) {
-                output(ACTION_STOP);
-            } else if (command instanceof RefreshType) {
-                queryOutput(ACTION_ZONELEVEL);
+        if (channelUID.getId().equals(CHANNEL_SWITCH)) {
+            if (command.equals(OnOffType.ON)) {
+                output(ACTION_ZONELEVEL, 100);
+            } else if (command.equals(OnOffType.OFF)) {
+                output(ACTION_ZONELEVEL, 0);
             }
         }
     }
 
     @Override
+    public int getIntegrationId() {
+        return this.integrationId;
+    }
+
+    @Override
     public void handleUpdate(LutronCommandType type, String... parameters) {
-        if (type == LutronCommandType.OUTPUT && parameters.length >= 2
+        if (type == LutronCommandType.OUTPUT && parameters.length > 1
                 && ACTION_ZONELEVEL.toString().equals(parameters[0])) {
             BigDecimal level = new BigDecimal(parameters[1]);
             if (getThing().getStatus() == ThingStatus.UNKNOWN) {
                 updateStatus(ThingStatus.ONLINE);
             }
-            updateState(CHANNEL_SHADELEVEL, new PercentType(level));
+            postCommand(CHANNEL_SWITCH, level.compareTo(BigDecimal.ZERO) == 0 ? OnOffType.OFF : OnOffType.ON);
+        }
+    }
+
+    @Override
+    public void channelLinked(ChannelUID channelUID) {
+        if (channelUID.getId().equals(CHANNEL_SWITCH)) {
+            // Refresh state when new item is linked.
+            queryOutput(ACTION_ZONELEVEL);
         }
     }
 }
