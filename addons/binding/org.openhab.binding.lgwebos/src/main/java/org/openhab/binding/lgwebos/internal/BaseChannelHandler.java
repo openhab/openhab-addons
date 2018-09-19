@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.lgwebos.handler.LGWebOSHandler;
+import org.openhab.binding.lgwebos.internal.handler.LGWebOSHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
