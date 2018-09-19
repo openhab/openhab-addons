@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.keba.handler;
+package org.openhab.binding.keba.internal.handler;
 
-import static org.openhab.binding.keba.KebaBindingConstants.*;
+import static org.openhab.binding.keba.internal.KebaBindingConstants.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -39,9 +39,9 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.keba.KebaBindingConstants.KebaFirmware;
-import org.openhab.binding.keba.KebaBindingConstants.KebaSeries;
-import org.openhab.binding.keba.KebaBindingConstants.KebaType;
+import org.openhab.binding.keba.internal.KebaBindingConstants.KebaFirmware;
+import org.openhab.binding.keba.internal.KebaBindingConstants.KebaSeries;
+import org.openhab.binding.keba.internal.KebaBindingConstants.KebaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
