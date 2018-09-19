@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.mihome.handler;
+package org.openhab.binding.mihome.internal.handler;
 
-import static org.openhab.binding.mihome.XiaomiGatewayBindingConstants.*;
+import static org.openhab.binding.mihome.internal.XiaomiGatewayBindingConstants.CHANNEL_SWITCH_CH0;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -20,34 +20,27 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 
 /**
- * Handles the Xiaomi aqara wall switch with two buttons
+ * Handles the Xiaomi aqara wall switch with one button
  *
  * @author Dieter Schmidt - Initial contribution
  */
-public class XiaomiAqaraActorSwitch2Handler extends XiaomiActorBaseHandler {
+public class XiaomiAqaraActorSwitch1Handler extends XiaomiActorBaseHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(XiaomiAqaraActorSwitch2Handler.class);
+    private final Logger logger = LoggerFactory.getLogger(XiaomiAqaraActorSwitch1Handler.class);
 
     private static final String CHANNEL_0 = "channel_0";
-    private static final String CHANNEL_1 = "channel_1";
     private static final String ON = "on";
 
-    public XiaomiAqaraActorSwitch2Handler(Thing thing) {
+    public XiaomiAqaraActorSwitch1Handler(Thing thing) {
         super(thing);
     }
 
     @Override
     void execute(ChannelUID channelUID, Command command) {
-        String status = command.toString().toLowerCase();
-        switch (channelUID.getId()) {
-            case CHANNEL_SWITCH_CH0:
-                getXiaomiBridgeHandler().writeToDevice(getItemId(), new String[] { CHANNEL_0 },
-                        new Object[] { status });
-                return;
-            case CHANNEL_SWITCH_CH1:
-                getXiaomiBridgeHandler().writeToDevice(getItemId(), new String[] { CHANNEL_1 },
-                        new Object[] { status });
-                return;
+        if (CHANNEL_SWITCH_CH0.equals(channelUID.getId())) {
+            String status = command.toString().toLowerCase();
+            getXiaomiBridgeHandler().writeToDevice(getItemId(), new String[] { CHANNEL_0 }, new Object[] { status });
+            return;
         }
         // Only gets here, if no condition was met
         logger.error("Can't handle command {} on channel {}", command, channelUID);
@@ -78,10 +71,6 @@ public class XiaomiAqaraActorSwitch2Handler extends XiaomiActorBaseHandler {
         if (data.has(CHANNEL_0)) {
             boolean isOn = ON.equals(data.get(CHANNEL_0).getAsString().toLowerCase());
             updateState(CHANNEL_SWITCH_CH0, isOn ? OnOffType.ON : OnOffType.OFF);
-        } else if (data.has(CHANNEL_1)) {
-            boolean isOn = ON.equals(data.get(CHANNEL_1).getAsString().toLowerCase());
-            updateState(CHANNEL_SWITCH_CH1, isOn ? OnOffType.ON : OnOffType.OFF);
         }
     }
-
 }

@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.mihome.handler;
+package org.openhab.binding.mihome.internal.handler;
 
-import static org.openhab.binding.mihome.XiaomiGatewayBindingConstants.CHANNEL_LEAK;
+import static org.openhab.binding.mihome.internal.XiaomiGatewayBindingConstants.CHANNEL_LEAK;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Thing;

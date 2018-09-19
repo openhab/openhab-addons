@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.mihome.handler;
+package org.openhab.binding.mihome.internal.handler;
 
-import static org.openhab.binding.mihome.XiaomiGatewayBindingConstants.*;
+import static org.openhab.binding.mihome.internal.XiaomiGatewayBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
