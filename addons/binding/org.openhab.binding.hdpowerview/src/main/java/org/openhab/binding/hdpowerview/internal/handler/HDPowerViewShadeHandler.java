@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.hdpowerview.handler;
+package org.openhab.binding.hdpowerview.internal.handler;
 
 import java.io.IOException;
 
@@ -21,7 +21,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.hdpowerview.HDPowerViewBindingConstants;
+import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades.Shade;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;

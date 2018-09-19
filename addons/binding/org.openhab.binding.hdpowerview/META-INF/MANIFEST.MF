@@ -10,9 +10,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.hdpowerview;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
-Export-Package: 
- org.openhab.binding.hdpowerview,
- org.openhab.binding.hdpowerview.handler
 Import-Package: 
  com.google.gson,
  javax.ws.rs.client,
@@ -26,8 +23,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.openhab.binding.hdpowerview,
- org.openhab.binding.hdpowerview.handler,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
