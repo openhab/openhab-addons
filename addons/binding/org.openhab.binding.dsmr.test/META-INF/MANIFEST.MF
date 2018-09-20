@@ -33,6 +33,6 @@ Import-Package:
  org.osgi.service.component,
  org.osgi.service.device,
  org.slf4j
-Require-Bundle: org.eclipse.smarthome.core,
+Require-Bundle: 
  org.hamcrest,
  org.junit
