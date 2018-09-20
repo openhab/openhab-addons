@@ -6,11 +6,11 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.nest.handler;
+package org.openhab.binding.nest.internal.handler;
 
 import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
 import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
-import static org.openhab.binding.nest.NestBindingConstants.*;
+import static org.openhab.binding.nest.internal.NestBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
