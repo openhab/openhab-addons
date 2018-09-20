@@ -9,7 +9,7 @@
 package org.openhab.binding.minecraft.internal.config;
 
 /**
- * Configuration settings for a {@link org.openhab.binding.minecraft.handler.MinecraftServerHandler}.
+ * Configuration settings for a {@link org.openhab.binding.minecraft.internal.handler.MinecraftServerHandler}.
  *
  * @author Mattias Markehed - Initial contribution
  */
