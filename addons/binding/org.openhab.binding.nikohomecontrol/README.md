@@ -98,7 +98,7 @@ Open the file with an unzip tool to read it's content.
 The `step` parameter is only available for dimmers.
 It sets a step value for dimmer increase/decrease actions. The parameter is optional and set to 10 by default.
 
-The Think configuration for **Niko Home Control thermostats** has the following syntax:
+The Thing configuration for **Niko Home Control thermostats** has the following syntax:
 
 ```
 Thing nikohomecontrol:thermostat:<bridgeId>:<thingId> "Label" @ "Location"
