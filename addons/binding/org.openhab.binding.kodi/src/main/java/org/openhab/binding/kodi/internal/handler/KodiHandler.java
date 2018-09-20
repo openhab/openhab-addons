@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.kodi.handler;
+package org.openhab.binding.kodi.internal.handler;
 
-import static org.openhab.binding.kodi.KodiBindingConstants.*;
+import static org.openhab.binding.kodi.internal.KodiBindingConstants.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;

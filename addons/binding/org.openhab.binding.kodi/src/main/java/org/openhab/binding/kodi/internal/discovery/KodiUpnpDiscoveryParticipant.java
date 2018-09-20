@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.kodi.internal.discovery;
 
-import static org.openhab.binding.kodi.KodiBindingConstants.*;
+import static org.openhab.binding.kodi.internal.KodiBindingConstants.*;
 
 import java.util.Dictionary;
 import java.util.HashMap;
