@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.kostal.inverter;
+package org.openhab.binding.internal.kostal.inverter;
 
 import java.io.IOException;
 import java.math.BigDecimal;
