@@ -18,10 +18,10 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.neato.NeatoBindingConstants;
-import org.openhab.binding.neato.handler.NeatoAccountHandler;
+import org.openhab.binding.neato.internal.NeatoBindingConstants;
 import org.openhab.binding.neato.internal.NeatoHandlerFactory;
 import org.openhab.binding.neato.internal.classes.Robot;
+import org.openhab.binding.neato.internal.handler.NeatoAccountHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
