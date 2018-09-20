@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.neato.handler;
+package org.openhab.binding.neato.internal.handler;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

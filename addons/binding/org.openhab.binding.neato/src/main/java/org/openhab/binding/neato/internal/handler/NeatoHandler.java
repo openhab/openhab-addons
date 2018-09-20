@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.neato.handler;
+package org.openhab.binding.neato.internal.handler;
 
-import static org.openhab.binding.neato.NeatoBindingConstants.*;
+import static org.openhab.binding.neato.internal.NeatoBindingConstants.*;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -24,8 +24,8 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.neato.NeatoBindingConstants;
 import org.openhab.binding.neato.internal.CouldNotFindRobotException;
+import org.openhab.binding.neato.internal.NeatoBindingConstants;
 import org.openhab.binding.neato.internal.NeatoCommunicationException;
 import org.openhab.binding.neato.internal.NeatoRobot;
 import org.openhab.binding.neato.internal.classes.Cleaning;
