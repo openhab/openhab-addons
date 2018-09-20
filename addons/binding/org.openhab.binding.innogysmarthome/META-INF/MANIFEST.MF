@@ -23,6 +23,7 @@ Import-Package:
  org.apache.commons.lang,
  org.apache.commons.lang.exception,
  org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.jetty.client,
  org.eclipse.jetty.io,
  org.eclipse.jetty.util,
  org.eclipse.jetty.util.component,
