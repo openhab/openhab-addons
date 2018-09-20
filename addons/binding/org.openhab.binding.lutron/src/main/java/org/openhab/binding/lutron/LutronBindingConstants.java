@@ -44,24 +44,6 @@ public class LutronBindingConstants {
     public static final String CHANNEL_SHADELEVEL = "shadelevel";
     public static final String CHANNEL_SWITCH = "switchstatus";
     public static final String CHANNEL_OCCUPANCYSTATUS = "occupancystatus";
-    public static final String CHANNEL_BUTTON1 = "button1";
-    public static final String CHANNEL_BUTTON2 = "button2";
-    public static final String CHANNEL_BUTTON3 = "button3";
-    public static final String CHANNEL_BUTTON4 = "button4";
-    public static final String CHANNEL_BUTTON5 = "button5";
-    public static final String CHANNEL_BUTTON6 = "button6";
-    public static final String CHANNEL_BUTTON7 = "button7";
-    public static final String CHANNEL_BUTTONTOPRAISE = "buttontopraise";
-    public static final String CHANNEL_BUTTONTOPLOWER = "buttontoplower";
-    public static final String CHANNEL_BUTTONBOTTOMRAISE = "buttonbottomraise";
-    public static final String CHANNEL_BUTTONBOTTOMLOWER = "buttonbottomlower";
-    public static final String CHANNEL_LED1 = "led1";
-    public static final String CHANNEL_LED2 = "led2";
-    public static final String CHANNEL_LED3 = "led3";
-    public static final String CHANNEL_LED4 = "led4";
-    public static final String CHANNEL_LED5 = "led5";
-    public static final String CHANNEL_LED6 = "led6";
-    public static final String CHANNEL_LED7 = "led7";
 
     // Bridge config properties
     public static final String HOST = "ipAddress";
