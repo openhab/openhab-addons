@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.neato.internal;
 
-import static org.openhab.binding.neato.NeatoBindingConstants.*;
+import static org.openhab.binding.neato.internal.NeatoBindingConstants.*;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,9 +26,9 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.neato.handler.NeatoAccountHandler;
-import org.openhab.binding.neato.handler.NeatoHandler;
 import org.openhab.binding.neato.internal.discovery.NeatoAccountDiscoveryService;
+import org.openhab.binding.neato.internal.handler.NeatoAccountHandler;
+import org.openhab.binding.neato.internal.handler.NeatoHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 
