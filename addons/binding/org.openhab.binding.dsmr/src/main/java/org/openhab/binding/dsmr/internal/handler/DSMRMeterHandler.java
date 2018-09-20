@@ -119,15 +119,13 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
     }
 
     /**
-     * Updates the state of all channels from the last received Cosem values from the meter.
+     * Updates the state of all channels from the last received Cosem values from the meter. The lastReceivedValues are
+     * cleared after processing here so when it does contain values the next time this method is called and it contains
+     * values those are new values.
      */
     private synchronized void updateState() {
         logger.trace("Update state for device: {}", getThing().getThingTypeUID().getId());
-        if (lastReceivedValues.isEmpty()) {
-            if (getThing().getStatus() != ThingStatus.OFFLINE) {
-                setDeviceOffline(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.thing.nodata");
-            }
-        } else {
+        if (!lastReceivedValues.isEmpty()) {
             for (CosemObject cosemObject : lastReceivedValues) {
                 String channel = cosemObject.getType().name().toLowerCase();
 
@@ -149,7 +147,8 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
     }
 
     /**
-     * Callback for received meter values
+     * Callback for received meter values. When this method is called but the telegram has no values for this meter this
+     * meter is set to offline because something is wrong, possible the meter has been removed.
      *
      * @param telegram The received telegram
      */
@@ -163,7 +162,11 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
         }
         List<CosemObject> filteredValues = localMeter.filterMeterValues(telegram.getCosemObjects());
 
-        if (!filteredValues.isEmpty()) {
+        if (filteredValues.isEmpty()) {
+            if (getThing().getStatus() == ThingStatus.ONLINE) {
+                setDeviceOffline(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.thing.nodata");
+            }
+        } else {
             if (logger.isTraceEnabled()) {
                 logger.trace("Received {} objects for {}", filteredValues.size(), getThing().getThingTypeUID().getId());
             }
