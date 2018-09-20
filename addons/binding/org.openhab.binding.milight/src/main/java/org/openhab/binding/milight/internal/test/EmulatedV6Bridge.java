@@ -15,7 +15,7 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import org.openhab.binding.milight.MilightBindingConstants;
+import org.openhab.binding.milight.internal.MilightBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

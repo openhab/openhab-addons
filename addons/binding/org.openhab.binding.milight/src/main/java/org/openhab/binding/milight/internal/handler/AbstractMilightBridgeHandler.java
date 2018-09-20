@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.milight.handler;
+package org.openhab.binding.milight.internal.handler;
 
 import java.math.BigDecimal;
 import java.net.InetAddress;
@@ -25,7 +25,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.milight.MilightBindingConstants;
+import org.openhab.binding.milight.internal.MilightBindingConstants;
 import org.openhab.binding.milight.internal.discovery.ThingDiscoveryService;
 import org.openhab.binding.milight.internal.protocol.QueuedSend;
 import org.slf4j.Logger;

@@ -15,7 +15,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.milight.MilightBindingConstants;
+import org.openhab.binding.milight.internal.MilightBindingConstants;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 

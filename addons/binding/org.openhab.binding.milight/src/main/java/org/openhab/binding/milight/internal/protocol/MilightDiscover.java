@@ -23,7 +23,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
-import org.openhab.binding.milight.MilightBindingConstants;
+import org.openhab.binding.milight.internal.MilightBindingConstants;
 import org.openhab.binding.milight.internal.protocol.MilightV6SessionManager.SessionState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
