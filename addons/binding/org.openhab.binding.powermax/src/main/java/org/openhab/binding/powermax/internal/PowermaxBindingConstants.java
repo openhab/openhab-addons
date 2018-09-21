@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.powermax;
+package org.openhab.binding.powermax.internal;
 
 import java.util.Set;
 
