@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.pulseaudio.handler;
+package org.openhab.binding.pulseaudio.internal.handler;
 
-import static org.openhab.binding.pulseaudio.PulseaudioBindingConstants.*;
+import static org.openhab.binding.pulseaudio.internal.PulseaudioBindingConstants.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -28,7 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.pulseaudio.PulseaudioBindingConstants;
+import org.openhab.binding.pulseaudio.internal.PulseaudioBindingConstants;
 import org.openhab.binding.pulseaudio.internal.PulseaudioClient;
 import org.openhab.binding.pulseaudio.internal.items.AbstractAudioDeviceConfig;
 import org.slf4j.Logger;
