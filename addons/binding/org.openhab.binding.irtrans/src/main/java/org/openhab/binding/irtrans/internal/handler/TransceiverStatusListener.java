@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.irtrans.handler;
+package org.openhab.binding.irtrans.internal.handler;
 
-import org.openhab.binding.irtrans.IrCommand;
+import org.openhab.binding.irtrans.internal.IrCommand;
 
 /**
  * The {@link TransceiverStatusListener} is interface that is to be implemented

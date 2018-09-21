@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.irtrans.handler;
+package org.openhab.binding.irtrans.internal.handler;
 
-import static org.openhab.binding.irtrans.IRtransBindingConstants.CHANNEL_IO;
+import static org.openhab.binding.irtrans.internal.IRtransBindingConstants.CHANNEL_IO;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -18,8 +18,8 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.irtrans.IRtransBindingConstants.Led;
-import org.openhab.binding.irtrans.IrCommand;
+import org.openhab.binding.irtrans.internal.IrCommand;
+import org.openhab.binding.irtrans.internal.IRtransBindingConstants.Led;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
