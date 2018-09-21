@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.irtrans.handler;
+package org.openhab.binding.irtrans.internal.handler;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -44,9 +44,9 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.util.HexUtils;
-import org.openhab.binding.irtrans.IRtransBindingConstants;
-import org.openhab.binding.irtrans.IRtransBindingConstants.Led;
-import org.openhab.binding.irtrans.IrCommand;
+import org.openhab.binding.irtrans.internal.IRtransBindingConstants;
+import org.openhab.binding.irtrans.internal.IrCommand;
+import org.openhab.binding.irtrans.internal.IRtransBindingConstants.Led;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
