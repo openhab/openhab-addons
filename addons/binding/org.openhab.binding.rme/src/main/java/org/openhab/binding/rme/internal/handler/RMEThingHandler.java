@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.rme.handler;
+package org.openhab.binding.rme.internal.handler;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,7 +18,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.rme.RMEBindingConstants.DataField;
+import org.openhab.binding.rme.internal.RMEBindingConstants.DataField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
