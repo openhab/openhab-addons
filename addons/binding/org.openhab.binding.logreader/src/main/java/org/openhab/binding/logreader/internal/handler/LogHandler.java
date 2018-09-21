@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.logreader.handler;
+package org.openhab.binding.logreader.internal.handler;
 
-import static org.openhab.binding.logreader.LogReaderBindingConstants.*;
+import static org.openhab.binding.logreader.internal.LogReaderBindingConstants.*;
 
 import java.util.Calendar;
 import java.util.regex.PatternSyntaxException;
