@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.plugwise.internal;
 
-import static org.openhab.binding.plugwise.PlugwiseBindingConstants.*;
+import static org.openhab.binding.plugwise.internal.PlugwiseBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -29,8 +29,7 @@ import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.plugwise.PlugwiseBindingConstants;
-import org.openhab.binding.plugwise.handler.PlugwiseStickHandler;
+import org.openhab.binding.plugwise.internal.handler.PlugwiseStickHandler;
 import org.openhab.binding.plugwise.internal.listener.PlugwiseMessageListener;
 import org.openhab.binding.plugwise.internal.listener.PlugwiseStickStatusListener;
 import org.openhab.binding.plugwise.internal.protocol.AnnounceAwakeRequestMessage;
