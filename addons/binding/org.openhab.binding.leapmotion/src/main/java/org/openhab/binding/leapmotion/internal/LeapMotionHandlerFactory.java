@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.leapmotion.internal;
 
-import static org.openhab.binding.leapmotion.LeapMotionBindingConstants.THING_TYPE_CONTROLLER;
+import static org.openhab.binding.leapmotion.internal.LeapMotionBindingConstants.THING_TYPE_CONTROLLER;
 
 import java.util.Collections;
 import java.util.Set;
@@ -20,7 +20,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.leapmotion.handler.LeapMotionHandler;
+import org.openhab.binding.leapmotion.internal.handler.LeapMotionHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**

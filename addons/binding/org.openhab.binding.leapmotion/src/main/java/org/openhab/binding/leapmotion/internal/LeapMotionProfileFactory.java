@@ -29,7 +29,6 @@ import org.eclipse.smarthome.core.thing.profiles.ProfileTypeUID;
 import org.eclipse.smarthome.core.thing.profiles.TriggerProfileType;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
-import org.openhab.binding.leapmotion.LeapMotionBindingConstants;
 import org.osgi.service.component.annotations.Component;
 
 /**

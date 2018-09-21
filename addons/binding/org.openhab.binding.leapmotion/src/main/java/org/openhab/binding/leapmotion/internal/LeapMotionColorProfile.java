@@ -17,7 +17,6 @@ import org.eclipse.smarthome.core.thing.profiles.ProfileCallback;
 import org.eclipse.smarthome.core.thing.profiles.ProfileTypeUID;
 import org.eclipse.smarthome.core.thing.profiles.TriggerProfile;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.leapmotion.LeapMotionBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
