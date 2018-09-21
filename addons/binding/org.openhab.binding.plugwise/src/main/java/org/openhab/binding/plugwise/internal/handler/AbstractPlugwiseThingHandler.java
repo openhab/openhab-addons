@@ -6,10 +6,10 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.plugwise.handler;
+package org.openhab.binding.plugwise.internal.handler;
 
 import static org.eclipse.smarthome.core.thing.ThingStatus.*;
-import static org.openhab.binding.plugwise.PlugwiseBindingConstants.CHANNEL_LAST_SEEN;
+import static org.openhab.binding.plugwise.internal.PlugwiseBindingConstants.CHANNEL_LAST_SEEN;
 
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -28,7 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.plugwise.PlugwiseBindingConstants;
+import org.openhab.binding.plugwise.internal.PlugwiseBindingConstants;
 import org.openhab.binding.plugwise.internal.PlugwiseDeviceTask;
 import org.openhab.binding.plugwise.internal.PlugwiseMessagePriority;
 import org.openhab.binding.plugwise.internal.PlugwiseUtils;
