@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.onewiregpio.handler;
+package org.openhab.binding.onewiregpio.internal.handler;
 
-import static org.openhab.binding.onewiregpio.OneWireGPIOBindingConstants.*;
+import static org.openhab.binding.onewiregpio.internal.OneWireGPIOBindingConstants.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -32,7 +32,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.onewiregpio.OneWireGPIOBindingConstants;
+import org.openhab.binding.onewiregpio.internal.OneWireGPIOBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
