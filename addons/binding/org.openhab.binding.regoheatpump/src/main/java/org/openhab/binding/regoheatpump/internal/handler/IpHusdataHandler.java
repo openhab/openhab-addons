@@ -6,21 +6,21 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.regoheatpump.handler;
+package org.openhab.binding.regoheatpump.internal.handler;
 
 import org.eclipse.smarthome.core.thing.Thing;
-import org.openhab.binding.regoheatpump.RegoHeatPumpBindingConstants;
+import org.openhab.binding.regoheatpump.internal.RegoHeatPumpBindingConstants;
 import org.openhab.binding.regoheatpump.internal.protocol.IpRegoConnection;
 import org.openhab.binding.regoheatpump.internal.protocol.RegoConnection;
 
 /**
- * The {@link IpRego6xxHeatPumpHandler} is responsible for handling commands, which are
+ * The {@link IpHusdataHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Boris Krivonog - Initial contribution
  */
-public class IpRego6xxHeatPumpHandler extends Rego6xxHeatPumpHandler {
-    public IpRego6xxHeatPumpHandler(Thing thing) {
+public class IpHusdataHandler extends HusdataHandler {
+    public IpHusdataHandler(Thing thing) {
         super(thing);
     }
 
