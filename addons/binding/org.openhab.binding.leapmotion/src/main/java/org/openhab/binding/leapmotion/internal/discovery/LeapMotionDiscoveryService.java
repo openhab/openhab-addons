@@ -18,7 +18,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.leapmotion.LeapMotionBindingConstants;
+import org.openhab.binding.leapmotion.internal.LeapMotionBindingConstants;
 import org.osgi.service.component.annotations.Component;
 
 import com.leapmotion.leap.Controller;
