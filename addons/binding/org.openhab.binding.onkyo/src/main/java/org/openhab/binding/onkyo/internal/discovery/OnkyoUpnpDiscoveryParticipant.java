@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.onkyo.internal.discovery;
 
-import static org.openhab.binding.onkyo.OnkyoBindingConstants.*;
+import static org.openhab.binding.onkyo.internal.OnkyoBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.HashSet;
