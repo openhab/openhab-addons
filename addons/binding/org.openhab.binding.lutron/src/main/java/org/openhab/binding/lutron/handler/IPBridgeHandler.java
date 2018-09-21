@@ -57,6 +57,11 @@ public class IPBridgeHandler extends BaseBridgeHandler {
 
     private static final int MAX_LOGIN_ATTEMPTS = 2;
 
+    private static final String PROMPT_GNET = "GNET>";
+    private static final String PROMPT_QNET = "QNET>";
+    private static final String PROMPT_SAFE = "SAFE>";
+    private static final String LOGIN_MATCH_REGEX = "(login:|[GQ]NET>|SAFE>)";
+
     private static final String DEFAULT_USER = "lutron";
     private static final String DEFAULT_PASSWORD = "integration";
 
@@ -269,11 +274,11 @@ public class IPBridgeHandler extends BaseBridgeHandler {
             this.session.waitFor("password:");
             this.session.writeLine(config.getPassword() != null ? config.getPassword() : DEFAULT_PASSWORD);
 
-            MatchResult matchResult = this.session.waitFor("(login:|[GQ]NET>|SAFE>)");
+            MatchResult matchResult = this.session.waitFor(LOGIN_MATCH_REGEX);
 
-            if ("GNET>".equals(matchResult.group()) || "QNET>".equals(matchResult.group())) {
+            if (PROMPT_GNET.equals(matchResult.group()) || PROMPT_QNET.equals(matchResult.group())) {
                 return true;
-            } else if ("SAFE>".equals(matchResult.group())) {
+            } else if (PROMPT_SAFE.equals(matchResult.group())) {
                 logger.warn("Lutron repeater is in safe mode. Unable to connect.");
                 throw new LutronSafemodeException("Lutron repeater in safe mode");
             }

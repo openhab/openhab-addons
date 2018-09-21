@@ -54,7 +54,6 @@
 		</config-description>
 	</thing-type>
 
-
 	<thing-type id="shade">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ipbridge"/>
@@ -74,7 +73,6 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-
 
 	<thing-type id="switch">
 		<supported-bridge-type-refs>
@@ -242,7 +240,6 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-
 
 	<thing-type id="ttkeypad">
 		<supported-bridge-type-refs>

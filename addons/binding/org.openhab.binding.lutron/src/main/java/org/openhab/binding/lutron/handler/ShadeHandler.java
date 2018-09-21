@@ -28,8 +28,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Handler responsible for communicating with a Lutron Sivoia QS shade
  *
- * @author Bob Adair - Initial contribution
- *         Based on Alan Tong's DimmerHandler
+ * @author Bob Adair - Initial contribution based on Alan Tong's DimmerHandler
  */
 public class ShadeHandler extends LutronHandler {
     private static final Integer ACTION_ZONELEVEL = 1;
@@ -97,7 +96,7 @@ public class ShadeHandler extends LutronHandler {
 
     @Override
     public void handleUpdate(LutronCommandType type, String... parameters) {
-        if (type == LutronCommandType.OUTPUT && parameters.length > 1
+        if (type == LutronCommandType.OUTPUT && parameters.length >= 2
                 && ACTION_ZONELEVEL.toString().equals(parameters[0])) {
             BigDecimal level = new BigDecimal(parameters[1]);
             updateState(CHANNEL_SHADELEVEL, new PercentType(level));

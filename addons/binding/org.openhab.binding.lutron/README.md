@@ -246,16 +246,16 @@ The behavior of this binding is the same as the other keypad bindings, with the 
 
 The following channels are supported:
 
-| Thing Type          | Channel ID        | Item Type    | Description                                  |
-|---------------------|-------------------|--------------|--------------------------------------------- |
-| dimmer              | lightlevel        | Dimmer       | Increase/decrease the light level            |
-| switch              | switchstatus      | Switch       | On/off status of the switch                  |
-| occupancysensor     | occupancystatus   | Switch       | Occupancy status                             |
-| cco                 | switchstatus      | Switch       | On/off status of the CCO                     |
-| keypads (all)       | button*           | Switch       | Keypad button                                |
-| keypads(except pico)| led*              | Switch       | LED indicator for the associated button      |
-| vcrx                | cci*              | Contact      | Contact closure input on/off status          |
-| shade           | shadelevel        | Rollershutter | Accepts Up, Down, Stop, & Percent   |
+| Thing Type          | Channel ID        | Item Type     | Description                                  |
+|---------------------|-------------------|---------------|--------------------------------------------- |
+| dimmer              | lightlevel        | Dimmer        | Increase/decrease the light level            |
+| switch              | switchstatus      | Switch        | On/off status of the switch                  |
+| occupancysensor     | occupancystatus   | Switch        | Occupancy status                             |
+| cco                 | switchstatus      | Switch        | On/off status of the CCO                     |
+| keypads (all)       | button*           | Switch        | Keypad button                                |
+| keypads(except pico)| led*              | Switch        | LED indicator for the associated button      |
+| vcrx                | cci*              | Contact       | Contact closure input on/off status          |
+| shade               | shadelevel        | Rollershutter | Accepts Up, Down, Stop, & Percent commands   |
 
 The channels available on each keypad device (i.e. keypad, ttkeypad, pico, vcrx, and virtualkeypad) will vary with keypad type and model.
 Appropriate channels will created automatically by the keypad, ttkeypad, and pico handlers based on the setting of the "model" parameter for those thing types.
