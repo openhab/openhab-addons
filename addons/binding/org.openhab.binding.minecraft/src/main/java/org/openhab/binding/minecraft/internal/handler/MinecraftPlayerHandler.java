@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.minecraft.handler;
+package org.openhab.binding.minecraft.internal.handler;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -21,7 +21,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.minecraft.MinecraftBindingConstants;
+import org.openhab.binding.minecraft.internal.MinecraftBindingConstants;
 import org.openhab.binding.minecraft.internal.config.PlayerConfig;
 import org.openhab.binding.minecraft.internal.message.OHMessage;
 import org.openhab.binding.minecraft.internal.message.data.PlayerData;
