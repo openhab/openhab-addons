@@ -98,7 +98,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
             return new ThermosthatHandler(thing, stateDescriptionProvider);
         } else if (thingTypeUID.equals(WELCOME_HOME_THING_TYPE)) {
             return new NAWelcomeHomeHandler(thing);
-        } else if (thingTypeUID.equals(WELCOME_CAMERA)) {
+        } else if (thingTypeUID.equals(WELCOME_CAMERA) || thingTypeUID.equals(PRESENCE_CAMERA)) {
             return new NAWelcomeCameraHandler(thing);
         } else if (thingTypeUID.equals(WELCOME_PERSON_THING_TYPE)) {
             return new NAWelcomePersonHandler(thing);

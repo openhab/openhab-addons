@@ -51,7 +51,7 @@ public class NAWelcomePersonHandler extends NetatmoModuleHandler<Person> {
             // Search the last event for this person
             events.getEventsList().forEach(event -> {
                 if (event.getPersonId() != null && event.getPersonId().equalsIgnoreCase(getId())
-                        && (lastEvent == null || lastEvent.getTime() < event.getTime())) {
+                        && (lastEvent == null || lastEvent.getTime().isBefore(event.getTime()))) {
                     lastEvent = event;
                 }
             });

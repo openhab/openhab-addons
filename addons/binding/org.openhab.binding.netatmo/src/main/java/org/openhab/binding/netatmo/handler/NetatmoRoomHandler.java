@@ -9,12 +9,10 @@
 package org.openhab.binding.netatmo.handler;
 
 import io.rudolph.netatmo.api.energy.EnergyConnector;
-import io.rudolph.netatmo.api.energy.model.BaseRoom;
-import io.rudolph.netatmo.api.energy.model.HomeStatusBody;
-import io.rudolph.netatmo.api.energy.model.HomesDataBody;
-import io.rudolph.netatmo.api.energy.model.Room;
+import io.rudolph.netatmo.api.energy.model.*;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -27,6 +25,10 @@ import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.measure.quantity.Temperature;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
@@ -111,7 +113,7 @@ public class NetatmoRoomHandler extends AbstractNetatmoThingHandler {
         }
 
         Room room = null;
-        for (Room base: statusBody.getHomes()
+        for (Room base : statusBody.getHomes()
                 .get(0)
                 .getRooms()) {
             if (getId().equals(base.getId())) {
@@ -137,8 +139,27 @@ public class NetatmoRoomHandler extends AbstractNetatmoThingHandler {
             updateChannels();
             return;
         }
-        switch (channelUID.getId()) {
+        if (command instanceof RefreshType) {
+            return;
+        }
 
+        switch (channelUID.getId()) {
+            case CHANNEL_ROOM_SETPOINT_TEMPERATURE: {
+                BigDecimal spTemp = null;
+                if (command instanceof QuantityType) {
+                    QuantityType<Temperature> quantity = ((QuantityType<Temperature>) command)
+                            .toUnit(API_TEMPERATURE_UNIT);
+                    if (quantity != null) {
+                        spTemp = quantity.toBigDecimal().setScale(1, RoundingMode.HALF_UP);
+                    }
+                } else {
+                    spTemp = new BigDecimal(command.toString()).setScale(1, RoundingMode.HALF_UP);
+                }
+                if (spTemp != null) {
+                    pushSetpointUpdate(ThermPointMode.MANUAL, LocalDateTime.now().plusHours(2), spTemp.floatValue());
+
+                }
+            }
         }
 
     }
@@ -201,5 +222,10 @@ public class NetatmoRoomHandler extends AbstractNetatmoThingHandler {
     protected void setRefreshRequired(boolean refreshRequired) {
         this.refreshRequired = refreshRequired;
     }
+
+    private void pushSetpointUpdate(ThermPointMode thermMode, LocalDateTime setpointEndtime, Float setpointTemp) {
+        getBridgeHandler().api.getEnergyApi().setRoomThermPoint(getParentId(), getId(), thermMode, setpointTemp, setpointEndtime);
+    }
+
 
 }

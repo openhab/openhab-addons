@@ -60,6 +60,8 @@ public class NetatmoBindingConstants {
     public static final ThingTypeUID VALVE = new ThingTypeUID(BINDING_ID, DeviceType.VALVE.getValue());
     public static final ThingTypeUID ROOM = new ThingTypeUID(BINDING_ID, ROOM_PROPERTY);
     public static final ThingTypeUID HOME = new ThingTypeUID(BINDING_ID, HOME_PROPERTY);
+    // List of PresenceHome Things Type UIDs
+    public static final ThingTypeUID PRESENCE_CAMERA = new ThingTypeUID(BINDING_ID, DeviceType.PRESENCE_CAMERA.getValue());
 
     // List of Welcome Home Things Type UIDs
     public static final ThingTypeUID WELCOME_HOME_THING_TYPE = new ThingTypeUID(BINDING_ID, "NAWelcomeHome");
@@ -191,7 +193,7 @@ public class NetatmoBindingConstants {
     // List of all supported physical devices and modules
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Stream
             .of(BASESTATION, OUTDOORMODULE, WINDMODULE, RAINGAUGEMODULE, INDOORMODULE, HOMECOACH, RELAY, THERMOSTAT,
-                    WELCOME_HOME_THING_TYPE, WELCOME_CAMERA, WELCOME_PERSON_THING_TYPE, VALVE, ROOM, HOME)
+                    WELCOME_HOME_THING_TYPE, WELCOME_CAMERA, WELCOME_PERSON_THING_TYPE, VALVE, ROOM, HOME, PRESENCE_CAMERA)
             .collect(Collectors.toSet());
 
     // List of all adressable things in OH = SUPPORTED_DEVICE_THING_TYPES_UIDS + the virtual bridge

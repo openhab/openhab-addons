@@ -79,7 +79,7 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<PresenceHome> {
                 });
 
                 result.getEvents().forEach(event -> {
-                    if (lastEvent == null || lastEvent.getTime() < event.getTime()) {
+                    if (lastEvent == null || lastEvent.getTime().isBefore(event.getTime())) {
                         lastEvent = event;
                     }
                 });
@@ -122,7 +122,9 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<PresenceHome> {
                     return UnDefType.UNDEF;
                 }
             case CHANNEL_WELCOME_EVENT_SNAPSHOT:
-                if (lastEvent != null) {
+                if (lastEvent != null && lastEvent.getSnapshot() != null
+                        && lastEvent.getSnapshot().getId() != null
+                        && lastEvent.getSnapshot().getKey() != null) {
                     String picture = getBridgeHandler().api
                             .getWelcomeApi()
                             .getCameraPicture(lastEvent.getSnapshot().getId(), lastEvent.getSnapshot().getKey())
