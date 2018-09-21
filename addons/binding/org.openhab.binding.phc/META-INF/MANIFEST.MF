@@ -18,10 +18,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.openhab.binding.phc,
- org.openhab.binding.phc.handler,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.phc,
- org.openhab.binding.phc.handler
 Bundle-ActivationPolicy: lazy
