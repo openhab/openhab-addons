@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.oceanic.internal;
 
-import static org.openhab.binding.oceanic.OceanicBindingConstants.*;
+import static org.openhab.binding.oceanic.internal.OceanicBindingConstants.*;
 
 import java.util.Collection;
 
@@ -17,8 +17,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.oceanic.handler.NetworkOceanicThingHandler;
-import org.openhab.binding.oceanic.handler.SerialOceanicThingHandler;
+import org.openhab.binding.oceanic.internal.handler.NetworkOceanicThingHandler;
+import org.openhab.binding.oceanic.internal.handler.SerialOceanicThingHandler;
 import org.osgi.service.component.annotations.Component;
 
 import com.google.common.collect.Lists;
