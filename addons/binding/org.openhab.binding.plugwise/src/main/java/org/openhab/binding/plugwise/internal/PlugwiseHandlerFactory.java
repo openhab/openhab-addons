@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.plugwise.internal;
 
-import static org.openhab.binding.plugwise.PlugwiseBindingConstants.*;
+import static org.openhab.binding.plugwise.internal.PlugwiseBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -24,11 +24,11 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.plugwise.handler.PlugwiseRelayDeviceHandler;
-import org.openhab.binding.plugwise.handler.PlugwiseScanHandler;
-import org.openhab.binding.plugwise.handler.PlugwiseSenseHandler;
-import org.openhab.binding.plugwise.handler.PlugwiseStickHandler;
-import org.openhab.binding.plugwise.handler.PlugwiseSwitchHandler;
+import org.openhab.binding.plugwise.internal.handler.PlugwiseRelayDeviceHandler;
+import org.openhab.binding.plugwise.internal.handler.PlugwiseScanHandler;
+import org.openhab.binding.plugwise.internal.handler.PlugwiseSenseHandler;
+import org.openhab.binding.plugwise.internal.handler.PlugwiseStickHandler;
+import org.openhab.binding.plugwise.internal.handler.PlugwiseSwitchHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 

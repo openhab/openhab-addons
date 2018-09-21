@@ -10,7 +10,7 @@ package org.openhab.binding.plugwise.internal.listener;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.openhab.binding.plugwise.handler.PlugwiseStickHandler;
+import org.openhab.binding.plugwise.internal.handler.PlugwiseStickHandler;
 
 /**
  * Interface for listeners of {@link PlugwiseStickHandler} thing status changes.

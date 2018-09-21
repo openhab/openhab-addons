@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.plugwise.internal;
 
-import static org.openhab.binding.plugwise.PlugwiseBindingConstants.THING_TYPE_STICK;
+import static org.openhab.binding.plugwise.internal.PlugwiseBindingConstants.THING_TYPE_STICK;
 import static org.openhab.binding.plugwise.internal.protocol.field.DeviceType.STICK;
 
 import java.io.IOException;
@@ -31,7 +31,6 @@ import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
 import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.plugwise.PlugwiseBindingConstants;
 import org.openhab.binding.plugwise.internal.config.PlugwiseStickConfig;
 import org.openhab.binding.plugwise.internal.listener.PlugwiseMessageListener;
 import org.openhab.binding.plugwise.internal.protocol.InformationRequestMessage;

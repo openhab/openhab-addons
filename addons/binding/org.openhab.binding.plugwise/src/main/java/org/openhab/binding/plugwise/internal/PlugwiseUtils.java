@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.plugwise.internal;
 
-import static org.openhab.binding.plugwise.PlugwiseBindingConstants.*;
+import static org.openhab.binding.plugwise.internal.PlugwiseBindingConstants.*;
 import static org.openhab.binding.plugwise.internal.protocol.field.DeviceType.*;
 
 import java.time.LocalDateTime;
@@ -22,7 +22,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.openhab.binding.plugwise.PlugwiseBindingConstants;
 import org.openhab.binding.plugwise.internal.protocol.InformationResponseMessage;
 import org.openhab.binding.plugwise.internal.protocol.field.DeviceType;
 
