@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.openuv.internal.discovery;
 
-import static org.openhab.binding.openuv.OpenUVBindingConstants.*;
+import static org.openhab.binding.openuv.internal.OpenUVBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +23,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.i18n.LocationProvider;
 import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.openuv.handler.OpenUVBridgeHandler;
+import org.openhab.binding.openuv.internal.handler.OpenUVBridgeHandler;
 import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

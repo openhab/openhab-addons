@@ -8,10 +8,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.openuv;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
-Export-Package: 
- org.openhab.binding.openuv,
- org.openhab.binding.openuv.handler,
- org.openhab.binding.openuv.json
 Import-Package: 
  com.google.gson,
  javax.measure,
@@ -27,8 +23,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.io.net.http,
- org.openhab.binding.openuv,
- org.openhab.binding.openuv.handler,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
