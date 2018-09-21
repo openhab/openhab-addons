@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.pentair.handler;
+package org.openhab.binding.pentair.internal.handler;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -15,7 +15,7 @@ import java.io.IOException;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.openhab.binding.pentair.config.internal.PentairSerialBridgeConfig;
+import org.openhab.binding.pentair.internal.config.PentairSerialBridgeConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.pentair.handler;
+package org.openhab.binding.pentair.internal.handler;
 
-import static org.openhab.binding.pentair.PentairBindingConstants.INTELLIFLO_THING_TYPE;
+import static org.openhab.binding.pentair.internal.PentairBindingConstants.INTELLIFLO_THING_TYPE;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
