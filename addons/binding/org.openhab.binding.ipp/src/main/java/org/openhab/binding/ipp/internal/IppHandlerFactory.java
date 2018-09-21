@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.ipp.internal;
 
-import static org.openhab.binding.ipp.IppBindingConstants.PRINTER_THING_TYPE;
+import static org.openhab.binding.ipp.internal.IppBindingConstants.PRINTER_THING_TYPE;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryServiceRegistry;
@@ -18,8 +18,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.ipp.IppBindingConstants;
-import org.openhab.binding.ipp.handler.IppPrinterHandler;
+import org.openhab.binding.ipp.internal.handler.IppPrinterHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;

@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.ipp.handler;
+package org.openhab.binding.ipp.internal.handler;
 
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
@@ -32,7 +32,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.ipp.IppBindingConstants;
+import org.openhab.binding.ipp.internal.IppBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
