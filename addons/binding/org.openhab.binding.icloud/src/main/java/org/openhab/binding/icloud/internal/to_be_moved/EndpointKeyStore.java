@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.icloud.internal.to_be_moved;
 
-import javax.net.ssl.TrustManager;
+import java.security.KeyStore;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -18,19 +18,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Martin van Wingerden - Initial Contribution
  */
 @NonNullByDefault
-public interface EndpointTrustManager {
+public interface EndpointKeyStore {
     /**
-     * Does this class support the given endpoint
-     *
-     * @param endpoint the endpoint for which a TrustManager was requested
-     * @return whether this implementation supports the given endpoints
-     */
-    boolean supports(String endpoint);
-
-    /**
-     * A TrustManager should always be returned if supports returned true
+     * hostname for which this TrustManager is intended
      *
      * @return
      */
-    TrustManager getTrustManager();
+    String getHostName();
+
+    /**
+     * A X509ExtendedTrustManager for the specified hostname
+     *
+     * @return
+     */
+    KeyStore getKeyStore();
 }

@@ -9,16 +9,15 @@
 package org.openhab.binding.icloud.internal;
 
 import java.io.IOException;
-import java.security.GeneralSecurityException;
-
-import javax.net.ssl.TrustManager;
+import java.io.InputStream;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.icloud.internal.to_be_moved.EndpointTrustManager;
+import org.openhab.binding.icloud.internal.to_be_moved.EndpointKeyStore;
 import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Provides a TrustManager for https://fmipmobile.icloud.com
@@ -27,34 +26,22 @@ import org.slf4j.LoggerFactory;
  */
 @Component
 @NonNullByDefault
-public class ICloudEndpointTrustManager implements EndpointTrustManager {
-    private final Logger logger = LoggerFactory.getLogger(ICloudEndpointTrustManager.class);
+public class ICloudEndpointTrustManager implements EndpointKeyStore {
 
-    @Nullable
-    private TrustManager trustManager;
-
-    public ICloudEndpointTrustManager() {
-        try {
-            trustManager = new ICloudTrustManager();
-        } catch (GeneralSecurityException | IOException e) {
-            logger.error("Failed to initialize the trustmanager", e);
-            trustManager = null;
-        }
+    @Override
+    public String getHostName() {
+        return "fmipmobile.icloud.com";
     }
 
     @Override
-    public boolean supports(String endpoint) {
-        return trustManager != null && endpoint.startsWith("https://fmipmobile.icloud.com");
-    }
-
-    @Override
-    public TrustManager getTrustManager() {
-        TrustManager localTrustManager = trustManager;
-
-        if (localTrustManager == null) {
-            throw new IllegalStateException("This method should not be called if supported = false");
+    public KeyStore getKeyStore() {
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader()
+                .getResourceAsStream("trustedCerts.pkcs12")) {
+            KeyStore ks = KeyStore.getInstance("PKCS12");
+            ks.load(inputStream, "passphrase".toCharArray());
+            return ks;
+        } catch (CertificateException | IOException | KeyStoreException | NoSuchAlgorithmException e) {
+            throw new IllegalStateException("Failed loading (content) of keystore", e);
         }
-
-        return localTrustManager;
     }
 }
