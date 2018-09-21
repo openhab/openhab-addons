@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.powermax.handler;
+package org.openhab.binding.powermax.internal.handler;
 
-import static org.openhab.binding.powermax.PowermaxBindingConstants.*;
+import static org.openhab.binding.powermax.internal.PowermaxBindingConstants.*;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;

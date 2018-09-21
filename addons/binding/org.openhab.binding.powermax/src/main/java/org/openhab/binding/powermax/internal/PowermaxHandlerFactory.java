@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.powermax.internal;
 
-import static org.openhab.binding.powermax.PowermaxBindingConstants.*;
+import static org.openhab.binding.powermax.internal.PowermaxBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -26,9 +26,9 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
-import org.openhab.binding.powermax.handler.PowermaxBridgeHandler;
-import org.openhab.binding.powermax.handler.PowermaxThingHandler;
 import org.openhab.binding.powermax.internal.discovery.PowermaxDiscoveryService;
+import org.openhab.binding.powermax.internal.handler.PowermaxBridgeHandler;
+import org.openhab.binding.powermax.internal.handler.PowermaxThingHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
