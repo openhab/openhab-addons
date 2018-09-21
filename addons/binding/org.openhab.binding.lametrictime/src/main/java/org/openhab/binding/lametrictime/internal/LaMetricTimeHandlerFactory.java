@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.lametrictime.internal;
 
-import static org.openhab.binding.lametrictime.LaMetricTimeBindingConstants.*;
+import static org.openhab.binding.lametrictime.internal.LaMetricTimeBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -23,13 +23,13 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.lametrictime.handler.ClockAppHandler;
-import org.openhab.binding.lametrictime.handler.CountdownAppHandler;
-import org.openhab.binding.lametrictime.handler.LaMetricTimeHandler;
-import org.openhab.binding.lametrictime.handler.RadioAppHandler;
-import org.openhab.binding.lametrictime.handler.StopwatchAppHandler;
-import org.openhab.binding.lametrictime.handler.WeatherAppHandler;
 import org.openhab.binding.lametrictime.internal.discovery.LaMetricTimeAppDiscoveryService;
+import org.openhab.binding.lametrictime.internal.handler.ClockAppHandler;
+import org.openhab.binding.lametrictime.internal.handler.CountdownAppHandler;
+import org.openhab.binding.lametrictime.internal.handler.LaMetricTimeHandler;
+import org.openhab.binding.lametrictime.internal.handler.RadioAppHandler;
+import org.openhab.binding.lametrictime.internal.handler.StopwatchAppHandler;
+import org.openhab.binding.lametrictime.internal.handler.WeatherAppHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;

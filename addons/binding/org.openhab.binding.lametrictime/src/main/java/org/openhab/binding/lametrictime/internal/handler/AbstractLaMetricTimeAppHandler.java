@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.lametrictime.handler;
+package org.openhab.binding.lametrictime.internal.handler;
 
 import java.util.SortedMap;
 
@@ -20,8 +20,8 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.lametrictime.config.LaMetricTimeAppConfiguration;
 import org.openhab.binding.lametrictime.internal.WidgetRef;
+import org.openhab.binding.lametrictime.internal.config.LaMetricTimeAppConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.syphr.lametrictime.api.LaMetricTime;

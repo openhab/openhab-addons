@@ -6,10 +6,10 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.lametrictime.handler;
+package org.openhab.binding.lametrictime.internal.handler;
 
-import static org.openhab.binding.lametrictime.LaMetricTimeBindingConstants.*;
-import static org.openhab.binding.lametrictime.config.LaMetricTimeConfiguration.*;
+import static org.openhab.binding.lametrictime.internal.LaMetricTimeBindingConstants.*;
+import static org.openhab.binding.lametrictime.internal.config.LaMetricTimeConfiguration.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,12 +37,12 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.glassfish.jersey.client.ClientProperties;
-import org.openhab.binding.lametrictime.LaMetricTimeBindingConstants;
-import org.openhab.binding.lametrictime.config.LaMetricTimeConfiguration;
+import org.openhab.binding.lametrictime.internal.LaMetricTimeBindingConstants;
 import org.openhab.binding.lametrictime.internal.LaMetricTimeConfigStatusMessage;
 import org.openhab.binding.lametrictime.internal.LaMetricTimeUtil;
 import org.openhab.binding.lametrictime.internal.StateDescriptionOptionsProvider;
 import org.openhab.binding.lametrictime.internal.WidgetRef;
+import org.openhab.binding.lametrictime.internal.config.LaMetricTimeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.syphr.lametrictime.api.Configuration;

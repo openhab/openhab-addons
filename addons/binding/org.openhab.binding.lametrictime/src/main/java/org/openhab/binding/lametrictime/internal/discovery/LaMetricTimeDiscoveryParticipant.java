@@ -8,8 +8,8 @@
  */
 package org.openhab.binding.lametrictime.internal.discovery;
 
-import static org.openhab.binding.lametrictime.LaMetricTimeBindingConstants.THING_TYPE_DEVICE;
-import static org.openhab.binding.lametrictime.config.LaMetricTimeConfiguration.HOST;
+import static org.openhab.binding.lametrictime.internal.LaMetricTimeBindingConstants.THING_TYPE_DEVICE;
+import static org.openhab.binding.lametrictime.internal.config.LaMetricTimeConfiguration.HOST;
 
 import java.util.Collections;
 import java.util.HashMap;
