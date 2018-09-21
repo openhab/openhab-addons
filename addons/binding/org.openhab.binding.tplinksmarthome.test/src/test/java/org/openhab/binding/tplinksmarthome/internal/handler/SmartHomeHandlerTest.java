@@ -6,13 +6,13 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.tplinksmarthome.handler;
+package org.openhab.binding.tplinksmarthome.internal.handler;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.openhab.binding.tplinksmarthome.TPLinkSmartHomeBindingConstants.*;
+import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.*;
 
 import java.io.IOException;
 
@@ -34,7 +34,6 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.openhab.binding.tplinksmarthome.TPLinkSmartHomeBindingConstants;
 import org.openhab.binding.tplinksmarthome.internal.Commands;
 import org.openhab.binding.tplinksmarthome.internal.Connection;
 import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeConfiguration;
@@ -67,8 +66,8 @@ public class SmartHomeHandlerTest {
     @Before
     public void setUp() throws IOException {
         initMocks(this);
-        configuration.put(TPLinkSmartHomeBindingConstants.CONFIG_IP, "localhost");
-        configuration.put(TPLinkSmartHomeBindingConstants.CONFIG_REFRESH, 0);
+        configuration.put(CONFIG_IP, "localhost");
+        configuration.put(CONFIG_REFRESH, 0);
         when(thing.getConfiguration()).thenReturn(configuration);
         when(smartHomeDevice.getUpdateCommand()).thenReturn(Commands.getSysinfo());
         when(connection.sendCommand(Commands.getSysinfo()))
