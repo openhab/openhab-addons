@@ -15,10 +15,12 @@ import java.math.BigDecimal;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.lutron.internal.protocol.LutronCommandType;
@@ -57,15 +59,29 @@ public class ShadeHandler extends LutronHandler {
             return;
         }
         integrationId = id.intValue();
-
         logger.debug("Initializing Shade handler for integration ID {}", id);
 
-        if (getThing().getBridgeUID() == null) {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
-            return;
+        } else if (bridge.getStatus() == ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Awaiting initial response");
+            queryOutput(ACTION_ZONELEVEL);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
-        updateStatus(ThingStatus.ONLINE);
-        queryOutput(ACTION_ZONELEVEL);
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        logger.debug("Bridge status changed to {} for shade handler {}", bridgeStatusInfo.getStatus(), integrationId);
+
+        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE
+                && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE) {
+            initialize();
+        } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
     }
 
     @Override
@@ -99,6 +115,9 @@ public class ShadeHandler extends LutronHandler {
         if (type == LutronCommandType.OUTPUT && parameters.length >= 2
                 && ACTION_ZONELEVEL.toString().equals(parameters[0])) {
             BigDecimal level = new BigDecimal(parameters[1]);
+            if (getThing().getStatus() == ThingStatus.UNKNOWN) {
+                updateStatus(ThingStatus.ONLINE);
+            }
             updateState(CHANNEL_SHADELEVEL, new PercentType(level));
         }
     }
