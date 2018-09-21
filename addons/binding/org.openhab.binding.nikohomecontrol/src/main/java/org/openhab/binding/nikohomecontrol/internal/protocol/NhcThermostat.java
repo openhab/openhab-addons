@@ -13,7 +13,7 @@ import java.time.temporal.ChronoUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.nikohomecontrol.handler.NikoHomeControlThermostatHandler;
+import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlThermostatHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
