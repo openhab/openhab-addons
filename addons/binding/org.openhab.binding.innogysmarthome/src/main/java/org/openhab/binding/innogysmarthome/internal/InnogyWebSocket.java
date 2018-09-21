@@ -21,7 +21,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.openhab.binding.innogysmarthome.handler.InnogyBridgeHandler;
+import org.openhab.binding.innogysmarthome.internal.handler.InnogyBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

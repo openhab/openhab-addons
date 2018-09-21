@@ -41,11 +41,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.openhab.binding.innogysmarthome,
- org.openhab.binding.innogysmarthome.handler,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: 
- org.openhab.binding.innogysmarthome,
- org.openhab.binding.innogysmarthome.handler

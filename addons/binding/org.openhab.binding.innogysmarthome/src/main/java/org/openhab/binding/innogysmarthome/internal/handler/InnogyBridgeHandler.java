@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.innogysmarthome.handler;
+package org.openhab.binding.innogysmarthome.internal.handler;
 
-import static org.openhab.binding.innogysmarthome.InnogyBindingConstants.*;
+import static org.openhab.binding.innogysmarthome.internal.InnogyBindingConstants.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -35,7 +35,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.innogysmarthome.InnogyBindingConstants;
+import org.openhab.binding.innogysmarthome.internal.InnogyBindingConstants;
 import org.openhab.binding.innogysmarthome.internal.InnogyWebSocket;
 import org.openhab.binding.innogysmarthome.internal.client.InnogyClient;
 import org.openhab.binding.innogysmarthome.internal.client.InnogyConfig;
