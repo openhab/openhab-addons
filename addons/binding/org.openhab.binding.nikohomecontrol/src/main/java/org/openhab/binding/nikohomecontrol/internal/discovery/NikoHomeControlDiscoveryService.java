@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.nikohomecontrol.internal.discovery;
 
-import static org.openhab.binding.nikohomecontrol.NikoHomeControlBindingConstants.*;
+import static org.openhab.binding.nikohomecontrol.internal.NikoHomeControlBindingConstants.*;
 
 import java.util.Date;
 import java.util.Map;
@@ -17,8 +17,8 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.nikohomecontrol.NikoHomeControlBindingConstants;
-import org.openhab.binding.nikohomecontrol.handler.NikoHomeControlBridgeHandler;
+import org.openhab.binding.nikohomecontrol.internal.NikoHomeControlBindingConstants;
+import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlBridgeHandler;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcAction;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcThermostat;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlCommunication;
