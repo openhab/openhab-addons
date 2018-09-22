@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.onebusaway.internal.handler;
 
-import static org.openhab.binding.onebusaway.OneBusAwayBindingConstants.THING_TYPE_STOP;
+import static org.openhab.binding.onebusaway.internal.OneBusAwayBindingConstants.THING_TYPE_STOP;
 
 import java.net.URI;
 import java.net.URISyntaxException;

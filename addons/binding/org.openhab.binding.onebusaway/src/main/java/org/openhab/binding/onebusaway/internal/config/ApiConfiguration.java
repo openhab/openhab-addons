@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.onebusaway.internal.config;
 
-import static org.openhab.binding.onebusaway.OneBusAwayBindingConstants.*;
+import static org.openhab.binding.onebusaway.internal.OneBusAwayBindingConstants.*;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
