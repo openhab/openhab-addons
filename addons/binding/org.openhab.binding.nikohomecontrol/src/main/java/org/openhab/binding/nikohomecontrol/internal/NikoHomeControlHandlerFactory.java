@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.nikohomecontrol.internal;
 
-import static org.openhab.binding.nikohomecontrol.NikoHomeControlBindingConstants.*;
+import static org.openhab.binding.nikohomecontrol.internal.NikoHomeControlBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -22,10 +22,10 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.nikohomecontrol.handler.NikoHomeControlActionHandler;
-import org.openhab.binding.nikohomecontrol.handler.NikoHomeControlBridgeHandler;
-import org.openhab.binding.nikohomecontrol.handler.NikoHomeControlThermostatHandler;
 import org.openhab.binding.nikohomecontrol.internal.discovery.NikoHomeControlDiscoveryService;
+import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlActionHandler;
+import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlBridgeHandler;
+import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlThermostatHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 

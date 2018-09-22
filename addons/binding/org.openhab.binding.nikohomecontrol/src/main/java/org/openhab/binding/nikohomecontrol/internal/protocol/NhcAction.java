@@ -10,7 +10,7 @@ package org.openhab.binding.nikohomecontrol.internal.protocol;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.nikohomecontrol.handler.NikoHomeControlActionHandler;
+import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlActionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
