@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.orvibo.internal;
 
-import static org.openhab.binding.orvibo.OrviboBindingConstants.THING_TYPE_S20;
+import static org.openhab.binding.orvibo.internal.OrviboBindingConstants.THING_TYPE_S20;
 
 import java.util.Collections;
 import java.util.Set;
@@ -18,7 +18,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.orvibo.handler.S20Handler;
+import org.openhab.binding.orvibo.internal.handler.S20Handler;
 import org.osgi.service.component.annotations.Component;
 
 /**
