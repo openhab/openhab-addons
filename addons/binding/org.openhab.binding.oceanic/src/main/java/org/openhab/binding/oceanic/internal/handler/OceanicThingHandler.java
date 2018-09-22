@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.oceanic.handler;
+package org.openhab.binding.oceanic.internal.handler;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.TypeParser;
-import org.openhab.binding.oceanic.OceanicBindingConstants.OceanicChannelSelector;
+import org.openhab.binding.oceanic.internal.OceanicBindingConstants.OceanicChannelSelector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

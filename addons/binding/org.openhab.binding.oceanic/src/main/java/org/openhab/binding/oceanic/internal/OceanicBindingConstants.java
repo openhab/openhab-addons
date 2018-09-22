@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.oceanic;
+package org.openhab.binding.oceanic.internal;
 
 import java.io.InvalidClassException;
 import java.text.ParseException;
