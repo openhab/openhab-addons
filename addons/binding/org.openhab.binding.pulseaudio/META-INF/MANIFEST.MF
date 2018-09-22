@@ -8,9 +8,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.pulseaudio;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
-Export-Package: 
- org.openhab.binding.pulseaudio,
- org.openhab.binding.pulseaudio.handler
 Import-Package: 
  com.google.common.collect,
  javax.jmdns,
@@ -27,8 +24,6 @@ Import-Package:
  org.jupnp.model,
  org.jupnp.model.meta,
  org.jupnp.model.types,
- org.openhab.binding.pulseaudio,
- org.openhab.binding.pulseaudio.handler,
  org.osgi.framework,
  org.osgi.service.component,
  org.slf4j
