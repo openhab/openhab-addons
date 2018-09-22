@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.regoheatpump.handler;
+package org.openhab.binding.regoheatpump.internal.handler;
 
-import static org.openhab.binding.regoheatpump.RegoHeatPumpBindingConstants.*;
+import static org.openhab.binding.regoheatpump.internal.RegoHeatPumpBindingConstants.*;
 
 import java.io.BufferedReader;
 import java.io.EOFException;
