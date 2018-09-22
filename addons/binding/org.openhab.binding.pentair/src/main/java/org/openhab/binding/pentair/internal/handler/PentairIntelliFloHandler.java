@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.pentair.handler;
+package org.openhab.binding.pentair.internal.handler;
 
-import static org.openhab.binding.pentair.PentairBindingConstants.*;
+import static org.openhab.binding.pentair.internal.PentairBindingConstants.*;
 
 import java.math.BigDecimal;
 
@@ -19,7 +19,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.pentair.PentairBindingConstants;
+import org.openhab.binding.pentair.internal.PentairBindingConstants;
 import org.openhab.binding.pentair.internal.PentairPacket;
 import org.openhab.binding.pentair.internal.PentairPacketPumpStatus;
 import org.slf4j.Logger;
