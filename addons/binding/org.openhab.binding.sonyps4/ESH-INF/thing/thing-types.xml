@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="sonyps4"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="SonyPS4">
+		<label>PlayStation 4</label>
+		<description>Sony PlayStation 4 console.</description>
+
+		<channels>
+			<channel id="power" typeId="power-channel" />
+			<channel id="application" typeId="application-channel" />
+		</channels>
+
+        <properties>
+            <property name="vendor">Sony</property>
+            <property name="modelId">PlayStation 4</property>
+        </properties>
+        <representation-property>deviceId</representation-property>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
+				<label>IP address</label>
+				<description>The local IP address or hostname of the PlayStation 4.</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="power-channel">
+		<item-type>switch</item-type>
+		<label>PS4 Power</label>
+		<description>Power channel for SonyPS4 Binding.</description>
+	</channel-type>
+	<channel-type id="application-channel">
+		<item-type>string</item-type>
+		<label>Application</label>
+		<description>Application channel for SonyPS4 Binding.</description>
+	</channel-type>
+
+</thing:thing-descriptions>
