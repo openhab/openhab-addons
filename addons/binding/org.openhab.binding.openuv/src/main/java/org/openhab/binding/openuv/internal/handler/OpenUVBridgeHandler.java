@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.openuv.handler;
+package org.openhab.binding.openuv.internal.handler;
 
-import static org.openhab.binding.openuv.OpenUVBindingConstants.BASE_URL;
+import static org.openhab.binding.openuv.internal.OpenUVBindingConstants.BASE_URL;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
@@ -29,8 +29,8 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.openuv.OpenUVBindingConstants;
-import org.openhab.binding.openuv.json.OpenUVJsonResponse;
+import org.openhab.binding.openuv.internal.OpenUVBindingConstants;
+import org.openhab.binding.openuv.internal.json.OpenUVJsonResponse;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
