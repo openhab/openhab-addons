@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.openuv.handler;
+package org.openhab.binding.openuv.internal.handler;
 
-import static org.openhab.binding.openuv.OpenUVBindingConstants.*;
+import static org.openhab.binding.openuv.internal.OpenUVBindingConstants.*;
 
 import java.io.IOException;
 import java.time.ZoneId;
@@ -33,8 +33,8 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.openuv.internal.OpenUVConfiguration;
-import org.openhab.binding.openuv.json.OpenUVJsonResponse;
-import org.openhab.binding.openuv.json.OpenUVJsonResult;
+import org.openhab.binding.openuv.internal.json.OpenUVJsonResponse;
+import org.openhab.binding.openuv.internal.json.OpenUVJsonResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
