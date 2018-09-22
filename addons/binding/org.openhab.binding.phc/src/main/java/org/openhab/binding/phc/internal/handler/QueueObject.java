@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.phc.handler;
+package org.openhab.binding.phc.internal.handler;
 
 import org.eclipse.smarthome.core.types.Command;
 

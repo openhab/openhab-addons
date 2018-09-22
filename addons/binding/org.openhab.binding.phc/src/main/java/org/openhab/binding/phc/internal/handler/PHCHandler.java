@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.phc.handler;
+package org.openhab.binding.phc.internal.handler;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -27,7 +27,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.phc.PHCBindingConstants;
+import org.openhab.binding.phc.internal.PHCBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
