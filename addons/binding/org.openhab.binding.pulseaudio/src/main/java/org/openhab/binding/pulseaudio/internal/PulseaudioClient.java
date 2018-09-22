@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.openhab.binding.pulseaudio.PulseaudioBindingConstants;
 import org.openhab.binding.pulseaudio.internal.cli.Parser;
 import org.openhab.binding.pulseaudio.internal.items.AbstractAudioDeviceConfig;
 import org.openhab.binding.pulseaudio.internal.items.AbstractAudioDeviceConfig.State;
