@@ -133,7 +133,7 @@ public class OnkyoBindingConstants {
     public static final String CHANNEL_NET_MENU9 = "netmenu#item9";
 
     // Used for Discovery service
-    public static final String MANUFACTURER = "ONKYO";
+    public static final String MANUFACTURER = "ONKYO"; 
     public static final String UPNP_DEVICE_TYPE = "MediaRenderer";
 
 }
