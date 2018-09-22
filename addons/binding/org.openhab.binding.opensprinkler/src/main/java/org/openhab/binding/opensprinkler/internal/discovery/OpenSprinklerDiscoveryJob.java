@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.opensprinkler.internal.discovery;
 
-import static org.openhab.binding.opensprinkler.OpenSprinklerBindingConstants.DISCOVERY_DEFAULT_IP_TIMEOUT_RATE;
+import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.DISCOVERY_DEFAULT_IP_TIMEOUT_RATE;
 import static org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiConstants.*;
 
 import java.io.IOException;

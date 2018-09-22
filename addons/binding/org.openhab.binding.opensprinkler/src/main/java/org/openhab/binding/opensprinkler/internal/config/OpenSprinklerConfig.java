@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.opensprinkler.internal.config;
 
-import static org.openhab.binding.opensprinkler.OpenSprinklerBindingConstants.DEFAULT_REFRESH_RATE;
+import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.DEFAULT_REFRESH_RATE;
 import static org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiConstants.*;
 
 /**

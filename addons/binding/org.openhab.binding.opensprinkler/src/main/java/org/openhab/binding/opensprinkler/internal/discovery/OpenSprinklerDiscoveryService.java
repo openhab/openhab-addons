@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.opensprinkler.internal.discovery;
 
-import static org.openhab.binding.opensprinkler.OpenSprinklerBindingConstants.*;
+import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.*;
 import static org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiConstants.*;
 
 import java.net.Inet4Address;

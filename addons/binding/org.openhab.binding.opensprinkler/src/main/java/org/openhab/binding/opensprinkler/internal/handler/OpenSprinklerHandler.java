@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.opensprinkler.handler;
+package org.openhab.binding.opensprinkler.internal.handler;
 
-import static org.openhab.binding.opensprinkler.OpenSprinklerBindingConstants.DEFAULT_REFRESH_RATE;
+import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.DEFAULT_REFRESH_RATE;
 
 import java.util.concurrent.ScheduledFuture;
 
@@ -21,7 +21,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.opensprinkler.OpenSprinklerBindingConstants.Station;
+import org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.Station;
 import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
