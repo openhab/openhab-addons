@@ -3,14 +3,16 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="main">
+	<thing-type id="otgw">
 		<label>OpenTherm Gateway</label>
-		<description>OpenTherm Gateway</description>	
+		<description>OpenTherm Gateway</description>
 		<channels>
             <channel id="roomtemp" typeId="roomtemp" />
             <channel id="roomsetpoint" typeId="roomsetpoint" />
-            <channel id="flowtemp" typeId="flowtemp" />            
-            <channel id="outsidetemp" typeId="outsidetemp" />            
+            <channel id="overridesetpoint" typeId="overridesetpoint" />
+            <channel id="flowtemp" typeId="flowtemp" />
+            <channel id="returntemp" typeId="returntemp" />
+            <channel id="outsidetemp" typeId="outsidetemp" />
             <channel id="ch_enable" typeId="ch_enable" />
             <channel id="ch_mode" typeId="ch_mode" />
             <channel id="dhw_enable" typeId="dhw_enable" />
@@ -18,17 +20,8 @@
             <channel id="flame" typeId="flame" />
             <channel id="modulevel" typeId="modulevel" />
             <channel id="maxrelmdulevel" typeId="maxrelmdulevel" />
-        </channels>	
-		<config-description>
-			<parameter name="ipaddress" type="text" required="true">
-				<label>Hostname or IP address</label>
-				<description>The hostname or IP address to connect to the OpenTherm Gateway.</description>
-			</parameter>
-			<parameter name="port" type="integer" required="true">
-				<label>Port</label>
-				<description>The port used to connect to the OpenTherm Gateway.</description>
-			</parameter>
-		</config-description>
+        </channels>
+		<config-description-ref uri="thing-type:openthermgateway:otgw" />
 	</thing-type>
-	
+
 </thing:thing-descriptions>

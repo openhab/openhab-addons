@@ -46,12 +46,11 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
 
             callback.log(LogLevel.Debug, "OpenThermGatewaySocketConnector connected");
 
+            // PS=0 causes the OTGW to report every message it receives and transmits
             sendCommand(CommandType.PrintSummary, "0");
 
-            String message;
-
             while (!stopping && !Thread.interrupted()) {
-                message = reader.readLine();
+                String message = reader.readLine();
                 handleMessage(message);
             }
 
@@ -82,18 +81,19 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
 
             String msg = command.getMessage(message);
 
-            callback.log(LogLevel.Debug, "Sending command to OpenTherm Gateway: %s", msg);
+            callback.log(LogLevel.Debug, "Sending message: %s", msg);
             writer.println(msg);
         } else {
-            callback.log(LogLevel.Debug, "No command found for commandType %s", commandType.toString());
+            callback.log(LogLevel.Warning, "No command found for commandType %s", commandType.toString());
         }
     }
 
     private void handleMessage(String message) {
+        callback.log(LogLevel.Debug, "Received message: %s", message);
+
         Message msg = Message.parse(message);
 
         if (msg != null) {
-            // Only handle ReadAck messages, since ReadData messages are empty and only used to request values
             if (msg.getCode().equals("B")
                     && (msg.getMessageType() == MessageType.ReadAck || msg.getMessageType() == MessageType.WriteAck)) {
                 receiveMessage(msg);

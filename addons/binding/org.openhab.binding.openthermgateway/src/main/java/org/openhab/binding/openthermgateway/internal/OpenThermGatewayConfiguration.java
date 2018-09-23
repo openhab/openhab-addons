@@ -15,7 +15,7 @@ package org.openhab.binding.openthermgateway.internal;
 /**
  * The {@link OpenThermGatewayConfiguration} class contains fields mapping thing configuration parameters.
  *
- * @author Arjen Korevaar - Initial contribution
+ * @author Arjen Korevaar
  */
 public class OpenThermGatewayConfiguration {
 

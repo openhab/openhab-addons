@@ -78,10 +78,10 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
         logger.debug("Received channel: {}, command: {}", channelUID, command);
 
         try {
-            if (connector != null && connector.isConnected()) {
+            if (connector != null && connector.isConnected() && command.toFullString() != "REFRESH") {
                 String channel = channelUID.getId();
 
-                if (channel.equals(OpenThermGatewayBindingConstants.CHANNEL_ROOM_SETPOINT)) {
+                if (channel.equals(OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_SETPOINT)) {
                     connector.sendCommand(CommandType.TemperatureTemporary, command.toFullString());
                 } else if (channel.equals(OpenThermGatewayBindingConstants.CHANNEL_OUTSIDE_TEMPERATURE)) {
                     connector.sendCommand(CommandType.TemperatureOutside, command.toFullString());

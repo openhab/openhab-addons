@@ -17,6 +17,15 @@
         <label>Room setpoint</label>
         <description>Current room temperature setpoint</description>
         <category>temperature</category>
+        <state readOnly="true" pattern="%.1f °C">
+        </state>
+    </channel-type>
+
+    <channel-type id="overridesetpoint">
+        <item-type>Number</item-type>
+        <label>Override room setpoint</label>
+        <description>Remote override room temperature setpoint</description>
+        <category>temperature</category>
         <state readOnly="false" pattern="%.1f °C">
         </state>
     </channel-type>
@@ -30,6 +39,15 @@
         </state>
     </channel-type>
 
+    <channel-type id="returntemp">
+        <item-type>Number</item-type>
+        <label>Return water temperature</label>
+        <description>Return water temperature</description>
+        <category>temperature</category>
+        <state readOnly="true" pattern="%.1f °C">
+        </state>
+    </channel-type>    
+
     <channel-type id="outsidetemp">
         <item-type>Number</item-type>
         <label>Outside temperature</label>
@@ -41,28 +59,28 @@
     
     <channel-type id="ch_enable">
         <item-type>Switch</item-type>
-        <label>CH enabled</label>
+        <label>Central heating enabled</label>
         <description>Central heating enabled</description>
         <state readOnly="true"></state>
     </channel-type>
 
     <channel-type id="ch_mode">
         <item-type>Switch</item-type>
-        <label>CH active</label>
+        <label>Central heating active</label>
         <description>Central heating active</description>
         <state readOnly="true"></state>
     </channel-type>         
     
     <channel-type id="dhw_enable">
         <item-type>Switch</item-type>
-        <label>DHW enabled</label>
+        <label>Domestic hot water enabled</label>
         <description>Domestic hot water enabled</description>
         <state readOnly="true"></state>
     </channel-type>
     
     <channel-type id="dhw_mode">
         <item-type>Switch</item-type>
-        <label>DHW active</label>
+        <label>Domestic hot water active</label>
         <description>Domestic hot water active</description>
         <state readOnly="true"></state>
     </channel-type>
