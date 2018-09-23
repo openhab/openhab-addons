@@ -8,8 +8,8 @@
  */
 package org.openhab.binding.netatmo.internal.thermostat;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAdjusters;
@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.netatmo.handler.NetatmoDeviceHandler;
+import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
 
 import io.swagger.client.model.NAPlug;
 import io.swagger.client.model.NAThermostatDataBody;
