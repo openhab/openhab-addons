@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.tplinksmarthome.handler;
+package org.openhab.binding.tplinksmarthome.internal.handler;
 
-import static org.openhab.binding.tplinksmarthome.TPLinkSmartHomeBindingConstants.CHANNEL_RSSI;
+import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.CHANNEL_RSSI;
 
 import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;

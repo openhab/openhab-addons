@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.tplinksmarthome.internal;
 
-import static org.openhab.binding.tplinksmarthome.TPLinkSmartHomeBindingConstants.*;
+import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.*;
 
 import java.util.Map;
 import java.util.TreeMap;

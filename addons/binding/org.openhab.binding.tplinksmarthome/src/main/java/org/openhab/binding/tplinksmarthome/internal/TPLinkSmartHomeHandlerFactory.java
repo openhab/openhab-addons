@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.tplinksmarthome.internal;
 
-import static org.openhab.binding.tplinksmarthome.TPLinkSmartHomeBindingConstants.*;
+import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.*;
 import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeThingType.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -18,13 +18,13 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.tplinksmarthome.handler.SmartHomeHandler;
 import org.openhab.binding.tplinksmarthome.internal.device.BulbDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.DimmerDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.EnergySwitchDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.RangeExtenderDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.SmartHomeDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.SwitchDevice;
+import org.openhab.binding.tplinksmarthome.internal.handler.SmartHomeHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**
