@@ -54,6 +54,26 @@
 		</config-description>
 	</thing-type>
 
+	<thing-type id="shade">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Sivoia QS Shade</label>
+		<description>Controls roller shades</description>
+
+		<channels>
+			<channel id="shadelevel" typeId="shadeControl"/>
+		</channels>
+
+		<config-description>
+			<parameter name="integrationId" type="integer" required="true">
+				<label>Integration ID</label>
+				<description>Address of shade in the Lutron system</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
 	<thing-type id="switch">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ipbridge"/>
@@ -220,7 +240,6 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-
 
 	<thing-type id="ttkeypad">
 		<supported-bridge-type-refs>
@@ -663,6 +682,14 @@
 		<label>Light Level</label>
 		<description>Increase/decrease the light level</description>
 		<category>DimmableLight</category>
+		<state min="0" max="100" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="shadeControl">
+		<item-type>Rollershutter</item-type>
+		<label>Shade Level</label>
+		<description>Raise/lower the shade level</description>
+		<category>Rollershutter</category>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 

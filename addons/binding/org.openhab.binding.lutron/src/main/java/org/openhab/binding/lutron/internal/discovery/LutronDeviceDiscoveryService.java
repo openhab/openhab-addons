@@ -194,6 +194,7 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
                     break;
 
                 case SYSTEM_SHADE:
+                    notifyDiscovery(THING_TYPE_SHADE, output.getIntegrationId(), label);
                     break;
             }
         } else {

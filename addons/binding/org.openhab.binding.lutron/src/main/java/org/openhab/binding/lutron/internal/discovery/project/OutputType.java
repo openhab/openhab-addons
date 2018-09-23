@@ -22,5 +22,5 @@ public enum OutputType {
     NON_DIM,
     NON_DIM_ELV,
     NON_DIM_INC,
-    SYSTEM_SHADE
+    SYSTEM_SHADE,
 }
