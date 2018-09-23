@@ -34,4 +34,14 @@ public class SonyPS4BindingConstants {
     public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_APPLICATION = "application";
     public static final String CHANNEL_NAME = "name";
+
+    // List of all properties in the response from the PS4
+    public static final String RESPONSE_HOST_ID = "host-id";
+    public static final String RESPONSE_HOST_TYPE = "host-type";
+    public static final String RESPONSE_HOST_NAME = "host-name";
+    public static final String RESPONSE_HOST_REQUEST_PORT = "host-request-port";
+    public static final String RESPONSE_DEVICE_DISCOVERY_PROTOCOL_VERSION = "device_discovery_protocol-version";
+    public static final String RESPONSE_SYSTEM_VERSION = "system-version";
+    public static final String RESPONSE_RUNNING_APP_NAME = "running-app-name";
+    public static final String RESPONSE_RUNNING_APP_TITLEID = "running-app-titleid";
 }

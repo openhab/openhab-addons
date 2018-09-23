@@ -30,14 +30,16 @@
 	</thing-type>
 
 	<channel-type id="power-channel">
-		<item-type>switch</item-type>
+		<item-type>Switch</item-type>
 		<label>PS4 Power</label>
 		<description>Power channel for SonyPS4 Binding.</description>
+        <state readOnly="true" />
 	</channel-type>
 	<channel-type id="application-channel">
-		<item-type>string</item-type>
+		<item-type>String</item-type>
 		<label>Application</label>
 		<description>Application channel for SonyPS4 Binding.</description>
+        <state pattern="%s" readOnly="true" />
 	</channel-type>
 
 </thing:thing-descriptions>

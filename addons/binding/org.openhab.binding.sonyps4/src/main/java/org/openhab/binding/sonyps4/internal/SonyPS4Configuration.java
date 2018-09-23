@@ -24,14 +24,25 @@ public class SonyPS4Configuration {
     public static final String IP_ADDRESS = "ipAddress";
 
     /**
-     * IP Address of PS4.
+     * Constant field used in {@link SonyPS4Discovery} to set the configuration property during discovery.
+     * Value of this field needs to match {@link #ipPort}.
+     */
+    public static final String IP_PORT = "ipPort";
+
+    /**
+     * IP-address of PS4.
      */
     private String ipAddress;
 
     /**
-     * UID of PS4.
+     * IP-port of PS4.
      */
-    private String uid;
+    private String ipPort;
+
+    /**
+     * host-id of PS4.
+     */
+    private String hostId;
 
     public String getIpAddress() {
         return ipAddress;
@@ -41,16 +52,24 @@ public class SonyPS4Configuration {
         this.ipAddress = ipAddress;
     }
 
-    public String getUID() {
-        return uid;
+    public String getIpPort() {
+        return ipPort;
     }
 
-    public void setUID(String uid) {
-        this.uid = uid;
+    public void setIpPort(String ipPort) {
+        this.ipPort = ipPort;
+    }
+
+    public String getHostId() {
+        return hostId;
+    }
+
+    public void setHostId(String hostId) {
+        this.hostId = hostId;
     }
 
     @Override
     public String toString() {
-        return "IP" + ipAddress + ", UID" + uid + ".";
+        return "IP" + ipAddress + ", Port" + ipPort + ", HostId" + hostId + ".";
     }
 }
