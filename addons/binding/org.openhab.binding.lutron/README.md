@@ -25,6 +25,7 @@ This binding currently supports the following thing types:
 * pico - Pico Keypad
 * vcrx - Visor control receiver
 * virtualkeypad - Repeater virtual keypad
+* shade - Lutron shade or motorized drape
 
 ## Discovery
 
@@ -60,6 +61,26 @@ In the thing file, this looks e.g. like:
 
 ```
 Thing lutron:dimmer:livingroom (lutron:ipbridge:radiora2) [ integrationId=8, fadeInTime=0.5, fadeOutTime=5 ]
+```
+
+### Shades
+
+Each Lutron shade or motorized drape is controlled by a “shade” thing.
+The only configuration parameter it accepts is integrationId. 
+
+A single channel shadelevel with item type Rollershutter and category Rollershutter will be created for each shade thing.
+It accepts Percent, Up, Down, Stop and Refresh commands.
+Sending a Percent command will cause the shade to immediately move so as to be open the specified percentage.
+You can also read the current shade level from the channel.
+It is specified as a percentage, where 0% = closed and 100% = fully open. Movement delays are not currently supported.
+The shade handler should be compatible with all Lutron devices which appear to the system as shades, including roller shades, honeycomb shades, pleated shades, roman shades, tension roller shades, drapes, and Kirbe vertical drapes.
+
+**Note:** While a shade is moving, the Lutron system will report the target level for the shade rather than the actual current level.
+
+Example:
+
+```
+Thing lutron:shade:libraryshade (lutron:ipbridge:radiora2) [ integrationId=33]
 ```
 
 ### Switches
@@ -225,15 +246,16 @@ The behavior of this binding is the same as the other keypad bindings, with the 
 
 The following channels are supported:
 
-| Thing Type          | Channel ID        | Item Type    | Description                                  |
-|---------------------|-------------------|--------------|--------------------------------------------- |
-| dimmer              | lightlevel        | Dimmer       | Increase/decrease the light level            |
-| switch              | switchstatus      | Switch       | On/off status of the switch                  |
-| occupancysensor     | occupancystatus   | Switch       | Occupancy status                             |
-| cco                 | switchstatus      | Switch       | On/off status of the CCO                     |
-| keypads (all)       | button*           | Switch       | Keypad button                                |
-| keypads(except pico)| led*              | Switch       | LED indicator for the associated button      |
-| vcrx                | cci*              | Contact      | Contact closure input on/off status          |
+| Thing Type          | Channel ID        | Item Type     | Description                                  |
+|---------------------|-------------------|---------------|--------------------------------------------- |
+| dimmer              | lightlevel        | Dimmer        | Increase/decrease the light level            |
+| switch              | switchstatus      | Switch        | On/off status of the switch                  |
+| occupancysensor     | occupancystatus   | Switch        | Occupancy status                             |
+| cco                 | switchstatus      | Switch        | On/off status of the CCO                     |
+| keypads (all)       | button*           | Switch        | Keypad button                                |
+| keypads(except pico)| led*              | Switch        | LED indicator for the associated button      |
+| vcrx                | cci*              | Contact       | Contact closure input on/off status          |
+| shade               | shadelevel        | Rollershutter | Accepts Up, Down, Stop, & Percent commands   |
 
 The channels available on each keypad device (i.e. keypad, ttkeypad, pico, vcrx, and virtualkeypad) will vary with keypad type and model.
 Appropriate channels will created automatically by the keypad, ttkeypad, and pico handlers based on the setting of the "model" parameter for those thing types.
