@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.netatmo.handler;
+package org.openhab.binding.netatmo.internal.handler;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.MEASURABLE_CHANNELS;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.MEASURABLE_CHANNELS;
 
 import java.util.ArrayList;
 import java.util.List;
