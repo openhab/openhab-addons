@@ -32,7 +32,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.openhab.binding.tplinksmarthome.TPLinkSmartHomeBindingConstants;
 import org.openhab.binding.tplinksmarthome.internal.model.ModelTestUtil;
 
 /**

@@ -9,7 +9,7 @@
 package org.openhab.binding.tplinksmarthome.internal.device;
 
 import static org.junit.Assert.*;
-import static org.openhab.binding.tplinksmarthome.TPLinkSmartHomeBindingConstants.*;
+import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.*;
 
 import java.io.IOException;
 
