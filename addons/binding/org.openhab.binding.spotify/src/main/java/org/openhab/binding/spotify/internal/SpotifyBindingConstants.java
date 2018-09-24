@@ -82,7 +82,7 @@ public class SpotifyBindingConstants {
     public static final String CHANNEL_DEVICERESTRICTED = "deviceRestricted";
     public static final String CHANNEL_DEVICEVOLUME = "deviceVolume";
     public static final String CHANNEL_DEVICESHUFFLE = "deviceShuffle";
-    public static final String CHANNEL_DEVICEPLAY = "devicePlay";
+    public static final String CHANNEL_DEVICEPLAYER = "devicePlayer";
 
     // List of Bridge configuration params
     public static final String CONFIGURATION_CLIENT_ID = "clientId";

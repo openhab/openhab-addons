@@ -140,51 +140,57 @@ The channel supports step tracks forward/backward.
 
 In this example there is a bridge configured with Thing ID __user1__ and illustrating that the bridge is authorized to play in the context of the Spotify user account __user1__.
 
+spotify.things:
+
+```
+Bridge spotify:player:user1 "Me" [clientId="<your client id>", clientSecret="<your client secret>"] {
+  Things:
+    device device1 "Device 1" [id="<spotify device id>"]
+    device device2 "Device 2" [id="<spotify device id>"]
+}
+```
+
 spotify.items:
 
 ```
-    Switch device1Player  {channel="spotify:device:user1:3b4...ed4:devicePlayer"}
-    Switch device2Player  {channel="spotify:device:user1:abc...123:devicePlayer"}
+Player device1Player  {channel="spotify:device:user1:device1:devicePlayer"}
+Player device2Player  {channel="spotify:device:user1:device2:devicePlayer"}
 ```
 
 spotify.sitemap
 
 ```
-    sitemap spotify label="Spotify Sitemap" {
+sitemap spotify label="Spotify Sitemap" {
 
-        Frame label="Spotify Player Info" {
-            Text item=spotify_player_user1_deviceShuffle label="Currently Player shuffle mode: [%s]"
-            Text item=spotify_player_user1_trackRepeat label="Currently Player repeat mode: [%s]"
-            Text item=spotify_player_user1_trackProgress label="Currently Played track progress: [%s]"
-            Text item=spotify_player_user1_trackDuration label="Currently Played track duration: [%s]"
-            Text item=spotify_player_user1_trackName label="Currently Played Track Name: [%s]"
-            Text item=spotify_player_user1_albumName label="Currently Played Album Name: [%s]"
-            Text item=spotify_player_user1_artistName label="Currently Played Artist Name: [%s]"
-        }
+  Frame label="Spotify Player Info" {
+    Player item="spotify_player_user1_trackPlayer
+    Text item=spotify_player_user1_deviceShuffle label="Currently Player shuffle mode: [%s]"
+    Text item=spotify_player_user1_trackRepeat label="Currently Player repeat mode: [%s]"
+    Text item=spotify_player_user1_trackProgress label="Currently Played track progress: [%s]"
+    Text item=spotify_player_user1_trackDuration label="Currently Played track duration: [%s]"
+    Text item=spotify_player_user1_trackName label="Currently Played Track Name: [%s]"
+    Text item=spotify_player_user1_albumName label="Currently Played Album Name: [%s]"
+    Text item=spotify_player_user1_artistName label="Currently Played Artist Name: [%s]"
+    Selection item=spotify_player_user1_trackPlay label="Playlist" icon="music" mappings=[
+      "spotify:user:spotify:playlist:37i9dQZF1DXdd3gw5QVjt9"="Morning Acoustic",
+      "spotify:user:spotify:playlist:37i9dQZEVXcMncpo9bdBsj"="Discover Weekly",
+    ]
+  }
 
-        Frame label="My Spotify Device 1" {
-            Selection item=spotify_device_user1_3b4....ed4_trackPlay label="Playlist" icon="music" mappings=[
-            "spotify:user:spotify:playlist:37i9dQZF1DXdd3gw5QVjt9"="Morning Acoustic",
-            "spotify:user:spotify:playlist:37i9dQZEVXcMncpo9bdBsj"="Discover Weekly",
-            ]
-            Text item=spotify_device_user1_3b4...ed4_deviceName label="Device Name [%s]"
-            Switch item=device1Player
-            Slider item=spotify_device_user1_3b4...ed4_deviceVolume
-            Switch item=spotify_device_user1_3b4...ed4_deviceShuffle
-        }
+  Frame label="My Spotify Device 1" {
+    Text item=spotify_device_user1_device1_deviceName label="Device Name [%s]"
+    Player item=device1Player
+    Slider item=spotify_device_user1_device1_deviceVolume
+    Switch item=spotify_device_user1_device1_deviceShuffle
+  }
 
-        Frame label="My Spotify Device 2" {
-            Selection item=spotify_device_user1_abc....123_trackPlay label="Playlist" icon="music" mappings=[
-            "spotify:user:spotify:playlist:37i9dQZF1DXdd3gw5QVjt9"="Morning Acoustic",
-            "spotify:user:spotify:playlist:37i9dQZEVXcMncpo9bdBsj"="Discover Weekly",
-            ]
-            Text item=spotify_device_user1_abc...123_deviceName label="Device Name [%s]"
-            Switch item=device2Player
-            Slider item=spotify_device_user1_abc...123_deviceVolume
-            Switch item=spotify_device_user1_abc...123_deviceShuffle
-        }
-
-    }
+   Frame label="My Spotify Device 2" {
+    Text item=spotify_device_user1_device2_deviceName label="Device Name [%s]"
+    Player item=device2Player
+    Slider item=spotify_device_user1_device2_deviceVolume
+    Switch item=spotify_device_user1_device2_deviceShuffle
+  }
+}
 ```
 
 ## Binding model and Spotify Web API

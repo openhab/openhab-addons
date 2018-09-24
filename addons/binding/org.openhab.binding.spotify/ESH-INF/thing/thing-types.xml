@@ -56,7 +56,7 @@ register a bridge for each account. Go to http://your openHAB address::8080/conn
 			<property name="user" />
 		</properties>
 
-		<representation-property>user</representation-property>
+		<representation-property>clientId</representation-property>
 
 		<config-description>
 			<parameter name="clientId" type="text">
@@ -100,21 +100,24 @@ bridge you have configured.</description>
 
 		<channels>
 			<channel id="trackPlay" typeId="trackPlay" />
-			<channel id="deviceId" typeId="deviceId" />
 			<channel id="deviceName" typeId="deviceName" />
 			<channel id="deviceType" typeId="deviceType" />
-			<channel id="devicePlay" typeId="devicePlay" />
+			<channel id="devicePlayer" typeId="devicePlayer" />
 			<channel id="deviceVolume" typeId="deviceVolume" />
 			<channel id="deviceActive" typeId="deviceActive" />
 			<channel id="deviceRestricted" typeId="deviceRestricted" />
 			<channel id="deviceShuffle" typeId="deviceShuffle" />
 		</channels>
 
-		<properties>
-			<property name="id" />
-		</properties>
-
 		<representation-property>id</representation-property>
+
+		<config-description>
+			<parameter name="id" type="text">
+				<required>true</required>
+				<label>Spotify Device ID</label>
+				<description>This is the device ID provided by Spotify.</description>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<!-- Channel Types -->
@@ -316,12 +319,6 @@ bridge you have configured.</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="deviceId" advanced="true">
-		<item-type>String</item-type>
-		<label>Device Id</label>
-		<description>Channel reports device id</description>
-		<state readOnly="true"></state>
-	</channel-type>
 	<channel-type id="deviceName">
 		<item-type>String</item-type>
 		<label>Device Name</label>
@@ -334,7 +331,7 @@ bridge you have configured.</description>
 		<description>Channel reports device type</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="devicePlay">
+	<channel-type id="devicePlayer">
 		<item-type>Player</item-type>
 		<label>Device Play</label>
 		<description>Channel controlling device play/pause/next/previous</description>

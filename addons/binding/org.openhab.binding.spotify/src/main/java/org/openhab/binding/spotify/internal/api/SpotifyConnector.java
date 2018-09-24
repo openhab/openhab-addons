@@ -209,8 +209,11 @@ public class SpotifyConnector {
                     delaySeconds = Integer.parseInt(retryAfter);
                     break;
                 case HTTP_FORBIDDEN:
-                    // No premium account
-                    throw new SpotifyAuthorizationException(processErrorState(response));
+                    // Process for authorization error, and logging.
+                    processErrorState(response);
+                    future.complete(response);
+                    success = true;
+                    break;
                 case HTTP_NOT_FOUND:
                     throw new SpotifyException(processErrorState(response));
                 case HTTP_INTERNAL_SERVER_ERROR:

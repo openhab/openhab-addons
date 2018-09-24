@@ -11,9 +11,11 @@ package org.openhab.binding.spotify.internal.api;
 import static org.eclipse.jetty.http.HttpMethod.*;
 import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.*;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -93,8 +95,16 @@ public class SpotifyApi {
      */
     public void playTrack(String deviceId, String trackId) {
         String url = "play" + optionalDeviceId(deviceId, QSM);
-        String jsonRequest = "{\"context_uri\":\"%s\",\"offset\":{\"position\":0}}";
-        requestPlayer(PUT, url, String.format(jsonRequest, trackId));
+        String play;
+        if (trackId.contains(":track:")) {
+            String jsonRequest = "{\"uris\":[%s],\"offset\":{\"position\":0}}";
+            play = String.format(jsonRequest, Arrays.asList(trackId.split(",")).stream().map(t -> '"' + t + '"')
+                    .collect(Collectors.joining(",")));
+        } else {
+            String jsonRequest = "{\"context_uri\":\"%s\",\"offset\":{\"position\":0}}";
+            play = String.format(jsonRequest, trackId);
+        }
+        requestPlayer(PUT, url, play);
     }
 
     /**

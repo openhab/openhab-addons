@@ -62,7 +62,7 @@ public class SpotifyHandleCommands {
         String channel = channelUID.getId();
 
         switch (channel) {
-            case CHANNEL_DEVICEPLAY:
+            case CHANNEL_DEVICEPLAYER:
             case CHANNEL_TRACKPLAYER:
                 commandRun = handleDevicePlay(command);
                 break;

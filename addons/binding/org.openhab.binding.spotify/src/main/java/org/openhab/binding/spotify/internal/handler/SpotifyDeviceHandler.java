@@ -10,9 +10,8 @@ package org.openhab.binding.spotify.internal.handler;
 
 import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.*;
 
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
@@ -47,6 +46,7 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
 
     private @NonNullByDefault({}) SpotifyHandleCommands commandHandler;
     private @NonNullByDefault({}) SpotifyApi spotifyApi;
+    private @NonNullByDefault({}) String id;
 
     /**
      * Constructor
@@ -73,8 +73,9 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
         SpotifyBridgeHandler bridgeHandler = (SpotifyBridgeHandler) getBridge().getHandler();
         spotifyApi = bridgeHandler.getSpotifyApi();
 
-        Map<String, String> props = thing.getProperties();
-        commandHandler = new SpotifyHandleCommands(spotifyApi, props.get(PROPERTY_SPOTIFY_DEVICE_ID));
+        Configuration props = thing.getConfiguration();
+        id = (String) props.get(PROPERTY_SPOTIFY_DEVICE_ID);
+        commandHandler = new SpotifyHandleCommands(spotifyApi, id);
         updateStatus(ThingStatus.UNKNOWN);
     }
 
@@ -95,17 +96,16 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
      * @return returns true if given device matches with this handler
      */
     public boolean updateDeviceStatus(Device device, boolean playing) {
-        if (thing.getProperties().get(PROPERTY_SPOTIFY_DEVICE_ID).equals(device.getId())) {
+        if (id.equals(device.getId())) {
             logger.debug("Updating status of Thing: {} Device [ {} {}, {} ]", thing.getUID(), device.getId(),
                     device.getName(), device.getType());
             boolean online = setOnlineStatus(device.isRestricted());
-            updateChannelState(CHANNEL_DEVICEID, new StringType(device.getId()));
             updateChannelState(CHANNEL_DEVICENAME, new StringType(device.getName()));
             updateChannelState(CHANNEL_DEVICETYPE, new StringType(device.getType()));
             updateChannelState(CHANNEL_DEVICEVOLUME,
                     device.getVolumePercent() == null ? UnDefType.UNDEF : new PercentType(device.getVolumePercent()));
             updateChannelState(CHANNEL_DEVICEACTIVE, device.isActive() ? OnOffType.ON : OnOffType.OFF);
-            updateChannelState(CHANNEL_DEVICEPLAY,
+            updateChannelState(CHANNEL_DEVICEPLAYER,
                     online && device.isActive() && playing ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
             return true;
         } else {
