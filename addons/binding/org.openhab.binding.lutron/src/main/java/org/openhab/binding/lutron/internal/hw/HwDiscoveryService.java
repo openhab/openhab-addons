@@ -56,7 +56,7 @@ public class HwDiscoveryService extends AbstractDiscoveryService {
 			}
 		    }
 		} catch (InterruptedException e) {
-		    logger.warn("Scan interrupted");
+		    logger.debug("Scan interrupted");
 		} catch (Exception e) {
 		    logger.error("Error occurred running discovery scanner", e);
 		} finally {
