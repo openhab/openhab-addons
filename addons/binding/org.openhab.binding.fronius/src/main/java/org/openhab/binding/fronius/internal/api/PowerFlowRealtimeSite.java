@@ -42,6 +42,9 @@ public class PowerFlowRealtimeSite {
     private String meterLocation;
 
     public String getMode() {
+        if (mode == null) {
+            mode = "";
+        }
         return mode;
     }
 

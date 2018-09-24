@@ -22,9 +22,13 @@ import org.w3c.dom.Node;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.util.Arrays;
 import java.util.Set;
 
+import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Zone.Main_Zone;
+import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Zone.Zone_2;
+import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLConstants.Commands.*;
+import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLProtocolService.getResponse;
+import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLProtocolService.getZoneResponse;
 import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.getNode;
 import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.getNodeContentOrEmpty;
 
@@ -80,7 +84,7 @@ public class DeviceInformationXML implements DeviceInformation {
     public void update() throws IOException, ReceivedMessageParseException {
         XMLConnection con = (XMLConnection) comReference.get();
 
-        Node systemConfigNode = XMLProtocolService.getResponse(con, "<System><Config>GetParam</Config></System>", "System/Config");
+        Node systemConfigNode = getResponse(con, SYSTEM_STATUS_CONFIG_CMD, SYSTEM_STATUS_CONFIG_PATH);
 
         state.host = con.getHost();
         state.name = getNodeContentOrEmpty(systemConfigNode, "Model_Name");
@@ -123,15 +127,15 @@ public class DeviceInformationXML implements DeviceInformation {
      * @throws ReceivedMessageParseException
      */
     private void detectZoneBSupport(XMLConnection con) throws IOException, ReceivedMessageParseException {
-        if (state.zones.contains(Zone.Main_Zone) && !state.zones.contains(Zone.Zone_2)) {
+        if (state.zones.contains(Main_Zone) && !state.zones.contains(Zone_2)) {
             // Detect if Zone_B is supported (HTR-4069). This will allow Zone_2 to be emulated.
 
             // Retrieve Main_Zone basic status, from which we will know this AVR supports Zone_B feature.
-            Node basicStatusNode = XMLProtocolService.getZoneResponse(con, Zone.Main_Zone, "<Basic_Status>GetParam</Basic_Status>");
-            String power = getNodeContentOrEmpty(basicStatusNode, "Basic_Status/Power_Control/Zone_B_Power_Info");
+            Node basicStatusNode = getZoneResponse(con, Main_Zone, ZONE_BASIC_STATUS_CMD, ZONE_BASIC_STATUS_PATH);
+            String power = getNodeContentOrEmpty(basicStatusNode, "Power_Control/Zone_B_Power_Info");
             if (StringUtils.isNotEmpty(power)) {
                 logger.info("Zone_2 emulation enabled via Zone_B");
-                state.zones.add(Zone.Zone_2);
+                state.zones.add(Zone_2);
                 state.features.add(Feature.ZONE_B);
             }
         }

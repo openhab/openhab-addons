@@ -27,7 +27,6 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  *
  * @author Ivan Martinez
  * @author James Hewitt-Thomas
- * @since 1.9.0
  */
 public class RFXComUndecodedRFMessage extends RFXComDeviceMessageImpl<RFXComUndecodedRFMessage.SubType> {
 

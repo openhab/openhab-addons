@@ -20,11 +20,10 @@ import org.openhab.binding.max.internal.exceptions.UnsupportedMessageTypeExcepti
 
 /**
  * @author Christian Rockrohr <christian@rockrohr.de>
- * @since 1.7.0
  */
 public class MessageProcessorTest {
 
-    MessageProcessor processor;
+    private MessageProcessor processor;
 
     @Before
     public void before() {
@@ -43,49 +42,49 @@ public class MessageProcessorTest {
     @Test
     public void testS_Message() throws Exception {
         String rawData = "S:03,0,30";
-        S_Message expectedMessage = new S_Message(rawData);
+        SMessage expectedMessage = new SMessage(rawData);
         commonMessageTest(rawData, expectedMessage);
     }
 
     @Test
     public void testN_Message() throws Exception {
         String rawData = "N:Aw4VzExFUTAwMTUzNDD/";
-        N_Message expectedMessage = new N_Message(rawData);
+        NMessage expectedMessage = new NMessage(rawData);
         commonMessageTest(rawData, expectedMessage);
     }
 
     @Test
     public void testA_Message() throws Exception {
         String rawData = "A:";
-        A_Message expectedMessage = new A_Message(rawData);
+        AMessage expectedMessage = new AMessage(rawData);
         commonMessageTest(rawData, expectedMessage);
     }
 
     @Test
     public void testC_Message() throws Exception {
         String rawData = "C:0ff1bc,EQ/xvAQJEAJMRVEwNzk0MDA3";
-        C_Message expectedMessage = new C_Message(rawData);
+        CMessage expectedMessage = new CMessage(rawData);
         commonMessageTest(rawData, expectedMessage);
     }
 
     @Test
     public void testL_Message() throws Exception {
         String rawData = "L:Bg/xvAkAAA==";
-        L_Message expectedMessage = new L_Message(rawData);
+        LMessage expectedMessage = new LMessage(rawData);
         commonMessageTest(rawData, expectedMessage);
     }
 
     @Test
     public void testH_Message() throws Exception {
         String rawData = "H:KHA0007199,081dd4,0113,00000000,0d524351,10,30,0f0407,1130,03,0000";
-        H_Message expectedMessage = new H_Message(rawData);
+        HMessage expectedMessage = new HMessage(rawData);
         commonMessageTest(rawData, expectedMessage);
     }
 
     @Test
     public void testSingleM_Message() throws Exception {
         String rawData = "M:00,01,VgIBAQpXb2huemltbWVyAAAAAQMQV6lMRVEwOTgyMTU2DldhbmR0aGVybW9zdGF0AQE=";
-        M_Message expectedMessage = new M_Message(rawData);
+        MMessage expectedMessage = new MMessage(rawData);
         commonMessageTest(rawData, expectedMessage);
     }
 
@@ -100,13 +99,13 @@ public class MessageProcessorTest {
         String line2 = line2_part1 + line2_part2;
 
         String expectedString = line1 + line2_part2;
-        M_Message expectedMessage = new M_Message(expectedString);
+        MMessage expectedMessage = new MMessage(expectedString);
 
         Assert.assertFalse(this.processor.addReceivedLine(line1));
         Assert.assertTrue(this.processor.addReceivedLine(line2));
         Message message = this.processor.pull();
         Assert.assertNotNull(message);
-        Assert.assertEquals(message.getClass().getName(), M_Message.class.getName());
+        Assert.assertEquals(message.getClass().getName(), MMessage.class.getName());
         Assert.assertEquals(expectedMessage.getPayload(), message.getPayload());
     }
 
@@ -147,11 +146,11 @@ public class MessageProcessorTest {
 
         Message message = this.processor.pull();
         Assert.assertNotNull(message);
-        Assert.assertEquals(message.getClass().getName(), H_Message.class.getName());
+        Assert.assertEquals(message.getClass().getName(), HMessage.class.getName());
         this.processor.addReceivedLine(line2);
         message = this.processor.pull();
         Assert.assertNotNull(message);
-        Assert.assertEquals(message.getClass().getName(), M_Message.class.getName());
+        Assert.assertEquals(message.getClass().getName(), MMessage.class.getName());
     }
 
     @Test
@@ -183,7 +182,7 @@ public class MessageProcessorTest {
     @Test
     public void testNoMessageAvailable() throws Exception {
         String rawData = "M:00,01,VgIBAQpXb2huemltbWVyAAAAAQMQV6lMRVEwOTgyMTU2DldhbmR0aGVybW9zdGF0AQE=";
-        M_Message expectedMessage = new M_Message(rawData);
+        MMessage expectedMessage = new MMessage(rawData);
         commonMessageTest(rawData, expectedMessage);
 
         try {

@@ -34,7 +34,7 @@ public class ChannelMapper {
         if (ret != null) {
             return ret;
         } else {
-            return "UNKNOWN_EVENT";
+            return reportedString;
         }
     }
 }

@@ -4,9 +4,9 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>pom</artifactId>
     <groupId>org.openhab.ui</groupId>
-    <version>2.3.0-SNAPSHOT</version>
+    <artifactId>pom</artifactId>
+    <version>2.4.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.ui.cometvisu</artifactId>
@@ -24,6 +24,21 @@
       <groupId>org.openhab.core</groupId>
       <artifactId>org.openhab.ui.dashboard</artifactId>
       <version>${ohc.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.smarthome.model</groupId>
+      <artifactId>org.eclipse.smarthome.model.sitemap</artifactId>
+      <version>${esh.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.smarthome.ui</groupId>
+      <artifactId>org.eclipse.smarthome.ui</artifactId>
+      <version>${esh.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.smarthome.ui</groupId>
+      <artifactId>org.eclipse.smarthome.ui.icon</artifactId>
+      <version>${esh.version}</version>
     </dependency>
   </dependencies>
 

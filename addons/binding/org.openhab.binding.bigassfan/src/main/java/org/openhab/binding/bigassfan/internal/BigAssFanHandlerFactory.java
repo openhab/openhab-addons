@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.bigassfan.internal;
 
-import static org.openhab.binding.bigassfan.BigAssFanBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+import static org.openhab.binding.bigassfan.internal.BigAssFanBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 
 import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -16,7 +16,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.bigassfan.handler.BigAssFanHandler;
+import org.openhab.binding.bigassfan.internal.handler.BigAssFanHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -26,7 +26,7 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Mark Hilbush - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.bigassfan")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.bigassfan")
 public class BigAssFanHandlerFactory extends BaseThingHandlerFactory {
 
     private NetworkAddressService networkAddressService;

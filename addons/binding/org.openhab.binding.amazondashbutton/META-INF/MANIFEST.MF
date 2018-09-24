@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.amazondashbutton
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: 
  .,
@@ -11,10 +12,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.amazondashbutton;singleton:=tru
  e
 Bundle-Vendor: openHAB
-Bundle-Version: 2.3.0.qualifier
-Export-Package: 
- org.openhab.binding.amazondashbutton,
- org.openhab.binding.amazondashbutton.handler
+Bundle-Version: 2.4.0.qualifier
 Import-Package: 
  com.google.common.base,
  com.google.common.collect,
@@ -32,8 +30,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.events,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.openhab.binding.amazondashbutton,
- org.openhab.binding.amazondashbutton.handler,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

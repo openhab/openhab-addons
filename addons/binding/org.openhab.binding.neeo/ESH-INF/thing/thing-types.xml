@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="neeo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- The brain bridge -->
+	<bridge-type id="brain">
+		<label>Neeo Brain</label>
+		<description>The NEEO Brain</description>
+		<channels>
+			<channel id="forwardActions" typeId="brain-forwardactions" />
+		</channels>
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
+				<label>IP or Host Name</label>
+				<description>The IP or host name of the NEEO Brain</description>
+			</parameter>
+			<parameter name="discoverEmptyRooms" type="boolean">
+				<label>Discover Empty Rooms</label>
+				<description>Whether to discover rooms with no devices or not</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="enableForwardActions" type="boolean">
+				<label>Enable Forward Actions</label>
+				<description>Whether to have the NEEO Brain forward actions to openHAB</description>
+				<default>true</default>
+			</parameter>
+			<parameter name="forwardChain" type="text">
+				<label>Forward Chaining</label>
+				<description>Comma delimited list of URLs to forward NEEO brain actions to</description>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="checkStatusInterval" type="integer">
+				<label>Check Status Interval</label>
+				<description>The interval (in seconds) to check the status of the brain (specify &lt;=0 to disable)</description>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+	<bridge-type id="room">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="brain" />
+		</supported-bridge-type-refs>
+		<label>Neeo Room</label>
+		<description>Neeo Room</description>
+		<channel-groups>
+			<channel-group id="state" typeId="room-state" />
+			<channel-group id="scenario" typeId="room-scenario" />
+			<channel-group id="recipe" typeId="room-recipe" />
+		</channel-groups>
+		<config-description>
+			<parameter name="roomKey" type="text" required="true">
+				<label>Room Key</label>
+				<description>Unique key of the room</description>
+			</parameter>
+			<parameter name="excludeThings" type="boolean">
+				<label>Exclude Things</label>
+				<description>Exclude openHAB things (from NEEO transport)</description>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="refreshPolling" type="integer">
+				<label>Refresh Polling</label>
+				<description>The time (in seconds) to refresh state (&lt;= 0 to disable)</description>
+				<default>120</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+	<thing-type id="device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="room" />
+		</supported-bridge-type-refs>
+		<label>Neeo Device</label>
+		<description>Neeo Device</description>
+		<channel-groups>
+			<channel-group id="macros" typeId="device-macros" />
+		</channel-groups>
+		<config-description>
+			<parameter name="deviceKey" type="text" required="true">
+				<label>Device Key</label>
+				<description>Unique key of the device</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<!-- Channel types for the NEEO Brain -->
+	<channel-type id="brain-forwardactions">
+		<kind>trigger</kind>
+		<label>Forward Actions</label>
+		<description>The forward Actions</description>
+		<event>
+		</event>
+	</channel-type>
+	<!-- Channel Types for the NEEO Room -->
+	<channel-group-type id="room-state">
+		<label>Room State</label>
+		<description>The room's state</description>
+		<channels>
+			<channel id="currentStep" typeId="room-state-currentstep" />
+		</channels>
+	</channel-group-type>
+	<channel-type id="room-state-currentstep">
+		<kind>trigger</kind>
+		<label>Current Step</label>
+		<description>The current step executing</description>
+		<event>
+		</event>
+	</channel-type>
+	<channel-group-type id="room-recipe">
+		<label>Recipes</label>
+		<description>The room recipes</description>
+		<channels>
+			<channel id="name" typeId="room-recipe-name" />
+			<channel id="type" typeId="room-recipe-type" />
+			<channel id="enabled" typeId="room-recipe-enabled" />
+			<channel id="status" typeId="room-recipe-status" />
+		</channels>
+	</channel-group-type>
+	<channel-type id="room-recipe-name" advanced="true">
+		<item-type>String</item-type>
+		<label>Label dynamically generated</label>
+		<description>The recipe name</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="room-recipe-type" advanced="true">
+		<item-type>String</item-type>
+		<label>Label dynamically generated</label>
+		<description>The type of recipe</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="room-recipe-enabled" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Label dynamically generated</label>
+		<description>Whether the recipe is enabled or not.</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="room-recipe-status">
+		<item-type>Switch</item-type>
+		<label>Label dynamically generated</label>
+		<description>Send ON to execute the recipe</description>
+	</channel-type>
+	<channel-group-type id="room-scenario">
+		<label>Scenarios</label>
+		<description>The room scenarios</description>
+		<channels>
+			<channel id="name" typeId="room-scenario-name" />
+			<channel id="configured" typeId="room-scenario-configured" />
+			<channel id="status" typeId="room-scenario-status" />
+		</channels>
+	</channel-group-type>
+	<channel-type id="room-scenario-name" advanced="true">
+		<item-type>String</item-type>
+		<label>Label dynamically generated</label>
+		<description>The scenario name</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="room-scenario-configured" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Label dynamically generated</label>
+		<description>Whether the scenario is configured or not</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="room-scenario-status">
+		<item-type>Switch</item-type>
+		<label>Label dynamically generated</label>
+		<description>Whether the scenario is running or not (send ON to turn on the scenario, OFF to turn off the scenario)</description>
+	</channel-type>
+	<channel-group-type id="device-macros">
+		<label>Macros</label>
+		<description>Executable macros</description>
+		<channels>
+			<channel id="status" typeId="device-macros-status" />
+		</channels>
+	</channel-group-type>
+	<channel-type id="device-macros-status">
+		<item-type>Switch</item-type>
+		<label>Label dynamically generated</label>
+		<description>Send ON to trigger the macro</description>
+	</channel-type>
+</thing:thing-descriptions>

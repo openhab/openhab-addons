@@ -8,15 +8,18 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
+import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Feature;
+import org.openhab.binding.yamahareceiver.internal.config.YamahaUtils;
 import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
+import org.openhab.binding.yamahareceiver.internal.state.DeviceInformationState;
+import org.slf4j.Logger;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Inputs.INPUT_MUSIC_CAST_LINK;
-import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Inputs.INPUT_NET_RADIO;
-import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Inputs.INPUT_TUNER;
+import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Inputs.*;
+import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Inputs.INPUT_USB;
 
 /**
  * Provides basis for all input controls
@@ -25,9 +28,15 @@ import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.
  */
 public abstract class AbstractInputControlXML {
 
+    protected final Logger logger;
+
     protected final WeakReference<AbstractConnection> comReference;
     protected final String inputID;
     protected final Map<String, String> inputToElement;
+    protected final DeviceDescriptorXML deviceDescriptor;
+
+    protected String inputElement;
+    protected DeviceDescriptorXML.FeatureDescriptor inputFeatureDescriptor;
 
     private Map<String, String> loadMapping() {
         Map<String, String> map = new HashMap<>();
@@ -40,10 +49,14 @@ public abstract class AbstractInputControlXML {
         return map;
     }
 
-    protected AbstractInputControlXML(String inputID, AbstractConnection com) {
-        this.comReference = new WeakReference<>(com);
+    protected AbstractInputControlXML(Logger logger, String inputID, AbstractConnection con, DeviceInformationState deviceInformationState) {
+        this.logger = logger;
+        this.comReference = new WeakReference<>(con);
         this.inputID = inputID;
+        this.deviceDescriptor = DeviceDescriptorXML.getAttached(deviceInformationState);
         this.inputToElement = loadMapping();
+        this.inputElement = inputToElement.getOrDefault(inputID, inputID);
+        this.inputFeatureDescriptor = getInputFeatureDescriptor();
     }
 
     /**
@@ -54,11 +67,31 @@ public abstract class AbstractInputControlXML {
      * @return
      */
     protected String wrInput(String message) {
-        String elementName = getInputElement();
-        return String.format("<%s>%s</%s>", elementName, message, elementName);
+        return String.format("<%s>%s</%s>", inputElement, message, inputElement);
     }
 
-    protected String getInputElement() {
-        return inputToElement.getOrDefault(inputID, inputID);
+    protected DeviceDescriptorXML.FeatureDescriptor getInputFeatureDescriptor() {
+        if (deviceDescriptor == null) {
+            logger.trace("Descriptor not available");
+            return null;
+        }
+
+        Feature inputFeature = YamahaUtils.tryParseEnum(Feature.class, inputElement);
+
+        // For RX-V3900 both the inputs 'NET RADIO' and 'USB' need to use the same NET_USB element
+        if ((INPUT_NET_RADIO.equals(inputID) || INPUT_USB.equals(inputID))
+                && deviceDescriptor.features.containsKey(Feature.NET_USB)
+                && !deviceDescriptor.features.containsKey(Feature.NET_RADIO)
+                && !deviceDescriptor.features.containsKey(Feature.USB)) {
+
+            // have to use the NET_USB xml element in this case
+            inputElement = "NET_USB";
+            inputFeature = Feature.NET_USB;
+        }
+
+        if (inputFeature != null) {
+            return deviceDescriptor.features.getOrDefault(inputFeature, null);
+        }
+        return null;
     }
 }

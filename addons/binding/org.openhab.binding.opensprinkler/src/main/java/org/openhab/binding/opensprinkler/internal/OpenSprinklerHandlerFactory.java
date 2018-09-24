@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.opensprinkler.internal;
 
-import static org.openhab.binding.opensprinkler.OpenSprinklerBindingConstants.*;
+import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.*;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -19,8 +19,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.opensprinkler.handler.OpenSprinklerHTTPHandler;
-import org.openhab.binding.opensprinkler.handler.OpenSprinklerPiHandler;
+import org.openhab.binding.opensprinkler.internal.handler.OpenSprinklerHTTPHandler;
+import org.openhab.binding.opensprinkler.internal.handler.OpenSprinklerPiHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -29,7 +29,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Chris Graham - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.opensprinkler")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.opensprinkler")
 public class OpenSprinklerHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
             Arrays.asList(OPENSPRINKLER_THING, OPENSPRINKLERPI_THING));

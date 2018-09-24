@@ -10,7 +10,7 @@ package org.openhab.binding.mihome.handler;
 
 import static org.openhab.binding.mihome.XiaomiGatewayBindingConstants.*;
 
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.Thing;
 
 import com.google.gson.JsonObject;
@@ -51,11 +51,11 @@ public class XiaomiSensorHtHandler extends XiaomiSensorBaseHandler {
     void parseDefault(JsonObject data) {
         if (data.has(HUMIDITY)) {
             float humidity = data.get(HUMIDITY).getAsFloat() / 100;
-            updateState(CHANNEL_HUMIDITY, new DecimalType(humidity));
+            updateState(CHANNEL_HUMIDITY, new QuantityType<>(humidity, PERCENT_UNIT));
         }
         if (data.has(TEMPERATURE)) {
             float temperature = data.get(TEMPERATURE).getAsFloat() / 100;
-            updateState(CHANNEL_TEMPERATURE, new DecimalType(temperature));
+            updateState(CHANNEL_TEMPERATURE, new QuantityType<>(temperature, TEMPERATURE_UNIT));
         }
         if (data.has(VOLTAGE)) {
             Integer voltage = data.get(VOLTAGE).getAsInt();
@@ -63,7 +63,7 @@ public class XiaomiSensorHtHandler extends XiaomiSensorBaseHandler {
         }
         if (data.has(PRESSURE)) {
             float pressure = (float) (data.get(PRESSURE).getAsFloat() / 1000.0);
-            updateState(CHANNEL_PRESSURE, new DecimalType(pressure));
+            updateState(CHANNEL_PRESSURE, new QuantityType<>(pressure, PRESSURE_UNIT));
         }
     }
 }

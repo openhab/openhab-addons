@@ -8,14 +8,14 @@
  */
 package org.openhab.binding.netatmo.internal.station;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.netatmo.handler.NetatmoModuleHandler;
 import org.openhab.binding.netatmo.internal.WeatherUtils;
+import org.openhab.binding.netatmo.internal.handler.NetatmoModuleHandler;
 
 import io.swagger.client.model.NADashboardData;
 import io.swagger.client.model.NAStationModule;
@@ -31,6 +31,11 @@ public class NAModule4Handler extends NetatmoModuleHandler<NAStationModule> {
 
     public NAModule4Handler(@NonNull Thing thing) {
         super(thing);
+    }
+
+    @Override
+    protected void updateProperties(NAStationModule moduleData) {
+        updateProperties(moduleData.getFirmware(), moduleData.getType());
     }
 
     @Override

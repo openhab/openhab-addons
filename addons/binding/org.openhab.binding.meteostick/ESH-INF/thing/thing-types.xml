@@ -14,7 +14,7 @@
 			<parameter name="port" type="text" required="true">
 				<label>Serial Port</label>
 				<context>serial-port</context>
-				<description>Serial port that the Meteostick is plugged in to</description>
+				<description>Serial port that the Meteostick is plugged into</description>
 			</parameter>
 			<parameter name="mode" type="integer" required="true">
 				<label>Frequency Band</label>
@@ -43,7 +43,10 @@
 			<channel id="outdoor-temperature" typeId="outdoor-temperature" />
 			<channel id="humidity" typeId="humidity" />
 			<channel id="wind-direction" typeId="wind-direction" />
+			<channel id="wind-direction-last2min-average" typeId="wind-direction-last2min-average" />
 			<channel id="wind-speed" typeId="wind-speed" />
+			<channel id="wind-speed-last2min-average" typeId="wind-speed-last2min-average" />
+			<channel id="wind-speed-last2min-maximum" typeId="wind-speed-last2min-maximum" />
 			<channel id="rain-raw" typeId="rain-raw" />
 			<channel id="rain-currenthour" typeId="rain-currenthour" />
 			<channel id="rain-lasthour" typeId="rain-lasthour" />
@@ -67,87 +70,121 @@
 					<option value="8">Channel 8</option>
 				</options>
 			</parameter>
+
+			<parameter name="spoon" type="decimal" required="false">
+				<label>Spoon</label>
+				<description>Specifies the amount of rain needed to tip spoon</description>
+				<default>0.254</default>
+				<unitLabel>mm</unitLabel>
+			</parameter>
 		</config-description>
 	</thing-type>
 
 	<channel-type id="indoor-temperature">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Indoor Temperature</label>
-		<description>Current temperature in degrees celsius</description>
+		<description>Current indoor temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f °C">
+		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
 
 	<channel-type id="outdoor-temperature">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Outdoor Temperature</label>
-		<description>Current temperature in degrees celsius</description>
+		<description>Current outdoor temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f °C">
+		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
 
 	<channel-type id="humidity">
 		<item-type>Number</item-type>
 		<label>Outdoor Humidity</label>
-		<description>Current humidity in %</description>
+		<description>Current humidity in percent</description>
 		<category>Humidity</category>
 		<state readOnly="true" pattern="%d %%">
 		</state>
 	</channel-type>
 
 	<channel-type id="pressure">
-		<item-type>Number</item-type>
+		<item-type>Number:Pressure</item-type>
 		<label>Pressure</label>
-		<description>Current pressure in millibar</description>
+		<description>Current atmospheric pressure</description>
 		<category>Pressure</category>
-		<state readOnly="true" pattern="%.1f hPa">
+		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
 
 	<channel-type id="wind-direction">
-		<item-type>Number</item-type>
+		<item-type>Number:Angle</item-type>
 		<label>Wind Direction</label>
 		<description>Wind direction</description>
 		<category>Wind</category>
-		<state readOnly="true" pattern="%.0f °">
+		<state readOnly="true" pattern="%.0f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="wind-direction-last2min-average" advanced="true">
+		<item-type>Number:Angle</item-type>
+		<label>Wind Direction (Average)</label>
+		<description>Wind direction average over last two minutes</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
 	</channel-type>
 
 	<channel-type id="wind-speed">
-		<item-type>Number</item-type>
+		<item-type>Number:Speed</item-type>
 		<label>Wind Speed</label>
 		<description>Wind speed</description>
 		<category>Wind</category>
-		<state readOnly="true" pattern="%.2f m/s">
+		<state readOnly="true" pattern="%.2f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="wind-speed-last2min-average" advanced="true">
+		<item-type>Number:Speed</item-type>
+		<label>Wind Speed (Average)</label>
+		<description>Wind speed average over last two minutes</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.2f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="wind-speed-last2min-maximum" advanced="true">
+		<item-type>Number:Speed</item-type>
+		<label>Wind Speed (Maximum)</label>
+		<description>Wind speed maximum over last two minutes</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
 	</channel-type>
 
 	<channel-type id="rain-raw" advanced="true">
 		<item-type>Number</item-type>
 		<label>Rainfall (Raw)</label>
-		<description>A counter between 0 and 255 in 0.01mm steps</description>
+		<description>A counter between 0 and 255 in spoon-sized steps</description>
 		<category>Rain</category>
 		<state readOnly="true" pattern="%.1f">
 		</state>
 	</channel-type>
 
 	<channel-type id="rain-lasthour">
-		<item-type>Number</item-type>
+		<item-type>Number:Length</item-type>
 		<label>Rainfall (previous hour)</label>
 		<description>Rainfall in the previous hour</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.1f mm">
+		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
 
 	<channel-type id="rain-currenthour">
-		<item-type>Number</item-type>
+		<item-type>Number:Length</item-type>
 		<label>Rainfall (60 minutes)</label>
 		<description>Rainfall in the last 60 minutes</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.1f mm">
+		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
 

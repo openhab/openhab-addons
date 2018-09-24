@@ -47,12 +47,12 @@
 		</channels>
 		<config-description>
 			<parameter name="id" type="integer" required="false">
-				<label>id</label>
-				<description>Numeric ID of the Harmony Device (id or name is required)</description>
+				<label>ID</label>
+				<description>Numeric ID of the Harmony Device (ID or name is required)</description>
 			</parameter>
 			<parameter name="name" type="text" required="false">
-				<label>id</label>
-				<description>Name of the Harmony Device (name or id is required)</description>
+				<label>Name</label>
+				<description>Name of the Harmony Device (name or ID is required)</description>
 			</parameter>
 		</config-description>
 	</thing-type>

@@ -13,7 +13,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-import org.openhab.voice.voicerss.internal.cloudapi.CachedVoiceRSSCloudImplementation;
+import org.openhab.voice.voicerss.internal.cloudapi.CachedVoiceRSSCloudImpl;
 
 /**
  * This class fills a cache with data from the VoiceRSS TTS service.
@@ -79,17 +79,11 @@ public class CreateTTSCache {
     private void generateCacheForFile(String apiKey, String cacheDir, String locale, String inputFileName)
             throws IOException {
         File inputFile = new File(inputFileName);
-        BufferedReader br = null;
-        try {
-            br = new BufferedReader(new FileReader(inputFile));
+        try (BufferedReader br = new BufferedReader(new FileReader(inputFile))) {
             String line;
             while ((line = br.readLine()) != null) {
                 // process the line.
                 generateCacheForMessage(apiKey, cacheDir, locale, line);
-            }
-        } finally {
-            if (br != null) {
-                br.close();
             }
         }
     }
@@ -99,13 +93,14 @@ public class CreateTTSCache {
             System.err.println("Ignore msg=null");
             return;
         }
-        msg = msg.trim();
-        if (msg.length() == 0) {
+        String trimmedMsg = msg.trim();
+        if (trimmedMsg.length() == 0) {
             System.err.println("Ignore msg=''");
             return;
         }
-        CachedVoiceRSSCloudImplementation impl = new CachedVoiceRSSCloudImplementation(cacheDir);
-        File cachedFile = impl.getTextToSpeechAsFile(apiKey, msg, locale, "MP3");
-        System.out.println("Created cached audio for locale='" + locale + "', msg='" + msg + "' to file=" + cachedFile);
+        CachedVoiceRSSCloudImpl impl = new CachedVoiceRSSCloudImpl(cacheDir);
+        File cachedFile = impl.getTextToSpeechAsFile(apiKey, trimmedMsg, locale, "MP3");
+        System.out.println(
+                "Created cached audio for locale='" + locale + "', msg='" + trimmedMsg + "' to file=" + cachedFile);
     }
 }

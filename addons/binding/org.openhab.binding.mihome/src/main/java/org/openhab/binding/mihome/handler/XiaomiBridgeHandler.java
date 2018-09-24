@@ -19,6 +19,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -53,8 +55,9 @@ import com.google.gson.JsonParser;
  */
 public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements XiaomiSocketListener {
 
-    private static final int DISCOVERY_LOCK_TIME_MILLIS = 10000;
-    private static final int READ_ACK_RETENTION_MILLIS = 60 * 60 * 1000; // 2 hours
+    private static final long DISCOVERY_LOCK_TIME_MILLIS = TimeUnit.SECONDS.toMillis(10);
+    private static final long READ_ACK_RETENTION_MILLIS = TimeUnit.HOURS.toMillis(2);
+    private static final long BRIDGE_CONNECTION_TIMEOUT_MILLIS = TimeUnit.MINUTES.toMillis(5);
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
     private static final JsonParser PARSER = new JsonParser();
     private static final EncryptionHelper CRYPTER = new EncryptionHelper();
@@ -73,6 +76,8 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
     private InetAddress host;
     private int port;
     private XiaomiBridgeSocket socket;
+    private Timer connectionTimeout = new Timer();
+    private boolean timerIsRunning = false;
 
     public XiaomiBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -82,6 +87,29 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
     public Collection<ConfigStatusMessage> getConfigStatus() {
         // Currently we have no errors. Since we always use discover, it should always be okay.
         return Collections.emptyList();
+    }
+
+    private class TimerAction extends TimerTask {
+        @Override
+        public synchronized void run() {
+            updateStatus(ThingStatus.OFFLINE);
+            timerIsRunning = false;
+        }
+    };
+
+    synchronized void startTimer() {
+        cancelRunningTimer();
+        connectionTimeout.schedule(new TimerAction(), BRIDGE_CONNECTION_TIMEOUT_MILLIS);
+        timerIsRunning = true;
+    }
+
+    synchronized void cancelRunningTimer() {
+        if (timerIsRunning) {
+            connectionTimeout.cancel();
+            logger.debug("Cancelled running timer");
+            connectionTimeout = new Timer();
+            timerIsRunning = false;
+        }
     }
 
     @Override
@@ -103,6 +131,7 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
         scheduler.schedule(() -> {
             discoverItems();
         }, 1, TimeUnit.SECONDS);
+        startTimer();
     }
 
     @Override

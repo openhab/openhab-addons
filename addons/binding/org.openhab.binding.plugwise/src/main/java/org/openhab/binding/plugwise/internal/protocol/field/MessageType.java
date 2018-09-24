@@ -11,12 +11,15 @@ package org.openhab.binding.plugwise.internal.protocol.field;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Enumerates all Plugwise message types. Many are still missing, and require further protocol analysis.
  *
- * @author Karel Goderis
- * @author Wouter Born - Initial contribution
+ * @author Wouter Born, Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public enum MessageType {
 
     ACKNOWLEDGEMENT_V1(0x0000),
@@ -70,7 +73,7 @@ public enum MessageType {
         identifier = value;
     }
 
-    public static MessageType forValue(int value) {
+    public static @Nullable MessageType forValue(int value) {
         return TYPES_BY_VALUE.get(value);
     }
 

@@ -34,6 +34,7 @@ public class AirQualityJsonData {
     private AirQualityJsonCity city;
     private List<Attribute> attributions;
     private AirQualityJsonIaqi iaqi;
+    private String dominentpol;
 
     public AirQualityJsonData() {
     }
@@ -120,6 +121,10 @@ public class AirQualityJsonData {
         }
 
         return NO_DATA;
+    }
+
+    public String getDominentPol() {
+        return dominentpol;
     }
 
 }

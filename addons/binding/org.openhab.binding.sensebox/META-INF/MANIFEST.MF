@@ -1,11 +1,12 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.sensebox
 Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
 Bundle-Name: senseBox Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.sensebox;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.3.0.qualifier
+Bundle-Version: 2.4.0.qualifier
 Export-Package: 
  org.openhab.binding.sensebox,
  org.openhab.binding.sensebox.handler

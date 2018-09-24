@@ -45,7 +45,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.satel")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.satel")
 public class SatelHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream

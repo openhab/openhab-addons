@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.tplinksmarthome
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
@@ -6,11 +7,8 @@ Bundle-Name: TPLinkSmartHome Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.tplinksmarthome;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.3.0.qualifier
-Export-Package: org.openhab.binding.tplinksmarthome,
- org.openhab.binding.tplinksmarthome.handler
-Import-Package: com.google.common.collect,
- com.google.gson,
+Bundle-Version: 2.4.0.qualifier
+Import-Package: com.google.gson,
  com.google.gson.annotations,
  com.google.gson.reflect,
  com.google.gson.stream,
@@ -25,7 +23,5 @@ Import-Package: com.google.common.collect,
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.openhab.binding.tplinksmarthome,
- org.openhab.binding.tplinksmarthome.handler,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

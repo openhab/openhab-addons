@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.hdanywhere.internal;
 
-import static org.openhab.binding.hdanywhere.HDanywhereBindingConstants.*;
+import static org.openhab.binding.hdanywhere.internal.HDanywhereBindingConstants.*;
 
 import java.util.Set;
 
@@ -19,9 +19,8 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.hdanywhere.HDanywhereBindingConstants;
-import org.openhab.binding.hdanywhere.handler.Mhub4K431Handler;
-import org.openhab.binding.hdanywhere.handler.MultiroomPlusHandler;
+import org.openhab.binding.hdanywhere.internal.handler.Mhub4K431Handler;
+import org.openhab.binding.hdanywhere.internal.handler.MultiroomPlusHandler;
 import org.osgi.service.component.annotations.Component;
 
 import com.google.common.collect.Sets;
@@ -32,7 +31,7 @@ import com.google.common.collect.Sets;
  *
  * @author Karel Goderis - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.hdanywhere")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.hdanywhere")
 public class HDanywhereHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_MULTIROOMPLUS,

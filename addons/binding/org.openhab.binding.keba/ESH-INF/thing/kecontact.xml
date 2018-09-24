@@ -12,7 +12,7 @@
 			<channel id="error1" typeId="error1" />
 			<channel id="error2" typeId="error2" />
 			<channel id="wallbox" typeId="plug" />
-			<channel id="vehicule" typeId="plug" />
+			<channel id="vehicle" typeId="plug" />
 			<channel id="locked" typeId="locked" />
 			<channel id="enabled" typeId="switch" />
 			<channel id="maxpilotcurrent" typeId="current" />

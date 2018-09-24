@@ -8,11 +8,14 @@
  */
 package org.openhab.binding.plugwise.internal.protocol.field;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Enumerates Plugwise devices.
  *
  * @author Wouter Born - Initial contribution
  */
+@NonNullByDefault
 public enum DeviceType {
 
     STICK("Stick", false, false),

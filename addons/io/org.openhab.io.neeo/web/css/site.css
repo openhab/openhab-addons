@@ -1,0 +1,491 @@
+@CHARSET "ISO-8859-1";
+
+#neeoApp .connected {
+	font-weight: bold;
+}
+
+#neeoApp .success {
+	color: green;
+}
+
+#neeoApp .danger {
+	color: red;
+}
+
+.jgrowl-error {
+	color: yellow;
+	font-weight: bold;
+	background-color: lightred;
+}
+
+#neeoApp .popover {
+	max-width: 100%;
+}
+
+.popoverName {
+	font-weight: bold;
+	display: inline-block;
+}
+
+.scrollable-menu {
+	height: auto;
+	max-height: 200px;
+	overflow-x: hidden;
+}
+
+.ui-select-choices {
+	position: fixed;
+	top: auto;
+	left: auto;
+	width: inherit;
+}
+
+.devicePopover .popoverName {
+	width: 5em;
+}
+
+.channelPopover .popoverName {
+	width: 12em;
+}
+
+.app-modal-virtualitems .modal-dialog  {
+	width: 700px;
+}
+.addItems-action {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.addItems-action.itemImport input {
+	display: none;
+}
+
+.addItems-action.itemImport .importLabel {
+	border: 1px solid #ccc;
+	display: inline-block;
+	background-color: buttonface;
+	cursor: pointer;
+}
+
+.addItems-importing {
+	display: inline-block;
+	margin: 1em;
+	font-size: larger;
+}
+
+.addItems-importing span {
+	display: inline-block;
+	margin-left: .5em;
+}
+
+.addItems-items {
+	margin-top: 1em;
+	overflow: auto;
+	height: 20em;
+	max-height: 20em;
+}
+
+.addItems-item {
+	margin-top: 3px;
+	width: 100vw;
+}
+
+.header {
+	margin: 1em 0em;
+}
+
+.header img {
+	width: 262px;
+	display: inline-block;
+	margin-right: 2em;
+}
+
+.header .title {
+	font-size: larger;
+	font-style: italic;
+}
+
+.header .disclaimer {
+	font-size: smaller;
+	margin-left: 3px;
+	margin-top: .5em;
+}
+
+.neeoBrains {
+	padding: 1em 1em;
+	overflow: auto;
+}
+
+.neeoBrains .brainActions {
+	padding: 0 0 .5em 0;
+	text-align: right;
+}
+
+.neeoBrains .brainActionNone {
+	display: inline-block;
+}
+
+.glyphicon {
+	display: inline-border;
+	margin-left: .5em;
+	cursor: pointer;
+}
+
+.tab-content {
+	border-right: 1px solid #ddd;
+	border-left: 1px solid #ddd;
+	border-bottom: 1px solid #ddd;
+}
+
+.empty {
+	padding: .5em 1em;
+	border: 1px solid black;
+	font-weight: bold;
+	font-size: large;
+}
+
+.toolBar {
+	display: inline-block;
+	margin: .5em;
+	background-color: lightblue;
+	padding: 3px;
+	border-radius: 5px;
+}
+
+.toolBar .toolBarAction {
+	display: inline-block;
+	margin-left: 3px 5px;
+}
+
+.toolBar .toolBarAction input {
+	border-radius: 3px;
+}
+
+.toolBar .toolBarAction .buttonText {
+	display: inline-block;
+	margin-left: .5em;
+}
+
+.openhabThings {
+	padding: .5em;
+	overflow: auto;
+}
+
+.openhabThings .noThingDetails {
+	font-size: small;
+	font-weight: normal;
+	margin: .5em 0em;
+}
+
+.openhabThings>div {
+	white-space: nowrap;
+}
+
+.openhabThings .criteria {
+	padding: .5em 1em;
+	border: 1px solid black;
+	margin-bottom: 1em;
+}
+
+.openhabThings .criteria label {
+	margin-right: .5em;
+}
+
+.openhabThings .devices .deviceInfo {
+	clear: both;
+	height: 30px;
+}
+
+.openhabThings .devices .deviceInfo.title1, .openhabThings .devices .deviceInfo.title2
+	{
+	height: initial;
+	font-weight: bold;
+}
+
+.openhabThings .devices .deviceInfo>div {
+	display: inline-block;
+	margin-right: .5em;
+	vertical-align: middle;
+}
+
+.openhabThings .devices .deviceInfo .deviceLinked {
+	width: 1.5em;
+    max-width: 1.5em;
+    min-width: 1.5em;
+	min-height: 1px; /* trick to make sure width is applied if empty */
+}
+
+.openhabThings .devices .deviceInfo .deviceExpand {
+	width: 12px;
+    max-width: 12px;
+    min-width: 12px;
+}
+
+.openhabThings .devices .deviceInfo .deviceInfoPopup {
+	width: 12px;
+    max-width: 12px;
+    min-width: 12px;
+}
+
+.openhabThings .devices .deviceInfo .deviceName {
+	width: 20em;
+    max-width: 20em;
+    min-width: 20em;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+.openhabThings .devices .deviceInfo .deviceTimings {
+	text-align: center;
+	width: 180px;
+}
+
+.openhabThings .devices .deviceInfo .deviceTimings input, .openhabThings .devices .deviceInfo .deviceTimings span
+	{
+	width: 55px;
+	display: inline-block;
+}
+
+.openhabThings .devices .deviceInfo .deviceType {
+	width: 200px;
+}
+
+.openhabThings .devices .deviceDetails {
+	margin: 1em 0em 1em 5em;
+}
+
+.openhabThings .devices .detailInfo, .openhabThings .devices .detailHeader
+	{
+	height: 30px;
+	padding: 0 5px;
+	display: table;
+}
+
+.openhabThings .devices .detailInfo {
+	height: 30px;
+	padding: 0 5px;
+	display: table;
+	border-top: 1px solid lightgray;
+	border-bottom: 1px solid lightgray;
+	margin: -1px 0 0 -1px;
+}
+
+.openhabThings .devices .detailHeader {
+	font-weight: bold;
+}
+
+.openhabThings .devices .detailInfo>div, .openhabThings .devices .detailHeader>div
+	{
+	display: table-cell;
+	margin-right: .5em;
+	vertical-align: middle;
+}
+
+.openhabThings .devices .detailInfoPopup {
+	width: 1.5em;
+	min-width: 1.5em;
+	max-width: 1.5em;
+}
+
+.openhabThings .devices .detailInfoActions {
+	width: 2em;
+	min-width: 2em;
+	max-width: 2em;
+}
+
+.openhabThings .devices .channelItemType {
+	width: 7em;
+	max-width: 7em;
+	min-width: 7em;
+}
+
+.openhabThings .devices .channelName, .openhabThings .devices .channelItemName
+	{
+	width: 15em;
+	max-width: 15em;
+	min-width: 15em;
+}
+
+.openhabThings .devices .channelLabel {
+	width: 15em;
+	max-width: 15em;
+	min-width: 15em;
+}
+
+.openhabThings .devices .channelLabel input {
+	width: 12em;
+	min-width: 12em;
+	max-width: 12em;
+}
+
+.openhabThings .devices .channelLabel input[type='checkbox'] {
+    width: 1em;
+    min-width: 1em;
+    max-width: 1em;
+}
+
+.openhabThings .devices .channelChannelType {
+	width: 15em;
+	max-width: 15em;
+	min-width: 15em;
+}
+
+.openhabThings .devices .channelType {
+	width: 10em;
+	max-width: 10em;
+	min-width: 10em;
+}
+
+.openhabThings .devices .channelValue {
+	width: 15em;
+	max-width: 15em;
+	min-width: 15em;
+}
+
+.openhabThings .devices .channelValue input {
+	width: 12em;
+    max-width: 12em;
+    min-width: 12em;
+}
+
+.openhabThings .devices .channelRange input {
+	width: 3em;
+    max-width: 15em;
+    min-width: 15em;
+}
+
+.openhabThings .devices .deviceActions button.save.canSave {
+	background-color: lightgreen;
+}
+
+.openhabThings .devices .deviceActions .advProp.btn {
+    margin-right: 1em;
+}
+
+.deviceEvenRow {
+	background-color: #F5F5F5;
+}
+
+.detailEvenRow {
+	background-color: lightyellow;
+}
+
+.secondButton {
+	display: block !important;
+	margin-top: 3px;
+}
+
+.deviceBreak {
+	font-weight: 600;
+	margin: 10px 0px 5px 0px;
+	padding: 3px;
+	border-radius: 5px;
+}
+
+.deviceBreak.newDeviceBreak {
+	background: lightgreen;
+}
+
+.deviceBreak.virtualDeviceBreak {
+	background: lightgoldenrodyellow;
+}
+
+.deviceBreak.triggerDeviceBreak {
+	background: lightsteelblue;
+}
+
+.deviceBreak.normalDeviceBreak {
+	background: lightgray;
+}
+
+.advProp-body {
+	font-size: 14px;
+}
+
+.advProp-body fieldset {
+    padding: .35em .625em .75em;
+    margin: 0 2px;
+    border: 1px solid silver;
+    margin-bottom: 1em;
+}
+
+.advProp-body legend {
+    font-size: 14px;
+    font-weight: bold;
+    padding: 0.2em 0.5em;
+    border: 1px solid gray;
+    margin-bottom: 10px;
+}
+
+.advProp-body .props label {
+    display: inline-block;
+    width: 10em;
+    font-weight: normal;
+}
+
+.advProp-body .deviceCapability input {
+    display: inline-block;
+    margin-right: .5em;
+}
+
+.advProp-body .deviceCapability label {
+    font-weight: normal;
+}
+
+.advProp-body .deviceCapabilities {
+}
+
+.logfile {
+	max-width: 1000px;
+	width: 100%;
+	height: 300px;
+	overflow: auto;
+}
+
+.logfile pre {
+    background-color: black;
+    color: white;
+}
+
+.brainActions2 button {
+	width: 2em;
+}
+
+.listItems-body {
+    margin-top: .5em;
+    overflow: auto;
+    height: 20em;
+    max-height: 20em;
+}
+.listItems-body table {
+	margin: 10px;
+	width: 100%;
+}
+
+.listItems-body table .error {
+    font-weight: bold;
+    color: red;
+}
+
+.listItems-body table tr td {
+    padding-bottom: 5px;
+}
+
+.listItems-body table tr td, .listItems-body table tr th {
+    padding-right: 5px;
+}
+
+.listItems-body table .actions button {
+}
+
+.listItems-body table .itemValue input {
+    min-width: 50px;
+}
+
+.listItems-body table .title input {
+    min-width: 150px;
+}
+
+
+.listItems-body table .thumbNail input {
+}

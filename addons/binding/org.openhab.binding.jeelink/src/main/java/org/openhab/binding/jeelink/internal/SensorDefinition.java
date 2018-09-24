@@ -15,6 +15,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.jeelink.internal.ec3k.Ec3kSensorDefinition;
 import org.openhab.binding.jeelink.internal.lacrosse.LaCrosseSensorDefinition;
+import org.openhab.binding.jeelink.internal.lacrosse.Tx22SensorDefinition;
 import org.openhab.binding.jeelink.internal.pca301.Pca301SensorDefinition;
 
 /**
@@ -35,6 +36,7 @@ public abstract class SensorDefinition<R extends Reading> {
         SENSOR_DEFS.add(new LaCrosseSensorDefinition());
         SENSOR_DEFS.add(new Ec3kSensorDefinition());
         SENSOR_DEFS.add(new Pca301SensorDefinition());
+        SENSOR_DEFS.add(new Tx22SensorDefinition());
     }
 
     public SensorDefinition(ThingTypeUID thingTypeUid, String name, String type) {
@@ -53,7 +55,7 @@ public abstract class SensorDefinition<R extends Reading> {
 
     public abstract Class<R> getReadingClass();
 
-    public abstract JeeLinkSensorHandler createHandler(Thing thing);
+    public abstract JeeLinkSensorHandler<R> createHandler(Thing thing);
 
     public abstract JeeLinkReadingConverter<R> createConverter();
 

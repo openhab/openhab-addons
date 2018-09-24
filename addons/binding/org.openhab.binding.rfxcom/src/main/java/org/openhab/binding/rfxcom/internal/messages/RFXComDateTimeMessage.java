@@ -22,7 +22,6 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
  * RFXCOM data class for Date and Time message.
  *
  * @author Damien Servant
- * @since 1.9.0
  */
 public class RFXComDateTimeMessage extends RFXComBatteryDeviceMessage<RFXComDateTimeMessage.SubType> {
 

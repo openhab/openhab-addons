@@ -18,7 +18,6 @@ import org.apache.commons.lang.ArrayUtils;
  * Command class for command to set RTC clock.
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.7.0
  */
 public class SetClockCommand extends ControlCommand {
 

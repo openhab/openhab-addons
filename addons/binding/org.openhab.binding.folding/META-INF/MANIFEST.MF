@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.folding
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
@@ -6,10 +7,7 @@ Bundle-Name: Folding Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.folding;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.3.0.qualifier
-Export-Package: 
- org.openhab.binding.folding,
- org.openhab.binding.folding.handler
+Bundle-Version: 2.4.0.qualifier
 Import-Package: 
  com.google.gson,
  com.google.gson.reflect,
@@ -23,8 +21,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.openhab.binding.folding,
- org.openhab.binding.folding.handler,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

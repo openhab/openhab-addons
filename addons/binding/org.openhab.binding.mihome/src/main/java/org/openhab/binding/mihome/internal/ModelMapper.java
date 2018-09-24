@@ -41,6 +41,7 @@ public class ModelMapper {
         THING_MAP.put("86sw1", THING_TYPE_SENSOR_AQARA1);
         THING_MAP.put("86sw2", THING_TYPE_SENSOR_AQARA2);
         THING_MAP.put("cube", THING_TYPE_SENSOR_CUBE);
+        THING_MAP.put("sensor_cube.aqgl01", THING_TYPE_SENSOR_CUBE);
         THING_MAP.put("sensor_ht", THING_TYPE_SENSOR_HT);
         THING_MAP.put("magnet", THING_TYPE_SENSOR_MAGNET);
         THING_MAP.put("motion", THING_TYPE_SENSOR_MOTION);
@@ -49,8 +50,10 @@ public class ModelMapper {
         THING_MAP.put("sensor_motion.aq2", THING_TYPE_SENSOR_AQARA_MOTION);
         THING_MAP.put("sensor_wleak.aq1", THING_TYPE_SENSOR_WATER);
         THING_MAP.put("sensor_switch.aq2", THING_TYPE_SENSOR_AQARA_SWITCH);
+        THING_MAP.put("sensor_switch.aq3", THING_TYPE_SENSOR_AQARA_SWITCH);
         THING_MAP.put("smoke", THING_TYPE_SENSOR_SMOKE);
         THING_MAP.put("switch", THING_TYPE_SENSOR_SWITCH);
+        THING_MAP.put("vibration", THING_TYPE_SENSOR_AQARA_VIBRATION);
         THING_MAP.put("weather.v1", THING_TYPE_SENSOR_AQARA_WEATHER_V1);
 
         LABEL_MAP.put("curtain", "Xiaomi Aqara Intelligent Curtain Motor");
@@ -65,6 +68,7 @@ public class ModelMapper {
         LABEL_MAP.put("86sw1", "Xiaomi Aqara Smart Switch 1 Button");
         LABEL_MAP.put("86sw2", "Xiaomi Aqara Smart Switch 2 Button");
         LABEL_MAP.put("cube", "Xiaomi Mi Smart Cube");
+        LABEL_MAP.put("sensor_cube.aqgl01", "Xiaomi Mi Smart Cube");
         LABEL_MAP.put("sensor_ht", "Xiaomi Mi Temperature & Humidity Sensor");
         LABEL_MAP.put("magnet", "Xiaomi Door/Window Sensor");
         LABEL_MAP.put("motion", "Xiaomi Mi Motion Sensor");
@@ -73,8 +77,10 @@ public class ModelMapper {
         LABEL_MAP.put("sensor_motion.aq2", "Xiaomi Aqara Motion Sensor");
         LABEL_MAP.put("sensor_wleak.aq1", "Xiaomi Aqara Water Leak Sensor");
         LABEL_MAP.put("sensor_switch.aq2", "Xiaomi Aqara Wireless Switch");
+        LABEL_MAP.put("sensor_switch.aq3", "Xiaomi Aqara Wireless Switch with Accelerometer");
         LABEL_MAP.put("smoke", "Xiaomi Mijia Honeywell Fire Alarm Detector");
         LABEL_MAP.put("switch", "Xiaomi Mi Wireless Switch");
+        LABEL_MAP.put("vibration", "Xiaomi Aqara Smart Motion Sensor");
         LABEL_MAP.put("weather.v1", "Xiaomi Aqara Temperature, Humidity & Pressure Sensor");
     }
 

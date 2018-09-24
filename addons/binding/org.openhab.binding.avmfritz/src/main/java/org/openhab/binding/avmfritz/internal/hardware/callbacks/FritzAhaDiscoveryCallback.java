@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.avmfritz.internal.hardware.callbacks;
 
+import static org.eclipse.jetty.http.HttpMethod.GET;
+
 import java.io.StringReader;
 
 import javax.xml.bind.JAXBException;
@@ -42,10 +44,10 @@ public class FritzAhaDiscoveryCallback extends FritzAhaReauthCallback {
      * Constructor
      *
      * @param webIface Webinterface to FRITZ!Box
-     * @param service Discovery service to call with result.
+     * @param service  Discovery service to call with result.
      */
     public FritzAhaDiscoveryCallback(FritzAhaWebInterface webIface, AVMFritzDiscoveryService service) {
-        super(WEBSERVICE_PATH, "switchcmd=getdevicelistinfos", webIface, Method.GET, 1);
+        super(WEBSERVICE_PATH, "switchcmd=getdevicelistinfos", webIface, GET, 1);
         this.service = service;
     }
 

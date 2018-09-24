@@ -12,7 +12,6 @@ package org.openhab.binding.satel.internal.types;
  * Available output states.
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.7.0
  */
 public enum OutputState implements StateType {
     STATE(0x17);

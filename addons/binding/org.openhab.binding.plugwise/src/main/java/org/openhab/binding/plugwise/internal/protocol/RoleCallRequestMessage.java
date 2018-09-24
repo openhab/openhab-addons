@@ -17,8 +17,7 @@ import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
  * {@link RoleCallResponseMessage} which contains the MAC address. Because a Plugwise network can have 64 devices,
  * the node ID value has a range from 0 to 63.
  *
- * @author Karel Goderis
- * @author Wouter Born - Initial contribution
+ * @author Wouter Born, Karel Goderis - Initial contribution
  */
 public class RoleCallRequestMessage extends Message {
 

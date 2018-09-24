@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="openuv" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- OpenUV Bridge -->
+	<bridge-type id="openuvapi">
+		<label>Open UV API</label>
+		<description>
+		Bridge to the OpenUV Project API. In order to receive the data, you must register an account on https://www.openuv.io/auth/google and get your API token.
+		</description>
+
+		<config-description>
+			<parameter name="apikey" type="text" required="true">
+				<context>password</context>
+				<label>API Key</label>
+				<description>Data-platform token to access the OpenUV API service</description>
+			</parameter>
+		</config-description>
+
+	</bridge-type>
+
+	<!-- OpenUV Report Thing -->
+	<thing-type id="uvreport">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="openuvapi" />
+		</supported-bridge-type-refs>
+		
+		<label>Open UV</label>
+		<description>
+		Provides various UV data from the OpenUV Project for a given location.
+		</description>
+
+		<channels>
+			<channel id="UVIndex" typeId="UVIndex" />
+			<channel id="UVColor" typeId="UVColor" />
+			<channel id="UVMax" typeId="UVMax" />
+			<channel id="UVMaxTime" typeId="UVMaxTime" />
+			<channel id="UVMaxEvent" typeId="UVMaxEvent" />
+			<channel id="Ozone" typeId="Ozone" />
+			<channel id="OzoneTime" typeId="OzoneTime" />
+			<channel id="UVTime" typeId="UVTime" />
+			<channel id="SafeExposure" typeId="SafeExposure" />
+		</channels>
+		
+		<representation-property>location</representation-property>
+
+		<config-description>
+			<parameter name="refresh" type="integer" min="3">
+				<label>Refresh interval</label>
+				<description>Specifies the refresh interval in minutes.</description>
+				<default>10</default>
+			</parameter>
+			<parameter name="location" type="text" required="true">
+				<label>Location</label>
+				<context>location</context>
+				<description>Your geo coordinates separated with comma (e.g. "37.8,-122.4,177").</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	
+	<channel-type id="UVIndex">
+		<item-type>Number</item-type>
+		<label>UV Index</label>
+		<description>UV Index</description>
+		<state readOnly="true" pattern="%.2f">
+		</state>
+	</channel-type>
+
+	<channel-type id="UVMax" advanced="true">
+		<item-type>Number</item-type>
+		<label>UV Max</label>
+		<description>Max UV Index for the day (at solar noon)</description>
+		<state readOnly="true" pattern="%.2f">
+		</state>
+	</channel-type>
+
+	<channel-type id="Ozone">
+		<item-type>Number</item-type>
+		<label>Ozone</label>
+		<description>Ozone level in du (Dobson Units) from OMI data</description>
+		<state readOnly="true" pattern="%.2f du">
+		</state>
+	</channel-type>
+
+	<channel-type id="OzoneTime" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Ozone Observation Time</label>
+		<description>Latest OMI ozone update time</description>
+		<state readOnly="true" pattern="%1$ta %1$tR" />
+	</channel-type>
+
+	<channel-type id="UVMaxTime" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>UV Max Time</label>
+		<description>Max UV Index time (solar noon)</description>
+		<state readOnly="true" pattern="%1$ta %1$tR" />
+	</channel-type>
+
+	<channel-type id="UVTime" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>UV Time</label>
+		<description>UV Index time</description>
+		<state readOnly="true" pattern="%1$ta %1$tR" />
+	</channel-type>
+
+	<channel-type id="UVColor" advanced="true">
+		<item-type>Color</item-type>
+		<label>UV Color</label>
+		<description>Color associated to given UV Index.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="SafeExposure" advanced="false">
+		<item-type>Number:Time</item-type>
+		<label>Safe Exposure</label>
+		<description>Safe exposure time for Fitzpatrick Skin Types</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+		<config-description>
+			<parameter name="Index" type="integer">
+				<label>Skin Type</label>
+				<description>Fitzpatrick Skin Type.</description>
+				<options>
+					<option value="1">I – White</option>
+					<option value="2">II – White</option>
+					<option value="3">III – Light brown</option>
+					<option value="4">IV – Moderate brown</option>
+					<option value="5">V – Dark brown</option>
+					<option value="6">VI – Black</option>
+				</options>
+				<default>1</default>
+			</parameter>
+		</config-description>
+	</channel-type>
+	
+	<!-- UV Max Event Channel Type -->
+	<channel-type id="UVMaxEvent">
+		<kind>trigger</kind>
+		<label>UV Max Event</label>
+		<description>Triggers when current UV Index reaches maximum of the day</description>
+	</channel-type>
+
+</thing:thing-descriptions>
+
