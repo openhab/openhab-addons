@@ -16,7 +16,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.icloud.internal.to_be_moved.EndpointKeyStore;
+import org.eclipse.smarthome.io.net.http.HostnameKeyStoreMapping;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -26,7 +26,7 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component
 @NonNullByDefault
-public class ICloudEndpointTrustManager implements EndpointKeyStore {
+public class ICloudEndpointTrustManager implements HostnameKeyStoreMapping {
 
     @Override
     public String getHostName() {
