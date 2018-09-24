@@ -416,7 +416,7 @@
 
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">
-				<context>network_address</context>
+				<context>serial-port</context>
 				<label>HomeWorks Bridge Serial Port</label>
 				<description>
 					The serial port name for the HomeWorks processor. Valid values
