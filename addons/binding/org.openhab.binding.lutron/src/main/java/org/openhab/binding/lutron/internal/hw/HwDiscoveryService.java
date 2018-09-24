@@ -10,6 +10,7 @@ package org.openhab.binding.lutron.internal.hw;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -32,6 +33,8 @@ import org.slf4j.LoggerFactory;
 public class HwDiscoveryService extends AbstractDiscoveryService {
     private Logger logger = LoggerFactory.getLogger(HwDiscoveryService.class);
 
+    private final AtomicBoolean isScanning = new AtomicBoolean(false);
+
     private final HwSerialBridgeHandler handler;
 
     public HwDiscoveryService(HwSerialBridgeHandler handler) {
@@ -42,20 +45,24 @@ public class HwDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         scheduler.submit(() -> {
-            try {
-                logger.debug("Starting scan for HW Dimmers");
-                for (int m = 1; m <= 8; m++) { // Modules
-                    for (int o = 1; o <= 4; o++) { // Outputs
-                        String address = String.format("[01:01:00:%02d:%02d]", m, o);
-                        handler.sendCommand("RDL, " + address);
-                        Thread.sleep(5);
-                    }
-                }
-            } catch (InterruptedException e) {
-                logger.warn("Scan interrupted");
-            } catch (Exception e) {
-                logger.error("Error occurred running discovery scanner", e);
-            }
+	    if (isScanning.compareAndSet(false, true)) {
+		try {
+		    logger.debug("Starting scan for HW Dimmers");
+		    for (int m = 1; m <= 8; m++) { // Modules
+			for (int o = 1; o <= 4; o++) { // Outputs
+			    String address = String.format("[01:01:00:%02d:%02d]", m, o);
+			    handler.sendCommand("RDL, " + address);
+			    Thread.sleep(5);
+			}
+		    }
+		} catch (InterruptedException e) {
+		    logger.warn("Scan interrupted");
+		} catch (Exception e) {
+		    logger.error("Error occurred running discovery scanner", e);
+		} finally {
+		    isScanning.set(false);
+		}
+	    }
         });
     }
 
