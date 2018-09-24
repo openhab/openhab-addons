@@ -23,7 +23,7 @@ import org.eclipse.smarthome.core.types.Command;
 /**
  * This class extends the BaseThingHandler to support HomeWorks Dimmer modules.
  *
- * @author Andrew Shilliday
+ * @author Andrew Shilliday - Initial contribution
  *
  */
 public class HwDimmerHandler extends BaseThingHandler {
