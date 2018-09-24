@@ -210,37 +210,37 @@ public class SonyPS4Discovery extends AbstractDiscoveryService {
             switch (manufacturer) {
                 // Ethernet
                 case "709e29":
-                    hwVersion = "CUH-1000";
+                    hwVersion = PS4HW_CUH1000;
                     break;
                 case "bc60a7":
                     if (ethId.equals("7b")) {
-                        hwVersion = "CUH-2000";
+                        hwVersion = PS4HW_CUH2000;
                     }
                     if (ethId.equals("8f")) {
-                        hwVersion = "CUH-7000";
+                        hwVersion = PS4HW_CUH7000;
                     }
                     break;
                 case "c863f1":
                 case "f8461c":
-                    hwVersion = "CUH-2000";
+                    hwVersion = PS4HW_CUH2000;
                     break;
 
                 // WiFi
                 case "b00594":
-                    hwVersion = "CUH-1000";
+                    hwVersion = PS4HW_CUH1000;
                     break;
                 case "40490f":
                 case "5c9656":
                     if (ethId.equals("07")) {
-                        hwVersion = "CUH-2000";
+                        hwVersion = PS4HW_CUH2000;
                     }
                     if (ethId.equals("da")) {
-                        hwVersion = "CUH-7000";
+                        hwVersion = PS4HW_CUH7000;
                     }
                     break;
                 case "5cea1d":
                 case "f8da0c":
-                    hwVersion = "CUH-2000";
+                    hwVersion = PS4HW_CUH2000;
                     break;
 
                 default:

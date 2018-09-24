@@ -44,4 +44,13 @@ public class SonyPS4BindingConstants {
     public static final String RESPONSE_SYSTEM_VERSION = "system-version";
     public static final String RESPONSE_RUNNING_APP_NAME = "running-app-name";
     public static final String RESPONSE_RUNNING_APP_TITLEID = "running-app-titleid";
+
+    public static final String PS4HW_CUHXXXX = "CUH-XXXX";
+    public static final String PS4HW_CUH1000 = "CUH-1000";
+    public static final String PS4HW_CUH1100 = "CUH-1100";
+    public static final String PS4HW_CUH1200 = "CUH-1200";
+    public static final String PS4HW_CUH2000 = "CUH-2000";
+    public static final String PS4HW_CUH2100 = "CUH-2100";
+    public static final String PS4HW_CUH7000 = "CUH-7000";
+    public static final String PS4HW_CUH7100 = "CUH-7100";
 }
