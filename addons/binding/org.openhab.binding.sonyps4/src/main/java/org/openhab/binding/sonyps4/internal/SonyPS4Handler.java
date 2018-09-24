@@ -183,59 +183,58 @@ public class SonyPS4Handler extends BaseThingHandler {
 
     private void parsePacket(DatagramPacket packet) {
         byte[] data = packet.getData();
-        String message;
+        String message = "";
         try {
             message = new String(data, "UTF-8");
-            String applicationTitleId = "";
-
-            String[] ss = message.split("\n");
-            for (String row : ss) {
-                int index = row.indexOf(':');
-                if (index == -1) {
-                    OnOffType power = null;
-                    if (row.contains("200")) {
-                        power = OnOffType.ON;
-                    } else if (row.contains("620")) {
-                        power = OnOffType.OFF;
-                    }
-                    if (power != null) {
-                        if (currentPower != power) {
-                            currentPower = power;
-                            ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_POWER);
-                            updateState(channel, currentPower);
-                        }
-                        if (thing.getStatus() != ThingStatus.ONLINE) {
-                            updateStatus(ThingStatus.ONLINE);
-                        }
-                    } else {
-                        updateStatus(ThingStatus.OFFLINE);
-                    }
-                    continue;
-                }
-                String key = row.substring(0, index);
-                String value = row.substring(index + 1);
-                switch (key) {
-                    case RESPONSE_RUNNING_APP_NAME:
-                        if (!currentApplication.equals(value)) {
-                            currentApplication = value;
-                            // String appName = String.
-                            ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_APPLICATION);
-                            updateState(channel, StringType.valueOf(value));
-                            logger.debug("PS4 current application: {}", value);
-                        }
-                        break;
-                    case RESPONSE_RUNNING_APP_TITLEID:
-                        applicationTitleId = value;
-                        logger.debug("PS4 current application title id: {}", applicationTitleId);
-                        break;
-
-                    default:
-                        break;
-                }
-            }
         } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.debug("UTF-8 decoding not supported? {}", e);
+        }
+        String applicationTitleId = "";
+
+        String[] ss = message.trim().split("\n");
+        for (String row : ss) {
+            int index = row.indexOf(':');
+            if (index == -1 && !row.isEmpty()) {
+                OnOffType power = null;
+                if (row.contains("200")) {
+                    power = OnOffType.ON;
+                } else if (row.contains("620")) {
+                    power = OnOffType.OFF;
+                }
+                if (power != null) {
+                    if (currentPower != power) {
+                        currentPower = power;
+                        ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_POWER);
+                        updateState(channel, currentPower);
+                    }
+                    if (thing.getStatus() != ThingStatus.ONLINE) {
+                        updateStatus(ThingStatus.ONLINE);
+                    }
+                } else {
+                    updateStatus(ThingStatus.OFFLINE);
+                }
+                continue;
+            }
+            String key = row.substring(0, index);
+            String value = row.substring(index + 1);
+            switch (key) {
+                case RESPONSE_RUNNING_APP_NAME:
+                    if (!currentApplication.equals(value)) {
+                        currentApplication = value;
+                        // String appName = String.
+                        ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_APPLICATION);
+                        updateState(channel, StringType.valueOf(value));
+                        logger.debug("PS4 current application: {}", value);
+                    }
+                    break;
+                case RESPONSE_RUNNING_APP_TITLEID:
+                    applicationTitleId = value;
+                    logger.debug("PS4 current application title id: {}", applicationTitleId);
+                    break;
+
+                default:
+                    break;
+            }
         }
     }
 

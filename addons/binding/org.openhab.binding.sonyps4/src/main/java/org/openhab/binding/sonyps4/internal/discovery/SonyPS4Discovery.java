@@ -12,6 +12,7 @@ import static org.openhab.binding.sonyps4.internal.SonyPS4BindingConstants.*;
 import static org.openhab.binding.sonyps4.internal.SonyPS4Configuration.*;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -104,7 +105,12 @@ public class SonyPS4Discovery extends AbstractDiscoveryService {
 
     private boolean parsePacket(DatagramPacket packet) {
         byte[] data = packet.getData();
-        String message = bytesToString(data);
+        String message = "";
+        try {
+            message = new String(data, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            logger.debug("UTF-8 decoding not supported? {}", e);
+        }
         String ipAddress = packet.getAddress().toString().split("/")[1];
         String hostId = "";
         String hostType = "";
@@ -113,7 +119,7 @@ public class SonyPS4Discovery extends AbstractDiscoveryService {
         String protocolVersion = "";
         String systemVersion = "";
 
-        String[] ss = message.split("\n");
+        String[] ss = message.trim().split("\n");
         for (String row : ss) {
             int index = row.indexOf(':');
             index = index != -1 ? index : 0;
@@ -158,17 +164,6 @@ public class SonyPS4Discovery extends AbstractDiscoveryService {
         thingDiscovered(result);
         logger.debug("Thing discovered '{}'", result);
         return true;
-    }
-
-    private static String bytesToString(byte[] bytes) {
-        StringBuilder sb = new StringBuilder();
-        for (byte aByte : bytes) {
-            if (aByte == 0) {
-                break;
-            }
-            sb.append((char) (aByte & 0xFF));
-        }
-        return sb.toString();
     }
 
     private static String hostIdToMacAddress(String hostId) {
