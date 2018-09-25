@@ -13,14 +13,14 @@ import io.rudolph.netatmo.api.energy.model.module.ValveModule;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.netatmo.handler.NetatmoModuleHandler;
+import org.openhab.binding.netatmo.internal.handler.NetatmoModuleHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.CHANNEL_REACHABLE;
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.CHANNEL_TEMPERATURE;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANNEL_REACHABLE;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANNEL_TEMPERATURE;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.toOnOffType;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.toQuantityType;
 

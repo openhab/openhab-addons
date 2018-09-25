@@ -16,15 +16,15 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.netatmo.handler.NetatmoDeviceHandler;
+import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.ZoneOffset;
 import java.util.List;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.CHANNEL_CONNECTED_BOILER;
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.PARENT_ID;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANNEL_CONNECTED_BOILER;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.PARENT_ID;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.toOnOffType;
 
 /**

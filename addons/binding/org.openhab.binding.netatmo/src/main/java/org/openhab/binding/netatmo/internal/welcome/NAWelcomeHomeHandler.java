@@ -21,15 +21,15 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.netatmo.handler.AbstractNetatmoThingHandler;
-import org.openhab.binding.netatmo.handler.NetatmoDeviceHandler;
+import org.openhab.binding.netatmo.internal.handler.AbstractNetatmoThingHandler;
+import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Calendar;
 import java.util.Optional;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 
 /**

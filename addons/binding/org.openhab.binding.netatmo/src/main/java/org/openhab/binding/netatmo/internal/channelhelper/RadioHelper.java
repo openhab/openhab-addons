@@ -19,8 +19,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.CHANNEL_RF_STATUS;
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.CHANNEL_WIFI_STATUS;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANNEL_RF_STATUS;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANNEL_WIFI_STATUS;
 
 /**
  * The {@link RadioHelper} handle specific behavior

@@ -16,9 +16,9 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.netatmo.handler.NetatmoModuleHandler;
+import org.openhab.binding.netatmo.internal.handler.NetatmoModuleHandler;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.toOnOffType;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.toStringType;
 

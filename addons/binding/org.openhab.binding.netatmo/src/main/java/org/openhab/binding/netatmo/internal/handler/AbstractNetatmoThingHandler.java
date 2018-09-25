@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.netatmo.handler;
+package org.openhab.binding.netatmo.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.core.Configuration;
@@ -31,7 +31,7 @@ import java.util.Optional;
 
 import static org.eclipse.smarthome.core.library.unit.MetricPrefix.HECTO;
 import static org.eclipse.smarthome.core.library.unit.MetricPrefix.MILLI;
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 /**
  * {@link AbstractNetatmoThingHandler} is the abstract class that handles

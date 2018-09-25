@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.netatmo.handler;
+package org.openhab.binding.netatmo.internal.handler;
 
 import io.rudolph.netatmo.api.common.model.MeasureRequestResponse;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.MEASURABLE_CHANNELS;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.MEASURABLE_CHANNELS;
 
 /**
  * {@link MeasurableChannels} is a helper class designed to handle

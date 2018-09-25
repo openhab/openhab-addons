@@ -28,7 +28,7 @@ Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
 Export-Package: 
  org.openhab.binding.netatmo,
- org.openhab.binding.netatmo.handler
+ org.openhab.binding.netatmo.internal.handler
 Import-Package: 
  javax.measure,
  javax.measure.quantity,
@@ -48,7 +48,7 @@ Import-Package:
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.io.net.http,
  org.openhab.binding.netatmo,
- org.openhab.binding.netatmo.handler,
+ org.openhab.binding.netatmo.internal.handler,
  org.osgi.framework,
  org.osgi.service.http,
  org.slf4j

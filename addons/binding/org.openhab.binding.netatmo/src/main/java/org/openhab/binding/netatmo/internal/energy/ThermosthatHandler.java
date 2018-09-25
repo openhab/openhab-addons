@@ -27,7 +27,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.*;
-import org.openhab.binding.netatmo.handler.NetatmoModuleHandler;
+import org.openhab.binding.netatmo.internal.handler.NetatmoModuleHandler;
 import org.openhab.binding.netatmo.internal.ThermosthatStateDescriptionProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 
 /**

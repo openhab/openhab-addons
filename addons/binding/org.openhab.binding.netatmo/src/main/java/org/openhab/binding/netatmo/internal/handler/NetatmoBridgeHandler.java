@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.netatmo.handler;
+package org.openhab.binding.netatmo.internal.handler;
 
 import io.rudolph.netatmo.NetatmoApi;
 import io.rudolph.netatmo.api.presence.model.AppType;
@@ -27,7 +27,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.stream.Stream;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 /**
  * {@link NetatmoBridgeHandler} is the handler for a Netatmo API and connects it

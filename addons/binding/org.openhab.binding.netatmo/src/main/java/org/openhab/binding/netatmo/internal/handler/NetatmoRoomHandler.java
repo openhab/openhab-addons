@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.netatmo.handler;
+package org.openhab.binding.netatmo.internal.handler;
 
 import io.rudolph.netatmo.api.energy.EnergyConnector;
 import io.rudolph.netatmo.api.energy.model.*;
@@ -34,7 +34,7 @@ import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 /**
  * {@link NetatmoRoomHandler} is the handler for a given

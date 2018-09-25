@@ -18,9 +18,9 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.type.ThingType;
-import org.openhab.binding.netatmo.handler.NetatmoBridgeHandler;
-import org.openhab.binding.netatmo.handler.NetatmoHomeHandler;
-import org.openhab.binding.netatmo.handler.NetatmoRoomHandler;
+import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
+import org.openhab.binding.netatmo.internal.handler.NetatmoHomeHandler;
+import org.openhab.binding.netatmo.internal.handler.NetatmoRoomHandler;
 import org.openhab.binding.netatmo.internal.discovery.NetatmoModuleDiscoveryService;
 import org.openhab.binding.netatmo.internal.energy.RelayHandler;
 import org.openhab.binding.netatmo.internal.energy.ThermosthatHandler;
@@ -43,7 +43,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 /**
  * The {@link NetatmoHandlerFactory} is responsible for creating things and

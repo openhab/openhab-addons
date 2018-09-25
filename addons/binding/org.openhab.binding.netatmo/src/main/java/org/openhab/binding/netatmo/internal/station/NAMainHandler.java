@@ -14,10 +14,10 @@ import io.rudolph.netatmo.api.common.model.StationResults;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.netatmo.handler.BaseDeviceHandler;
+import org.openhab.binding.netatmo.internal.handler.BaseDeviceHandler;
 import org.openhab.binding.netatmo.internal.WeatherUtils;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 
 /**

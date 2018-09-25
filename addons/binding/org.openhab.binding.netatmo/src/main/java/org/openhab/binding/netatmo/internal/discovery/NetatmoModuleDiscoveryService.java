@@ -24,15 +24,15 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.netatmo.handler.NetatmoBridgeHandler;
-import org.openhab.binding.netatmo.handler.NetatmoDataListener;
+import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
+import org.openhab.binding.netatmo.internal.handler.NetatmoDataListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 /**
  * The {@link NetatmoModuleDiscoveryService} searches for available Netatmo

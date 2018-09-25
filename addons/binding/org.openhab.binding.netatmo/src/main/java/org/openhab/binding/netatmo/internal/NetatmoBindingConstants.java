@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.netatmo;
+package org.openhab.binding.netatmo.internal;
 
 import io.rudolph.netatmo.api.common.model.DeviceType;
 import io.rudolph.netatmo.api.presence.model.EventType;

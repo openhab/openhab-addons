@@ -10,7 +10,6 @@ package org.openhab.binding.netatmo.internal.channelhelper;
 
 import io.rudolph.netatmo.api.common.model.BatteryState;
 import io.rudolph.netatmo.api.common.model.ClimateModule;
-import io.rudolph.netatmo.api.energy.model.module.EnergyModule;
 import io.rudolph.netatmo.api.energy.model.module.ValveBaseModule;
 import io.rudolph.netatmo.api.energy.model.module.ValveModule;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -19,11 +18,10 @@ import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Method;
 import java.util.Optional;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.CHANNEL_BATTERY_LEVEL;
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.CHANNEL_LOW_BATTERY;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANNEL_BATTERY_LEVEL;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANNEL_LOW_BATTERY;
 
 /**
  * The {@link BatteryHelper} handle specific behavior

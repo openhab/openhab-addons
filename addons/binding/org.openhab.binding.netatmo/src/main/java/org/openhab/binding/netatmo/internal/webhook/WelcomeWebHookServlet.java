@@ -9,7 +9,7 @@
 package org.openhab.binding.netatmo.internal.webhook;
 
 import io.rudolph.netatmo.api.presence.model.PersonsEvent;
-import org.openhab.binding.netatmo.handler.NetatmoBridgeHandler;
+import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
