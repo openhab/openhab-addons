@@ -14,7 +14,13 @@ package org.openhab.binding.lutron.internal.discovery.project;
  * @author Allan Tong - Initial contribution
  */
 public enum OutputType {
+    AUTO_DETECT,
+    CCO_MAINTAINED,
+    CCO_PULSED,
     INC,
     MLV,
-    NON_DIM
+    NON_DIM,
+    NON_DIM_ELV,
+    NON_DIM_INC,
+    SYSTEM_SHADE,
 }

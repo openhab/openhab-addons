@@ -23,7 +23,6 @@ import org.openhab.binding.rfxcom.internal.messages.RFXComSecurity1Message.Statu
  * Test for RFXCom-binding
  *
  * @author Martin van Wingerden
- * @since 1.9.0
  */
 public class RFXComSecurity1MessageTest {
     private void testSomeMessages(String hexMessage, RFXComSecurity1Message.SubType subType, int sequenceNumber,

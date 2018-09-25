@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.allplay
 Bundle-ClassPath: 
  .,
  lib/tchaikovsky.jar
@@ -18,10 +19,7 @@ Bundle-NativeCode:
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.allplay;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.3.0.qualifier
-Export-Package: 
- org.openhab.binding.allplay,
- org.openhab.binding.allplay.handler
+Bundle-Version: 2.4.0.qualifier
 Import-Package: 
  com.google.common.collect,
  org.apache.commons.io,
@@ -36,8 +34,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.types,
- org.openhab.binding.allplay,
- org.openhab.binding.allplay.handler,
  org.osgi.framework,
  org.osgi.service.component,
  org.slf4j

@@ -8,223 +8,183 @@
  */
 package org.openhab.binding.lutron.handler;
 
-import static org.openhab.binding.lutron.LutronBindingConstants.*;
+import java.util.Arrays;
 
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.lutron.internal.protocol.LutronCommandType;
+import org.openhab.binding.lutron.internal.KeypadComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Handler responsible for communicating with a keypad.
+ * Handler responsible for communicating with Lutron seeTouch and Hybrid seeTouch keypads used in
+ * RadioRA2 and Homeworks QS systems
  *
- * @author Allan Tong - Initial contribution
+ * @author Bob Adair - Initial contribution
  */
-public class KeypadHandler extends LutronHandler {
-    private static final int COMPONENT_BUTTON1 = 1;
-    private static final int COMPONENT_BUTTON2 = 2;
-    private static final int COMPONENT_BUTTON3 = 3;
-    private static final int COMPONENT_BUTTON4 = 4;
-    private static final int COMPONENT_BUTTON5 = 5;
-    private static final int COMPONENT_BUTTON6 = 6;
-    private static final int COMPONENT_BUTTON7 = 7;
-    private static final int COMPONENT_BUTTONTOPLOWER = 16;
-    private static final int COMPONENT_BUTTONTOPRAISE = 17;
-    private static final int COMPONENT_BUTTONBOTTOMLOWER = 18;
-    private static final int COMPONENT_BUTTONBOTTOMRAISE = 19;
-    private static final int COMPONENT_LED1 = 81;
-    private static final int COMPONENT_LED2 = 82;
-    private static final int COMPONENT_LED3 = 83;
-    private static final int COMPONENT_LED4 = 84;
-    private static final int COMPONENT_LED5 = 85;
-    private static final int COMPONENT_LED6 = 86;
-    private static final int COMPONENT_LED7 = 87;
+public class KeypadHandler extends BaseKeypadHandler {
 
-    private static final Integer ACTION_PRESS = 3;
-    private static final Integer ACTION_RELEASE = 4;
-    private static final Integer LED_STATE = 9;
+    private static enum Component implements KeypadComponent {
+        BUTTON1(1, "button1", "Button 1"),
+        BUTTON2(2, "button2", "Button 2"),
+        BUTTON3(3, "button3", "Button 3"),
+        BUTTON4(4, "button4", "Button 4"),
+        BUTTON5(5, "button5", "Button 5"),
+        BUTTON6(6, "button6", "Button 6"),
+        BUTTON7(7, "button7", "Button 7"),
 
-    private static final Integer LED_OFF = 0;
-    private static final Integer LED_ON = 1;
+        LOWER1(16, "buttontoplower", "Top lower button"),
+        RAISE1(17, "buttontopraise", "Top raise button"),
+        LOWER2(18, "buttonbottomlower", "Bottom lower button"),
+        RAISE2(19, "buttonbottomraise", "Bottom raise button"),
 
-    private Logger logger = LoggerFactory.getLogger(KeypadHandler.class);
+        // CCI1(25, "cci1", ""), // listed in spec but currently unused in binding
+        // CCI2(26, "cci2", ""), // listed in spec but currently unused in binding
 
-    private int integrationId;
+        LED1(81, "led1", "LED 1"),
+        LED2(82, "led2", "LED 2"),
+        LED3(83, "led3", "LED 3"),
+        LED4(84, "led4", "LED 4"),
+        LED5(85, "led5", "LED 5"),
+        LED6(86, "led6", "LED 6"),
+        LED7(87, "led7", "LED 7");
+
+        private final int id;
+        private final String channel;
+        private final String description;
+
+        Component(int id, String channel, String description) {
+            this.id = id;
+            this.channel = channel;
+            this.description = description;
+        }
+
+        @Override
+        public int id() {
+            return id;
+        }
+
+        @Override
+        public String channel() {
+            return channel;
+        }
+
+        @Override
+        public String description() {
+            return description;
+        }
+
+    }
+
+    private final Logger logger = LoggerFactory.getLogger(KeypadHandler.class);
+
+    @Override
+    protected boolean isLed(int id) {
+        return (id >= 81 && id <= 87);
+    }
+
+    @Override
+    protected boolean isButton(int id) {
+        return ((id >= 1 && id <= 7) || (id >= 16 && id <= 19));
+    }
+
+    @Override
+    protected boolean isCCI(int id) {
+        return false;
+    }
+
+    @Override
+    protected void configureComponents(String model) {
+        String mod = model == null ? "Generic" : model;
+        logger.debug("Configuring components for keypad model {}", model);
+
+        switch (mod) {
+            case "W1RLD":
+            case "H1RLD":
+                buttonList.addAll(Arrays.asList(Component.BUTTON1, Component.BUTTON2, Component.BUTTON3,
+                        Component.BUTTON5, Component.BUTTON6));
+                buttonList.addAll(Arrays.asList(Component.LOWER2, Component.RAISE2));
+                ledList.addAll(
+                        Arrays.asList(Component.LED1, Component.LED2, Component.LED3, Component.LED5, Component.LED6));
+                break;
+            case "W2RLD":
+            case "H2RLD":
+                buttonList.addAll(
+                        Arrays.asList(Component.BUTTON1, Component.BUTTON2, Component.BUTTON5, Component.BUTTON6));
+                buttonList
+                        .addAll(Arrays.asList(Component.LOWER1, Component.RAISE1, Component.LOWER2, Component.RAISE2));
+                ledList.addAll(Arrays.asList(Component.LED1, Component.LED2, Component.LED5, Component.LED6));
+                break;
+            case "W3S":
+            case "H3S":
+                buttonList.addAll(
+                        Arrays.asList(Component.BUTTON1, Component.BUTTON2, Component.BUTTON3, Component.BUTTON6));
+                buttonList.addAll(Arrays.asList(Component.LOWER2, Component.RAISE2));
+                ledList.addAll(Arrays.asList(Component.LED1, Component.LED2, Component.LED3, Component.LED6));
+                break;
+            case "W3BD":
+                buttonList.addAll(Arrays.asList(Component.BUTTON1, Component.BUTTON2, Component.BUTTON3,
+                        Component.BUTTON5, Component.BUTTON6, Component.BUTTON7));
+                ledList.addAll(Arrays.asList(Component.LED1, Component.LED2, Component.LED3, Component.LED5,
+                        Component.LED6, Component.LED7));
+                break;
+            case "W3BRL":
+                buttonList.addAll(Arrays.asList(Component.BUTTON2, Component.BUTTON3, Component.BUTTON4));
+                buttonList.addAll(Arrays.asList(Component.LOWER2, Component.RAISE2));
+                ledList.addAll(Arrays.asList(Component.LED2, Component.LED3, Component.LED4));
+                break;
+            case "W3BSRL":
+            case "H3BSRL":
+                buttonList.addAll(Arrays.asList(Component.BUTTON1, Component.BUTTON3, Component.BUTTON5));
+                buttonList.addAll(Arrays.asList(Component.LOWER2, Component.RAISE2));
+                ledList.addAll(Arrays.asList(Component.LED1, Component.LED3, Component.LED5));
+                break;
+            case "W4S":
+            case "H4S":
+                buttonList.addAll(Arrays.asList(Component.BUTTON1, Component.BUTTON2, Component.BUTTON3,
+                        Component.BUTTON4, Component.BUTTON6));
+                buttonList.addAll(Arrays.asList(Component.LOWER2, Component.RAISE2));
+                ledList.addAll(
+                        Arrays.asList(Component.LED1, Component.LED2, Component.LED3, Component.LED4, Component.LED6));
+                break;
+            case "W5BRL":
+            case "H5BRL":
+            case "W5BRLIR":
+                buttonList.addAll(Arrays.asList(Component.BUTTON1, Component.BUTTON2, Component.BUTTON3,
+                        Component.BUTTON4, Component.BUTTON5));
+                buttonList.addAll(Arrays.asList(Component.LOWER2, Component.RAISE2));
+                ledList.addAll(
+                        Arrays.asList(Component.LED1, Component.LED2, Component.LED3, Component.LED4, Component.LED5));
+                break;
+            case "W6BRL":
+            case "H6BRL":
+                buttonList.addAll(Arrays.asList(Component.BUTTON1, Component.BUTTON2, Component.BUTTON3,
+                        Component.BUTTON4, Component.BUTTON5, Component.BUTTON6));
+                buttonList.addAll(Arrays.asList(Component.LOWER2, Component.RAISE2));
+                ledList.addAll(Arrays.asList(Component.LED1, Component.LED2, Component.LED3, Component.LED4,
+                        Component.LED5, Component.LED6));
+                break;
+            case "W7B":
+                buttonList.addAll(Arrays.asList(Component.BUTTON1, Component.BUTTON2, Component.BUTTON3,
+                        Component.BUTTON4, Component.BUTTON5, Component.BUTTON6, Component.BUTTON7));
+                ledList.addAll(Arrays.asList(Component.LED1, Component.LED2, Component.LED3, Component.LED4,
+                        Component.LED5, Component.LED6, Component.LED7));
+                break;
+            default:
+                logger.warn("No valid keypad model defined ({}). Assuming Generic model.", mod);
+                // fall through
+            case "Generic":
+                buttonList.addAll(Arrays.asList(Component.BUTTON1, Component.BUTTON2, Component.BUTTON3,
+                        Component.BUTTON4, Component.BUTTON5, Component.BUTTON6, Component.BUTTON7));
+                buttonList
+                        .addAll(Arrays.asList(Component.LOWER1, Component.RAISE1, Component.LOWER2, Component.RAISE2));
+                ledList.addAll(Arrays.asList(Component.LED1, Component.LED2, Component.LED3, Component.LED4,
+                        Component.LED5, Component.LED6, Component.LED7));
+                break;
+        }
+    }
 
     public KeypadHandler(Thing thing) {
         super(thing);
-    }
-
-    @Override
-    public void initialize() {
-        Number id = (Number) getThing().getConfiguration().get("integrationId");
-
-        if (id == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No integrationId");
-
-            return;
-        }
-
-        this.integrationId = id.intValue();
-
-        updateStatus(ThingStatus.ONLINE);
-
-        queryDevice(COMPONENT_LED1, LED_STATE);
-        queryDevice(COMPONENT_LED2, LED_STATE);
-        queryDevice(COMPONENT_LED3, LED_STATE);
-        queryDevice(COMPONENT_LED4, LED_STATE);
-        queryDevice(COMPONENT_LED5, LED_STATE);
-        queryDevice(COMPONENT_LED6, LED_STATE);
-        queryDevice(COMPONENT_LED7, LED_STATE);
-    }
-
-    private ChannelUID channelFromComponent(int component) {
-        String channel;
-
-        switch (component) {
-            case COMPONENT_BUTTON1:
-                channel = CHANNEL_BUTTON1;
-                break;
-
-            case COMPONENT_BUTTON2:
-                channel = CHANNEL_BUTTON2;
-                break;
-
-            case COMPONENT_BUTTON3:
-                channel = CHANNEL_BUTTON3;
-                break;
-
-            case COMPONENT_BUTTON4:
-                channel = CHANNEL_BUTTON4;
-                break;
-
-            case COMPONENT_BUTTON5:
-                channel = CHANNEL_BUTTON5;
-                break;
-
-            case COMPONENT_BUTTON6:
-                channel = CHANNEL_BUTTON6;
-                break;
-
-            case COMPONENT_BUTTON7:
-                channel = CHANNEL_BUTTON7;
-                break;
-
-            case COMPONENT_BUTTONTOPRAISE:
-                channel = CHANNEL_BUTTONTOPRAISE;
-                break;
-
-            case COMPONENT_BUTTONTOPLOWER:
-                channel = CHANNEL_BUTTONTOPLOWER;
-                break;
-
-            case COMPONENT_BUTTONBOTTOMRAISE:
-                channel = CHANNEL_BUTTONBOTTOMRAISE;
-                break;
-
-            case COMPONENT_BUTTONBOTTOMLOWER:
-                channel = CHANNEL_BUTTONBOTTOMLOWER;
-                break;
-
-            case COMPONENT_LED1:
-                channel = CHANNEL_LED1;
-                break;
-
-            case COMPONENT_LED2:
-                channel = CHANNEL_LED2;
-                break;
-
-            case COMPONENT_LED3:
-                channel = CHANNEL_LED3;
-                break;
-
-            case COMPONENT_LED4:
-                channel = CHANNEL_LED4;
-                break;
-
-            case COMPONENT_LED5:
-                channel = CHANNEL_LED5;
-                break;
-
-            case COMPONENT_LED6:
-                channel = CHANNEL_LED6;
-                break;
-
-            case COMPONENT_LED7:
-                channel = CHANNEL_LED7;
-                break;
-
-            default:
-                this.logger.error("Unknown component {}", component);
-                channel = null;
-                break;
-        }
-
-        return channel == null ? null : new ChannelUID(getThing().getUID(), channel);
-    }
-
-    @Override
-    public void handleCommand(final ChannelUID channelUID, Command command) {
-    }
-
-    @Override
-    public int getIntegrationId() {
-        return this.integrationId;
-    }
-
-    @Override
-    public void channelLinked(ChannelUID channelUID) {
-        if (channelUID.getId().equals(CHANNEL_LED1)) {
-            queryDevice(COMPONENT_LED1, LED_STATE);
-        } else if (channelUID.getId().equals(CHANNEL_LED2)) {
-            queryDevice(COMPONENT_LED2, LED_STATE);
-        } else if (channelUID.getId().equals(CHANNEL_LED3)) {
-            queryDevice(COMPONENT_LED3, LED_STATE);
-        } else if (channelUID.getId().equals(CHANNEL_LED4)) {
-            queryDevice(COMPONENT_LED4, LED_STATE);
-        } else if (channelUID.getId().equals(CHANNEL_LED5)) {
-            queryDevice(COMPONENT_LED5, LED_STATE);
-        } else if (channelUID.getId().equals(CHANNEL_LED6)) {
-            queryDevice(COMPONENT_LED6, LED_STATE);
-        } else if (channelUID.getId().equals(CHANNEL_LED7)) {
-            queryDevice(COMPONENT_LED7, LED_STATE);
-        }
-    }
-
-    @Override
-    public void handleUpdate(LutronCommandType type, String... parameters) {
-        if (type == LutronCommandType.DEVICE && parameters.length >= 2) {
-            int component;
-
-            try {
-                component = Integer.parseInt(parameters[0]);
-            } catch (NumberFormatException e) {
-                this.logger.error("Invalid component {} in keypad update event message", parameters[0]);
-
-                return;
-            }
-
-            ChannelUID channelUID = channelFromComponent(component);
-
-            if (channelUID != null) {
-                if (LED_STATE.toString().equals(parameters[1]) && parameters.length >= 3) {
-                    if (LED_ON.toString().equals(parameters[2])) {
-                        updateState(channelUID, OnOffType.ON);
-                    } else if (LED_OFF.toString().equals(parameters[2])) {
-                        updateState(channelUID, OnOffType.OFF);
-                    }
-                } else if (ACTION_PRESS.toString().equals(parameters[1])) {
-                    postCommand(channelUID, OnOffType.ON);
-                } else if (ACTION_RELEASE.toString().equals(parameters[1])) {
-                    postCommand(channelUID, OnOffType.OFF);
-                }
-            }
-        }
     }
 
 }

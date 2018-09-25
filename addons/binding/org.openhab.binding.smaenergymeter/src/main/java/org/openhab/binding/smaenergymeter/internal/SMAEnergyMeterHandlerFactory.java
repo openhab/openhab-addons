@@ -24,7 +24,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Osman Basha - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.smaenergymeter")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.smaenergymeter")
 public class SMAEnergyMeterHandlerFactory extends BaseThingHandlerFactory {
 
     @Override

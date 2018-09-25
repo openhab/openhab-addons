@@ -19,10 +19,9 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.minecraft.MinecraftBindingConstants;
-import org.openhab.binding.minecraft.handler.MinecraftPlayerHandler;
-import org.openhab.binding.minecraft.handler.MinecraftServerHandler;
-import org.openhab.binding.minecraft.handler.MinecraftSignHandler;
+import org.openhab.binding.minecraft.internal.handler.MinecraftPlayerHandler;
+import org.openhab.binding.minecraft.internal.handler.MinecraftServerHandler;
+import org.openhab.binding.minecraft.internal.handler.MinecraftSignHandler;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +32,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mattias Markehed - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.minecraft")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.minecraft")
 public class MinecraftHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MinecraftHandlerFactory.class);

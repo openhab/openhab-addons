@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * All the Nest devices broken up by type.
  *
- * @author David Bennett - Initial Contribution
+ * @author David Bennett - Initial contribution
  */
 public class NestDevices {
 
@@ -34,6 +34,52 @@ public class NestDevices {
     /** Id to smoke detector */
     public Map<String, SmokeDetector> getSmokeCoAlarms() {
         return smokeCoAlarms;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        NestDevices other = (NestDevices) obj;
+        if (cameras == null) {
+            if (other.cameras != null) {
+                return false;
+            }
+        } else if (!cameras.equals(other.cameras)) {
+            return false;
+        }
+        if (smokeCoAlarms == null) {
+            if (other.smokeCoAlarms != null) {
+                return false;
+            }
+        } else if (!smokeCoAlarms.equals(other.smokeCoAlarms)) {
+            return false;
+        }
+        if (thermostats == null) {
+            if (other.thermostats != null) {
+                return false;
+            }
+        } else if (!thermostats.equals(other.thermostats)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((cameras == null) ? 0 : cameras.hashCode());
+        result = prime * result + ((smokeCoAlarms == null) ? 0 : smokeCoAlarms.hashCode());
+        result = prime * result + ((thermostats == null) ? 0 : thermostats.hashCode());
+        return result;
     }
 
     @Override

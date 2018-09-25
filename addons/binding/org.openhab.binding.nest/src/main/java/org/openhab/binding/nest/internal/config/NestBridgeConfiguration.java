@@ -8,25 +8,29 @@
  */
 package org.openhab.binding.nest.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The configuration for the Nest bridge, allowing it to talk to Nest.
  *
- * @author David Bennett - initial contribution
+ * @author David Bennett - Initial contribution
  */
+@NonNullByDefault
 public class NestBridgeConfiguration {
     public static final String PRODUCT_ID = "productId";
     /** Product ID from the Nest product page. */
-    public String productId;
+    public String productId = "";
 
     public static final String PRODUCT_SECRET = "productSecret";
     /** Product secret from the Nest product page. */
-    public String productSecret;
+    public String productSecret = "";
 
     public static final String PINCODE = "pincode";
     /** Product pincode from the Nest authorization page. */
-    public String pincode;
+    public @Nullable String pincode;
 
     public static final String ACCESS_TOKEN = "accessToken";
     /** The access token to use once retrieved from Nest. */
-    public String accessToken;
+    public @Nullable String accessToken;
 }

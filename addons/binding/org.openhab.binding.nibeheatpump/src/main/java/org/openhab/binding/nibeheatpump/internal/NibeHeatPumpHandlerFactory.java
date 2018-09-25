@@ -25,7 +25,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Pauli Anttila - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.nibeheatpump")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.nibeheatpump")
 public class NibeHeatPumpHandlerFactory extends BaseThingHandlerFactory {
 
     @Override

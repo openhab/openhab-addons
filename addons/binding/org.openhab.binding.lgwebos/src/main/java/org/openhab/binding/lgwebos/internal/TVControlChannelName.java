@@ -10,8 +10,11 @@ package org.openhab.binding.lgwebos.internal;
 
 import java.util.Optional;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.lgwebos.handler.LGWebOSHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +32,8 @@ import com.connectsdk.service.command.ServiceSubscription;
  *
  * @author Sebastian Prehn - initial contribution
  */
-public class TVControlChannelName extends BaseChannelHandler<ChannelListener> {
+@NonNullByDefault
+public class TVControlChannelName extends BaseChannelHandler<ChannelListener, Object> {
     private final Logger logger = LoggerFactory.getLogger(TVControlChannelName.class);
 
     private TVControl getControl(ConnectableDevice device) {
@@ -37,7 +41,8 @@ public class TVControlChannelName extends BaseChannelHandler<ChannelListener> {
     }
 
     @Override
-    public void onReceiveCommand(ConnectableDevice device, String channelId, LGWebOSHandler handler, Command command) {
+    public void onReceiveCommand(@Nullable ConnectableDevice device, String channelId, LGWebOSHandler handler,
+            Command command) {
         // nothing to do, this is read only.
     }
 
@@ -48,17 +53,18 @@ public class TVControlChannelName extends BaseChannelHandler<ChannelListener> {
             return Optional.of(getControl(device).subscribeCurrentChannel(new ChannelListener() {
 
                 @Override
-                public void onError(ServiceCommandError error) {
+                public void onError(@Nullable ServiceCommandError error) {
                     logger.debug("{} {} {}", error.getCode(), error.getPayload(), error.getMessage());
+                    handler.postUpdate(channelId, UnDefType.UNDEF);
                 }
 
                 @Override
-                public void onSuccess(ChannelInfo channelInfo) {
+                public void onSuccess(@Nullable ChannelInfo channelInfo) {
                     handler.postUpdate(channelId, new StringType(channelInfo.getName()));
                 }
             }));
         } else {
-            return null;
+            return Optional.empty();
         }
     }
 }

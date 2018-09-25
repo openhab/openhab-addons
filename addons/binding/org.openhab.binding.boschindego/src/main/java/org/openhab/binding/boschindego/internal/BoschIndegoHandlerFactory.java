@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.boschindego.internal;
 
-import static org.openhab.binding.boschindego.BoschIndegoBindingConstants.THING_TYPE_INDEGO;
+import static org.openhab.binding.boschindego.internal.BoschIndegoBindingConstants.THING_TYPE_INDEGO;
 
 import java.util.Collections;
 import java.util.Set;
@@ -18,7 +18,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.boschindego.handler.BoschIndegoHandler;
+import org.openhab.binding.boschindego.internal.handler.BoschIndegoHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -27,7 +27,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Jonas Fleck - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.boschindego")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.boschindego")
 public class BoschIndegoHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_INDEGO);

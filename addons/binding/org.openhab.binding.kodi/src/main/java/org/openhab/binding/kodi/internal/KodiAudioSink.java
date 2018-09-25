@@ -24,7 +24,7 @@ import org.eclipse.smarthome.core.audio.UnsupportedAudioFormatException;
 import org.eclipse.smarthome.core.audio.UnsupportedAudioStreamException;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.openhab.binding.kodi.handler.KodiHandler;
+import org.openhab.binding.kodi.internal.handler.KodiHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +44,7 @@ public class KodiAudioSink implements AudioSink {
     private static final Set<Class<? extends AudioStream>> SUPPORTED_AUDIO_STREAMS = Collections
             .unmodifiableSet(Stream.of(FixedLengthAudioStream.class, URLAudioStream.class).collect(Collectors.toSet()));
     // Needed because Kodi does multiple requests for the stream
-    private final int STREAM_TIMEOUT = 30;
+    private static final int STREAM_TIMEOUT = 30;
 
     private final KodiHandler handler;
     private final AudioHTTPServer audioHTTPServer;

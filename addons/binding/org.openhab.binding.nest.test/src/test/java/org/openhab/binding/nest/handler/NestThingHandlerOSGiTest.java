@@ -22,11 +22,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.function.Function;
 
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.events.EventPublisher;
-import org.eclipse.smarthome.core.items.GenericItem;
+import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.ItemFactory;
 import org.eclipse.smarthome.core.items.ItemNotFoundException;
 import org.eclipse.smarthome.core.items.ItemRegistry;
@@ -46,6 +47,9 @@ import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.link.ItemChannelLink;
 import org.eclipse.smarthome.core.thing.link.ManagedItemChannelLinkProvider;
 import org.eclipse.smarthome.core.thing.type.ChannelDefinition;
+import org.eclipse.smarthome.core.thing.type.ChannelGroupDefinition;
+import org.eclipse.smarthome.core.thing.type.ChannelGroupType;
+import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeRegistry;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeRegistry;
 import org.eclipse.smarthome.core.thing.type.ThingType;
@@ -86,6 +90,7 @@ public abstract class NestThingHandlerOSGiTest extends JavaOSGiTest {
     private static NestTestApiServlet servlet = new NestTestApiServlet();
 
     private ChannelTypeRegistry channelTypeRegistry;
+    private ChannelGroupTypeRegistry channelGroupTypeRegistry;
     private ItemFactory itemFactory;
     private ItemRegistry itemRegistry;
     private EventPublisher eventPublisher;
@@ -125,6 +130,9 @@ public abstract class NestThingHandlerOSGiTest extends JavaOSGiTest {
 
         channelTypeRegistry = getService(ChannelTypeRegistry.class);
         assertThat("Could not get ChannelTypeRegistry", channelTypeRegistry, is(notNullValue()));
+
+        channelGroupTypeRegistry = getService(ChannelGroupTypeRegistry.class);
+        assertThat("Could not get ChannelGroupTypeRegistry", channelGroupTypeRegistry, is(notNullValue()));
 
         eventPublisher = getService(EventPublisher.class);
         assertThat("Could not get EventPublisher", eventPublisher, is(notNullValue()));
@@ -185,17 +193,35 @@ public abstract class NestThingHandlerOSGiTest extends JavaOSGiTest {
         ThingType thingType = thingTypeRegistry.getThingType(thingTypeUID);
 
         List<Channel> channels = new ArrayList<>();
-        for (ChannelDefinition channelDefinition : thingType.getChannelDefinitions()) {
-            ChannelType channelType = channelTypeRegistry.getChannelType(channelDefinition.getChannelTypeUID());
-            if (channelType != null) {
-                channels.add(ChannelBuilder
-                        .create(new ChannelUID(thingUID, channelDefinition.getId()), channelType.getItemType())
-                        .build());
+        channels.addAll(buildChannels(thingUID, thingType.getChannelDefinitions(), (id) -> id));
+
+        for (ChannelGroupDefinition channelGroupDefinition : thingType.getChannelGroupDefinitions()) {
+            ChannelGroupType channelGroupType = channelGroupTypeRegistry
+                    .getChannelGroupType(channelGroupDefinition.getTypeUID());
+            String groupId = channelGroupDefinition.getId();
+            if (channelGroupType != null) {
+                channels.addAll(
+                        buildChannels(thingUID, channelGroupType.getChannelDefinitions(), (id) -> groupId + "#" + id));
             }
         }
 
         channels.sort((Channel c1, Channel c2) -> c1.getUID().getId().compareTo(c2.getUID().getId()));
         return channels;
+    }
+
+    protected List<Channel> buildChannels(ThingUID thingUID, List<ChannelDefinition> channelDefinitions,
+            Function<String, String> channelIdFunction) {
+        List<Channel> result = new ArrayList<>();
+        for (ChannelDefinition channelDefinition : channelDefinitions) {
+            ChannelType channelType = channelTypeRegistry.getChannelType(channelDefinition.getChannelTypeUID());
+            if (channelType != null) {
+                result.add(ChannelBuilder
+                        .create(new ChannelUID(thingUID, channelIdFunction.apply(channelDefinition.getId())),
+                                channelType.getItemType())
+                        .build());
+            }
+        }
+        return result;
     }
 
     @SuppressWarnings("unchecked")
@@ -224,7 +250,7 @@ public abstract class NestThingHandlerOSGiTest extends JavaOSGiTest {
     protected void createAndLinkItems() {
         thing.getChannels().forEach(c -> {
             String itemName = getItemName(c.getUID().getId());
-            GenericItem item = itemFactory.createItem(c.getAcceptedItemType(), itemName);
+            Item item = itemFactory.createItem(c.getAcceptedItemType(), itemName);
             if (item != null) {
                 itemRegistry.add(item);
             }
@@ -255,7 +281,7 @@ public abstract class NestThingHandlerOSGiTest extends JavaOSGiTest {
     }
 
     protected String getItemName(String channelId) {
-        return getThingId() + "_" + channelId;
+        return getThingId() + "_" + channelId.replaceAll("#", "_");
     }
 
     private State getItemState(String channelId) {

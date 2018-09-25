@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.avmfritz.internal.hardware.callbacks;
 
+import static org.eclipse.jetty.http.HttpMethod.GET;
+
 import java.io.StringReader;
 
 import javax.xml.bind.JAXBException;
@@ -15,9 +17,8 @@ import javax.xml.bind.Unmarshaller;
 
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.openhab.binding.avmfritz.handler.AVMFritzBaseBridgeHandler;
-import org.openhab.binding.avmfritz.internal.ahamodel.AVMFritzBaseModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.DevicelistModel;
+import org.openhab.binding.avmfritz.internal.handler.AVMFritzBaseBridgeHandler;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaWebInterface;
 import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
 import org.slf4j.Logger;
@@ -43,10 +44,10 @@ public class FritzAhaUpdateXmlCallback extends FritzAhaReauthCallback {
      * Constructor
      *
      * @param webIface Webinterface to FRITZ!Box
-     * @param handler Bridge handler that will update things.
+     * @param handler  Bridge handler that will update things.
      */
     public FritzAhaUpdateXmlCallback(FritzAhaWebInterface webIface, AVMFritzBaseBridgeHandler handler) {
-        super(WEBSERVICE_PATH, "switchcmd=getdevicelistinfos", webIface, Method.GET, 1);
+        super(WEBSERVICE_PATH, "switchcmd=getdevicelistinfos", webIface, GET, 1);
         this.handler = handler;
     }
 
@@ -59,15 +60,15 @@ public class FritzAhaUpdateXmlCallback extends FritzAhaReauthCallback {
                 Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
                 DevicelistModel model = (DevicelistModel) u.unmarshal(new StringReader(response));
                 if (model != null) {
-                    for (AVMFritzBaseModel device : model.getDevicelist()) {
-                        handler.addDeviceList(device);
-                    }
-                    handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, "FRITZ!Box online");
+                    handler.addDeviceList(model.getDevicelist());
                 } else {
                     logger.warn("no model in response");
                 }
+                handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
             } catch (JAXBException e) {
                 logger.error("Exception creating Unmarshaller: {}", e.getLocalizedMessage(), e);
+                handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        e.getLocalizedMessage());
             }
         } else {
             logger.debug("request is invalid: {}", status);

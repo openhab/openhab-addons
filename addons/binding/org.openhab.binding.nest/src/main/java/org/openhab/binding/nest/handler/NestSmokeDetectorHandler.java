@@ -12,6 +12,7 @@ import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
 import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
 import static org.openhab.binding.nest.NestBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -26,14 +27,15 @@ import org.slf4j.LoggerFactory;
 /**
  * The smoke detector handler, it handles the data from Nest for the smoke detector.
  *
- * @author David Bennett - Initial Contribution
+ * @author David Bennett - Initial contribution
  * @author Wouter Born - Handle channel refresh command
  */
+@NonNullByDefault
 public class NestSmokeDetectorHandler extends NestBaseHandler<SmokeDetector> {
     private final Logger logger = LoggerFactory.getLogger(NestSmokeDetectorHandler.class);
 
     public NestSmokeDetectorHandler(Thing thing) {
-        super(thing);
+        super(thing, SmokeDetector.class);
     }
 
     @Override
@@ -66,26 +68,25 @@ public class NestSmokeDetectorHandler extends NestBaseHandler<SmokeDetector> {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (REFRESH.equals(command)) {
-            if (getLastUpdate() != null) {
-                updateState(channelUID, getChannelState(channelUID, getLastUpdate()));
+            SmokeDetector lastUpdate = getLastUpdate();
+            if (lastUpdate != null) {
+                updateState(channelUID, getChannelState(channelUID, lastUpdate));
             }
         }
     }
 
     @Override
-    public void onNewNestSmokeDetectorData(SmokeDetector smokeDetector) {
-        if (isNotHandling(smokeDetector)) {
-            logger.debug("Smoke detector {} is not handling update for {}", getDeviceId(), smokeDetector.getDeviceId());
-            return;
-        }
+    protected void update(SmokeDetector oldSmokeDetector, SmokeDetector smokeDetector) {
+        logger.debug("Updating {}", getThing().getUID());
 
-        logger.debug("Updating smoke detector {}", smokeDetector.getDeviceId());
-
-        setLastUpdate(smokeDetector);
-        updateChannels(smokeDetector);
-        updateStatus(smokeDetector.isOnline() == null ? ThingStatus.UNKNOWN
-                : smokeDetector.isOnline() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
+        updateLinkedChannels(oldSmokeDetector, smokeDetector);
         updateProperty(PROPERTY_FIRMWARE_VERSION, smokeDetector.getSoftwareVersion());
+
+        ThingStatus newStatus = smokeDetector.isOnline() == null ? ThingStatus.UNKNOWN
+                : smokeDetector.isOnline() ? ThingStatus.ONLINE : ThingStatus.OFFLINE;
+        if (newStatus != thing.getStatus()) {
+            updateStatus(newStatus);
+        }
     }
 
 }

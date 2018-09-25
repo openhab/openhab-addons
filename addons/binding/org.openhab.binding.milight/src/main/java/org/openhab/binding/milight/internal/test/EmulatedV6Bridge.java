@@ -15,7 +15,7 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import org.openhab.binding.milight.MilightBindingConstants;
+import org.openhab.binding.milight.internal.MilightBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
  * as well as test the binding to be conformant to the protocol.
  *
  * @author David Graeff - Initial contribution
- * @since 2.1
  */
 public class EmulatedV6Bridge {
     protected final Logger logger = LoggerFactory.getLogger(EmulatedV6Bridge.class);

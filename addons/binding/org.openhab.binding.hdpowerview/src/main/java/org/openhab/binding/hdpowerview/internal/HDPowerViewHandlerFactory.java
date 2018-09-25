@@ -17,10 +17,9 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.hdpowerview.HDPowerViewBindingConstants;
-import org.openhab.binding.hdpowerview.handler.HDPowerViewHubHandler;
-import org.openhab.binding.hdpowerview.handler.HDPowerViewShadeHandler;
 import org.openhab.binding.hdpowerview.internal.discovery.HDPowerViewShadeDiscoveryService;
+import org.openhab.binding.hdpowerview.internal.handler.HDPowerViewHubHandler;
+import org.openhab.binding.hdpowerview.internal.handler.HDPowerViewShadeHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -29,7 +28,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Andy Lintner - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.hdpowerview")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.hdpowerview")
 public class HDPowerViewHandlerFactory extends BaseThingHandlerFactory {
 
     @Override

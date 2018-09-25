@@ -10,6 +10,7 @@ package org.openhab.binding.plugwise.internal;
 
 import java.time.LocalDateTime;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.plugwise.internal.protocol.Message;
 
 /**
@@ -17,6 +18,7 @@ import org.openhab.binding.plugwise.internal.protocol.Message;
  *
  * @author Wouter Born - Initial contribution
  */
+@NonNullByDefault
 public class PlugwiseQueuedMessage {
 
     private final PlugwiseMessagePriority priority;

@@ -164,16 +164,20 @@ http://<Your_Yamaha_ID>/YamahaRemoteControl/UnitDesc.xml
 As Yamaha introduces new models there may be variations between XML structure.
 In an attempt to improve the addon maintenance and troubleshooting selected model's `desc.xml`' has been collected from community users:
 
+* [HTR-4069](desc_HTR-4069.xml) 
+* [RX-A2000](desc_RX-A2000.xml) 
+* [RX-A3070](desc_RX-A3070.xml) 
 * [RX-S601D](desc_RX-S601D.xml) 
 * [RX-V479](desc_RX-V479.xml) 
 * [RX-V583](desc_RX-V583.xml) 
 * [RX-V675](desc_RX-V675.xml) 
 * [RX-V3900](desc_RX-V3900.xml) 
-* [HTR-4069](desc_HTR-4069.xml) 
 
 ### Key differences between models
 
-Key element | Models | Desc
----------|-----------|----
-Volume | RX-V3900 | Volume command uses `Vol` element, while other models have `Volume`. There is no `Feature_Existence` element on system status. 
-Zone B | HTR-4069 | `Zone_2` feature does not exist, but instead there is `Zone_B` commands under `Main_Zone` with only power, mute and volume control.
+| Key element | Models   | Desc                                                                                                                                |
+|-------------|----------|-------------------------------------------------------------------------------------------------------------------------------------|
+| Volume      | RX-V3900 | Volume command uses `Vol` element, while other models have `Volume`. There is no `Feature_Existence` element on system status.      |
+| Zone B      | HTR-4069 | `Zone_2` feature does not exist, but instead there is `Zone_B` commands under `Main_Zone` with only power, mute and volume control. |
+| Preset      | RX-V3900 | The preset values on this model are strings `A1`, `A2`, `B1`, `B2` instead of numbers.                                              |
+| Party Mode  | RX-A2000 | Has party mode support, although its XML descriptor does not mention it.                                                            |

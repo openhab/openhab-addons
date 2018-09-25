@@ -16,11 +16,11 @@ import javax.jmdns.ServiceInfo;
 
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.eclipse.smarthome.io.transport.mdns.discovery.MDNSDiscoveryParticipant;
-import org.openhab.binding.freebox.FreeboxBindingConstants;
+import org.openhab.binding.freebox.internal.FreeboxBindingConstants;
 import org.openhab.binding.freebox.internal.config.FreeboxServerConfiguration;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * The {@link FreeboxServerDiscoveryParticipant} is responsible for discovering
  * the Freebox Server (bridge) thing using mDNS discovery service
  *
- * @author Laurent Garnier
+ * @author Laurent Garnier - Initial contribution
  */
 @Component(immediate = true)
 public class FreeboxServerDiscoveryParticipant implements MDNSDiscoveryParticipant {
@@ -51,12 +51,10 @@ public class FreeboxServerDiscoveryParticipant implements MDNSDiscoveryParticipa
 
     @Override
     public ThingUID getThingUID(ServiceInfo service) {
-        if (service != null) {
-            if ((service.getType() != null) && service.getType().equals(getServiceType())
-                    && (service.getPropertyString("uid") != null)) {
-                return new ThingUID(FreeboxBindingConstants.FREEBOX_BRIDGE_TYPE_SERVER,
-                        service.getPropertyString("uid").replaceAll("[^A-Za-z0-9_]", "_"));
-            }
+        if ((service.getType() != null) && service.getType().equals(getServiceType())
+                && (service.getPropertyString("uid") != null)) {
+            return new ThingUID(FreeboxBindingConstants.FREEBOX_BRIDGE_TYPE_SERVER,
+                    service.getPropertyString("uid").replaceAll("[^A-Za-z0-9_]", "_"));
         }
         return null;
     }

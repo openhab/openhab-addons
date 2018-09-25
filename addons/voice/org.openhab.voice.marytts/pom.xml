@@ -4,15 +4,15 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
+    <groupId>org.openhab.voice</groupId>
     <artifactId>pom</artifactId>
-    <groupId>org.openhab.addons.voice</groupId>
-    <version>2.3.0-SNAPSHOT</version>
+    <version>2.4.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.voice.marytts</artifactId>
   <packaging>eclipse-plugin</packaging>
 
-  <name>Mary TTS Integration</name>
+  <name>Mary Text-to-Speech</name>
 
   <build>
 
@@ -29,15 +29,6 @@
       <plugin>
         <groupId>com.savage7.maven.plugins</groupId>
         <artifactId>maven-external-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>resolve-install-external-dependencies</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>resolve-external</goal>
-            </goals>
-          </execution>
-        </executions>
         <configuration>
           <stagingDirectory>${basedir}/lib</stagingDirectory>
           <artifactItems>
@@ -170,6 +161,15 @@
 
           </artifactItems>
         </configuration>
+        <executions>
+          <execution>
+            <id>resolve-install-external-dependencies</id>
+            <goals>
+              <goal>resolve-external</goal>
+            </goals>
+            <phase>process-resources</phase>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
 

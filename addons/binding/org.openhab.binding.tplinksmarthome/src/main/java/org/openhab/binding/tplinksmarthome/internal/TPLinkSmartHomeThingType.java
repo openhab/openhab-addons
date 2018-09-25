@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.openhab.binding.tplinksmarthome.TPLinkSmartHomeBindingConstants;
 
 /**
  * ThingType enum with all supported TP-Link Smart Home devices.
@@ -44,6 +43,10 @@ enum TPLinkSmartHomeThingType {
 
     // Switch Thing Type UIDs
     HS200("hs200", DeviceType.SWITCH),
+    HS210("hs210", DeviceType.SWITCH),
+
+    // Dimmer Thing Type UIDs
+    HS220("hs220", DeviceType.DIMMER),
 
     // Range Extender Thing Type UIDs
     RE270K("re270", DeviceType.RANGE_EXTENDER),
@@ -96,7 +99,18 @@ enum TPLinkSmartHomeThingType {
      */
     public static boolean isSwitchingDevice(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_LIST.stream().filter(t -> t.is(thingTypeUID))
-                .anyMatch(t -> t.type != DeviceType.BULB);
+                .anyMatch(t -> t.type == DeviceType.PLUG || t.type == DeviceType.SWITCH);
+    }
+
+    /**
+     * Returns true if the given {@link ThingTypeUID} matches a device that is a range extender.
+     *
+     * @param thingTypeUID if the check
+     * @return true if it's a range extender
+     */
+    public static boolean isRangeExtenderDevice(ThingTypeUID thingTypeUID) {
+        return SUPPORTED_THING_TYPES_LIST.stream().filter(t -> t.is(thingTypeUID))
+                .anyMatch(t -> t.type == DeviceType.RANGE_EXTENDER);
     }
 
     /**
@@ -117,6 +131,10 @@ enum TPLinkSmartHomeThingType {
          * Light Bulb device.
          */
         BULB,
+        /**
+         * Dimmer device.
+         */
+        DIMMER,
         /**
          * Plug device.
          */

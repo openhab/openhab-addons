@@ -31,7 +31,7 @@ import com.google.common.collect.Sets;
  *
  * @author Dennis Dollinger - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.tankerkoenig")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.tankerkoenig")
 public class TankerkoenigHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.union(BRIDGE_THING_TYPES_UIDS,
             TankerkoenigBindingConstants.SUPPORTED_THING_TYPES_UIDS);

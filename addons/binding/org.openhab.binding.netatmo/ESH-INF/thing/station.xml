@@ -38,7 +38,7 @@
 
 		<properties>
 			<property name="signalLevels">86,71,56</property>
-			<property name="refreshPeriod">600000</property>
+			<property name="refreshPeriod">auto</property>
 		</properties>		 
 
 		<representation-property>id</representation-property>
@@ -93,6 +93,8 @@
 		<channels>
 			<channel id="WindAngle" typeId="WindAngle" />
 			<channel id="WindStrength" typeId="WindStrength" />
+			<channel id="MaxWindStrength" typeId="MaxWindStrength" />
+			<channel id="DateMaxWindStrength" typeId="DateMaxWindStrength" />
 			<channel id="GustAngle" typeId="GustAngle" />	  
 			<channel id="GustStrength" typeId="GustStrength" />
 			<!--  Common to all modules -->

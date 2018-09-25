@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.nikohomecontrol.internal.discovery;
 
-import static org.openhab.binding.nikohomecontrol.NikoHomeControlBindingConstants.*;
+import static org.openhab.binding.nikohomecontrol.internal.NikoHomeControlBindingConstants.*;
 
 import java.util.Date;
 import java.util.Map;
@@ -17,9 +17,10 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.nikohomecontrol.NikoHomeControlBindingConstants;
-import org.openhab.binding.nikohomecontrol.handler.NikoHomeControlBridgeHandler;
+import org.openhab.binding.nikohomecontrol.internal.NikoHomeControlBindingConstants;
+import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlBridgeHandler;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcAction;
+import org.openhab.binding.nikohomecontrol.internal.protocol.NhcThermostat;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlCommunication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,11 +30,11 @@ import org.slf4j.LoggerFactory;
  * {@link NikoHomeControlDiscoveryService}
  * is used to return Niko Home Control Actions as things to the framework.
  *
- * @author Mark Herwege
+ * @author Mark Herwege - Initial Contribution
  */
 public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
 
-    private Logger logger = LoggerFactory.getLogger(NikoHomeControlDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(NikoHomeControlDiscoveryService.class);
 
     private static final int TIMEOUT = 5;
 
@@ -82,17 +83,17 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
             switch (nhcAction.getType()) {
                 case 0: // handles all-off
                 case 1: // switch
-                    addDevice(new ThingUID(THING_TYPE_ON_OFF_LIGHT, this.handler.getThing().getUID(),
+                    addActionDevice(new ThingUID(THING_TYPE_ON_OFF_LIGHT, this.handler.getThing().getUID(),
                             Integer.toString(actionId)), actionId, thingName, thingLocation);
 
                     break;
                 case 2: // dimmer
-                    addDevice(new ThingUID(THING_TYPE_DIMMABLE_LIGHT, this.handler.getThing().getUID(),
+                    addActionDevice(new ThingUID(THING_TYPE_DIMMABLE_LIGHT, this.handler.getThing().getUID(),
                             Integer.toString(actionId)), actionId, thingName, thingLocation);
                     break;
                 case 4: // rollershutter
                 case 5:
-                    addDevice(new ThingUID(THING_TYPE_BLIND, this.handler.getThing().getUID(),
+                    addActionDevice(new ThingUID(THING_TYPE_BLIND, this.handler.getThing().getUID(),
                             Integer.toString(actionId)), actionId, thingName, thingLocation);
                     break;
                 default:
@@ -100,11 +101,29 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
                             actionId, thingName);
             }
         }
+
+        Map<Integer, NhcThermostat> thermostats = nhcComm.getThermostats();
+
+        for (Map.Entry<Integer, NhcThermostat> thermostatEntry : thermostats.entrySet()) {
+
+            int thermostatId = thermostatEntry.getKey();
+            NhcThermostat nhcThermostat = thermostatEntry.getValue();
+            String thingName = nhcThermostat.getName();
+            String thingLocation = nhcThermostat.getLocation();
+            addThermostatDevice(new ThingUID(THING_TYPE_THERMOSTAT, this.handler.getThing().getUID(),
+                    Integer.toString(thermostatId)), thermostatId, thingName, thingLocation);
+        }
     }
 
-    private void addDevice(ThingUID uid, int actionId, String thingName, String thingLocation) {
+    private void addActionDevice(ThingUID uid, int actionId, String thingName, String thingLocation) {
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withLabel(thingName)
                 .withProperty("Location", thingLocation).withProperty(CONFIG_ACTION_ID, actionId).build();
+        thingDiscovered(discoveryResult);
+    }
+
+    private void addThermostatDevice(ThingUID uid, int thermostatId, String thingName, String thingLocation) {
+        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withLabel(thingName)
+                .withProperty("Location", thingLocation).withProperty(CONFIG_THERMOSTAT_ID, thermostatId).build();
         thingDiscovered(discoveryResult);
     }
 

@@ -8,14 +8,17 @@
  */
 package org.openhab.binding.plugwise.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link PlugwiseStickConfig} class represents the configuration for a Plugwise Stick.
  *
  * @author Wouter Born - Initial contribution
  */
+@NonNullByDefault
 public class PlugwiseStickConfig {
 
-    private String serialPort;
+    private String serialPort = "";
     private int messageWaitTime = 150; // milliseconds
 
     public String getSerialPort() {

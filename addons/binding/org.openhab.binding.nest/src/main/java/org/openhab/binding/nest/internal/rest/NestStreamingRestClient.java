@@ -20,6 +20,8 @@ import javax.net.ssl.SSLContext;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.glassfish.jersey.SslConfigurator;
 import org.glassfish.jersey.media.sse.EventSource;
 import org.glassfish.jersey.media.sse.InboundEvent;
@@ -36,8 +38,10 @@ import org.slf4j.LoggerFactory;
 /**
  * A client that generates events based on Nest streaming REST API Server-Sent Events (SSE).
  *
+ * @author Wouter Born - Initial contribution
  * @author Wouter Born - Replace polling with REST streaming
  */
+@NonNullByDefault
 public class NestStreamingRestClient {
 
     // Assume connection timeout when 2 keep alive message should have been received
@@ -53,14 +57,14 @@ public class NestStreamingRestClient {
 
     private final List<NestStreamingDataListener> listeners = new CopyOnWriteArrayList<>();
     private final ScheduledExecutorService scheduler;
+    private final Object startStopLock = new Object();
 
     private String accessToken;
-    private ScheduledFuture<?> checkConnectionJob;
+    private @Nullable ScheduledFuture<?> checkConnectionJob;
     private boolean connected;
-    private boolean openingEventSource;
-    private EventSource eventSource;
+    private @Nullable EventSource eventSource;
     private long lastEventTimestamp;
-    private TopLevelData lastReceivedTopLevelData;
+    private @Nullable TopLevelData lastReceivedTopLevelData;
     private NestRedirectUrlSupplier redirectUrlSupplier;
 
     public NestStreamingRestClient(String accessToken, NestRedirectUrlSupplier redirectUrlSupplier,
@@ -83,12 +87,16 @@ public class NestStreamingRestClient {
         long millisSinceLastEvent = System.currentTimeMillis() - lastEventTimestamp;
         if (millisSinceLastEvent > CONNECTION_TIMEOUT_MILLIS) {
             logger.debug("Check: Disconnected from streaming events, millisSinceLastEvent={}", millisSinceLastEvent);
-            if (connected) {
-                connected = false;
-                listeners.forEach(listener -> listener.onDisconnected());
+            synchronized (startStopLock) {
+                stopCheckConnectionJob(false);
+                if (connected) {
+                    connected = false;
+                    listeners.forEach(listener -> listener.onDisconnected());
+                }
+                redirectUrlSupplier.resetCache();
+                reopenEventSource();
+                startCheckConnectionJob();
             }
-            redirectUrlSupplier.resetCache();
-            reopenEventSource();
         } else {
             logger.debug("Check: Receiving streaming events, millisSinceLastEvent={}", millisSinceLastEvent);
         }
@@ -99,62 +107,65 @@ public class NestStreamingRestClient {
      * itself.
      */
     private void reopenEventSource() {
-        if (openingEventSource) {
-            logger.debug("EventSource is currently being opened");
-            return;
-        }
+        try {
+            logger.debug("Reopening EventSource");
+            closeEventSource(10, TimeUnit.SECONDS);
 
-        synchronized (this) {
-            try {
-                logger.debug("Reopening EventSource");
-                openingEventSource = true;
+            logger.debug("Opening new EventSource");
+            EventSource localEventSource = createEventSource();
+            localEventSource.open();
 
-                if (eventSource != null) {
-                    if (!eventSource.isOpen()) {
-                        logger.debug("Existing EventSource is already closed");
-                    } else if (eventSource.close(10, TimeUnit.SECONDS)) {
-                        logger.debug("Succesfully closed existing EventSource");
-                    } else {
-                        logger.debug("Failed to close existing EventSource");
-                    }
-                    eventSource = null;
-                }
-
-                logger.debug("Opening new EventSource");
-                eventSource = createEventSource();
-                eventSource.open();
-            } catch (FailedResolvingNestUrlException e) {
-                logger.debug("Failed to resolve Nest redirect URL while opening new EventSource");
-            } finally {
-                openingEventSource = false;
-            }
+            eventSource = localEventSource;
+        } catch (FailedResolvingNestUrlException e) {
+            logger.debug("Failed to resolve Nest redirect URL while opening new EventSource");
         }
     }
 
     public void start() {
-        synchronized (this) {
+        synchronized (startStopLock) {
             logger.debug("Opening EventSource and starting checkConnection job");
             reopenEventSource();
-
-            if (checkConnectionJob == null || checkConnectionJob.isCancelled()) {
-                checkConnectionJob = scheduler.scheduleWithFixedDelay(this::checkConnection, KEEP_ALIVE_MILLIS,
-                        KEEP_ALIVE_MILLIS, TimeUnit.MILLISECONDS);
-            }
+            startCheckConnectionJob();
             logger.debug("Started");
         }
     }
 
     public void stop() {
-        synchronized (this) {
+        synchronized (startStopLock) {
             logger.debug("Closing EventSource and stopping checkConnection job");
-            if (eventSource != null) {
-                eventSource.close(0, TimeUnit.SECONDS);
-            }
-            if (checkConnectionJob != null && !checkConnectionJob.isCancelled()) {
-                checkConnectionJob.cancel(true);
-                checkConnectionJob = null;
-            }
+            stopCheckConnectionJob(true);
+            closeEventSource(0, TimeUnit.SECONDS);
             logger.debug("Stopped");
+        }
+    }
+
+    private void closeEventSource(long timeout, TimeUnit timeoutUnit) {
+        EventSource localEventSource = eventSource;
+        if (localEventSource != null) {
+            if (!localEventSource.isOpen()) {
+                logger.debug("Existing EventSource is already closed");
+            } else if (localEventSource.close(timeout, timeoutUnit)) {
+                logger.debug("Succesfully closed existing EventSource");
+            } else {
+                logger.debug("Failed to close existing EventSource");
+            }
+            eventSource = null;
+        }
+    }
+
+    private void startCheckConnectionJob() {
+        ScheduledFuture<?> localCheckConnectionJob = checkConnectionJob;
+        if (localCheckConnectionJob == null || localCheckConnectionJob.isCancelled()) {
+            checkConnectionJob = scheduler.scheduleWithFixedDelay(this::checkConnection, CONNECTION_TIMEOUT_MILLIS,
+                    KEEP_ALIVE_MILLIS, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    private void stopCheckConnectionJob(boolean mayInterruptIfRunning) {
+        ScheduledFuture<?> localCheckConnectionJob = checkConnectionJob;
+        if (localCheckConnectionJob != null && !localCheckConnectionJob.isCancelled()) {
+            localCheckConnectionJob.cancel(mayInterruptIfRunning);
+            checkConnectionJob = null;
         }
     }
 
@@ -166,7 +177,7 @@ public class NestStreamingRestClient {
         return listeners.remove(listener);
     }
 
-    public TopLevelData getLastReceivedTopLevelData() {
+    public @Nullable TopLevelData getLastReceivedTopLevelData() {
         return lastReceivedTopLevelData;
     }
 
@@ -197,8 +208,9 @@ public class NestStreamingRestClient {
                 logger.debug("Event stream opened");
             } else if (PUT.equals(name)) {
                 logger.debug("Data has changed (or initial data sent)");
-                lastReceivedTopLevelData = NestUtils.fromJson(data, TopLevelStreamingData.class).getData();
-                listeners.forEach(listener -> listener.onNewTopLevelData(lastReceivedTopLevelData));
+                TopLevelData topLevelData = NestUtils.fromJson(data, TopLevelStreamingData.class).getData();
+                lastReceivedTopLevelData = topLevelData;
+                listeners.forEach(listener -> listener.onNewTopLevelData(topLevelData));
             } else {
                 logger.debug("Received unhandled event with name '{}' and data '{}'", name, data);
             }
