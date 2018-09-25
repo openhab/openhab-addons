@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.satel.handler;
+package org.openhab.binding.satel.internal.handler;
 
-import static org.openhab.binding.satel.SatelBindingConstants.THING_TYPE_ETHM1;
+import static org.openhab.binding.satel.internal.SatelBindingConstants.THING_TYPE_ETHM1;
 import static org.openhab.binding.satel.internal.config.Ethm1Config.HOST;
 
 import java.util.Collection;
