@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.urtsi.handler;
+package org.openhab.binding.urtsi.internal.handler;
 
 import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
@@ -18,7 +18,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.urtsi.UrtsiBindingConstants;
+import org.openhab.binding.urtsi.internal.UrtsiBindingConstants;
 import org.openhab.binding.urtsi.internal.config.RtsDeviceConfig;
 import org.openhab.binding.urtsi.internal.mapping.UrtsiChannelMapping;
 

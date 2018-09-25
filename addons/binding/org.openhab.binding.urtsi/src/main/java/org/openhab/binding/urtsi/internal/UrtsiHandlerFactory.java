@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.urtsi.internal;
 
-import static org.openhab.binding.urtsi.UrtsiBindingConstants.*;
+import static org.openhab.binding.urtsi.internal.UrtsiBindingConstants.*;
 
 import java.util.List;
 
@@ -18,8 +18,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.urtsi.handler.RtsDeviceHandler;
-import org.openhab.binding.urtsi.handler.UrtsiDeviceHandler;
+import org.openhab.binding.urtsi.internal.handler.RtsDeviceHandler;
+import org.openhab.binding.urtsi.internal.handler.UrtsiDeviceHandler;
 import org.osgi.service.component.annotations.Component;
 
 import com.google.common.collect.Lists;
