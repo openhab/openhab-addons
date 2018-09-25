@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.solarlog.handler;
+package org.openhab.binding.solarlog.internal.handler;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -31,7 +31,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.solarlog.SolarLogBindingConstants;
+import org.openhab.binding.solarlog.internal.SolarLogBindingConstants;
 import org.openhab.binding.solarlog.internal.SolarLogChannel;
 import org.openhab.binding.solarlog.internal.SolarLogConfig;
 import org.slf4j.Logger;
