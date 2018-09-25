@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.toon.handler;
+package org.openhab.binding.toon.internal.handler;
 
 import static org.eclipse.smarthome.core.thing.ThingStatus.OFFLINE;
 import static org.eclipse.smarthome.core.thing.ThingStatus.ONLINE;
