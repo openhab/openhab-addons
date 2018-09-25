@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.silvercrestwifisocket.handler;
+package org.openhab.binding.silvercrestwifisocket.internal.handler;
 
 import java.net.SocketException;
 import java.util.HashMap;
@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.smarthome.core.thing.Thing;
-import org.openhab.binding.silvercrestwifisocket.SilvercrestWifiSocketBindingConstants;
+import org.openhab.binding.silvercrestwifisocket.internal.SilvercrestWifiSocketBindingConstants;
 import org.openhab.binding.silvercrestwifisocket.internal.discovery.SilvercrestWifiSocketDiscoveryService;
 import org.openhab.binding.silvercrestwifisocket.internal.entities.SilvercrestWifiSocketResponse;
 import org.openhab.binding.silvercrestwifisocket.internal.runnable.SilvercrestWifiSocketUpdateReceiverRunnable;
