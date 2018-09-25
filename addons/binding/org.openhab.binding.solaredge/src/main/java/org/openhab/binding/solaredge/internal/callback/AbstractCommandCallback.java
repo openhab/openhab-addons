@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.solaredge.internal.callback;
 
-import static org.openhab.binding.solaredge.SolarEdgeBindingConstants.*;
+import static org.openhab.binding.solaredge.internal.SolarEdgeBindingConstants.*;
 
 import java.net.CookieStore;
 import java.net.HttpCookie;
@@ -25,8 +25,8 @@ import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.HttpStatus.Code;
-import org.openhab.binding.solaredge.config.SolarEdgeConfiguration;
 import org.openhab.binding.solaredge.internal.command.SolarEdgeCommand;
+import org.openhab.binding.solaredge.internal.config.SolarEdgeConfiguration;
 import org.openhab.binding.solaredge.internal.connector.CommunicationStatus;
 import org.openhab.binding.solaredge.internal.connector.StatusUpdateListener;
 import org.slf4j.Logger;

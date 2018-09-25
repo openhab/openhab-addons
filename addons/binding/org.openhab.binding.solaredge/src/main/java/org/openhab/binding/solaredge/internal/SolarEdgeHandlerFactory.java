@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.solaredge.internal;
 
-import static org.openhab.binding.solaredge.SolarEdgeBindingConstants.*;
+import static org.openhab.binding.solaredge.internal.SolarEdgeBindingConstants.*;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -17,7 +17,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
-import org.openhab.binding.solaredge.handler.GenericSolarEdgeHandler;
+import org.openhab.binding.solaredge.internal.handler.GenericSolarEdgeHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;

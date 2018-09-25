@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.solaredge.handler;
+package org.openhab.binding.solaredge.internal.handler;
 
 import org.openhab.binding.solaredge.internal.command.LiveDataUpdateMeterless;
 import org.openhab.binding.solaredge.internal.command.LiveDataUpdatePrivateApi;

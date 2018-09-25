@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.solaredge.internal.command;
 
-import static org.openhab.binding.solaredge.SolarEdgeBindingConstants.*;
+import static org.openhab.binding.solaredge.internal.SolarEdgeBindingConstants.*;
 
 import java.nio.charset.StandardCharsets;
 
@@ -16,8 +16,8 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.solaredge.handler.SolarEdgeHandler;
 import org.openhab.binding.solaredge.internal.callback.AbstractCommandCallback;
+import org.openhab.binding.solaredge.internal.handler.SolarEdgeHandler;
 import org.openhab.binding.solaredge.internal.model.DataResponse;
 import org.openhab.binding.solaredge.internal.model.LiveDataResponse;
 
