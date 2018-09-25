@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.synopanalyzer.handler;
+package org.openhab.binding.synopanalyzer.internal.handler;
 
-import static org.openhab.binding.synopanalyzer.SynopAnalyzerBindingConstants.*;
+import static org.openhab.binding.synopanalyzer.internal.SynopAnalyzerBindingConstants.*;
 import static org.openhab.binding.synopanalyzer.internal.UnitUtils.*;
 
 import java.io.IOException;
