@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.tado.handler;
+package org.openhab.binding.tado.internal.handler;
 
-import static org.openhab.binding.tado.TadoBindingConstants.*;
+import static org.openhab.binding.tado.internal.TadoBindingConstants.*;
 
 import java.util.Arrays;
 import java.util.Collections;

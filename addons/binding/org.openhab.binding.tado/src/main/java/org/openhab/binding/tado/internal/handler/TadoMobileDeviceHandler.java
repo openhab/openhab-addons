@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.tado.handler;
+package org.openhab.binding.tado.internal.handler;
 
 import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
@@ -21,7 +21,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.tado.TadoBindingConstants;
+import org.openhab.binding.tado.internal.TadoBindingConstants;
 import org.openhab.binding.tado.internal.api.ApiException;
 import org.openhab.binding.tado.internal.api.model.MobileDevice;
 import org.openhab.binding.tado.internal.config.TadoMobileDeviceConfig;
