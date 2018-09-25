@@ -38,6 +38,8 @@ public class XiaomiGatewayBindingConstants {
     public static final ThingTypeUID THING_TYPE_SENSOR_MAGNET = new ThingTypeUID(BINDING_ID, "sensor_magnet");
     public static final ThingTypeUID THING_TYPE_SENSOR_AQARA_MAGNET = new ThingTypeUID(BINDING_ID, "sensor_magnet_aq2");
     public static final ThingTypeUID THING_TYPE_SENSOR_CUBE = new ThingTypeUID(BINDING_ID, "sensor_cube");
+    public static final ThingTypeUID THING_TYPE_SENSOR_AQARA_VIBRATION = new ThingTypeUID(BINDING_ID,
+            "sensor_vibration");
     public static final ThingTypeUID THING_TYPE_SENSOR_AQARA1 = new ThingTypeUID(BINDING_ID, "86sw1");
     public static final ThingTypeUID THING_TYPE_SENSOR_AQARA2 = new ThingTypeUID(BINDING_ID, "86sw2");
     public static final ThingTypeUID THING_TYPE_SENSOR_GAS = new ThingTypeUID(BINDING_ID, "natgas");
@@ -55,7 +57,7 @@ public class XiaomiGatewayBindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_BATTERY_LEVEL = "batteryLevel";
     public static final String CHANNEL_LOW_BATTERY = "lowBattery";
-    // TH sensor
+    // HT sensor
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_HUMIDITY = "humidity";
     public static final String CHANNEL_PRESSURE = "pressure";
@@ -76,9 +78,16 @@ public class XiaomiGatewayBindingConstants {
     // switch
     public static final String CHANNEL_BUTTON = "button";
     // cube
-    public static final String CHANNEL_CUBE_ACTION = "action";
+    public static final String CHANNEL_ACTION = "action";
+    public static final String CHANNEL_LAST_ACTION = "lastAction";
     public static final String CHANNEL_CUBE_ROTATION_ANGLE = "rotationAngle";
     public static final String CHANNEL_CUBE_ROTATION_TIME = "rotationTime";
+    // vibration
+    public static final String CHANNEL_TILT_ANGLE = "tiltAngle";
+    public static final String CHANNEL_ORIENTATION_X = "orientationX";
+    public static final String CHANNEL_ORIENTATION_Y = "orientationY";
+    public static final String CHANNEL_ORIENTATION_Z = "orientationZ";
+    public static final String CHANNEL_BED_ACTIVITY = "bedActivity";
     // gateway general
     public static final String CHANNEL_GATEWAY_JOIN_PERMISSION = "joinPermission";
     // gateway sound

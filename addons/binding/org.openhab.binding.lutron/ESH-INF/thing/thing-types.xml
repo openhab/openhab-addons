@@ -54,6 +54,26 @@
 		</config-description>
 	</thing-type>
 
+	<thing-type id="shade">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Sivoia QS Shade</label>
+		<description>Controls roller shades</description>
+
+		<channels>
+			<channel id="shadelevel" typeId="shadeControl"/>
+		</channels>
+
+		<config-description>
+			<parameter name="integrationId" type="integer" required="true">
+				<label>Integration ID</label>
+				<description>Address of shade in the Lutron system</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
 	<thing-type id="switch">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ipbridge"/>
@@ -70,6 +90,86 @@
 			<parameter name="integrationId" type="integer" required="true">
 				<label>Integration ID</label>
 				<description>Address of switch in the Lutron lighting system</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="cco">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>CCO</label>
+		<description>Contact Closure Output</description>
+
+		<channels>
+			<channel id="switchstatus" typeId="switchState"/>
+		</channels>
+
+		<config-description>
+			<parameter name="integrationId" type="integer" required="true">
+				<label>Integration ID</label>
+				<description>Address of CCO in the Lutron control system</description>
+			</parameter>
+			<parameter name="pulseLength" type="decimal" min="0.25" max="99.00" unit="s" step="0.25">
+				<label>Pulse Length</label>
+				<description>Pulse length in seconds (0.25 - 99.00)</description>
+				<default>0.5</default>
+			</parameter>
+			<parameter name="outputType" type="text" required="true">
+				<label>Output Type</label>
+				<description>CCO Output Type</description>
+				<options>
+					<option value="Pulsed">Pulsed</option>
+					<option value="Maintained">Maintained</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<default>Pulsed</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="ccopulsed">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Pulsed CCO</label>
+		<description>Pulsed Contact Closure Output</description>
+
+		<channels>
+			<channel id="switchstatus" typeId="switchState"/>
+		</channels>
+
+		<config-description>
+			<parameter name="integrationId" type="integer" required="true">
+				<label>Integration ID</label>
+				<description>Address of CCO in the Lutron control system</description>
+			</parameter>
+			<parameter name="pulseLength" type="decimal" min="0.25" max="99.00" unit="s" step="0.25">
+				<label>Pulse Length</label>
+				<description>Pulse length in seconds (0.25 - 99.00)</description>
+				<default>0.5</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="ccomaintained">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Maintained CCO</label>
+		<description>Maintained Contact Closure Output</description>
+
+		<channels>
+			<channel id="switchstatus" typeId="switchState"/>
+		</channels>
+
+		<config-description>
+			<parameter name="integrationId" type="integer" required="true">
+				<label>Integration ID</label>
+				<description>Address of CCO in the Lutron control system</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -100,69 +200,154 @@
 		</supported-bridge-type-refs>
 
 		<label>seeTouch Keypad</label>
-		<description>Button keypad</description>
-
-		<channels>
-			<channel id="button1" typeId="button">
-				<label>Button 1</label>
-			</channel>
-			<channel id="button2" typeId="button">
-				<label>Button 2</label>
-			</channel>
-			<channel id="button3" typeId="button">
-				<label>Button 3</label>
-			</channel>
-			<channel id="button4" typeId="button">
-				<label>Button 4</label>
-			</channel>
-			<channel id="button5" typeId="button">
-				<label>Button 5</label>
-			</channel>
-			<channel id="button6" typeId="button">
-				<label>Button 6</label>
-			</channel>
-			<channel id="button7" typeId="button">
-				<label>Button 7</label>
-			</channel>
-			<channel id="buttontopraise" typeId="button">
-				<label>Button Top Raise</label>
-			</channel>
-			<channel id="buttontoplower" typeId="button">
-				<label>Button Top Lower</label>
-			</channel>
-			<channel id="buttonbottomraise" typeId="button">
-				<label>Button Bottom Raise</label>
-			</channel>
-			<channel id="buttonbottomlower" typeId="button">
-				<label>Button Bottom Lower</label>
-			</channel>
-			<channel id="led1" typeId="ledIndicator">
-				<label>LED 1</label>
-			</channel>
-			<channel id="led2" typeId="ledIndicator">
-				<label>LED 2</label>
-			</channel>
-			<channel id="led3" typeId="ledIndicator">
-				<label>LED 3</label>
-			</channel>
-			<channel id="led4" typeId="ledIndicator">
-				<label>LED 4</label>
-			</channel>
-			<channel id="led5" typeId="ledIndicator">
-				<label>LED 5</label>
-			</channel>
-			<channel id="led6" typeId="ledIndicator">
-				<label>LED 6</label>
-			</channel>
-			<channel id="led7" typeId="ledIndicator">
-				<label>LED 7</label>
-			</channel>
-		</channels>
+		<description>Lutron seeTouch/Hybrid seeTouch wall keypad</description>
 
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
 				<label>Integration ID</label>
 				<description>Address of keypad in the Lutron lighting system</description>
+			</parameter>
+			<parameter name="model" type="text">
+				<label>Keypad Model</label>
+				<description>Keypad model number without the system prefix</description>
+				<options>
+					<option value="H1RLD">H1RLD</option>
+					<option value="H2RLD">H2RLD</option>
+					<option value="H3BSRL">H3BSRL</option>
+					<option value="H3S">H3S</option>
+					<option value="H4S">H4S</option>
+					<option value="H5BRL">H5BRL</option>
+					<option value="H6BRL">H6BRL</option>
+					<option value="W1RLD">W1RLD</option>
+					<option value="W2RLD">W2RLD</option>
+					<option value="W3BD">W3BD</option>
+					<option value="W3BRL">W3BRL</option>
+					<option value="W3BSRL">W3BSRL</option>
+					<option value="W3S">W3S</option>
+					<option value="W4S">W4S</option>
+					<option value="W5BRL">W5BRL</option>
+					<option value="W5BRLIR">W5BRLIR</option>
+					<option value="W6BRL">W6BRL</option>
+					<option value="W7B">W7B</option>
+					<option value="Generic">Generic</option>
+				</options>
+				<default>Generic</default>
+			</parameter>
+			<parameter name="autorelease" type="boolean">
+				<label>Auto-release</label>
+				<description>Automatically release pressed buttons</description>
+				<default>true</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="ttkeypad">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Tabletop seeTouch Keypad</label>
+		<description>Lutron wireless tabletop keypad</description>
+
+		<config-description>
+			<parameter name="integrationId" type="integer" required="true">
+				<label>Integration ID</label>
+				<description>Address of keypad in the Lutron lighting system</description>
+			</parameter>
+			<parameter name="model" type="text">
+				<label>Keypad Model</label>
+				<description>Keypad model number without the system prefix</description>
+				<options>
+					<option value="T5RL">T5RL</option>
+					<option value="T10RL">T10RL</option>
+					<option value="T15RL">T15RL</option>
+					<option value="T5CRL">T5CRL</option>
+					<option value="T10CRL">T10CRL</option>
+					<option value="T15CRL">T15CRL</option>
+					<option value="Generic">Generic</option>
+				</options>
+				<default>Generic</default>
+			</parameter>
+			<parameter name="autorelease" type="boolean">
+				<label>Auto-release</label>
+				<description>Automatically release pressed buttons</description>
+				<default>true</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="pico">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Pico Keypad</label>
+		<description>Lutron wireless Pico keypad</description>
+
+		<config-description>
+			<parameter name="integrationId" type="integer" required="true">
+				<label>Integration ID</label>
+				<description>Address of keypad in the Lutron lighting system</description>
+			</parameter>
+			<parameter name="model" type="text">
+				<label>Pico Model</label>
+				<description>Pico model number without the system prefix</description>
+				<options>
+					<option value="2B">2B</option>
+					<option value="2BRL">2BRL</option>
+					<option value="3B">3B</option>
+					<option value="3BRL">3BRL</option>
+					<option value="4B">4B</option>
+					<option value="Generic">Generic</option>
+				</options>
+				<default>Generic</default>
+			</parameter>
+			<parameter name="autorelease" type="boolean">
+				<label>Auto-release</label>
+				<description>Automatically release pressed buttons</description>
+				<default>true</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="vcrx">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VCRX</label>
+		<description>Lutron visor control receiver</description>
+
+		<config-description>
+			<parameter name="integrationId" type="integer" required="true">
+				<label>Integration ID</label>
+				<description>Address of VCRX in the Lutron control system</description>
+			</parameter>
+			<parameter name="autorelease" type="boolean">
+				<label>Auto-release</label>
+				<description>Automatically release pressed buttons</description>
+				<default>true</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="virtualkeypad">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Virtual Keypad</label>
+		<description>Virtual integration keypad on repeater</description>
+
+		<config-description>
+			<parameter name="integrationId" type="integer" required="true">
+				<label>Integration ID</label>
+				<description>Address in the Lutron control system</description>
+			</parameter>
+			<parameter name="autorelease" type="boolean">
+				<label>Auto-release</label>
+				<description>Automatically release pressed buttons</description>
+				<default>true</default>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -500,6 +685,14 @@
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
+	<channel-type id="shadeControl">
+		<item-type>Rollershutter</item-type>
+		<label>Shade Level</label>
+		<description>Raise/lower the shade level</description>
+		<category>Rollershutter</category>
+		<state min="0" max="100" pattern="%d %%"/>
+	</channel-type>
+
 	<channel-type id="switchState">
 		<item-type>Switch</item-type>
 		<label>Switch State</label>
@@ -522,11 +715,32 @@
 		<category>Switch</category>
 	</channel-type>
 
+	<channel-type id="buttonAdvanced" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Keypad button</label>
+		<description>Button to trigger a scene or rule</description>
+		<category>Switch</category>
+	</channel-type>
+
 	<channel-type id="ledIndicator">
 		<item-type>Switch</item-type>
 		<label>Keypad button LED indicator</label>
 		<description>LED indicator for the associated button</description>
 		<category>Light</category>
+	</channel-type>
+
+	<channel-type id="ledIndicatorAdvanced" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Keypad button LED indicator</label>
+		<description>LED indicator for the associated button</description>
+		<category>Light</category>
+	</channel-type>
+
+	<channel-type id="cciState" advanced="true">
+		<item-type>Contact</item-type>
+		<label>CCI</label>
+		<description>Contact Closure input</description>
+		<category>Switch</category>
 	</channel-type>
 
 	<channel-type id="buttonpress">

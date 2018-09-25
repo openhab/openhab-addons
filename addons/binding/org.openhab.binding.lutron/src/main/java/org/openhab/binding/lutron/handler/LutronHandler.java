@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public abstract class LutronHandler extends BaseThingHandler {
-    private Logger logger = LoggerFactory.getLogger(LutronHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(LutronHandler.class);
 
     public LutronHandler(Thing thing) {
         super(thing);
@@ -46,7 +46,6 @@ public abstract class LutronHandler extends BaseThingHandler {
         IPBridgeHandler bridgeHandler = getBridgeHandler();
 
         if (bridgeHandler == null) {
-            this.logger.info("Not sending command, no bridge associated");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR, "No bridge associated");
         } else {
             bridgeHandler.sendCommand(command);

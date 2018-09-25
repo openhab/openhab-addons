@@ -9,7 +9,7 @@
 package org.openhab.binding.avmfritz.internal.ahamodel;
 
 import static org.junit.Assert.*;
-import static org.openhab.binding.avmfritz.BindingConstants.*;
+import static org.openhab.binding.avmfritz.internal.BindingConstants.*;
 
 import java.io.StringReader;
 import java.math.BigDecimal;

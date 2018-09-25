@@ -26,10 +26,6 @@ Import-Package: org.apache.commons.io,
  org.mockito,
  org.mockito.invocation,
  org.mockito.stubbing,
- org.openhab.binding.tplinksmarthome,
- org.openhab.binding.tplinksmarthome.handler,
  org.osgi.framework,
  org.osgi.service.device,
  org.slf4j
-Export-Package: 
- org.openhab.binding.tplinksmarthome;uses:="org.eclipse.smarthome.test"

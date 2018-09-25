@@ -14,7 +14,6 @@ import org.openhab.binding.satel.internal.types.IntegraType;
  * Event class describing type and version of connected Integra system.
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.7.0
  */
 public class IntegraVersionEvent implements SatelEvent {
 

@@ -407,8 +407,8 @@ All these channels except welcomePersonAtHome are read only.
 // Bridge configuration:
 Bridge netatmo:netatmoapi:home "Netatmo API" [ clientId="*********", clientSecret="**********", username = "mail@example.com", password = "******", readStation=true, readThermostat=false] {
     // Thing configuration:
-    Thing netatmo:NAMain:home:inside "Netatmo Inside"  [ id="aa:aa:aa:aa:aa:aa" ]
-    Thing netatmo:NAModule1:home:outside "Netatmo Outside"  [ id="bb:bb:bb:bb:bb:bb", parentId="aa:aa:aa:aa:aa:aa" ]
+    Thing NAMain inside "Netatmo Inside"  [ id="aa:aa:aa:aa:aa:aa" ]
+    Thing NAModule1 outside "Netatmo Outside"  [ id="bb:bb:bb:bb:bb:bb", parentId="aa:aa:aa:aa:aa:aa" ]
 }
 ```
 

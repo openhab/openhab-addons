@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.ftpupload.internal;
 
-import static org.openhab.binding.ftpupload.FtpUploadBindingConstants.THING_TYPE_IMAGERECEIVER;
+import static org.openhab.binding.ftpupload.internal.FtpUploadBindingConstants.THING_TYPE_IMAGERECEIVER;
 
 import java.util.Collections;
 import java.util.Dictionary;
@@ -25,8 +25,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.ftpupload.handler.FtpUploadHandler;
 import org.openhab.binding.ftpupload.internal.ftp.FtpServer;
+import org.openhab.binding.ftpupload.internal.handler.FtpUploadHandler;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;

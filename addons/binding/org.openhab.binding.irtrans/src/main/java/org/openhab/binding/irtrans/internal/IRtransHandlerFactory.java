@@ -18,9 +18,8 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.irtrans.IRtransBindingConstants;
-import org.openhab.binding.irtrans.handler.BlasterHandler;
-import org.openhab.binding.irtrans.handler.EthernetBridgeHandler;
+import org.openhab.binding.irtrans.internal.handler.BlasterHandler;
+import org.openhab.binding.irtrans.internal.handler.EthernetBridgeHandler;
 import org.osgi.service.component.annotations.Component;
 
 import com.google.common.collect.Lists;
@@ -30,7 +29,6 @@ import com.google.common.collect.Lists;
  * thing handlers.
  *
  * @author Karel Goderis - Initial contribution
- * @since 2.3.0
  *
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.irtrans")

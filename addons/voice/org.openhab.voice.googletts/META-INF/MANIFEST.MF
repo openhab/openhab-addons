@@ -1,0 +1,41 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.voice.googletts
+Bundle-ActivationPolicy: lazy
+Bundle-ManifestVersion: 2
+Bundle-Name: Google Cloud Text-to-Speech
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.voice.googletts;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.4.0.qualifier
+Bundle-ClassPath: 
+ .,
+ lib/api-common-1.6.0.jar,
+ lib/gax-1.28.0.jar,
+ lib/gax-grpc-1.28.0.jar,
+ lib/google-auth-library-credentials-0.9.1.jar,
+ lib/google-auth-library-oauth2-http-0.9.1.jar,
+ lib/google-cloud-texttospeech-0.53.0-beta.jar,
+ lib/google-http-client-1.23.0.jar,
+ lib/google-http-client-jackson2-1.19.0.jar,
+ lib/grpc-auth-1.12.0.jar,
+ lib/grpc-context-1.12.0.jar,
+ lib/grpc-core-1.12.0.jar,
+ lib/grpc-netty-shaded-1.12.0.jar,
+ lib/grpc-protobuf-1.12.0.jar,
+ lib/grpc-protobuf-lite-1.12.0.jar,
+ lib/grpc-stub-1.12.0.jar,
+ lib/guava-24.1-jre.jar,
+ lib/jackson-core-2.8.8.jar,
+ lib/opencensus-api-0.11.0.jar,
+ lib/opencensus-contrib-grpc-metrics-0.11.0.jar,
+ lib/proto-google-cloud-texttospeech-v1beta1-0.18.0.jar,
+ lib/protobuf-java-3.5.1.jar,
+ lib/threetenbp-1.3.6.jar
+Import-Package: 
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.core.audio,
+ org.eclipse.smarthome.core.voice,
+ org.osgi.framework,
+ org.slf4j
+Service-Component: OSGI-INF/*.xml

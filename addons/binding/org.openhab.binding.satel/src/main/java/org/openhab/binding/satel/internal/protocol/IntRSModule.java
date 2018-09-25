@@ -31,7 +31,6 @@ import gnu.io.UnsupportedCommOperationException;
  * communicate with that module over serial protocol.
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.7.0
  */
 public class IntRSModule extends SatelModule {
 

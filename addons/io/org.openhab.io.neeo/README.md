@@ -2,7 +2,7 @@
 
 This integration will allow openHAB things/items to be exposed to the NEEO Brain and allow the NEEO smart remote to control them.
 NEEO is a smart home solution that includes an IP based remote.
-More information can be found at [NEEO](neeo.com) or in the forums at [NEEO Planet](planet.neeo.com).
+More information can be found at [NEEO](https://neeo.com) or in the forums at [NEEO Planet](https://planet.neeo.com).
 **This integration was not developed by NEEO** - so please don't ask questions on the NEEO forums.
 
 The openHAB NEEO integration allows mapping of openHAB things/item to a NEEO device/capabilities (see Mappings below).

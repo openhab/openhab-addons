@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
  * done in subclasses.
  *
  * @author David Graeff - Initial contribution
- * @since 2.1
  */
 public abstract class MilightV6 extends AbstractBulbInterface {
     protected final Logger logger = LoggerFactory.getLogger(MilightV6.class);

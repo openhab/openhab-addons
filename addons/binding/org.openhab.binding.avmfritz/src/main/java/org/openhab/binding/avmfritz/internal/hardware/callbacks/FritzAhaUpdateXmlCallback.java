@@ -17,8 +17,8 @@ import javax.xml.bind.Unmarshaller;
 
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.openhab.binding.avmfritz.handler.AVMFritzBaseBridgeHandler;
 import org.openhab.binding.avmfritz.internal.ahamodel.DevicelistModel;
+import org.openhab.binding.avmfritz.internal.handler.AVMFritzBaseBridgeHandler;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaWebInterface;
 import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
 import org.slf4j.Logger;

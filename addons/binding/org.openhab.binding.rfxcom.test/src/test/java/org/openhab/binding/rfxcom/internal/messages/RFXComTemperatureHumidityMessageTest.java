@@ -22,7 +22,6 @@ import org.openhab.binding.rfxcom.internal.messages.RFXComTemperatureHumidityMes
  *
  * @author Ivan F. Martinez
  * @author Martin van Wingerden
- * @since 1.9.0
  */
 public class RFXComTemperatureHumidityMessageTest {
 

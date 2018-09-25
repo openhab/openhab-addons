@@ -10,7 +10,7 @@ package org.openhab.binding.russound.internal.rio;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.openhab.binding.russound.RussoundBindingConstants;
+import org.openhab.binding.russound.internal.RussoundBindingConstants;
 
 /**
  * The class defines common constants ({@link ThingTypeUID} and channels), which are used across the rio binding

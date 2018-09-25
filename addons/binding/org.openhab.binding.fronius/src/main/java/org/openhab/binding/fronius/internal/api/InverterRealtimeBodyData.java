@@ -72,6 +72,9 @@ public class InverterRealtimeBodyData {
     }
 
     public DeviceStatus getDeviceStatus() {
+        if (deviceStatus == null) {
+            deviceStatus = new DeviceStatus();
+        }
         return deviceStatus;
     }
 

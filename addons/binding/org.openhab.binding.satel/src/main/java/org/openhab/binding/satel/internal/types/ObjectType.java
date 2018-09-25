@@ -20,7 +20,6 @@ package org.openhab.binding.satel.internal.types;
  * </ul>
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.7.0
  */
 public enum ObjectType {
     ZONE,

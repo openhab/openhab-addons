@@ -16,10 +16,9 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.milight.MilightBindingConstants;
-import org.openhab.binding.milight.handler.MilightBridgeV3Handler;
-import org.openhab.binding.milight.handler.MilightBridgeV6Handler;
-import org.openhab.binding.milight.handler.MilightLedHandler;
+import org.openhab.binding.milight.internal.handler.MilightBridgeV3Handler;
+import org.openhab.binding.milight.internal.handler.MilightBridgeV6Handler;
+import org.openhab.binding.milight.internal.handler.MilightLedHandler;
 import org.osgi.service.component.annotations.Component;
 
 import com.google.common.collect.Sets;

@@ -11,8 +11,7 @@ package org.openhab.binding.max.internal.device;
 /**
  * This enumeration represents the different message types provided by the MAX! Cube protocol.
  *
- * @author Andreas Heil (info@aheil.de)
- * @since 1.4.0
+ * @author Andreas Heil (info@aheil.de) - Initial contribution
  */
 public enum DeviceType {
     Invalid(256),

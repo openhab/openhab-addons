@@ -18,7 +18,6 @@ import org.openhab.binding.satel.internal.types.StateType;
  * Event class describing current state of zones/partitions/outputs/doors/troubles.
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.7.0
  */
 public class IntegraStateEvent implements SatelEvent {
 

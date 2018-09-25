@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.openuv.internal;
 
-import static org.openhab.binding.openuv.OpenUVBindingConstants.*;
+import static org.openhab.binding.openuv.internal.OpenUVBindingConstants.*;
 
 import java.util.Hashtable;
 
@@ -22,9 +22,9 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.openuv.handler.OpenUVBridgeHandler;
-import org.openhab.binding.openuv.handler.OpenUVReportHandler;
 import org.openhab.binding.openuv.internal.discovery.OpenUVDiscoveryService;
+import org.openhab.binding.openuv.internal.handler.OpenUVBridgeHandler;
+import org.openhab.binding.openuv.internal.handler.OpenUVReportHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 

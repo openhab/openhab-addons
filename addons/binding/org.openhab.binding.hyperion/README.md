@@ -59,56 +59,62 @@ Thing hyperion:serverNG:myServer [ host="192.168.0.10", port=19444, priority=50,
 
 ## Channels
 
-### Hyperion Server:
+### Hyperion Server (V1):
 
-| Channel    | Item   | Description                                       | Example                               |
-|------------|--------|---------------------------------------------------|---------------------------------------|
-| brightness | Dimmer | Sets/stores the current brightness                | hyperion:serverV1:myServer:brightness |
-| effect     | String | Sets/stores the current effect                    | hyperion:serverV1:myServer:effect     |
-| color      | Color  | Sets/stores the current color                     | hyperion:serverV1:myServer:color      |
-| clear      | Switch | Clears the priority specified in the Thing config | hyperion:serverV1:myServer:clear      |
-| clear_all  | Switch | Clears all priorities                             | hyperion:serverV1:myServer:clear_all  |
+| Channel    | Item   | Description                                        | Example                               |
+|------------|--------|----------------------------------------------------|---------------------------------------|
+| brightness | Dimmer | Sets/stores the current brightness                 | hyperion:serverV1:myServer:brightness |
+| effect     | String | Sets/stores the current effect                     | hyperion:serverV1:myServer:effect     |
+| color      | Color  | Sets/stores the current color                      | hyperion:serverV1:myServer:color      |
+| clear      | String | Clears the priority of the given input (e.g. "50") | hyperion:serverV1:myServer:clear      |
 
 ### Hyperion.ng Server
 
-| Channel         | Item   | Description                                       | Example                                    |
-|-----------------|--------|---------------------------------------------------|--------------------------------------------|
-| brightness      | Dimmer | Sets/stores the current brightness                | hyperion:serverNG:myServer:brightness      |
-| effect          | String | Sets/stores the current effect                    | hyperion:serverNG:myServer:effect          |
-| color           | Color  | Sets/stores the current color                     | hyperion:serverNG:myServer:color           |
-| clear           | Switch | Clears the priority specified in the Thing config | hyperion:serverNG:myServer:clear           |
-| clear_all       | Switch | Clears all priorities                             | hyperion:serverNG:myServer:clear_all       |
-| hyperionenabled | Switch | Enables or disables Hyperion                      | hyperion:serverNG:myServer:hyperionenabled |
-| blackborder     | Switch | Enables or disables the black border component    | hyperion:serverNG:myServer:blackborder     |
-| smoothing       | Switch | Enables or disables the smoothing component       | hyperion:serverNG:myServer:smoothing       |
-| kodichecker     | Switch | Enables or disables the kodi checker component    | hyperion:serverNG:myServer:kodichecker     |
-| forwarder       | Switch | Enables or disables the forwarder component       | hyperion:serverNG:myServer:forwarder       |
-| udplistener     | Switch | Enables or disables the udp listener component    | hyperion:serverNG:myServer:udplistener     |
-| boblightserver  | Switch | Enables or disables the boblight server component | hyperion:serverNG:myServer:boblightserver  |
-| grabber         | Switch | Enables or disables the grabber component         | hyperion:serverNG:myServer:grabber         |
-| v4l             | Switch | Enables or disables the V4L component             | hyperion:serverNG:myServer:v4l             |
-| leddevice       | Switch | Enables or disables the led device component      | hyperion:serverNG:myServer:leddevice       |
+| Channel         | Item   | Description                                        | Example                                    |
+|-----------------|--------|----------------------------------------------------|--------------------------------------------|
+| brightness      | Dimmer | Sets/stores the current brightness                 | hyperion:serverNG:myServer:brightness      |
+| effect          | String | Sets/stores the current effect                     | hyperion:serverNG:myServer:effect          |
+| color           | Color  | Sets/stores the current color                      | hyperion:serverNG:myServer:color           |
+| clear           | String | Clears the priority of the given input (e.g. "50") | hyperion:serverNG:myServer:clear           |
+| hyperionenabled | Switch | Enables or disables Hyperion                       | hyperion:serverNG:myServer:hyperionenabled |
+| blackborder     | Switch | Enables or disables the black border component     | hyperion:serverNG:myServer:blackborder     |
+| smoothing       | Switch | Enables or disables the smoothing component        | hyperion:serverNG:myServer:smoothing       |
+| kodichecker     | Switch | Enables or disables the kodi checker component     | hyperion:serverNG:myServer:kodichecker     |
+| forwarder       | Switch | Enables or disables the forwarder component        | hyperion:serverNG:myServer:forwarder       |
+| udplistener     | Switch | Enables or disables the udp listener component     | hyperion:serverNG:myServer:udplistener     |
+| boblightserver  | Switch | Enables or disables the boblight server component  | hyperion:serverNG:myServer:boblightserver  |
+| grabber         | Switch | Enables or disables the grabber component          | hyperion:serverNG:myServer:grabber         |
+| v4l             | Switch | Enables or disables the V4L component              | hyperion:serverNG:myServer:v4l             |
+| leddevice       | Switch | Enables or disables the led device component       | hyperion:serverNG:myServer:leddevice       |
 
 ## Items:
 
-```
-Dimmer Brightness 			"Brightness [%s]" 	{ channel="hyperion:serverV1:myServer:brightness"}
-String Effect				"Current effect [%s]" 	{ channel="hyperion:serverV1:myServer:effect"}
-Color MyColor				"Color"	 { channel="hyperion:serverV1:myServer:color"}
-String Clear          "Clear priority"  { channel="hyperion:serverV1:myServer:clear"}
-```
+### Hyperion Server (V1):
 
 ```
-Switch HyperionEnabled {channel="hyperion:serverNG:myServer:hyperionenabled"}
-Switch BlackBorderEnabled {channel="hyperion:serverNG:myServer:blackborder"}
-Switch SmoothingEnabled {channel="hyperion:serverNG:myServer:smoothing"}
-Switch KodiCheckerEnabled {channel="hyperion:serverNG:myServer:kodichecker"}
-Switch ForwarderEnabled {channel="hyperion:serverNG:myServer:forwarder"}
-Switch UdpListenerEnabled {channel="hyperion:serverNG:myServer:udplistener"}
-Switch BoblightEnabled {channel="hyperion:serverNG:myServer:boblightserver"}
-Switch GrabberEnabled {channel="hyperion:serverNG:myServer:grabber"}
-Switch V4lEnabled {channel="hyperion:serverNG:myServer:v4l"}
-Switch LedDeviceEnabled {channel="hyperion:serverNG:myServer:leddevice"}
+Dimmer Brightness "Brightness [%s]" {channel="hyperion:serverV1:myServer:brightness"}
+Color MyColor "Color" {channel="hyperion:serverV1:myServer:color"}
+String Effect "Current effect [%s]" {channel="hyperion:serverV1:myServer:effect"}
+String lear "Clear priority" {channel="hyperion:serverV1:myServer:clear"}
+```
+
+### Hyperion.ng Server
+
+```
+Dimmer Brightness "Brightness [%s]" {channel="hyperion:serverNG:myServer:brightness"}
+Color MyColor "Color" {channel="hyperion:serverNG:myServer:color"}
+String Effect "Current effect [%s]" {channel="hyperion:serverNG:myServer:effect"}
+String Clear "Clear priority" {channel="hyperion:serverNG:myServer:clear"}
+Switch HyperionEnabled "Hyperion Enabled" {channel="hyperion:serverNG:myServer:hyperionenabled"}
+Switch BlackBorderEnabled "Black Border" {channel="hyperion:serverNG:myServer:blackborder"}
+Switch SmoothingEnabled "Smooting" {channel="hyperion:serverNG:myServer:smoothing"}
+Switch KodiCheckerEnabled "Kodi Checker" {channel="hyperion:serverNG:myServer:kodichecker"}
+Switch ForwarderEnabled "Forwarder" {channel="hyperion:serverNG:myServer:forwarder"}
+Switch UdpListenerEnabled "UDP Listener" {channel="hyperion:serverNG:myServer:udplistener"}
+Switch BoblightEnabled "Boblight" {channel="hyperion:serverNG:myServer:boblightserver"}
+Switch GrabberEnabled "Grabber" {channel="hyperion:serverNG:myServer:grabber"}
+Switch V4lEnabled "V4L" {channel="hyperion:serverNG:myServer:v4l"}
+Switch LedDeviceEnabled	"LED Device" {channel="hyperion:serverNG:myServer:leddevice"}
 ```
 
 ## Example Sitemap
@@ -118,22 +124,24 @@ Sitemap:
 
 ```
 sitemap demo label="Main Menu" {
-        Frame  {
-               	Slider item=Brightness
-				Selection item=Effect mappings=['Knight rider' = 'Knight rider', 'Red mood blobs'='Red mood blobs']
-				Text item=Clear
-				Colorpicker item=MyColor
-				
-				Switch item=HyperionEnabled
-				Switch item=BlackBorderEnabled
-				Switch item=SmoothingEnabled
-				Switch item=KodiCheckerEnabled
-				Switch item=ForwarderEnabled
-				Switch item=UdpListenerEnabled
-				Switch item=BoblightEnabled
-				Switch item=GrabberEnabled
-				Switch item=V4lEnabled
-				Switch item=LedDeviceEnabled
-        }
+ Frame  {
+  // serverV1 & serverNG
+  Slider item=Brightness
+  Colorpicker item=MyColor
+  Selection item=Effect mappings=['Knight rider'='Knight rider', 'Red mood blobs'='Red mood blobs']
+  Switch item=Clear mappings=[50="Clear"]
+  
+  // only serverNG
+  Switch item=HyperionEnabled
+  Switch item=BlackBorderEnabled
+  Switch item=SmoothingEnabled
+  Switch item=KodiCheckerEnabled
+  Switch item=ForwarderEnabled
+  Switch item=UdpListenerEnabled
+  Switch item=BoblightEnabled
+  Switch item=GrabberEnabled
+  Switch item=V4lEnabled
+  Switch item=LedDeviceEnabled
+ }
 }
 ```

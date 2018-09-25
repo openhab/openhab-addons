@@ -21,6 +21,9 @@ public class PowerFlowRealtimeBody {
     private PowerFlowRealtimeBodyData data;
 
     public PowerFlowRealtimeBodyData getData() {
+        if (data == null) {
+            data = new PowerFlowRealtimeBodyData();
+        }
         return data;
     }
 
