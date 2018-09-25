@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.netatmo.internal;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -25,8 +25,8 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.netatmo.handler.NetatmoBridgeHandler;
 import org.openhab.binding.netatmo.internal.discovery.NetatmoModuleDiscoveryService;
+import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
 import org.openhab.binding.netatmo.internal.homecoach.NAHealthyHomeCoachHandler;
 import org.openhab.binding.netatmo.internal.station.NAMainHandler;
 import org.openhab.binding.netatmo.internal.station.NAModule1Handler;
@@ -35,6 +35,7 @@ import org.openhab.binding.netatmo.internal.station.NAModule3Handler;
 import org.openhab.binding.netatmo.internal.station.NAModule4Handler;
 import org.openhab.binding.netatmo.internal.thermostat.NAPlugHandler;
 import org.openhab.binding.netatmo.internal.thermostat.NATherm1Handler;
+import org.openhab.binding.netatmo.internal.webhook.WelcomeWebHookServlet;
 import org.openhab.binding.netatmo.internal.welcome.NAWelcomeCameraHandler;
 import org.openhab.binding.netatmo.internal.welcome.NAWelcomeHomeHandler;
 import org.openhab.binding.netatmo.internal.welcome.NAWelcomePersonHandler;
@@ -59,6 +60,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
     private Map<ThingUID, ServiceRegistration<?>> webHookServiceRegs = new HashMap<>();
     private HttpService httpService;
+    private NATherm1StateDescriptionProvider stateDescriptionProvider;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -88,7 +90,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
         } else if (thingTypeUID.equals(PLUG_THING_TYPE)) {
             return new NAPlugHandler(thing);
         } else if (thingTypeUID.equals(THERM1_THING_TYPE)) {
-            return new NATherm1Handler(thing);
+            return new NATherm1Handler(thing, stateDescriptionProvider);
         } else if (thingTypeUID.equals(WELCOME_HOME_THING_TYPE)) {
             return new NAWelcomeHomeHandler(thing);
         } else if (thingTypeUID.equals(WELCOME_CAMERA_THING_TYPE)) {
@@ -108,26 +110,30 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
             unregisterDeviceDiscoveryService(thingUID);
             unregisterWebHookServlet(thingUID);
         }
-        super.removeHandler(thingHandler);
     }
 
-    private void registerDeviceDiscoveryService(@NonNull NetatmoBridgeHandler netatmoBridgeHandler) {
+    private synchronized void registerDeviceDiscoveryService(@NonNull NetatmoBridgeHandler netatmoBridgeHandler) {
         if (bundleContext != null) {
             NetatmoModuleDiscoveryService discoveryService = new NetatmoModuleDiscoveryService(netatmoBridgeHandler);
+            discoveryService.activate(null);
             discoveryServiceRegs.put(netatmoBridgeHandler.getThing().getUID(), bundleContext.registerService(
                     DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
         }
     }
 
-    private void unregisterDeviceDiscoveryService(ThingUID thingUID) {
-        ServiceRegistration<?> serviceReg = discoveryServiceRegs.get(thingUID);
+    private synchronized void unregisterDeviceDiscoveryService(ThingUID thingUID) {
+        ServiceRegistration<?> serviceReg = discoveryServiceRegs.remove(thingUID);
         if (serviceReg != null) {
+            NetatmoModuleDiscoveryService service = (NetatmoModuleDiscoveryService) bundleContext
+                    .getService(serviceReg.getReference());
             serviceReg.unregister();
-            discoveryServiceRegs.remove(thingUID);
+            if (service != null) {
+                service.deactivate();
+            }
         }
     }
 
-    private WelcomeWebHookServlet registerWebHookServlet(ThingUID thingUID) {
+    private synchronized WelcomeWebHookServlet registerWebHookServlet(ThingUID thingUID) {
         WelcomeWebHookServlet servlet = null;
         if (bundleContext != null) {
             servlet = new WelcomeWebHookServlet(httpService, thingUID.getId());
@@ -137,11 +143,10 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
         return servlet;
     }
 
-    private void unregisterWebHookServlet(ThingUID thingUID) {
-        ServiceRegistration<?> serviceReg = webHookServiceRegs.get(thingUID);
+    private synchronized void unregisterWebHookServlet(ThingUID thingUID) {
+        ServiceRegistration<?> serviceReg = webHookServiceRegs.remove(thingUID);
         if (serviceReg != null) {
             serviceReg.unregister();
-            webHookServiceRegs.remove(thingUID);
         }
     }
 
@@ -152,6 +157,15 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
 
     public void unsetHttpService(HttpService httpService) {
         this.httpService = null;
+    }
+
+    @Reference
+    protected void setDynamicStateDescriptionProvider(NATherm1StateDescriptionProvider provider) {
+        this.stateDescriptionProvider = provider;
+    }
+
+    protected void unsetDynamicStateDescriptionProvider(NATherm1StateDescriptionProvider provider) {
+        this.stateDescriptionProvider = null;
     }
 
 }

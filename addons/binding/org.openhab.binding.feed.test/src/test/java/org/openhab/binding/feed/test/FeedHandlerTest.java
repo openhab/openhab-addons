@@ -49,8 +49,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.openhab.binding.feed.FeedBindingConstants;
-import org.openhab.binding.feed.handler.FeedHandler;
+import org.openhab.binding.feed.internal.FeedBindingConstants;
+import org.openhab.binding.feed.internal.handler.FeedHandler;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 

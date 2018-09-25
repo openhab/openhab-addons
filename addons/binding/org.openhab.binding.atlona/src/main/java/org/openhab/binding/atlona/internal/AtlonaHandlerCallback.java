@@ -11,7 +11,7 @@ package org.openhab.binding.atlona.internal;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.atlona.handler.AtlonaHandler;
+import org.openhab.binding.atlona.internal.handler.AtlonaHandler;
 
 /**
  *

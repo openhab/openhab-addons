@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.feican.internal;
 
-import static org.openhab.binding.feican.FeicanBindingConstants.*;
+import static org.openhab.binding.feican.internal.FeicanBindingConstants.*;
 
 import java.io.IOException;
 import java.net.DatagramPacket;

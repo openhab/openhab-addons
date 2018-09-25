@@ -16,12 +16,11 @@ package org.openhab.binding.airquality.internal;
  */
 public class AirQualityConfiguration {
 
+    public static final String LOCATION = "location";
+
     public String apikey;
-
     public String location;
-
     public Integer stationId;
-
     public Integer refresh;
 
 }

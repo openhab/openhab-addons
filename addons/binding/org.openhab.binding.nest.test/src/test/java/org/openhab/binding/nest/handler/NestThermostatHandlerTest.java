@@ -21,9 +21,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -41,7 +41,7 @@ import org.openhab.binding.nest.internal.config.NestDeviceConfiguration;
 public class NestThermostatHandlerTest extends NestThingHandlerOSGiTest {
 
     private static final ThingUID THERMOSTAT_UID = new ThingUID(THING_TYPE_THERMOSTAT, "thermostat1");
-    private static final int CHANNEL_COUNT = 23;
+    private static final int CHANNEL_COUNT = 25;
 
     public NestThermostatHandlerTest() {
         super(NestThermostatHandler.class);
@@ -68,12 +68,14 @@ public class NestThermostatHandlerTest extends NestThingHandlerOSGiTest {
 
         assertThatItemHasState(CHANNEL_CAN_COOL, OFF);
         assertThatItemHasState(CHANNEL_CAN_HEAT, ON);
+        assertThatItemHasState(CHANNEL_ECO_MAX_SET_POINT, new QuantityType<>(24, CELSIUS));
+        assertThatItemHasState(CHANNEL_ECO_MIN_SET_POINT, new QuantityType<>(12.5, CELSIUS));
         assertThatItemHasState(CHANNEL_FAN_TIMER_ACTIVE, OFF);
-        assertThatItemHasState(CHANNEL_FAN_TIMER_DURATION, new DecimalType(15));
+        assertThatItemHasState(CHANNEL_FAN_TIMER_DURATION, new QuantityType<>(15, SmartHomeUnits.MINUTE));
         assertThatItemHasState(CHANNEL_FAN_TIMER_TIMEOUT, parseDateTimeType("1970-01-01T00:00:00.000Z"));
         assertThatItemHasState(CHANNEL_HAS_FAN, ON);
         assertThatItemHasState(CHANNEL_HAS_LEAF, ON);
-        assertThatItemHasState(CHANNEL_HUMIDITY, new DecimalType(25));
+        assertThatItemHasState(CHANNEL_HUMIDITY, new QuantityType<>(25, SmartHomeUnits.PERCENT));
         assertThatItemHasState(CHANNEL_LAST_CONNECTION, parseDateTimeType("2017-02-02T21:00:06.000Z"));
         assertThatItemHasState(CHANNEL_LOCKED, OFF);
         assertThatItemHasState(CHANNEL_LOCKED_MAX_SET_POINT, new QuantityType<>(22, CELSIUS));
@@ -87,7 +89,7 @@ public class NestThermostatHandlerTest extends NestThingHandlerOSGiTest {
         assertThatItemHasState(CHANNEL_SUNLIGHT_CORRECTION_ACTIVE, OFF);
         assertThatItemHasState(CHANNEL_SUNLIGHT_CORRECTION_ENABLED, ON);
         assertThatItemHasState(CHANNEL_TEMPERATURE, new QuantityType<>(19, CELSIUS));
-        assertThatItemHasState(CHANNEL_TIME_TO_TARGET_MINS, new DecimalType(0));
+        assertThatItemHasState(CHANNEL_TIME_TO_TARGET, new QuantityType<>(0, SmartHomeUnits.MINUTE));
         assertThatItemHasState(CHANNEL_USING_EMERGENCY_HEAT, OFF);
 
         assertThatAllItemStatesAreNotNull();
@@ -104,12 +106,14 @@ public class NestThermostatHandlerTest extends NestThingHandlerOSGiTest {
 
         assertThatItemHasState(CHANNEL_CAN_COOL, OFF);
         assertThatItemHasState(CHANNEL_CAN_HEAT, ON);
+        assertThatItemHasState(CHANNEL_ECO_MAX_SET_POINT, new QuantityType<>(76, FAHRENHEIT));
+        assertThatItemHasState(CHANNEL_ECO_MIN_SET_POINT, new QuantityType<>(55, FAHRENHEIT));
         assertThatItemHasState(CHANNEL_FAN_TIMER_ACTIVE, OFF);
-        assertThatItemHasState(CHANNEL_FAN_TIMER_DURATION, new DecimalType(15));
+        assertThatItemHasState(CHANNEL_FAN_TIMER_DURATION, new QuantityType<>(15, SmartHomeUnits.MINUTE));
         assertThatItemHasState(CHANNEL_FAN_TIMER_TIMEOUT, parseDateTimeType("1970-01-01T00:00:00.000Z"));
         assertThatItemHasState(CHANNEL_HAS_FAN, ON);
         assertThatItemHasState(CHANNEL_HAS_LEAF, ON);
-        assertThatItemHasState(CHANNEL_HUMIDITY, new DecimalType(25));
+        assertThatItemHasState(CHANNEL_HUMIDITY, new QuantityType<>(25, SmartHomeUnits.PERCENT));
         assertThatItemHasState(CHANNEL_LAST_CONNECTION, parseDateTimeType("2017-02-02T21:00:06.000Z"));
         assertThatItemHasState(CHANNEL_LOCKED, OFF);
         assertThatItemHasState(CHANNEL_LOCKED_MAX_SET_POINT, new QuantityType<>(72, FAHRENHEIT));
@@ -123,7 +127,7 @@ public class NestThermostatHandlerTest extends NestThingHandlerOSGiTest {
         assertThatItemHasState(CHANNEL_SUNLIGHT_CORRECTION_ACTIVE, OFF);
         assertThatItemHasState(CHANNEL_SUNLIGHT_CORRECTION_ENABLED, ON);
         assertThatItemHasState(CHANNEL_TEMPERATURE, new QuantityType<>(66, FAHRENHEIT));
-        assertThatItemHasState(CHANNEL_TIME_TO_TARGET_MINS, new DecimalType(0));
+        assertThatItemHasState(CHANNEL_TIME_TO_TARGET, new QuantityType<>(0, SmartHomeUnits.MINUTE));
         assertThatItemHasState(CHANNEL_USING_EMERGENCY_HEAT, OFF);
 
         assertThatAllItemStatesAreNotNull();
@@ -185,109 +189,29 @@ public class NestThermostatHandlerTest extends NestThingHandlerOSGiTest {
     public void handleFanTimerDurationCommands() throws IOException {
         int[] durations = { 15, 30, 45, 60, 120, 240, 480, 960, 15 };
         for (int duration : durations) {
-            handleCommand(CHANNEL_FAN_TIMER_DURATION, new DecimalType(duration));
+            handleCommand(CHANNEL_FAN_TIMER_DURATION, new QuantityType<>(duration, SmartHomeUnits.MINUTE));
             assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "fan_timer_duration", String.valueOf(duration));
         }
     }
 
     @Test
     public void handleMaxSetPointCelsiusCommands() throws IOException {
-        waitForAssert(() -> assertThat(bridge.getStatus(), is(ThingStatus.ONLINE)));
-        putStreamingEventData(fromFile(COMPLETE_DATA_FILE_NAME, CELSIUS));
-        waitForAssert(() -> assertThat(thing.getStatus(), is(ThingStatus.ONLINE)));
-
-        handleCommand(CHANNEL_MAX_SET_POINT, new QuantityType<>(20, CELSIUS));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_high_c", "20.0");
-
-        handleCommand(CHANNEL_MAX_SET_POINT, new QuantityType<>(21.123, CELSIUS));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_high_c", "21.0");
-
-        handleCommand(CHANNEL_MAX_SET_POINT, new QuantityType<>(22.541, CELSIUS));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_high_c", "22.5");
-
-        handleCommand(CHANNEL_MAX_SET_POINT, new QuantityType<>(23.74, CELSIUS));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_high_c", "23.5");
-
-        handleCommand(CHANNEL_MAX_SET_POINT, new QuantityType<>(23.75, CELSIUS));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_high_c", "24.0");
-
-        handleCommand(CHANNEL_MAX_SET_POINT, new QuantityType<>(70, FAHRENHEIT));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_high_c", "21.0");
+        celsiusCommandsTest(CHANNEL_MAX_SET_POINT, "target_temperature_high_c");
     }
 
     @Test
     public void handleMaxSetPointFahrenheitCommands() throws IOException {
-        waitForAssert(() -> assertThat(bridge.getStatus(), is(ThingStatus.ONLINE)));
-        putStreamingEventData(fromFile(COMPLETE_DATA_FILE_NAME, FAHRENHEIT));
-        waitForAssert(() -> assertThat(thing.getStatus(), is(ThingStatus.ONLINE)));
-
-        handleCommand(CHANNEL_MAX_SET_POINT, new QuantityType<>(70, FAHRENHEIT));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_high_f", "70");
-
-        handleCommand(CHANNEL_MAX_SET_POINT, new QuantityType<>(71.123, FAHRENHEIT));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_high_f", "71");
-
-        handleCommand(CHANNEL_MAX_SET_POINT, new QuantityType<>(71.541, FAHRENHEIT));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_high_f", "72");
-
-        handleCommand(CHANNEL_MAX_SET_POINT, new QuantityType<>(72.74, FAHRENHEIT));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_high_f", "73");
-
-        handleCommand(CHANNEL_MAX_SET_POINT, new QuantityType<>(73.75, FAHRENHEIT));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_high_f", "74");
-
-        handleCommand(CHANNEL_MAX_SET_POINT, new QuantityType<>(21, CELSIUS));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_high_f", "70");
+        fahrenheitCommandsTest(CHANNEL_MAX_SET_POINT, "target_temperature_high_f");
     }
 
     @Test
     public void handleMinSetPointCelsiusCommands() throws IOException {
-        waitForAssert(() -> assertThat(bridge.getStatus(), is(ThingStatus.ONLINE)));
-        putStreamingEventData(fromFile(COMPLETE_DATA_FILE_NAME, CELSIUS));
-        waitForAssert(() -> assertThat(thing.getStatus(), is(ThingStatus.ONLINE)));
-
-        handleCommand(CHANNEL_MIN_SET_POINT, new QuantityType<>(20, CELSIUS));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_low_c", "20.0");
-
-        handleCommand(CHANNEL_MIN_SET_POINT, new QuantityType<>(21.123, CELSIUS));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_low_c", "21.0");
-
-        handleCommand(CHANNEL_MIN_SET_POINT, new QuantityType<>(22.541, CELSIUS));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_low_c", "22.5");
-
-        handleCommand(CHANNEL_MIN_SET_POINT, new QuantityType<>(23.74, CELSIUS));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_low_c", "23.5");
-
-        handleCommand(CHANNEL_MIN_SET_POINT, new QuantityType<>(23.75, CELSIUS));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_low_c", "24.0");
-
-        handleCommand(CHANNEL_MIN_SET_POINT, new QuantityType<>(70, FAHRENHEIT));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_low_c", "21.0");
+        celsiusCommandsTest(CHANNEL_MIN_SET_POINT, "target_temperature_low_c");
     }
 
     @Test
     public void handleMinSetPointFahrenheitCommands() throws IOException {
-        waitForAssert(() -> assertThat(bridge.getStatus(), is(ThingStatus.ONLINE)));
-        putStreamingEventData(fromFile(COMPLETE_DATA_FILE_NAME, FAHRENHEIT));
-        waitForAssert(() -> assertThat(thing.getStatus(), is(ThingStatus.ONLINE)));
-
-        handleCommand(CHANNEL_MIN_SET_POINT, new QuantityType<>(70, FAHRENHEIT));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_low_f", "70");
-
-        handleCommand(CHANNEL_MIN_SET_POINT, new QuantityType<>(71.123, FAHRENHEIT));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_low_f", "71");
-
-        handleCommand(CHANNEL_MIN_SET_POINT, new QuantityType<>(71.541, FAHRENHEIT));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_low_f", "72");
-
-        handleCommand(CHANNEL_MIN_SET_POINT, new QuantityType<>(72.74, FAHRENHEIT));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_low_f", "73");
-
-        handleCommand(CHANNEL_MIN_SET_POINT, new QuantityType<>(73.75, FAHRENHEIT));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_low_f", "74");
-
-        handleCommand(CHANNEL_MIN_SET_POINT, new QuantityType<>(21, CELSIUS));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_low_f", "70");
+        fahrenheitCommandsTest(CHANNEL_MIN_SET_POINT, "target_temperature_low_f");
     }
 
     @Test
@@ -313,51 +237,60 @@ public class NestThermostatHandlerTest extends NestThingHandlerOSGiTest {
 
     @Test
     public void handleSetPointCelsiusCommands() throws IOException {
-        waitForAssert(() -> assertThat(bridge.getStatus(), is(ThingStatus.ONLINE)));
-        putStreamingEventData(fromFile(COMPLETE_DATA_FILE_NAME, CELSIUS));
-        waitForAssert(() -> assertThat(thing.getStatus(), is(ThingStatus.ONLINE)));
-
-        handleCommand(CHANNEL_SET_POINT, new QuantityType<>(20, CELSIUS));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_c", "20.0");
-
-        handleCommand(CHANNEL_SET_POINT, new QuantityType<>(21.123, CELSIUS));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_c", "21.0");
-
-        handleCommand(CHANNEL_SET_POINT, new QuantityType<>(22.541, CELSIUS));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_c", "22.5");
-
-        handleCommand(CHANNEL_SET_POINT, new QuantityType<>(23.74, CELSIUS));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_c", "23.5");
-
-        handleCommand(CHANNEL_SET_POINT, new QuantityType<>(23.75, CELSIUS));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_c", "24.0");
-
-        handleCommand(CHANNEL_SET_POINT, new QuantityType<>(70, FAHRENHEIT));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_c", "21.0");
+        celsiusCommandsTest(CHANNEL_SET_POINT, "target_temperature_c");
     }
 
     @Test
     public void handleSetPointFahrenheitCommands() throws IOException {
+        fahrenheitCommandsTest(CHANNEL_SET_POINT, "target_temperature_f");
+    }
+
+    private void celsiusCommandsTest(String channelId, String apiPropertyName) throws IOException {
+        waitForAssert(() -> assertThat(bridge.getStatus(), is(ThingStatus.ONLINE)));
+        putStreamingEventData(fromFile(COMPLETE_DATA_FILE_NAME, CELSIUS));
+        waitForAssert(() -> assertThat(thing.getStatus(), is(ThingStatus.ONLINE)));
+
+        handleCommand(channelId, new QuantityType<>(20, CELSIUS));
+        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, apiPropertyName, "20.0");
+
+        handleCommand(channelId, new QuantityType<>(21.123, CELSIUS));
+        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, apiPropertyName, "21.0");
+
+        handleCommand(channelId, new QuantityType<>(22.541, CELSIUS));
+        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, apiPropertyName, "22.5");
+
+        handleCommand(channelId, new QuantityType<>(23.74, CELSIUS));
+        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, apiPropertyName, "23.5");
+
+        handleCommand(channelId, new QuantityType<>(23.75, CELSIUS));
+        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, apiPropertyName, "24.0");
+
+        handleCommand(channelId, new QuantityType<>(70, FAHRENHEIT));
+        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, apiPropertyName, "21.0");
+    }
+
+    private void fahrenheitCommandsTest(String channelId, String apiPropertyName) throws IOException {
         waitForAssert(() -> assertThat(bridge.getStatus(), is(ThingStatus.ONLINE)));
         putStreamingEventData(fromFile(COMPLETE_DATA_FILE_NAME, FAHRENHEIT));
         waitForAssert(() -> assertThat(thing.getStatus(), is(ThingStatus.ONLINE)));
 
-        handleCommand(CHANNEL_SET_POINT, new QuantityType<>(70, FAHRENHEIT));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_f", "70");
+        handleCommand(channelId, new QuantityType<>(70, FAHRENHEIT));
+        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, apiPropertyName, "70");
 
-        handleCommand(CHANNEL_SET_POINT, new QuantityType<>(71.123, FAHRENHEIT));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_f", "71");
+        handleCommand(channelId, new QuantityType<>(71.123, FAHRENHEIT));
+        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, apiPropertyName, "71");
 
-        handleCommand(CHANNEL_SET_POINT, new QuantityType<>(71.541, FAHRENHEIT));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_f", "72");
+        handleCommand(channelId, new QuantityType<>(71.541, FAHRENHEIT));
+        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, apiPropertyName, "72");
 
-        handleCommand(CHANNEL_SET_POINT, new QuantityType<>(72.74, FAHRENHEIT));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_f", "73");
+        handleCommand(channelId, new QuantityType<>(72.74, FAHRENHEIT));
+        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, apiPropertyName, "73");
 
-        handleCommand(CHANNEL_SET_POINT, new QuantityType<>(73.75, FAHRENHEIT));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_f", "74");
+        handleCommand(channelId, new QuantityType<>(73.75, FAHRENHEIT));
+        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, apiPropertyName, "74");
 
-        handleCommand(CHANNEL_SET_POINT, new QuantityType<>(21, CELSIUS));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "target_temperature_f", "70");
+        handleCommand(channelId, new QuantityType<>(21, CELSIUS));
+        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, apiPropertyName, "70");
     }
+
 }

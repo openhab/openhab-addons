@@ -7,13 +7,15 @@ This binding allows you to integrate, view and control Gardena Smart Home device
 
 Devices connected to Gardena Smart Home, currently:
 
-| Thing type               | Name                  |
-|--------------------------|-----------------------|
-| bridge                   | smart Home Gateway    |
-| mower                    | smart Sileno(+) Mower |
-| watering_computer        | smart Water Control   |
-| sensor                   | smart Sensor          |
-| electronic_pressure_pump | smart Pressure Pump   |
+| Thing type               | Name                     |
+|--------------------------|--------------------------|
+| bridge                   | smart Home Gateway       |
+| mower                    | smart Sileno(+) Mower    |
+| watering_computer        | smart Water Control      |
+| sensor                   | smart Sensor             |
+| electronic_pressure_pump | smart Pressure Pump      |
+| power                    | smart Power Plug         |
+| ic24                     | smart Irrigation Control |
 
 The schedules are not yet integrated!
 
@@ -96,6 +98,38 @@ In scripts:
 import org.eclipse.smarthome.core.types.RefreshType
 ...
 sendCommand(ITEM_NAME, RefreshType.REFRESH)
+```
+
+## Examples
+
+```shell
+// smart Water Control
+Switch  Watering_Valve      "Valve"             { channel="gardena:watering_computer:home:myValve:outlet#valve_open" }
+Number  Watering_Duration   "Duration [%d min]" { channel="gardena:watering_computer:home:myValve:outlet#button_manual_override_time" }
+
+// smart Power Plug
+String Power_Timer          "Power Timer [%s]"  { channel="gardena:power:home:myPowerplug:power#power_timer" }
+
+// smart Irrigation Control
+Number Watering_Timer_1     "Watering Timer 1 [%d min]  { channel="gardena:ic24:home:myIrrigationController:watering#watering_timer_1" }
+
+// smart Pressure Pump
+Number Pump_Timer           "Pump Timer [%d min]        { channel="gardena:electronic_pressure_pump:home:myPressurePump:manual_watering#manual_watering_timer" }
+```
+
+```shell
+Watering_Duration.sendCommand(30) // 30 minutes
+Watering_Valve.sendCommand(ON)
+
+Power_Timer.sendCommand("on")
+Power_Timer.sendCommand("off")
+Power_Timer.sendCommand("180") // on for 180 seconds
+
+Watering_Timer_1.sendCommand(0) // turn off watering
+Watering_Timer_1.sendCommand(30) // turn on for 30 minutes
+
+Pump_Timer.sendCommand(0) // turn the pump off
+Pump_Timer.sendCommand(30) // turn the pump on for 30 minutes
 ```
 
 ### Debugging and Tracing

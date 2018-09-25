@@ -21,6 +21,9 @@ public class InverterRealtimeBody {
     private InverterRealtimeBodyData data;
 
     public InverterRealtimeBodyData getData() {
+        if (data == null) {
+            data = new InverterRealtimeBodyData();
+        }
         return data;
     }
 

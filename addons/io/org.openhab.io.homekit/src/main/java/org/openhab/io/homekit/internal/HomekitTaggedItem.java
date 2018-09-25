@@ -110,7 +110,7 @@ public class HomekitTaggedItem {
         if (CREATED_ACCESSORY_IDS.containsKey(id)) {
             if (!CREATED_ACCESSORY_IDS.get(id).equals(item.getName())) {
                 logger.error(
-                        "Could not create homekit accessory {} because its hash conflicts with {}. This is a 1:1,000,000 chance occurrence. Change one of the names and consider playing the lottery. See https://github.com/openhab/openhab2/issues/257#issuecomment-125886562",
+                        "Could not create homekit accessory {} because its hash conflicts with {}. This is a 1:1,000,000 chance occurrence. Change one of the names and consider playing the lottery. See https://github.com/openhab/openhab2-addons/issues/257#issuecomment-125886562",
                         item.getName(), CREATED_ACCESSORY_IDS.get(id));
                 return 0;
             }

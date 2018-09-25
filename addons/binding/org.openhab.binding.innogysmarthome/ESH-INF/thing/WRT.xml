@@ -14,7 +14,11 @@
 		<channels>
 			<channel id="set_temperature" typeId="ThermostatActuator_PointTemperature" />
 			<channel id="temperature" typeId="TemperatureSensor_Temperature" />
+			<channel id="frost_warning" typeId="TemperatureSensor_FrostWarning" />
 			<channel id="humidity" typeId="HumiditySensor_Humidity" />
+			<channel id="mold_warning" typeId="HumiditySensor_MoldWarning" />
+			<channel id="operation_mode" typeId="ThermostatActuator_OperationMode" />
+			<channel id="window_reduction_active" typeId="ThermostatActuator_WindowReductionActive" />
 			<channel id="battery_low" typeId="system.low-battery" />
 		</channels>
 

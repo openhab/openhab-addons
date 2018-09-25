@@ -10,10 +10,11 @@ package org.openhab.binding.max.test;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
-import static org.openhab.binding.max.MaxBinding.*;
+import static org.openhab.binding.max.MaxBindingConstants.*;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingRegistry;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
@@ -24,15 +25,14 @@ import org.eclipse.smarthome.test.storage.VolatileStorageService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.binding.max.MaxBinding;
+import org.openhab.binding.max.MaxBindingConstants;
 import org.openhab.binding.max.internal.handler.MaxCubeBridgeHandler;
 
 /**
  * Tests for {@link MaxCubeBridgeHandler}.
  *
- * @author Marcel Verpaalen - Initial version
+ * @author Marcel Verpaalen - Initial contribution
  * @author Wouter Born - Migrate Groovy to Java tests
- * @since 2.0
  */
 public class MaxCubeBridgeHandlerOSGiTest extends JavaOSGiTest {
 
@@ -69,8 +69,8 @@ public class MaxCubeBridgeHandlerOSGiTest extends JavaOSGiTest {
         assertThat(maxBridgeHandler, is(nullValue()));
 
         Configuration configuration = new Configuration();
-        configuration.put(MaxBinding.PROPERTY_SERIAL_NUMBER, "KEQ0565026");
-        configuration.put(MaxBinding.PROPERTY_IP_ADDRESS, "192.168.3.100");
+        configuration.put(Thing.PROPERTY_SERIAL_NUMBER, "KEQ0565026");
+        configuration.put(MaxBindingConstants.PROPERTY_IP_ADDRESS, "192.168.3.100");
 
         ThingUID cubeUid = new ThingUID(BRIDGE_THING_TYPE_UID, "testCube");
 

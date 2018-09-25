@@ -53,6 +53,8 @@ public class KNXBindingConstants {
     public static final String DEFAULT_MULTICAST_IP = "224.0.23.12";
 
     // Channel Type IDs
+    public static final String CHANNEL_COLOR = "color";
+    public static final String CHANNEL_COLOR_CONTROL = "color-control";
     public static final String CHANNEL_CONTACT = "contact";
     public static final String CHANNEL_CONTACT_CONTROL = "contact-control";
     public static final String CHANNEL_DATETIME = "datetime";
@@ -68,25 +70,26 @@ public class KNXBindingConstants {
     public static final String CHANNEL_SWITCH = "switch";
     public static final String CHANNEL_SWITCH_CONTROL = "switch-control";
 
-    public static final Set<String> CONTROL_CHANNEL_TYPES = Collections
-            .unmodifiableSet(Stream.of(CHANNEL_CONTACT_CONTROL, //
-                    CHANNEL_DATETIME_CONTROL, //
-                    CHANNEL_DIMMER_CONTROL, //
-                    CHANNEL_NUMBER_CONTROL, //
-                    CHANNEL_ROLLERSHUTTER_CONTROL, //
-                    CHANNEL_STRING_CONTROL, //
-                    CHANNEL_SWITCH_CONTROL //
+    public static final Set<String> CONTROL_CHANNEL_TYPES = Collections.unmodifiableSet(Stream.of(CHANNEL_COLOR_CONTROL, //
+            CHANNEL_CONTACT_CONTROL, //
+            CHANNEL_DATETIME_CONTROL, //
+            CHANNEL_DIMMER_CONTROL, //
+            CHANNEL_NUMBER_CONTROL, //
+            CHANNEL_ROLLERSHUTTER_CONTROL, //
+            CHANNEL_STRING_CONTROL, //
+            CHANNEL_SWITCH_CONTROL //
     ).collect(toSet()));
 
     public static final String CHANNEL_RESET = "reset";
 
     // Channel Configuration parameters
     public static final String GA = "ga";
+    public static final String HSB_GA = "hsb";
     public static final String INCREASE_DECREASE_GA = "increaseDecrease";
     public static final String POSITION_GA = "position";
+    public static final String REPEAT_FREQUENCY = "frequency";
     public static final String STOP_MOVE_GA = "stopMove";
     public static final String SWITCH_GA = "switch";
     public static final String UP_DOWN_GA = "upDown";
-    public static final String REPEAT_FREQUENCY = "frequency";
 
 }

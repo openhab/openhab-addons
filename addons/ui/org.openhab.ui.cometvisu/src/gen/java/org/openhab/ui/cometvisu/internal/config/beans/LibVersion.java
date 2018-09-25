@@ -13,7 +13,6 @@ package org.openhab.ui.cometvisu.internal.config.beans;
  * this must be changed manually, everytime the cometvisu´s libVersion changes after JAXB generation
  * 
  * @author Tobias Bräutigam
- * @since 2.0.0
  *
  */
 public class LibVersion {

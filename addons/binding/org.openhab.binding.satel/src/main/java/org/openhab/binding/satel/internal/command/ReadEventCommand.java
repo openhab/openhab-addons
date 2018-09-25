@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
  * Command class for command that reads one record from the event log.
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.9.0
  */
 public class ReadEventCommand extends SatelCommandBase {
 

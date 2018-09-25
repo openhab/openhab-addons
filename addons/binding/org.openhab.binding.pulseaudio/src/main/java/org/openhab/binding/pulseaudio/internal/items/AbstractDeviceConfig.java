@@ -14,7 +14,6 @@ package org.openhab.binding.pulseaudio.internal.items;
  * class.
  *
  * @author Tobias Bräutigam - Initial contribution
- * @since 1.2.0
  */
 public abstract class AbstractDeviceConfig {
 

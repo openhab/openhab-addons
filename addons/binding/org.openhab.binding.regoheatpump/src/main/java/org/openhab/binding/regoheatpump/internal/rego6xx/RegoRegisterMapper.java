@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.regoheatpump.internal.rego6xx;
 
-import static org.openhab.binding.regoheatpump.RegoHeatPumpBindingConstants.*;
+import static org.openhab.binding.regoheatpump.internal.RegoHeatPumpBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;

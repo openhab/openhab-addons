@@ -9,7 +9,7 @@
 package org.openhab.binding.avmfritz.internal.discovery;
 
 import static org.eclipse.smarthome.core.thing.Thing.*;
-import static org.openhab.binding.avmfritz.BindingConstants.*;
+import static org.openhab.binding.avmfritz.internal.BindingConstants.*;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,9 +24,9 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.avmfritz.handler.AVMFritzBaseBridgeHandler;
 import org.openhab.binding.avmfritz.internal.ahamodel.AVMFritzBaseModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.GroupModel;
+import org.openhab.binding.avmfritz.internal.handler.AVMFritzBaseBridgeHandler;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaWebInterface;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaDiscoveryCallback;
 import org.slf4j.Logger;
@@ -116,7 +116,7 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
             ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, bridgeHandler.getThingName(device));
 
             Map<String, Object> properties = new HashMap<>();
-            properties.put(THING_AIN, device.getIdentifier());
+            properties.put(CONFIG_AIN, device.getIdentifier());
             properties.put(PROPERTY_VENDOR, device.getManufacturer());
             properties.put(PROPERTY_MODEL_ID, device.getDeviceId());
             properties.put(PROPERTY_SERIAL_NUMBER, device.getIdentifier());
@@ -127,7 +127,7 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
             }
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withRepresentationProperty(THING_AIN).withBridge(bridgeUID).withLabel(device.getName()).build();
+                    .withRepresentationProperty(CONFIG_AIN).withBridge(bridgeUID).withLabel(device.getName()).build();
 
             thingDiscovered(discoveryResult);
         } else {

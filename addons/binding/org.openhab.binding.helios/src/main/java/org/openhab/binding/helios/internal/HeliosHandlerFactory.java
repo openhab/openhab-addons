@@ -29,7 +29,7 @@ import com.google.common.collect.Lists;
  *
  * @author Karel Goderis - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.helios")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.helios")
 public class HeliosHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists

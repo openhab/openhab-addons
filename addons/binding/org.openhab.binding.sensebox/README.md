@@ -7,7 +7,7 @@ Citizen Science Toolkit.
 
 The API server uses Letsencrypt certificates.
 Therefore, one needs to either import the Letsencrypt root certificates into the local keystore (see the description in the
-[netatmo addon](http://docs.openhab.org/addons/bindings/netatmo/readme.html)).
+[Netatmo Binding](https://www.openhab.org/addons/bindings/netatmo/#missing-certificate-authority)).
 Another way would be to simply update the JDK to at least JDK 1.8.0_111
 
 ## Supported Things

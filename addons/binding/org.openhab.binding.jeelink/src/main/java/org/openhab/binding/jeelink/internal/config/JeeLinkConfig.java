@@ -19,4 +19,5 @@ public class JeeLinkConfig {
     public String serialPort;
     public Integer baudRate;
     public String initCommands;
+    public Integer initDelay;
 }

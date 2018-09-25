@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.io.openhabcloud
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: 
  .,
@@ -13,7 +14,7 @@ Bundle-Name: openHAB Cloud Connector Bundle
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.io.openhabcloud
 Bundle-Vendor: openHAB.org
-Bundle-Version: 2.3.0.qualifier
+Bundle-Version: 2.4.0.qualifier
 Export-Package: org.openhab.io.openhabcloud
 Ignore-Package: org.openhab.io.openhabcloud.internal
 Import-Package: 
@@ -46,7 +47,6 @@ Import-Package:
  org.eclipse.smarthome.core.service,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.model.script.engine.action,
- org.eclipse.smarthome.ui.items,
  org.openhab.core,
  org.openhab.io.openhabcloud,
  org.osgi.framework,

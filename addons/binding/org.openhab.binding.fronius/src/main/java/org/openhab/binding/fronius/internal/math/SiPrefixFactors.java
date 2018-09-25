@@ -11,7 +11,7 @@ package org.openhab.binding.fronius.internal.math;
 /**
  * Helper class for unit conversions
  *
- * @author Thomas Rokohl
+ * @author Thomas Rokohl - Initial contribution
  *
  */
 public class SiPrefixFactors {

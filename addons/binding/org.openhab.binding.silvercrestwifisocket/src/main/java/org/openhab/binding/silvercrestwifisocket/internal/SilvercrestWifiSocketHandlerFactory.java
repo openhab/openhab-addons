@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jaime Vaz - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.silvercrestwifisocket")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.silvercrestwifisocket")
 public class SilvercrestWifiSocketHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections

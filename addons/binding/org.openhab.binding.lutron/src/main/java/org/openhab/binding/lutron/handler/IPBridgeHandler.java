@@ -57,10 +57,15 @@ public class IPBridgeHandler extends BaseBridgeHandler {
 
     private static final int MAX_LOGIN_ATTEMPTS = 2;
 
+    private static final String PROMPT_GNET = "GNET>";
+    private static final String PROMPT_QNET = "QNET>";
+    private static final String PROMPT_SAFE = "SAFE>";
+    private static final String LOGIN_MATCH_REGEX = "(login:|[GQ]NET>|SAFE>)";
+
     private static final String DEFAULT_USER = "lutron";
     private static final String DEFAULT_PASSWORD = "integration";
 
-    private Logger logger = LoggerFactory.getLogger(IPBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(IPBridgeHandler.class);
 
     private IPBridgeConfig config;
 
@@ -73,6 +78,14 @@ public class IPBridgeHandler extends BaseBridgeHandler {
 
     private Date lastDbUpdateDate;
     private ServiceRegistration<DiscoveryService> discoveryServiceRegistration;
+
+    public class LutronSafemodeException extends Exception {
+        private static final long serialVersionUID = 1L;
+
+        public LutronSafemodeException(String message) {
+            super(message);
+        }
+    }
 
     public IPBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -139,7 +152,7 @@ public class IPBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        this.logger.debug("Connecting to bridge at {}", config.getIpAddress());
+        logger.debug("Connecting to bridge at {}", config.getIpAddress());
 
         try {
             if (!login(config)) {
@@ -156,6 +169,11 @@ public class IPBridgeHandler extends BaseBridgeHandler {
             // a scan for paired devices.
             sendCommand(
                     new LutronCommand(LutronOperation.QUERY, LutronCommandType.SYSTEM, -1, SYSTEM_DBEXPORTDATETIME));
+        } catch (LutronSafemodeException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "main repeater is in safe mode");
+            disconnect();
+
+            return;
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             disconnect();
@@ -192,12 +210,12 @@ public class IPBridgeHandler extends BaseBridgeHandler {
             while (true) {
                 LutronCommand command = this.sendQueue.take();
 
-                this.logger.debug("Sending command {}", command);
+                logger.debug("Sending command {}", command);
 
                 try {
                     this.session.writeLine(command.toString());
                 } catch (IOException e) {
-                    this.logger.error("Communication error, will try to reconnect", e);
+                    logger.error("Communication error, will try to reconnect", e);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
 
                     // Requeue command
@@ -215,7 +233,7 @@ public class IPBridgeHandler extends BaseBridgeHandler {
     }
 
     private synchronized void disconnect() {
-        this.logger.debug("Disconnecting from bridge");
+        logger.debug("Disconnecting from bridge");
 
         if (this.keepAlive != null) {
             this.keepAlive.cancel(true);
@@ -234,19 +252,19 @@ public class IPBridgeHandler extends BaseBridgeHandler {
         try {
             this.session.close();
         } catch (IOException e) {
-            this.logger.error("Error disconnecting", e);
+            logger.error("Error disconnecting", e);
         }
     }
 
     private synchronized void reconnect() {
-        this.logger.debug("Keepalive timeout, attempting to reconnect to the bridge");
+        logger.debug("Keepalive timeout, attempting to reconnect to the bridge");
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE);
         disconnect();
         connect();
     }
 
-    private boolean login(IPBridgeConfig config) throws IOException, InterruptedException {
+    private boolean login(IPBridgeConfig config) throws IOException, InterruptedException, LutronSafemodeException {
         this.session.open(config.getIpAddress());
         this.session.waitFor("login:");
 
@@ -256,13 +274,19 @@ public class IPBridgeHandler extends BaseBridgeHandler {
             this.session.waitFor("password:");
             this.session.writeLine(config.getPassword() != null ? config.getPassword() : DEFAULT_PASSWORD);
 
-            MatchResult matchResult = this.session.waitFor("(login:|GNET>)");
-            if ("GNET>".equals(matchResult.group())) {
+            MatchResult matchResult = this.session.waitFor(LOGIN_MATCH_REGEX);
+
+            if (PROMPT_GNET.equals(matchResult.group()) || PROMPT_QNET.equals(matchResult.group())) {
                 return true;
+            } else if (PROMPT_SAFE.equals(matchResult.group())) {
+                logger.warn("Lutron repeater is in safe mode. Unable to connect.");
+                throw new LutronSafemodeException("Lutron repeater in safe mode");
             }
 
-            this.logger.debug("got another login prompt, logging in again");
-            // we already got the login prompt so go straight to sending user
+            else {
+                logger.debug("got another login prompt, logging in again");
+                // we already got the login prompt so go straight to sending user
+            }
         }
         return false;
     }
@@ -286,13 +310,15 @@ public class IPBridgeHandler extends BaseBridgeHandler {
     }
 
     private void parseUpdates() {
+        String paramString;
+
         for (String line : this.session.readLines()) {
             if (line.trim().equals("")) {
                 // Sometimes we get an empty line (possibly only when prompts are disabled). Ignore them.
                 continue;
             }
 
-            this.logger.debug("Received message {}", line);
+            logger.debug("Received message {}", line);
 
             // System is alive, cancel reconnect task.
             if (this.keepAliveReconnect != null) {
@@ -312,22 +338,30 @@ public class IPBridgeHandler extends BaseBridgeHandler {
                     continue;
                 }
 
-                Integer integrationId = new Integer(matcher.group(2));
+                Integer integrationId;
+
+                try {
+                    integrationId = Integer.valueOf(matcher.group(2));
+                } catch (NumberFormatException e1) {
+                    logger.warn("Integer conversion error parsing update: {}", line);
+                    continue;
+                }
+                paramString = matcher.group(3);
+
+                // Now dispatch update to the proper thing handler
                 LutronHandler handler = findThingHandler(integrationId);
 
                 if (handler != null) {
-                    String paramString = matcher.group(3);
-
                     try {
                         handler.handleUpdate(type, paramString.split(","));
                     } catch (Exception e) {
-                        this.logger.error("Error processing update", e);
+                        logger.error("Error processing update", e);
                     }
                 } else {
-                    this.logger.info("No thing configured for integration ID {}", integrationId);
+                    logger.debug("No thing configured for integration ID {}", integrationId);
                 }
             } else {
-                this.logger.info("Ignoring message {}", line);
+                logger.debug("Ignoring message {}", line);
             }
         }
     }

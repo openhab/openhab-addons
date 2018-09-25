@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 public class DimmerHandler extends LutronHandler {
     private static final Integer ACTION_ZONELEVEL = 1;
 
-    private Logger logger = LoggerFactory.getLogger(DimmerHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(DimmerHandler.class);
 
     private DimmerConfig config;
 

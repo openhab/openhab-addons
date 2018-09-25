@@ -28,7 +28,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Marius Bjørnstad - Initial contribution
  */
 
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.rotelra1x")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.rotelra1x")
 public class RotelRa1xHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_AMP);

@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
  * must implement {@link SatelEventListener} interface.
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.7.0
  */
 public class EventDispatcher {
 

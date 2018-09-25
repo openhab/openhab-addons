@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.innogysmarthome.internal.discovery;
 
-import static org.openhab.binding.innogysmarthome.InnogyBindingConstants.*;
+import static org.openhab.binding.innogysmarthome.internal.InnogyBindingConstants.*;
 
 import java.util.Collection;
 import java.util.Date;
@@ -22,9 +22,9 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
-import org.openhab.binding.innogysmarthome.handler.InnogyBridgeHandler;
-import org.openhab.binding.innogysmarthome.handler.InnogyDeviceHandler;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.Device;
+import org.openhab.binding.innogysmarthome.internal.handler.InnogyBridgeHandler;
+import org.openhab.binding.innogysmarthome.internal.handler.InnogyDeviceHandler;
 import org.openhab.binding.innogysmarthome.internal.listener.DeviceStatusListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

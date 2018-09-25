@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.ui.cometvisu
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.openhab.ui.cometvisu.internal.CvActivator
 Bundle-ClassPath: 
@@ -10,7 +11,7 @@ Bundle-Name: CometVisu backend
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.ui.cometvisu;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.3.0.qualifier
+Bundle-Version: 2.4.0.qualifier
 Export-Package: org.openhab.ui.cometvisu.php
 Import-Package: 
  com.google.gson,

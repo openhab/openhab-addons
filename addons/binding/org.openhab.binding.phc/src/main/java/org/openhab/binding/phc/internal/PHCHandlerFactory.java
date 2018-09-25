@@ -18,9 +18,8 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.phc.PHCBindingConstants;
-import org.openhab.binding.phc.handler.PHCBridgeHandler;
-import org.openhab.binding.phc.handler.PHCHandler;
+import org.openhab.binding.phc.internal.handler.PHCBridgeHandler;
+import org.openhab.binding.phc.internal.handler.PHCHandler;
 import org.osgi.service.component.annotations.Component;
 
 import com.google.common.collect.Sets;
@@ -31,7 +30,7 @@ import com.google.common.collect.Sets;
  *
  * @author Jonas Hohaus - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.phc")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.phc")
 public class PHCHandlerFactory extends BaseThingHandlerFactory {
 
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(

@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.avmfritz.internal;
 
-import static org.openhab.binding.avmfritz.BindingConstants.*;
+import static org.openhab.binding.avmfritz.internal.BindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -25,12 +25,12 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
-import org.openhab.binding.avmfritz.handler.AVMFritzBaseBridgeHandler;
-import org.openhab.binding.avmfritz.handler.BoxHandler;
-import org.openhab.binding.avmfritz.handler.DeviceHandler;
-import org.openhab.binding.avmfritz.handler.GroupHandler;
-import org.openhab.binding.avmfritz.handler.Powerline546EHandler;
 import org.openhab.binding.avmfritz.internal.discovery.AVMFritzDiscoveryService;
+import org.openhab.binding.avmfritz.internal.handler.AVMFritzBaseBridgeHandler;
+import org.openhab.binding.avmfritz.internal.handler.BoxHandler;
+import org.openhab.binding.avmfritz.internal.handler.DeviceHandler;
+import org.openhab.binding.avmfritz.internal.handler.GroupHandler;
+import org.openhab.binding.avmfritz.internal.handler.Powerline546EHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Robert Bausdorf - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.avmfritz")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.avmfritz")
 public class AVMFritzHandlerFactory extends BaseThingHandlerFactory {
     /**
      * Logger
@@ -96,14 +96,15 @@ public class AVMFritzHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected synchronized void removeHandler(@NonNull ThingHandler thingHandler) {
         if (thingHandler instanceof AVMFritzBaseBridgeHandler) {
-            ServiceRegistration<?> serviceReg = discoveryServiceRegs.get(thingHandler.getThing().getUID());
+            ServiceRegistration<?> serviceReg = discoveryServiceRegs.remove(thingHandler.getThing().getUID());
             if (serviceReg != null) {
                 // remove discovery service, if bridge handler is removed
-                AVMFritzDiscoveryService discoveryService = (AVMFritzDiscoveryService) bundleContext
+                AVMFritzDiscoveryService service = (AVMFritzDiscoveryService) bundleContext
                         .getService(serviceReg.getReference());
-                discoveryService.deactivate();
                 serviceReg.unregister();
-                discoveryServiceRegs.remove(thingHandler.getThing().getUID());
+                if (service != null) {
+                    service.deactivate();
+                }
             }
         }
     }
@@ -113,7 +114,7 @@ public class AVMFritzHandlerFactory extends BaseThingHandlerFactory {
      *
      * @param handler
      */
-    private void registerDeviceDiscoveryService(AVMFritzBaseBridgeHandler handler) {
+    private synchronized void registerDeviceDiscoveryService(AVMFritzBaseBridgeHandler handler) {
         AVMFritzDiscoveryService discoveryService = new AVMFritzDiscoveryService(handler);
         discoveryServiceRegs.put(handler.getThing().getUID(), bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));

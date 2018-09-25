@@ -6,7 +6,7 @@
 
 # Prepare openHAB
 
-1. [Download](http://www.openhab.org/getting-started/downloads.html) openHAB 2 (further information about installing openHAB you can find [here](http://docs.openhab.org/installation/index.html))
+1. [Download](https://www.openhab.org/download/) openHAB 2 (further information about installing openHAB you can find [here](https://www.openhab.org/docs/installation/))
 2. Install Z-Way Binding
     - via Extension Manager
     - via Download

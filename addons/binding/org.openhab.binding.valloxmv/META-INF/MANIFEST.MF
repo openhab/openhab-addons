@@ -1,0 +1,35 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.valloxmv
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-ManifestVersion: 2
+Bundle-Name: ValloxMV Binding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.binding.valloxmv;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.4.0.qualifier
+Import-Package: 
+ javax.measure,
+ javax.measure.quantity,
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.jetty.client,
+ org.eclipse.jetty.http,
+ org.eclipse.jetty.io,
+ org.eclipse.jetty.util,
+ org.eclipse.jetty.util.component,
+ org.eclipse.jetty.websocket.api,
+ org.eclipse.jetty.websocket.api.annotations,
+ org.eclipse.jetty.websocket.client,
+ org.eclipse.jetty.websocket.common,
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.library.unit,
+ org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.thing.binding.builder,
+ org.eclipse.smarthome.core.thing.type,
+ org.eclipse.smarthome.core.types,
+ org.osgi.framework,
+ org.osgi.service.component.annotations;resolution:=optional,
+ org.slf4j
+Service-Component: OSGI-INF/*.xml

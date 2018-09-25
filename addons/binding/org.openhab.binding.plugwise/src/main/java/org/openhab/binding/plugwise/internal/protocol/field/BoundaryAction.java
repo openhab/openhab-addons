@@ -8,11 +8,14 @@
  */
 package org.openhab.binding.plugwise.internal.protocol.field;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The boundary switch action of a Sense when the value is below/above the boundary minimum/maximum.
  *
  * @author Wouter Born - Initial contribution
  */
+@NonNullByDefault
 public enum BoundaryAction {
 
     OFF_BELOW_ON_ABOVE(0, 1),

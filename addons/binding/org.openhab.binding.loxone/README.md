@@ -1,7 +1,7 @@
 # Loxone Binding
 
 This binding integrates [Loxone Miniserver](https://www.loxone.com/enen/products/miniserver-extensions/) with [openHAB](http://www.openhab.org/).
-Miniserver is represented as a [Thing](http://docs.openhab.org/configuration/things.html). Miniserver controls, that are visible in the Loxone [UI](https://www.loxone.com/enen/kb/user-interface-configuration/), are exposed as openHAB channels.
+Miniserver is represented as a [Thing](https://www.openhab.org/docs/configuration/things.html). Miniserver controls, that are visible in the Loxone [UI](https://www.loxone.com/enen/kb/user-interface-configuration/), are exposed as openHAB channels.
 
 ## Features
 
@@ -9,7 +9,7 @@ The following features are currently supported:
 
 *   [Discovery](https://en.wikipedia.org/wiki/Simple_Service_Discovery_Protocol) of Miniservers available on the local network
 *   Creation of channels for Loxone controls that are exposed in the Loxone [UI](https://www.loxone.com/enen/kb/user-interface-configuration/)
-*   Tagging of channels and [items](http://docs.openhab.org/configuration/items.html) with tags that can be recognized by [Alexa](https://en.wikipedia.org/wiki/Amazon_Alexa) openHAB [skill](https://www.amazon.com/openHAB-Foundation/dp/B01MTY7Z5L), so voice can be used to command Loxone controls
+*   Tagging of channels and [items](https://www.openhab.org/docs/configuration/items.html) with tags that can be recognized by [Alexa](https://en.wikipedia.org/wiki/Amazon_Alexa) openHAB [skill](https://www.amazon.com/openHAB-Foundation/dp/B01MTY7Z5L), so voice can be used to command Loxone controls
 *   Management of a Websocket connection to the Miniserver and updating Thing status accordingly
 *   Updates of openHAB channel's state in runtime according to control's state changes on the Miniserver
 *   Passing channel commands to the Miniserver's controls
@@ -31,7 +31,7 @@ Please set them manually in Thing configuration after you add a new Miniserver T
 
 ### Manual configuration
 
-As an alternative to the automatic discovery process, Miniservers can be configured manually, through an entry in [.things file](http://docs.openhab.org/configuration/things.html#defining-things-using-files).
+As an alternative to the automatic discovery process, Miniservers can be configured manually, through an entry in [.things file](https://www.openhab.org/docs/configuration/things.html#defining-things-using-files).
 The entry should have the following syntax:
 
 `loxone:miniserver:<thing-id> [ user="<user>", password="<password>", host="<host>", port=<port>, ... ]`
@@ -104,7 +104,7 @@ A method to enable unrestricted security policy depends on the JRE version and v
 This binding creates channels for controls that are [used in Loxone's user interface](https://www.loxone.com/enen/kb/user-interface-configuration/).
 Currently supported controls are presented in the table below.
 
-| [Loxone API Control](https://www.loxone.com/enen/kb/api/) | Loxone Block-Functions                                                                                                                                                                                                                                                                                                    | [Item Types](http://docs.openhab.org/concepts/items.html) | Supported Commands                                                                                                           |
+| [Loxone API Control](https://www.loxone.com/enen/kb/api/) | Loxone Block-Functions                                                                                                                                                                                                                                                                                                    | [Item Types](https://www.openhab.org/docs/concepts/items.html) | Supported Commands                                                                                                           |
 |-----------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------|
 | Dimmer                                                    | [Dimmer](https://www.loxone.com/enen/kb/dimmer/)                                                                                                                                                                                                                                                                          | `Dimmer`                                                  | `OnOffType.*`<br>`Percent`                                                                                                   |
 | InfoOnlyAnalog                                            | Analog [virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) (virtual state)                                                                                                                                                                                                                           | `Number`                                                  | none (read-only value)                                                                                                       |
@@ -182,11 +182,11 @@ The simplest and quickest way of configuring a Loxone Miniserver with openHAB is
 *   Configure your Miniserver by editing Miniserver Thing in `Configuration/Things` page and providing user name and password.
 *   Miniserver Thing should go online. Channels and Items will be automatically created and configured.
 *   On the `Control` page, you can test Miniserver Items and interact with them.
-*   As the user interface, you may use [HABPanel](http://docs.openhab.org/addons/uis/habpanel/readme.html), where all Miniserver's items are ready for picking up, using entirely the graphical user interface.
+*   As the user interface, you may use [HABPanel](https://www.openhab.org/docs/configuration/habpanel.html), where all Miniserver's items are ready for picking up, using entirely the graphical user interface.
 
 ## Manual Configuration Example
 
-A more advanced setup requires manual creation and editing of openHAB configuration files, according to the instructions provided in [configuration user guide](http://docs.openhab.org/configuration/index.html).
+A more advanced setup requires manual creation and editing of openHAB configuration files, according to the instructions provided in [configuration user guide](https://www.openhab.org/docs/configuration/).
 In this example we will manually configure:
 
 *   A Miniserver with serial number 504F2414780F, available at IP 192.168.0.220 and with web services port 80

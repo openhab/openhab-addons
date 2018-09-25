@@ -13,8 +13,7 @@ import static org.openhab.binding.plugwise.internal.protocol.field.MessageType.N
 /**
  * Requests the network status from the Stick. This message is answered by a {@link NetworkStatusResponseMessage}.
  *
- * @author Karel Goderis
- * @author Wouter Born - Initial contribution
+ * @author Wouter Born, Karel Goderis - Initial contribution
  */
 public class NetworkStatusRequestMessage extends Message {
 

@@ -8,12 +8,14 @@
  */
 package org.openhab.binding.plugwise.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Exception used during Stick initialization.
  *
- * @author Karel Goderis
- * @author Wouter Born - Initial contribution
+ * @author Wouter Born, Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public class PlugwiseInitializationException extends Exception {
 
     private static final long serialVersionUID = 2095258016390913221L;

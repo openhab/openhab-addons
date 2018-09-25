@@ -15,8 +15,7 @@ import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
 /**
  * Requests the real-time clock value of a Circle+.
  *
- * @author Karel Goderis
- * @author Wouter Born - Initial contribution
+ * @author Wouter Born, Karel Goderis - Initial contribution
  */
 public class RealTimeClockGetRequestMessage extends Message {
 

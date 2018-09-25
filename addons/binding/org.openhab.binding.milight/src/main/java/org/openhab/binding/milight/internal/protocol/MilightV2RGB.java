@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
  * and can only be add manually in the things file.
  *
  * @author David Graeff - Initial contribution
- * @since 2.0
  */
 public class MilightV2RGB extends AbstractBulbInterface {
     protected final Logger logger = LoggerFactory.getLogger(MilightV2RGB.class);

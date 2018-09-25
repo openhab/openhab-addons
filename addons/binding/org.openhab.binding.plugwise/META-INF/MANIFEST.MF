@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.plugwise
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
@@ -6,10 +7,7 @@ Bundle-Name: Plugwise Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.plugwise;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.3.0.qualifier
-Export-Package: 
- org.openhab.binding.plugwise,
- org.openhab.binding.plugwise.handler
+Bundle-Version: 2.4.0.qualifier
 Import-Package: 
  com.google.common.base,
  com.google.common.collect,
@@ -28,8 +26,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.openhab.binding.plugwise,
- org.openhab.binding.plugwise.handler,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

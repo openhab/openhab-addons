@@ -1,11 +1,12 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.io.hueemulation
 Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
 Bundle-Name: Hue Emulation Service
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.io.hueemulation;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.3.0.qualifier
+Bundle-Version: 2.4.0.qualifier
 Import-Package: 
  com.google.gson,
  com.google.gson.reflect,

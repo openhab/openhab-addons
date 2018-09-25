@@ -3,16 +3,15 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>pom-tycho</artifactId>
     <groupId>org.openhab</groupId>
-    <version>2.3.0-SNAPSHOT</version>
+    <artifactId>pom-tycho</artifactId>
+    <version>2.4.0-SNAPSHOT</version>
     <relativePath></relativePath>
   </parent>
 
   <groupId>org.openhab</groupId>
   <artifactId>pom-addons2</artifactId>
-  <version>2.3.0-SNAPSHOT</version>
-
+  <version>2.4.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>openHAB 2 Add-ons</name>
 
@@ -59,7 +58,7 @@
   </distributionManagement>
 
   <properties>
-    <ohc.version>2.3.0-SNAPSHOT</ohc.version>
+    <ohc.version>2.4.0-SNAPSHOT</ohc.version>
   </properties>
 
   <repositories>
@@ -103,19 +102,6 @@
       <id>openhab-artifactory-snapshot</id>
       <name>JFrog Artifactory Repository</name>
       <url>https://openhab.jfrog.io/openhab/libs-snapshot</url>
-    </repository>
-
-    <!-- SmartHome p2 snapshot repository -->
-    <repository>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <id>p2-smarthome-snapshot</id>
-      <url>https://openhab.jfrog.io/openhab/eclipse-smarthome-stable</url>
-      <layout>p2</layout>
     </repository>
 
     <!-- openHAB dependencies p2 repository -->
@@ -163,6 +149,7 @@
           <version>{sat.version}</version>
           <configuration>
             <checkstyleProperties>${basedirRoot}/tools/checkstyle.properties</checkstyleProperties>
+            <checkstyleFilter>${basedirRoot}/tools/checkstyle_suppressions.xml</checkstyleFilter>
           </configuration>
         </plugin>
       </plugins>
@@ -174,31 +161,5 @@
       </plugin>
     </plugins>
   </build>
-
-  <profiles>
-    <profile>
-      <id>releasebuild</id>
-      <activation>
-        <property>
-          <name>release</name>
-        </property>
-      </activation>
-      <repositories>
-        <!-- SmartHome p2 release repository -->
-        <repository>
-          <releases>
-            <enabled>true</enabled>
-            <updatePolicy>never</updatePolicy>
-          </releases>
-          <snapshots>
-            <enabled>false</enabled>
-          </snapshots>
-          <id>p2-smarthome-release</id>
-          <url>http://download.eclipse.org/smarthome/updates-release/${esh.releaseVersion}</url>
-          <layout>p2</layout>
-        </repository>
-      </repositories>
-    </profile>
-  </profiles>
 
 </project>

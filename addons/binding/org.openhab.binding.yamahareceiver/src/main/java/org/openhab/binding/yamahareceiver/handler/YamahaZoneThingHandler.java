@@ -16,10 +16,9 @@ import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeProvider;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
 import org.openhab.binding.yamahareceiver.internal.ChannelsTypeProviderAvailableInputs;
 import org.openhab.binding.yamahareceiver.internal.ChannelsTypeProviderPreset;
-import org.openhab.binding.yamahareceiver.internal.config.YamahaZoneConfiguration;
+import org.openhab.binding.yamahareceiver.internal.config.YamahaZoneConfig;
 import org.openhab.binding.yamahareceiver.internal.protocol.*;
 import org.openhab.binding.yamahareceiver.internal.protocol.xml.InputWithNavigationControlXML;
 import org.openhab.binding.yamahareceiver.internal.protocol.xml.InputWithPlayControlXML;
@@ -59,7 +58,7 @@ public class YamahaZoneThingHandler extends BaseThingHandler implements
 
     private final Logger logger = LoggerFactory.getLogger(YamahaZoneThingHandler.class);
 
-    private YamahaZoneConfiguration zoneConfiguration;
+    private YamahaZoneConfig zoneConfig;
 
     /// ChannelType providers
     protected ChannelsTypeProviderPreset channelsTypeProviderPreset;
@@ -80,7 +79,7 @@ public class YamahaZoneThingHandler extends BaseThingHandler implements
     protected InputWithNavigationControl inputWithNavigationControl;
     protected ZoneAvailableInputs zoneAvailableInputs;
     protected InputWithPresetControl inputWithPresetControl;
-    protected InputWithDabBandControl inputWithDabBandControl;
+    protected InputWithTunerBandControl inputWithDabBandControl;
 
     public YamahaZoneThingHandler(Thing thing) {
         super(thing);
@@ -104,8 +103,8 @@ public class YamahaZoneThingHandler extends BaseThingHandler implements
 
         updateConfiguration(configuration);
 
-        zoneConfiguration = configuration.as(YamahaZoneConfiguration.class);
-        logger.trace("Updating configuration of {} with zone '{}'", getThing().getLabel(), zoneConfiguration.getZoneValue());
+        zoneConfig = configuration.as(YamahaZoneConfig.class);
+        logger.trace("Updating configuration of {} with zone '{}'", getThing().getLabel(), zoneConfig.getZoneValue());
     }
 
     /**
@@ -123,11 +122,11 @@ public class YamahaZoneThingHandler extends BaseThingHandler implements
     public void initialize() {
         // Determine the zone of this thing
 
-        zoneConfiguration = getConfigAs(YamahaZoneConfiguration.class);
-        logger.trace("Initialize {} with zone '{}'", getThing().getLabel(), zoneConfiguration.getZoneValue());
+        zoneConfig = getConfigAs(YamahaZoneConfig.class);
+        logger.trace("Initialize {} with zone '{}'", getThing().getLabel(), zoneConfig.getZoneValue());
 
-        if (zoneConfiguration.getZone() == null) {
-            String msg = String.format("Zone not set or invalid zone name used: '%s'. It needs to be on of: '%s'", zoneConfiguration.getZoneValue(), Arrays.toString(Zone.values()));
+        if (zoneConfig.getZone() == null) {
+            String msg = String.format("Zone not set or invalid zone name used: '%s'. It needs to be on of: '%s'", zoneConfig.getZoneValue(), Arrays.toString(Zone.values()));
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
             logger.warn(msg);
             return;
@@ -169,14 +168,22 @@ public class YamahaZoneThingHandler extends BaseThingHandler implements
         return (YamahaBridgeHandler) bridge.getHandler();
     }
 
+    protected ProtocolFactory getProtocolFactory() {
+        return getBridgeHandler().getProtocolFactory();
+    }
+
+    protected AbstractConnection getConnection() {
+        return getBridgeHandler().getConnection();
+    }
+
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             if (zoneControl == null) {
                 YamahaBridgeHandler brHandler = getBridgeHandler();
 
-                zoneControl = ProtocolFactory.ZoneControl(brHandler.getCommunication(), zoneConfiguration, this, brHandler::getInputConverter, getDeviceInformationState());
-                zoneAvailableInputs = ProtocolFactory.ZoneAvailableInputs(brHandler.getCommunication(), zoneConfiguration, this, brHandler::getInputConverter, getDeviceInformationState());
+                zoneControl = getProtocolFactory().ZoneControl(getConnection(), zoneConfig, this, brHandler::getInputConverter, getDeviceInformationState());
+                zoneAvailableInputs = getProtocolFactory().ZoneAvailableInputs(getConnection(), zoneConfig, this, brHandler::getInputConverter, getDeviceInformationState());
 
                 updateZoneInformation();
             }
@@ -193,7 +200,7 @@ public class YamahaZoneThingHandler extends BaseThingHandler implements
      * Return true if the zone is set, and zoneControl and zoneAvailableInputs objects have been created.
      */
     boolean isCorrectlyInitialized() {
-        return zoneConfiguration.getZone() != null && zoneAvailableInputs != null && zoneControl != null;
+        return zoneConfig != null && zoneConfig.getZone() != null && zoneAvailableInputs != null && zoneControl != null;
     }
 
     /**
@@ -235,34 +242,37 @@ public class YamahaZoneThingHandler extends BaseThingHandler implements
             }
 
             switch (id) {
-                case YamahaReceiverBindingConstants.CHANNEL_POWER:
+                case CHANNEL_POWER:
                     zoneControl.setPower(((OnOffType) command) == OnOffType.ON);
                     break;
-                case YamahaReceiverBindingConstants.CHANNEL_INPUT:
+                case CHANNEL_INPUT:
                     zoneControl.setInput(((StringType) command).toString());
                     break;
-                case YamahaReceiverBindingConstants.CHANNEL_SURROUND:
+                case CHANNEL_SURROUND:
                     zoneControl.setSurroundProgram(((StringType) command).toString());
                     break;
-                case YamahaReceiverBindingConstants.CHANNEL_VOLUME_DB:
+                case CHANNEL_VOLUME_DB:
                     zoneControl.setVolumeDB(((DecimalType) command).floatValue());
                     break;
-                case YamahaReceiverBindingConstants.CHANNEL_VOLUME:
+                case CHANNEL_VOLUME:
                     if (command instanceof DecimalType) {
                         zoneControl.setVolume(((DecimalType) command).floatValue());
                     } else if (command instanceof IncreaseDecreaseType) {
                         zoneControl.setVolumeRelative(zoneState,
-                                (((IncreaseDecreaseType) command) == IncreaseDecreaseType.INCREASE ? 1 : -1) * zoneConfiguration.getVolumeRelativeChangeFactor());
+                                (((IncreaseDecreaseType) command) == IncreaseDecreaseType.INCREASE ? 1 : -1) * zoneConfig.getVolumeRelativeChangeFactor());
                     }
                     break;
-                case YamahaReceiverBindingConstants.CHANNEL_MUTE:
+                case CHANNEL_MUTE:
                     zoneControl.setMute(((OnOffType) command) == OnOffType.ON);
                     break;
-                case YamahaReceiverBindingConstants.CHANNEL_DIALOGUE_LEVEL:
+                case CHANNEL_SCENE:
+                    zoneControl.setScene(((StringType) command).toString());
+                    break;
+                case CHANNEL_DIALOGUE_LEVEL:
                     zoneControl.setDialogueLevel(((DecimalType) command).intValue());
                     break;
 
-                case YamahaReceiverBindingConstants.CHANNEL_NAVIGATION_MENU:
+                case CHANNEL_NAVIGATION_MENU:
                     if (inputWithNavigationControl == null) {
                         logger.warn("Channel {} not working with {} input!", id, zoneState.inputID);
                         return;
@@ -272,7 +282,7 @@ public class YamahaZoneThingHandler extends BaseThingHandler implements
                     inputWithNavigationControl.selectItemFullPath(path);
                     break;
 
-                case YamahaReceiverBindingConstants.CHANNEL_NAVIGATION_UPDOWN:
+                case CHANNEL_NAVIGATION_UPDOWN:
                     if (inputWithNavigationControl == null) {
                         logger.warn("Channel {} not working with {} input!", id, zoneState.inputID);
                         return;
@@ -284,7 +294,7 @@ public class YamahaZoneThingHandler extends BaseThingHandler implements
                     }
                     break;
 
-                case YamahaReceiverBindingConstants.CHANNEL_NAVIGATION_LEFTRIGHT:
+                case CHANNEL_NAVIGATION_LEFTRIGHT:
                     if (inputWithNavigationControl == null) {
                         logger.warn("Channel {} not working with {} input!", id, zoneState.inputID);
                         return;
@@ -296,7 +306,7 @@ public class YamahaZoneThingHandler extends BaseThingHandler implements
                     }
                     break;
 
-                case YamahaReceiverBindingConstants.CHANNEL_NAVIGATION_SELECT:
+                case CHANNEL_NAVIGATION_SELECT:
                     if (inputWithNavigationControl == null) {
                         logger.warn("Channel {} not working with {} input!", id, zoneState.inputID);
                         return;
@@ -304,7 +314,7 @@ public class YamahaZoneThingHandler extends BaseThingHandler implements
                     inputWithNavigationControl.selectCurrentItem();
                     break;
 
-                case YamahaReceiverBindingConstants.CHANNEL_NAVIGATION_BACK:
+                case CHANNEL_NAVIGATION_BACK:
                     if (inputWithNavigationControl == null) {
                         logger.warn("Channel {} not working with {} input!", id, zoneState.inputID);
                         return;
@@ -312,7 +322,7 @@ public class YamahaZoneThingHandler extends BaseThingHandler implements
                     inputWithNavigationControl.goBack();
                     break;
 
-                case YamahaReceiverBindingConstants.CHANNEL_NAVIGATION_BACKTOROOT:
+                case CHANNEL_NAVIGATION_BACKTOROOT:
                     if (inputWithNavigationControl == null) {
                         logger.warn("Channel {} not working with {} input!", id, zoneState.inputID);
                         return;
@@ -320,7 +330,7 @@ public class YamahaZoneThingHandler extends BaseThingHandler implements
                     inputWithNavigationControl.goToRoot();
                     break;
 
-                case YamahaReceiverBindingConstants.CHANNEL_PLAYBACK_PRESET:
+                case CHANNEL_PLAYBACK_PRESET:
                     if (inputWithPresetControl == null) {
                         logger.warn("Channel {} not working with {} input!", id, zoneState.inputID);
                         return;
@@ -439,13 +449,15 @@ public class YamahaZoneThingHandler extends BaseThingHandler implements
         } else if (id.equals(grpZone(CHANNEL_VOLUME_DB))) {
             updateState(channelUID, new DecimalType(zoneState.volumeDB));
         } else if (id.equals(grpZone(CHANNEL_VOLUME))) {
-            updateState(channelUID, new PercentType((int) zoneConfiguration.getVolumePercentage(zoneState.volumeDB)));
+            updateState(channelUID, new PercentType((int) zoneConfig.getVolumePercentage(zoneState.volumeDB)));
         } else if (id.equals(grpZone(CHANNEL_MUTE))) {
             updateState(channelUID, zoneState.mute ? OnOffType.ON : OnOffType.OFF);
         } else if (id.equals(grpZone(CHANNEL_INPUT))) {
             updateState(channelUID, new StringType(zoneState.inputID));
         } else if (id.equals(grpZone(CHANNEL_SURROUND))) {
             updateState(channelUID, new StringType(zoneState.surroundProgram));
+        } else if (id.equals(grpZone(CHANNEL_SCENE))) {
+            // no state updates available
         } else if (id.equals(grpZone(CHANNEL_DIALOGUE_LEVEL))) {
             updateState(channelUID, new DecimalType(zoneState.dialogueLevel));
 
@@ -459,6 +471,8 @@ public class YamahaZoneThingHandler extends BaseThingHandler implements
             updateState(channelUID, new StringType(playInfoState.album));
         } else if (id.equals(grpPlayback(CHANNEL_PLAYBACK_SONG))) {
             updateState(channelUID, new StringType(playInfoState.song));
+        } else if (id.equals(grpPlayback(CHANNEL_PLAYBACK_SONG_IMAGE_URL))) {
+            updateState(channelUID, new StringType(playInfoState.songImageUrl));
         } else if (id.equals(grpPlayback(CHANNEL_PLAYBACK_PRESET))) {
             updateState(channelUID, new DecimalType(presetInfoState.presetChannel));
         } else if (id.equals(grpPlayback(CHANNEL_TUNER_BAND))) {
@@ -473,7 +487,7 @@ public class YamahaZoneThingHandler extends BaseThingHandler implements
         } else if (id.equals(grpNav(CHANNEL_NAVIGATION_TOTAL_ITEMS))) {
             updateState(channelUID, new DecimalType(navigationInfoState.maxLine));
         } else {
-            logger.error("Channel {} not implemented!", id);
+            logger.warn("Channel {} not implemented!", id);
         }
     }
 
@@ -488,7 +502,7 @@ public class YamahaZoneThingHandler extends BaseThingHandler implements
         updateState(grpZone(CHANNEL_INPUT), new StringType(zoneState.inputID));
         updateState(grpZone(CHANNEL_SURROUND), new StringType(zoneState.surroundProgram));
         updateState(grpZone(CHANNEL_VOLUME_DB), new DecimalType(zoneState.volumeDB));
-        updateState(grpZone(CHANNEL_VOLUME), new PercentType((int) zoneConfiguration.getVolumePercentage(zoneState.volumeDB)));
+        updateState(grpZone(CHANNEL_VOLUME), new PercentType((int) zoneConfig.getVolumePercentage(zoneState.volumeDB)));
         updateState(grpZone(CHANNEL_MUTE), zoneState.mute ? OnOffType.ON : OnOffType.OFF);
         updateState(grpZone(CHANNEL_DIALOGUE_LEVEL), new DecimalType(zoneState.dialogueLevel));
 
@@ -510,12 +524,11 @@ public class YamahaZoneThingHandler extends BaseThingHandler implements
             logger.warn("Input {} is not supported on your AVR model", zoneState.inputID);
         }
 
-        AbstractConnection connection = getBridgeHandler().getCommunication();
-        inputChangedCheckForNavigationControl(connection);
+        inputChangedCheckForNavigationControl();
         // Note: the DAB band needs to be initialized before preset and playback
-        inputChangedCheckForDabBand(connection);
-        inputChangedCheckForPlaybackControl(connection);
-        inputChangedCheckForPresetControl(connection);
+        inputChangedCheckForDabBand();
+        inputChangedCheckForPlaybackControl();
+        inputChangedCheckForPresetControl();
     }
 
     /**
@@ -537,7 +550,7 @@ public class YamahaZoneThingHandler extends BaseThingHandler implements
         return true;
     }
 
-    private void inputChangedCheckForNavigationControl(AbstractConnection connection) {
+    private void inputChangedCheckForNavigationControl() {
         boolean includeInputWithNavigationControl = false;
 
         for (String channelName : CHANNELS_NAVIGATION) {
@@ -563,13 +576,12 @@ public class YamahaZoneThingHandler extends BaseThingHandler implements
             return;
         }
 
-        inputWithNavigationControl = ProtocolFactory.InputWithNavigationControl(connection, navigationInfoState,
-                zoneState.inputID, this);
+        inputWithNavigationControl = getProtocolFactory().InputWithNavigationControl(getConnection(), navigationInfoState, zoneState.inputID, this, getDeviceInformationState());
 
         updateAsyncMakeOfflineIfFail(inputWithNavigationControl);
     }
 
-    private void inputChangedCheckForPlaybackControl(AbstractConnection connection) {
+    private void inputChangedCheckForPlaybackControl() {
         boolean includeInputWithPlaybackControl = false;
 
         for (String channelName : CHANNELS_PLAYBACK) {
@@ -602,14 +614,14 @@ public class YamahaZoneThingHandler extends BaseThingHandler implements
             // When input is Tuner DAB there is no playback control
             inputWithPlayControl = null;
         } else {
-            inputWithPlayControl = ProtocolFactory.InputWithPlayControl(connection, zoneState.inputID, this, getBridgeHandler().getConfiguration());
+            inputWithPlayControl = getProtocolFactory().InputWithPlayControl(getConnection(), zoneState.inputID, this, getBridgeHandler().getConfiguration(), getDeviceInformationState());
 
             updateAsyncMakeOfflineIfFail(inputWithPlayControl);
         }
     }
 
-    private void inputChangedCheckForPresetControl(AbstractConnection connection) {
-        boolean includeInput = isLinked(grpPlayback(YamahaReceiverBindingConstants.CHANNEL_PLAYBACK_PRESET));
+    private void inputChangedCheckForPresetControl() {
+        boolean includeInput = isLinked(grpPlayback(CHANNEL_PLAYBACK_PRESET));
 
         logger.trace("Preset control requested by channel");
 
@@ -635,20 +647,20 @@ public class YamahaZoneThingHandler extends BaseThingHandler implements
             inputWithPresetControl = (InputWithPresetControl) inputWithDabBandControl;
             // Note: No need to update state - it will be already called for DabBand control (see inputChangedCheckForDabBand)
         } else {
-            inputWithPresetControl = ProtocolFactory.InputWithPresetControl(connection, zoneState.inputID, this);
+            inputWithPresetControl = getProtocolFactory().InputWithPresetControl(getConnection(), zoneState.inputID, this, getDeviceInformationState());
 
             updateAsyncMakeOfflineIfFail(inputWithPresetControl);
         }
     }
 
-    private void inputChangedCheckForDabBand(AbstractConnection connection) {
+    private void inputChangedCheckForDabBand() {
         boolean includeInput = isLinked(grpPlayback(CHANNEL_TUNER_BAND));
 
         logger.trace("Band control requested by channel");
 
         if (includeInput) {
             // Check if TUNER input is DAB - dual bands radio tuner
-            includeInput = InputWithDabBandControl.SUPPORTED_INPUTS.contains(zoneState.inputID)
+            includeInput = InputWithTunerBandControl.SUPPORTED_INPUTS.contains(zoneState.inputID)
                     && getDeviceInformationState().features.contains(Feature.DAB);
             if (!includeInput) {
                 logger.debug("Band control not supported by {}", zoneState.inputID);
@@ -662,21 +674,21 @@ public class YamahaZoneThingHandler extends BaseThingHandler implements
             return;
         }
 
-        logger.debug("InputWithDabBandControl created for {}", zoneState.inputID);
-        inputWithDabBandControl = ProtocolFactory.InputWithDabBandControl(zoneState.inputID, connection,
-                this, this, this);
+        logger.debug("InputWithTunerBandControl created for {}", zoneState.inputID);
+        inputWithDabBandControl = getProtocolFactory().InputWithDabBandControl(zoneState.inputID, getConnection(),
+                this, this, this, getDeviceInformationState());
 
         updateAsyncMakeOfflineIfFail(inputWithDabBandControl);
     }
 
-    protected void updateAsyncMakeOfflineIfFail(IStateUpdatable stateUpdateable) {
+    protected void updateAsyncMakeOfflineIfFail(IStateUpdatable stateUpdatable) {
         scheduler.submit(() -> {
             try {
-                stateUpdateable.update();
+                stateUpdatable.update();
             } catch (IOException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             } catch (ReceivedMessageParseException e) {
-                updateProperty(YamahaReceiverBindingConstants.PROPERTY_LAST_PARSE_ERROR, e.getMessage());
+                updateProperty(PROPERTY_LAST_PARSE_ERROR, e.getMessage());
                 // Some AVRs send unexpected responses. We log parser exceptions therefore.
                 logger.debug("Parse error!", e);
             }
@@ -694,10 +706,11 @@ public class YamahaZoneThingHandler extends BaseThingHandler implements
 
         // Remove the old channel and add the new channel. The channel will be requested from the
         // yamahaChannelTypeProvider.
-        ChannelUID inputChannelUID = new ChannelUID(thing.getUID(), CHANNEL_GROUP_ZONE,
-                YamahaReceiverBindingConstants.CHANNEL_INPUT);
-        Channel channel = ChannelBuilder.create(inputChannelUID, "String")
-                .withType(channelsTypeProviderAvailableInputs.getChannelTypeUID()).build();
+        ChannelUID inputChannelUID = new ChannelUID(thing.getUID(), CHANNEL_GROUP_ZONE, CHANNEL_INPUT);
+        Channel channel = ChannelBuilder
+                .create(inputChannelUID, "String")
+                .withType(channelsTypeProviderAvailableInputs.getChannelTypeUID())
+                .build();
         updateThing(editThing().withoutChannel(inputChannelUID).withChannel(channel).build());
     }
 
@@ -731,6 +744,7 @@ public class YamahaZoneThingHandler extends BaseThingHandler implements
 
         if (msg.presetChannelNamesChanged) {
             msg.presetChannelNamesChanged = false;
+
             channelsTypeProviderPreset.changePresetNames(msg.presetChannelNames);
 
             // Remove the old channel and add the new channel. The channel will be requested from the

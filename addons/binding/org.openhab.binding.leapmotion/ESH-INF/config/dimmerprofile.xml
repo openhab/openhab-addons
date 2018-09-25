@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+	http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="profile:leapmotion:dimmer">
+		<parameter name="mode" type="text" required="false">
+			<label>Mode</label>
+			<description>The mode for interpreting gestures. Either it dims depending on the number of shown fingers or it uses the height of the hand over the controller.</description>
+			<options>
+				<option value="fingers">Number of Fingers</option>
+				<option value="height">Height of Hand</option>
+			</options>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

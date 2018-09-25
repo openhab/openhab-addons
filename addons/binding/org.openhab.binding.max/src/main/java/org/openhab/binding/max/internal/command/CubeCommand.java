@@ -8,14 +8,10 @@
  */
 package org.openhab.binding.max.internal.command;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * {@link CubeCommand} is the base class for commands to be send to the MAX! Cube.
  *
  * @author Marcel Verpaalen - Initial contribution
- * @since 2.0
  *
  */
 public abstract class CubeCommand {
