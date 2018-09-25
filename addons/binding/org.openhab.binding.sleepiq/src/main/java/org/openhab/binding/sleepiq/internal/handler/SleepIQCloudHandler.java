@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.sleepiq.handler;
+package org.openhab.binding.sleepiq.internal.handler;
 
-import static org.openhab.binding.sleepiq.SleepIQBindingConstants.THING_TYPE_CLOUD;
+import static org.openhab.binding.sleepiq.internal.SleepIQBindingConstants.THING_TYPE_CLOUD;
 import static org.openhab.binding.sleepiq.internal.config.SleepIQCloudConfiguration.*;
 
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.ConfigStatusBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.sleepiq.SleepIQBindingConstants;
+import org.openhab.binding.sleepiq.internal.SleepIQBindingConstants;
 import org.openhab.binding.sleepiq.internal.SleepIQConfigStatusMessage;
 import org.openhab.binding.sleepiq.internal.config.SleepIQCloudConfiguration;
 import org.slf4j.Logger;

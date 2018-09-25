@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.sleepiq.handler;
+package org.openhab.binding.sleepiq.internal.handler;
 
-import static org.openhab.binding.sleepiq.SleepIQBindingConstants.*;
+import static org.openhab.binding.sleepiq.internal.SleepIQBindingConstants.*;
 
 import java.util.Collections;
 import java.util.Set;
