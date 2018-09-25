@@ -10,9 +10,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.synopanalyzer;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
-Export-Package: 
- org.openhab.binding.synopanalyzer,
- org.openhab.binding.synopanalyzer.handler
 Import-Package: 
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
