@@ -118,21 +118,21 @@
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="slideserial">
-	   <item-type>String</item-type>
-	   <label>Slide Serial Number</label>
-	   <description>The serial Number of the currently installed slide</description>
-	   <state readOnly="true" />
+		<item-type>String</item-type>
+		<label>Slide Serial Number</label>
+		<description>The serial Number of the currently installed slide</description>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="outofwater">
-	   <item-type>String</item-type>
-	   <label>Out of Water</label>
-	   <description>The Sensor is reporting being out of the water</description>
-	   <state readOnly="true" />
+		<item-type>String</item-type>
+		<label>Out of Water</label>
+		<description>The Sensor is reporting being out of the water</description>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="disconnected">
-	   <item-type>String</item-type>
-	   <label>Disconnected</label>
-	   <description>No readings have been uploaded for a while, check connection</description>
-	   <state readOnly="true" />
+		<item-type>String</item-type>
+		<label>Disconnected</label>
+		<description>No readings have been uploaded for a while, check connection</description>
+		<state readOnly="true" />
 	</channel-type>
 </thing:thing-descriptions>
