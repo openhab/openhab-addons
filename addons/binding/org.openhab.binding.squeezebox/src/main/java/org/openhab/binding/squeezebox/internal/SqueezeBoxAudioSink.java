@@ -24,7 +24,7 @@ import org.eclipse.smarthome.core.audio.UnsupportedAudioStreamException;
 import org.eclipse.smarthome.core.audio.utils.AudioStreamUtils;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.openhab.binding.squeezebox.handler.SqueezeBoxPlayerHandler;
+import org.openhab.binding.squeezebox.internal.handler.SqueezeBoxPlayerHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.squeezebox.internal.discovery;
 
-import static org.openhab.binding.squeezebox.SqueezeBoxBindingConstants.SQUEEZEBOXPLAYER_THING_TYPE;
+import static org.openhab.binding.squeezebox.internal.SqueezeBoxBindingConstants.SQUEEZEBOXPLAYER_THING_TYPE;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,10 +20,10 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.squeezebox.handler.SqueezeBoxPlayer;
-import org.openhab.binding.squeezebox.handler.SqueezeBoxPlayerEventListener;
-import org.openhab.binding.squeezebox.handler.SqueezeBoxPlayerHandler;
-import org.openhab.binding.squeezebox.handler.SqueezeBoxServerHandler;
+import org.openhab.binding.squeezebox.internal.handler.SqueezeBoxPlayer;
+import org.openhab.binding.squeezebox.internal.handler.SqueezeBoxPlayerEventListener;
+import org.openhab.binding.squeezebox.internal.handler.SqueezeBoxPlayerHandler;
+import org.openhab.binding.squeezebox.internal.handler.SqueezeBoxServerHandler;
 import org.openhab.binding.squeezebox.internal.model.Favorite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
