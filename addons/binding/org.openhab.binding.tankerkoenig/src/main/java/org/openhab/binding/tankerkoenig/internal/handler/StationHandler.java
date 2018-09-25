@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.tankerkoenig.handler;
+package org.openhab.binding.tankerkoenig.internal.handler;
 
-import static org.openhab.binding.tankerkoenig.TankerkoenigBindingConstants.*;
+import static org.openhab.binding.tankerkoenig.internal.TankerkoenigBindingConstants.*;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -26,7 +26,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.tankerkoenig.TankerkoenigBindingConstants;
+import org.openhab.binding.tankerkoenig.internal.TankerkoenigBindingConstants;
 import org.openhab.binding.tankerkoenig.internal.config.LittleStation;
 import org.openhab.binding.tankerkoenig.internal.config.OpeningTimes;
 import org.openhab.binding.tankerkoenig.internal.config.TankerkoenigDetailResult;

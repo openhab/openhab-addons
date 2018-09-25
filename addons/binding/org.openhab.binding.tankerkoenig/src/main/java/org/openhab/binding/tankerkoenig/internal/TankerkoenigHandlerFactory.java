@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.tankerkoenig.internal;
 
-import static org.openhab.binding.tankerkoenig.TankerkoenigBindingConstants.*;
+import static org.openhab.binding.tankerkoenig.internal.TankerkoenigBindingConstants.*;
 
 import java.util.Set;
 
@@ -18,9 +18,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.tankerkoenig.TankerkoenigBindingConstants;
-import org.openhab.binding.tankerkoenig.handler.StationHandler;
-import org.openhab.binding.tankerkoenig.handler.WebserviceHandler;
+import org.openhab.binding.tankerkoenig.internal.handler.StationHandler;
+import org.openhab.binding.tankerkoenig.internal.handler.WebserviceHandler;
 import org.osgi.service.component.annotations.Component;
 
 import com.google.common.collect.Sets;

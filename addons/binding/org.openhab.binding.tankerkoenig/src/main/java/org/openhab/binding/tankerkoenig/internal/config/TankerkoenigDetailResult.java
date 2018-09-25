@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.tankerkoenig.internal.config;
 
-import org.openhab.binding.tankerkoenig.TankerkoenigBindingConstants;
+import org.openhab.binding.tankerkoenig.internal.TankerkoenigBindingConstants;
 
 /***
  * The {@link TankerkoenigDetailResult} class is the representing java model for the json result of the tankerkoenig.de
