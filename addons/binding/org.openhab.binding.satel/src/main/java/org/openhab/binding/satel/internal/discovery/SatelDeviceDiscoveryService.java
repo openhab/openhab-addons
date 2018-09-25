@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.satel.internal.discovery;
 
-import static org.openhab.binding.satel.SatelBindingConstants.*;
+import static org.openhab.binding.satel.internal.SatelBindingConstants.*;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
@@ -25,11 +25,11 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.type.ThingType;
-import org.openhab.binding.satel.handler.SatelBridgeHandler;
 import org.openhab.binding.satel.internal.command.ReadDeviceInfoCommand;
 import org.openhab.binding.satel.internal.command.ReadDeviceInfoCommand.DeviceType;
 import org.openhab.binding.satel.internal.command.SatelCommand;
 import org.openhab.binding.satel.internal.config.SatelThingConfig;
+import org.openhab.binding.satel.internal.handler.SatelBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

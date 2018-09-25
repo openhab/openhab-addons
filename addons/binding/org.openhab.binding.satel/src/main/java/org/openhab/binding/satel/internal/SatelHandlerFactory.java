@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.satel.internal;
 
-import static org.openhab.binding.satel.SatelBindingConstants.*;
+import static org.openhab.binding.satel.internal.SatelBindingConstants.*;
 
 import java.util.Hashtable;
 import java.util.Map;
@@ -26,16 +26,16 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.satel.handler.Ethm1BridgeHandler;
-import org.openhab.binding.satel.handler.IntRSBridgeHandler;
-import org.openhab.binding.satel.handler.SatelBridgeHandler;
-import org.openhab.binding.satel.handler.SatelOutputHandler;
-import org.openhab.binding.satel.handler.SatelPartitionHandler;
-import org.openhab.binding.satel.handler.SatelShutterHandler;
-import org.openhab.binding.satel.handler.SatelSystemHandler;
-import org.openhab.binding.satel.handler.SatelZoneHandler;
 import org.openhab.binding.satel.internal.config.SatelThingConfig;
 import org.openhab.binding.satel.internal.discovery.SatelDeviceDiscoveryService;
+import org.openhab.binding.satel.internal.handler.Ethm1BridgeHandler;
+import org.openhab.binding.satel.internal.handler.IntRSBridgeHandler;
+import org.openhab.binding.satel.internal.handler.SatelBridgeHandler;
+import org.openhab.binding.satel.internal.handler.SatelOutputHandler;
+import org.openhab.binding.satel.internal.handler.SatelPartitionHandler;
+import org.openhab.binding.satel.internal.handler.SatelShutterHandler;
+import org.openhab.binding.satel.internal.handler.SatelSystemHandler;
+import org.openhab.binding.satel.internal.handler.SatelZoneHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 
