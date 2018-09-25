@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.smaenergymeter.handler;
+package org.openhab.binding.smaenergymeter.internal.handler;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;

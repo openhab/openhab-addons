@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.smaenergymeter.internal.discovery;
 
-import static org.openhab.binding.smaenergymeter.SMAEnergyMeterBindingConstants.*;
+import static org.openhab.binding.smaenergymeter.internal.SMAEnergyMeterBindingConstants.*;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -23,7 +23,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.smaenergymeter.handler.EnergyMeter;
+import org.openhab.binding.smaenergymeter.internal.handler.EnergyMeter;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
