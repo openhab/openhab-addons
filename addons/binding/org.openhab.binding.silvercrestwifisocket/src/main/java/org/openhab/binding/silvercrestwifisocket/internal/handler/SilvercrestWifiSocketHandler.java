@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.silvercrestwifisocket.handler;
+package org.openhab.binding.silvercrestwifisocket.internal.handler;
 
-import static org.openhab.binding.silvercrestwifisocket.SilvercrestWifiSocketBindingConstants.WIFI_SOCKET_CHANNEL_ID;
+import static org.openhab.binding.silvercrestwifisocket.internal.SilvercrestWifiSocketBindingConstants.WIFI_SOCKET_CHANNEL_ID;
 
 import java.math.BigDecimal;
 import java.net.DatagramPacket;
@@ -29,7 +29,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.silvercrestwifisocket.SilvercrestWifiSocketBindingConstants;
+import org.openhab.binding.silvercrestwifisocket.internal.SilvercrestWifiSocketBindingConstants;
 import org.openhab.binding.silvercrestwifisocket.internal.entities.SilvercrestWifiSocketRequest;
 import org.openhab.binding.silvercrestwifisocket.internal.entities.SilvercrestWifiSocketResponse;
 import org.openhab.binding.silvercrestwifisocket.internal.enums.SilvercrestWifiSocketRequestType;
