@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.tankerkoenig.handler;
+package org.openhab.binding.tankerkoenig.internal.handler;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -27,7 +27,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.tankerkoenig.TankerkoenigBindingConstants;
+import org.openhab.binding.tankerkoenig.internal.TankerkoenigBindingConstants;
 import org.openhab.binding.tankerkoenig.internal.config.LittleStation;
 import org.openhab.binding.tankerkoenig.internal.config.OpeningTime;
 import org.openhab.binding.tankerkoenig.internal.config.OpeningTimes;
