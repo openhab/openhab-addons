@@ -15,11 +15,13 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
@@ -195,9 +197,46 @@ public abstract class BaseKeypadHandler extends LutronHandler {
 
             configureChannels();
 
-            updateStatus(ThingStatus.ONLINE);
+            initDeviceState();
 
             logger.debug("Async init thread finishing for keypad handler {}", integrationId);
+        }
+    }
+
+    public void initDeviceState() {
+        synchronized (asyncInitLock) {
+            Bridge bridge = getBridge();
+            if (bridge == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
+            } else if (bridge.getStatus() == ThingStatus.ONLINE) {
+                if (ledList.isEmpty()) {
+                    // Device with no LEDs has nothing to query. Assume it is online if bridge is online.
+                    updateStatus(ThingStatus.ONLINE);
+                } else {
+                    // Query LED states. Method handleUpdate() will set thing status to online when response arrives.
+                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Awaiting initial response");
+                    // To reduce query volume, query only 1st LED and LEDs with linked channels.
+                    for (KeypadComponent component : ledList) {
+                        if (component.id() == ledList.get(0).id() || isLinked(channelFromComponent(component.id()))) {
+                            queryDevice(component.id(), ACTION_LED_STATE);
+                        }
+                    }
+                }
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            }
+        }
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        logger.debug("Bridge status changed to {} for shade handler {}", bridgeStatusInfo.getStatus(), integrationId);
+
+        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE
+                && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE) {
+            initDeviceState();
+        } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
@@ -277,7 +316,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
 
     @Override
     public void handleUpdate(LutronCommandType type, String... parameters) {
-        logger.debug("Handling command {} {} from keypad {}", type, parameters, integrationId);
+        logger.trace("Handling command {} {} from keypad {}", type, parameters, integrationId);
         if (type == LutronCommandType.DEVICE && parameters.length >= 2) {
             int component;
 
@@ -292,6 +331,9 @@ public abstract class BaseKeypadHandler extends LutronHandler {
 
             if (channelUID != null) {
                 if (ACTION_LED_STATE.toString().equals(parameters[1]) && parameters.length >= 3) {
+                    if (getThing().getStatus() == ThingStatus.UNKNOWN) {
+                        updateStatus(ThingStatus.ONLINE); // set thing status online if this is an initial response
+                    }
                     if (LED_ON.toString().equals(parameters[2])) {
                         updateState(channelUID, OnOffType.ON);
                     } else if (LED_OFF.toString().equals(parameters[2])) {
