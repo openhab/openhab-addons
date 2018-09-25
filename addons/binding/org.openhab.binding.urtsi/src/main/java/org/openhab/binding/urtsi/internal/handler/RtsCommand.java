@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.urtsi.handler;
+package org.openhab.binding.urtsi.internal.handler;
 
 /**
  * The {@code RtsCommand} provides the available commands due to Somfy's RTS protocol.
