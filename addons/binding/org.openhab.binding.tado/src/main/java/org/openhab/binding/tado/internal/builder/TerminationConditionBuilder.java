@@ -12,12 +12,12 @@ import static org.openhab.binding.tado.internal.api.TadoApiTypeUtils.*;
 
 import java.io.IOException;
 
-import org.openhab.binding.tado.handler.TadoZoneHandler;
 import org.openhab.binding.tado.internal.api.ApiException;
 import org.openhab.binding.tado.internal.api.model.OverlayTerminationCondition;
 import org.openhab.binding.tado.internal.api.model.OverlayTerminationConditionType;
 import org.openhab.binding.tado.internal.api.model.TimerTerminationCondition;
 import org.openhab.binding.tado.internal.api.model.ZoneState;
+import org.openhab.binding.tado.internal.handler.TadoZoneHandler;
 
 /**
  * Builder for creation of overlay termination conditions.
