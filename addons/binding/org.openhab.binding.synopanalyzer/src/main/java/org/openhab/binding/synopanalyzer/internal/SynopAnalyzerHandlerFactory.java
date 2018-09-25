@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.synopanalyzer.internal;
 
-import static org.openhab.binding.synopanalyzer.SynopAnalyzerBindingConstants.THING_SYNOP;
+import static org.openhab.binding.synopanalyzer.internal.SynopAnalyzerBindingConstants.THING_SYNOP;
 
 import java.util.Collections;
 import java.util.Set;
@@ -18,7 +18,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.synopanalyzer.handler.SynopAnalyzerHandler;
+import org.openhab.binding.synopanalyzer.internal.handler.SynopAnalyzerHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**
