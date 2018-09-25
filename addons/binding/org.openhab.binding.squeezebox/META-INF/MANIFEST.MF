@@ -7,9 +7,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.squeezebox;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
-Export-Package: 
- org.openhab.binding.squeezebox,
- org.openhab.binding.squeezebox.handler
 Import-Package: 
  com.google.gson,
  org.apache.commons.lang,
@@ -36,8 +33,6 @@ Import-Package:
  org.jupnp.model,
  org.jupnp.model.meta,
  org.jupnp.model.types,
- org.openhab.binding.squeezebox,
- org.openhab.binding.squeezebox.handler,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

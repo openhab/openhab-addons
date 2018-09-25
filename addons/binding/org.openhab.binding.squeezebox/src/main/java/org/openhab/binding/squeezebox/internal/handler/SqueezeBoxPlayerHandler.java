@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.squeezebox.handler;
+package org.openhab.binding.squeezebox.internal.handler;
 
-import static org.openhab.binding.squeezebox.SqueezeBoxBindingConstants.*;
+import static org.openhab.binding.squeezebox.internal.SqueezeBoxBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
