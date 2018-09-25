@@ -8,14 +8,14 @@
  */
 package org.openhab.binding.solaredge.internal.command;
 
-import static org.openhab.binding.solaredge.SolarEdgeBindingConstants.*;
+import static org.openhab.binding.solaredge.internal.SolarEdgeBindingConstants.*;
 
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.http.HttpMethod;
-import org.openhab.binding.solaredge.handler.SolarEdgeHandler;
 import org.openhab.binding.solaredge.internal.callback.AbstractCommandCallback;
 import org.openhab.binding.solaredge.internal.connector.StatusUpdateListener;
+import org.openhab.binding.solaredge.internal.handler.SolarEdgeHandler;
 
 /**
  * checks validity of the token by accessing the webinterface
