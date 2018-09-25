@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.sensebox.handler;
+package org.openhab.binding.sensebox.internal.handler;
 
-import static org.openhab.binding.sensebox.SenseBoxBindingConstants.*;
+import static org.openhab.binding.sensebox.internal.SenseBoxBindingConstants.*;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;

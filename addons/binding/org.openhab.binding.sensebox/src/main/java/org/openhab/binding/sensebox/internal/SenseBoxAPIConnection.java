@@ -22,14 +22,14 @@ import org.osgi.framework.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.openhab.binding.sensebox.internal.SenseBoxBindingConstants.INVALID_BRIGHTNESS;
+import static org.openhab.binding.sensebox.internal.SenseBoxBindingConstants.SENSEMAP_API_URL_BASE;
+import static org.openhab.binding.sensebox.internal.SenseBoxBindingConstants.SENSEMAP_IMAGE_URL_BASE;
+import static org.openhab.binding.sensebox.internal.SenseBoxBindingConstants.SENSEMAP_MAP_URL_BASE;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
-
-import static org.openhab.binding.sensebox.SenseBoxBindingConstants.INVALID_BRIGHTNESS;
-import static org.openhab.binding.sensebox.SenseBoxBindingConstants.SENSEMAP_API_URL_BASE;
-import static org.openhab.binding.sensebox.SenseBoxBindingConstants.SENSEMAP_IMAGE_URL_BASE;
-import static org.openhab.binding.sensebox.SenseBoxBindingConstants.SENSEMAP_MAP_URL_BASE;
 
 /**
  * The {@link SenseBoxAPIConnection} is responsible for fetching data from the senseBox API server.
