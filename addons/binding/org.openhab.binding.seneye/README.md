@@ -17,7 +17,7 @@ You can have multiple seneye devices in your home, just make sure that your aqua
 
 ## Discovery
 
-Discovery is not supported, the seneye monitor must be configured manually; either through Paper or .items
+Discovery is not supported, the seneye monitor must be configured manually.
 
 ## Thing Configuration
 
