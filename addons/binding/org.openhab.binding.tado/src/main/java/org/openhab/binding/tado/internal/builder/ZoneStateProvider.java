@@ -10,9 +10,9 @@ package org.openhab.binding.tado.internal.builder;
 
 import java.io.IOException;
 
-import org.openhab.binding.tado.handler.TadoZoneHandler;
 import org.openhab.binding.tado.internal.api.ApiException;
 import org.openhab.binding.tado.internal.api.model.ZoneState;
+import org.openhab.binding.tado.internal.handler.TadoZoneHandler;
 
 /**
  * Wrapper for zone state to support lazy loading.

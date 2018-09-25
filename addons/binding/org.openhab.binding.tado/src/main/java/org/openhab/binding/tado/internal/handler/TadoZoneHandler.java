@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.tado.handler;
+package org.openhab.binding.tado.internal.handler;
 
 import static org.openhab.binding.tado.internal.api.TadoApiTypeUtils.terminationConditionTemplateToTerminationCondition;
 
@@ -31,11 +31,11 @@ import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.tado.TadoBindingConstants;
-import org.openhab.binding.tado.TadoBindingConstants.OperationMode;
-import org.openhab.binding.tado.TadoBindingConstants.TemperatureUnit;
-import org.openhab.binding.tado.TadoBindingConstants.ZoneType;
+import org.openhab.binding.tado.internal.TadoBindingConstants;
 import org.openhab.binding.tado.internal.TadoHvacChange;
+import org.openhab.binding.tado.internal.TadoBindingConstants.OperationMode;
+import org.openhab.binding.tado.internal.TadoBindingConstants.TemperatureUnit;
+import org.openhab.binding.tado.internal.TadoBindingConstants.ZoneType;
 import org.openhab.binding.tado.internal.adapter.TadoZoneStateAdapter;
 import org.openhab.binding.tado.internal.api.ApiException;
 import org.openhab.binding.tado.internal.api.model.GenericZoneCapabilities;
