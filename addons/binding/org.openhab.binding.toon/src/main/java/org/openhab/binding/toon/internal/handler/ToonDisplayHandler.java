@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.toon.handler;
+package org.openhab.binding.toon.internal.handler;
 
-import static org.openhab.binding.toon.ToonBindingConstants.*;
+import static org.openhab.binding.toon.internal.ToonBindingConstants.*;
 
 import java.math.BigDecimal;
 
