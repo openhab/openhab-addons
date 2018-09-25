@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.samsungtv.internal.service;
 
-import static org.openhab.binding.samsungtv.SamsungTvBindingConstants.*;
+import static org.openhab.binding.samsungtv.internal.SamsungTvBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;

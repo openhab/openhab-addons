@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.samsungtv.internal;
 
-import static org.openhab.binding.samsungtv.SamsungTvBindingConstants.SAMSUNG_TV_THING_TYPE;
+import static org.openhab.binding.samsungtv.internal.SamsungTvBindingConstants.SAMSUNG_TV_THING_TYPE;
 
 import java.util.Collection;
 
@@ -19,7 +19,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
 import org.jupnp.UpnpService;
-import org.openhab.binding.samsungtv.handler.SamsungTvHandler;
+import org.openhab.binding.samsungtv.internal.handler.SamsungTvHandler;
 
 import com.google.common.collect.Lists;
 
