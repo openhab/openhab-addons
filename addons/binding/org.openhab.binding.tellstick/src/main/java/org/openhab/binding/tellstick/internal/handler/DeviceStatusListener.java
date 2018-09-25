@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.tellstick.handler;
+package org.openhab.binding.tellstick.internal.handler;
 
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.tellstick.device.iface.Device;
