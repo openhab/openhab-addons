@@ -19,8 +19,8 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.zway.ZWayBindingConstants;
-import org.openhab.binding.zway.handler.ZWayBridgeHandler;
+import org.openhab.binding.zway.internal.ZWayBindingConstants;
+import org.openhab.binding.zway.internal.handler.ZWayBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

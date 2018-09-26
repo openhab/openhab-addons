@@ -21,10 +21,10 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.zway.handler.ZWayBridgeHandler;
-import org.openhab.binding.zway.handler.ZWayZAutomationDeviceHandler;
-import org.openhab.binding.zway.handler.ZWayZWaveDeviceHandler;
 import org.openhab.binding.zway.internal.discovery.ZWayDeviceDiscoveryService;
+import org.openhab.binding.zway.internal.handler.ZWayBridgeHandler;
+import org.openhab.binding.zway.internal.handler.ZWayZAutomationDeviceHandler;
+import org.openhab.binding.zway.internal.handler.ZWayZWaveDeviceHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 
