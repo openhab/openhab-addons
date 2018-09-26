@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.velbus.internal.packets;
 
-import static org.openhab.binding.velbus.VelbusBindingConstants.COMMAND_SENSOR_TEMP_REQUEST;
+import static org.openhab.binding.velbus.internal.VelbusBindingConstants.COMMAND_SENSOR_TEMP_REQUEST;
 
 /**
  * The {@link VelbusSensorTemperatureRequestPacket} represents a Velbus packet that can be used to

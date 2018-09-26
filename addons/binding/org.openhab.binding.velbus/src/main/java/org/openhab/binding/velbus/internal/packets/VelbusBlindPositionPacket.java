@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.velbus.internal.packets;
 
-import static org.openhab.binding.velbus.VelbusBindingConstants.COMMAND_BLIND_POS;
+import static org.openhab.binding.velbus.internal.VelbusBindingConstants.COMMAND_BLIND_POS;
 
 import org.openhab.binding.velbus.internal.VelbusChannelIdentifier;
 

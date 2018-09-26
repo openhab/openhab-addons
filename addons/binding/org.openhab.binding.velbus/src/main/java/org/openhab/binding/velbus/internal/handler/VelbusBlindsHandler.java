@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.velbus.handler;
+package org.openhab.binding.velbus.internal.handler;
 
-import static org.openhab.binding.velbus.VelbusBindingConstants.*;
+import static org.openhab.binding.velbus.internal.VelbusBindingConstants.*;
 
 import java.util.Arrays;
 import java.util.HashSet;
