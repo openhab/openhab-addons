@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.velbus.internal.discovery;
 
-import static org.openhab.binding.velbus.VelbusBindingConstants.*;
+import static org.openhab.binding.velbus.internal.VelbusBindingConstants.*;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -18,11 +18,11 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.velbus.handler.VelbusBridgeHandler;
 import org.openhab.binding.velbus.internal.VelbusChannelIdentifier;
 import org.openhab.binding.velbus.internal.VelbusModule;
 import org.openhab.binding.velbus.internal.VelbusModuleAddress;
 import org.openhab.binding.velbus.internal.VelbusPacketListener;
+import org.openhab.binding.velbus.internal.handler.VelbusBridgeHandler;
 import org.openhab.binding.velbus.internal.packets.VelbusPacket;
 import org.openhab.binding.velbus.internal.packets.VelbusScanPacket;
 import org.slf4j.Logger;
