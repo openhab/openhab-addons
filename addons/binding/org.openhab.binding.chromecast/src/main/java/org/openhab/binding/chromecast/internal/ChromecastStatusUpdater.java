@@ -9,7 +9,7 @@
 package org.openhab.binding.chromecast.internal;
 
 import static org.eclipse.smarthome.core.types.UnDefType.UNDEF;
-import static org.openhab.binding.chromecast.ChromecastBindingConstants.*;
+import static org.openhab.binding.chromecast.internal.ChromecastBindingConstants.*;
 import static su.litvak.chromecast.api.v2.MediaStatus.PlayerState.*;
 
 import java.time.Instant;
@@ -33,8 +33,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.chromecast.ChromecastBindingConstants;
-import org.openhab.binding.chromecast.handler.ChromecastHandler;
+import org.openhab.binding.chromecast.internal.handler.ChromecastHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
