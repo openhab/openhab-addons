@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.wifiled.internal.discovery;
 
-import static org.openhab.binding.wifiled.WiFiLEDBindingConstants.*;
+import static org.openhab.binding.wifiled.internal.WiFiLEDBindingConstants.*;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -26,8 +26,8 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.wifiled.handler.AbstractWiFiLEDDriver;
-import org.openhab.binding.wifiled.handler.ClassicWiFiLEDDriver;
+import org.openhab.binding.wifiled.internal.handler.AbstractWiFiLEDDriver;
+import org.openhab.binding.wifiled.internal.handler.ClassicWiFiLEDDriver;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

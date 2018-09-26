@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.wifiled.internal;
 
-import static org.openhab.binding.wifiled.WiFiLEDBindingConstants.THING_TYPE_WIFILED;
+import static org.openhab.binding.wifiled.internal.WiFiLEDBindingConstants.THING_TYPE_WIFILED;
 
 import java.util.Collections;
 import java.util.Set;
@@ -18,7 +18,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.wifiled.handler.WiFiLEDHandler;
+import org.openhab.binding.wifiled.internal.handler.WiFiLEDHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**

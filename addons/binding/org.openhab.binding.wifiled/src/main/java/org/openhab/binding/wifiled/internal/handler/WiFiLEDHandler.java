@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.wifiled.handler;
+package org.openhab.binding.wifiled.internal.handler;
 
 import org.eclipse.smarthome.core.library.types.*;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -16,10 +16,10 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.wifiled.WiFiLEDBindingConstants;
-import org.openhab.binding.wifiled.handler.AbstractWiFiLEDDriver.Protocol;
+import org.openhab.binding.wifiled.internal.WiFiLEDBindingConstants;
 import org.openhab.binding.wifiled.internal.configuration.WiFiLEDConfig;
-import org.openhab.binding.wifiled.handler.AbstractWiFiLEDDriver.Driver;
+import org.openhab.binding.wifiled.internal.handler.AbstractWiFiLEDDriver.Driver;
+import org.openhab.binding.wifiled.internal.handler.AbstractWiFiLEDDriver.Protocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
