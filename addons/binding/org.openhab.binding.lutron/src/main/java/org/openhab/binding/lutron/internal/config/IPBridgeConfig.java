@@ -19,10 +19,11 @@ public class IPBridgeConfig {
     private String ipAddress;
     private String user;
     private String password;
+    private int reconnect = 0;
 
     public boolean sameConnectionParameters(IPBridgeConfig config) {
         return StringUtils.equals(this.ipAddress, config.ipAddress) && StringUtils.equals(this.user, config.user)
-                && StringUtils.equals(this.password, config.password);
+                && StringUtils.equals(this.password, config.password) && (this.reconnect == config.reconnect);
     }
 
     public String getIpAddress() {
@@ -47,5 +48,13 @@ public class IPBridgeConfig {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public int getReconnect() {
+        return reconnect;
+    }
+
+    public void setReconnect(int reconnect) {
+        this.reconnect = reconnect;
     }
 }
