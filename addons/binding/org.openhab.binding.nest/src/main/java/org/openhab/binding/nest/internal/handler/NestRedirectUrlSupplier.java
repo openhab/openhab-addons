@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.nest.handler;
+package org.openhab.binding.nest.internal.handler;
 
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -21,7 +21,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.nest.NestBindingConstants;
+import org.openhab.binding.nest.internal.NestBindingConstants;
 import org.openhab.binding.nest.internal.exceptions.FailedResolvingNestUrlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

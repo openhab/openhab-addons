@@ -6,10 +6,10 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.nest.handler;
+package org.openhab.binding.nest.internal.handler;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.openhab.binding.nest.NestBindingConstants.JSON_CONTENT_TYPE;
+import static org.openhab.binding.nest.internal.NestBindingConstants.JSON_CONTENT_TYPE;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

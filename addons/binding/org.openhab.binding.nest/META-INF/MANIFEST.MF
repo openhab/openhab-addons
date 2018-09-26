@@ -8,9 +8,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.nest;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
-Export-Package: 
- org.openhab.binding.nest,
- org.openhab.binding.nest.handler
 Import-Package: 
  com.google.gson,
  com.google.gson.annotations,
@@ -40,8 +37,6 @@ Import-Package:
  org.glassfish.jersey,
  org.glassfish.jersey.client,
  org.glassfish.jersey.media.sse,
- org.openhab.binding.nest,
- org.openhab.binding.nest.handler,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

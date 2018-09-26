@@ -7,9 +7,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.nest.test;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
-Export-Package: 
- org.openhab.binding.nest;uses:="org.eclipse
- .smarthome.test"
 Fragment-Host: org.openhab.binding.nest
 Import-Package: 
  com.google.gson.reflect,
@@ -37,7 +34,6 @@ Import-Package:
  org.junit;version="4.0.0",
  org.mockito,
  org.mockito.stubbing,
- org.openhab.binding.nest,
  org.osgi.framework,
  org.osgi.service.component,
  org.osgi.service.device,
