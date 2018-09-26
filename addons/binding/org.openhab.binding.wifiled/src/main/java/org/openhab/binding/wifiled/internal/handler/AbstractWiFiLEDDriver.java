@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.wifiled.handler;
+package org.openhab.binding.wifiled.internal.handler;
 
-import static org.openhab.binding.wifiled.handler.ClassicWiFiLEDDriver.bytesToHex;
+import static org.openhab.binding.wifiled.internal.handler.ClassicWiFiLEDDriver.bytesToHex;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

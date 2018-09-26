@@ -6,12 +6,13 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.wifiled.handler;
+package org.openhab.binding.wifiled.internal.handler;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
+import org.openhab.binding.wifiled.internal.handler.LEDStateDTO;
 
 /**
  * Test for LEDStateDTO
