@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.zway.internal.config;
 
-import static org.openhab.binding.zway.ZWayBindingConstants.DEVICE_CONFIG_VIRTUAL_DEVICE_ID;
+import static org.openhab.binding.zway.internal.ZWayBindingConstants.DEVICE_CONFIG_VIRTUAL_DEVICE_ID;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 

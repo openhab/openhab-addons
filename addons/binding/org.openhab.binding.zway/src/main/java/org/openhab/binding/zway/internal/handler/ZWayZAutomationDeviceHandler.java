@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.zway.handler;
+package org.openhab.binding.zway.internal.handler;
 
-import static org.openhab.binding.zway.ZWayBindingConstants.*;
+import static org.openhab.binding.zway.internal.ZWayBindingConstants.*;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
