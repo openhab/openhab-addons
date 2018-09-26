@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vitotronic;
+package org.openhab.binding.vitotronic.internal;
 
 /**
  * The {@link VitotronicBindingConfiguration} class defines variables which are
