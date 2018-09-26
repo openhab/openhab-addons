@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import static org.openhab.binding.rfxcom.RFXComBindingConstants.CHANNEL_SIGNAL_LEVEL;
+import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.CHANNEL_SIGNAL_LEVEL;
 
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.library.types.DecimalType;
