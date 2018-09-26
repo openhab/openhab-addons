@@ -13,7 +13,7 @@ import java.io.IOException;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.nest.NestBindingConstants;
+import org.openhab.binding.nest.internal.NestBindingConstants;
 import org.openhab.binding.nest.internal.NestUtils;
 import org.openhab.binding.nest.internal.config.NestBridgeConfiguration;
 import org.openhab.binding.nest.internal.data.AccessTokenData;

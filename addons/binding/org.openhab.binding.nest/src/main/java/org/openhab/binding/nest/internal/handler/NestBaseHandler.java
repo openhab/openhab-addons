@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.nest.handler;
+package org.openhab.binding.nest.internal.handler;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -54,7 +54,8 @@ import org.slf4j.LoggerFactory;
  * @param <T> the type of update data
  */
 @NonNullByDefault
-abstract class NestBaseHandler<T> extends BaseThingHandler implements NestThingDataListener<T>, NestIdentifiable {
+public abstract class NestBaseHandler<T> extends BaseThingHandler
+        implements NestThingDataListener<T>, NestIdentifiable {
     private final Logger logger = LoggerFactory.getLogger(NestBaseHandler.class);
     private final Set<ChannelUID> linkedChannelUIDs = new CopyOnWriteArraySet<>();
 

@@ -9,7 +9,7 @@
 package org.openhab.binding.nest.internal.discovery;
 
 import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
-import static org.openhab.binding.nest.NestBindingConstants.*;
+import static org.openhab.binding.nest.internal.NestBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -24,7 +24,6 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.nest.handler.NestBridgeHandler;
 import org.openhab.binding.nest.internal.config.NestDeviceConfiguration;
 import org.openhab.binding.nest.internal.config.NestStructureConfiguration;
 import org.openhab.binding.nest.internal.data.BaseNestDevice;
@@ -32,6 +31,7 @@ import org.openhab.binding.nest.internal.data.Camera;
 import org.openhab.binding.nest.internal.data.SmokeDetector;
 import org.openhab.binding.nest.internal.data.Structure;
 import org.openhab.binding.nest.internal.data.Thermostat;
+import org.openhab.binding.nest.internal.handler.NestBridgeHandler;
 import org.openhab.binding.nest.internal.listener.NestThingDataListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

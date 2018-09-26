@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.nest.test;
 
-import static org.openhab.binding.nest.NestBindingConstants.BINDING_ID;
+import static org.openhab.binding.nest.internal.NestBindingConstants.BINDING_ID;
 
 import java.util.Collections;
 import java.util.Properties;
@@ -16,9 +16,9 @@ import java.util.Set;
 
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.openhab.binding.nest.handler.NestBridgeHandler;
-import org.openhab.binding.nest.handler.NestRedirectUrlSupplier;
 import org.openhab.binding.nest.internal.exceptions.InvalidAccessTokenException;
+import org.openhab.binding.nest.internal.handler.NestBridgeHandler;
+import org.openhab.binding.nest.internal.handler.NestRedirectUrlSupplier;
 
 /**
  * The {@link NestTestBridgeHandler} is a {@link NestBridgeHandler} modified for testing. Using the

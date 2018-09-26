@@ -25,6 +25,8 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.openhab.binding.nest.internal.config.NestBridgeConfiguration;
+import org.openhab.binding.nest.internal.handler.NestBridgeHandler;
+import org.openhab.binding.nest.internal.handler.NestRedirectUrlSupplier;
 import org.openhab.binding.nest.test.NestTestBridgeHandler;
 
 /**

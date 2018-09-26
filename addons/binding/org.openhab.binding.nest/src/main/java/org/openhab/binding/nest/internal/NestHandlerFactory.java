@@ -9,7 +9,7 @@
 package org.openhab.binding.nest.internal;
 
 import static java.util.stream.Collectors.toSet;
-import static org.openhab.binding.nest.NestBindingConstants.*;
+import static org.openhab.binding.nest.internal.NestBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -27,12 +27,12 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.nest.handler.NestBridgeHandler;
-import org.openhab.binding.nest.handler.NestCameraHandler;
-import org.openhab.binding.nest.handler.NestSmokeDetectorHandler;
-import org.openhab.binding.nest.handler.NestStructureHandler;
-import org.openhab.binding.nest.handler.NestThermostatHandler;
 import org.openhab.binding.nest.internal.discovery.NestDiscoveryService;
+import org.openhab.binding.nest.internal.handler.NestBridgeHandler;
+import org.openhab.binding.nest.internal.handler.NestCameraHandler;
+import org.openhab.binding.nest.internal.handler.NestSmokeDetectorHandler;
+import org.openhab.binding.nest.internal.handler.NestStructureHandler;
+import org.openhab.binding.nest.internal.handler.NestThermostatHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 

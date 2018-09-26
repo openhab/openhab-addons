@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.nest.test;
 
-import static org.openhab.binding.nest.NestBindingConstants.*;
+import static org.openhab.binding.nest.internal.NestBindingConstants.*;
 import static org.openhab.binding.nest.internal.rest.NestStreamingRestClient.*;
 
 import java.io.IOException;

@@ -11,7 +11,7 @@ package org.openhab.binding.nest.handler;
 import static org.eclipse.smarthome.core.library.types.OnOffType.*;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.openhab.binding.nest.NestBindingConstants.*;
+import static org.openhab.binding.nest.internal.NestBindingConstants.*;
 import static org.openhab.binding.nest.internal.data.NestDataUtil.*;
 
 import java.io.IOException;
@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.junit.Test;
 import org.openhab.binding.nest.internal.config.NestDeviceConfiguration;
+import org.openhab.binding.nest.internal.handler.NestCameraHandler;
 
 /**
  * Tests for {@link NestCameraHandler}.

@@ -65,6 +65,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.openhab.binding.nest.internal.config.NestBridgeConfiguration;
+import org.openhab.binding.nest.internal.handler.NestBaseHandler;
 import org.openhab.binding.nest.test.NestTestApiServlet;
 import org.openhab.binding.nest.test.NestTestBridgeHandler;
 import org.openhab.binding.nest.test.NestTestHandlerFactory;
