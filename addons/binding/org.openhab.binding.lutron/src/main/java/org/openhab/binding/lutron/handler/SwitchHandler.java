@@ -63,7 +63,7 @@ public class SwitchHandler extends LutronHandler {
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        logger.debug("Bridge status changed to {} for shade handler {}", bridgeStatusInfo.getStatus(), integrationId);
+        logger.debug("Bridge status changed to {} for switch handler {}", bridgeStatusInfo.getStatus(), integrationId);
 
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE
                 && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE) {
