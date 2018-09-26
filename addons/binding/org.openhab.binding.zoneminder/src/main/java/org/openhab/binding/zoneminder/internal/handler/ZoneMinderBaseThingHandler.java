@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.zoneminder.handler;
+package org.openhab.binding.zoneminder.internal.handler;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -33,8 +33,8 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.zoneminder.ZoneMinderConstants;
 import org.openhab.binding.zoneminder.internal.DataRefreshPriorityEnum;
+import org.openhab.binding.zoneminder.internal.ZoneMinderConstants;
 import org.openhab.binding.zoneminder.internal.config.ZoneMinderThingConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
