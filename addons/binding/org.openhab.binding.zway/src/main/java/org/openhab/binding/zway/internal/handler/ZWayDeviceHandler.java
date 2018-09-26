@@ -6,10 +6,10 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.zway.handler;
+package org.openhab.binding.zway.internal.handler;
 
 import static de.fh_zwickau.informatik.sensor.ZWayConstants.*;
-import static org.openhab.binding.zway.ZWayBindingConstants.*;
+import static org.openhab.binding.zway.internal.ZWayBindingConstants.*;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -38,7 +38,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.zway.ZWayBindingConstants;
+import org.openhab.binding.zway.internal.ZWayBindingConstants;
 import org.openhab.binding.zway.internal.converter.ZWayDeviceStateConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
