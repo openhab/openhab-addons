@@ -43,10 +43,11 @@ import org.slf4j.LoggerFactory;
 public class SpotifyDeviceHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SpotifyDeviceHandler.class);
-
     private @NonNullByDefault({}) SpotifyHandleCommands commandHandler;
     private @NonNullByDefault({}) SpotifyApi spotifyApi;
     private @NonNullByDefault({}) String id;
+
+    private boolean active;
 
     /**
      * Constructor
@@ -61,7 +62,7 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
             if (commandHandler != null) {
-                commandHandler.handleCommand(channelUID, command);
+                commandHandler.handleCommand(channelUID, command, active);
             }
         } catch (SpotifyException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
@@ -73,8 +74,8 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
         SpotifyBridgeHandler bridgeHandler = (SpotifyBridgeHandler) getBridge().getHandler();
         spotifyApi = bridgeHandler.getSpotifyApi();
 
-        Configuration props = thing.getConfiguration();
-        id = (String) props.get(PROPERTY_SPOTIFY_DEVICE_ID);
+        Configuration config = thing.getConfiguration();
+        id = (String) config.get(PROPERTY_SPOTIFY_DEVICE_ID);
         commandHandler = new SpotifyHandleCommands(spotifyApi, id);
         updateStatus(ThingStatus.UNKNOWN);
     }
@@ -92,7 +93,7 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
      * Updates the status if the given device matches with this handler.
      *
      * @param device device with status information
-     * @param playing
+     * @param playing true if the current active device is playing
      * @return returns true if given device matches with this handler
      */
     public boolean updateDeviceStatus(Device device, boolean playing) {
@@ -104,14 +105,26 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
             updateChannelState(CHANNEL_DEVICETYPE, new StringType(device.getType()));
             updateChannelState(CHANNEL_DEVICEVOLUME,
                     device.getVolumePercent() == null ? UnDefType.UNDEF : new PercentType(device.getVolumePercent()));
-            updateChannelState(CHANNEL_DEVICEACTIVE, device.isActive() ? OnOffType.ON : OnOffType.OFF);
+            active = device.isActive();
+            updateChannelState(CHANNEL_DEVICEACTIVE, active ? OnOffType.ON : OnOffType.OFF);
             updateChannelState(CHANNEL_DEVICEPLAYER,
-                    online && device.isActive() && playing ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
+                    online && active && playing ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
             return true;
         } else {
             return false;
         }
+    }
 
+    /**
+     * Updates the device as showing status is gone and reset all device status to default.
+     */
+    public void setStatusGone() {
+        logger.debug("Device is gone: {}", thing.getUID());
+        getThing().setStatusInfo(
+                new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Device not available on Spotify"));
+        updateChannelState(CHANNEL_DEVICERESTRICTED, OnOffType.ON);
+        updateChannelState(CHANNEL_DEVICEACTIVE, OnOffType.OFF);
+        updateChannelState(CHANNEL_DEVICEPLAYER, PlayPauseType.PAUSE);
     }
 
     /**

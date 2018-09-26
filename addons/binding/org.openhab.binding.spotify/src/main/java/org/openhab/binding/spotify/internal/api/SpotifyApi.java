@@ -117,6 +117,16 @@ public class SpotifyApi {
     }
 
     /**
+     * Call Spotify Api to transfer playing to. Depending on play value is start play or pause.
+     *
+     * @param deviceId device to play on. It can not be empty.
+     * @param play if true transfers and starts to play, else transfers but pauses.
+     */
+    public void transferPlay(String deviceId, boolean play) {
+        requestPlayer(PUT, "", String.format("{\"device_ids\":[\"%s\"],\"play\":%b}", deviceId, play));
+    }
+
+    /**
      * Call Spotify Api to pause playing. If the device id is empty it will pause play of the active device.
      *
      * @param deviceId device to pause on or empty if pause on the active device

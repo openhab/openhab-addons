@@ -54,9 +54,10 @@ public class SpotifyHandleCommands {
      *
      * @param channelUID Channel the command is from
      * @param command command to run
+     * @param active true if the device this command is send to is the active device
      * @return true if the command was done or else if no channel or command matched
      */
-    public boolean handleCommand(ChannelUID channelUID, Command command) {
+    public boolean handleCommand(ChannelUID channelUID, Command command, boolean active) {
         logger.debug("Received channel: {}, command: {}", channelUID, command);
         boolean commandRun = false;
         String channel = channelUID.getId();
@@ -64,7 +65,7 @@ public class SpotifyHandleCommands {
         switch (channel) {
             case CHANNEL_DEVICEPLAYER:
             case CHANNEL_TRACKPLAYER:
-                commandRun = handleDevicePlay(command);
+                commandRun = handleDevicePlay(command, active);
                 break;
             case CHANNEL_DEVICESHUFFLE:
                 if (command instanceof OnOffType) {
@@ -104,14 +105,20 @@ public class SpotifyHandleCommands {
      * Helper method to handle device play status.
      *
      * @param command command to run
+     * @param active true if the device this command is send to is the active device
      * @return true if the command was done or else if no channel or command matched
      */
-    private boolean handleDevicePlay(Command command) {
+    private boolean handleDevicePlay(Command command, boolean active) {
         if (command instanceof PlayPauseType) {
-            if (command == PlayPauseType.PLAY) {
-                spotifyApi.play(deviceId);
+            boolean play = command == PlayPauseType.PLAY;
+            if (active || deviceId.isEmpty()) {
+                if (play) {
+                    spotifyApi.play(deviceId);
+                } else {
+                    spotifyApi.pause(deviceId);
+                }
             } else {
-                spotifyApi.pause(deviceId);
+                spotifyApi.transferPlay(deviceId, play);
             }
             return true;
         } else if (command instanceof NextPreviousType) {

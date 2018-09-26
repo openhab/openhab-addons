@@ -34,7 +34,6 @@ import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
@@ -121,7 +120,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
             albumUpdater.refreshAlbumImage(channelUID);
         } else {
             try {
-                if (handleCommand != null && handleCommand.handleCommand(channelUID, command)) {
+                if (handleCommand != null && handleCommand.handleCommand(channelUID, command, true)) {
                     scheduler.schedule(() -> {
                         boolean statusNoPolling = pollingFuture == null || pollingFuture.isCancelled();
                         playingContextCache.invalidateValue();
@@ -306,15 +305,14 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     /**
      * Updates the status of all child Spotify Device Things.
      *
-     * @param playing
+     * @param playing true if the current active device is playing
      */
     private void updateDevicesStatus(List<Device> spotifyDevices, boolean playing) {
         getThing().getThings().stream().filter(thing -> !spotifyDevices.stream().anyMatch(sd -> {
             SpotifyDeviceHandler handler = (SpotifyDeviceHandler) thing.getHandler();
 
             return handler == null ? false : handler.updateDeviceStatus(sd, playing);
-        })).forEach(thing -> thing.setStatusInfo(
-                new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Device not available on Spotify")));
+        })).forEach(thing -> ((SpotifyDeviceHandler) thing.getHandler()).setStatusGone());
     }
 
     /**
@@ -322,7 +320,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
      */
     private void updatePlayerInfo(CurrentlyPlayingContext playerInfo) {
         updateChannelState(CHANNEL_TRACKPLAYER, playerInfo.isPlaying() ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
-        updateChannelState(CHANNEL_DEVICESHUFFLE, OnOffType.from(playerInfo.isShuffleState()));
+        updateChannelState(CHANNEL_DEVICESHUFFLE, playerInfo.isShuffleState() ? OnOffType.ON : OnOffType.OFF);
         updateChannelState(CHANNEL_TRACKREPEAT, playerInfo.getRepeatState());
 
         boolean hasItem = playerInfo.getItem() != null;
@@ -369,7 +367,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         }
         Device device = playerInfo.getDevice() == null ? EMPTY_DEVICE : playerInfo.getDevice();
         updateChannelState(CHANNEL_DEVICEID, valueOrEmpty(device.getId()));
-        updateChannelState(CHANNEL_DEVICEACTIVE, OnOffType.from(device.isActive()));
+        updateChannelState(CHANNEL_DEVICEACTIVE, device.isActive() ? OnOffType.ON : OnOffType.OFF);
         updateChannelState(CHANNEL_DEVICENAME, valueOrEmpty(device.getName()));
         updateChannelState(CHANNEL_DEVICETYPE, valueOrEmpty(device.getType()));
 

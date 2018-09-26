@@ -116,7 +116,8 @@ public class SpotifyDeviceDiscoveryService extends AbstractDiscoveryService {
                 device.getId().substring(0, PLAYER_ID_LENGTH));
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thing).withBridge(bridgeUID)
-                .withProperties(properties).withLabel(device.getName()).build();
+                .withProperties(properties).withRepresentationProperty(PROPERTY_SPOTIFY_DEVICE_ID)
+                .withLabel(device.getName()).build();
 
         thingDiscovered(discoveryResult);
     }
