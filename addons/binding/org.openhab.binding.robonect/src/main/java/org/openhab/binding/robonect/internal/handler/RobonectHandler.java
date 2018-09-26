@@ -6,7 +6,30 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.robonect.handler;
+package org.openhab.binding.robonect.internal.handler;
+
+import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_ERROR_CODE;
+import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_ERROR_DATE;
+import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_ERROR_MESSAGE;
+import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_HEALTH_HUM;
+import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_HEALTH_TEMP;
+import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_JOB;
+import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_LAST_ERROR_CODE;
+import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_LAST_ERROR_DATE;
+import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_LAST_ERROR_MESSAGE;
+import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_MOWER_NAME;
+import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_MOWER_START;
+import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_MOWER_STATUS_OFFLINE_TRIGGER;
+import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_STATUS;
+import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_STATUS_BATTERY;
+import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_STATUS_DURATION;
+import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_STATUS_HOURS;
+import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_STATUS_MODE;
+import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_TIMER_NEXT_TIMER;
+import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_TIMER_STATUS;
+import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_WLAN_SIGNAL;
+import static org.openhab.binding.robonect.internal.RobonectBindingConstants.PROPERTY_COMMENT;
+import static org.openhab.binding.robonect.internal.RobonectBindingConstants.PROPERTY_COMPILED;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -47,29 +70,6 @@ import org.openhab.binding.robonect.internal.model.VersionInfo;
 import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_ERROR_CODE;
-import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_ERROR_DATE;
-import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_ERROR_MESSAGE;
-import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_HEALTH_HUM;
-import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_HEALTH_TEMP;
-import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_JOB;
-import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_LAST_ERROR_CODE;
-import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_LAST_ERROR_DATE;
-import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_LAST_ERROR_MESSAGE;
-import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_MOWER_NAME;
-import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_MOWER_STATUS_OFFLINE_TRIGGER;
-import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_MOWER_START;
-import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_STATUS;
-import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_STATUS_BATTERY;
-import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_STATUS_DURATION;
-import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_STATUS_HOURS;
-import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_STATUS_MODE;
-import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_TIMER_NEXT_TIMER;
-import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_TIMER_STATUS;
-import static org.openhab.binding.robonect.RobonectBindingConstants.CHANNEL_WLAN_SIGNAL;
-import static org.openhab.binding.robonect.RobonectBindingConstants.PROPERTY_COMMENT;
-import static org.openhab.binding.robonect.RobonectBindingConstants.PROPERTY_COMPILED;
 
 /**
  * The {@link RobonectHandler} is responsible for handling commands, which are
