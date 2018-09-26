@@ -8,8 +8,6 @@ Bundle-SymbolicName: org.openhab.binding.chromecast.test;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
 Fragment-Host: org.openhab.binding.chromecast
-Export-Package: 
- org.openhab.binding.chromecast;uses:="org.eclipse.smarthome.test"
 Import-Package: 
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.core.common.registry,
@@ -26,7 +24,6 @@ Import-Package:
  org.mockito,
  org.mockito.invocation,
  org.mockito.stubbing,
- org.openhab.binding.chromecast,
  org.osgi.framework,
  org.osgi.service.component,
  org.osgi.service.device,

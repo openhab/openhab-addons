@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.chromecast;
+package org.openhab.binding.chromecast.internal;
 
 import java.util.HashSet;
 import java.util.Set;
