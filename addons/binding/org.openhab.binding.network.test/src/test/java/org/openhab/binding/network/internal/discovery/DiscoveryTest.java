@@ -22,7 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.openhab.binding.network.NetworkBindingConstants;
+import org.openhab.binding.network.internal.NetworkBindingConstants;
 import org.openhab.binding.network.internal.PresenceDetectionValue;
 
 /**

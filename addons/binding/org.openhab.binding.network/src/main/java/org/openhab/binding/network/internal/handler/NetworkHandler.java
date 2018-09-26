@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.network.handler;
+package org.openhab.binding.network.internal.handler;
 
-import static org.openhab.binding.network.NetworkBindingConstants.*;
+import static org.openhab.binding.network.internal.NetworkBindingConstants.*;
 
 import java.net.UnknownHostException;
 import java.util.Calendar;
@@ -26,8 +26,8 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.network.NetworkBindingConstants;
 import org.openhab.binding.network.internal.NetworkBindingConfiguration;
+import org.openhab.binding.network.internal.NetworkBindingConstants;
 import org.openhab.binding.network.internal.NetworkHandlerConfiguration;
 import org.openhab.binding.network.internal.PresenceDetection;
 import org.openhab.binding.network.internal.PresenceDetectionListener;

@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.network.handler;
+package org.openhab.binding.network.internal.handler;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
@@ -29,10 +29,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.openhab.binding.network.NetworkBindingConstants;
 import org.openhab.binding.network.internal.NetworkBindingConfiguration;
+import org.openhab.binding.network.internal.NetworkBindingConstants;
 import org.openhab.binding.network.internal.PresenceDetection;
 import org.openhab.binding.network.internal.PresenceDetectionValue;
+import org.openhab.binding.network.internal.handler.NetworkHandler;
 
 /**
  * Tests cases for {@link NetworkHandler}.
