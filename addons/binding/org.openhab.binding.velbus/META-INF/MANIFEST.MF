@@ -8,9 +8,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.velbus;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
-Export-Package: 
- org.openhab.binding.velbus,
- org.openhab.binding.velbus.handler
 Import-Package: 
  gnu.io,
  javax.measure.quantity,
@@ -26,8 +23,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.core.util,
- org.openhab.binding.velbus,
- org.openhab.binding.velbus.handler,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
