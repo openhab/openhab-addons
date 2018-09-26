@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.systeminfo.internal;
 
-import static org.openhab.binding.systeminfo.SysteminfoBindingConstants.THING_TYPE_COMPUTER;
+import static org.openhab.binding.systeminfo.internal.SysteminfoBindingConstants.THING_TYPE_COMPUTER;
 
 import java.util.Collections;
 import java.util.Set;
@@ -18,7 +18,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.systeminfo.handler.SysteminfoHandler;
+import org.openhab.binding.systeminfo.internal.handler.SysteminfoHandler;
 import org.openhab.binding.systeminfo.internal.model.SysteminfoInterface;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;

@@ -57,10 +57,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.openhab.binding.systeminfo.SysteminfoBindingConstants;
-import org.openhab.binding.systeminfo.handler.SysteminfoHandler;
+import org.openhab.binding.systeminfo.internal.SysteminfoBindingConstants;
 import org.openhab.binding.systeminfo.internal.SysteminfoHandlerFactory;
 import org.openhab.binding.systeminfo.internal.discovery.SysteminfoDiscoveryService;
+import org.openhab.binding.systeminfo.internal.handler.SysteminfoHandler;
 import org.openhab.binding.systeminfo.internal.model.DeviceNotFoundException;
 import org.openhab.binding.systeminfo.internal.model.SysteminfoInterface;
 
