@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.nibeheatpump.internal.connection;
 
-import static org.openhab.binding.nibeheatpump.NibeHeatPumpBindingConstants.*;
+import static org.openhab.binding.nibeheatpump.internal.NibeHeatPumpBindingConstants.*;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpException;

@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.nibeheatpump.handler;
+package org.openhab.binding.nibeheatpump.internal.handler;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
