@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.network.internal.discovery;
 
-import static org.openhab.binding.network.NetworkBindingConstants.*;
+import static org.openhab.binding.network.internal.NetworkBindingConstants.*;
 
 import java.net.UnknownHostException;
 import java.util.HashMap;
