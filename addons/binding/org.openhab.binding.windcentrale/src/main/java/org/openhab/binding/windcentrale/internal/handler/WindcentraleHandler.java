@@ -6,10 +6,10 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.windcentrale.handler;
+package org.openhab.binding.windcentrale.internal.handler;
 
 import static org.eclipse.smarthome.core.library.unit.MetricPrefix.KILO;
-import static org.openhab.binding.windcentrale.WindcentraleBindingConstants.*;
+import static org.openhab.binding.windcentrale.internal.WindcentraleBindingConstants.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
