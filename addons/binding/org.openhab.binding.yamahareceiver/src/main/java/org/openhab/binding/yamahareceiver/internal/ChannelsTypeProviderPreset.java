@@ -9,7 +9,7 @@
 package org.openhab.binding.yamahareceiver.internal;
 
 import static java.util.stream.Collectors.toList;
-import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.*;
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.*;
 
 import java.util.Collection;
 import java.util.Collections;

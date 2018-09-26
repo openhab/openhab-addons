@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.yamahareceiver.internal.config;
 
-import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
+import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants;
 
 /**
  * Zone settings.
@@ -18,7 +18,7 @@ import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
 public class YamahaZoneConfig {
 
     /**
-     * Zone name, will be one of {@link org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Zone}.
+     * Zone name, will be one of {@link org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone}.
      */
     private String zone = "";
     /**

@@ -8,9 +8,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.yamahareceiver;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
-Export-Package: 
- org.openhab.binding.yamahareceiver,
- org.openhab.binding.yamahareceiver.handler
 Import-Package: 
  com.google.common.collect,
  javax.xml.parsers,
@@ -29,8 +26,6 @@ Import-Package:
  org.eclipse.smarthome.core.types,
  org.jupnp.model.meta,
  org.jupnp.model.types,
- org.openhab.binding.yamahareceiver,
- org.openhab.binding.yamahareceiver.handler,
  org.osgi.framework,
  org.osgi.service.component,
  org.slf4j

@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.yamahareceiver.internal.state;
 
-import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.VALUE_EMPTY;
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.VALUE_EMPTY;
 
 /**
  * The state of a specific zone of a Yamaha receiver.
