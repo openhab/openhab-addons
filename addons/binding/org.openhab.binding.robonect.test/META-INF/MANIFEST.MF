@@ -28,6 +28,5 @@ Import-Package:
   org.mockito.invocation,
   org.mockito.stubbing,
   org.mockito.verification,
-  org.openhab.binding.robonect,
   org.osgi.service.device,
   org.slf4j

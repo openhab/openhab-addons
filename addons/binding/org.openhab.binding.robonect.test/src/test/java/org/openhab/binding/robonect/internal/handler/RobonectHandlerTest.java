@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.robonect.handler;
+package org.openhab.binding.robonect.internal.handler;
 
 import java.util.Calendar;
 
@@ -28,9 +28,9 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.openhab.binding.robonect.RobonectBindingConstants;
+import org.openhab.binding.robonect.internal.RobonectBindingConstants;
 import org.openhab.binding.robonect.internal.RobonectClient;
-import org.openhab.binding.robonect.handler.RobonectHandler;
+import org.openhab.binding.robonect.internal.handler.RobonectHandler;
 import org.openhab.binding.robonect.internal.model.ErrorEntry;
 import org.openhab.binding.robonect.internal.model.ErrorList;
 import org.openhab.binding.robonect.internal.model.MowerInfo;

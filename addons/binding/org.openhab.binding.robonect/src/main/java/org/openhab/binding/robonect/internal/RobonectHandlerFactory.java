@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.robonect.internal;
 
-import static org.openhab.binding.robonect.RobonectBindingConstants.THING_TYPE_AUTOMOWER;
+import static org.openhab.binding.robonect.internal.RobonectBindingConstants.THING_TYPE_AUTOMOWER;
 
 import java.util.Collections;
 import java.util.Set;
@@ -20,7 +20,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
-import org.openhab.binding.robonect.handler.RobonectHandler;
+import org.openhab.binding.robonect.internal.handler.RobonectHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
