@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.knx.handler;
+package org.openhab.binding.knx.internal.handler;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
@@ -26,8 +26,8 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.knx.client.KNXClient;
-import org.openhab.binding.knx.client.StatusUpdateCallback;
+import org.openhab.binding.knx.internal.client.KNXClient;
+import org.openhab.binding.knx.internal.client.StatusUpdateCallback;
 
 import tuwien.auto.calimero.IndividualAddress;
 import tuwien.auto.calimero.mgmt.Destination;

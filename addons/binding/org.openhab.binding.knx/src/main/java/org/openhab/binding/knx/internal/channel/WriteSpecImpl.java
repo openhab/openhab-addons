@@ -14,7 +14,7 @@ package org.openhab.binding.knx.internal.channel;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.types.Type;
-import org.openhab.binding.knx.client.OutboundSpec;
+import org.openhab.binding.knx.internal.client.OutboundSpec;
 
 import tuwien.auto.calimero.GroupAddress;
 import tuwien.auto.calimero.KNXFormatException;

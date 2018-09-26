@@ -18,7 +18,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.knx.client.InboundSpec;
+import org.openhab.binding.knx.internal.client.InboundSpec;
 
 import tuwien.auto.calimero.GroupAddress;
 
