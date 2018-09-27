@@ -87,7 +87,7 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler {
     /**
      * Updates things from device model.
      *
-     * @param thing  Thing to be updated.
+     * @param thing Thing to be updated.
      * @param device Device model with new data.
      */
     @Override
@@ -150,8 +150,6 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler {
                 if (command instanceof OnOffType) {
                     state.getSwitch().setState(OnOffType.ON.equals(command) ? SwitchModel.ON : SwitchModel.OFF);
                     fritzBox.setSwitch(ain, OnOffType.ON.equals(command));
-                } else {
-                    logger.warn("Received unknown command '{}' for channel {}", command, CHANNEL_OUTLET);
                 }
                 break;
             default:

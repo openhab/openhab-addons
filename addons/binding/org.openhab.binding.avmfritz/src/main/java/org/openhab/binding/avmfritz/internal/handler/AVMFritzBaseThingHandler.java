@@ -77,9 +77,9 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler {
     /**
      * Called from {@link AVMFritzBaseBridgeHandler)} to update the thing status because updateStatus is protected.
      *
-     * @param status       Thing status
+     * @param status Thing status
      * @param statusDetail Thing status detail
-     * @param description  Thing status description
+     * @param description Thing status description
      */
     public void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
         updateStatus(status, statusDetail, description);
@@ -120,8 +120,6 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler {
                 if (command instanceof OnOffType) {
                     state.getSwitch().setState(OnOffType.ON.equals(command) ? SwitchModel.ON : SwitchModel.OFF);
                     fritzBox.setSwitch(ain, OnOffType.ON.equals(command));
-                } else {
-                    logger.warn("Received unknown command '{}' for channel {}", command, CHANNEL_OUTLET);
                 }
                 break;
             case CHANNEL_SETTEMP:
@@ -152,8 +150,6 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler {
                     state.getHkr().setTsoll(temperature);
                     fritzBox.setSetTemp(ain, temperature);
                     updateState(CHANNEL_RADIATOR_MODE, new StringType(state.getHkr().getRadiatorMode()));
-                } else {
-                    logger.warn("Received unknown command '{}' for channel {}", command, CHANNEL_SETTEMP);
                 }
                 break;
             case CHANNEL_RADIATOR_MODE:
@@ -194,9 +190,6 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler {
                         case MODE_UNKNOWN:
                         case MODE_WINDOW_OPEN:
                             logger.debug("Command '{}' is a read-only command for channel {}.", command, channelId);
-                            break;
-                        default:
-                            logger.warn("Received unknown command '{}' for channel {}", command, CHANNEL_RADIATOR_MODE);
                             break;
                     }
                 }

@@ -71,7 +71,7 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
         logger.debug("initialize discovery service");
         this.bridgeHandler = bridgeHandler;
         if (bridgeHandler == null) {
-            logger.warn("no bridge handler for scan given");
+            logger.debug("no bridge handler for scan given");
         }
         this.activate(null);
     }

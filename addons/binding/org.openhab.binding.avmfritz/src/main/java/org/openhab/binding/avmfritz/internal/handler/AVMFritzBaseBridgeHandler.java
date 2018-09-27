@@ -302,7 +302,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
         if (channel != null) {
             updateState(channel.getUID(), state);
         } else {
-            logger.warn("Channel '{}' in thing '{}' does not exist, recreating thing.", channelId, thing.getUID());
+            logger.debug("Channel '{}' in thing '{}' does not exist, recreating thing.", channelId, thing.getUID());
             AVMFritzBaseThingHandler handler = (AVMFritzBaseThingHandler) thing.getHandler();
             if (handler != null) {
                 handler.createChannel(channelId);
