@@ -22,7 +22,7 @@ There is no configuration required for the binding.
 
 The auto-discovery service of the binding will detect the ipAddress and port of the Konnected module.  
 But once it is added you will need to provide an Authority Token to secure communication between the module and openHAB.  
-The binding will attempt to discover the ip address of your OpenHAB server.  However, if it is unable to determine the ip address you can manually define the ip address and port in the thing configuration.
+The binding will attempt to discover the ip address of your openHAB server.  However, if it is unable to determine the ip address you can manually define the ip address and port in the thing configuration.
 
 ## Channels
 
@@ -48,9 +48,6 @@ A momentary switch actuates a switch for a specified time (in milliseconds) and 
 A beep/blink switch is like a momentary switch that repeats either a specified number of times or indefinitely. This is commonly used with a a piezo buzzer to make a "beep beep" sound when a door is opened, or to make a repeating beep pattern for an alarm or audible warning. It can also be used to blink lights.
 
 ## Full Example
-
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
-
 
 *.items
 

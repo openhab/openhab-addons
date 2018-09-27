@@ -4,7 +4,7 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 	<!-- This is the Konnected Thing-Type -->
-	<thing-type id="module" extensible="sensor,actuator">
+	<thing-type id="module" extensible="sensor,actuator,temperature,humidity">
 		<label>Konnected Binding Thing</label>
 		<description>The Konnected Module</description>
 		<channels>
@@ -24,7 +24,28 @@
 		<label>Sensor</label>
 		<description>This zone is a sensor</description>
 		<state readOnly="true"/>
-
+	</channel-type>
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>This zone measures Temperature</description>
+		<state readOnly="true"/>
+		<config-description>
+			<parameter name="tempsensorType" type="boolean">
+				<label>dht22</label>
+				<description>Is the sensor a dht22 or a ds18b20? Set to true for dht22 sensor</description>
+			</parameter>
+			<parameter name="pollinterval" type="integer">
+				<label>Poll Interval</label>
+				<description>The interval in minutes to poll the sensor.</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<channel-type id="humidity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<description>This zone measures Humidity</description>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="actuator">
 		<item-type>Switch</item-type>

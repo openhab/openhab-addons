@@ -115,7 +115,6 @@ public class KonnectedHandlerFactory extends BaseThingHandlerFactory {
                 logger.warn("No network interface could be found.");
                 return null;
             }
-
             return ipAddress;
         }
     }

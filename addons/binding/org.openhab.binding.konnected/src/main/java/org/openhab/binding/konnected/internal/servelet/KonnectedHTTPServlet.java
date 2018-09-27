@@ -80,7 +80,7 @@ public class KonnectedHTTPServlet extends HttpServlet {
         if (data != null && thingHandler != null) {
             KonnectedModuleGson event = gson.fromJson(data, KonnectedModuleGson.class);
             String auth = req.getHeader("Authorization");
-            this.thingHandler.handleWebHookEvent(event.getPin(), event.getState(), auth);
+            this.thingHandler.handleWebHookEvent(event, auth);
         }
 
         setHeaders(resp);

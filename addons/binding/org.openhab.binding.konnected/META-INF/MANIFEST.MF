@@ -10,6 +10,7 @@ Bundle-Version: 2.4.0.qualifier
 Import-Package: 
  com.google.gson,
  com.google.gson.annotations,
+ javax.measure.quantity,
  javax.servlet,
  javax.servlet.http,
  org.eclipse.jdt.annotation;resolution:=optional,
@@ -18,6 +19,7 @@ Import-Package:
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.config.discovery.upnp,
  org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.library.unit,
  org.eclipse.smarthome.core.net,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,

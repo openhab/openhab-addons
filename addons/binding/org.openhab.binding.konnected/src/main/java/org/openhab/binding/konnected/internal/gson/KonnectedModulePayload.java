@@ -24,15 +24,23 @@ public class KonnectedModulePayload {
 
     private Set<KonnectedModuleGson> sensors;
     private Set<KonnectedModuleGson> actuators;
+    @SerializedName("dht_sensors")
+    private Set<KonnectedModuleGson> dht22;
+    @SerializedName("ds18b20_sensors")
+    private Set<KonnectedModuleGson> ds18b20;
     @SerializedName("token")
     private String authToken;
     private String apiUrl;
+    private Boolean blink;
+    private Boolean discovery;
 
     public KonnectedModulePayload(String authTokenPassed, String apiURLPassed) {
         this.authToken = authTokenPassed;
         this.apiUrl = apiURLPassed;
         this.sensors = new HashSet<KonnectedModuleGson>();
         this.actuators = new HashSet<KonnectedModuleGson>();
+        this.dht22 = new HashSet<KonnectedModuleGson>();
+        this.ds18b20 = new HashSet<KonnectedModuleGson>();
     }
 
     public Set<KonnectedModuleGson> getSensors() {
@@ -66,4 +74,37 @@ public class KonnectedModulePayload {
     public String getapiUrl() {
         return apiUrl;
     }
+
+    public Set<KonnectedModuleGson> getDht22() {
+        return dht22;
+    }
+
+    public void addDht22(KonnectedModuleGson Dht22) {
+        this.dht22.add(Dht22);
+    }
+
+    public void removeDht22(KonnectedModuleGson Dht22) {
+        this.dht22.remove(Dht22);
+    }
+
+    public Set<KonnectedModuleGson> getDs18b20() {
+        return ds18b20;
+    }
+
+    public void addDs18b20(KonnectedModuleGson Ds18b20) {
+        this.ds18b20.add(Ds18b20);
+    }
+
+    public void removeDs18b20(KonnectedModuleGson Ds18b20) {
+        this.ds18b20.remove(Ds18b20);
+    }
+
+    public void setDiscovery(Boolean setDiscovery) {
+        this.discovery = setDiscovery;
+    }
+
+    public void setBlink(Boolean setBlink) {
+        this.blink = setBlink;
+    }
+
 }

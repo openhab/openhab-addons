@@ -28,4 +28,6 @@ public class KonnectedConfiguration extends Configuration {
      */
     public String authToken;
     public String hostAddress;
+    public boolean blink;
+    public boolean discovery;
 }

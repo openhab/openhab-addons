@@ -19,20 +19,48 @@ import com.google.gson.annotations.SerializedName;
  */
 public class KonnectedModuleGson {
 
-    private String pin;
+    private Integer pin;
+    private String temp;
+    private String humi;
     private String state;
     @SerializedName("Auth_Token")
     private String authToken;
     private String momentary;
     private String pause;
     private String times;
+    @SerializedName("poll_interval")
+    private Integer pollInterval;
 
-    public String getPin() {
+    public Integer getPin() {
         return pin;
     }
 
-    public void setPin(String setPin) {
+    public void setPin(Integer setPin) {
         this.pin = setPin;
+    }
+
+    public Integer getPollInterval() {
+        return pollInterval;
+    }
+
+    public void setPollInterval(Integer setPollInterval) {
+        this.pollInterval = setPollInterval;
+    }
+
+    public String getTemp() {
+        return temp;
+    }
+
+    public void setTemp(String setTemp) {
+        this.temp = setTemp;
+    }
+
+    public String getHumi() {
+        return humi;
+    }
+
+    public void setHumi(String setHumi) {
+        this.humi = setHumi;
     }
 
     public String getState() {

@@ -50,7 +50,7 @@ public class KonnectedUPnPServer implements UpnpDiscoveryParticipant {
     public @Nullable DiscoveryResult createResult(RemoteDevice device) {
         ThingUID uid = getThingUID(device);
         if (uid != null) {
-            Map<String, Object> properties = new HashMap<>(2);
+            Map<String, Object> properties = new HashMap<>();
             properties.put(HOST, device.getDetails().getBaseURL());
             properties.put(MAC_ADDR, device.getDetails().getSerialNumber());
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
@@ -81,5 +81,4 @@ public class KonnectedUPnPServer implements UpnpDiscoveryParticipant {
         }
         return null;
     }
-
 }
