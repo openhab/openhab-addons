@@ -141,7 +141,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
      */
     private synchronized void onUpdate() {
         if (pollingJob == null || pollingJob.isCancelled()) {
-            logger.debug("start polling job at intervall {}s", refreshInterval);
+            logger.debug("start polling job at interval {}s", refreshInterval);
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, INITIAL_DELAY, refreshInterval, TimeUnit.SECONDS);
         } else {
             logger.debug("pollingJob active");
@@ -302,7 +302,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
         if (channel != null) {
             updateState(channel.getUID(), state);
         } else {
-            logger.warn("Channel '{}' in thing '{}' does not exist, recreating thing.", channelId, thing.getUID());
+            logger.debug("Channel '{}' in thing '{}' does not exist, recreating thing.", channelId, thing.getUID());
             AVMFritzBaseThingHandler handler = (AVMFritzBaseThingHandler) thing.getHandler();
             if (handler != null) {
                 handler.createChannel(channelId);
@@ -388,15 +388,15 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
         return device.getIdentifier().replaceAll(INVALID_PATTERN, "_");
     }
 
-    /**
-     * Just logging - nothing to do.
-     */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Handle command '{}' for channel {}", command, channelUID);
         if (command instanceof RefreshType) {
-            scheduler.submit(() -> poll());
-            return;
+            handleRefreshCommand();
         }
+    }
+
+    public void handleRefreshCommand() {
+        scheduler.submit(this::poll);
     }
 }
