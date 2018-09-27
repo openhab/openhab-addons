@@ -71,7 +71,7 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
         logger.debug("initialize discovery service");
         this.bridgeHandler = bridgeHandler;
         if (bridgeHandler == null) {
-            logger.warn("no bridge handler for scan given");
+            logger.debug("no bridge handler for scan given");
         }
         this.activate(null);
     }
@@ -141,7 +141,7 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startBackgroundDiscovery() {
         if (scanningJob == null || scanningJob.isCancelled()) {
-            logger.debug("start background scanning job at intervall {}s", SCAN_INTERVAL);
+            logger.debug("start background scanning job at interval {}s", SCAN_INTERVAL);
             scanningJob = scheduler.scheduleWithFixedDelay(this::startScan, INITIAL_DELAY, SCAN_INTERVAL,
                     TimeUnit.SECONDS);
         } else {

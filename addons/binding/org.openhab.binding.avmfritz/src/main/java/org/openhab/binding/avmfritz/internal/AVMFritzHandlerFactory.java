@@ -84,9 +84,8 @@ public class AVMFritzHandlerFactory extends BaseThingHandlerFactory {
         } else if (SUPPORTED_GROUP_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new GroupHandler(thing);
         } else {
-            logger.warn("ThingHandler not found for {}", thing.getThingTypeUID());
+            logger.error("ThingHandler not found for {}", thing.getThingTypeUID());
         }
-
         return null;
     }
 

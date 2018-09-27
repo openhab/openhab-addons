@@ -44,7 +44,7 @@ public class FritzAhaUpdateXmlCallback extends FritzAhaReauthCallback {
      * Constructor
      *
      * @param webIface Webinterface to FRITZ!Box
-     * @param handler  Bridge handler that will update things.
+     * @param handler Bridge handler that will update things.
      */
     public FritzAhaUpdateXmlCallback(FritzAhaWebInterface webIface, AVMFritzBaseBridgeHandler handler) {
         super(WEBSERVICE_PATH, "switchcmd=getdevicelistinfos", webIface, GET, 1);
@@ -62,7 +62,7 @@ public class FritzAhaUpdateXmlCallback extends FritzAhaReauthCallback {
                 if (model != null) {
                     handler.addDeviceList(model.getDevicelist());
                 } else {
-                    logger.warn("no model in response");
+                    logger.debug("no model in response");
                 }
                 handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
             } catch (JAXBException e) {

@@ -33,6 +33,7 @@ import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.avmfritz.internal.ahamodel.AVMFritzBaseModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.HeatingModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.SwitchModel;
@@ -77,9 +78,9 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler {
     /**
      * Called from {@link AVMFritzBaseBridgeHandler)} to update the thing status because updateStatus is protected.
      *
-     * @param status       Thing status
+     * @param status Thing status
      * @param statusDetail Thing status detail
-     * @param description  Thing status description
+     * @param description Thing status description
      */
     public void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
         updateStatus(status, statusDetail, description);
@@ -89,6 +90,15 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         String channelId = channelUID.getIdWithoutGroup();
         logger.debug("Handle command '{}' for channel {}", command, channelId);
+        if (command instanceof RefreshType) {
+            Bridge bridge = getBridge();
+            if (bridge != null) {
+                BridgeHandler bridgeHandler = bridge.getHandler();
+                if (bridgeHandler != null && bridgeHandler instanceof AVMFritzBaseBridgeHandler) {
+                    ((AVMFritzBaseBridgeHandler) bridgeHandler).handleRefreshCommand();
+                }
+            }
+        }
         FritzAhaWebInterface fritzBox = getWebInterface();
         if (fritzBox == null) {
             logger.debug("Cannot handle command '{}' because connection is missing", command);
@@ -120,8 +130,6 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler {
                 if (command instanceof OnOffType) {
                     state.getSwitch().setState(OnOffType.ON.equals(command) ? SwitchModel.ON : SwitchModel.OFF);
                     fritzBox.setSwitch(ain, OnOffType.ON.equals(command));
-                } else {
-                    logger.warn("Received unknown command '{}' for channel {}", command, CHANNEL_OUTLET);
                 }
                 break;
             case CHANNEL_SETTEMP:
@@ -152,8 +160,6 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler {
                     state.getHkr().setTsoll(temperature);
                     fritzBox.setSetTemp(ain, temperature);
                     updateState(CHANNEL_RADIATOR_MODE, new StringType(state.getHkr().getRadiatorMode()));
-                } else {
-                    logger.warn("Received unknown command '{}' for channel {}", command, CHANNEL_SETTEMP);
                 }
                 break;
             case CHANNEL_RADIATOR_MODE:
@@ -195,9 +201,6 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler {
                         case MODE_WINDOW_OPEN:
                             logger.debug("Command '{}' is a read-only command for channel {}.", command, channelId);
                             break;
-                        default:
-                            logger.warn("Received unknown command '{}' for channel {}", command, CHANNEL_RADIATOR_MODE);
-                            break;
                     }
                 }
                 break;
@@ -234,8 +237,8 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
         if (bridge != null) {
             BridgeHandler handler = bridge.getHandler();
-            if (handler != null && handler instanceof BoxHandler) {
-                return ((BoxHandler) handler).getWebInterface();
+            if (handler != null && handler instanceof AVMFritzBaseBridgeHandler) {
+                return ((AVMFritzBaseBridgeHandler) handler).getWebInterface();
             }
         }
         return null;
