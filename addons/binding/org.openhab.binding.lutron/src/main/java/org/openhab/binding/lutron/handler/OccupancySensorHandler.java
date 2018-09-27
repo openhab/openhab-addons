@@ -52,6 +52,12 @@ public class OccupancySensorHandler extends LutronHandler {
         integrationId = id.intValue();
         logger.debug("Initializing Occupancy Sensor handler for integration ID {}", id);
 
+        initDeviceState();
+    }
+
+    @Override
+    protected void initDeviceState() {
+        logger.debug("Initializing device state for Occupancy Sensor {}", getIntegrationId());
         Bridge bridge = getBridge();
         if (bridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");

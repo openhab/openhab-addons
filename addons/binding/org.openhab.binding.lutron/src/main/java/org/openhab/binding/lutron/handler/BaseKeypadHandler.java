@@ -21,7 +21,6 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
@@ -203,8 +202,10 @@ public abstract class BaseKeypadHandler extends LutronHandler {
         }
     }
 
+    @Override
     public void initDeviceState() {
         synchronized (asyncInitLock) {
+            logger.debug("Initializing device state for Keypad {}", integrationId);
             Bridge bridge = getBridge();
             if (bridge == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
@@ -225,18 +226,6 @@ public abstract class BaseKeypadHandler extends LutronHandler {
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             }
-        }
-    }
-
-    @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        logger.debug("Bridge status changed to {} for keypad handler {}", bridgeStatusInfo.getStatus(), integrationId);
-
-        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE
-                && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE) {
-            initDeviceState();
-        } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
