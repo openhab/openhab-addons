@@ -90,6 +90,7 @@
     <module>org.openhab.binding.nest.test</module>
     <module>org.openhab.binding.nibeheatpump</module>
     <module>org.openhab.binding.nibeheatpump.test</module>
+    <module>org.openhab.binding.nibeuplink</module>
     <module>org.openhab.binding.nikohomecontrol</module>
     <module>org.openhab.binding.oceanic</module>
     <module>org.openhab.binding.onebusaway</module>
