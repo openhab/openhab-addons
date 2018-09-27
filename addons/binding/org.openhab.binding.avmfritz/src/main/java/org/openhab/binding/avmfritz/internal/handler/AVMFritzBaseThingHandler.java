@@ -33,6 +33,7 @@ import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.avmfritz.internal.ahamodel.AVMFritzBaseModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.HeatingModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.SwitchModel;
@@ -89,6 +90,15 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         String channelId = channelUID.getIdWithoutGroup();
         logger.debug("Handle command '{}' for channel {}", command, channelId);
+        if (command instanceof RefreshType) {
+            Bridge bridge = getBridge();
+            if (bridge != null) {
+                BridgeHandler bridgeHandler = bridge.getHandler();
+                if (bridgeHandler != null && bridgeHandler instanceof AVMFritzBaseBridgeHandler) {
+                    ((AVMFritzBaseBridgeHandler) bridgeHandler).handleRefreshCommand();
+                }
+            }
+        }
         FritzAhaWebInterface fritzBox = getWebInterface();
         if (fritzBox == null) {
             logger.debug("Cannot handle command '{}' because connection is missing", command);
@@ -227,8 +237,8 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
         if (bridge != null) {
             BridgeHandler handler = bridge.getHandler();
-            if (handler != null && handler instanceof BoxHandler) {
-                return ((BoxHandler) handler).getWebInterface();
+            if (handler != null && handler instanceof AVMFritzBaseBridgeHandler) {
+                return ((AVMFritzBaseBridgeHandler) handler).getWebInterface();
             }
         }
         return null;

@@ -388,15 +388,15 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
         return device.getIdentifier().replaceAll(INVALID_PATTERN, "_");
     }
 
-    /**
-     * Just logging - nothing to do.
-     */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Handle command '{}' for channel {}", command, channelUID);
         if (command instanceof RefreshType) {
-            scheduler.submit(() -> poll());
-            return;
+            handleRefreshCommand();
         }
+    }
+
+    public void handleRefreshCommand() {
+        scheduler.submit(this::poll);
     }
 }
