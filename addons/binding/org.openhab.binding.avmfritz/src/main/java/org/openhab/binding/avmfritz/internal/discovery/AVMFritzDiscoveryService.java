@@ -141,7 +141,7 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startBackgroundDiscovery() {
         if (scanningJob == null || scanningJob.isCancelled()) {
-            logger.debug("start background scanning job at intervall {}s", SCAN_INTERVAL);
+            logger.debug("start background scanning job at interval {}s", SCAN_INTERVAL);
             scanningJob = scheduler.scheduleWithFixedDelay(this::startScan, INITIAL_DELAY, SCAN_INTERVAL,
                     TimeUnit.SECONDS);
         } else {

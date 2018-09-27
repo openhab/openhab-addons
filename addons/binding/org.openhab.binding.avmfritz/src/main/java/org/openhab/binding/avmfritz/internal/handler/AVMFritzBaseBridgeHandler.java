@@ -141,7 +141,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
      */
     private synchronized void onUpdate() {
         if (pollingJob == null || pollingJob.isCancelled()) {
-            logger.debug("start polling job at intervall {}s", refreshInterval);
+            logger.debug("start polling job at interval {}s", refreshInterval);
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, INITIAL_DELAY, refreshInterval, TimeUnit.SECONDS);
         } else {
             logger.debug("pollingJob active");
