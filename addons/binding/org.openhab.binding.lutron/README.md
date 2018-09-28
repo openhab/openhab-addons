@@ -343,6 +343,48 @@ Switch Switch_FrontDoor "Front Door Lights" { channel="lutronradiora:switch:chro
 Switch Phantom_Movie "Movie Scene" { channel="lutronradiora:phantomButton:chronos1:phantomButton1:switchstatus" }
 ```
 
+# Legacy HomeWorks RS232 (Serial) Processors
+
+The binding supports legacy HomeWorks processors that interface with a Serial RS232 connection.  To connect to such a system, you would need to use a RS232 -> USB adapter (assuming you don't have a serial port).  
+
+Please see [HomeWorks RS232 Protocol Guide](http://www.lutron.com/TechnicalDocumentLibrary/HWI%20RS232%20Protocol.pdf) for information on the protocol.
+
+## Supported Things
+
+* HomeWorks RS232-connected Processor Units
+* Dimmers
+
+Supported in future updates:
+* Keypads
+* Keypad LEDs
+
+## Discovery
+
+This binding supports active and passive discovery.  It will detect dimmers as they are manually raised or lowered, or can be made to scan for configured dimmer modules.
+
+## Thing Configuration
+
+The bridge requires the port location (e.g., /dev/ttyUSB1 or COM1) and the baud rate.  The default baud rate for HomeWorks processors is set to 9600.  
+
+```
+lutron:hwserialbridge:home [serialPort="/dev/ttyUSB1", baudRate="9600]
+```
+
+Dimmers have one required parameter ``address`` that specifies the device address (e.g., [01:01:03:02:04]) and two optional parameters: ``fadeTime`` which sets the time it takes to set the light level when changed, and ``defaultLevel`` which sets the level to use for the dimmer when turning it on (with a switch rather than a slider).
+
+```
+lutron:hwdimmer:dimmer1 [address="[01:01:03:02:04]", fadeTime="1", defaultLevel="75"] 
+```
+
+## Channels
+
+The following channels are supported:
+
+| Thing Type      | Channel Type ID   | Item Type    | Description                                  |
+|-----------------|-------------------|--------------|--------------------------------------------- |
+| dimmer          | lightlevel        | Dimmer       | Increase/decrease the light level            |
+
+
 # Lutron Grafik Eye 3x/4x binding via GRX-PRG or GRX-CI-PRG
 
 This lutron binding will also work with Grafik Eye 3x/4x systems in conjuction with the GRX-PRG or GRX-CI-PRG interfaces.

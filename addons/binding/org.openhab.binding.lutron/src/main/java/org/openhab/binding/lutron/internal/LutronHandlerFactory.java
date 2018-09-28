@@ -33,6 +33,9 @@ import org.openhab.binding.lutron.handler.VirtualKeypadHandler;
 import org.openhab.binding.lutron.internal.grxprg.GrafikEyeHandler;
 import org.openhab.binding.lutron.internal.grxprg.PrgBridgeHandler;
 import org.openhab.binding.lutron.internal.grxprg.PrgConstants;
+import org.openhab.binding.lutron.internal.hw.HwConstants;
+import org.openhab.binding.lutron.internal.hw.HwDimmerHandler;
+import org.openhab.binding.lutron.internal.hw.HwSerialBridgeHandler;
 import org.openhab.binding.lutron.internal.radiora.RadioRAConstants;
 import org.openhab.binding.lutron.internal.radiora.handler.PhantomButtonHandler;
 import org.openhab.binding.lutron.internal.radiora.handler.RS232Handler;
@@ -53,16 +56,22 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
             THING_TYPE_VIRTUALKEYPAD, THING_TYPE_VCRX, THING_TYPE_CCO_PULSED, THING_TYPE_CCO_MAINTAINED,
             THING_TYPE_SHADE);
 
+    // Used by the HwDiscoveryService
+    public static final Set<ThingTypeUID> HW_DISCOVERABLE_DEVICE_TYPES_UIDS = ImmutableSet
+            .of(HwConstants.THING_TYPE_HWDIMMER);
+
     // Other types that can be initiated but not discovered
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_IPBRIDGE,
             PrgConstants.THING_TYPE_PRGBRIDGE, PrgConstants.THING_TYPE_GRAFIKEYE, RadioRAConstants.THING_TYPE_RS232,
-            RadioRAConstants.THING_TYPE_DIMMER, RadioRAConstants.THING_TYPE_SWITCH, RadioRAConstants.THING_TYPE_PHANTOM,
+            RadioRAConstants.THING_TYPE_DIMMER, RadioRAConstants.THING_TYPE_SWITCH,
+            RadioRAConstants.THING_TYPE_PHANTOM, HwConstants.THING_TYPE_HWSERIALBRIDGE,
             THING_TYPE_CCO);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)
-                || DISCOVERABLE_DEVICE_TYPES_UIDS.contains(thingTypeUID);
+                || DISCOVERABLE_DEVICE_TYPES_UIDS.contains(thingTypeUID)
+                || HW_DISCOVERABLE_DEVICE_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Override
@@ -107,6 +116,10 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
             return new org.openhab.binding.lutron.internal.radiora.handler.SwitchHandler(thing);
         } else if (thingTypeUID.equals(RadioRAConstants.THING_TYPE_PHANTOM)) {
             return new PhantomButtonHandler(thing);
+        } else if (thingTypeUID.equals(HwConstants.THING_TYPE_HWSERIALBRIDGE)) {
+            return new HwSerialBridgeHandler((Bridge) thing);
+        } else if (thingTypeUID.equals(HwConstants.THING_TYPE_HWDIMMER)) {
+            return new HwDimmerHandler(thing);
         }
 
         return null;
