@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
  * Handler responsible for communicating with the main Lutron control hub.
  *
  * @author Allan Tong - Initial contribution
+ * @author Bob Adair - Added reconnect and heartbeat config parameters
  */
 public class IPBridgeHandler extends BaseBridgeHandler {
     private static final Pattern STATUS_REGEX = Pattern.compile("~(OUTPUT|DEVICE|SYSTEM),([^,]+),(.*)");
@@ -65,11 +66,13 @@ public class IPBridgeHandler extends BaseBridgeHandler {
     private static final String DEFAULT_USER = "lutron";
     private static final String DEFAULT_PASSWORD = "integration";
     private static final int DEFAULT_RECONNECT = 5;
+    private static final int DEFAULT_HEARTBEAT = 5;
 
     private final Logger logger = LoggerFactory.getLogger(IPBridgeHandler.class);
 
     private IPBridgeConfig config;
     private int reconnectInterval;
+    private int heartbeatInterval;
 
     private TelnetSession session;
     private BlockingQueue<LutronCommand> sendQueue = new LinkedBlockingQueue<>();
@@ -122,6 +125,7 @@ public class IPBridgeHandler extends BaseBridgeHandler {
         if (validConfiguration(this.config)) {
             LutronDeviceDiscoveryService discovery = new LutronDeviceDiscoveryService(this);
             reconnectInterval = (config.getReconnect() > 0) ? config.getReconnect() : DEFAULT_RECONNECT;
+            heartbeatInterval = (config.getHeartbeat() > 0) ? config.getHeartbeat() : DEFAULT_HEARTBEAT;
 
             this.discoveryServiceRegistration = this.bundleContext.registerService(DiscoveryService.class, discovery,
                     null);
@@ -208,12 +212,8 @@ public class IPBridgeHandler extends BaseBridgeHandler {
 
         updateStatus(ThingStatus.ONLINE);
 
-        this.keepAlive = this.scheduler.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                sendKeepAlive();
-            }
-        }, 5, 5, TimeUnit.MINUTES);
+        keepAlive = scheduler.scheduleWithFixedDelay(this::sendKeepAlive, heartbeatInterval, heartbeatInterval,
+                TimeUnit.MINUTES);
     }
 
     private void sendCommands() {
