@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.modbus.handler;
+package org.openhab.binding.modbus.internal.handler;
 
-import static org.openhab.binding.modbus.ModbusBindingConstants.*;
+import static org.openhab.binding.modbus.internal.ModbusBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -46,7 +46,7 @@ import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.modbus.ModbusBindingConstants;
+import org.openhab.binding.modbus.internal.ModbusBindingConstants;
 import org.openhab.binding.modbus.internal.ModbusConfigurationException;
 import org.openhab.binding.modbus.internal.Transformation;
 import org.openhab.binding.modbus.internal.config.ModbusDataConfiguration;

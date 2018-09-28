@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.modbus.handler;
+package org.openhab.binding.modbus.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
