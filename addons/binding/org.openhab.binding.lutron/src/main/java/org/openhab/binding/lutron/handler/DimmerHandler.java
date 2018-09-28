@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
  * Handler responsible for communicating with a light dimmer.
  *
  * @author Allan Tong - Initial contribution
+ * @author Bob Adair - Added initDeviceState method
  */
 public class DimmerHandler extends LutronHandler {
     private static final Integer ACTION_ZONELEVEL = 1;

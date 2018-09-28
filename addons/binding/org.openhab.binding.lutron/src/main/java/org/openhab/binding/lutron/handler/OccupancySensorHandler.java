@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 /**
  *
  * @author Allan Tong - Initial contribution
+ * @author Bob Adair - Added initDeviceState method
  */
 public class OccupancySensorHandler extends LutronHandler {
     private static final String OCCUPIED_STATE_UPDATE = "2";

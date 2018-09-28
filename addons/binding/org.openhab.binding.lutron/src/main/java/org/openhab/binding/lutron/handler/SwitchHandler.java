@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
  * Handler responsible for communicating with a switch.
  *
  * @author Allan Tong - Initial contribution
+ * @author Bob Adair - Added initDeviceState method
  */
 public class SwitchHandler extends LutronHandler {
     private static final Integer ACTION_ZONELEVEL = 1;
