@@ -99,7 +99,7 @@ public class DSMRSerialAutoDeviceTest {
         try (InputStream inputStream = new ByteArrayInputStream(TelegramReaderUtil.readRawTelegram(TELEGRAM_NAME))) {
             when(mockSerialPort.getInputStream()).thenReturn(inputStream);
             DSMRSerialAutoDevice device = new DSMRSerialAutoDevice(serialPortManager, DUMMY_PORTNAME, listener,
-                    scheduler, 1);
+                    new DSMRTelegramListener(), scheduler, 1);
             device.start();
             assertSame("Expect to be starting discovery state", DeviceState.DISCOVER_SETTINGS, device.getState());
             serialPortEventListener
@@ -136,7 +136,7 @@ public class DSMRSerialAutoDeviceTest {
                 throw new PortInUseException();
             }).when(mockIdentifier).open(eq(DSMRBindingConstants.DSMR_PORT_NAME), anyInt());
             DSMRSerialAutoDevice device = new DSMRSerialAutoDevice(serialPortManager, DUMMY_PORTNAME, listener,
-                    scheduler, 1);
+                    new DSMRTelegramListener(), scheduler, 1);
             device.start();
             assertSame("Expected an error", DSMRConnectorErrorEvent.IN_USE, eventRef.get());
             assertSame("Expect to be in error state", DeviceState.ERROR, device.getState());
@@ -146,7 +146,8 @@ public class DSMRSerialAutoDeviceTest {
             assertSame("Expect to be starting discovery state", DeviceState.DISCOVER_SETTINGS, device.getState());
             // Trigger device to go into error stage with port doesn't exist.
             mockIdentifier = null;
-            device = new DSMRSerialAutoDevice(serialPortManager, DUMMY_PORTNAME, listener, scheduler, 1);
+            device = new DSMRSerialAutoDevice(serialPortManager, DUMMY_PORTNAME, listener, new DSMRTelegramListener(),
+                    scheduler, 1);
             device.start();
             assertSame("Expected an error", DSMRConnectorErrorEvent.DONT_EXISTS, eventRef.get());
             assertSame("Expect to be in error state", DeviceState.ERROR, device.getState());

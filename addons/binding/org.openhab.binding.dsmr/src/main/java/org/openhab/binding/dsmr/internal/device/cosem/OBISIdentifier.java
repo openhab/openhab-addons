@@ -39,7 +39,7 @@ public class OBISIdentifier {
     private Integer groupB;
     private int groupC;
     private int groupD;
-    private int groupE;
+    private Integer groupE;
     private Integer groupF;
 
     /**
@@ -52,7 +52,7 @@ public class OBISIdentifier {
      * @param groupE E value
      * @param groupF F value
      */
-    public OBISIdentifier(int groupA, Integer groupB, int groupC, int groupD, int groupE, Integer groupF) {
+    public OBISIdentifier(int groupA, Integer groupB, int groupC, int groupD, Integer groupE, Integer groupF) {
         this.groupA = groupA;
         this.groupB = groupB;
         this.groupC = groupC;
@@ -78,7 +78,7 @@ public class OBISIdentifier {
 
             // Optional value B
             if (m.group(4) != null) {
-                this.groupB = Integer.parseInt(m.group(4));
+                this.groupB = Integer.valueOf(m.group(4));
             }
 
             // Required value C & D
@@ -87,12 +87,12 @@ public class OBISIdentifier {
 
             // Optional value E
             if (m.group(9) != null) {
-                this.groupE = Integer.parseInt(m.group(9));
+                this.groupE = Integer.valueOf(m.group(9));
             }
 
             // Optional value F
             if (m.group(11) != null) {
-                this.groupF = Integer.parseInt(m.group(11));
+                this.groupF = Integer.valueOf(m.group(11));
             }
         } else {
             throw new ParseException("Invalid OBIS identifier:" + obisIDString, 0);
@@ -130,7 +130,7 @@ public class OBISIdentifier {
     /**
      * @return the groupE
      */
-    public int getGroupE() {
+    public Integer getGroupE() {
         return groupE;
     }
 
@@ -143,8 +143,8 @@ public class OBISIdentifier {
 
     @Override
     public String toString() {
-        return groupA + "-" + (groupB != null ? (groupB + ":") : "") + groupC + "." + groupD + "." + groupE
-                + (groupF != null ? ("*" + groupF) : "");
+        return groupA + "-" + (groupB == null ? "" : (groupB + ":")) + groupC + "." + groupD
+                + (groupE == null ? "" : ("." + groupE)) + (groupF == null ? "" : ("*" + groupF));
     }
 
     /**
@@ -199,7 +199,9 @@ public class OBISIdentifier {
         }
         result &= groupC == o.groupC;
         result &= groupD == o.groupD;
-        result &= groupE == o.groupE;
+        if (groupE != null && o.groupE != null) {
+            result &= (groupE.equals(o.groupE));
+        }
         if (groupF != null && o.groupF != null) {
             result &= (groupF.equals(o.groupF));
         }
@@ -209,7 +211,7 @@ public class OBISIdentifier {
 
     @Override
     public int hashCode() {
-        return Objects.hash(groupA, ((groupB == null) ? 0 : groupB), groupC, groupD, groupE,
+        return Objects.hash(groupA, ((groupB == null) ? 0 : groupB), groupC, groupD, ((groupE == null) ? 0 : groupE),
                 ((groupF == null) ? 0 : groupF));
     }
 

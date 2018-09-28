@@ -136,7 +136,21 @@ public enum CosemObjectType {
     GJMETER_VALUE_V4(new OBISIdentifier(0, null, 24, 2, 1, null), CosemDate.INSTANCE, CosemQuantity.GIGA_JOULE),
 
     /* Generic Meter (DSMR v3 only) */
-    GENMETER_VALUE_V3(new OBISIdentifier(0, null, 24, 3, 0, null), CosemDecimal.INSTANCE);
+    GENMETER_VALUE_V3(new OBISIdentifier(0, null, 24, 3, 0, null), CosemDecimal.INSTANCE),
+
+    /* Additional Luxembourgish Smarty Electricity */
+    EMETER_TOTAL_IMPORTED_ENERGY_REGISTER_Q(new OBISIdentifier(1, null, 3, 8, 0, null), CosemQuantity.KILO_VAR_HOUR),
+    EMETER_TOTAL_EXPORTED_ENERGY_REGISTER_Q(new OBISIdentifier(1, null, 4, 8, 0, null), CosemQuantity.KILO_VAR_HOUR),
+    // The actual reactive's and threshold have no unit in the data and therefore are not quantity types.
+    EMETER_ACTUAL_REACTIVE_DELIVERY(new OBISIdentifier(1, 0, 3, 7, 0, null), CosemDecimal.INSTANCE),
+    EMETER_ACTUAL_REACTIVE_PRODUCTION(new OBISIdentifier(1, 0, 4, 7, 0, null), CosemDecimal.INSTANCE),
+    EMETER_ACTIVE_THRESHOLD_SMAX(new OBISIdentifier(0, 0, 17, 0, 0, null), CosemDecimal.INSTANCE),
+    EMETER_INSTANT_REACTIVE_POWER_DELIVERY_L1(new OBISIdentifier(1, 0, 23, 7, 0, null), CosemQuantity.KILO_VAR),
+    EMETER_INSTANT_REACTIVE_POWER_DELIVERY_L2(new OBISIdentifier(1, 0, 43, 7, 0, null), CosemQuantity.KILO_VAR),
+    EMETER_INSTANT_REACTIVE_POWER_DELIVERY_L3(new OBISIdentifier(1, 0, 63, 7, 0, null), CosemQuantity.KILO_VAR),
+    EMETER_INSTANT_REACTIVE_POWER_PRODUCTION_L1(new OBISIdentifier(1, 0, 24, 7, 0, null), CosemQuantity.KILO_VAR),
+    EMETER_INSTANT_REACTIVE_POWER_PRODUCTION_L2(new OBISIdentifier(1, 0, 44, 7, 0, null), CosemQuantity.KILO_VAR),
+    EMETER_INSTANT_REACTIVE_POWER_PRODUCTION_L3(new OBISIdentifier(1, 0, 64, 7, 0, null), CosemQuantity.KILO_VAR);
 
     /** OBIS reduced identifier */
     public final OBISIdentifier obisId;

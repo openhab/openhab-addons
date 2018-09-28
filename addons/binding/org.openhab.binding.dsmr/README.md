@@ -1,13 +1,14 @@
 # DSMR Binding
 
-The DSMR-binding is targeted towards Dutch users having a smart meter (Dutch: 'Slimme meter').
-Data of Dutch smart meters can be obtained via the P1-port.
+The DSMR-binding is targeted towards Dutch and Luxembourger users having a smart meter (Dutch: 'Slimme meter').
+Data of Dutch/Luxembourg smart meters can be obtained via the P1-port.
 When connecting this port from a serial port the data can be read out.
 
 This binding reads the P1-port of the Dutch Smart Meters that comply to NTA8130, DSMR v2.1, DSMR v2.2, DSMR v3.0, DSMR v4.0, DSMR v4.04, and DSMR 5.0.
+This binding reads the P1-port of the Luxembourg’s electricity meter "Smarty" that comply to V1.0.
 Although DSMR v4.2 is not an official specification, the binding has support for this version.
 
-If you are not living in the Netherlands but do want to read a meter please have look at the [SmartMeter Binding](https://www.openhab.org/addons/bindings/smartmeter).
+If you are not living in the Netherlands/Luxembourg but do want to read a meter please have look at the [SmartMeter Binding](https://www.openhab.org/addons/bindings/smartmeter).
 Because the Dutch Meter standard is based on the IEC-62056-21 standard it might be desirable to build support for other country metering systems based on that standard in this binding.
 
 ## Serial Port Configuration
@@ -16,6 +17,8 @@ The P1-port is a serial port. To configure the serial port within openHAB see th
 
 ## Supported Things
 
+### dsmrBridge (The Netherlands)
+
 `dsmrBridge`: This is the device that communicated between the binding (serial) and its internal meters.
 You always have to have a 'Dutch Smart Meter'-bridge. The bridge contains the serial port configuration.
 Specific meters are bound via the bridge to the smart meter. A smart meter consists typically out of minimal 2 meters.
@@ -23,23 +26,39 @@ A generic meter and the electricity meter. Each meter is bound to the DSMR proto
 For each meter it is possible to set a refresh rate at which the status is updated.
 The physical meter might update with a high frequency per second, while it's desired to have only values per minute.
 
+### smartyBridge (Luxembourg)
+
+`smartyBridge`: This is the device
+
 ## Discovery
 
-Both bridges and meters can be discovered via the discovery process.
+The `dsmrBridge` and meters can be discovered via the discovery process.
+The `smartyBridge` can be discovered.
+But the user needs to set the decryption key.
+After the decryption key is set a new discovery can be started to discover the meter.
 If a bridge is manually configured it is possible to auto detect available meters.
 
 ### Configuration
 
-The configuration for the Bridge consists of the following parameters:
+The configuration for the `dsmrBridge` consists of the following parameters:
 
 | Parameter           | Description                                                                                                 |
 |---------------------|-------------------------------------------------------------------------------------------------------------|
 | serialPort          | The serial port where the P1-port is connected to (e.g. Linux: `/dev/ttyUSB1`, Windows: `COM2`) (mandatory) |
-| receivedTimeout     | The time out period in which messages are expected to arrive, default is 120 seconds.                       |
+| receivedTimeout     | The time out period in which messages are expected to arrive, default is 120 seconds                        |
 | baudrate            | Baudrate when no auto detect. valid values: 4800, 9600, 19200, 38400, 57600, 115200                         |
 | databits            | Data bits when no auto detect. valid values: 5, 6, 7, 8                                                     |
 | parity              | Parity when no auto detect. valid values: E(ven), N(one), O(dd)                                             |
 | stopbits            | Stop bits when no auto detect. valid values: 1, 1.5, 2                                                      |
+
+The configuration for the `smartyBridge` consists of the following parameters:
+
+| Parameter           | Description                                                                                                 |
+|---------------------|-------------------------------------------------------------------------------------------------------------|
+| serialPort          | The serial port where the P1-port is connected to (e.g. Linux: `/dev/ttyUSB1`, Windows: `COM2`) (mandatory) |
+| decryptionKey       | The meter specific decryption key (mandatory)                                                               |
+| receivedTimeout     | The time out period in which messages are expected to arrive, default is 120 seconds                        |
+
 
 **Note:** *The manual configuration is only needed if the DSMR-device requires non DSMR-standard Serial Port parameters (i.e. something different then `115200 8N1` or `9600 7E1`)*
 
@@ -90,6 +109,7 @@ Supported meters:
 | DSMR V5 Giga Joule meter (heating or cooling)   | `gj_v5_0`                    | *note 1*      | 5 minutes    |
 | DSMR V4.x m3 meter (gas or water)               | `m3_v4`                      | *note 1*      | 1 hour       |
 | DSMR V5 m3 meter (gas or water)                 | `m3_v5_0`                    | *note 1*      | 5 minutes    |
+| SMARTY_ELECTRICITY_V1_0                         | `electricity_smarty_v1_0`    | 0             | 10 seconds   |
 
 *note 1*. The channel of these meters is dependent on the physical installation and corresponds to the M-Bus channel.
 You can ask your supplier / installer for this information or you can retrieve it from the logfiles (see *Determine M-Bus channel*).
@@ -128,8 +148,8 @@ The following channels are supported:
 - O channel is supported only if the device has this functionality
 
 
-| Channel Type ID                                  | Item Type | Description                                                            | Ace4000 | DSMR V2.1 | DSMR V2.2 | DSMR V3.0 | DSMR V4.0 | DSMR V4.0.4 | DSMR V4.2 | DSMR V5 |
-|--------------------------------------------------|-----------|------------------------------------------------------------------------|---------|-----------|-----------|-----------|-----------|-------------|-----------|---------|
+| Channel Type ID                                  | Item Type | Description                                                            | Ace4000 | DSMR V2.1 | DSMR V2.2 | DSMR V3.0 | DSMR V4.0 | DSMR V4.0.4 | DSMR V4.2 | DSMR V5 | SMARTY V1.0 |
+|--------------------------------------------------|-----------|------------------------------------------------------------------------|---------|-----------|-----------|-----------|-----------|-------------|-----------|---------|-------------|
 |                                                  |           | **Channels for the generic device**                                    |         |           |           |           |           |             |           |         |
 | `p1_text_code`                                   | String    | Text code from the device                                              | -       | Y         | Y         | Y         | Y         | Y           | Y         | -       |
 | `p1_text_string`                                 | String    | Text string from the device                                            | -       | Y         | Y         | Y         | Y         | Y           | Y         | Y       |

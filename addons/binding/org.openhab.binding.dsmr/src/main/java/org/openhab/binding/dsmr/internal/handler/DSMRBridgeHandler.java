@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.dsmr.internal.handler;
 
+import static org.openhab.binding.dsmr.internal.DSMRBindingConstants.THING_TYPE_SMARTY_BRIDGE;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
@@ -32,6 +34,7 @@ import org.openhab.binding.dsmr.internal.device.DSMRDeviceRunnable;
 import org.openhab.binding.dsmr.internal.device.DSMREventListener;
 import org.openhab.binding.dsmr.internal.device.DSMRFixedConfigDevice;
 import org.openhab.binding.dsmr.internal.device.DSMRSerialAutoDevice;
+import org.openhab.binding.dsmr.internal.device.DSMRTelegramListener;
 import org.openhab.binding.dsmr.internal.device.connector.DSMRConnectorErrorEvent;
 import org.openhab.binding.dsmr.internal.device.connector.DSMRSerialSettings;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram;
@@ -98,6 +101,8 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
      */
     private volatile long telegramReceivedTimeNanos;
 
+    private final boolean smartyMeter;
+
     /**
      * Constructor
      *
@@ -107,6 +112,7 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
     public DSMRBridgeHandler(Bridge bridge, SerialPortManager serialPortManager) {
         super(bridge);
         this.serialPortManager = serialPortManager;
+        smartyMeter = THING_TYPE_SMARTY_BRIDGE.equals(bridge.getThingTypeUID());
     }
 
     /**
@@ -128,44 +134,49 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
      */
     @Override
     public void initialize() {
-        DSMRDeviceConfiguration deviceConfig = getConfigAs(DSMRDeviceConfiguration.class);
+        final DSMRDeviceConfiguration deviceConfig = getConfigAs(DSMRDeviceConfiguration.class);
+
+        if (smartyMeter && (deviceConfig.decryptionKey == null || deviceConfig.decryptionKey.length() != 32)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/error.configuration.invalidsmartykey");
+            return;
+        }
 
         logger.trace("Using configuration {}", deviceConfig);
         updateStatus(ThingStatus.UNKNOWN);
         receivedTimeoutNanos = TimeUnit.SECONDS.toNanos(deviceConfig.receivedTimeout);
-        try {
-            DSMRDevice dsmrDevice = createDevice(deviceConfig);
-            resetLastReceivedState();
-            this.dsmrDevice = dsmrDevice; // otherwise Eclipse will give a null pointer error on the next line :-(
-            dsmrDeviceRunnable = new DSMRDeviceRunnable(dsmrDevice, this);
-            dsmrDeviceThread = new Thread(dsmrDeviceRunnable);
-            dsmrDeviceThread.start();
-            watchdog = scheduler.scheduleWithFixedDelay(this::alive, receivedTimeoutNanos, receivedTimeoutNanos,
+        final DSMRDevice dsmrDevice = createDevice(deviceConfig);
+        resetLastReceivedState();
+        this.dsmrDevice = dsmrDevice; // otherwise Eclipse will give a null pointer error on the next line :-(
+        dsmrDeviceRunnable = new DSMRDeviceRunnable(dsmrDevice, this);
+        dsmrDeviceThread = new Thread(dsmrDeviceRunnable);
+        dsmrDeviceThread.start();
+        watchdog = scheduler.scheduleWithFixedDelay(this::alive, receivedTimeoutNanos, receivedTimeoutNanos,
                 TimeUnit.NANOSECONDS);
-        } catch (IllegalArgumentException e) {
-            logger.debug("Incomplete configuration: {}", deviceConfig);
-
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                "@text/error.configuration.incomplete");
-        }
     }
 
     /**
      * Creates the {@link DSMRDevice} that corresponds with the user specified configuration.
      *
      * @param deviceConfig device configuration
-     * @return Specific {@link DSMRDevice} instance or throws an {@link IllegalArgumentException} if no valid
-     *         configuration was set.
+     * @return Specific {@link DSMRDevice} instance
      */
     private DSMRDevice createDevice(DSMRDeviceConfiguration deviceConfig) {
-        DSMRDevice dsmrDevice;
+        final DSMRDevice dsmrDevice;
 
-        if (deviceConfig.isSerialFixedSettings()) {
+        if (smartyMeter) {
             dsmrDevice = new DSMRFixedConfigDevice(serialPortManager, deviceConfig.serialPort,
-                DSMRSerialSettings.getPortSettingsFromConfiguration(deviceConfig), this);
+                    DSMRSerialSettings.HIGH_SPEED_SETTINGS, this, new DSMRTelegramListener(deviceConfig.decryptionKey));
         } else {
-            dsmrDevice = new DSMRSerialAutoDevice(serialPortManager, deviceConfig.serialPort, this, scheduler,
-                deviceConfig.receivedTimeout);
+            final DSMRTelegramListener telegramListener = new DSMRTelegramListener();
+
+            if (deviceConfig.isSerialFixedSettings()) {
+                dsmrDevice = new DSMRFixedConfigDevice(serialPortManager, deviceConfig.serialPort,
+                        DSMRSerialSettings.getPortSettingsFromConfiguration(deviceConfig), this, telegramListener);
+            } else {
+                dsmrDevice = new DSMRSerialAutoDevice(serialPortManager, deviceConfig.serialPort, this,
+                        telegramListener, scheduler, deviceConfig.receivedTimeout);
+            }
         }
         return dsmrDevice;
     }
@@ -204,7 +215,7 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
 
         if (deltaLastReceived > receivedTimeoutNanos) {
             logger.debug("No data received for {} seconds, restarting port if possible.",
-                TimeUnit.NANOSECONDS.toSeconds(deltaLastReceived));
+                    TimeUnit.NANOSECONDS.toSeconds(deltaLastReceived));
             if (dsmrDeviceRunnable != null) {
                 dsmrDeviceRunnable.restart();
             }
@@ -230,7 +241,7 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
     public synchronized void handleTelegramReceived(P1Telegram telegram) {
         if (telegram.getCosemObjects().isEmpty()) {
             logger.debug("Parsing worked but something went wrong, so there were no CosemObjects:{}",
-                telegram.getTelegramState().stateDetails);
+                    telegram.getTelegramState().stateDetails);
             deviceOffline(ThingStatusDetail.COMMUNICATION_ERROR, telegram.getTelegramState().stateDetails);
         } else {
             resetLastReceivedState();
@@ -255,7 +266,7 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
         getThing().getThings().forEach(child -> {
             if (logger.isTraceEnabled()) {
                 logger.trace("Update child:{} with {} objects", child.getThingTypeUID().getId(),
-                    telegram.getCosemObjects().size());
+                        telegram.getCosemObjects().size());
             }
             DSMRMeterHandler dsmrMeterHandler = (DSMRMeterHandler) child.getHandler();
 

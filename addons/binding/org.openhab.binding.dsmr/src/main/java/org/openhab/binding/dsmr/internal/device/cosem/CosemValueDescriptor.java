@@ -30,8 +30,6 @@ abstract class CosemValueDescriptor<S extends State> {
 
     /**
      * Creates a new {@link CosemValueDescriptor} with no unit and a default channel.
-     *
-     * @param cosemValueClass the {@link CosemValue} class that the {@link CosemValueDescriptor} represent
      */
     public CosemValueDescriptor() {
         this("");

@@ -233,7 +233,7 @@ public class DSMRSerialConnector extends DSMRBaseConnector implements SerialPort
                     }
                 } catch (UnsupportedCommOperationException e) {
                     logger.debug(
-                            "Port does not support requested port settings (invalid dsmr:portsettings parameter?): {}",
+                            "Port does {} not support requested port settings (invalid dsmr:portsettings parameter?): {}",
                             serialPortName, portSettings);
                     dsmrConnectorListener.handleErrorEvent(DSMRConnectorErrorEvent.NOT_COMPATIBLE);
                 }
