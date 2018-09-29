@@ -9,8 +9,6 @@ Bundle-ClassPath: .,
  lib/org.apache.httpcomponents.httpcore_4.4.1.jar
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Version: 2.4.0.qualifier
-Export-Package: org.openhab.binding.ihc,
- org.openhab.binding.ihc.handler
 Import-Package: org.apache.commons.io,
  org.apache.commons.lang,
  org.eclipse.jdt.annotation;resolution:=optional,

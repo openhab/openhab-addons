@@ -19,6 +19,5 @@ Import-Package:
  org.mockito,
  org.mockito.invocation,
  org.mockito.stubbing,
- org.openhab.binding.ihc,
  org.osgi.service.device,
  org.slf4j

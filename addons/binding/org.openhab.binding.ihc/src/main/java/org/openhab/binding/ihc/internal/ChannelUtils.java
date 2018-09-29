@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.ihc.internal;
 
-import static org.openhab.binding.ihc.IhcBindingConstants.*;
+import static org.openhab.binding.ihc.internal.IhcBindingConstants.*;
 
 import java.util.HashSet;
 import java.util.List;
@@ -22,8 +22,8 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
-import org.openhab.binding.ihc.handler.IhcHandler;
 import org.openhab.binding.ihc.internal.config.ChannelParams;
+import org.openhab.binding.ihc.internal.handler.IhcHandler;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSRFDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

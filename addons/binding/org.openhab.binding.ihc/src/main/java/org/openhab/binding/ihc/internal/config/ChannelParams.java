@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.ihc.internal.config;
 
-import static org.openhab.binding.ihc.IhcBindingConstants.*;
+import static org.openhab.binding.ihc.internal.IhcBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.util.Map;

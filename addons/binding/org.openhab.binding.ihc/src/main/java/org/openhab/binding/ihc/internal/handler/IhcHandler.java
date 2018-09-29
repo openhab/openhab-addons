@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.ihc.handler;
+package org.openhab.binding.ihc.internal.handler;
 
-import static org.openhab.binding.ihc.IhcBindingConstants.*;
+import static org.openhab.binding.ihc.internal.IhcBindingConstants.*;
 
 import java.io.File;
 import java.math.BigDecimal;
