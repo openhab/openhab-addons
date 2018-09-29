@@ -28,7 +28,6 @@
             <parameter name="userCredential" type="text" required="true">
                 <label>User credential</label>
                 <description>User credential to communicate with the PlayStation 4, 64 hex characters.</description>
-                <default>18141fdcad0910faf7a58abfec7b6b38b1b6e307053192072fb3514208ca5216</default>
             </parameter>
 		</config-description>
 
