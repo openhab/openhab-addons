@@ -27,7 +27,7 @@ public class DecimalTypeWSBooleanValueConverter implements Converter<WSBooleanVa
     @Override
     public WSBooleanValue convertFromOHType(DecimalType from, WSBooleanValue value, ConverterAdditionalInfo convertData)
             throws NumberFormatException {
-        value.setValue(from.intValue() > 0 ? true : false);
+        value.setValue(from.intValue() > 0);
         return value;
     }
 }

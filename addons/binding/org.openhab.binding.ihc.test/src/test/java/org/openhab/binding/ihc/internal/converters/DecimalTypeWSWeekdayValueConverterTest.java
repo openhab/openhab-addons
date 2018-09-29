@@ -24,7 +24,7 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSWeekdayValue;
 public class DecimalTypeWSWeekdayValueConverterTest {
 
     @Test
-    public void Test() {
+    public void testConversion() {
         WSWeekdayValue val = new WSWeekdayValue(12345);
 
         val = convertFromOHType(val, new DecimalType(6), new ConverterAdditionalInfo(null, false));

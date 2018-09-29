@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.ihc.internal;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.time.Duration;
 
@@ -22,7 +22,7 @@ import org.junit.Test;
 public class ButtonPressDurationDetectorTest {
 
     @Test
-    public void TestShortPress() {
+    public void testShortPress() {
         Duration duration = Duration.ofMillis(450);
         long short_press_max_time = 1000;
         long long_press_max_time = 2000;
@@ -31,13 +31,13 @@ public class ButtonPressDurationDetectorTest {
         ButtonPressDurationDetector button = new ButtonPressDurationDetector(duration, short_press_max_time,
                 long_press_max_time, extra_long_press_max_time);
 
-        assertEquals(true, button.isShortPress());
-        assertEquals(false, button.isLongPress());
-        assertEquals(false, button.isExtraLongPress());
+        assertTrue(button.isShortPress());
+        assertFalse(button.isLongPress());
+        assertFalse(button.isExtraLongPress());
     }
 
     @Test
-    public void TestLongPress() {
+    public void testLongPress() {
         Duration duration = Duration.ofMillis(1003);
         long short_press_max_time = 1000;
         long long_press_max_time = 2000;
@@ -46,13 +46,13 @@ public class ButtonPressDurationDetectorTest {
         ButtonPressDurationDetector button = new ButtonPressDurationDetector(duration, short_press_max_time,
                 long_press_max_time, extra_long_press_max_time);
 
-        assertEquals(false, button.isShortPress());
-        assertEquals(true, button.isLongPress());
-        assertEquals(false, button.isExtraLongPress());
+        assertFalse(button.isShortPress());
+        assertTrue(button.isLongPress());
+        assertFalse(button.isExtraLongPress());
     }
 
     @Test
-    public void TestExtraLongPress() {
+    public void testExtraLongPress() {
         Duration duration = Duration.ofMillis(2423);
         long short_press_max_time = 1000;
         long long_press_max_time = 2000;
@@ -61,13 +61,13 @@ public class ButtonPressDurationDetectorTest {
         ButtonPressDurationDetector button = new ButtonPressDurationDetector(duration, short_press_max_time,
                 long_press_max_time, extra_long_press_max_time);
 
-        assertEquals(false, button.isShortPress());
-        assertEquals(false, button.isLongPress());
-        assertEquals(true, button.isExtraLongPress());
+        assertFalse(button.isShortPress());
+        assertFalse(button.isLongPress());
+        assertTrue(button.isExtraLongPress());
     }
 
     @Test
-    public void TestTooLongPress() {
+    public void testTooLongPress() {
         Duration duration = Duration.ofMillis(5001);
         long short_press_max_time = 1000;
         long long_press_max_time = 2000;
@@ -76,8 +76,8 @@ public class ButtonPressDurationDetectorTest {
         ButtonPressDurationDetector button = new ButtonPressDurationDetector(duration, short_press_max_time,
                 long_press_max_time, extra_long_press_max_time);
 
-        assertEquals(false, button.isShortPress());
-        assertEquals(false, button.isLongPress());
-        assertEquals(false, button.isExtraLongPress());
+        assertFalse(button.isShortPress());
+        assertFalse(button.isLongPress());
+        assertFalse(button.isExtraLongPress());
     }
 }

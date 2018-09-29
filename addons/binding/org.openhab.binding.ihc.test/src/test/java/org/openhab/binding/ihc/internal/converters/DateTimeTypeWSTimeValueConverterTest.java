@@ -24,7 +24,7 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSTimeValue;
 public class DateTimeTypeWSTimeValueConverterTest {
 
     @Test
-    public void Test() {
+    public void testConversion() {
         final DateTimeType dateTimeType = new DateTimeType("2000-12-30T13:59:30");
         WSTimeValue val = new WSTimeValue(12345);
 

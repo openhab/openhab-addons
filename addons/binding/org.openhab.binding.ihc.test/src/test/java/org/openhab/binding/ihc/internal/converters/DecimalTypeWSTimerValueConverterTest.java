@@ -24,7 +24,7 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSTimerValue;
 public class DecimalTypeWSTimerValueConverterTest {
 
     @Test
-    public void Test() {
+    public void testConversion() {
         WSTimerValue val = new WSTimerValue(12345);
 
         val = convertFromOHType(val, new DecimalType(123456), new ConverterAdditionalInfo(null, false));

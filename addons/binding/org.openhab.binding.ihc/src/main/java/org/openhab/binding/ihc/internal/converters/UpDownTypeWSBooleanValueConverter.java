@@ -21,19 +21,13 @@ public class UpDownTypeWSBooleanValueConverter implements Converter<WSBooleanVal
     @Override
     public UpDownType convertFromResourceValue(WSBooleanValue from, ConverterAdditionalInfo convertData)
             throws NumberFormatException {
-        if (from.isValue()) {
-            return convertData.getInverted() == false ? UpDownType.UP : UpDownType.DOWN;
-        } else {
-            return convertData.getInverted() == false ? UpDownType.DOWN : UpDownType.UP;
-        }
+        return from.isValue() ^ convertData.getInverted() ? UpDownType.UP : UpDownType.DOWN;
     }
 
     @Override
     public WSBooleanValue convertFromOHType(UpDownType from, WSBooleanValue value, ConverterAdditionalInfo convertData)
             throws NumberFormatException {
-        boolean valON = convertData.getInverted() == false ? true : false;
-        boolean valOFF = convertData.getInverted() == false ? false : true;
-        value.setValue(from == UpDownType.UP ? valON : valOFF);
+        value.setValue(from == UpDownType.UP ^ convertData.getInverted());
         return value;
     }
 }

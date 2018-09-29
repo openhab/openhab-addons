@@ -21,19 +21,13 @@ public class OpenClosedTypeWSBooleanValueConverter implements Converter<WSBoolea
     @Override
     public OpenClosedType convertFromResourceValue(WSBooleanValue from, ConverterAdditionalInfo convertData)
             throws NumberFormatException {
-        if (from.isValue()) {
-            return convertData.getInverted() == false ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
-        } else {
-            return convertData.getInverted() == false ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
-        }
+        return from.isValue() ^ convertData.getInverted() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
     }
 
     @Override
     public WSBooleanValue convertFromOHType(OpenClosedType from, WSBooleanValue value,
             ConverterAdditionalInfo convertData) throws NumberFormatException {
-        boolean valON = convertData.getInverted() == false ? true : false;
-        boolean valOFF = convertData.getInverted() == false ? false : true;
-        value.setValue(from == OpenClosedType.OPEN ? valON : valOFF);
+        value.setValue(from == OpenClosedType.OPEN ^ convertData.getInverted());
         return value;
     }
 }

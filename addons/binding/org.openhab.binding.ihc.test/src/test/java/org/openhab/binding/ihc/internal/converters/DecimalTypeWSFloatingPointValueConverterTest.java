@@ -24,7 +24,7 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
 public class DecimalTypeWSFloatingPointValueConverterTest {
 
     @Test
-    public void Test() {
+    public void testConversion() {
         WSFloatingPointValue val = new WSFloatingPointValue(12345, 0, -100, 100);
 
         val = convertFromOHType(val, new DecimalType(2.54), new ConverterAdditionalInfo(null, false));
@@ -36,13 +36,13 @@ public class DecimalTypeWSFloatingPointValueConverterTest {
     }
 
     @Test(expected = NumberFormatException.class)
-    public void TestMinExceed() {
+    public void testMinExceed() {
         WSFloatingPointValue val = new WSFloatingPointValue(12345, 0, -100, 100);
         val = convertFromOHType(val, new DecimalType(-101.5), new ConverterAdditionalInfo(null, false));
     }
 
     @Test(expected = NumberFormatException.class)
-    public void TestMaxExceed() {
+    public void testMaxExceed() {
         WSFloatingPointValue val = new WSFloatingPointValue(12345, 0, -100, 100);
         val = convertFromOHType(val, new DecimalType(101.5), new ConverterAdditionalInfo(null, false));
     }

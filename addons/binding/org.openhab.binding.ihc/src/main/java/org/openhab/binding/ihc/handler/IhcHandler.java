@@ -22,8 +22,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -91,7 +89,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
      * Reminder to slow down resource value notification ordering from
      * controller.
      */
-    private NotificationsRequestReminder reminder;
+    private ScheduledFuture<?> notificationsRequestReminder;
 
     /** Holds local IHC / ELKO project file */
     Document projectFile;
@@ -113,20 +111,6 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
 
     private ScheduledFuture<?> controlJob;
     private ScheduledFuture<?> pollingJobRf;
-
-    private final Runnable pollingRunnableRF = new Runnable() {
-        @Override
-        public void run() {
-            updateRfDeviceStates();
-        }
-    };
-
-    private final Runnable controlRunnable = new Runnable() {
-        @Override
-        public void run() {
-            reconnectCheck();
-        }
-    };
 
     public IhcHandler(Thing thing) {
         super(thing);
@@ -183,7 +167,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
 
         if (controlJob == null || controlJob.isCancelled()) {
             logger.debug("Start control task, interval={}sec", 1);
-            controlJob = scheduler.scheduleWithFixedDelay(controlRunnable, 0, 1, TimeUnit.SECONDS);
+            controlJob = scheduler.scheduleWithFixedDelay(this::reconnectCheck, 0, 1, TimeUnit.SECONDS);
         }
     }
 
@@ -373,19 +357,25 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
         WSResourceValue val = converter.convertFromOHType(OnOffType.ON, value, converterAdditionalInfo);
         logger.debug("Update resource value (inverted output={}): {}", params.isInverted(), val);
         if (updateResource(val)) {
-            // sleep a while
-            try {
-                logger.debug("Sleeping: {}ms", pulseWidth);
-                Thread.sleep(pulseWidth);
-            } catch (InterruptedException e) {
-                // do nothing
-            }
-            // set resource back to OFF
-            val = converter.convertFromOHType(OnOffType.OFF, value, converterAdditionalInfo);
-            logger.debug("Update resource value (inverted output={}): {}", params.isInverted(), val);
-            if (!updateResource(val)) {
-                logger.warn("Channel {} update to resource '{}' failed.", channelUID, val);
-            }
+            scheduler.submit(() -> {
+                // sleep a while
+                try {
+                    logger.debug("Sleeping: {}ms", pulseWidth);
+                    Thread.sleep(pulseWidth);
+                } catch (InterruptedException e) {
+                    // do nothing
+                }
+                // set resource back to OFF
+                WSResourceValue v = converter.convertFromOHType(OnOffType.OFF, value, converterAdditionalInfo);
+                logger.debug("Update resource value (inverted output={}): {}", params.isInverted(), v);
+                try {
+                    if (!updateResource(v)) {
+                        logger.warn("Channel {} update to resource '{}' failed.", channelUID, v);
+                    }
+                } catch (IhcExecption e) {
+                    logger.error("Can't update channel '{}' value, cause ", channelUID, e.getMessage());
+                }
+            });
         } else {
             logger.warn("Channel {} update failed.", channelUID);
         }
@@ -425,9 +415,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 try {
                     ChannelParams params = new ChannelParams(thing.getChannel(channelUID.getId()));
                     if (params.getResourceId() != null) {
-                        synchronized (linkedResourceIds) {
-                            linkedResourceIds.add(params.getResourceId());
-                        }
+                        linkedResourceIds.add(params.getResourceId());
                         updateNotificationsRequestReminder();
                     }
                 } catch (IllegalArgumentException e) {
@@ -452,9 +440,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 try {
                     ChannelParams params = new ChannelParams(thing.getChannel(channelUID.getId()));
                     if (params.getResourceId() != null) {
-                        synchronized (linkedResourceIds) {
-                            linkedResourceIds.removeIf(c -> c.equals(params.getResourceId()));
-                        }
+                        linkedResourceIds.removeIf(c -> c.equals(params.getResourceId()));
                         updateNotificationsRequestReminder();
                     }
                 } catch (IllegalArgumentException e) {
@@ -470,8 +456,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
     private void connect() throws IhcExecption {
         try {
             setConnectingState(true);
-            logger.debug("Connecting to IHC / ELKO LS controller [IP='{}' Username='{}' Password='{}'].",
-                    new Object[] { conf.ip, conf.username, "******" });
+            logger.debug("Connecting to IHC / ELKO LS controller [IP='{}', username='{}'].", conf.ip, conf.username);
             ihc = new IhcClient(conf.ip, conf.username, conf.password, conf.timeout);
             ihc.openConnection();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
@@ -556,7 +541,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
     private void startRFPolling() {
         if (pollingJobRf == null || pollingJobRf.isCancelled()) {
             logger.debug("Start RF device refresh task, interval={}sec", 60);
-            pollingJobRf = scheduler.scheduleWithFixedDelay(pollingRunnableRF, 10, 60, TimeUnit.SECONDS);
+            pollingJobRf = scheduler.scheduleWithFixedDelay(this::updateRfDeviceStates, 10, 60, TimeUnit.SECONDS);
         }
     }
 
@@ -803,39 +788,17 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
     }
 
     private synchronized void updateNotificationsRequestReminder() {
-        if (reminder != null) {
-            reminder.cancel();
-            reminder = null;
+        if (notificationsRequestReminder != null) {
+            notificationsRequestReminder.cancel(false);
         }
 
-        reminder = new NotificationsRequestReminder(NOTIFICATIONS_REORDER_WAIT_TIME);
-    }
-
-    /**
-     * Used to slow down resource value notification ordering process. All
-     * resource values need to be ordered by one request from the controller,
-     * therefore wait that all channels are linked.
-     */
-    private class NotificationsRequestReminder {
-        Timer timer;
-
-        public NotificationsRequestReminder(int milliseconds) {
-            timer = new Timer();
-            timer.schedule(new RemindTask(), milliseconds);
-        }
-
-        public void cancel() {
-            timer.cancel();
-        }
-
-        class RemindTask extends TimerTask {
+        notificationsRequestReminder = scheduler.schedule(new Runnable() {
 
             @Override
             public void run() {
-                logger.debug("Timer: Delayed resource value notifications request is now enabled");
+                logger.debug("Delayed resource value notifications request is now enabled");
                 setValueNotificationRequest(true);
-                timer.cancel();
             }
-        }
+        }, NOTIFICATIONS_REORDER_WAIT_TIME, TimeUnit.MILLISECONDS);
     }
 }

@@ -46,17 +46,17 @@ public enum ConverterFactory {
     private static final String ITEM_TYPE_ROLLERSHUTTER = "Rollershutter";
 
     private class Key {
-        Class<? extends WSResourceValue> a;
-        Class<? extends Type> b;
+        Class<? extends WSResourceValue> ihcType;
+        Class<? extends Type> openhabType;
 
-        Key(Class<? extends WSResourceValue> a, Class<? extends Type> b) {
-            this.a = a;
-            this.b = b;
+        Key(Class<? extends WSResourceValue> ihcType, Class<? extends Type> openhabType) {
+            this.ihcType = ihcType;
+            this.openhabType = openhabType;
         }
 
         @Override
         public int hashCode() {
-            return new String(a.getClass().toString() + b.getClass().toString()).hashCode();
+            return new String(ihcType.getClass().toString() + openhabType.getClass().toString()).hashCode();
         }
 
         @Override
@@ -69,7 +69,7 @@ public enum ConverterFactory {
             }
             Key key = (Key) o;
 
-            return key.a.equals(a) && key.b.equals(b);
+            return key.ihcType.equals(ihcType) && key.openhabType.equals(openhabType);
         }
     }
 

@@ -10,6 +10,7 @@ package org.openhab.binding.ihc.internal.ws;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
@@ -282,7 +283,6 @@ public class IhcClient {
      */
     public byte[] loadProjectFileFromControllerAsByteArray() throws IhcExecption {
         try {
-
             WSProjectInfo projectInfo = getProjectInfo();
             int numberOfSegments = getProjectNumberOfSegments();
             int segmentationSize = getProjectSegmentationSize();
@@ -290,23 +290,26 @@ public class IhcClient {
             logger.debug("Number of segments: {}", numberOfSegments);
             logger.debug("Segmentation size: {}", segmentationSize);
 
-            ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+            try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
+                for (int i = 0; i < numberOfSegments; i++) {
+                    logger.debug("Downloading segment {}", i);
 
-            for (int i = 0; i < numberOfSegments; i++) {
-                logger.debug("Downloading segment {}", i);
-
-                WSFile data = getProjectSegment(i, projectInfo.getProjectMajorRevision(),
-                        projectInfo.getProjectMinorRevision());
-                byteStream.write(data.getData());
+                    WSFile data = getProjectSegment(i, projectInfo.getProjectMajorRevision(),
+                            projectInfo.getProjectMinorRevision());
+                    byteStream.write(data.getData());
+                }
+                if (logger.isDebugEnabled()) {
+                    logger.debug("File size before base64 encoding: {} bytes", byteStream.size());
+                }
+                byte[] decodedBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(byteStream.toString());
+                logger.debug("File size after base64 encoding: {} bytes", decodedBytes.length);
+                try (GZIPInputStream gzis = new GZIPInputStream(new ByteArrayInputStream(decodedBytes))) {
+                    try (InputStreamReader in = new InputStreamReader(gzis, "ISO-8859-1")) {
+                        return IOUtils.toByteArray(in, "ISO-8859-1");
+                    }
+                }
             }
-
-            logger.debug("File size before base64 encoding: {} bytes", byteStream.size());
-            byte[] decodedBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(byteStream.toString());
-            logger.debug("File size after base64 encoding: {} bytes", decodedBytes.length);
-            GZIPInputStream gzis = new GZIPInputStream(new ByteArrayInputStream(decodedBytes));
-            InputStreamReader in = new InputStreamReader(gzis, "ISO-8859-1");
-            return IOUtils.toByteArray(in, "ISO-8859-1");
-        } catch (Exception e) {
+        } catch (IOException | IllegalArgumentException e) {
             throw new IhcExecption(e);
         }
     }
@@ -349,8 +352,7 @@ public class IhcClient {
      * @return List of received runtime value notifications.
      * @throws SocketTimeoutException
      */
-    private List<WSResourceValue> waitResourceValueNotifications(int timeoutInSeconds)
-            throws IhcExecption, SocketTimeoutException {
+    private List<WSResourceValue> waitResourceValueNotifications(int timeoutInSeconds) throws IhcExecption {
 
         List<WSResourceValue> list = resourceInteractionService.waitResourceValueNotifications(timeoutInSeconds);
 
@@ -413,7 +415,7 @@ public class IhcClient {
      * Thread listen resource value notifications from IHC / ELKO LS controller.
      */
     private class IhcResourceValueNotificationListener extends Thread {
-        private boolean interrupted = false;
+        private volatile boolean interrupted = false;
 
         public void setInterrupted(boolean interrupted) {
             this.interrupted = interrupted;
@@ -440,8 +442,6 @@ public class IhcClient {
                 for (WSResourceValue value : resourceValueList) {
                     sendResourceValueUpdateEvent(value);
                 }
-            } catch (SocketTimeoutException e) {
-                logger.trace("Notifications timeout - no new notifications");
             } catch (IhcExecption e) {
                 if (!interrupted) {
                     logger.warn("New notifications wait failed...", e);
@@ -468,7 +468,7 @@ public class IhcClient {
      *
      */
     private class IhcControllerStateListener extends Thread {
-        private boolean interrupted = false;
+        private volatile boolean interrupted = false;
 
         public void setInterrupted(boolean interrupted) {
             this.interrupted = interrupted;
@@ -527,7 +527,7 @@ public class IhcClient {
                 iterator.next().errorOccured(err);
             }
         } catch (Exception e) {
-            logger.error("Event listener invoking error", e);
+            logger.debug("Event listener invoking error", e);
         }
     }
 
@@ -539,7 +539,7 @@ public class IhcClient {
                 iterator.next().statusUpdateReceived(state);
             }
         } catch (Exception e) {
-            logger.error("Event listener invoking error", e);
+            logger.debug("Event listener invoking error", e);
         }
     }
 
@@ -552,7 +552,7 @@ public class IhcClient {
             }
 
         } catch (Exception e) {
-            logger.error("Event listener invoking error", e);
+            logger.debug("Event listener invoking error", e);
         }
     }
 }

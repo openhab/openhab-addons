@@ -21,11 +21,7 @@ public class UpDownTypeWSIntegerValueConverter implements Converter<WSIntegerVal
     @Override
     public UpDownType convertFromResourceValue(WSIntegerValue from, ConverterAdditionalInfo convertData)
             throws NumberFormatException {
-        if (from.getInteger() > 0) {
-            return convertData.getInverted() == false ? UpDownType.UP : UpDownType.DOWN;
-        } else {
-            return convertData.getInverted() == false ? UpDownType.DOWN : UpDownType.UP;
-        }
+        return from.getInteger() > 0 ^ convertData.getInverted() ? UpDownType.UP : UpDownType.DOWN;
     }
 
     @Override

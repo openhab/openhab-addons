@@ -24,7 +24,7 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
 public class OpenClosedTypeWSIntegerValueConverterTest {
 
     @Test
-    public void TestOpen() {
+    public void testOpen() {
         final boolean inverted = false;
         WSIntegerValue val = new WSIntegerValue(12345, 0, 0, 1);
 
@@ -37,7 +37,7 @@ public class OpenClosedTypeWSIntegerValueConverterTest {
     }
 
     @Test
-    public void TestClosed() {
+    public void testClosed() {
         final boolean inverted = false;
 
         WSIntegerValue val = new WSIntegerValue(12345, 0, 0, 1);
@@ -50,7 +50,7 @@ public class OpenClosedTypeWSIntegerValueConverterTest {
     }
 
     @Test
-    public void TestOpenInverted() {
+    public void testOpenInverted() {
         final boolean inverted = true;
 
         WSIntegerValue val = new WSIntegerValue(12345, 0, 0, 1);
@@ -63,7 +63,7 @@ public class OpenClosedTypeWSIntegerValueConverterTest {
     }
 
     @Test
-    public void TestClosedInverted() {
+    public void testClosedInverted() {
         final boolean inverted = true;
 
         WSIntegerValue val = new WSIntegerValue(12345, 0, 0, 1);

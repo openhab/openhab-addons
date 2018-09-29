@@ -24,7 +24,7 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
 public class OnOffTypeWSIntegerValueConverterTest {
 
     @Test
-    public void TestOn() {
+    public void testOn() {
         final boolean inverted = false;
         WSIntegerValue val = new WSIntegerValue(12345, 0, 0, 1);
 
@@ -37,7 +37,7 @@ public class OnOffTypeWSIntegerValueConverterTest {
     }
 
     @Test
-    public void TestOff() {
+    public void testOff() {
         final boolean inverted = false;
 
         WSIntegerValue val = new WSIntegerValue(12345, 0, 0, 1);
@@ -50,7 +50,7 @@ public class OnOffTypeWSIntegerValueConverterTest {
     }
 
     @Test
-    public void TestOnInverted() {
+    public void testOnInverted() {
         final boolean inverted = true;
 
         WSIntegerValue val = new WSIntegerValue(12345, 0, 0, 1);
@@ -63,7 +63,7 @@ public class OnOffTypeWSIntegerValueConverterTest {
     }
 
     @Test
-    public void TestOffInverted() {
+    public void testOffInverted() {
         final boolean inverted = true;
 
         WSIntegerValue val = new WSIntegerValue(12345, 0, 0, 1);

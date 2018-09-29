@@ -27,7 +27,7 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
 public class StringTypeWSEnumValueConverterTest {
 
     @Test
-    public void Test() {
+    public void test() {
         ArrayList<IhcEnumValue> enumValues = new ArrayList<>();
         enumValues.add(new IhcEnumValue(101, "testA"));
         enumValues.add(new IhcEnumValue(102, "testB"));

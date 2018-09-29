@@ -21,11 +21,7 @@ public class OpenClosedTypeWSIntegerValueConverter implements Converter<WSIntege
     @Override
     public OpenClosedType convertFromResourceValue(WSIntegerValue from, ConverterAdditionalInfo convertData)
             throws NumberFormatException {
-        if (from.getInteger() > 0) {
-            return convertData.getInverted() == false ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
-        } else {
-            return convertData.getInverted() == false ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
-        }
+        return from.getInteger() > 0 ^ convertData.getInverted() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
     }
 
     @Override

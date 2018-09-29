@@ -24,7 +24,7 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
 public class DecimalTypeWSEnumValueConverterTest {
 
     @Test
-    public void Test() {
+    public void testConversion() {
         WSEnumValue val = new WSEnumValue(12345, 100, 0, "testB");
 
         val = convertFromOHType(val, new DecimalType(2), new ConverterAdditionalInfo(null, false));

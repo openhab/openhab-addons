@@ -9,8 +9,8 @@
 package org.openhab.binding.ihc.internal.ws.services;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -71,47 +71,45 @@ public class IhcAirlinkManagementService extends IhcBaseService {
                 throw new IhcExecption("Illegal resource value notification response received");
             }
             return resourceValueList;
-        } catch (XPathExpressionException e) {
-            throw new IhcExecption(e);
-        } catch (UnsupportedEncodingException e) {
+        } catch (XPathExpressionException | IOException e) {
             throw new IhcExecption(e);
         }
     }
 
-    private NodeList parseList(String xml, String xpathExpression)
-            throws XPathExpressionException, UnsupportedEncodingException {
-        InputStream is = new ByteArrayInputStream(xml.getBytes("UTF8"));
-        XPath xpath = XPathFactory.newInstance().newXPath();
-        InputSource inputSource = new InputSource(is);
+    private NodeList parseList(String xml, String xpathExpression) throws XPathExpressionException, IOException {
 
-        xpath.setNamespaceContext(new NamespaceContext() {
-            @Override
-            public String getNamespaceURI(String prefix) {
-                if (prefix == null) {
-                    throw new IllegalArgumentException("Prefix argument can't be null");
-                } else if ("SOAP-ENV".equals(prefix)) {
-                    return "http://schemas.xmlsoap.org/soap/envelope/";
-                } else if ("ns1".equals(prefix)) {
-                    return "utcs";
-                } else if ("ns2".equals(prefix)) {
-                    return "utcs.values";
+        try (InputStream is = new ByteArrayInputStream(xml.getBytes("UTF8"))) {
+            XPath xpath = XPathFactory.newInstance().newXPath();
+            InputSource inputSource = new InputSource(is);
+
+            xpath.setNamespaceContext(new NamespaceContext() {
+                @Override
+                public String getNamespaceURI(String prefix) {
+                    if (prefix == null) {
+                        throw new IllegalArgumentException("Prefix argument can't be null");
+                    } else if ("SOAP-ENV".equals(prefix)) {
+                        return "http://schemas.xmlsoap.org/soap/envelope/";
+                    } else if ("ns1".equals(prefix)) {
+                        return "utcs";
+                    } else if ("ns2".equals(prefix)) {
+                        return "utcs.values";
+                    }
+                    return null;
                 }
-                return null;
-            }
 
-            @Override
-            public String getPrefix(String uri) {
-                return null;
-            }
+                @Override
+                public String getPrefix(String uri) {
+                    return null;
+                }
 
-            @Override
-            @SuppressWarnings("rawtypes")
-            public Iterator getPrefixes(String uri) {
-                throw new UnsupportedOperationException();
-            }
-        });
-
-        return (NodeList) xpath.evaluate(xpathExpression, inputSource, XPathConstants.NODESET);
+                @Override
+                @SuppressWarnings("rawtypes")
+                public Iterator getPrefixes(String uri) {
+                    throw new UnsupportedOperationException();
+                }
+            });
+            return (NodeList) xpath.evaluate(xpathExpression, inputSource, XPathConstants.NODESET);
+        }
     }
 
     private String getValue(Node n, String expr) throws XPathExpressionException {

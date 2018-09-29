@@ -24,7 +24,7 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
 public class DecimalTypeWSIntegerValueConverterTest {
 
     @Test
-    public void Test() {
+    public void testConversion() {
         WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
 
         val = convertFromOHType(val, new DecimalType(2), new ConverterAdditionalInfo(null, false));
@@ -36,13 +36,13 @@ public class DecimalTypeWSIntegerValueConverterTest {
     }
 
     @Test(expected = NumberFormatException.class)
-    public void TestMinExceed() {
+    public void testMinExceed() {
         WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
         val = convertFromOHType(val, new DecimalType(-101.5), new ConverterAdditionalInfo(null, false));
     }
 
     @Test(expected = NumberFormatException.class)
-    public void TestMaxExceed() {
+    public void testMaxExceed() {
         WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
         val = convertFromOHType(val, new DecimalType(101.5), new ConverterAdditionalInfo(null, false));
     }

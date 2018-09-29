@@ -24,7 +24,7 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
 public class DecimalTypeWSBooleanValueConverterTest {
 
     @Test
-    public void TestOn() {
+    public void testOn() {
         final boolean inverted = false;
         WSBooleanValue val = new WSBooleanValue(12345);
 
@@ -37,7 +37,7 @@ public class DecimalTypeWSBooleanValueConverterTest {
     }
 
     @Test
-    public void TestOff() {
+    public void testOff() {
         final boolean inverted = false;
 
         WSBooleanValue val = new WSBooleanValue(12345);

@@ -29,7 +29,6 @@ public class DateTimeTypeWSDateValueConverter implements Converter<WSDateValue, 
             throws NumberFormatException {
 
         Calendar cal = WSDateTimeToCalendar(from, null);
-        // return new DateTimeType(cal);
         return new DateTimeType(ZonedDateTime.ofInstant(cal.toInstant(), TimeZone.getDefault().toZoneId()));
     }
 
@@ -37,7 +36,6 @@ public class DateTimeTypeWSDateValueConverter implements Converter<WSDateValue, 
     public WSDateValue convertFromOHType(DateTimeType from, WSDateValue value, ConverterAdditionalInfo convertData)
             throws NumberFormatException {
 
-        // Calendar cal = from.getCalendar();
         Calendar cal = GregorianCalendar.from(from.getZonedDateTime());
         short year = (short) cal.get(Calendar.YEAR);
         byte month = (byte) (cal.get(Calendar.MONTH) + 1);

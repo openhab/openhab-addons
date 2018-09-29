@@ -21,19 +21,13 @@ public class OnOffTypeWSBooleanValueConverter implements Converter<WSBooleanValu
     @Override
     public OnOffType convertFromResourceValue(WSBooleanValue from, ConverterAdditionalInfo convertData)
             throws NumberFormatException {
-        if (from.isValue()) {
-            return convertData.getInverted() == false ? OnOffType.ON : OnOffType.OFF;
-        } else {
-            return convertData.getInverted() == false ? OnOffType.OFF : OnOffType.ON;
-        }
+        return from.isValue() ^ convertData.getInverted() ? OnOffType.ON : OnOffType.OFF;
     }
 
     @Override
     public WSBooleanValue convertFromOHType(OnOffType from, WSBooleanValue value, ConverterAdditionalInfo convertData)
             throws NumberFormatException {
-        boolean valON = convertData.getInverted() == false ? true : false;
-        boolean valOFF = convertData.getInverted() == false ? false : true;
-        value.setValue(from == OnOffType.ON ? valON : valOFF);
+        value.setValue(from == OnOffType.ON ^ convertData.getInverted());
         return value;
     }
 }

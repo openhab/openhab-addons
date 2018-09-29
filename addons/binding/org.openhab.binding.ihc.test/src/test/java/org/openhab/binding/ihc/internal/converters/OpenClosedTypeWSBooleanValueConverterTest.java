@@ -24,7 +24,7 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
 public class OpenClosedTypeWSBooleanValueConverterTest {
 
     @Test
-    public void TestOpen() {
+    public void testOpen() {
         final boolean inverted = false;
         WSBooleanValue val = new WSBooleanValue(12345);
 
@@ -37,7 +37,7 @@ public class OpenClosedTypeWSBooleanValueConverterTest {
     }
 
     @Test
-    public void TestClosed() {
+    public void testClosed() {
         final boolean inverted = false;
 
         WSBooleanValue val = new WSBooleanValue(12345);
@@ -50,7 +50,7 @@ public class OpenClosedTypeWSBooleanValueConverterTest {
     }
 
     @Test
-    public void TestOpenInverted() {
+    public void testOpenInverted() {
         final boolean inverted = true;
 
         WSBooleanValue val = new WSBooleanValue(12345);
@@ -63,7 +63,7 @@ public class OpenClosedTypeWSBooleanValueConverterTest {
     }
 
     @Test
-    public void TestClosedInverted() {
+    public void testClosedInverted() {
         final boolean inverted = true;
 
         WSBooleanValue val = new WSBooleanValue(12345);

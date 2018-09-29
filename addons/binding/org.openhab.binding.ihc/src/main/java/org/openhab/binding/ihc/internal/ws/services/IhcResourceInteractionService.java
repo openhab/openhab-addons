@@ -9,8 +9,8 @@
 package org.openhab.binding.ihc.internal.ws.services;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -92,47 +92,46 @@ public class IhcResourceInteractionService extends IhcBaseService {
             } else {
                 throw new IhcExecption("No resource value found");
             }
-        } catch (XPathExpressionException e) {
-            throw new IhcExecption(e);
-        } catch (UnsupportedEncodingException e) {
+        } catch (XPathExpressionException | IOException e) {
             throw new IhcExecption(e);
         }
     }
 
-    private NodeList parseList(String xml, String xpathExpression)
-            throws XPathExpressionException, UnsupportedEncodingException {
-        InputStream is = new ByteArrayInputStream(xml.getBytes("UTF8"));
-        XPath xpath = XPathFactory.newInstance().newXPath();
-        InputSource inputSource = new InputSource(is);
+    private NodeList parseList(String xml, String xpathExpression) throws XPathExpressionException, IOException {
 
-        xpath.setNamespaceContext(new NamespaceContext() {
-            @Override
-            public String getNamespaceURI(String prefix) {
-                if (prefix == null) {
-                    throw new IllegalArgumentException("Prefix argument can't be null");
-                } else if ("SOAP-ENV".equals(prefix)) {
-                    return "http://schemas.xmlsoap.org/soap/envelope/";
-                } else if ("ns1".equals(prefix)) {
-                    return "utcs";
-                } else if ("ns2".equals(prefix)) {
-                    return "utcs.values";
+        try (InputStream is = new ByteArrayInputStream(xml.getBytes("UTF8"))) {
+            XPath xpath = XPathFactory.newInstance().newXPath();
+            InputSource inputSource = new InputSource(is);
+
+            xpath.setNamespaceContext(new NamespaceContext() {
+                @Override
+                public String getNamespaceURI(String prefix) {
+                    if (prefix == null) {
+                        throw new IllegalArgumentException("Prefix argument can't be null");
+                    } else if ("SOAP-ENV".equals(prefix)) {
+                        return "http://schemas.xmlsoap.org/soap/envelope/";
+                    } else if ("ns1".equals(prefix)) {
+                        return "utcs";
+                    } else if ("ns2".equals(prefix)) {
+                        return "utcs.values";
+                    }
+                    return null;
                 }
-                return null;
-            }
 
-            @Override
-            public String getPrefix(String uri) {
-                return null;
-            }
+                @Override
+                public String getPrefix(String uri) {
+                    return null;
+                }
 
-            @Override
-            @SuppressWarnings("rawtypes")
-            public Iterator getPrefixes(String uri) {
-                throw new UnsupportedOperationException();
-            }
-        });
+                @Override
+                @SuppressWarnings("rawtypes")
+                public Iterator getPrefixes(String uri) {
+                    throw new UnsupportedOperationException();
+                }
+            });
 
-        return (NodeList) xpath.evaluate(xpathExpression, inputSource, XPathConstants.NODESET);
+            return (NodeList) xpath.evaluate(xpathExpression, inputSource, XPathConstants.NODESET);
+        }
     }
 
     private WSResourceValue parseResourceValue(Node n, int nameSpaceNumber) throws XPathExpressionException {
@@ -555,9 +554,9 @@ public class IhcResourceInteractionService extends IhcBaseService {
      *            How many seconds to wait notifications.
      * @return List of received runtime value notifications.
      * @throws SocketTimeoutException
+     * @throws IhcTimeoutExecption
      */
-    public List<WSResourceValue> waitResourceValueNotifications(int timeoutInSeconds)
-            throws IhcExecption, SocketTimeoutException {
+    public List<WSResourceValue> waitResourceValueNotifications(int timeoutInSeconds) throws IhcExecption {
 
         // @formatter:off
         final String soapQuery =
@@ -581,8 +580,8 @@ public class IhcResourceInteractionService extends IhcBaseService {
                 if (nodeList.getLength() == 1) {
                     String resourceId = getValue(nodeList.item(0), "ns1:resourceID");
                     if (resourceId == null || resourceId.isEmpty()) {
-                        // IHC controller indicates timeout
-                        throw new SocketTimeoutException();
+                        // IHC controller indicates timeout, return empty list
+                        return resourceValueList;
                     }
                 }
 
@@ -597,9 +596,9 @@ public class IhcResourceInteractionService extends IhcBaseService {
                 throw new IhcExecption("Illegal resource value notification response received");
             }
             return resourceValueList;
-        } catch (XPathExpressionException e) {
+        } catch (IOException e) {
             throw new IhcExecption(e);
-        } catch (UnsupportedEncodingException e) {
+        } catch (XPathExpressionException e) {
             throw new IhcExecption(e);
         }
     }

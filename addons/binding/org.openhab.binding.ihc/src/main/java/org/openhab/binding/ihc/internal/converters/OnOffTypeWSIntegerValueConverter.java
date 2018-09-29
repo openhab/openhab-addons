@@ -21,11 +21,7 @@ public class OnOffTypeWSIntegerValueConverter implements Converter<WSIntegerValu
     @Override
     public OnOffType convertFromResourceValue(WSIntegerValue from, ConverterAdditionalInfo convertData)
             throws NumberFormatException {
-        if (from.getInteger() > 0) {
-            return convertData.getInverted() == false ? OnOffType.ON : OnOffType.OFF;
-        } else {
-            return convertData.getInverted() == false ? OnOffType.OFF : OnOffType.ON;
-        }
+        return from.getInteger() > 0 ^ convertData.getInverted() ? OnOffType.ON : OnOffType.OFF;
     }
 
     @Override

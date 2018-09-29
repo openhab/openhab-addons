@@ -24,7 +24,7 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
 public class PercentTypeWSIntegerValueConverterTest {
 
     @Test
-    public void Test() {
+    public void test() {
         WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
 
         val = convertFromOHType(val, new PercentType(2), new ConverterAdditionalInfo(null, false));
