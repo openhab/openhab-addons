@@ -13,11 +13,11 @@
 			<channel id="application" typeId="application-channel" />
 		</channels>
 
-        <properties>
-            <property name="vendor">Sony</property>
-            <property name="modelId">PlayStation 4</property>
-        </properties>
-        <representation-property>deviceId</representation-property>
+		<properties>
+			<property name="vendor">Sony</property>
+			<property name="modelId">PlayStation 4</property>
+		</properties>
+		<representation-property>deviceId</representation-property>
 
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
@@ -25,6 +25,11 @@
 				<label>IP address</label>
 				<description>The local IP address or hostname of the PlayStation 4.</description>
 			</parameter>
+            <parameter name="userCredential" type="text" required="true">
+                <label>User credential</label>
+                <description>User credential to communicate with the PlayStation 4, 64 hex characters.</description>
+                <default>18141fdcad0910faf7a58abfec7b6b38b1b6e307053192072fb3514208ca5216</default>
+            </parameter>
 		</config-description>
 
 	</thing-type>
@@ -33,13 +38,12 @@
 		<item-type>Switch</item-type>
 		<label>PS4 Power</label>
 		<description>Power channel for SonyPS4 Binding.</description>
-        <state readOnly="true" />
 	</channel-type>
 	<channel-type id="application-channel">
 		<item-type>String</item-type>
 		<label>Application</label>
 		<description>Application channel for SonyPS4 Binding.</description>
-        <state pattern="%s" readOnly="true" />
+		<state pattern="%s" readOnly="true" />
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -25,6 +25,12 @@ public class SonyPS4Configuration {
 
     /**
      * Constant field used in {@link SonyPS4Discovery} to set the configuration property during discovery.
+     * Value of this field needs to match {@link #userCredential}.
+     */
+    public static final String USER_CREDENTIAL = "userCredential";
+
+    /**
+     * Constant field used in {@link SonyPS4Discovery} to set the configuration property during discovery.
      * Value of this field needs to match {@link #ipPort}.
      */
     public static final String IP_PORT = "ipPort";
@@ -33,6 +39,11 @@ public class SonyPS4Configuration {
      * IP-address of PS4.
      */
     private String ipAddress;
+
+    /**
+     * User-credential for the PS4.
+     */
+    private String userCredential;
 
     /**
      * IP-port of PS4.
@@ -50,6 +61,14 @@ public class SonyPS4Configuration {
 
     public void setIpAddress(String ipAddress) {
         this.ipAddress = ipAddress;
+    }
+
+    public String getUserCredential() {
+        return userCredential;
+    }
+
+    public void setUserCredential(String userCredential) {
+        this.userCredential = userCredential;
     }
 
     public String getIpPort() {
@@ -70,6 +89,6 @@ public class SonyPS4Configuration {
 
     @Override
     public String toString() {
-        return "IP" + ipAddress + ", Port" + ipPort + ", HostId" + hostId + ".";
+        return "IP" + ipAddress + ", User-credential" + userCredential + ", Port" + ipPort + ", HostId" + hostId + ".";
     }
 }

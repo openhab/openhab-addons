@@ -11,11 +11,11 @@ package org.openhab.binding.sonyps4.internal;
 import static org.openhab.binding.sonyps4.internal.SonyPS4BindingConstants.*;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -42,6 +42,8 @@ import org.slf4j.LoggerFactory;
 public class SonyPS4Handler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SonyPS4Handler.class);
+    private final SonyPS4PacketHandler ps4PacketHandler = new SonyPS4PacketHandler();
+    private static final String DDP_VERSION = "00020020";
     private static final int BROADCAST_PORT = 987;
     private static final int SOCKET_TIMEOUT_SECONDS = 4;
 
@@ -65,13 +67,9 @@ public class SonyPS4Handler extends BaseThingHandler {
             refreshFromState(channelUID);
         } else {
             if (CHANNEL_POWER.equals(channelUID.getId())) {
-
-                // TODO: handle command
-
-                // Note: if communication with thing fails for some reason,
-                // indicate that by setting the status with detail information:
-                // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                // "Could not control device at IP address x.x.x.x");
+                if (command instanceof OnOffType) {
+                    wakeUpPS4();
+                }
             }
             if (CHANNEL_APPLICATION.equals(channelUID.getId())) {
             }
@@ -162,7 +160,7 @@ public class SonyPS4Handler extends BaseThingHandler {
             InetAddress inetAddress = InetAddress.getByName(config.getIpAddress());
 
             // send discover
-            byte[] discover = "SRCH * HTTP/1.1\ndevice-discovery-protocol-version:00020020\n".getBytes();
+            byte[] discover = ps4PacketHandler.makeSearchPacket();
             DatagramPacket packet = new DatagramPacket(discover, discover.length, inetAddress, BROADCAST_PORT);
             socket.send(packet);
 
@@ -181,20 +179,41 @@ public class SonyPS4Handler extends BaseThingHandler {
         }
     }
 
+    private void wakeUpPS4() {
+        try (DatagramSocket socket = new DatagramSocket()) {
+            socket.setBroadcast(false);
+            socket.setSoTimeout(11 * 1000);
+
+            InetAddress inetAddress = InetAddress.getByName(config.getIpAddress());
+
+            byte[] wakeup = ps4PacketHandler.makeWakeupPacket(config.getUserCredential());
+            DatagramPacket packet = new DatagramPacket(wakeup, wakeup.length, inetAddress, BROADCAST_PORT);
+            socket.send(packet);
+
+            // wait for responses
+            byte[] rxbuf = new byte[256];
+            packet = new DatagramPacket(rxbuf, rxbuf.length);
+            socket.receive(packet);
+
+            logger.debug("PS4 wakeup received: {}", packet);
+        } catch (SocketTimeoutException e) {
+            updateStatus(ThingStatus.OFFLINE);
+            logger.debug("PS4 communication timeout. Diagnostic: {}", e.getMessage());
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE);
+            logger.debug("No PS4 device found. Diagnostic: {}", e.getMessage());
+        }
+    }
+
     private void parsePacket(DatagramPacket packet) {
         byte[] data = packet.getData();
-        String message = "";
-        try {
-            message = new String(data, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            logger.debug("UTF-8 decoding not supported? {}", e);
-        }
+        String message = new String(data, StandardCharsets.UTF_8);
         String applicationTitleId = "";
 
         String[] ss = message.trim().split("\n");
         for (String row : ss) {
             int index = row.indexOf(':');
-            if (index == -1 && !row.isEmpty()) {
+            if (index == -1) {
                 OnOffType power = null;
                 if (row.contains("200")) {
                     power = OnOffType.ON;
@@ -236,6 +255,7 @@ public class SonyPS4Handler extends BaseThingHandler {
                     break;
             }
         }
+        ps4PacketHandler.makeHelloPacket();
     }
 
 }

@@ -12,11 +12,11 @@ import static org.openhab.binding.sonyps4.internal.SonyPS4BindingConstants.*;
 import static org.openhab.binding.sonyps4.internal.SonyPS4Configuration.*;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -105,12 +105,8 @@ public class SonyPS4Discovery extends AbstractDiscoveryService {
 
     private boolean parsePacket(DatagramPacket packet) {
         byte[] data = packet.getData();
-        String message = "";
-        try {
-            message = new String(data, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            logger.debug("UTF-8 decoding not supported? {}", e);
-        }
+        String message = new String(data, StandardCharsets.UTF_8);
+
         String ipAddress = packet.getAddress().toString().split("/")[1];
         String hostId = "";
         String hostType = "";
@@ -153,7 +149,7 @@ public class SonyPS4Discovery extends AbstractDiscoveryService {
         Map<String, Object> properties = new HashMap<>();
         properties.put(IP_ADDRESS, ipAddress);
         properties.put(IP_PORT, hostPort);
-        properties.put(Thing.PROPERTY_MODEL_ID, hostType);
+        properties.put(Thing.PROPERTY_MODEL_ID, hostType.equals("PS4") ? "PlayStation 4" : hostType);
         properties.put(Thing.PROPERTY_HARDWARE_VERSION, hostIdToHWVersion(hostId));
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, systemVersion);
         properties.put(Thing.PROPERTY_MAC_ADDRESS, hostIdToMacAddress(hostId));
@@ -178,29 +174,6 @@ public class SonyPS4Discovery extends AbstractDiscoveryService {
         }
         return sb.toString();
     }
-
-    /*
-     * CUH-1004A, Kenneth
-     * Ethernet: 70:9e:29:00:35:b2
-     * Wi-Fi: b0:05:94:02:33:bb
-     *
-     * CUH-2016B, Oscar
-     * Ethernet: bc:60:a7:7b:17:5d
-     * Wi-Fi: 5c:96:56:07:37:1f
-     *
-     * CUH-7016B, Fredrik
-     * Ethernet: bc:60:a7:8f:7e:f9
-     * Wi-Fi: 40:49:0f:da:c9:8d
-     *
-     * CUH-20XX, Claes
-     * Ethernet: c8:63:f1:74:6c:0f
-     * Wi-Fi: 5c:ea:1d:eb:3a:4b
-     *
-     * CUH-20XX, Marcus
-     * Ethernet: f8:46:1c:88:f0:4e
-     * Wi-Fi: f8:da:0c:c8:88:75
-     *
-     */
 
     private static String hostIdToHWVersion(String hostId) {
         String hwVersion = "CUH-XXXX";
