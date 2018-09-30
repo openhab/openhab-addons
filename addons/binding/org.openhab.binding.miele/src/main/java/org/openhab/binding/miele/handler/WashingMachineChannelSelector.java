@@ -110,10 +110,10 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
     SPINNING_SPEED("spinningSpeed", "spinningspeed", StringType.class, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
-            if (s.equals("0")) {
+            if ("0".equals(s)) {
                 return getState("Without spinning");
             }
-            if (s.equals("256")) {
+            if ("256".equals(s)) {
                 return getState("Rinsing");
             }
             return getState(Integer.toString((Integer.valueOf(s) * 10)));
@@ -123,11 +123,11 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
         @Override
 
         public State getState(String s, DeviceMetaData dmd) {
-            if (s.equals("true")) {
+            if ("true".equals(s)) {
                 return getState("OPEN");
             }
 
-            if (s.equals("false")) {
+            if ("false".equals(s)) {
                 return getState("CLOSED");
             }
 
