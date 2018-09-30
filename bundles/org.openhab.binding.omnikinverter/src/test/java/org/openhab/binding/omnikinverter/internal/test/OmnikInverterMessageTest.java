@@ -30,18 +30,9 @@ public class OmnikInverterMessageTest {
     OmnikInverterMessage message;
 
     @Before
-    public void setUp() {
-        byte[] b = new byte[1024];
-
-        File resourcesDirectory = new File("src/test/resources/omnik.output");
-        try (FileInputStream fis = new FileInputStream(resourcesDirectory);) {
-            fis.read(b);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            logger.debug(e.getMessage());
-        }
-
-        message = new OmnikInverterMessage(b);
+    public void setUp() throws IOException {
+        File file = new File("src/test/resources/omnik.output");
+        message = new OmnikInverterMessage(Files.readAllBytes(file.toPath()));
     }
 
     @Test

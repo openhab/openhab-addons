@@ -18,9 +18,13 @@ import java.net.NoRouteToHostException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
+import javax.measure.quantity.Energy;
+import javax.measure.quantity.Power;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -97,34 +101,9 @@ public class OmnikInverterHandler extends BaseThingHandler {
             }
         } catch (UnknownHostException | NoRouteToHostException | ConnectException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        } catch (UnknownHostException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unknown host provided");
-        } catch (java.net.NoRouteToHostException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No route to host");
-
-        } catch (ConnectException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Host does not allow socket connection");
         } catch (IOException e) {
-            logger.debug(e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unknown communication exception");
+            logger.debug("Unknown exception when pulling data from the inverter: {}", e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Unknown error: " + e.getMessage());
         }
-    }
-
-    @Override
-    public void initialize() {
-        OmnikInverterConfiguration config = getConfigAs(OmnikInverterConfiguration.class);
-
-        inverter = new OmnikInverter(config.omnikHostname, config.omnikPort, config.omnikSerial);
-
-        // TODO: Initialize the thing. If done set status to ONLINE to indicate proper working.
-        // Long running initialization should be done asynchronously in background.
-        scheduler.scheduleWithFixedDelay(this::updateData, 0, 10, TimeUnit.SECONDS);
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work
-        // as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
     }
 }
