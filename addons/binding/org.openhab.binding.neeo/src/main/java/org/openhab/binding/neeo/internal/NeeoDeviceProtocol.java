@@ -13,9 +13,6 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.openhab.binding.neeo.NeeoConstants;
-import org.openhab.binding.neeo.NeeoUtil;
-import org.openhab.binding.neeo.UidUtils;
 import org.openhab.binding.neeo.internal.models.NeeoDevice;
 import org.openhab.binding.neeo.internal.models.NeeoDevices;
 import org.openhab.binding.neeo.internal.models.NeeoMacro;

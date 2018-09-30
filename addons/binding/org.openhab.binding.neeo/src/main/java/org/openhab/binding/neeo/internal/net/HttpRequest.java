@@ -22,7 +22,7 @@ import javax.ws.rs.core.Response;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpStatus;
 import org.glassfish.jersey.filter.LoggingFilter;
-import org.openhab.binding.neeo.NeeoUtil;
+import org.openhab.binding.neeo.internal.NeeoUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

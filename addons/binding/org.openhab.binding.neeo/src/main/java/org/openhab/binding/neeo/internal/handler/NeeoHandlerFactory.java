@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.neeo.handler;
+package org.openhab.binding.neeo.internal.handler;
 
 import java.util.Hashtable;
 import java.util.Objects;
@@ -25,7 +25,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.neeo.NeeoConstants;
+import org.openhab.binding.neeo.internal.NeeoConstants;
 import org.openhab.binding.neeo.internal.discovery.NeeoDeviceDiscoveryService;
 import org.openhab.binding.neeo.internal.discovery.NeeoRoomDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
