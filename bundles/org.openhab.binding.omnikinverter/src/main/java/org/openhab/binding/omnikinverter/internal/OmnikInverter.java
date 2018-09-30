@@ -49,6 +49,7 @@ public class OmnikInverter {
         byte[] returnMessage = new byte[1024];
 
         try (Socket socket = new Socket(host, port)) {
+            socket.setSoTimeout(5000);
             socket.getOutputStream().write(magicPacket);
             socket.getInputStream().read(returnMessage);
 
