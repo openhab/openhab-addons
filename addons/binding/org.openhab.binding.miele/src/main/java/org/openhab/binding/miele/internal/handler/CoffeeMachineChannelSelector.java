@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.miele.handler;
+package org.openhab.binding.miele.internal.handler;
 
 import java.lang.reflect.Method;
 import java.util.Map.Entry;
@@ -17,7 +17,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.miele.handler.MieleBridgeHandler.DeviceMetaData;
+import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
