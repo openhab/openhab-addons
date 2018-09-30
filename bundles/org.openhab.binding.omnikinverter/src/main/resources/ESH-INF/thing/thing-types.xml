@@ -1,0 +1,45 @@
+<thing:thing-descriptions bindingId="omnikinverter"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="omnik">
+		<label>OmnikInverter Binding Thing</label>
+		<description>Thing for OmnikInverter Binding</description>
+
+		<channels>
+			<channel id="power" typeId="power" />
+			<channel id="energyToday" typeId="energyToday" />
+		</channels>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<label>Hostname</label>
+				<description>The hostname or IP of the Omnik Inverter</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="port" type="integer" required="true">
+				<label>Port</label>
+				<description>The TCP port of the Omnik inverter, usually 8899</description>
+				<default>8899</default>
+			</parameter>
+			<parameter name="serial" type="integer" required="true">
+				<label>Serial</label>
+				<description>The serial of the Omnik inverter's Wifi module. This the number part only.</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="power">
+		<item-type>Number</item-type>
+		<label>Instantaneous power</label>
+		<description>The instantaneous power generation</description>
+	</channel-type>
+	<channel-type id="energyToday">
+        <item-type>Number</item-type>
+        <label>Total generated energy today</label>
+        <description>the amount of energy generated today</description>
+    </channel-type>
+
+</thing:thing-descriptions>
