@@ -93,8 +93,7 @@ public enum HobChannelSelector implements ApplianceChannelSelector {
     private final Class<? extends Type> typeClass;
     private final boolean isProperty;
 
-    private HobChannelSelector(String propertyID, String channelID, Class<? extends Type> typeClass,
-            boolean isProperty) {
+    HobChannelSelector(String propertyID, String channelID, Class<? extends Type> typeClass, boolean isProperty) {
         this.mieleID = propertyID;
         this.channelID = channelID;
         this.typeClass = typeClass;

@@ -13,6 +13,8 @@ import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -34,7 +36,6 @@ import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.HomeDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -53,18 +54,19 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
 
     private final Logger logger = LoggerFactory.getLogger(MieleApplianceHandler.class);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.newHashSet(THING_TYPE_DISHWASHER,
-            THING_TYPE_OVEN, THING_TYPE_FRIDGE, THING_TYPE_DRYER, THING_TYPE_HOB, THING_TYPE_FRIDGEFREEZER,
-            THING_TYPE_HOOD, THING_TYPE_WASHINGMACHINE, THING_TYPE_COFFEEMACHINE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream
+            .of(THING_TYPE_DISHWASHER, THING_TYPE_OVEN, THING_TYPE_FRIDGE, THING_TYPE_DRYER, THING_TYPE_HOB,
+                    THING_TYPE_FRIDGEFREEZER, THING_TYPE_HOOD, THING_TYPE_WASHINGMACHINE, THING_TYPE_COFFEEMACHINE)
+            .collect(Collectors.toSet());
 
     protected Gson gson = new Gson();
 
-    protected String UID;
+    protected String uid;
     protected MieleBridgeHandler bridgeHandler;
     private Class<E> selectorType;
     protected String modelID;
 
-    protected Map<String, String> metaDataCache = new HashMap<String, String>();
+    protected Map<String, String> metaDataCache = new HashMap<>();
 
     public MieleApplianceHandler(Thing thing, Class<E> selectorType, String modelID) {
         super(thing);
@@ -74,7 +76,6 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
 
     public ApplianceChannelSelector getValueSelectorFromChannelID(String valueSelectorText)
             throws IllegalArgumentException {
-
         for (ApplianceChannelSelector c : selectorType.getEnumConstants()) {
             if (c.getChannelID() != null && c.getChannelID().equals(valueSelectorText)) {
                 return c;
@@ -86,7 +87,6 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
 
     public ApplianceChannelSelector getValueSelectorFromMieleID(String valueSelectorText)
             throws IllegalArgumentException {
-
         for (ApplianceChannelSelector c : selectorType.getEnumConstants()) {
             if (c.getMieleID() != null && c.getMieleID().equals(valueSelectorText)) {
                 return c;
@@ -99,9 +99,9 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
     @Override
     public void initialize() {
         logger.debug("Initializing Miele appliance handler.");
-        final String UID = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
-        if (UID != null) {
-            this.UID = UID;
+        final String uid = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
+        if (uid != null) {
+            this.uid = uid;
             if (getMieleBridgeHandler() != null) {
                 ThingStatusInfo statusInfo = getBridge().getStatusInfo();
                 updateStatus(statusInfo.getStatus(), statusInfo.getStatusDetail(), statusInfo.getDescription());
@@ -119,12 +119,12 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
     @Override
     public void dispose() {
         logger.debug("Handler disposes. Unregistering listener.");
-        if (UID != null) {
+        if (uid != null) {
             MieleBridgeHandler bridgeHandler = getMieleBridgeHandler();
             if (bridgeHandler != null) {
                 getMieleBridgeHandler().unregisterApplianceStatusListener(this);
             }
-            UID = null;
+            uid = null;
         }
     }
 
@@ -139,13 +139,11 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
 
     @Override
     public void onApplianceStateChanged(String UID, DeviceClassObject dco) {
-
         String myUID = "hdm:ZigBee:" + (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
         String modelID = StringUtils.right(dco.DeviceClass,
                 dco.DeviceClass.length() - new String("com.miele.xgw3000.gateway.hdm.deviceclasses.Miele").length());
 
         if (myUID.equals(UID)) {
-
             if (modelID.equals(this.modelID)) {
                 for (JsonElement prop : dco.Properties.getAsJsonArray()) {
                     try {
@@ -236,8 +234,8 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
 
     @Override
     public void onApplianceRemoved(HomeDevice appliance) {
-        if (UID != null) {
-            if (UID.equals(appliance.UID)) {
+        if (uid != null) {
+            if (uid.equals(appliance.UID)) {
                 updateStatus(ThingStatus.OFFLINE);
             }
         }
@@ -245,8 +243,8 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
 
     @Override
     public void onApplianceAdded(HomeDevice appliance) {
-        if (UID != null) {
-            if (UID.equals(appliance.UID)) {
+        if (uid != null) {
+            if (uid.equals(appliance.UID)) {
                 updateStatus(ThingStatus.ONLINE);
             }
         }

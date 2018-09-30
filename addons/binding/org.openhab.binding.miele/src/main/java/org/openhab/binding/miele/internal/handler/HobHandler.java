@@ -11,8 +11,6 @@ package org.openhab.binding.miele.internal.handler;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link HobHandler} is responsible for handling commands,
@@ -29,7 +27,6 @@ public class HobHandler extends MieleApplianceHandler<HobChannelSelector> {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         super.handleCommand(channelUID, command);
     }
 

@@ -23,23 +23,23 @@ import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaD
 public interface ApplianceChannelSelector {
 
     @Override
-    public String toString();
+    String toString();
 
     /**
      * Returns the ESH ChannelID for the given datapoint
      */
-    public String getChannelID();
+    String getChannelID();
 
     /**
      * Returns the Miele defined ID for the given datapoint
      */
-    public String getMieleID();
+    String getMieleID();
 
     /**
      * Returns true if the given datapoint is to be considered as a Property
      * instead of a regular modifiable datapoint
      */
-    public boolean isProperty();
+    boolean isProperty();
 
     /**
      *
@@ -50,10 +50,10 @@ public interface ApplianceChannelSelector {
      * @param s - the value to be used to instantiate the State
      * @param dmd - the device meta data
      */
-    public State getState(String s, DeviceMetaData dmd);
+    State getState(String s, DeviceMetaData dmd);
 
     /**
      * Returns "compatible" Type for this datapoint
      */
-    public Class<? extends Type> getTypeClass();
+    Class<? extends Type> getTypeClass();
 }

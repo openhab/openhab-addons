@@ -36,7 +36,6 @@ public class FridgeFreezerHandler extends MieleApplianceHandler<FridgeFreezerCha
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         super.handleCommand(channelUID, command);
 
         String channelID = channelUID.getId();
