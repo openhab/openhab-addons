@@ -6,14 +6,13 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.neeo.handler;
+package org.openhab.binding.neeo.internal.handler;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -23,63 +22,59 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.neeo.NeeoConstants;
-import org.openhab.binding.neeo.NeeoUtil;
-import org.openhab.binding.neeo.UidUtils;
 import org.openhab.binding.neeo.internal.NeeoBrainApi;
-import org.openhab.binding.neeo.internal.NeeoDeviceConfig;
-import org.openhab.binding.neeo.internal.NeeoDeviceProtocol;
+import org.openhab.binding.neeo.internal.NeeoConstants;
 import org.openhab.binding.neeo.internal.NeeoHandlerCallback;
 import org.openhab.binding.neeo.internal.NeeoRoomConfig;
-import org.openhab.binding.neeo.internal.models.NeeoDevice;
-import org.openhab.binding.neeo.internal.models.NeeoDeviceDetails;
-import org.openhab.binding.neeo.internal.models.NeeoDeviceDetailsTiming;
+import org.openhab.binding.neeo.internal.NeeoRoomProtocol;
+import org.openhab.binding.neeo.internal.NeeoUtil;
+import org.openhab.binding.neeo.internal.UidUtils;
+import org.openhab.binding.neeo.internal.models.NeeoAction;
 import org.openhab.binding.neeo.internal.models.NeeoRoom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An extension of {@link BaseThingHandler} that is responsible for handling commands for a device
+ * A subclass of {@link BaseBridgeHandler} that is responsible for handling commands for a room
  *
  * @author Tim Roberts - Initial contribution
  */
 @NonNullByDefault
-public class NeeoDeviceHandler extends BaseThingHandler {
+public class NeeoRoomHandler extends BaseBridgeHandler {
 
     /** The logger */
-    private final Logger logger = LoggerFactory.getLogger(NeeoDeviceHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(NeeoRoomHandler.class);
 
     /**
      * The initialization task (null until set by {@link #initializeTask()} and set back to null in {@link #dispose()}
      */
-    private final AtomicReference<@Nullable Future<?>> initializationTask = new AtomicReference<>(null);
+    private final AtomicReference<@Nullable Future<?>> initializationTask = new AtomicReference<>();
 
     /**
      * The refresh task (null until set by {@link #initializeTask()} and set back to null in {@link #dispose()}
      */
-    private final AtomicReference<@Nullable ScheduledFuture<?>> refreshTask = new AtomicReference<>(null);
+    private final AtomicReference<@Nullable Future<?>> refreshTask = new AtomicReference<>();
 
-    /** The {@link NeeoDeviceProtocol} (null until set by {@link #initializationTask}) */
-    private final AtomicReference<@Nullable NeeoDeviceProtocol> deviceProtocol = new AtomicReference<>();
+    /** The {@link NeeoRoomProtocol} (null until set by {@link #initializationTask}) */
+    private final AtomicReference<@Nullable NeeoRoomProtocol> roomProtocol = new AtomicReference<>();
 
     /**
-     * Instantiates a new neeo device handler.
+     * Instantiates a new neeo room handler.
      *
-     * @param thing the non-null thing
+     * @param bridge the non-null bridge
      */
-    NeeoDeviceHandler(Thing thing) {
-        super(thing);
-        Objects.requireNonNull(thing, "thing cannot be null");
+    NeeoRoomHandler(Bridge bridge) {
+        super(bridge);
+        Objects.requireNonNull(bridge, "bridge cannot be null");
     }
 
     @Override
@@ -87,7 +82,7 @@ public class NeeoDeviceHandler extends BaseThingHandler {
         Objects.requireNonNull(channelUID, "channelUID cannot be null");
         Objects.requireNonNull(command, "command cannot be null");
 
-        final NeeoDeviceProtocol protocol = deviceProtocol.get();
+        final NeeoRoomProtocol protocol = roomProtocol.get();
         if (protocol == null) {
             logger.debug("Protocol is null - ignoring update: {}", channelUID);
             return;
@@ -104,29 +99,31 @@ public class NeeoDeviceHandler extends BaseThingHandler {
         final String channelId = channelIds[0];
         final String channelKey = channelIds.length > 1 ? channelIds[1] : "";
 
-        if (StringUtils.isEmpty(groupId)) {
-            logger.debug("GroupID for channel is null - ignoring command: {}", channelUID);
-            return;
-        }
-
         if (command instanceof RefreshType) {
-            refreshChannel(protocol, groupId, channelId, channelKey);
+            refreshChannel(protocol, groupId, channelKey, channelId);
         } else {
             switch (groupId) {
-                case NeeoConstants.DEVICE_GROUP_MACROS_ID:
+                case NeeoConstants.ROOM_GROUP_RECIPE_ID:
                     switch (channelId) {
-                        case NeeoConstants.DEVICE_CHANNEL_STATUS:
-                            if (command instanceof OnOffType) {
-                                protocol.setMacroStatus(channelKey, command == OnOffType.ON);
+                        case NeeoConstants.ROOM_CHANNEL_STATUS:
+                            // Ignore OFF status updates
+                            if (command == OnOffType.ON) {
+                                protocol.startRecipe(channelKey);
                             }
                             break;
-                        default:
-                            logger.debug("Unknown channel to set: {}", channelUID);
+                    }
+                    break;
+                case NeeoConstants.ROOM_GROUP_SCENARIO_ID:
+                    switch (channelId) {
+                        case NeeoConstants.ROOM_CHANNEL_STATUS:
+                            if (command instanceof OnOffType) {
+                                protocol.setScenarioStatus(channelKey, command == OnOffType.ON);
+                            }
                             break;
                     }
                     break;
                 default:
-                    logger.debug("Unknown group to set: {}", channelUID);
+                    logger.debug("Unknown channel to set: {}", channelUID);
                     break;
             }
         }
@@ -136,21 +133,44 @@ public class NeeoDeviceHandler extends BaseThingHandler {
      * Refresh the specified channel section, key and id using the specified protocol
      *
      * @param protocol a non-null protocol to use
-     * @param groupId the non-empty groupId
-     * @param channelId the non-empty channel id
+     * @param groupId the non-empty channel section
      * @param channelKey the non-empty channel key
+     * @param channelId the non-empty channel id
      */
-    private void refreshChannel(NeeoDeviceProtocol protocol, String groupId, String channelId, String channelKey) {
+    private void refreshChannel(NeeoRoomProtocol protocol, String groupId, String channelKey, String channelId) {
         Objects.requireNonNull(protocol, "protocol cannot be null");
         NeeoUtil.requireNotEmpty(groupId, "groupId must not be empty");
         NeeoUtil.requireNotEmpty(channelId, "channelId must not be empty");
-        NeeoUtil.requireNotEmpty(channelKey, "channelKey must not be empty");
 
         switch (groupId) {
-            case NeeoConstants.DEVICE_GROUP_MACROS_ID:
+            case NeeoConstants.ROOM_GROUP_RECIPE_ID:
+                NeeoUtil.requireNotEmpty(channelKey, "channelKey must not be empty");
                 switch (channelId) {
-                    case NeeoConstants.DEVICE_CHANNEL_STATUS:
-                        protocol.refreshMacroStatus(channelKey);
+                    case NeeoConstants.ROOM_CHANNEL_NAME:
+                        protocol.refreshRecipeName(channelKey);
+                        break;
+                    case NeeoConstants.ROOM_CHANNEL_TYPE:
+                        protocol.refreshRecipeType(channelKey);
+                        break;
+                    case NeeoConstants.ROOM_CHANNEL_ENABLED:
+                        protocol.refreshRecipeEnabled(channelKey);
+                        break;
+                    case NeeoConstants.ROOM_CHANNEL_STATUS:
+                        protocol.refreshRecipeStatus(channelKey);
+                        break;
+                }
+                break;
+            case NeeoConstants.ROOM_GROUP_SCENARIO_ID:
+                NeeoUtil.requireNotEmpty(channelKey, "channelKey must not be empty");
+                switch (channelId) {
+                    case NeeoConstants.ROOM_CHANNEL_NAME:
+                        protocol.refreshScenarioName(channelKey);
+                        break;
+                    case NeeoConstants.ROOM_CHANNEL_CONFIGURED:
+                        protocol.refreshScenarioConfigured(channelKey);
+                        break;
+                    case NeeoConstants.ROOM_CHANNEL_STATUS:
+                        protocol.refreshScenarioStatus(channelKey);
                         break;
                 }
                 break;
@@ -165,23 +185,15 @@ public class NeeoDeviceHandler extends BaseThingHandler {
     }
 
     /**
-     * Initializes the task be creating the {@link NeeoDeviceProtocol}, going online and then scheduling the refresh
-     * task.
+     * Initializes the task be creating the {@link NeeoRoomProtocol}, going online and then scheduling the refresh task.
      */
     private void initializeTask() {
-        final NeeoDeviceConfig config = getConfigAs(NeeoDeviceConfig.class);
+        final NeeoRoomConfig config = getConfigAs(NeeoRoomConfig.class);
 
-        final String roomKey = getRoomKey();
+        final String roomKey = config.getRoomKey();
         if (roomKey == null || StringUtils.isEmpty(roomKey)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Room key (from the parent room bridge) was not found");
-            return;
-        }
-
-        final String deviceKey = config.getDeviceKey();
-        if (deviceKey == null || StringUtils.isEmpty(deviceKey)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Device key was not found or empty");
             return;
         }
 
@@ -195,42 +207,18 @@ public class NeeoDeviceHandler extends BaseThingHandler {
 
             final NeeoRoom room = brainApi.getRoom(roomKey);
 
-            final NeeoDevice device = room.getDevices().getDevice(deviceKey);
-            if (device == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Device (" + config.getDeviceKey() + ") was not found in room (" + roomKey + ")");
-                return;
-            }
-
             final ThingUID thingUid = getThing().getUID();
 
             final Map<String, String> properties = new HashMap<>();
-            final NeeoDeviceDetails details = device.getDetails();
-            if (details != null) {
-                /** The following properties have matches in org.openhab.io.neeo.OpenHabToDeviceConverter.java */
-                addProperty(properties, "Source Name", details.getSourceName());
-                addProperty(properties, "Adapter Name", details.getAdapterName());
-                addProperty(properties, "Type", details.getType());
-                addProperty(properties, "Manufacturer", details.getManufacturer());
-                addProperty(properties, "Name", details.getName());
-
-                final NeeoDeviceDetailsTiming timing = details.getTiming();
-                if (timing != null) {
-                    properties.put("Standby Command Delay", toString(timing.getStandbyCommandDelay()));
-                    properties.put("Source Switch Delay", toString(timing.getSourceSwitchDelay()));
-                    properties.put("Shutdown Delay", toString(timing.getShutdownDelay()));
-                }
-
-                properties.put("Device Capabilities", StringUtils.join(details.getDeviceCapabilities(), ','));
-            }
+            properties.put("Key", roomKey);
 
             final ThingBuilder thingBuilder = editThing();
-            thingBuilder.withLabel(device.getName() + " (NEEO " + brainApi.getBrain().getKey() + ")")
-                    .withProperties(properties).withChannels(ChannelUtils.generateChannels(thingUid, device));
+            thingBuilder.withLabel(room.getName() + " (NEEO " + brainApi.getBrain().getKey() + ")")
+                    .withProperties(properties).withChannels(ChannelUtils.generateChannels(thingUid, room));
             updateThing(thingBuilder.build());
 
             NeeoUtil.checkInterrupt();
-            final NeeoDeviceProtocol protocol = new NeeoDeviceProtocol(new NeeoHandlerCallback() {
+            final NeeoRoomProtocol protocol = new NeeoRoomProtocol(new NeeoHandlerCallback() {
 
                 @Override
                 public void statusChanged(ThingStatus status, ThingStatusDetail detail, String msg) {
@@ -262,15 +250,26 @@ public class NeeoDeviceHandler extends BaseThingHandler {
                 public NeeoBrainApi getApi() {
                     return getNeeoBrainApi();
                 }
-            }, roomKey, deviceKey);
-            deviceProtocol.getAndSet(protocol);
+            }, roomKey);
+            roomProtocol.getAndSet(protocol);
 
             NeeoUtil.checkInterrupt();
             updateStatus(ThingStatus.ONLINE);
+
+            if (config.getRefreshPolling() > 0) {
+                NeeoUtil.checkInterrupt();
+                NeeoUtil.cancel(refreshTask.getAndSet(scheduler.scheduleWithFixedDelay(() -> {
+                    try {
+                        refreshState();
+                    } catch (InterruptedException e) {
+                        logger.debug("Refresh State was interrupted", e);
+                    }
+                }, 0, config.getRefreshPolling(), TimeUnit.SECONDS)));
+            }
         } catch (IOException e) {
             logger.debug("IOException during initialization", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Room " + roomKey + " couldn't be found");
+                    "Room " + config.getRoomKey() + " couldn't be found");
         } catch (InterruptedException e) {
             logger.debug("Initialization was interrupted", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
@@ -279,62 +278,44 @@ public class NeeoDeviceHandler extends BaseThingHandler {
     }
 
     /**
-     * Helper method to add a property to the properties map if the value is not null
+     * Processes the action if it applies to this room
      *
-     * @param properties a non-null properties map
-     * @param key a non-null, non-empty key
-     * @param value a possibly null, possibly empty key
+     * @param action a non-null action to process
      */
-    private void addProperty(Map<String, String> properties, String key, @Nullable String value) {
-        Objects.requireNonNull(properties, "properties cannot be null");
-        NeeoUtil.requireNotEmpty(key, "key cannot be empty");
-        if (value != null && StringUtils.isNotEmpty(value)) {
-            properties.put(key, value);
+    void processAction(NeeoAction action) {
+        Objects.requireNonNull(action, "action cannot be null");
+        final NeeoRoomProtocol protocol = roomProtocol.get();
+        if (protocol != null) {
+            protocol.processAction(action);
         }
     }
 
     /**
-     * Helper method to get the room key from the parent bridge (which should be a room)
+     * Refreshes the state of the room by calling {@link NeeoRoomProtocol#refreshState()}
      *
-     * @return a non-null, non-empty room key if found, null if not found
+     * @throws InterruptedException if the call is interrupted
+     */
+    private void refreshState() throws InterruptedException {
+        NeeoUtil.checkInterrupt();
+        final NeeoRoomProtocol protocol = roomProtocol.get();
+        if (protocol != null) {
+            NeeoUtil.checkInterrupt();
+            protocol.refreshState();
+        }
+    }
+
+    /**
+     * Helper method to return the {@link NeeoBrainHandler} associated with this handler
+     *
+     * @return a possibly null {@link NeeoBrainHandler}
      */
     @Nullable
-    private String getRoomKey() {
-        final Bridge bridge = getBridge();
-        if (bridge != null) {
-            final BridgeHandler handler = bridge.getHandler();
-            if (handler instanceof NeeoRoomHandler) {
-                return handler.getThing().getConfiguration().as(NeeoRoomConfig.class).getRoomKey();
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Helper method to simply create a string from an integer
-     *
-     * @param i the integer
-     * @return the resulting string representation
-     */
-    private static String toString(@Nullable Integer i) {
-        if (i == null) {
-            return "";
-        }
-        return i.toString();
-    }
-
-    /**
-     * Helper method to return the {@link NeeoRoomHandler} associated with this handler
-     *
-     * @return a possibly null {@link NeeoRoomHandler}
-     */
-    @Nullable
-    private NeeoRoomHandler getRoomHandler() {
+    private NeeoBrainHandler getBrainHandler() {
         final Bridge parent = getBridge();
         if (parent != null) {
             final BridgeHandler handler = parent.getHandler();
-            if (handler instanceof NeeoRoomHandler) {
-                return ((NeeoRoomHandler) handler);
+            if (handler instanceof NeeoBrainHandler) {
+                return ((NeeoBrainHandler) handler);
             }
         }
         return null;
@@ -346,8 +327,8 @@ public class NeeoDeviceHandler extends BaseThingHandler {
      * @return the {@link NeeoBrainApi} or null if not found
      */
     @Nullable
-    private NeeoBrainApi getNeeoBrainApi() {
-        final NeeoRoomHandler handler = getRoomHandler();
+    public NeeoBrainApi getNeeoBrainApi() {
+        final NeeoBrainHandler handler = getBrainHandler();
         return handler == null ? null : handler.getNeeoBrainApi();
     }
 
@@ -358,7 +339,7 @@ public class NeeoDeviceHandler extends BaseThingHandler {
      */
     @Nullable
     public String getNeeoBrainId() {
-        final NeeoRoomHandler handler = getRoomHandler();
+        final NeeoBrainHandler handler = getBrainHandler();
         return handler == null ? null : handler.getNeeoBrainId();
     }
 
@@ -366,6 +347,6 @@ public class NeeoDeviceHandler extends BaseThingHandler {
     public void dispose() {
         NeeoUtil.cancel(initializationTask.getAndSet(null));
         NeeoUtil.cancel(refreshTask.getAndSet(null));
-        deviceProtocol.getAndSet(null);
+        roomProtocol.getAndSet(null);
     }
 }

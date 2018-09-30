@@ -15,8 +15,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.neeo.NeeoConstants;
-import org.openhab.binding.neeo.NeeoUtil;
 import org.openhab.binding.neeo.internal.models.ExecuteResult;
 import org.openhab.binding.neeo.internal.models.NeeoBrain;
 import org.openhab.binding.neeo.internal.models.NeeoForwardActions;

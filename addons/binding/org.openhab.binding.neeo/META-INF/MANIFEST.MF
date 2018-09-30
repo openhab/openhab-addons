@@ -43,14 +43,10 @@ Import-Package:
  org.eclipse.smarthome.io.transport.mdns,
  org.eclipse.smarthome.io.transport.mdns.discovery,
  org.glassfish.jersey.filter,
- org.openhab.binding.neeo,
- org.openhab.binding.neeo.handler,
  org.osgi.framework,
  org.osgi.service.component,
  org.osgi.service.http,
  org.osgi.util.tracker,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.neeo,
- org.openhab.binding.neeo.handler
 Bundle-ActivationPolicy: lazy
