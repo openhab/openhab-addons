@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.onkyo.handler;
+package org.openhab.binding.onkyo.internal.handler;
 
-import static org.openhab.binding.onkyo.OnkyoBindingConstants.*;
+import static org.openhab.binding.onkyo.internal.OnkyoBindingConstants.*;
 
 import java.io.IOException;
 import java.util.List;
