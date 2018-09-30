@@ -10,6 +10,7 @@ Bundle-ClassPath: .
 Import-Package: org.apache.commons.lang,
  org.apache.commons.lang.builder,
  org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.core.cache,
  org.eclipse.smarthome.core.library.items,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,

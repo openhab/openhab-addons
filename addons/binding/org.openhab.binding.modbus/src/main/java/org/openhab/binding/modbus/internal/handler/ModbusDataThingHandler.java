@@ -55,6 +55,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
+import org.openhab.binding.modbus.internal.LazyThingStatusUpdater;
 import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
 import org.openhab.binding.modbus.internal.ModbusConfigurationException;
 import org.openhab.binding.modbus.internal.Transformation;
@@ -117,6 +118,8 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         CHANNEL_ID_TO_ACCEPTED_TYPES.put(ModbusBindingConstantsInternal.CHANNEL_ROLLERSHUTTER,
                 new RollershutterItem("").getAcceptedDataTypes());
     }
+    private static final ThingStatusInfo ONLINE_STATUS = new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE,
+            null);
 
     //
     // If you change the below default/initial values, please update the corresponding values in dispose()
@@ -145,8 +148,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
     private volatile ThingStatusInfo statusInfo = new ThingStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
             null);
 
-    private static final ThingStatusInfo ONLINE_STATUS = new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE,
-            null);
+    private volatile LazyThingStatusUpdater lazyStatusUpdater = new LazyThingStatusUpdater();
 
     public ModbusDataThingHandler(Thing thing) {
         super(thing);
@@ -331,6 +333,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         // Initialize the thing. If done set status to ONLINE to indicate proper working.
         // Long running initialization should be done asynchronously in background.
         try {
+            lazyStatusUpdater.invalidate();
             logger.trace("initialize() of thing {} '{}' starting", thing.getUID(), thing.getLabel());
             config = getConfigAs(ModbusDataConfiguration.class);
             Bridge bridge = getBridge();
@@ -408,6 +411,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         channelCache = new HashMap<>();
         lastStatusInfoUpdate = LocalDateTime.MIN;
         statusInfo = new ThingStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null);
+        lazyStatusUpdater = new LazyThingStatusUpdater();
     }
 
     @Override
@@ -724,6 +728,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 tryUpdateState(uid, state);
             });
 
+            lazyStatusUpdater.invalidate();
             updateStatusIfChanged(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     String.format("Error (%s) with read. Request: %s. Description: %s. Message: %s",
                             error.getClass().getSimpleName(), request, error.toString(), error.getMessage()));
@@ -761,6 +766,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 tryUpdateState(uid, state);
             });
 
+            lazyStatusUpdater.invalidate();
             updateStatusIfChanged(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     String.format("Error (%s) with write. Request: %s. Description: %s. Message: %s",
                             error.getClass().getSimpleName(), request, error.toString(), error.getMessage()));
