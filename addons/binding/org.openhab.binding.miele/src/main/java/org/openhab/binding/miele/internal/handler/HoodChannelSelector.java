@@ -6,94 +6,61 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.miele.handler;
+package org.openhab.binding.miele.internal.handler;
 
 import java.lang.reflect.Method;
 import java.util.Map.Entry;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-import org.openhab.binding.miele.handler.MieleBridgeHandler.DeviceMetaData;
+import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
 
 /**
- * The {@link ApplianceChannelSelector} for hobs
+ * The {@link ApplianceChannelSelector} for ventilation hoods
  *
  * @author Karel Goderis - Initial contribution
  */
-public enum HobChannelSelector implements ApplianceChannelSelector {
+public enum HoodChannelSelector implements ApplianceChannelSelector {
 
     PRODUCT_TYPE("productTypeId", "productType", StringType.class, true),
     DEVICE_TYPE("mieleDeviceType", "deviceType", StringType.class, true),
     BRAND_ID("brandId", "brandId", StringType.class, true),
     COMPANY_ID("companyId", "companyId", StringType.class, true),
     STATE("state", "state", StringType.class, false),
-    PLATES("plateNumbers", "plates", DecimalType.class, true),
-    PLATE1_POWER("plate1PowerStep", "plate1power", DecimalType.class, false),
-    PLATE1_HEAT("plate1RemainingHeat", "plate1heat", DecimalType.class, false) {
+    VENTILATION("ventilationPower", "ventilation", DecimalType.class, false),
+    LIGHT("lightingStatus", "light", OnOffType.class, false) {
         @Override
-        public State getState(String s, DeviceMetaData dmd) {
-            // If there is remaining heat, the device metadata contains some informative string which can not be
-            // converted into a DecimalType. We therefore ignore the metadata and return the device property value as a
-            // State
-            return getState(s);
-        }
-    },
-    PLATE1_TIME("plate1RemainingTime", "plate1time", StringType.class, false),
-    PLATE2_POWER("plate2PowerStep", "plate2power", DecimalType.class, false),
-    PLATE2_HEAT("plate2RemainingHeat", "plate2heat", DecimalType.class, false) {
-        @Override
-        public State getState(String s, DeviceMetaData dmd) {
-            return getState(s);
-        }
-    },
-    PLATE2_TIME("plate2RemainingTime", "plate2time", StringType.class, false),
-    PLATE3_POWER("plate3PowerStep", "plate3power", DecimalType.class, false),
-    PLATE3_HEAT("plate3RemainingHeat", "plate3heat", DecimalType.class, false) {
-        @Override
-        public State getState(String s, DeviceMetaData dmd) {
-            return getState(s);
-        }
-    },
-    PLATE3_TIME("plate3RemainingTime", "plate3time", StringType.class, false),
-    PLATE4_POWER("plate4PowerStep", "plate4power", DecimalType.class, false),
-    PLATE4_HEAT("plate4RemainingHeat", "plate4heat", DecimalType.class, false) {
-        @Override
-        public State getState(String s, DeviceMetaData dmd) {
-            return getState(s);
-        }
-    },
-    PLATE4_TIME("plate4RemainingTime", "plate4time", StringType.class, false),
-    PLATE5_POWER("plate5PowerStep", "plate5power", DecimalType.class, false),
-    PLATE5_HEAT("plate5RemainingHeat", "plate5heat", DecimalType.class, false) {
-        @Override
-        public State getState(String s, DeviceMetaData dmd) {
-            return getState(s);
-        }
-    },
-    PLATE5_TIME("plate5RemainingTime", "plate5time", StringType.class, false),
-    PLATE6_POWER("plate6PowerStep", "plate6power", DecimalType.class, false),
-    PLATE6_HEAT("plate6RemainingHeat", "plate6heat", DecimalType.class, false) {
-        @Override
-        public State getState(String s, DeviceMetaData dmd) {
-            return getState(s);
-        }
-    },
-    PLATE6_TIME("plate6RemainingTime", "plate6time", StringType.class, false);
 
-    private final Logger logger = LoggerFactory.getLogger(HobChannelSelector.class);
+        public State getState(String s, DeviceMetaData dmd) {
+            if ("true".equals(s)) {
+                return getState("ON");
+            }
+
+            if ("false".equals(s)) {
+                return getState("OFF");
+            }
+
+            return UnDefType.UNDEF;
+        }
+    },
+    STOP(null, "stop", OnOffType.class, false);
+
+    private final Logger logger = LoggerFactory.getLogger(HoodChannelSelector.class);
 
     private final String mieleID;
     private final String channelID;
     private final Class<? extends Type> typeClass;
     private final boolean isProperty;
 
-    private HobChannelSelector(String propertyID, String channelID, Class<? extends Type> typeClass,
+    HoodChannelSelector(String propertyID, String channelID, Class<? extends Type> typeClass,
             boolean isProperty) {
         this.mieleID = propertyID;
         this.channelID = channelID;

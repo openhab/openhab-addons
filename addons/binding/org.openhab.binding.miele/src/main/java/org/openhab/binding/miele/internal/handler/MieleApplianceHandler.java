@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.miele.handler;
+package org.openhab.binding.miele.internal.handler;
 
-import static org.openhab.binding.miele.MieleBindingConstants.*;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,11 +26,11 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.miele.handler.MieleBridgeHandler.DeviceClassObject;
-import org.openhab.binding.miele.handler.MieleBridgeHandler.DeviceMetaData;
-import org.openhab.binding.miele.handler.MieleBridgeHandler.DeviceOperation;
-import org.openhab.binding.miele.handler.MieleBridgeHandler.DeviceProperty;
-import org.openhab.binding.miele.handler.MieleBridgeHandler.HomeDevice;
+import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceClassObject;
+import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
+import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceOperation;
+import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceProperty;
+import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.HomeDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

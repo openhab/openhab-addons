@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.miele.internal;
 
-import static org.openhab.binding.miele.MieleBindingConstants.*;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -23,18 +23,18 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.miele.handler.CoffeeMachineHandler;
-import org.openhab.binding.miele.handler.DishWasherHandler;
-import org.openhab.binding.miele.handler.FridgeFreezerHandler;
-import org.openhab.binding.miele.handler.FridgeHandler;
-import org.openhab.binding.miele.handler.HobHandler;
-import org.openhab.binding.miele.handler.HoodHandler;
-import org.openhab.binding.miele.handler.MieleApplianceHandler;
-import org.openhab.binding.miele.handler.MieleBridgeHandler;
-import org.openhab.binding.miele.handler.OvenHandler;
-import org.openhab.binding.miele.handler.TumbleDryerHandler;
-import org.openhab.binding.miele.handler.WashingMachineHandler;
 import org.openhab.binding.miele.internal.discovery.MieleApplianceDiscoveryService;
+import org.openhab.binding.miele.internal.handler.CoffeeMachineHandler;
+import org.openhab.binding.miele.internal.handler.DishWasherHandler;
+import org.openhab.binding.miele.internal.handler.FridgeFreezerHandler;
+import org.openhab.binding.miele.internal.handler.FridgeHandler;
+import org.openhab.binding.miele.internal.handler.HobHandler;
+import org.openhab.binding.miele.internal.handler.HoodHandler;
+import org.openhab.binding.miele.internal.handler.MieleApplianceHandler;
+import org.openhab.binding.miele.internal.handler.MieleBridgeHandler;
+import org.openhab.binding.miele.internal.handler.OvenHandler;
+import org.openhab.binding.miele.internal.handler.TumbleDryerHandler;
+import org.openhab.binding.miele.internal.handler.WashingMachineHandler;
 import org.osgi.framework.ServiceRegistration;
 
 import com.google.common.collect.Sets;

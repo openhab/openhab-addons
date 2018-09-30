@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.miele;
+package org.openhab.binding.miele.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;

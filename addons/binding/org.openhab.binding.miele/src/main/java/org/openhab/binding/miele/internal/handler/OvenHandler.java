@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.miele.handler;
+package org.openhab.binding.miele.internal.handler;
 
-import static org.openhab.binding.miele.MieleBindingConstants.APPLIANCE_ID;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.APPLIANCE_ID;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -21,17 +21,18 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonElement;
 
 /**
- * The {@link FridgeHandler} is responsible for handling commands,
+ * The {@link OvenHandler} is responsible for handling commands,
  * which are sent to one of the channels
  *
  * @author Karel Goderis - Initial contribution
+ * @author Kai Kreuzer - fixed handling of REFRESH commands
  */
-public class FridgeHandler extends MieleApplianceHandler<FridgeChannelSelector> {
+public class OvenHandler extends MieleApplianceHandler<OvenChannelSelector> {
 
-    private final Logger logger = LoggerFactory.getLogger(FridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(OvenHandler.class);
 
-    public FridgeHandler(Thing thing) {
-        super(thing, FridgeChannelSelector.class, "Fridge");
+    public OvenHandler(Thing thing) {
+        super(thing, OvenChannelSelector.class, "Oven");
     }
 
     @Override
@@ -42,23 +43,23 @@ public class FridgeHandler extends MieleApplianceHandler<FridgeChannelSelector> 
         String channelID = channelUID.getId();
         String uid = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
 
-        FridgeChannelSelector selector = (FridgeChannelSelector) getValueSelectorFromChannelID(channelID);
+        OvenChannelSelector selector = (OvenChannelSelector) getValueSelectorFromChannelID(channelID);
         JsonElement result = null;
 
         try {
             if (selector != null) {
                 switch (selector) {
-                    case SUPERCOOL: {
+                    case SWITCH: {
                         if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "startSuperCooling");
+                            result = bridgeHandler.invokeOperation(uid, modelID, "switchOn");
                         } else if (command.equals(OnOffType.OFF)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "stopSuperCooling");
+                            result = bridgeHandler.invokeOperation(uid, modelID, "switchOff");
                         }
                         break;
                     }
-                    case START: {
+                    case STOP: {
                         if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "start");
+                            result = bridgeHandler.invokeOperation(uid, modelID, "stop");
                         }
                         break;
                     }

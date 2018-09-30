@@ -6,11 +6,11 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.miele.handler;
+package org.openhab.binding.miele.internal.handler;
 
-import org.openhab.binding.miele.handler.MieleBridgeHandler.DeviceClassObject;
-import org.openhab.binding.miele.handler.MieleBridgeHandler.DeviceProperty;
-import org.openhab.binding.miele.handler.MieleBridgeHandler.HomeDevice;
+import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceClassObject;
+import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceProperty;
+import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.HomeDevice;
 
 /**
  *

@@ -6,32 +6,32 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.miele.handler;
+package org.openhab.binding.miele.internal.handler;
 
-import static org.openhab.binding.miele.MieleBindingConstants.APPLIANCE_ID;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.APPLIANCE_ID;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
 
 /**
- * The {@link HoodHandler} is responsible for handling commands,
+ * The {@link FridgeHandler} is responsible for handling commands,
  * which are sent to one of the channels
  *
  * @author Karel Goderis - Initial contribution
- * @author Kai Kreuzer - fixed handling of REFRESH commands
  */
-public class HoodHandler extends MieleApplianceHandler<HoodChannelSelector> {
+public class FridgeHandler extends MieleApplianceHandler<FridgeChannelSelector> {
 
-    private final Logger logger = LoggerFactory.getLogger(HoodHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(FridgeHandler.class);
 
-    public HoodHandler(Thing thing) {
-        super(thing, HoodChannelSelector.class, "Hood");
+    public FridgeHandler(Thing thing) {
+        super(thing, FridgeChannelSelector.class, "Fridge");
     }
 
     @Override
@@ -42,29 +42,31 @@ public class HoodHandler extends MieleApplianceHandler<HoodChannelSelector> {
         String channelID = channelUID.getId();
         String uid = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
 
-        HoodChannelSelector selector = (HoodChannelSelector) getValueSelectorFromChannelID(channelID);
+        FridgeChannelSelector selector = (FridgeChannelSelector) getValueSelectorFromChannelID(channelID);
         JsonElement result = null;
 
         try {
             if (selector != null) {
                 switch (selector) {
-                    case LIGHT: {
+                    case SUPERCOOL: {
                         if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "startLighting");
+                            result = bridgeHandler.invokeOperation(uid, modelID, "startSuperCooling");
                         } else if (command.equals(OnOffType.OFF)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "stopLighting");
+                            result = bridgeHandler.invokeOperation(uid, modelID, "stopSuperCooling");
                         }
                         break;
                     }
-                    case STOP: {
+                    case START: {
                         if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "stop");
+                            result = bridgeHandler.invokeOperation(uid, modelID, "start");
                         }
                         break;
                     }
                     default: {
-                        logger.debug("{} is a read-only channel that does not accept commands",
-                                selector.getChannelID());
+                        if (!(command instanceof RefreshType)) {
+                            logger.debug("{} is a read-only channel that does not accept commands",
+                                    selector.getChannelID());
+                        }
                     }
                 }
             }
@@ -78,5 +80,4 @@ public class HoodHandler extends MieleApplianceHandler<HoodChannelSelector> {
                     channelID, command.toString());
         }
     }
-
 }

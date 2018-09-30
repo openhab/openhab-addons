@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.miele.handler;
+package org.openhab.binding.miele.internal.handler;
 
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
@@ -14,7 +14,6 @@ import java.util.Date;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -23,19 +22,19 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.miele.handler.MieleBridgeHandler.DeviceMetaData;
+import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
 
 /**
- * The {@link ApplianceChannelSelector} for washing machines
+ * The {@link ApplianceChannelSelector} for tumble dryers
  *
  * @author Karel Goderis - Initial contribution
  * @author Kai Kreuzer - Changed START_TIME to DateTimeType
  */
-public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
+public enum TumbleDryerChannelSelector implements ApplianceChannelSelector {
 
     PRODUCT_TYPE("productTypeId", "productType", StringType.class, true),
     DEVICE_TYPE("mieleDeviceType", "deviceType", StringType.class, true),
@@ -66,7 +65,7 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
             SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             DATE_FORMATTER.setTimeZone(TimeZone.getTimeZone("GMT+0"));
             try {
-                date.setTime(Long.valueOf(StringUtils.trim(s)) * 60000);
+                date.setTime(Long.valueOf(s) * 60000);
             } catch (Exception e) {
                 date.setTime(0);
             }
@@ -101,22 +100,10 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
             return getState(DATE_FORMATTER.format(date));
         }
     },
-    TARGET_TEMP("targetTemperature", "target", DecimalType.class, false) {
+    DRYING_STEP("dryingStep", "step", DecimalType.class, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
             return getState(s);
-        }
-    },
-    SPINNING_SPEED("spinningSpeed", "spinningspeed", StringType.class, false) {
-        @Override
-        public State getState(String s, DeviceMetaData dmd) {
-            if ("0".equals(s)) {
-                return getState("Without spinning");
-            }
-            if ("256".equals(s)) {
-                return getState("Rinsing");
-            }
-            return getState(Integer.toString((Integer.valueOf(s) * 10)));
         }
     },
     DOOR("signalDoor", "door", OpenClosedType.class, false) {
@@ -136,14 +123,14 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
     },
     SWITCH(null, "switch", OnOffType.class, false);
 
-    private final Logger logger = LoggerFactory.getLogger(WashingMachineChannelSelector.class);
+    private final Logger logger = LoggerFactory.getLogger(TumbleDryerChannelSelector.class);
 
     private final String mieleID;
     private final String channelID;
     private final Class<? extends Type> typeClass;
     private final boolean isProperty;
 
-    WashingMachineChannelSelector(String propertyID, String channelID, Class<? extends Type> typeClass,
+    private TumbleDryerChannelSelector(String propertyID, String channelID, Class<? extends Type> typeClass,
             boolean isProperty) {
         this.mieleID = propertyID;
         this.channelID = channelID;
@@ -218,4 +205,5 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
 
         return null;
     }
+
 }

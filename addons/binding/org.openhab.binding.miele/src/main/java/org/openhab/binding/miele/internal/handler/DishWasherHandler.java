@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.miele.handler;
+package org.openhab.binding.miele.internal.handler;
 
-import static org.openhab.binding.miele.MieleBindingConstants.APPLIANCE_ID;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.APPLIANCE_ID;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
