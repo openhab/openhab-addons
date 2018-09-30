@@ -145,6 +145,9 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
     private volatile ThingStatusInfo statusInfo = new ThingStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
             null);
 
+    private static final ThingStatusInfo ONLINE_STATUS = new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE,
+            null);
+
     public ModbusDataThingHandler(Thing thing) {
         super(thing);
     }
@@ -225,7 +228,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
      * In case of JSON as transformation output, the output processed using {@link processJsonTransform}.
      *
      * @param channelUID channel UID corresponding to received command
-     * @param command command to be transformed
+     * @param command    command to be transformed
      * @return transformed command. Null is returned with JSON transformation outputs and configuration errors
      *
      * @see processJsonTransform
@@ -372,7 +375,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             validateAndParseWriteParameters();
             validateMustReadOrWrite();
 
-            updateStatusIfChanged(ThingStatus.ONLINE);
+            updateStatusIfChanged(ONLINE_STATUS);
         } catch (ModbusConfigurationException | EndpointNotInitializedException e) {
             logger.debug("Thing {} '{}' initialization error: {}", getThing().getUID(), getThing().getLabel(),
                     e.getMessage());
@@ -772,7 +775,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             return;
         }
         logger.debug("Successful write, matching request {}", request);
-        updateStatusIfChanged(ThingStatus.ONLINE);
+        updateStatusIfChanged(ONLINE_STATUS);
         ChannelUID lastWriteSuccessUID = getChannelUID(ModbusBindingConstantsInternal.CHANNEL_LAST_WRITE_SUCCESS);
         if (isLinked(lastWriteSuccessUID)) {
             updateState(lastWriteSuccessUID, new DateTimeType());
@@ -783,7 +786,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
      * Update linked channels
      *
      * @param numericState numeric state corresponding to polled data
-     * @param boolValue boolean value corresponding to polled data
+     * @param boolValue    boolean value corresponding to polled data
      * @return updated channel data
      */
     private Map<ChannelUID, State> processUpdatedValue(DecimalType numericState, boolean boolValue) {
@@ -845,8 +848,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         }
 
         synchronized (this) {
-            updateStatusIfChanged(ThingStatus.ONLINE);
-
+            updateStatusIfChanged(ONLINE_STATUS);
             // Update channels
             states.forEach((uid, state) -> {
                 tryUpdateState(uid, state);
@@ -876,6 +878,10 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
     private void updateStatusIfChanged(ThingStatus status, ThingStatusDetail statusDetail,
             @Nullable String description) {
         ThingStatusInfo newStatusInfo = new ThingStatusInfo(status, statusDetail, description);
+        updateStatusIfChanged(newStatusInfo);
+    }
+
+    private void updateStatusIfChanged(ThingStatusInfo newStatusInfo) {
         Duration durationSinceLastUpdate = Duration.between(lastStatusInfoUpdate, LocalDateTime.now());
         boolean intervalElapsed = MIN_STATUS_INFO_UPDATE_INTERVAL.minus(durationSinceLastUpdate).isNegative();
         if (statusInfo.getStatus() == ThingStatus.UNKNOWN || !statusInfo.equals(newStatusInfo) || intervalElapsed) {
