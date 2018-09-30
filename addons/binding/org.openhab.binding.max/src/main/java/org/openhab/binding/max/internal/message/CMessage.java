@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.max.internal.message;
 
-import static org.openhab.binding.max.MaxBindingConstants.*;
+import static org.openhab.binding.max.internal.MaxBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

@@ -8,7 +8,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.max;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
-Export-Package: org.openhab.binding.max
 Import-Package: 
  javax.measure.quantity,
  org.apache.commons.lang,
@@ -24,7 +23,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.types,
- org.openhab.binding.max,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
