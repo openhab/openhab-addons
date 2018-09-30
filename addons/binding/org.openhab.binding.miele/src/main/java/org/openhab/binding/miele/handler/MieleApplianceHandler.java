@@ -55,7 +55,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.newHashSet(THING_TYPE_DISHWASHER,
             THING_TYPE_OVEN, THING_TYPE_FRIDGE, THING_TYPE_DRYER, THING_TYPE_HOB, THING_TYPE_FRIDGEFREEZER,
-            THING_TYPE_HOOD, THING_TYPE_WASHINGMACHINE, THING_TYPE_COFFEESYSTEM);
+            THING_TYPE_HOOD, THING_TYPE_WASHINGMACHINE, THING_TYPE_COFFEEMACHINE);
 
     protected Gson gson = new Gson();
 
@@ -214,7 +214,8 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
                         ChannelUID theChannelUID = new ChannelUID(getThing().getUID(), selector.getChannelID());
 
                         if (dp.Value != null) {
-                            logger.trace("Update state of {} with getState '{}'", new Object[] { theChannelUID, selector.getState(dpValue, dmd) });
+                            logger.trace("Update state of {} with getState '{}'",
+                                    new Object[] { theChannelUID, selector.getState(dpValue, dmd) });
                             updateState(theChannelUID, selector.getState(dpValue, dmd));
                         } else {
                             updateState(theChannelUID, UnDefType.UNDEF);

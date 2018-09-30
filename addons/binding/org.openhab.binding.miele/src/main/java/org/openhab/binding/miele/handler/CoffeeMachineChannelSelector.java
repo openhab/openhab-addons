@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -24,13 +24,13 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonElement;
 
 /**
- * The {@link ApplianceChannelSelector} for coffee systems
+ * The {@link ApplianceChannelSelector} for coffee machines
  *
  * @author Karel Goderis - Initial contribution
  * @author Kai Kreuzer - Changed START_TIME to DateTimeType
- * @author maplesteve - Adoption for the coffeemaker
+ * @author Stephan Esch - Adoption for the coffeemachine
  */
-public enum CoffeeSystemChannelSelector implements ApplianceChannelSelector {
+public enum CoffeeMachineChannelSelector implements ApplianceChannelSelector {
 
     PRODUCT_TYPE("productTypeId", "productType", StringType.class, true),
     DEVICE_TYPE("mieleDeviceType", "deviceType", StringType.class, true),
@@ -58,14 +58,14 @@ public enum CoffeeSystemChannelSelector implements ApplianceChannelSelector {
     },
     SWITCH(null, "switch", OnOffType.class, false);
 
-    private final Logger logger = LoggerFactory.getLogger(CoffeeSystemChannelSelector.class);
+    private final Logger logger = LoggerFactory.getLogger(CoffeeMachineChannelSelector.class);
 
     private final String mieleID;
     private final String channelID;
     private final Class<? extends Type> typeClass;
     private final boolean isProperty;
 
-    private CoffeeSystemChannelSelector(String propertyID, String channelID, Class<? extends Type> typeClass,
+    CoffeeMachineChannelSelector(String propertyID, String channelID, Class<? extends Type> typeClass,
             boolean isProperty) {
         this.mieleID = propertyID;
         this.channelID = channelID;

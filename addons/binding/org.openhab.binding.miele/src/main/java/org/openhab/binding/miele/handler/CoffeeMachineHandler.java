@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,30 +21,29 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonElement;
 
 /**
- * The {@link CoffeeSystemHandler} is responsible for handling commands,
+ * The {@link CoffeeMachineHandler} is responsible for handling commands,
  * which are sent to one of the channels
  *
  * @author Karel Goderis - Initial contribution
  * @author Kai Kreuzer - fixed handling of REFRESH commands
- * @author maplesteve - Adoption for the coffeemaker
+ * @author Stephan Esch - Adoption for the coffeemachine
  */
-public class CoffeeSystemHandler extends MieleApplianceHandler<CoffeeSystemChannelSelector> {
+public class CoffeeMachineHandler extends MieleApplianceHandler<CoffeeMachineChannelSelector> {
 
-    private final Logger logger = LoggerFactory.getLogger(CoffeeSystemHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(CoffeeMachineHandler.class);
 
-    public CoffeeSystemHandler(Thing thing) {
-        super(thing, CoffeeSystemChannelSelector.class, "CoffeeSystem");
+    public CoffeeMachineHandler(Thing thing) {
+        super(thing, CoffeeMachineChannelSelector.class, "CoffeeSystem");
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         super.handleCommand(channelUID, command);
 
         String channelID = channelUID.getId();
         String uid = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
 
-        CoffeeSystemChannelSelector selector = (CoffeeSystemChannelSelector) getValueSelectorFromChannelID(channelID);
+        CoffeeMachineChannelSelector selector = (CoffeeMachineChannelSelector) getValueSelectorFromChannelID(channelID);
         JsonElement result = null;
 
         try {
