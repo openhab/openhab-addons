@@ -24,9 +24,7 @@ import com.google.gson.JsonElement;
  * The {@link CoffeeMachineHandler} is responsible for handling commands,
  * which are sent to one of the channels
  *
- * @author Karel Goderis - Initial contribution
- * @author Kai Kreuzer - fixed handling of REFRESH commands
- * @author Stephan Esch - Adoption for the coffeemachine
+ * @author Stephan Esch - Initial contribution
  */
 public class CoffeeMachineHandler extends MieleApplianceHandler<CoffeeMachineChannelSelector> {
 

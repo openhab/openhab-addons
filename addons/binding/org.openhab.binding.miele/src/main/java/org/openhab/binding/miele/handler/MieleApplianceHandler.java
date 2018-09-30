@@ -214,16 +214,15 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
                         ChannelUID theChannelUID = new ChannelUID(getThing().getUID(), selector.getChannelID());
 
                         if (dp.Value != null) {
-                            logger.trace("Update state of {} with getState '{}'",
-                                    new Object[] { theChannelUID, selector.getState(dpValue, dmd) });
+                            logger.trace("Update state of {} with getState '{}'", theChannelUID,
+                                    selector.getState(dpValue, dmd));
                             updateState(theChannelUID, selector.getState(dpValue, dmd));
                         } else {
                             updateState(theChannelUID, UnDefType.UNDEF);
                         }
                     } else if (dpValue != null) {
-                        logger.debug("Updating the property '{}' of '{}' to '{}'",
-                                new Object[] { selector.getChannelID(), getThing().getUID(),
-                                        selector.getState(dpValue, dmd).toString() });
+                        logger.debug("Updating the property '{}' of '{}' to '{}'", selector.getChannelID(),
+                                getThing().getUID(), selector.getState(dpValue, dmd).toString());
                         Map<String, String> properties = editProperties();
                         properties.put(selector.getChannelID(), selector.getState(dpValue, dmd).toString());
                         updateProperties(properties);

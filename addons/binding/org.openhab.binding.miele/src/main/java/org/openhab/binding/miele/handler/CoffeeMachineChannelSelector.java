@@ -26,9 +26,7 @@ import com.google.gson.JsonElement;
 /**
  * The {@link ApplianceChannelSelector} for coffee machines
  *
- * @author Karel Goderis - Initial contribution
- * @author Kai Kreuzer - Changed START_TIME to DateTimeType
- * @author Stephan Esch - Adoption for the coffeemachine
+ * @author Stephan Esch - Initial contribution
  */
 public enum CoffeeMachineChannelSelector implements ApplianceChannelSelector {
 
@@ -43,7 +41,6 @@ public enum CoffeeMachineChannelSelector implements ApplianceChannelSelector {
     // lightingStatus signalFailure signalInfo
     DOOR("signalDoor", "door", OpenClosedType.class, false) {
         @Override
-
         public State getState(String s, DeviceMetaData dmd) {
             if ("true".equals(s)) {
                 return getState("OPEN");

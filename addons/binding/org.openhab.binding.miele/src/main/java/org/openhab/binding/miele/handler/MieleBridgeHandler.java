@@ -355,8 +355,8 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                                 clientSocket.receive(packet);
 
                                 String event = new String(packet.getData());
-                                logger.debug("Received a multicast event '{}' from '{}:{}'",
-                                        new Object[] { event, packet.getAddress(), packet.getPort() });
+                                logger.debug("Received a multicast event '{}' from '{}:{}'", event, packet.getAddress(),
+                                        packet.getPort());
 
                                 DeviceProperty dp = new DeviceProperty();
                                 String uid = null;
@@ -468,7 +468,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                     String message = (o.has("message") ? o.get("message").getAsString() : null);
                     String data = (o.has("data") ? (o.get("data") instanceof JsonObject ? o.get("data").toString()
                             : o.get("data").getAsString()) : null);
-                    logger.debug("A remote exception occurred: '{}':'{}':'{}'", new Object[] { code, message, data });
+                    logger.debug("A remote exception occurred: '{}':'{}':'{}'", code, message, data);
                 } else {
                     logger.debug("An unknown remote exception occurred: '{}'", error.toString());
                 }
