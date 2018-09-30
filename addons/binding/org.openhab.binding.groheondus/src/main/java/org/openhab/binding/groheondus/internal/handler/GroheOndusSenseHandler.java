@@ -48,7 +48,7 @@ public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<SenseApp
     private final Logger logger = LoggerFactory.getLogger(GroheOndusSenseHandler.class);
 
     public GroheOndusSenseHandler(Thing thing) {
-        super(thing);
+        super(thing, SenseAppliance.TYPE);
     }
 
     @Override
@@ -166,10 +166,5 @@ public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<SenseApp
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-    }
-
-    @Override
-    protected int getType() {
-        return SenseAppliance.TYPE;
     }
 }

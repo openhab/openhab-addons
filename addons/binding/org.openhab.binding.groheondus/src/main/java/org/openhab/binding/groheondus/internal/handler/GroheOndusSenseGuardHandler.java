@@ -47,7 +47,7 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<Sen
     private final Logger logger = LoggerFactory.getLogger(GroheOndusSenseGuardHandler.class);
 
     public GroheOndusSenseGuardHandler(Thing thing) {
-        super(thing);
+        super(thing, SenseGuardAppliance.TYPE);
     }
 
     @Override
@@ -185,10 +185,5 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<Sen
         } catch (IOException e) {
             logger.debug("Could not update valve open state", e);
         }
-    }
-
-    @Override
-    protected int getType() {
-        return SenseGuardAppliance.TYPE;
     }
 }

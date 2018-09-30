@@ -62,9 +62,9 @@ and the `locationId`. Once the account bridge is configured, the appliances in y
 | Channel                  | Type                     | Description                                           |
 |--------------------------|--------------------------|-------------------------------------------------------|
 | name                     | String                   | The name of the appliance                             |
-| humidity                 | Number                   | The humidity measured by the appliance                |
+| humidity                 | Number:Dimensionless     | The humidity measured by the appliance                |
 | temperature              | Number:Temperature       | The ambient temperature of the appliance              |
-| battery                  | Number:Percent           | The battery level of the appliance                    |
+| battery                  | Number                   | The battery level of the appliance                    |
 
 ## Full Example
 
@@ -86,6 +86,6 @@ Number:Temperature Temperature_Sense_Guard "Temperature [%.1f %unit%]" {channel=
 
 String Name_Sense "Temperature [%.1f %unit%]" {channel="groheondus:sense:groheondus:appliance:444e8400-e29b-11d4-a716-446655440000:name"}
 Number:Temperature Temperature_Sense "Temperature [%.1f %unit%]" {channel="groheondus:sense:groheondus:appliance:444e8400-e29b-11d4-a716-446655440000:temperature"}
-Number Humidity_Sense "Humidity [%.1f %unit%]" {channel="groheondus:sense:groheondus:appliance:444e8400-e29b-11d4-a716-446655440000:humidity"}
+Number Humidity_Sense "Humidity [%.1f]" {channel="groheondus:sense:groheondus:appliance:444e8400-e29b-11d4-a716-446655440000:humidity"}
 ````
 

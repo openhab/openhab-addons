@@ -37,8 +37,11 @@ public abstract class GroheOndusBaseHandler<T extends BaseAppliance, M> extends 
 
     protected @Nullable GroheOndusApplianceConfiguration config;
 
-    public GroheOndusBaseHandler(Thing thing) {
+    private final int applianceType;
+
+    public GroheOndusBaseHandler(Thing thing, int applianceType) {
         super(thing);
+        this.applianceType = applianceType;
     }
 
     @Override
@@ -150,5 +153,7 @@ public abstract class GroheOndusBaseHandler<T extends BaseAppliance, M> extends 
 
     protected abstract int getPollingInterval(T appliance);
 
-    protected abstract int getType();
+    private int getType() {
+        return this.applianceType;
+    };
 }
