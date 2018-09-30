@@ -26,7 +26,7 @@ public abstract class IhcBaseService extends IhcHttpsClient {
             + "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">\n"
             + " <soapenv:Body>\n"
             + " </soapenv:Body>\n"
-            + "</soapenv:Envelope>\n";
+            + "</soapenv:Envelope>";
     // @formatter:on
 
     protected String url;

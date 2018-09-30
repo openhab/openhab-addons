@@ -43,7 +43,7 @@ public class IhcAuthenticationService extends IhcBaseService {
         // @formatter:off
         final String soapQuery =
                   "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n"
+                + "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n"
                 + " <soapenv:Body>\n"
                 + "  <authenticate1 xmlns=\"utcs\">\n"
                 + "   <password>%s</password>\n"

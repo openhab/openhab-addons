@@ -17,6 +17,7 @@ import java.net.SocketTimeoutException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
+import org.openhab.binding.ihc.internal.ws.ResourceFileUtils;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSLoginResult;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
 import org.openhab.binding.ihc.internal.ws.http.IhcConnectionPool;
@@ -31,127 +32,24 @@ public class IhcAuthenticationServiceTest {
     private IhcAuthenticationService ihcAuthenticationService;
     private final String url = "https://1.1.1.1/ws/AuthenticationService";
 
-    // @formatter:off
-    private final String querySuccesfulLogin =
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-          + "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n"
-          + " <soapenv:Body>\n"
-          + "  <authenticate1 xmlns=\"utcs\">\n"
-          + "   <password>pass</password>\n"
-          + "   <username>user</username>\n"
-          + "   <application>treeview</application>\n"
-          + "  </authenticate1>\n"
-          + " </soapenv:Body>\n"
-          + "</soapenv:Envelope>";
-
-    private final String responseSuccesfulLogin =
-            "<?xml version='1.0' encoding='UTF-8'?>\n" +
-            "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n" +
-            "<SOAP-ENV:Body>\n" +
-            "<ns1:authenticate2 xmlns:ns1=\"utcs\" xsi:type=\"ns1:WSLoginResult\">\n" +
-            "<ns1:loggedInUser xsi:type=\"ns1:WSUser\">\n" +
-            "<ns1:createdDate xsi:type=\"ns1:WSDate\">\n" +
-            "<ns1:day xsi:type=\"xsd:int\">13</ns1:day>\n" +
-            "\n" +
-            "<ns1:monthWithJanuaryAsOne xsi:type=\"xsd:int\">4</ns1:monthWithJanuaryAsOne>\n" +
-            "\n" +
-            "<ns1:hours xsi:type=\"xsd:int\">19</ns1:hours>\n" +
-            "\n" +
-            "<ns1:minutes xsi:type=\"xsd:int\">43</ns1:minutes>\n" +
-            "\n" +
-            "<ns1:seconds xsi:type=\"xsd:int\">9</ns1:seconds>\n" +
-            "\n" +
-            "<ns1:year xsi:type=\"xsd:int\">2018</ns1:year>\n" +
-            "</ns1:createdDate>\n" +
-            "\n" +
-            "<ns1:loginDate xsi:type=\"ns1:WSDate\">\n" +
-            "<ns1:day xsi:type=\"xsd:int\">28</ns1:day>\n" +
-            "\n" +
-            "<ns1:monthWithJanuaryAsOne xsi:type=\"xsd:int\">6</ns1:monthWithJanuaryAsOne>\n" +
-            "\n" +
-            "<ns1:hours xsi:type=\"xsd:int\">20</ns1:hours>\n" +
-            "\n" +
-            "<ns1:minutes xsi:type=\"xsd:int\">2</ns1:minutes>\n" +
-            "\n" +
-            "<ns1:seconds xsi:type=\"xsd:int\">28</ns1:seconds>\n" +
-            "\n" +
-            "<ns1:year xsi:type=\"xsd:int\">2018</ns1:year>\n" +
-            "</ns1:loginDate>\n" +
-            "\n" +
-            "<ns1:username xsi:type=\"xsd:string\">user</ns1:username>\n" +
-            "\n" +
-            "<ns1:password xsi:type=\"xsd:string\">pass</ns1:password>\n" +
-            "\n" +
-            "<ns1:email xsi:type=\"xsd:string\" xsi:nil=\"true\">\n" +
-            "</ns1:email>\n" +
-            "\n" +
-            "<ns1:firstname xsi:type=\"xsd:string\" xsi:nil=\"true\">\n" +
-            "</ns1:firstname>\n" +
-            "\n" +
-            "<ns1:lastname xsi:type=\"xsd:string\" xsi:nil=\"true\">\n" +
-            "</ns1:lastname>\n" +
-            "\n" +
-            "<ns1:phone xsi:type=\"xsd:string\" xsi:nil=\"true\">\n" +
-            "</ns1:phone>\n" +
-            "\n" +
-            "<ns1:group xsi:type=\"ns1:WSUserGroup\">\n" +
-            "<ns1:type xsi:type=\"xsd:string\">text.usermanager.group_administrators</ns1:type>\n" +
-            "</ns1:group>\n" +
-            "\n" +
-            "<ns1:project xsi:type=\"xsd:string\" xsi:nil=\"true\">\n" +
-            "</ns1:project>\n" +
-            "</ns1:loggedInUser>\n" +
-            "\n" +
-            "<ns1:loginWasSuccessful xsi:type=\"xsd:boolean\">true</ns1:loginWasSuccessful>\n" +
-            "\n" +
-            "<ns1:loginFailedDueToConnectionRestrictions xsi:type=\"xsd:boolean\">false</ns1:loginFailedDueToConnectionRestrictions>\n" +
-            "\n" +
-            "<ns1:loginFailedDueToInsufficientUserRights xsi:type=\"xsd:boolean\">false</ns1:loginFailedDueToInsufficientUserRights>\n" +
-            "\n" +
-            "<ns1:loginFailedDueToAccountInvalid xsi:type=\"xsd:boolean\">false</ns1:loginFailedDueToAccountInvalid>\n" +
-            "</ns1:authenticate2>\n" +
-            "</SOAP-ENV:Body>\n" +
-            "</SOAP-ENV:Envelope>\n";
-
-    private final String queryLoginFailed =
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-          + "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n"
-          + " <soapenv:Body>\n"
-          + "  <authenticate1 xmlns=\"utcs\">\n"
-          + "   <password>wrong</password>\n"
-          + "   <username>user</username>\n"
-          + "   <application>treeview</application>\n"
-          + "  </authenticate1>\n"
-          + " </soapenv:Body>\n"
-          + "</soapenv:Envelope>";
-
-    private final String responseLoginFailed =
-            "<?xml version='1.0' encoding='UTF-8'?>\n" +
-            "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n" +
-            "<SOAP-ENV:Body>\n" +
-            "<ns1:authenticate2 xmlns:ns1=\"utcs\" xsi:type=\"ns1:WSLoginResult\">\n" +
-            "<ns1:loggedInUser xsi:nil=\"true\" xsi:type=\"ns1:WSUser\">\n" +
-            "</ns1:loggedInUser>\n" +
-            "\n" +
-            "<ns1:loginWasSuccessful xsi:type=\"xsd:boolean\">false</ns1:loginWasSuccessful>\n" +
-            "\n" +
-            "<ns1:loginFailedDueToConnectionRestrictions xsi:type=\"xsd:boolean\">false</ns1:loginFailedDueToConnectionRestrictions>\n" +
-            "\n" +
-            "<ns1:loginFailedDueToInsufficientUserRights xsi:type=\"xsd:boolean\">false</ns1:loginFailedDueToInsufficientUserRights>\n" +
-            "\n" +
-            "<ns1:loginFailedDueToAccountInvalid xsi:type=\"xsd:boolean\">true</ns1:loginFailedDueToAccountInvalid>\n" +
-            "</ns1:authenticate2>\n" +
-            "</SOAP-ENV:Body>\n" +
-            "</SOAP-ENV:Envelope>\n";
-    // @formatter:on
-
     @Before
     public void setUp() throws IhcExecption, SocketTimeoutException {
         ihcAuthenticationService = spy(new IhcAuthenticationService(url, 0, new IhcConnectionPool()));
         doNothing().when(ihcAuthenticationService).openConnection(eq(url));
 
+        final String querySuccesfulLogin = ResourceFileUtils
+                .getFileContent("src/test/resources/SuccesfulLoginQuery.xml");
+        final String responseSuccesfulLogin = ResourceFileUtils
+                .getFileContent("src/test/resources/SuccesfulLoginResponse.xml");
+
         doReturn(responseSuccesfulLogin).when(ihcAuthenticationService).sendQuery(eq(querySuccesfulLogin),
                 ArgumentMatchers.anyInt());
+
+        final String queryLoginFailed = ResourceFileUtils
+                .getFileContent("src/test/resources/LoginFailedQuery.xml");
+        final String responseLoginFailed = ResourceFileUtils
+                .getFileContent("src/test/resources/LoginFailedResponse.xml");
+
         doReturn(responseLoginFailed).when(ihcAuthenticationService).sendQuery(eq(queryLoginFailed),
                 ArgumentMatchers.anyInt());
     }

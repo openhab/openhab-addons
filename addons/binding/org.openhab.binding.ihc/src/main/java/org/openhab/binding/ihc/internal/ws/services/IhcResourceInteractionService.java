@@ -71,7 +71,7 @@ public class IhcResourceInteractionService extends IhcBaseService {
                 + " <soapenv:Body>\n"
                 + "  <ns1:getRuntimeValue1 xmlns:ns1=\"utcs\">%s</ns1:getRuntimeValue1>\n"
                 + " </soapenv:Body>\n"
-                + "</soapenv:Envelope>\n";
+                + "</soapenv:Envelope>";
         // @formatter:on
 
         String query = String.format(soapQuery, String.valueOf(resoureId));
@@ -340,7 +340,7 @@ public class IhcResourceInteractionService extends IhcBaseService {
                 + "   <isValueRuntime>true</isValueRuntime>\n"
                 + "  </setResourceValue1>\n"
                 + " </soap:Body>\n"
-                + "</soap:Envelope>\n";
+                + "</soap:Envelope>";
         // @formatter:on
 
         String query = String.format(soapQuery, value.isValue() ? "true" : "false", value.getResourceID());
@@ -363,7 +363,7 @@ public class IhcResourceInteractionService extends IhcBaseService {
                 + "   <isValueRuntime>true</isValueRuntime>\n"
                 + "  </setResourceValue1>\n"
                 + " </soap:Body>\n"
-                + "</soap:Envelope>\n";
+                + "</soap:Envelope>";
         // @formatter:on
 
         String query = String.format(soapQuery, value.getMaximumValue(), value.getMinimumValue(),
