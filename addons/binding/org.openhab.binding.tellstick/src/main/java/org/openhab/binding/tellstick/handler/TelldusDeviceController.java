@@ -18,8 +18,7 @@ import org.tellstick.device.iface.Device;
 /**
  * Interface for telldus controllers. This is used to send and get status of devices from the controller.
  *
- * @author Jarle Hjortland
- *
+ * @author Jarle Hjortland - Initial contribution
  */
 public interface TelldusDeviceController {
 

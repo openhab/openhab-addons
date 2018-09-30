@@ -55,9 +55,8 @@ import org.tellstick.device.iface.SwitchableDevice;
  * {@link TelldusLiveDeviceController} is the communication with Telldus Live service (Tellstick.NET and ZNET)
  * This controller uses XML based Rest API to communicate with Telldus Live.
  *
- * @author Jarle Hjortland
+ * @author Jarle Hjortland - Initial contribution
  */
-
 public class TelldusLiveDeviceController implements DeviceChangeListener, SensorListener, TelldusDeviceController {
     private final Logger logger = LoggerFactory.getLogger(TelldusLiveDeviceController.class);
     private long lastSend = 0;

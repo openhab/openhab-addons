@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 /**
  * Class used to deserialize XML from Telldus Live.
  *
- * @author Jarle Hjortland
+ * @author Jarle Hjortland - Initial contribution
  */
 public class NameToDataType extends XmlAdapter<String, LiveDataType> {
     @Override

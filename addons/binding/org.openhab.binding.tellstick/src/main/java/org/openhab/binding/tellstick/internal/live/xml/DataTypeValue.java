@@ -15,8 +15,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 /**
  * Class used to deserialize XML from Telldus Live.
  *
- * @author Jarle Hjortland
- *
+ * @author Jarle Hjortland - Initial contribution
  */
 @XmlRootElement(name = "data")
 public class DataTypeValue {
@@ -48,11 +47,6 @@ public class DataTypeValue {
         this.data = data;
     }
 
-    @Override
-    public String toString() {
-        return "DataTypeValue [dataType=" + dataType + ", data=" + data + ", unit=" + unit + "]";
-    }
-
     @XmlAttribute(name = "unit")
     public String getUnit() {
         return unit;
@@ -69,5 +63,10 @@ public class DataTypeValue {
 
     public void setScale(Integer scale) {
         this.scale = scale;
+    }
+
+    @Override
+    public String toString() {
+        return "DataTypeValue [dataType=" + dataType + ", data=" + data + ", unit=" + unit + "]";
     }
 }

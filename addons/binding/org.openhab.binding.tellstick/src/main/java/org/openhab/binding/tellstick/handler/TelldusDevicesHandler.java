@@ -47,8 +47,7 @@ import org.tellstick.enums.DeviceType;
 /**
  * Handler for telldus and tellstick devices. This sends the commands to the correct bridge.
  *
- * @author Jarle Hjortland
- *
+ * @author Jarle Hjortland - Initial contribution
  */
 public class TelldusDevicesHandler extends BaseThingHandler implements DeviceStatusListener {
 
@@ -256,7 +255,7 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
                 updateDeviceState(device);
             } else if (event instanceof TellstickNetSensorEvent) {
                 TellstickNetSensorEvent sensorevent = (TellstickNetSensorEvent) event;
-                updateSensorDataState(sensorevent.getLiveDataType());
+                updateSensorDataState(sensorevent.getDataTypeValue());
             } else if (event instanceof TellstickSensorEvent) {
                 TellstickSensorEvent sensorevent = (TellstickSensorEvent) event;
                 updateSensorDataState(sensorevent.getDataType(), sensorevent.getData());

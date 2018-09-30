@@ -14,7 +14,7 @@ import org.tellstick.device.TellstickException;
  * {@link TelldusLiveException} is used when there is exception communicating with Telldus Live.
  * This exception extends the Telldus Core exception.
  *
- * @author Jarle Hjortland
+ * @author Jarle Hjortland - Initial contribution
  */
 public class TelldusLiveException extends TellstickException {
 

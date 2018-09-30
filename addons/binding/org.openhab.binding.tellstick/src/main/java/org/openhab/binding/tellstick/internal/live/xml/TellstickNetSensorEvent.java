@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,16 +9,16 @@
 package org.openhab.binding.tellstick.internal.live.xml;
 
 import org.openhab.binding.tellstick.internal.TellstickRuntimeException;
+import org.tellstick.device.TellstickSensorEvent;
 import org.tellstick.device.iface.TellstickEvent;
 import org.tellstick.enums.DataType;
 
 /**
  * This class is used for events for the telldus live sensors.
  *
- * @author jarle hjortland
- *
+ * @author Jarle Hjortland - Initial contribution
  */
-public class TellstickNetSensorEvent extends org.tellstick.device.TellstickSensorEvent implements TellstickEvent {
+public class TellstickNetSensorEvent extends TellstickSensorEvent implements TellstickEvent {
 
     private DataTypeValue dataType;
 
@@ -28,7 +28,7 @@ public class TellstickNetSensorEvent extends org.tellstick.device.TellstickSenso
         this.dataType = dataValue;
     }
 
-    public DataTypeValue getLiveDataType() {
+    public DataTypeValue getDataTypeValue() {
         return dataType;
     }
 

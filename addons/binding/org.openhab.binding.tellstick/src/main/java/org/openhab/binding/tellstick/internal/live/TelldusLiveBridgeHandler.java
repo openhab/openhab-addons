@@ -44,8 +44,7 @@ import org.tellstick.device.iface.Device;
  * to the framework. All {@link TelldusDevicesHandler}s use the
  * {@link TelldusLiveDeviceController} to execute the actual commands.
  *
- * @author Jarle Hjortland
- *
+ * @author Jarle Hjortland - Initial contribution
  */
 public class TelldusLiveBridgeHandler extends BaseBridgeHandler implements TelldusBridgeHandler {
 

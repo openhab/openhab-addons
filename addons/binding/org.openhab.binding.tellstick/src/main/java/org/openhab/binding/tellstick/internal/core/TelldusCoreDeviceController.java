@@ -38,9 +38,8 @@ import org.tellstick.device.iface.SwitchableDevice;
  * This communicates with the telldus DLL using the javatellstick
  * library.
  *
- * @author Jarle Hjortland
+ * @author Jarle Hjortland - Initial contribution
  * @author Elias Gabrielsson
- *
  */
 public class TelldusCoreDeviceController implements DeviceChangeListener, SensorListener, TelldusDeviceController {
     private final Logger logger = LoggerFactory.getLogger(TelldusCoreDeviceController.class);

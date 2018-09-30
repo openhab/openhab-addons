@@ -16,15 +16,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * Class used to deserialize XML from Telldus Live.
  *
- * @author Jarle Hjortland
- *
+ * @author Jarle Hjortland - Initial contribution
  */
 @XmlRootElement(name = "sensors")
 public class TellstickNetSensors {
-
-    public TellstickNetSensors() {
-        super();
-    }
 
     List<TellstickNetSensor> sensors;
 

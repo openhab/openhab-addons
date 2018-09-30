@@ -23,8 +23,7 @@ import org.tellstick.enums.DeviceType;
 /**
  * Class used to deserialize XML from Telldus Live.
  *
- * @author Jarle Hjortland
- *
+ * @author Jarle Hjortland - Initial contribution
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "sensor")
@@ -90,15 +89,6 @@ public class TellstickNetSensor implements Device {
         this.name = name;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("TellstickNetSensor [deviceId=").append(deviceId).append(", protocol=").append(protocol)
-                .append(", name=").append(name).append(", online=").append(online).append(", data=").append(data)
-                .append(", lastUpdated=").append(lastUpdated).append(", updated=").append(updated).append("]");
-        return builder.toString();
-    }
-
     public boolean getOnline() {
         return online;
     }
@@ -131,7 +121,7 @@ public class TellstickNetSensor implements Device {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
+        int prime = 31;
         int result = 1;
         result = prime * result + deviceId;
         return result;
@@ -182,5 +172,14 @@ public class TellstickNetSensor implements Device {
 
     public void setBattery(Long battery) {
         this.battery = battery;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("TellstickNetSensor [deviceId=").append(deviceId).append(", protocol=").append(protocol)
+                .append(", name=").append(name).append(", online=").append(online).append(", data=").append(data)
+                .append(", lastUpdated=").append(lastUpdated).append(", updated=").append(updated).append("]");
+        return builder.toString();
     }
 }
