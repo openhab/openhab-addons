@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.knx.internal.handler;
 
-import static org.openhab.binding.internal.knx.KNXBindingConstants.*;
+import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -38,8 +38,8 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.internal.knx.KNXBindingConstants;
-import org.openhab.binding.internal.knx.KNXTypeMapper;
+import org.openhab.binding.knx.internal.KNXBindingConstants;
+import org.openhab.binding.knx.internal.KNXTypeMapper;
 import org.openhab.binding.knx.internal.channel.KNXChannelType;
 import org.openhab.binding.knx.internal.channel.KNXChannelTypes;
 import org.openhab.binding.knx.internal.client.AbstractKNXClient;

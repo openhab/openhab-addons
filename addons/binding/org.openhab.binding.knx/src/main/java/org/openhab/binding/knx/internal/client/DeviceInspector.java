@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.knx.internal.client;
 
-import static org.openhab.binding.internal.knx.KNXBindingConstants.*;
+import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 import static org.openhab.binding.knx.internal.handler.DeviceConstants.*;
 
 import java.util.Collections;

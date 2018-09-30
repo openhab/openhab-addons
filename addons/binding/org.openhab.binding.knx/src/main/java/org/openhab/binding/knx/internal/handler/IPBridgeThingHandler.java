@@ -21,7 +21,7 @@ import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.openhab.binding.internal.knx.KNXBindingConstants;
+import org.openhab.binding.knx.internal.KNXBindingConstants;
 import org.openhab.binding.knx.internal.client.CustomKNXNetworkLinkIP;
 import org.openhab.binding.knx.internal.client.IPClient;
 import org.openhab.binding.knx.internal.client.KNXClient;
