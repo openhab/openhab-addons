@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.openhab.binding.miele.handler.CoffeeMachineHandler;
 import org.openhab.binding.miele.handler.DishWasherHandler;
 import org.openhab.binding.miele.handler.FridgeFreezerHandler;
 import org.openhab.binding.miele.handler.FridgeHandler;
@@ -101,6 +102,9 @@ public class MieleHandlerFactory extends BaseThingHandlerFactory {
             }
             if (thing.getThingTypeUID().equals(THING_TYPE_DISHWASHER)) {
                 return new DishWasherHandler(thing);
+            }
+            if (thing.getThingTypeUID().equals(THING_TYPE_COFFEEMACHINE)) {
+                return new CoffeeMachineHandler(thing);
             }
         }
 
