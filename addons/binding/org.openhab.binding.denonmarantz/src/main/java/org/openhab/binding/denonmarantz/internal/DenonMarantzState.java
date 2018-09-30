@@ -16,7 +16,6 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.denonmarantz.DenonMarantzBindingConstants;
 
 /**
  * Represents the state of the handled DenonMarantz AVR

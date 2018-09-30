@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.denonmarantz.handler;
+package org.openhab.binding.denonmarantz.internal.handler;
 
-import static org.openhab.binding.denonmarantz.DenonMarantzBindingConstants.*;
+import static org.openhab.binding.denonmarantz.internal.DenonMarantzBindingConstants.*;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -44,7 +44,6 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.denonmarantz.DenonMarantzBindingConstants;
 import org.openhab.binding.denonmarantz.internal.DenonMarantzState;
 import org.openhab.binding.denonmarantz.internal.DenonMarantzStateChangedListener;
 import org.openhab.binding.denonmarantz.internal.UnsupportedCommandTypeException;
@@ -261,8 +260,8 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
             config.setTelnet(telnetEnable);
             config.setZoneCount(zoneCount);
             Configuration configuration = editConfiguration();
-            configuration.put(DenonMarantzBindingConstants.PARAMETER_TELNET_ENABLED, telnetEnable);
-            configuration.put(DenonMarantzBindingConstants.PARAMETER_ZONE_COUNT, zoneCount);
+            configuration.put(PARAMETER_TELNET_ENABLED, telnetEnable);
+            configuration.put(PARAMETER_ZONE_COUNT, zoneCount);
             updateConfiguration(configuration);
         }
     }
@@ -305,14 +304,13 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
         Set<Entry<String, ChannelTypeUID>> channelsToRemove = new HashSet<>();
 
         if (zoneCount > 1) {
-            List<Entry<String, ChannelTypeUID>> channelsToAdd = new ArrayList<>(
-                    DenonMarantzBindingConstants.ZONE2_CHANNEL_TYPES.entrySet());
+            List<Entry<String, ChannelTypeUID>> channelsToAdd = new ArrayList<>(ZONE2_CHANNEL_TYPES.entrySet());
 
             if (zoneCount > 2) {
                 // add channels for zone 3 (more zones currently not supported)
-                channelsToAdd.addAll(DenonMarantzBindingConstants.ZONE3_CHANNEL_TYPES.entrySet());
+                channelsToAdd.addAll(ZONE3_CHANNEL_TYPES.entrySet());
             } else {
-                channelsToRemove.addAll(DenonMarantzBindingConstants.ZONE3_CHANNEL_TYPES.entrySet());
+                channelsToRemove.addAll(ZONE3_CHANNEL_TYPES.entrySet());
             }
 
             // filter out the already existing channels
@@ -321,7 +319,7 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
             // add the channels that were not yet added
             if (!channelsToAdd.isEmpty()) {
                 for (Entry<String, ChannelTypeUID> entry : channelsToAdd) {
-                    String itemType = DenonMarantzBindingConstants.CHANNEL_ITEM_TYPES.get(entry.getKey());
+                    String itemType = CHANNEL_ITEM_TYPES.get(entry.getKey());
                     Channel channel = ChannelBuilder
                             .create(new ChannelUID(this.getThing().getUID(), entry.getKey()), itemType)
                             .withType(entry.getValue()).build();
@@ -332,8 +330,8 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
                 logger.debug("No zone channels have been added");
             }
         } else {
-            channelsToRemove.addAll(DenonMarantzBindingConstants.ZONE2_CHANNEL_TYPES.entrySet());
-            channelsToRemove.addAll(DenonMarantzBindingConstants.ZONE3_CHANNEL_TYPES.entrySet());
+            channelsToRemove.addAll(ZONE2_CHANNEL_TYPES.entrySet());
+            channelsToRemove.addAll(ZONE3_CHANNEL_TYPES.entrySet());
         }
 
         // filter out the non-existing channels
