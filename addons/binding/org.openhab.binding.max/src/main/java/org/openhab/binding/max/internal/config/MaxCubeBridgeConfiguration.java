@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.max.internal.config;
 
-import org.openhab.binding.max.MaxBindingConstants;
+import org.openhab.binding.max.internal.MaxBindingConstants;
 
 /**
  * Configuration class for {@link MaxBindingConstants} bridge used to connect to the
