@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.miele.handler;
+package org.openhab.binding.miele.internal.handler;
 
-import static org.openhab.binding.miele.MieleBindingConstants.APPLIANCE_ID;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.APPLIANCE_ID;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -21,18 +21,18 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonElement;
 
 /**
- * The {@link OvenHandler} is responsible for handling commands,
+ * The {@link WashingMachineHandler} is responsible for handling commands,
  * which are sent to one of the channels
  *
  * @author Karel Goderis - Initial contribution
  * @author Kai Kreuzer - fixed handling of REFRESH commands
  */
-public class OvenHandler extends MieleApplianceHandler<OvenChannelSelector> {
+public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineChannelSelector> {
 
-    private final Logger logger = LoggerFactory.getLogger(OvenHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(WashingMachineHandler.class);
 
-    public OvenHandler(Thing thing) {
-        super(thing, OvenChannelSelector.class, "Oven");
+    public WashingMachineHandler(Thing thing) {
+        super(thing, WashingMachineChannelSelector.class, "WashingMachine");
     }
 
     @Override
@@ -43,7 +43,8 @@ public class OvenHandler extends MieleApplianceHandler<OvenChannelSelector> {
         String channelID = channelUID.getId();
         String uid = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
 
-        OvenChannelSelector selector = (OvenChannelSelector) getValueSelectorFromChannelID(channelID);
+        WashingMachineChannelSelector selector = (WashingMachineChannelSelector) getValueSelectorFromChannelID(
+                channelID);
         JsonElement result = null;
 
         try {
@@ -51,14 +52,8 @@ public class OvenHandler extends MieleApplianceHandler<OvenChannelSelector> {
                 switch (selector) {
                     case SWITCH: {
                         if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "switchOn");
+                            result = bridgeHandler.invokeOperation(uid, modelID, "start");
                         } else if (command.equals(OnOffType.OFF)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "switchOff");
-                        }
-                        break;
-                    }
-                    case STOP: {
-                        if (command.equals(OnOffType.ON)) {
                             result = bridgeHandler.invokeOperation(uid, modelID, "stop");
                         }
                         break;
@@ -81,4 +76,5 @@ public class OvenHandler extends MieleApplianceHandler<OvenChannelSelector> {
                     channelID, command.toString());
         }
     }
+
 }

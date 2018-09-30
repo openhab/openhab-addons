@@ -6,8 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.miele.handler;
+package org.openhab.binding.miele.internal.handler;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,26 +16,23 @@ import java.util.Map.Entry;
 import java.util.TimeZone;
 
 import org.eclipse.smarthome.core.library.types.DateTimeType;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.miele.handler.MieleBridgeHandler.DeviceMetaData;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
 
 import com.google.gson.JsonElement;
 
 /**
- * The {@link ApplianceChannelSelector} for tumble dryers
+ * The {@link ApplianceChannelSelector} for dishwashers
  *
  * @author Karel Goderis - Initial contribution
  * @author Kai Kreuzer - Changed START_TIME to DateTimeType
  */
-public enum TumbleDryerChannelSelector implements ApplianceChannelSelector {
+public enum DishwasherChannelSelector implements ApplianceChannelSelector {
 
     PRODUCT_TYPE("productTypeId", "productType", StringType.class, true),
     DEVICE_TYPE("mieleDeviceType", "deviceType", StringType.class, true),
@@ -42,7 +40,6 @@ public enum TumbleDryerChannelSelector implements ApplianceChannelSelector {
     COMPANY_ID("companyId", "companyId", StringType.class, true),
     STATE("state", "state", StringType.class, false),
     PROGRAMID("programId", "program", StringType.class, false),
-    PROGRAMTYPE("programType", "type", StringType.class, false),
     PROGRAMPHASE("phase", "phase", StringType.class, false),
     START_TIME("startTime", "start", DateTimeType.class, false) {
         @Override
@@ -100,15 +97,8 @@ public enum TumbleDryerChannelSelector implements ApplianceChannelSelector {
             return getState(DATE_FORMATTER.format(date));
         }
     },
-    DRYING_STEP("dryingStep", "step", DecimalType.class, false) {
-        @Override
-        public State getState(String s, DeviceMetaData dmd) {
-            return getState(s);
-        }
-    },
     DOOR("signalDoor", "door", OpenClosedType.class, false) {
         @Override
-
         public State getState(String s, DeviceMetaData dmd) {
             if ("true".equals(s)) {
                 return getState("OPEN");
@@ -123,14 +113,12 @@ public enum TumbleDryerChannelSelector implements ApplianceChannelSelector {
     },
     SWITCH(null, "switch", OnOffType.class, false);
 
-    private final Logger logger = LoggerFactory.getLogger(TumbleDryerChannelSelector.class);
-
     private final String mieleID;
     private final String channelID;
     private final Class<? extends Type> typeClass;
     private final boolean isProperty;
 
-    private TumbleDryerChannelSelector(String propertyID, String channelID, Class<? extends Type> typeClass,
+    DishwasherChannelSelector(String propertyID, String channelID, Class<? extends Type> typeClass,
             boolean isProperty) {
         this.mieleID = propertyID;
         this.channelID = channelID;
@@ -187,8 +175,10 @@ public enum TumbleDryerChannelSelector implements ApplianceChannelSelector {
             if (state != null) {
                 return state;
             }
-        } catch (Exception e) {
-            logger.error("An exception occurred while converting '{}' into a State", s);
+        } catch (NoSuchMethodException e) {
+        } catch (IllegalArgumentException e) {
+        } catch (IllegalAccessException e) {
+        } catch (InvocationTargetException e) {
         }
 
         return null;

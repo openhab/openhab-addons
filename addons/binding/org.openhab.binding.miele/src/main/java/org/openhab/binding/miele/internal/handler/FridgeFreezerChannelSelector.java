@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.miele.handler;
+package org.openhab.binding.miele.internal.handler;
 
 import java.lang.reflect.Method;
 import java.util.Map.Entry;
@@ -18,32 +18,48 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.miele.handler.MieleBridgeHandler.DeviceMetaData;
+import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
 
 /**
- * The {@link ApplianceChannelSelector} for fridges
+ * The {@link ApplianceChannelSelector} for fridges with
+ * a freezer compartment
  *
  * @author Karel Goderis - Initial contribution
  */
-public enum FridgeChannelSelector implements ApplianceChannelSelector {
+public enum FridgeFreezerChannelSelector implements ApplianceChannelSelector {
 
     PRODUCT_TYPE("productTypeId", "productType", StringType.class, true),
     DEVICE_TYPE("mieleDeviceType", "deviceType", StringType.class, true),
     BRAND_ID("brandId", "brandId", StringType.class, true),
     COMPANY_ID("companyId", "companyId", StringType.class, true),
     STATE("state", "state", StringType.class, false),
+    FREEZERSTATE("freezerState", "freezerstate", StringType.class, false),
+    FRIDGESTATE("fridgeState", "fridgestate", StringType.class, false),
     SUPERCOOL(null, "supercool", OnOffType.class, false),
-    FRIDGECURRENTTEMP("currentTemperature", "current", DecimalType.class, false) {
+    SUPERFREEZE(null, "superfreeze", OnOffType.class, false),
+    FREEZERCURRENTTEMP("freezerCurrentTemperature", "freezercurrent", DecimalType.class, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
             return getState(s);
         }
     },
-    FRIDGETARGETTEMP("targetTemperature", "target", DecimalType.class, false) {
+    FREEZERTARGETTEMP("freezerTargetTemperature", "freezertarget", DecimalType.class, false) {
+        @Override
+        public State getState(String s, DeviceMetaData dmd) {
+            return getState(s);
+        }
+    },
+    FRIDGECURRENTTEMP("fridgeCurrentTemperature", "fridgecurrent", DecimalType.class, false) {
+        @Override
+        public State getState(String s, DeviceMetaData dmd) {
+            return getState(s);
+        }
+    },
+    FRIDGETARGETTEMP("fridgeTargetTemperature", "fridgetarget", DecimalType.class, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
             return getState(s);
@@ -66,14 +82,14 @@ public enum FridgeChannelSelector implements ApplianceChannelSelector {
     },
     START(null, "start", OnOffType.class, false);
 
-    private final Logger logger = LoggerFactory.getLogger(FridgeChannelSelector.class);
+    private final Logger logger = LoggerFactory.getLogger(FridgeFreezerChannelSelector.class);
 
     private final String mieleID;
     private final String channelID;
     private final Class<? extends Type> typeClass;
     private final boolean isProperty;
 
-    FridgeChannelSelector(String propertyID, String channelID, Class<? extends Type> typeClass,
+    FridgeFreezerChannelSelector(String propertyID, String channelID, Class<? extends Type> typeClass,
             boolean isProperty) {
         this.mieleID = propertyID;
         this.channelID = channelID;

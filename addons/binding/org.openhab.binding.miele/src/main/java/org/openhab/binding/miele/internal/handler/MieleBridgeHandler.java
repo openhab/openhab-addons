@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.miele.handler;
+package org.openhab.binding.miele.internal.handler;
 
-import static org.openhab.binding.miele.MieleBindingConstants.*;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
