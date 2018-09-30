@@ -16,7 +16,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.openhab.binding.internal.yamahareceiver.TestModels.*;
+import static org.openhab.binding.yamahareceiver.internal.TestModels.*;
 import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone.Main_Zone;
 
 /**
