@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.denonmarantz.internal.connector;
 
+import static org.openhab.binding.denonmarantz.internal.DenonMarantzBindingConstants.DB_OFFSET;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.concurrent.ScheduledExecutorService;
@@ -19,7 +21,6 @@ import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.denonmarantz.DenonMarantzBindingConstants;
 import org.openhab.binding.denonmarantz.internal.DenonMarantzState;
 import org.openhab.binding.denonmarantz.internal.UnsupportedCommandTypeException;
 import org.openhab.binding.denonmarantz.internal.config.DenonMarantzConfiguration;
@@ -173,8 +174,7 @@ public abstract class DenonMarantzConnector {
             throw new UnsupportedCommandTypeException();
         } else if (dbCommand instanceof DecimalType) {
             // convert dB to 'normal' volume by adding the offset of 80
-            dbCommand = new DecimalType(
-                    ((DecimalType) command).toBigDecimal().add(DenonMarantzBindingConstants.DB_OFFSET));
+            dbCommand = new DecimalType(((DecimalType) command).toBigDecimal().add(DB_OFFSET));
         }
         sendVolumeCommand(dbCommand, zone);
     }

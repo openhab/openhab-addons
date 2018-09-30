@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.denonmarantz.internal;
 
-import static org.openhab.binding.denonmarantz.DenonMarantzBindingConstants.THING_TYPE_AVR;
+import static org.openhab.binding.denonmarantz.internal.DenonMarantzBindingConstants.THING_TYPE_AVR;
 
 import java.util.Collections;
 import java.util.Set;
@@ -20,7 +20,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
-import org.openhab.binding.denonmarantz.handler.DenonMarantzHandler;
+import org.openhab.binding.denonmarantz.internal.handler.DenonMarantzHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 

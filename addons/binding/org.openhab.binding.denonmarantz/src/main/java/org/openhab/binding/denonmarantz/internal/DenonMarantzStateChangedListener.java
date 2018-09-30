@@ -9,7 +9,7 @@
 package org.openhab.binding.denonmarantz.internal;
 
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.denonmarantz.handler.DenonMarantzHandler;
+import org.openhab.binding.denonmarantz.internal.handler.DenonMarantzHandler;
 
 /**
  * Interface to notify the {@link DenonMarantzHandler} about state changes.
