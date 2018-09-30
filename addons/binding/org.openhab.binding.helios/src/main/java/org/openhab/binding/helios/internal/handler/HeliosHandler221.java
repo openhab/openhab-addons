@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.helios.handler;
+package org.openhab.binding.helios.internal.handler;
 
-import static org.openhab.binding.helios.HeliosBindingConstants.*;
+import static org.openhab.binding.helios.internal.HeliosBindingConstants.*;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

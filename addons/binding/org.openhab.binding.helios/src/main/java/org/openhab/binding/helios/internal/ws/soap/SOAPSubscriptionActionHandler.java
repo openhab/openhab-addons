@@ -16,7 +16,7 @@ import javax.xml.soap.SOAPMessage;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 
-import org.openhab.binding.helios.handler.HeliosHandler27;
+import org.openhab.binding.helios.internal.handler.HeliosHandler27;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
