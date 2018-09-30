@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.onkyo.handler;
+package org.openhab.binding.onkyo.internal.handler;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,7 +28,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOParticipant;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
-import org.openhab.binding.onkyo.OnkyoBindingConstants;
+import org.openhab.binding.onkyo.internal.OnkyoBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
