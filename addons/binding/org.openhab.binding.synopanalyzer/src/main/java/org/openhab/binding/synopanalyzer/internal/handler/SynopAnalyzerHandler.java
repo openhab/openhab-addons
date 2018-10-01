@@ -9,7 +9,6 @@
 package org.openhab.binding.synopanalyzer.internal.handler;
 
 import static org.openhab.binding.synopanalyzer.internal.SynopAnalyzerBindingConstants.*;
-import static org.openhab.binding.synopanalyzer.internal.UnitUtils.*;
 
 import java.io.IOException;
 import java.time.ZoneOffset;
@@ -17,16 +16,20 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
-import java.util.TimeZone;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
+import javax.measure.quantity.Angle;
+import javax.measure.quantity.Speed;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -53,24 +56,24 @@ import com.nwpi.synop.SynopShip;
  * @author Gaël L'hopital - Initial contribution
  * @author Mark Herwege - Correction for timezone treatment
  */
-
+@NonNullByDefault
 public class SynopAnalyzerHandler extends BaseThingHandler {
 
     private static final String OGIMET_SYNOP_PATH = "http://www.ogimet.com/cgi-bin/getsynop?block=";
     private static final int REQUEST_TIMEOUT = 5000;
     private static final DateTimeFormatter SYNOP_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMddHH00");
     private static final String MPS = "m/s";
-    private static final String KNOTS = "knots";
-    private static final String UTC = "UTC";
     private static final double KASTEN_POWER = 3.4;
     private static final double OCTA_MAX = 8.0;
 
     private Logger logger = LoggerFactory.getLogger(SynopAnalyzerHandler.class);
 
+    @NonNullByDefault({})
     private ScheduledFuture<?> executionJob;
+    @NonNullByDefault({})
     private SynopAnalyzerConfiguration configuration;
 
-    public SynopAnalyzerHandler(@NonNull Thing thing) {
+    public SynopAnalyzerHandler(Thing thing) {
         super(thing);
     }
 
@@ -85,10 +88,9 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
             updateSynopChannels();
         }, 0, configuration.refreshInterval, TimeUnit.MINUTES);
         updateStatus(ThingStatus.ONLINE);
-
     }
 
-    private Synop getLastAvailableSynop() {
+    private Optional<Synop> getLastAvailableSynop() {
         logger.debug("Retrieving last Synop message");
 
         String url = forgeURL();
@@ -104,31 +106,31 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
                     List<String> messageParts = Arrays.asList(message.split(","));
                     String synopMessage = messageParts.get(messageParts.size() - 1);
 
-                    return createSynopObject(synopMessage);
+                    return Optional.of(createSynopObject(synopMessage));
                 }
+                logger.warn("Message does not belong to station {} : {}", configuration.stationId, message);
             }
             logger.warn("No valid Synop found for last 24h");
         } catch (IOException e) {
             logger.warn("Synop request timedout : {}", e.getMessage());
         }
-        return null;
+        return Optional.empty();
     }
 
     private void updateSynopChannels() {
         logger.debug("Updating device channels");
 
-        Synop synop = getLastAvailableSynop();
-        updateStatus(synop != null ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
-        if (synop != null) {
+        Optional<Synop> synop = getLastAvailableSynop();
+        updateStatus(synop.isPresent() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
+        synop.ifPresent(theSynop -> {
             getThing().getChannels().forEach(channel -> {
                 String channelId = channel.getUID().getId();
-                updateState(channelId, getChannelState(channelId, synop));
+                updateState(channelId, getChannelState(channelId, theSynop));
             });
-        }
+        });
     }
 
     private State getChannelState(String channelId, Synop synop) {
-
         switch (channelId) {
             case HORIZONTAL_VISIBILITY:
                 return new StringType(synop.getHorizontalVisibility());
@@ -142,51 +144,53 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
             case OVERCAST:
                 return new StringType(synop.getOvercast());
             case PRESSURE:
-                return new DecimalType(synop.getPressure());
+                return new QuantityType<>(synop.getPressure(), PRESSURE_UNIT);
             case TEMPERATURE:
-                return new DecimalType(synop.getTemperature());
+                return new QuantityType<>(synop.getTemperature(), TEMPERATURE_UNIT);
             case WIND_ANGLE:
-                return new DecimalType(synop.getWindDirection());
+                return getWindAngle(synop);
             case WIND_DIRECTION:
-                int angle = synop.getWindDirection();
-                String direction = getWindDirection(angle);
-                return new StringType(direction);
-            case WIND_SPEED_MS:
-                if (synop.getWindUnit().equalsIgnoreCase(MPS)) {
-                    return new DecimalType(synop.getWindSpeed());
-                } else {
-                    Double kmhSpeed = knotsToKmh(new Double(synop.getWindSpeed()));
-                    return new DecimalType(kmhToMps(kmhSpeed));
-                }
-            case WIND_SPEED_KNOTS:
-                if (synop.getWindUnit().equalsIgnoreCase(KNOTS)) {
-                    return new DecimalType(synop.getWindSpeed());
-                } else {
-                    Double kmhSpeed = mpsToKmh(new Double(synop.getWindSpeed()));
-                    Double knotSpeed = kmhToKnots(kmhSpeed);
-                    return new DecimalType(knotSpeed);
-                }
+                QuantityType<Angle> angle = getWindAngle(synop);
+                return new StringType(getWindDirection(angle.intValue()));
+            case WIND_STRENGTH:
+                return getWindStrength(synop);
             case WIND_SPEED_BEAUFORT:
-                Double kmhSpeed;
-                if (synop.getWindUnit().equalsIgnoreCase(MPS)) {
-                    kmhSpeed = mpsToKmh(new Double(synop.getWindSpeed()));
-                } else {
-                    kmhSpeed = knotsToKmh(new Double(synop.getWindSpeed()));
-                }
-                Double beaufort = kmhToBeaufort(kmhSpeed);
-                return new DecimalType(beaufort);
+                QuantityType<Speed> windStrength = getWindStrength(synop);
+                QuantityType<Speed> wsKpH = windStrength.toUnit(SIUnits.KILOMETRE_PER_HOUR);
+                return (wsKpH != null) ? new DecimalType(Math.round(Math.pow(wsKpH.floatValue() / 3.01, 0.666666666)))
+                        : UnDefType.UNDEF;
             case TIME_UTC:
-                Calendar observationTime = Calendar.getInstance(TimeZone.getTimeZone(UTC));
-                observationTime.set(Calendar.DAY_OF_MONTH, synop.getDay());
-                observationTime.set(Calendar.HOUR_OF_DAY, synop.getHour());
-                observationTime.set(Calendar.MINUTE, 0);
-                observationTime.set(Calendar.SECOND, 0);
-                observationTime.set(Calendar.MILLISECOND, 0);
-                return new DateTimeType(observationTime);
+                ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
+                int year = synop.getYear() == 0 ? now.getYear() : synop.getYear();
+                int month = synop.getMonth() == 0 ? now.getMonth().getValue() : synop.getMonth();
+                ZonedDateTime zdt = ZonedDateTime.of(year, month, synop.getDay(), synop.getHour(), 0, 0, 0,
+                        ZoneOffset.UTC);
+                return new DateTimeType(zdt);
             default:
                 logger.error("Unsupported channel Id '{}'", channelId);
                 return UnDefType.UNDEF;
         }
+    }
+
+    /**
+     * Returns the wind direction based on degree.
+     */
+    private String getWindDirection(int degree) {
+        double step = 360.0 / WIND_DIRECTIONS.length;
+        double b = Math.floor((degree + (step / 2.0)) / step);
+        return WIND_DIRECTIONS[(int) (b % WIND_DIRECTIONS.length)];
+    }
+
+    private QuantityType<Angle> getWindAngle(Synop synop) {
+        return new QuantityType<>(synop.getWindDirection(), WIND_DIRECTION_UNIT);
+    }
+
+    /**
+     * Returns the wind strength depending upon the unit of the message.
+     */
+    private QuantityType<Speed> getWindStrength(Synop synop) {
+        return new QuantityType<>(synop.getWindSpeed(),
+                MPS.equalsIgnoreCase(synop.getWindUnit()) ? WIND_SPEED_UNIT_MS : WIND_SPEED_UNIT_KNOT);
     }
 
     private Synop createSynopObject(String synopMessage) {
