@@ -95,6 +95,10 @@ public class SonyPS4PacketHandler {
         ivSpec = new IvParameterSpec(remoteSeed);
     }
 
+    public byte[] decryptResponsePacket(byte[] input) {
+        return aesDecryptCipher.update(input);
+    }
+
     public byte[] handleLoginResponse(byte[] input) {
         byte[] output = null;
         try {
@@ -180,7 +184,7 @@ public class SonyPS4PacketHandler {
             aesEncryptCipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec);
             aesDecryptCipher = Cipher.getInstance("AES/CBC/NoPadding");
             aesDecryptCipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec);
-            output = aesEncryptCipher.doFinal(packet.array());
+            output = aesEncryptCipher.update(packet.array());
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (NoSuchPaddingException e) {
@@ -188,10 +192,6 @@ public class SonyPS4PacketHandler {
         } catch (InvalidKeyException e) {
             e.printStackTrace();
         } catch (InvalidAlgorithmParameterException e) {
-            e.printStackTrace();
-        } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
-        } catch (BadPaddingException e) {
             e.printStackTrace();
         }
         return output;
@@ -205,10 +205,10 @@ public class SonyPS4PacketHandler {
     }
 
     public byte[] makeStandbyPacket() {
-        ByteBuffer packet = newPacketOfSize(12);
+        ByteBuffer packet = newPacketOfSize(16);
         packet.putInt(STANDBY_REQ);
         packet.putLong(0); // Padding
-        return packet.array();
+        return aesEncryptCipher.update(packet.array());
     }
 
     private Cipher getRsaCipher(String key) {

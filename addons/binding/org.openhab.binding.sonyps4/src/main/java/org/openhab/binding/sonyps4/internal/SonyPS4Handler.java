@@ -219,12 +219,8 @@ public class SonyPS4Handler extends BaseThingHandler {
         if (!openComs()) {
             return;
         }
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e1) {
-            logger.debug("PS4 coms interrupted: {}", e1);
-        }
         try (SocketChannel channel = SocketChannel.open()) {
+            Thread.sleep(1000);
             logger.debug("PS4 tcp connecting");
             String hostName = config.getIpAddress();
             channel.configureBlocking(true);
@@ -232,33 +228,53 @@ public class SonyPS4Handler extends BaseThingHandler {
             channel.finishConnect();
 
             logger.debug("PS4 sending hello packet");
-            byte[] hello = ps4PacketHandler.makeHelloPacket();
-            channel.write(ByteBuffer.wrap(hello));
+            byte[] outPacket = ps4PacketHandler.makeHelloPacket();
+            channel.write(ByteBuffer.wrap(outPacket));
 
-            // read for hello response
+            // read hello response
             final ByteBuffer readBuffer = ByteBuffer.allocate(1024);
             channel.read(readBuffer);
             logger.debug("PS4 hello response received: {}", readBuffer);
             ps4PacketHandler.handleHelloResponse(readBuffer);
 
             logger.debug("PS4 sending handshake packet");
-            byte[] handshake = ps4PacketHandler.makeHandshakePacket();
-            channel.write(ByteBuffer.wrap(handshake));
+            outPacket = ps4PacketHandler.makeHandshakePacket();
+            channel.write(ByteBuffer.wrap(outPacket));
 
             logger.debug("PS4 sending login packet");
-            byte[] login = ps4PacketHandler.makeLoginPacket(config.getUserCredential());
-            channel.write(ByteBuffer.wrap(login));
+            outPacket = ps4PacketHandler.makeLoginPacket(config.getUserCredential());
+            channel.write(ByteBuffer.wrap(outPacket));
 
             // read login response
             readBuffer.clear();
-            int loginLength = channel.read(readBuffer);
-            if (loginLength > 0) {
-                logger.debug("PS4 login response received: {}", readBuffer);
-                byte[] loginDecrypt = ps4PacketHandler
-                        .handleLoginResponse((byte[]) readBuffer.limit(loginLength).array());
+            int responseLength = channel.read(readBuffer);
+            if (responseLength > 0) {
+                byte[] respBuff = new byte[responseLength];
+                readBuffer.position(0);
+                readBuffer.get(respBuff, 0, responseLength);
+                logger.debug("PS4 login response received: {}", respBuff);
+                byte[] loginDecrypt = ps4PacketHandler.decryptResponsePacket(respBuff);
                 logger.debug("PS4 login decrypted: {}", loginDecrypt);
             } else {
                 logger.warn("PS4 no login response!");
+            }
+
+            logger.debug("PS4 sending standby packet");
+            outPacket = ps4PacketHandler.makeStandbyPacket();
+            channel.write(ByteBuffer.wrap(outPacket));
+
+            // read standby response
+            readBuffer.clear();
+            responseLength = channel.read(readBuffer);
+            if (responseLength > 0) {
+                byte[] respBuff = new byte[responseLength];
+                readBuffer.position(0);
+                readBuffer.get(respBuff, 0, responseLength);
+                logger.debug("PS4 standby response received: {}", respBuff);
+                byte[] standbyDecrypt = ps4PacketHandler.decryptResponsePacket(respBuff);
+                logger.debug("PS4 standby decrypted: {}", standbyDecrypt);
+            } else {
+                logger.warn("PS4 no standby response!");
             }
 
         } catch (SocketTimeoutException e) {
@@ -267,6 +283,8 @@ public class SonyPS4Handler extends BaseThingHandler {
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE);
             logger.debug("No PS4 device found. Diagnostic: {}", e.getMessage());
+        } catch (InterruptedException e1) {
+            logger.debug("PS4 coms interrupted: {}", e1);
         }
     }
 
