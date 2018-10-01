@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="domintell" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<bridge-type id="bridge">
+		<label>Domintell Bridge</label>
+		<description>Domintell DETH02 IP interface integration for openHAB</description>
+		
+		<channels>
+			<channel id="systemDate" typeId="dateTime"/>
+			<channel id="systemCommand" typeId="systemCommand"/>
+		</channels>
+		
+		<config-description-ref uri="thing-type:domintell:bridge"/>
+	</bridge-type>
+	
+	<!-- Groups -->
+	<thing-type id="group">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>Domintell Group</label>
+		<description>Group of type specific items</description>
+	</thing-type>
+	
+	<!-- Modules -->
+	<thing-type id="moduleTEx"> <!--DTEM01(TE1) and DTEM02(TE2)-->
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>Domintell DTEM0x</label>
+		<description>Domintell DTEM0x thermostat module</description>
+		<channel-groups>
+			<channel-group id="heating" typeId="heating"/>
+			<channel-group id="cooling" typeId="cooling"/>
+		</channel-groups>
+		<config-description-ref uri="thing-type:domintell:addressable"/>
+	</thing-type>
+	<thing-type id="modulePBx">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>Domintell Push Button</label>
+		<description>Domintell DPBL04|DPBL06|DPBR02|DPBR04|DPBR06|DPB(U/T)01|DPB(U/T)02|DPB(U/T)04|DPB(U/T)06 modules
+		</description>
+		<channels>
+			<channel id="command" typeId="command"/>
+		</channels>
+		<config-description-ref uri="thing-type:domintell:addressable"/>
+	</thing-type>
+	<thing-type id="moduleDIM">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>Domintell DDIM01</label>
+		<description>Domintell DDIM01 dimmer module</description>
+		<channels>
+			<channel id="1" typeId="system.brightness"/>
+			<channel id="2" typeId="system.brightness"/>
+			<channel id="3" typeId="system.brightness"/>
+			<channel id="4" typeId="system.brightness"/>
+			<channel id="5" typeId="system.brightness"/>
+			<channel id="6" typeId="system.brightness"/>
+			<channel id="7" typeId="system.brightness"/>
+			<channel id="8" typeId="system.brightness"/>
+		</channels>
+		<config-description-ref uri="thing-type:domintell:addressable"/>
+	</thing-type>
+	<thing-type id="moduleD10">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>Domintell DOUT10V02</label>
+		<description>Domintell DOUT10V02 dimmer module</description>
+		<channels>
+			<channel id="1" typeId="system.brightness"/>
+		</channels>
+		<config-description-ref uri="thing-type:domintell:addressable"/>
+	</thing-type>
+	<thing-type id="moduleIS8">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>Domintell DISM08</label>
+		<description>Domintell DISM08 input module</description>
+		
+		<channels>
+			<channel id="command" typeId="command"/>
+			<channel id="1" typeId="contact"/>
+			<channel id="2" typeId="contact"/>
+			<channel id="3" typeId="contact"/>
+			<channel id="4" typeId="contact"/>
+			<channel id="5" typeId="contact"/>
+			<channel id="6" typeId="contact"/>
+			<channel id="7" typeId="contact"/>
+			<channel id="8" typeId="contact"/>
+		</channels>
+		<config-description-ref uri="thing-type:domintell:addressable"/>
+	</thing-type>
+	<thing-type id="moduleIS4">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>Domintell DISM04</label>
+		<description>Domintell DISM04 input module</description>
+		
+		<channels>
+			<channel id="command" typeId="command"/>
+			<channel id="1" typeId="contact"/>
+			<channel id="2" typeId="contact"/>
+			<channel id="3" typeId="contact"/>
+			<channel id="4" typeId="contact"/>
+		</channels>
+		<config-description-ref uri="thing-type:domintell:addressable"/>
+	</thing-type>
+	<thing-type id="moduleBIR">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>Domintell DBIR01</label>
+		<description>Domintell DBIR01 input module</description>
+		
+		<channels>
+			<channel id="1" typeId="output"/>
+			<channel id="2" typeId="output"/>
+			<channel id="3" typeId="output"/>
+			<channel id="4" typeId="output"/>
+			<channel id="5" typeId="output"/>
+			<channel id="6" typeId="output"/>
+			<channel id="7" typeId="output"/>
+			<channel id="8" typeId="output"/>
+		</channels>
+		<config-description-ref uri="thing-type:domintell:addressable"/>
+	</thing-type>
+	<thing-type id="moduleDMR">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>Domintell DMR01</label>
+		<description>Domintell DMR01 input module</description>
+		
+		<channels>
+			<channel id="1" typeId="output"/>
+			<channel id="2" typeId="output"/>
+			<channel id="3" typeId="output"/>
+			<channel id="4" typeId="output"/>
+			<channel id="5" typeId="output"/>
+		</channels>
+		<config-description-ref uri="thing-type:domintell:addressable"/>
+	</thing-type>
+	
+	<!-- Item Types -->
+	<channel-type id="dateTime">
+		<item-type>DateTime</item-type>
+		<label>System Date</label>
+		<description>Domintell system date</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="systemCommand">
+		<item-type>String</item-type>
+		<label>System Command</label>
+		<description>Domintell system commands</description>
+		<state>
+			<options>
+				<option value="SCAN">Scan</option>
+				<option value="PING">Ping</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="output">
+		<item-type>Switch</item-type>
+		<label>Output</label>
+		<description>Module output</description>
+		<category>Switch</category>
+	</channel-type>
+	<channel-type id="contact">
+		<item-type>Contact</item-type>
+		<label>Input</label>
+		<description>Module input</description>
+		<state readOnly="true"/>
+		<config-description-ref uri="thing-type:domintell:contact"/>
+	</channel-type>
+	<channel-type id="command">
+		<item-type>String</item-type>
+		<label>Command String</label>
+		<description>Command support for contacts</description>
+	</channel-type>
+	<channel-type id="numericVar">
+		<item-type>Number</item-type>
+		<label>Numeric variable</label>
+		<description>Numeric variable</description>
+		<state pattern="%d" readOnly="true"/>
+		<config-description-ref uri="thing-type:domintell:addressable"/>
+	</channel-type>
+	<channel-type id="booleanVar">
+		<item-type>Switch</item-type>
+		<label>Boolean variable</label>
+		<description>Boolean variable</description>
+		<category>Switch</category>
+		<config-description-ref uri="thing-type:domintell:addressable"/>
+	</channel-type>
+	<channel-group-type id="heating">
+		<label>Heating</label>
+		<description>Thermostat heating channels</description>
+		<channels>
+			<channel id="presetValue" typeId="temperatureRW"/>
+			<channel id="currentValue" typeId="temperatureRO"/>
+			<channel id="profileValue" typeId="temperatureRO"/>
+			<channel id="mode" typeId="heatingMode"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="cooling">
+		<label>Cooling</label>
+		<description>Thermostat cooling channels</description>
+		<channels>
+			<channel id="presetValue" typeId="temperatureRW"/>
+			<channel id="currentValue" typeId="temperatureRO"/>
+			<channel id="profileValue" typeId="temperatureRO"/>
+			<channel id="mode" typeId="coolingMode"/>
+		</channels>
+	</channel-group-type>
+	<channel-type id="temperatureRO">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Value</label>
+		<description>Temperature value in °C or °F</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="temperatureRW">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Value</label>
+		<description>Temperature value in °C or °F</description>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="heatingMode">
+		<item-type>Number</item-type>
+		<label>Mode</label>
+		<description>Heating temperature mode</description>
+		<category>Number</category>
+		<state>
+			<options>
+				<option value="2">AUTO</option>
+				<option value="1">ABSENCE</option>
+				<option value="5">COMFORT</option>
+				<option value="6">FROST</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="coolingMode">
+		<item-type>Number</item-type>
+		<label>Mode</label>
+		<description>Cooling regulation mode</description>
+		<category>Number</category>
+		<state>
+			<options>
+				<option value="0">OFF</option>
+				<option value="1">HEATING</option>
+				<option value="2">COOLING</option>
+				<option value="3">AUTO</option>
+			</options>
+		</state>
+	</channel-type>
+</thing:thing-descriptions>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+		http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+	<config-description uri="thing-type:domintell:bridge">
+		<parameter name="address" type="text" required="true">
+			<label>IP Address/Host Name</label>
+			<description>IP Address of Domintell DETH02 IP-interface</description>
+			<advanced>false</advanced>
+			<context>network-address</context>
+		</parameter>
+		<parameter name="port" type="integer" required="false">
+			<label>Port</label>
+			<description>Port to communicate with Domintell DETH02 IP-interface, default 17481</description>
+			<default>17481</default>
+			<advanced>false</advanced>
+		</parameter>
+	</config-description>
+	<config-description uri="thing-type:domintell:addressable">
+		<parameter name="moduleType" type="text" required="true">
+			<label>Module Type</label>
+			<description>Domintell module type</description>
+			<advanced>false</advanced>
+		</parameter>
+		<parameter name="serialNumber" type="text" required="true">
+			<label>Serial Number</label>
+			<description>Domintell serial number</description>
+			<advanced>false</advanced>
+		</parameter>
+	</config-description>
+	<config-description uri="thing-type:domintell:contact">
+		<parameter name="inverted" type="boolean" required="true">
+			<label>Inverted</label>
+			<description>Contact value should be inverted</description>
+			<default>false</default>
+			<advanced>false</advanced>
+		</parameter>
+		<parameter name="resetTimeout" type="integer" required="true" min="0" unit="s">
+			<label>Reset Timeout</label>
+			<description>If not 0 the item value will be reset and refreshed from Domintell</description>
+			<default>0</default>
+			<unitLabel>second</unitLabel>
+			<advanced>false</advanced>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
