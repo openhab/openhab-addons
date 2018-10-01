@@ -85,6 +85,8 @@ public class ChannelUtils {
                             "Switch", "output", CHANNEL_TYPE_SWITCH, thingChannels);
                     ChannelUtils.addChannelsFromProjectFile(thing, node.getElementsByTagName("resource_temperature"),
                             "Number", "temperature", CHANNEL_TYPE_NUMBER, thingChannels);
+                    ChannelUtils.addChannelsFromProjectFile(thing, node.getElementsByTagName("resource_humidity_level"),
+                            "Number", "humidity", CHANNEL_TYPE_NUMBER, thingChannels);
                 }
             } catch (Exception e) {
                 LOGGER.warn("Error occured when adding channels, reason: {}", e.getMessage(), e);
@@ -99,6 +101,10 @@ public class ChannelUtils {
                             "input", CHANNEL_TYPE_SWITCH, thingChannels);
                     ChannelUtils.addChannelsFromProjectFile(thing, node.getElementsByTagName("airlink_output"),
                             "Switch", "output", CHANNEL_TYPE_SWITCH, thingChannels);
+                    ChannelUtils.addChannelsFromProjectFile(thing, node.getElementsByTagName("airlink_relay"), "Switch",
+                            "output", CHANNEL_TYPE_SWITCH, thingChannels);
+                    ChannelUtils.addChannelsFromProjectFile(thing, node.getElementsByTagName("airlink_dimming"),
+                            "Dimmer", "output", CHANNEL_TYPE_SWITCH, thingChannels);
                 }
             } catch (Exception e) {
                 LOGGER.warn("Error occured when adding channels, reason: {}", e.getMessage(), e);
