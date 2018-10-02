@@ -8,12 +8,13 @@
  */
 package org.openhab.binding.dscalarm.internal;
 
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * The DSCAlarmBinding class defines common constants, which are used across the whole binding.
@@ -104,12 +105,15 @@ public class DSCAlarmBindingConstants {
     public static final String KEYPAD_LCD_CURSOR = "keypad_lcd_cursor";
 
     // Set of all supported Thing Type UIDs
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(ENVISALINKBRIDGE_THING_TYPE,
-            IT100BRIDGE_THING_TYPE, TCPSERVERBRIDGE_THING_TYPE, PANEL_THING_TYPE, PARTITION_THING_TYPE, ZONE_THING_TYPE,
-            KEYPAD_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream
+                    .of(ENVISALINKBRIDGE_THING_TYPE, IT100BRIDGE_THING_TYPE, TCPSERVERBRIDGE_THING_TYPE,
+                            PANEL_THING_TYPE, PARTITION_THING_TYPE, ZONE_THING_TYPE, KEYPAD_THING_TYPE)
+                    .collect(Collectors.toSet()));
 
     // Set of all supported Bridge Type UIDs
-    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = ImmutableSet
-            .of(ENVISALINKBRIDGE_THING_TYPE, IT100BRIDGE_THING_TYPE, TCPSERVERBRIDGE_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(ENVISALINKBRIDGE_THING_TYPE, IT100BRIDGE_THING_TYPE, TCPSERVERBRIDGE_THING_TYPE)
+                    .collect(Collectors.toSet()));
 
 }
