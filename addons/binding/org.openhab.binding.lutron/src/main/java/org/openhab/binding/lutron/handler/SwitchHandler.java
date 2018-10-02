@@ -13,20 +13,26 @@ import static org.openhab.binding.lutron.LutronBindingConstants.CHANNEL_SWITCH;
 import java.math.BigDecimal;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.lutron.internal.protocol.LutronCommandType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handler responsible for communicating with a switch.
  *
  * @author Allan Tong - Initial contribution
+ * @author Bob Adair - Added initDeviceState method
  */
 public class SwitchHandler extends LutronHandler {
     private static final Integer ACTION_ZONELEVEL = 1;
+
+    private final Logger logger = LoggerFactory.getLogger(SwitchHandler.class);
 
     private int integrationId;
 
@@ -37,17 +43,28 @@ public class SwitchHandler extends LutronHandler {
     @Override
     public void initialize() {
         Number id = (Number) getThing().getConfiguration().get("integrationId");
-
         if (id == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No integrationId");
-
             return;
         }
+        integrationId = id.intValue();
+        logger.debug("Initializing Switch handler for integration ID {}", id);
 
-        this.integrationId = id.intValue();
+        initDeviceState();
+    }
 
-        updateStatus(ThingStatus.ONLINE);
-        queryOutput(ACTION_ZONELEVEL);
+    @Override
+    protected void initDeviceState() {
+        logger.debug("Initializing device state for Switch {}", getIntegrationId());
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
+        } else if (bridge.getStatus() == ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Awaiting initial response");
+            queryOutput(ACTION_ZONELEVEL); // handleUpdate() will set thing status to online when response arrives
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
     }
 
     @Override
@@ -71,7 +88,9 @@ public class SwitchHandler extends LutronHandler {
         if (type == LutronCommandType.OUTPUT && parameters.length > 1
                 && ACTION_ZONELEVEL.toString().equals(parameters[0])) {
             BigDecimal level = new BigDecimal(parameters[1]);
-
+            if (getThing().getStatus() == ThingStatus.UNKNOWN) {
+                updateStatus(ThingStatus.ONLINE);
+            }
             postCommand(CHANNEL_SWITCH, level.compareTo(BigDecimal.ZERO) == 0 ? OnOffType.OFF : OnOffType.ON);
         }
     }

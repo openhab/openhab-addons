@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -28,6 +29,7 @@ import org.slf4j.LoggerFactory;
  * Handler responsible for communicating with a light dimmer.
  *
  * @author Allan Tong - Initial contribution
+ * @author Bob Adair - Added initDeviceState method
  */
 public class DimmerHandler extends LutronHandler {
     private static final Integer ACTION_ZONELEVEL = 1;
@@ -51,22 +53,28 @@ public class DimmerHandler extends LutronHandler {
 
     @Override
     public void initialize() {
-        this.config = getThing().getConfiguration().as(DimmerConfig.class);
-
-        if (this.config.getIntegrationId() <= 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No integrationId");
-
+        config = getThing().getConfiguration().as(DimmerConfig.class);
+        if (config.getIntegrationId() <= 0) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No integrationId configured");
             return;
         }
+        logger.debug("Initializing Dimmer handler for integration ID {}", getIntegrationId());
 
-        if (getThing().getBridgeUID() == null) {
+        initDeviceState();
+    }
+
+    @Override
+    protected void initDeviceState() {
+        logger.debug("Initializing device state for Dimmer {}", getIntegrationId());
+        Bridge bridge = getBridge();
+        if (bridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
-
-            return;
+        } else if (bridge.getStatus() == ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Awaiting initial response");
+            queryOutput(ACTION_ZONELEVEL); // handleUpdate() will set thing status to online when response arrives
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
-
-        updateStatus(ThingStatus.ONLINE);
-        queryOutput(ACTION_ZONELEVEL);
     }
 
     @Override
@@ -97,7 +105,9 @@ public class DimmerHandler extends LutronHandler {
         if (type == LutronCommandType.OUTPUT && parameters.length > 1
                 && ACTION_ZONELEVEL.toString().equals(parameters[0])) {
             BigDecimal level = new BigDecimal(parameters[1]);
-
+            if (getThing().getStatus() == ThingStatus.UNKNOWN) {
+                updateStatus(ThingStatus.ONLINE);
+            }
             updateState(CHANNEL_LIGHTLEVEL, new PercentType(level));
         }
     }

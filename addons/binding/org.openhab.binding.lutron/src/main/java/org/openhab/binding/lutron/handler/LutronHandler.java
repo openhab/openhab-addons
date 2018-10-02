@@ -12,6 +12,7 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.openhab.binding.lutron.internal.protocol.LutronCommand;
 import org.openhab.binding.lutron.internal.protocol.LutronCommandType;
@@ -23,7 +24,7 @@ import org.slf4j.LoggerFactory;
  * Base type for all Lutron thing handlers.
  *
  * @author Allan Tong - Initial contribution
- *
+ * @author Bob Adair - Added methods for status and state management
  */
 public abstract class LutronHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(LutronHandler.class);
@@ -36,10 +37,31 @@ public abstract class LutronHandler extends BaseThingHandler {
 
     public abstract void handleUpdate(LutronCommandType type, String... parameters);
 
+    /**
+     * Queries for any device state needed at initialization time or after losing connectivity to the bridge, and
+     * updates device status. Will be called when bridge status changes to ONLINE and thing has status
+     * OFFLINE:BRIDGE_OFFLINE.
+     */
+    protected abstract void initDeviceState();
+
     protected IPBridgeHandler getBridgeHandler() {
         Bridge bridge = getBridge();
 
         return bridge == null ? null : (IPBridgeHandler) bridge.getHandler();
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        logger.debug("Bridge status changed to {} for lutron device handler {}", bridgeStatusInfo.getStatus(),
+                getIntegrationId());
+
+        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE
+                && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE) {
+            initDeviceState();
+
+        } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
     }
 
     private void sendCommand(LutronCommand command) {

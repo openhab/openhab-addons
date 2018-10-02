@@ -20,7 +20,6 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.lutron.internal.protocol.LutronCommandType;
@@ -61,25 +60,19 @@ public class ShadeHandler extends LutronHandler {
         integrationId = id.intValue();
         logger.debug("Initializing Shade handler for integration ID {}", id);
 
+        initDeviceState();
+    }
+
+    @Override
+    protected void initDeviceState() {
+        logger.debug("Initializing device state for Shade {}", getIntegrationId());
         Bridge bridge = getBridge();
         if (bridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
         } else if (bridge.getStatus() == ThingStatus.ONLINE) {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Awaiting initial response");
-            queryOutput(ACTION_ZONELEVEL);
+            queryOutput(ACTION_ZONELEVEL); // handleUpdate() will set thing status to online when response arrives
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-        }
-    }
-
-    @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        logger.debug("Bridge status changed to {} for shade handler {}", bridgeStatusInfo.getStatus(), integrationId);
-
-        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE
-                && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE) {
-            initialize();
-        } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }

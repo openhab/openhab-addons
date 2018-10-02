@@ -15,6 +15,7 @@ import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -71,6 +72,7 @@ public class CcoHandler extends LutronHandler {
             return;
         }
         integrationId = id.intValue();
+        logger.debug("Initializing CCO handler for integration ID {}", id);
 
         // Determine output type from configuration if not pre-defined by subclass
         if (outputType == null) {
@@ -104,11 +106,20 @@ public class CcoHandler extends LutronHandler {
                 logger.debug("Using default pulse length value for device {}", integrationId);
             }
         }
+        initDeviceState();
+    }
 
-        updateStatus(ThingStatus.ONLINE);
-
-        if (outputType == CcoOutputType.MAINTAINED) {
-            queryOutput(ACTION_STATE);
+    @Override
+    protected void initDeviceState() {
+        logger.debug("Initializing device state for CCO {}", integrationId);
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
+        } else if (bridge.getStatus() == ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Awaiting initial response");
+            queryOutput(ACTION_STATE); // handleUpdate() will set thing status to online when response arrives
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
@@ -152,6 +163,8 @@ public class CcoHandler extends LutronHandler {
             else if (command instanceof RefreshType) {
                 if (outputType == CcoOutputType.MAINTAINED) {
                     queryOutput(ACTION_STATE);
+                } else {
+                    updateState(CHANNEL_SWITCH, OnOffType.OFF);
                 }
             } else {
                 logger.debug("ignoring invalid command on channel {} for CCO {}", channelUID.getId(), integrationId);
@@ -164,9 +177,13 @@ public class CcoHandler extends LutronHandler {
     @Override
     public void handleUpdate(LutronCommandType type, String... parameters) {
         logger.debug("Update received for CCO: {} {}", type, StringUtils.join(parameters, ","));
+
         if (outputType == CcoOutputType.MAINTAINED) {
             if (type == LutronCommandType.OUTPUT && parameters.length > 1
                     && ACTION_STATE.toString().equals(parameters[0])) {
+                if (getThing().getStatus() == ThingStatus.UNKNOWN) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
                 try {
                     BigDecimal state = new BigDecimal(parameters[1]);
                     updateState(CHANNEL_SWITCH, state.compareTo(BigDecimal.ZERO) == 0 ? OnOffType.OFF : OnOffType.ON);
@@ -176,8 +193,12 @@ public class CcoHandler extends LutronHandler {
                     return;
                 }
             }
+        } else {
+            // Do nothing on receiving updates for pulsed CCO except update online status
+            if (getThing().getStatus() == ThingStatus.UNKNOWN) {
+                updateStatus(ThingStatus.ONLINE);
+            }
         }
-        // Do nothing on updates for pulsed CCO. Repeater is only echoing back our own pulse output commands.
     }
 
 }
