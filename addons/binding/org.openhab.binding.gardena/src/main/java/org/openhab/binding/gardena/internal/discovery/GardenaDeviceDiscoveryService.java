@@ -10,8 +10,11 @@ package org.openhab.binding.gardena.internal.discovery;
 
 import static org.openhab.binding.gardena.internal.GardenaBindingConstants.BINDING_ID;
 
+import java.util.Collections;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -28,8 +31,6 @@ import org.openhab.binding.gardena.internal.util.UidUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.ImmutableSet;
-
 /**
  * The {@link GardenaDeviceDiscoveryService} is used to discover devices that are connected to Gardena Smart Home.
  *
@@ -44,7 +45,8 @@ public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService {
     private Future<?> scanFuture;
 
     public GardenaDeviceDiscoveryService(GardenaAccountHandler accountHandler) {
-        super(ImmutableSet.of(new ThingTypeUID(BINDING_ID, "-")), DISCOVER_TIMEOUT_SECONDS, false);
+        super(Collections.unmodifiableSet(Stream.of(new ThingTypeUID(BINDING_ID, "-")).collect(Collectors.toSet())),
+                DISCOVER_TIMEOUT_SECONDS, false);
         this.accountHandler = accountHandler;
     }
 
