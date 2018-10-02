@@ -25,7 +25,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Victor Antonovich - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.airvisualnode")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.airvisualnode")
 public class AirVisualNodeHandlerFactory extends BaseThingHandlerFactory {
 
     @Override

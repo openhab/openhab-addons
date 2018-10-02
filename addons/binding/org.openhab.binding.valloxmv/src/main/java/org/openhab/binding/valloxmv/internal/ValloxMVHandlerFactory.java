@@ -28,7 +28,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Björn Brings - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.valloxmv")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.valloxmv")
 @NonNullByDefault
 public class ValloxMVHandlerFactory extends BaseThingHandlerFactory {
 

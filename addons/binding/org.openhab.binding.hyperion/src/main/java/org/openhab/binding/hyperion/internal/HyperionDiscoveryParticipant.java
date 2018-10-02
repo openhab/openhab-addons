@@ -30,7 +30,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Daniel Walters - Initial contribution
  */
 
-@Component(service = MDNSDiscoveryParticipant.class, immediate = true)
+@Component(immediate = true)
 public class HyperionDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     @Override

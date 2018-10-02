@@ -40,7 +40,7 @@ import org.osgi.service.http.HttpService;
  * @author Tim Roberts - Initial contribution
  */
 @NonNullByDefault
-@Component(service = ThingHandlerFactory.class, immediate = true)
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.neeo")
 public class NeeoHandlerFactory extends BaseThingHandlerFactory {
 
     /** The {@link HttpService} used to register callbacks */
