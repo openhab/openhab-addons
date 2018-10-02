@@ -37,7 +37,6 @@ public class TumbleDryerHandler extends MieleApplianceHandler<TumbleDryerChannel
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         super.handleCommand(channelUID, command);
 
         String channelID = channelUID.getId();

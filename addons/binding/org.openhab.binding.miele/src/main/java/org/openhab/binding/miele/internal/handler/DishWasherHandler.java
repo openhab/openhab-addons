@@ -37,7 +37,6 @@ public class DishWasherHandler extends MieleApplianceHandler<DishwasherChannelSe
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         super.handleCommand(channelUID, command);
 
         String channelID = channelUID.getId();

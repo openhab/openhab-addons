@@ -27,7 +27,7 @@ public interface ApplianceStatusListener {
      * @param uid the UID of the aplliance that has changed
      * @param dco the POJO containing the new state (properties and/or operations)
      */
-    public void onApplianceStateChanged(String uid, DeviceClassObject dco);
+    void onApplianceStateChanged(String uid, DeviceClassObject dco);
 
     /**
      * This method is called whenever a "property" of the given appliance has changed.
@@ -35,20 +35,20 @@ public interface ApplianceStatusListener {
      * @param uid the UID of the aplliance that has changed
      * @param dco the POJO containing the new state of the property
      */
-    public void onAppliancePropertyChanged(String uid, DeviceProperty dp);
+    void onAppliancePropertyChanged(String uid, DeviceProperty dp);
 
     /**
      * This method us called whenever an appliance is removed.
      *
      * @param appliance The XGW homedevice definition of the appliance that was removed
      */
-    public void onApplianceRemoved(HomeDevice appliance);
+    void onApplianceRemoved(HomeDevice appliance);
 
     /**
      * This method us called whenever an appliance is added.
      *
      * @param appliance The XGW homedevice definition of the appliance that was removed
      */
-    public void onApplianceAdded(HomeDevice appliance);
+    void onApplianceAdded(HomeDevice appliance);
 
 }

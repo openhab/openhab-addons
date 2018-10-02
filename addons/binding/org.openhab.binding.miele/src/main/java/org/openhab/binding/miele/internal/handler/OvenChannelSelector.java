@@ -47,56 +47,56 @@ public enum OvenChannelSelector implements ApplianceChannelSelector {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
             Date date = new Date();
-            SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            DATE_FORMATTER.setTimeZone(TimeZone.getTimeZone("GMT+0"));
+            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT+0"));
             try {
                 date.setTime(Long.valueOf(s) * 60000);
             } catch (Exception e) {
                 date.setTime(0);
             }
-            return getState(DATE_FORMATTER.format(date));
+            return getState(dateFormatter.format(date));
         }
     },
     DURATION("duration", "duration", DateTimeType.class, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
             Date date = new Date();
-            SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            DATE_FORMATTER.setTimeZone(TimeZone.getTimeZone("GMT+0"));
+            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT+0"));
             try {
                 date.setTime(Long.valueOf(s) * 60000);
             } catch (Exception e) {
                 date.setTime(0);
             }
-            return getState(DATE_FORMATTER.format(date));
+            return getState(dateFormatter.format(date));
         }
     },
     ELAPSED_TIME("elapsedTime", "elapsed", DateTimeType.class, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
             Date date = new Date();
-            SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            DATE_FORMATTER.setTimeZone(TimeZone.getTimeZone("GMT+0"));
+            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT+0"));
             try {
                 date.setTime(Long.valueOf(s) * 60000);
             } catch (Exception e) {
                 date.setTime(0);
             }
-            return getState(DATE_FORMATTER.format(date));
+            return getState(dateFormatter.format(date));
         }
     },
     FINISH_TIME("finishTime", "finish", DateTimeType.class, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
             Date date = new Date();
-            SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            DATE_FORMATTER.setTimeZone(TimeZone.getTimeZone("GMT+0"));
+            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT+0"));
             try {
                 date.setTime(Long.valueOf(s) * 60000);
             } catch (Exception e) {
                 date.setTime(0);
             }
-            return getState(DATE_FORMATTER.format(date));
+            return getState(dateFormatter.format(date));
         }
     },
     TARGET_TEMP("targetTemperature", "target", DecimalType.class, false) {
@@ -148,8 +148,7 @@ public enum OvenChannelSelector implements ApplianceChannelSelector {
     private final Class<? extends Type> typeClass;
     private final boolean isProperty;
 
-    OvenChannelSelector(String propertyID, String channelID, Class<? extends Type> typeClass,
-            boolean isProperty) {
+    OvenChannelSelector(String propertyID, String channelID, Class<? extends Type> typeClass, boolean isProperty) {
         this.mieleID = propertyID;
         this.channelID = channelID;
         this.typeClass = typeClass;

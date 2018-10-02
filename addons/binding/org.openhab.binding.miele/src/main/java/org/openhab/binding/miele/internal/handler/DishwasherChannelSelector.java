@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.miele.internal.handler;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -23,6 +22,8 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
 
@@ -45,56 +46,56 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
             Date date = new Date();
-            SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            DATE_FORMATTER.setTimeZone(TimeZone.getTimeZone("GMT+0"));
+            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT+0"));
             try {
                 date.setTime(Long.valueOf(s) * 60000);
             } catch (Exception e) {
                 date.setTime(0);
             }
-            return getState(DATE_FORMATTER.format(date));
+            return getState(dateFormatter.format(date));
         }
     },
     DURATION("duration", "duration", DateTimeType.class, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
             Date date = new Date();
-            SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            DATE_FORMATTER.setTimeZone(TimeZone.getTimeZone("GMT+0"));
+            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT+0"));
             try {
                 date.setTime(Long.valueOf(s) * 60000);
             } catch (Exception e) {
                 date.setTime(0);
             }
-            return getState(DATE_FORMATTER.format(date));
+            return getState(dateFormatter.format(date));
         }
     },
     ELAPSED_TIME("elapsedTime", "elapsed", DateTimeType.class, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
             Date date = new Date();
-            SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            DATE_FORMATTER.setTimeZone(TimeZone.getTimeZone("GMT+0"));
+            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT+0"));
             try {
                 date.setTime(Long.valueOf(s) * 60000);
             } catch (Exception e) {
                 date.setTime(0);
             }
-            return getState(DATE_FORMATTER.format(date));
+            return getState(dateFormatter.format(date));
         }
     },
     FINISH_TIME("finishTime", "finish", DateTimeType.class, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
             Date date = new Date();
-            SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            DATE_FORMATTER.setTimeZone(TimeZone.getTimeZone("GMT+0"));
+            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT+0"));
             try {
                 date.setTime(Long.valueOf(s) * 60000);
             } catch (Exception e) {
                 date.setTime(0);
             }
-            return getState(DATE_FORMATTER.format(date));
+            return getState(dateFormatter.format(date));
         }
     },
     DOOR("signalDoor", "door", OpenClosedType.class, false) {
@@ -112,6 +113,8 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
         }
     },
     SWITCH(null, "switch", OnOffType.class, false);
+
+    private final Logger logger = LoggerFactory.getLogger(DishwasherChannelSelector.class);
 
     private final String mieleID;
     private final String channelID;
@@ -175,10 +178,8 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
             if (state != null) {
                 return state;
             }
-        } catch (NoSuchMethodException e) {
-        } catch (IllegalArgumentException e) {
-        } catch (IllegalAccessException e) {
-        } catch (InvocationTargetException e) {
+        } catch (Exception e) {
+            logger.error("An exception occurred while converting '{}' into a State", s);
         }
 
         return null;
