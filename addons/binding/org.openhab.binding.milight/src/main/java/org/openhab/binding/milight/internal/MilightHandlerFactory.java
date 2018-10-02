@@ -8,7 +8,12 @@
  */
 package org.openhab.binding.milight.internal;
 
+import static org.openhab.binding.milight.internal.MilightBindingConstants.*;
+
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -21,8 +26,6 @@ import org.openhab.binding.milight.internal.handler.MilightBridgeV6Handler;
 import org.openhab.binding.milight.internal.handler.MilightLedHandler;
 import org.osgi.service.component.annotations.Component;
 
-import com.google.common.collect.Sets;
-
 /**
  * The {@link MilightHandlerFactory} is responsible for creating things and thing
  * handlers.
@@ -31,8 +34,9 @@ import com.google.common.collect.Sets;
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.milight")
 public class MilightHandlerFactory extends BaseThingHandlerFactory {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
-            .union(MilightBindingConstants.BRIDGE_THING_TYPES_UIDS, MilightBindingConstants.SUPPORTED_THING_TYPES_UIDS);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
+            Stream.concat(BRIDGE_THING_TYPES_UIDS.stream(), MilightBindingConstants.SUPPORTED_THING_TYPES_UIDS.stream())
+                    .collect(Collectors.toSet()));
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -43,11 +47,11 @@ public class MilightHandlerFactory extends BaseThingHandlerFactory {
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(MilightBindingConstants.BRIDGEV3_THING_TYPE)) {
+        if (thingTypeUID.equals(BRIDGEV3_THING_TYPE)) {
             return new MilightBridgeV3Handler((Bridge) thing);
-        } else if (thingTypeUID.equals(MilightBindingConstants.BRIDGEV6_THING_TYPE)) {
+        } else if (thingTypeUID.equals(BRIDGEV6_THING_TYPE)) {
             return new MilightBridgeV6Handler((Bridge) thing);
-        } else if (MilightBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
+        } else if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new MilightLedHandler(thing);
         }
 
