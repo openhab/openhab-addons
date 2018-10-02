@@ -106,6 +106,10 @@ public class ChannelTypeUtils {
         return (value == null || unit == null) ? UnDefType.NULL : toQuantityType(new BigDecimal(value), unit);
     }
 
+    public static State toQuantityType(@Nullable Long value, @Nullable Unit<?> unit) {
+        return (value == null || unit == null) ? UnDefType.NULL : toQuantityType(new BigDecimal(value), unit);
+    }
+
     public static State toQuantityType(float value, @Nullable Unit<?> unit) {
         return (unit == null) ? UnDefType.NULL : toQuantityType(new BigDecimal(value), unit);
     }
