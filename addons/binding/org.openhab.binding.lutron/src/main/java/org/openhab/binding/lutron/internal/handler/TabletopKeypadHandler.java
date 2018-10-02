@@ -65,7 +65,10 @@ public class TabletopKeypadHandler extends BaseKeypadHandler {
         LED12(92, "led12", "LED 12"),
         LED13(93, "led13", "LED 13"),
         LED14(94, "led14", "LED 14"),
-        LED15(95, "led15", "LED 15");
+        LED15(95, "led15", "LED 15"),
+
+        LED16(96, "led16", "LED 16"),
+        LED17(97, "led17", "LED 17");
 
         private final int id;
         private final String channel;
@@ -113,6 +116,8 @@ public class TabletopKeypadHandler extends BaseKeypadHandler {
     private static final List<Component> ledGroup3 = Arrays.asList(Component.LED11, Component.LED12, Component.LED13,
             Component.LED14, Component.LED15);
 
+    private static final List<Component> LedsBottomRL = Arrays.asList(Component.LED16, Component.LED17);
+
     private final Logger logger = LoggerFactory.getLogger(TabletopKeypadHandler.class);
 
     @Override
@@ -152,6 +157,7 @@ public class TabletopKeypadHandler extends BaseKeypadHandler {
                 buttonList.addAll(buttonGroup1);
                 buttonList.addAll(buttonsBottomRL);
                 ledList.addAll(ledGroup1);
+                ledList.addAll(LedsBottomRL);
                 break;
 
             case "T15CRL":
