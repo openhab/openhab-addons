@@ -70,10 +70,10 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     private static final Pattern IP_PATTERN = Pattern
             .compile("^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
 
-    protected final int POLLING_PERIOD = 15; // in seconds
-    protected final int JSON_RPC_PORT = 2810;
-    protected final String JSON_RPC_MULTICAST_IP1 = "239.255.68.139";
-    protected final String JSON_RPC_MULTICAST_IP2 = "224.255.68.139";
+    protected static final int POLLING_PERIOD = 15; // in seconds
+    protected static final int JSON_RPC_PORT = 2810;
+    protected static final String JSON_RPC_MULTICAST_IP1 = "239.255.68.139";
+    protected static final String JSON_RPC_MULTICAST_IP2 = "224.255.68.139";
     private boolean lastBridgeConnectionState = false;
     private boolean currentBridgeConnectionState = false;
 
@@ -85,7 +85,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     protected ScheduledFuture<?> pollingJob;
     protected ScheduledFuture<?> eventListenerJob;
 
-    protected List<HomeDevice> previousHomeDevices = new CopyOnWriteArrayList<HomeDevice>();
+    protected List<HomeDevice> previousHomeDevices = new CopyOnWriteArrayList<>();
 
     protected URL url;
     protected Map<String, String> headers;
@@ -158,7 +158,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         if (getConfig().get(HOST) != null && getConfig().get(INTERFACE) != null) {
             if (IP_PATTERN.matcher((String) getConfig().get(HOST)).matches()
                     && IP_PATTERN.matcher((String) getConfig().get(INTERFACE)).matches()) {
-
                 try {
                     url = new URL("http://" + (String) getConfig().get(HOST) + "/remote/json-rpc");
                 } catch (MalformedURLException e) {
@@ -168,7 +167,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                 }
 
                 // for future usage - no headers to be set for now
-                headers = new HashMap<String, String>();
+                headers = new HashMap<>();
 
                 onUpdate();
                 updateStatus(ThingStatus.ONLINE);
@@ -181,7 +180,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "Cannot connect to the Miele gateway. host IP address or multicast interface are not set.");
         }
-
     }
 
     private Runnable pollingRunnable = new Runnable() {
@@ -271,7 +269,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                             }
                         }
                     }
-
                 } catch (Exception e) {
                     logger.debug("An exception occurred while polling an appliance :'{}'", e.getMessage());
                 }
@@ -302,8 +299,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     };
 
     public List<HomeDevice> getHomeDevices() {
-
-        List<HomeDevice> devices = new ArrayList<HomeDevice>();
+        List<HomeDevice> devices = new ArrayList<>();
 
         if (getThing().getStatus() == ThingStatus.ONLINE) {
             try {
@@ -425,7 +421,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     }
 
     protected JsonElement invokeRPC(String methodName, Object[] args) {
-
         int id = rand.nextInt(Integer.MAX_VALUE);
 
         JsonObject req = new JsonObject();
@@ -479,7 +474,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     }
 
     protected String post(URL url, Map<String, String> headers, String data) throws IOException {
-
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
         if (headers != null) {
@@ -589,7 +583,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
             for (HomeDevice hd : getHomeDevices()) {
                 applianceStatusListener.onApplianceAdded(hd);
             }
-
         }
         return result;
     }

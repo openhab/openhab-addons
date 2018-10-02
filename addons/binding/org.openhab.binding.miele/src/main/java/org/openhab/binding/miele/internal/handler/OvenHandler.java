@@ -37,7 +37,6 @@ public class OvenHandler extends MieleApplianceHandler<OvenChannelSelector> {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         super.handleCommand(channelUID, command);
 
         String channelID = channelUID.getId();

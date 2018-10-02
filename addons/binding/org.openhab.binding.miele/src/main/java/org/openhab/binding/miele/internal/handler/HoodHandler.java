@@ -36,7 +36,6 @@ public class HoodHandler extends MieleApplianceHandler<HoodChannelSelector> {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         super.handleCommand(channelUID, command);
 
         String channelID = channelUID.getId();

@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -23,6 +25,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.miele.internal.discovery.MieleApplianceDiscoveryService;
 import org.openhab.binding.miele.internal.handler.CoffeeMachineHandler;
 import org.openhab.binding.miele.internal.handler.DishWasherHandler;
@@ -36,8 +39,7 @@ import org.openhab.binding.miele.internal.handler.OvenHandler;
 import org.openhab.binding.miele.internal.handler.TumbleDryerHandler;
 import org.openhab.binding.miele.internal.handler.WashingMachineHandler;
 import org.osgi.framework.ServiceRegistration;
-
-import com.google.common.collect.Sets;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * The {@link MieleHandlerFactory} is responsible for creating things and thing
@@ -45,10 +47,13 @@ import com.google.common.collect.Sets;
  *
  * @author Karel Goderis - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.miele")
 public class MieleHandlerFactory extends BaseThingHandlerFactory {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
-            .union(MieleBridgeHandler.SUPPORTED_THING_TYPES, MieleApplianceHandler.SUPPORTED_THING_TYPES);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
+            .concat(MieleBridgeHandler.SUPPORTED_THING_TYPES.stream(),
+                    MieleApplianceHandler.SUPPORTED_THING_TYPES.stream())
+            .collect(Collectors.toSet());
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
@@ -109,7 +114,6 @@ public class MieleHandlerFactory extends BaseThingHandlerFactory {
         }
 
         return null;
-
     }
 
     private ThingUID getBridgeThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration) {
@@ -133,8 +137,8 @@ public class MieleHandlerFactory extends BaseThingHandlerFactory {
     private synchronized void registerApplianceDiscoveryService(MieleBridgeHandler bridgeHandler) {
         MieleApplianceDiscoveryService discoveryService = new MieleApplianceDiscoveryService(bridgeHandler);
         discoveryService.activate();
-        this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+        this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
     @Override

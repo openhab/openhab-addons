@@ -8,9 +8,8 @@ Bundle-SymbolicName: org.openhab.binding.miele;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
 Import-Package: 
- com.google.common.collect,
  com.google.gson,
- javax.jmdns;version="3.5.0",
+ javax.jmdns,
  org.apache.commons.lang,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
