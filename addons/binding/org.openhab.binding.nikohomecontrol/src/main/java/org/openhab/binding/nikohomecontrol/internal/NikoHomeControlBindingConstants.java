@@ -10,11 +10,11 @@ package org.openhab.binding.nikohomecontrol.internal;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import com.google.common.collect.Sets;
 
 /**
  * The {@link NikoHomeControlBindingConstants} class defines common constants, which are
@@ -40,10 +40,11 @@ public class NikoHomeControlBindingConstants {
 
     // thing type sets
     public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Collections.singleton(BRIDGE_THING_TYPE);
-    public static final Set<ThingTypeUID> ACTION_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_ON_OFF_LIGHT,
-            THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_BLIND);
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_ON_OFF_LIGHT,
-            THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_BLIND, THING_TYPE_THERMOSTAT);
+    public static final Set<ThingTypeUID> ACTION_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
+            .of(THING_TYPE_ON_OFF_LIGHT, THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_BLIND).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
+            Stream.of(THING_TYPE_ON_OFF_LIGHT, THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_BLIND, THING_TYPE_THERMOSTAT)
+                    .collect(Collectors.toSet()));
 
     // List of all Channel ids
     public static final String CHANNEL_SWITCH = "switch";
