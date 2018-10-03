@@ -8,6 +8,15 @@
  */
 package org.openhab.binding.somfytahoma.internal;
 
+import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -16,17 +25,31 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.somfytahoma.handler.*;
+import org.openhab.binding.somfytahoma.handler.SomfyTahomaActionGroupHandler;
+import org.openhab.binding.somfytahoma.handler.SomfyTahomaAwningHandler;
+import org.openhab.binding.somfytahoma.handler.SomfyTahomaBridgeHandler;
+import org.openhab.binding.somfytahoma.handler.SomfyTahomaContactSensorHandler;
+import org.openhab.binding.somfytahoma.handler.SomfyTahomaDoorLockHandler;
+import org.openhab.binding.somfytahoma.handler.SomfyTahomaExternalAlarmHandler;
+import org.openhab.binding.somfytahoma.handler.SomfyTahomaGatewayHandler;
+import org.openhab.binding.somfytahoma.handler.SomfyTahomaHeatingSystemHandler;
+import org.openhab.binding.somfytahoma.handler.SomfyTahomaInternalAlarmHandler;
+import org.openhab.binding.somfytahoma.handler.SomfyTahomaLightSensorHandler;
+import org.openhab.binding.somfytahoma.handler.SomfyTahomaOccupancySensorHandler;
+import org.openhab.binding.somfytahoma.handler.SomfyTahomaOnOffHandler;
+import org.openhab.binding.somfytahoma.handler.SomfyTahomaOnOffHeatingSystemHandler;
+import org.openhab.binding.somfytahoma.handler.SomfyTahomaPergolaHandler;
+import org.openhab.binding.somfytahoma.handler.SomfyTahomaPodHandler;
+import org.openhab.binding.somfytahoma.handler.SomfyTahomaRollerShutterHandler;
+import org.openhab.binding.somfytahoma.handler.SomfyTahomaSilentRollerShutterHandler;
+import org.openhab.binding.somfytahoma.handler.SomfyTahomaSmokeSensorHandler;
+import org.openhab.binding.somfytahoma.handler.SomfyTahomaVenetianBlindHandler;
+import org.openhab.binding.somfytahoma.handler.SomfyTahomaWindowHandler;
 import org.openhab.binding.somfytahoma.internal.discovery.SomfyTahomaItemDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.*;
-
-import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
 
 /**
  * The {@link SomfyTahomaHandlerFactory} is responsible for creating things and thing
@@ -34,7 +57,7 @@ import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
  *
  * @author Ondrej Pecta - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.somfytahoma", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.somfytahoma")
 public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(SomfyTahomaHandlerFactory.class);
@@ -43,7 +66,8 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             THING_TYPE_VENETIANBLIND, THING_TYPE_EXTERIORSCREEN, THING_TYPE_EXTERIORVENETIANBLIND,
             THING_TYPE_GARAGEDOOR, THING_TYPE_AWNING, THING_TYPE_ACTIONGROUP, THING_TYPE_ONOFF, THING_TYPE_LIGHT,
             THING_TYPE_LIGHTSENSOR, THING_TYPE_SMOKESENSOR, THING_TYPE_CONTACTSENSOR, THING_TYPE_OCCUPANCYSENSOR,
-            THING_TYPE_WINDOW, THING_TYPE_INTERNAL_ALARM, THING_TYPE_EXTERNAL_ALARM, THING_TYPE_POD, THING_TYPE_HEATING_SYSTEM, THING_TYPE_ONOFF_HEATING_SYSTEM, THING_TYPE_DOOR_LOCK, THING_TYPE_PERGOLA));
+            THING_TYPE_WINDOW, THING_TYPE_INTERNAL_ALARM, THING_TYPE_EXTERNAL_ALARM, THING_TYPE_POD,
+            THING_TYPE_HEATING_SYSTEM, THING_TYPE_ONOFF_HEATING_SYSTEM, THING_TYPE_DOOR_LOCK, THING_TYPE_PERGOLA));
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
