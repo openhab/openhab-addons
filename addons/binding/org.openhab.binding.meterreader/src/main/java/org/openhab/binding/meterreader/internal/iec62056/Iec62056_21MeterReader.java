@@ -10,6 +10,9 @@ package org.openhab.binding.meterreader.internal.iec62056;
 
 import javax.measure.Quantity;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.meterreader.connectors.IMeterReaderConnector;
 import org.openhab.binding.meterreader.internal.MeterDevice;
 import org.openhab.binding.meterreader.internal.MeterValue;
@@ -23,9 +26,10 @@ import org.openmuc.j62056.DataSet;
  * @author MatthiasS
  *
  */
+@NonNullByDefault
 public class Iec62056_21MeterReader extends MeterDevice<DataMessage> {
 
-    public Iec62056_21MeterReader(String deviceId, String serialPort, byte[] initMessage, int baudrate,
+    public Iec62056_21MeterReader(String deviceId, String serialPort, byte @Nullable [] initMessage, int baudrate,
             int baudrateChangeDelay, ProtocolMode protocolMode) {
         super(deviceId, serialPort, initMessage, baudrate, baudrateChangeDelay, protocolMode);
     }
@@ -37,7 +41,7 @@ public class Iec62056_21MeterReader extends MeterDevice<DataMessage> {
     }
 
     @Override
-    protected <Q extends Quantity<Q>> void populateValueCache(DataMessage smlFile) {
+    protected <Q extends @NonNull Quantity<Q>> void populateValueCache(DataMessage smlFile) {
         for (DataSet dataSet : smlFile.getDataSets()) {
             String address = dataSet.getAddress();
             if (address != null && !address.isEmpty()) {

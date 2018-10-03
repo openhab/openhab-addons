@@ -9,6 +9,7 @@
 package org.openhab.binding.meterreader.internal.helper;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.io.transport.serial.SerialPort;
 
 /**
@@ -16,6 +17,7 @@ import org.eclipse.smarthome.io.transport.serial.SerialPort;
  * @author MatthiasS
  *
  */
+@NonNullByDefault
 public enum SerialParameter {
 
     _8N1(SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE),

@@ -12,6 +12,7 @@ import java.util.Arrays;
 
 import javax.measure.Quantity;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.meterreader.MeterReaderBindingConstants;
 import org.openhab.binding.meterreader.internal.MeterValue;
 import org.openmuc.jsml.EObis;
@@ -25,6 +26,7 @@ import org.openmuc.jsml.structures.SmlListEntry;
  * @author Mathias Gilhuber
  * @since 1.7.0
  */
+@NonNullByDefault
 public final class SmlValueExtractor {
 
     /**
@@ -51,10 +53,7 @@ public final class SmlValueExtractor {
      * @return the values unit if available - Integer.MIN_VALUE.
      */
     public EUnit getUnit() {
-        if (smlListEntry != null) {
-            return EUnit.from(smlListEntry.getUnit().getVal());
-        }
-        return null;
+        return EUnit.from(smlListEntry.getUnit().getVal());
     }
 
     /**
@@ -64,10 +63,7 @@ public final class SmlValueExtractor {
      */
     public String getUnitName() {
         EUnit unitEnum = getUnit();
-        if (unitEnum != null) {
-            return unitEnum.name();
-        }
-        return null;
+        return unitEnum.name();
     }
 
     /**
@@ -77,12 +73,9 @@ public final class SmlValueExtractor {
      */
     public String getObisName() {
         String obisName = null;
-        if (smlListEntry != null) {
-            EObis smlUnit = Arrays.asList(EObis.values()).stream()
-                    .filter((a) -> a.obisCode().equals(smlListEntry.getObjName())).findAny()
-                    .orElseGet(() -> EObis.UNKNOWN);
-            obisName = smlUnit.name();
-        }
+        EObis smlUnit = Arrays.asList(EObis.values()).stream()
+                .filter((a) -> a.obisCode().equals(smlListEntry.getObjName())).findAny().orElseGet(() -> EObis.UNKNOWN);
+        obisName = smlUnit.name();
 
         return obisName;
     }
@@ -99,19 +92,15 @@ public final class SmlValueExtractor {
      */
     public String getValue() {
 
-        if (smlListEntry != null) {
-            org.openmuc.jsml.structures.SmlValue smlValue = smlListEntry.getValue();
-            ASNObject choice = smlValue.getChoice();
-            String value = choice.toString();
-            try {
-                value = scaleValue(Double.parseDouble(value)) + "";
-            } catch (Exception e) {
-                // value is no numeric value
-            }
-            return value;
+        org.openmuc.jsml.structures.SmlValue smlValue = smlListEntry.getValue();
+        ASNObject choice = smlValue.getChoice();
+        String value = choice.toString();
+        try {
+            value = scaleValue(Double.parseDouble(value)) + "";
+        } catch (Exception e) {
+            // value is no numeric value
         }
-
-        return null;
+        return value;
     }
 
     /**
@@ -122,7 +111,7 @@ public final class SmlValueExtractor {
     double getScaler() {
         int scaler = 0;
 
-        if (smlListEntry != null && smlListEntry.getScaler().isSelected()) {
+        if (smlListEntry.getScaler().isSelected()) {
             byte scalerByte = smlListEntry.getScaler().getVal();
 
             scaler = Integer.parseInt(String.format("%02x", scalerByte), 16);

@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" configuration-policy="optional" name="org.openhab.binding.meterreader.internal.MeterReaderHandlerFactory">
-   <service>
-      <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
-   </service>
-   <implementation class="org.openhab.binding.meterreader.internal.MeterReaderHandlerFactory"/>
-</scr:component>

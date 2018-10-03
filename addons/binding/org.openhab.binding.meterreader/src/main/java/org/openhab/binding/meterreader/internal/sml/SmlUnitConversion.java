@@ -11,6 +11,8 @@ package org.openhab.binding.meterreader.internal.sml;
 import javax.measure.Quantity;
 import javax.measure.Unit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.openmuc.jsml.EUnit;
@@ -20,14 +22,12 @@ import org.openmuc.jsml.EUnit;
  * @author MatthiasS
  *
  */
+@NonNullByDefault
 public class SmlUnitConversion {
 
     @SuppressWarnings("unchecked")
-    public static <Q extends Quantity<Q>> Unit<Q> getUnit(EUnit unit) {
+    public static @Nullable <Q extends Quantity<Q>> Unit<Q> getUnit(EUnit unit) {
         Unit<?> javaUnit = null;
-        if (unit == null) {
-            return null;
-        }
         switch (unit) {
 
             case AMPERE:

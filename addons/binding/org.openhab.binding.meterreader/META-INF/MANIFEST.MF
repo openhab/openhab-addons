@@ -11,7 +11,7 @@ Bundle-ClassPath: .,
  lib/rxjava-2.2.0.jar,
  lib/reactive-streams-1.0.2.jar
 Import-Package: 
- com.google.common.base;version="15.0.0",
+ com.google.common.base,
  javax.measure,
  javax.measure.format,
  javax.measure.quantity,
@@ -24,6 +24,8 @@ Import-Package:
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.common,
+ org.eclipse.smarthome.core.items,
+ org.eclipse.smarthome.core.library,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.library.unit,
  org.eclipse.smarthome.core.thing,

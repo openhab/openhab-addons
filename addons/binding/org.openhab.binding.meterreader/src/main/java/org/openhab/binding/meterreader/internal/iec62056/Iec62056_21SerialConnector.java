@@ -11,6 +11,8 @@ package org.openhab.binding.meterreader.internal.iec62056;
 import java.io.IOException;
 import java.time.Duration;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.meterreader.connectors.ConnectorBase;
 import org.openhab.binding.meterreader.internal.helper.Baudrate;
 import org.openhab.binding.meterreader.internal.helper.ProtocolMode;
@@ -30,12 +32,14 @@ import io.reactivex.FlowableEmitter;
  * @author MatthiasS
  *
  */
+@NonNullByDefault
 public class Iec62056_21SerialConnector extends ConnectorBase<DataMessage> {
 
     private final static Logger logger = LoggerFactory.getLogger(Iec62056_21SerialConnector.class);
     private int baudrate;
     private int baudrateChangeDelay;
     private ProtocolMode protocolMode;
+    @Nullable
     private Iec21Port iec21Port;
 
     public Iec62056_21SerialConnector(String portName, int baudrate, int baudrateChangeDelay,
@@ -66,32 +70,38 @@ public class Iec62056_21SerialConnector extends ConnectorBase<DataMessage> {
     }
 
     @Override
-    protected DataMessage readNext(byte[] initMessage) throws IOException {
-        DataMessage dataMessage = iec21Port.read();
-        logger.debug("Datamessage read: {}", dataMessage);
-        return dataMessage;
+    protected DataMessage readNext(byte @Nullable [] initMessage) throws IOException {
+        if (iec21Port != null) {
+            DataMessage dataMessage = iec21Port.read();
+            logger.debug("Datamessage read: {}", dataMessage);
+            return dataMessage;
+        }
+        throw new IOException("SerialPort was not yet created!");
     }
 
     @Override
-    protected void emitValues(byte[] initMessage, FlowableEmitter<DataMessage> emitter) throws IOException {
+    protected void emitValues(byte @Nullable [] initMessage, FlowableEmitter<@Nullable DataMessage> emitter)
+            throws IOException {
         switch (protocolMode) {
             case ABC:
                 super.emitValues(initMessage, emitter);
                 break;
             case D:
-                iec21Port.listen(new ModeDListener() {
+                if (iec21Port != null) {
+                    iec21Port.listen(new ModeDListener() {
 
-                    @Override
-                    public void newDataMessage(DataMessage dataMessage) {
-                        logger.debug("Datamessage read: {}", dataMessage);
-                        emitter.onNext(dataMessage);
-                    }
+                        @Override
+                        public void newDataMessage(@Nullable DataMessage dataMessage) {
+                            logger.debug("Datamessage read: {}", dataMessage);
+                            emitter.onNext(dataMessage);
+                        }
 
-                    @Override
-                    public void exceptionWhileListening(Exception e) {
-                        logger.error("Exception while listening for mode D data message", e);
-                    }
-                });
+                        @Override
+                        public void exceptionWhileListening(@Nullable Exception e) {
+                            logger.error("Exception while listening for mode D data message", e);
+                        }
+                    });
+                }
                 break;
             case SML:
                 throw new IOException("SML mode not supported");
@@ -111,7 +121,9 @@ public class Iec62056_21SerialConnector extends ConnectorBase<DataMessage> {
 
     @Override
     public void closeConnection() {
-        iec21Port.close();
+        if (iec21Port != null) {
+            iec21Port.close();
+        }
     }
 
 }

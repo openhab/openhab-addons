@@ -17,6 +17,8 @@ import java.text.MessageFormat;
 
 import org.apache.commons.codec.binary.Hex;
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.transport.serial.SerialPort;
 import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
@@ -35,12 +37,15 @@ import org.osgi.framework.ServiceReference;
  * @author Mathias Gilhuber
  * @since 1.7.0
  */
+@NonNullByDefault
 public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
 
     private SerialPortManager serialManager;
+    @Nullable
     private SerialPort serialPort;
+    @Nullable
     private DataInputStream is;
-
+    @Nullable
     private DataOutputStream os;
     private int baudrate;
 
@@ -70,11 +75,13 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
     }
 
     @Override
-    protected SmlFile readNext(byte[] initMessage) throws IOException {
+    protected SmlFile readNext(byte @Nullable [] initMessage) throws IOException {
         if (initMessage != null) {
             logger.debug("Writing init message: {}", Hex.encodeHexString(initMessage));
-            os.write(initMessage);
-            os.flush();
+            if (os != null) {
+                os.write(initMessage);
+                os.flush();
+            }
         }
         return new Transport().getSMLFile(is);
     }

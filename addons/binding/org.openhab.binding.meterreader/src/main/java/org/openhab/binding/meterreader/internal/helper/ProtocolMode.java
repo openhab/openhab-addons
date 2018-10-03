@@ -8,11 +8,14 @@
  */
 package org.openhab.binding.meterreader.internal.helper;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  *
  * @author MatthiasS
  *
  */
+@NonNullByDefault
 public enum ProtocolMode {
 
     ABC("A,B,C"),

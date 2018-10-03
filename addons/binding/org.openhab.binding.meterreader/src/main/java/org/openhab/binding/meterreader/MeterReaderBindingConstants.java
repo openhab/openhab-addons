@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.meterreader;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.meterreader.internal.ObisCode;
 
@@ -17,6 +18,7 @@ import org.openhab.binding.meterreader.internal.ObisCode;
  *
  * @author Matthias Steigenberger - Initial contribution
  */
+@NonNullByDefault
 public class MeterReaderBindingConstants {
 
     public static final String BINDING_ID = "meterreader";
@@ -47,10 +49,9 @@ public class MeterReaderBindingConstants {
     /** Obis format */
     public static final String OBIS_FORMAT = OBIS_FORMAT_MINIMAL + "*%d";
 
-    public static final String CHANNEL_TYPE_NUMBER = "NumberChannel";
-    public static final String CHANNEL_TYPE_STRING = "StringChannel";
+    public static final String CHANNEL_TYPE_METERREADER_OBIS = "channel-type:meterreader:obis";
 
     public static String getObisChannelId(String obis) {
-        return obis.replaceAll("\\.", "-").replaceAll(":|\\*", "#");
+        return obis.replaceAll("\\.", "-").replaceAll(":|\\*", "_");
     }
 }

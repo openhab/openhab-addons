@@ -8,11 +8,15 @@
  */
 package org.openhab.binding.meterreader.internal.helper;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  *
  * @author MatthiasS
  *
  */
+@NonNullByDefault
 public enum Baudrate {
     AUTO(-1) {
         @Override
@@ -49,9 +53,9 @@ public enum Baudrate {
         return Baudrate._9600;
     }
 
-    public static Baudrate fromString(String baudrate) {
+    public static @Nullable Baudrate fromString(String baudrate) {
         try {
-            if (baudrate == null || baudrate.equalsIgnoreCase(AUTO.name())) {
+            if (baudrate.equalsIgnoreCase(AUTO.name())) {
                 return Baudrate.AUTO;
             }
             return valueOf("_" + baudrate.toUpperCase());

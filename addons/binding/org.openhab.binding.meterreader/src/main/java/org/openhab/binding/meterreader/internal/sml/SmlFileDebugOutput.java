@@ -11,6 +11,7 @@ package org.openhab.binding.meterreader.internal.sml;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openmuc.jsml.structures.EMessageBody;
 import org.openmuc.jsml.structures.SmlFile;
 import org.openmuc.jsml.structures.SmlMessage;
@@ -24,9 +25,10 @@ import org.openmuc.jsml.structures.responses.SmlPublicOpenRes;
 
 /**
  * Class to parse a SML_FILE
- * 
+ *
  * @author MatthiasS
  */
+@NonNullByDefault
 public class SmlFileDebugOutput {
 
     private SmlFileDebugOutput() {

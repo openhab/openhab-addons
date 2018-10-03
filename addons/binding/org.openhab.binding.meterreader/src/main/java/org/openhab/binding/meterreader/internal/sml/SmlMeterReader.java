@@ -10,7 +10,8 @@ package org.openhab.binding.meterreader.internal.sml;
 
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.meterreader.connectors.IMeterReaderConnector;
 import org.openhab.binding.meterreader.internal.MeterDevice;
 import org.openhab.binding.meterreader.internal.MeterValue;
@@ -32,6 +33,7 @@ import org.slf4j.LoggerFactory;
  * @author Mathias Gilhuber
  * @since 1.7.0
  */
+@NonNullByDefault
 public final class SmlMeterReader extends MeterDevice<SmlFile> {
 
     protected final Logger logger = LoggerFactory.getLogger(SmlMeterReader.class);
@@ -45,8 +47,8 @@ public final class SmlMeterReader extends MeterDevice<SmlFile> {
      * @param serialParameter
      * @param initMessage
      */
-    public static SmlMeterReader createInstance(String deviceId, String serialPort, byte[] initMessage, int baudrate,
-            int baudrateChangeDelay) {
+    public static SmlMeterReader createInstance(String deviceId, String serialPort, byte @Nullable [] initMessage,
+            int baudrate, int baudrateChangeDelay) {
         SmlMeterReader device = new SmlMeterReader(deviceId, serialPort, initMessage, baudrate, baudrateChangeDelay,
                 ProtocolMode.SML);
 
@@ -62,7 +64,7 @@ public final class SmlMeterReader extends MeterDevice<SmlFile> {
      * @param initMessage
      * @param baudrate
      */
-    private SmlMeterReader(String deviceId, String serialPort, byte[] initMessage, int baudrate,
+    private SmlMeterReader(String deviceId, String serialPort, byte @Nullable [] initMessage, int baudrate,
             int baudrateChangeDelay, ProtocolMode protocolMode) {
         super(deviceId, serialPort, initMessage, baudrate, baudrateChangeDelay, protocolMode);
 
@@ -76,67 +78,60 @@ public final class SmlMeterReader extends MeterDevice<SmlFile> {
      */
     @Override
     protected void populateValueCache(SmlFile smlFile) {
-        if (smlFile != null) {
-            if (logger.isTraceEnabled()) {
-                logger.trace("Read out following SML file: {}", System.lineSeparator());
-                SmlFileDebugOutput.printFile(smlFile, (msg) -> logger.trace(msg));
-            }
-            List<SmlMessage> smlMessages = smlFile.getMessages();
+        if (logger.isTraceEnabled()) {
+            logger.trace("Read out following SML file: {}", System.lineSeparator());
+            SmlFileDebugOutput.printFile(smlFile, (msg) -> logger.trace(msg));
+        }
+        List<SmlMessage> smlMessages = smlFile.getMessages();
 
-            if (smlMessages != null) {
-                int messageCount = smlMessages.size();
+        if (smlMessages != null) {
+            int messageCount = smlMessages.size();
 
-                if (messageCount <= 0) {
-                    logger.warn("{}: no valid SML messages list retrieved.", this.toString());
-                }
-
-                for (int i = 0; i < messageCount; i++) {
-                    SmlMessage smlMessage = smlMessages.get(i);
-
-                    if (smlMessage == null) {
-                        logger.warn("{}: no valid SML message.", this.toString());
-                        continue;
-                    }
-
-                    int tag = smlMessage.getMessageBody().getTag().id();
-
-                    if (tag != EMessageBody.GET_LIST_RESPONSE.id()) {
-                        continue;
-                    }
-
-                    SmlGetListRes listResponse = (SmlGetListRes) smlMessage.getMessageBody().getChoice();
-                    SmlList smlValueList = listResponse.getValList();
-                    SmlListEntry[] smlListEntries = smlValueList.getValListEntry();
-
-                    for (SmlListEntry entry : smlListEntries) {
-                        SmlValueExtractor valueExtractor = new SmlValueExtractor(entry);
-                        String obis = valueExtractor.getObisCode();
-
-                        MeterValue<?> smlValue = getSmlValue(obis);
-
-                        if (smlValue == null) {
-                            smlValue = valueExtractor.getSmlValue();
-                        }
-
-                        SmlStatus status = entry.getStatus();
-                        if (status != null) {
-                            String statusValue = readStatus(status, obis);
-                            smlValue.setStatus(statusValue);
-                        }
-
-                        addObisCache(smlValue);
-                    }
-                }
-
-            } else {
+            if (messageCount <= 0) {
                 logger.warn("{}: no valid SML messages list retrieved.", this.toString());
             }
+
+            for (int i = 0; i < messageCount; i++) {
+                SmlMessage smlMessage = smlMessages.get(i);
+
+                int tag = smlMessage.getMessageBody().getTag().id();
+
+                if (tag != EMessageBody.GET_LIST_RESPONSE.id()) {
+                    continue;
+                }
+
+                SmlGetListRes listResponse = (SmlGetListRes) smlMessage.getMessageBody().getChoice();
+                SmlList smlValueList = listResponse.getValList();
+                SmlListEntry[] smlListEntries = smlValueList.getValListEntry();
+
+                for (SmlListEntry entry : smlListEntries) {
+                    SmlValueExtractor valueExtractor = new SmlValueExtractor(entry);
+                    String obis = valueExtractor.getObisCode();
+
+                    MeterValue<?> smlValue = getSmlValue(obis);
+
+                    if (smlValue == null) {
+                        smlValue = valueExtractor.getSmlValue();
+                    }
+
+                    SmlStatus status = entry.getStatus();
+                    if (status != null) {
+                        String statusValue = readStatus(status, obis);
+                        if (statusValue != null) {
+                            smlValue.setStatus(statusValue);
+                        }
+                    }
+
+                    addObisCache(smlValue);
+                }
+            }
+
         } else {
-            logger.warn("{}: no valid SML File.", this.toString());
+            logger.warn("{}: no valid SML messages list retrieved.", this.toString());
         }
     }
 
-    private String readStatus(@NonNull SmlStatus status, String obis) {
+    private @Nullable String readStatus(SmlStatus status, String obis) {
         ASNObject choice = status.getChoice();
         if (choice != null) {
             String statusValue = choice.toString();

@@ -6,13 +6,17 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.meterreader.internal;
+package org.openhab.binding.meterreader.internal.conformity.negate;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  *
  * @author MatthiasS
  *
  */
+@NonNullByDefault
 public class NegateBitModel {
 
     private int negatePosition;
@@ -60,7 +64,7 @@ public class NegateBitModel {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (this == obj) {
             return true;
         }

@@ -6,18 +6,24 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.meterreader.internal;
+package org.openhab.binding.meterreader.internal.conformity;
 
 import java.util.function.Supplier;
 
 import javax.measure.Quantity;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.meterreader.MeterReaderBindingConstants;
+import org.openhab.binding.meterreader.internal.MeterDevice;
+import org.openhab.binding.meterreader.internal.MeterValue;
+import org.openhab.binding.meterreader.internal.ObisCode;
+import org.openhab.binding.meterreader.internal.conformity.negate.NegateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +32,7 @@ import org.slf4j.LoggerFactory;
  * @author MatthiasS
  *
  */
+@NonNullByDefault
 public enum Conformity {
 
     NONE {
@@ -63,18 +70,21 @@ public enum Conformity {
                             try {
                                 MeterValue<?> otherValue = device.getSmlValue(obis);
                                 ObisCode obisCode = ObisCode.from(obis);
-                                if (obisCode.matches((byte) 0x60, (byte) 0x05, (byte) 0x05)) {
+                                if (otherValue != null) {
 
-                                    // we found status status obis 96.5.5
-                                    if (NegateHandler.isNegateSet(otherValue.getValue(), 5)) {
-                                        return currentState.negate();
-                                    }
-                                } else if (obisCode.matches((byte) 0x01, (byte) 0x08, (byte) 0x00)) {
+                                    if (obisCode.matches((byte) 0x60, (byte) 0x05, (byte) 0x05)) {
 
-                                    // check obis 1.8.0 for status if status has negate bit set.
-                                    String status = otherValue.getStatus();
-                                    if (status != null && NegateHandler.isNegateSet(status, 5)) {
-                                        return currentState.negate();
+                                        // we found status status obis 96.5.5
+                                        if (NegateHandler.isNegateSet(otherValue.getValue(), 5)) {
+                                            return currentState.negate();
+                                        }
+                                    } else if (obisCode.matches((byte) 0x01, (byte) 0x08, (byte) 0x00)) {
+
+                                        // check obis 1.8.0 for status if status has negate bit set.
+                                        String status = otherValue.getStatus();
+                                        if (status != null && NegateHandler.isNegateSet(status, 5)) {
+                                            return currentState.negate();
+                                        }
                                     }
                                 }
                             } catch (Exception e) {
@@ -132,7 +142,8 @@ public enum Conformity {
      * @return
      */
     protected <Q extends Quantity<Q>> QuantityType<?> retrieveOverwrittenNegate(Channel channel,
-            QuantityType<Q> currentState, Thing thing, MeterDevice<?> device, Supplier<QuantityType<Q>> elseDo) {
+            QuantityType<Q> currentState, Thing thing, MeterDevice<?> device,
+            @Nullable Supplier<QuantityType<Q>> elseDo) {
         // Negate setting
         String negateProperty = (String) channel.getConfiguration()
                 .get(MeterReaderBindingConstants.CONFIGURATION_CHANNEL_NEGATE);

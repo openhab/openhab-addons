@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.meterreader.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.meterreader.internal.helper.ProtocolMode;
 import org.openhab.binding.meterreader.internal.iec62056.Iec62056_21MeterReader;
 import org.openhab.binding.meterreader.internal.sml.SmlMeterReader;
@@ -18,10 +20,11 @@ import org.openhab.binding.meterreader.internal.sml.SmlMeterReader;
  * @author MatthiasS
  *
  */
+@NonNullByDefault
 public class MeterDeviceFactory {
 
-    public static MeterDevice<?> getDevice(String mode, String deviceId, String serialPort, byte[] initMessage,
-            int baudrate, int baudrateChangeDelay) {
+    public static @Nullable MeterDevice<?> getDevice(String mode, String deviceId, String serialPort,
+            byte @Nullable [] initMessage, int baudrate, int baudrateChangeDelay) {
         ProtocolMode protocolMode = ProtocolMode.valueOf(mode.toUpperCase());
         switch (protocolMode) {
             case D:

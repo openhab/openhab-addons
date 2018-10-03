@@ -15,11 +15,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.Quantity;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.meterreader.connectors.IMeterReaderConnector;
 import org.openhab.binding.meterreader.internal.helper.ProtocolMode;
 import org.slf4j.Logger;
@@ -35,6 +38,7 @@ import io.reactivex.schedulers.Schedulers;
  *
  * @param <T>
  */
+@NonNullByDefault
 public abstract class MeterDevice<T> {
 
     /**
@@ -45,7 +49,7 @@ public abstract class MeterDevice<T> {
      * Map of all values captured from the device during the read request.
      */
     private Map<String, MeterValue<?>> valueCache;
-    private byte[] initMessage;
+    private byte @Nullable [] initMessage;
     /**
      * The id of the SML device from openHAB configuration.
      */
@@ -58,12 +62,12 @@ public abstract class MeterDevice<T> {
     private List<MeterValueListener> valueChangeListeners;
     private final static Logger logger = LoggerFactory.getLogger(MeterDevice.class);
 
-    public MeterDevice(String deviceId, String serialPort, byte[] initMessage, int baudrate, int baudrateChangeDelay,
-            ProtocolMode protocolMode) {
+    public MeterDevice(String deviceId, String serialPort, byte @Nullable [] initMessage, int baudrate,
+            int baudrateChangeDelay, ProtocolMode protocolMode) {
         super();
         this.deviceId = deviceId;
         this.valueCache = new HashMap<String, MeterValue<?>>();
-        this.valueChangeListeners = new ArrayList<>();
+        this.valueChangeListeners = new CopyOnWriteArrayList<>();
         this.printMeterInfo = true;
         this.connector = createConnector(serialPort, baudrate, baudrateChangeDelay, protocolMode);
     }
@@ -86,6 +90,7 @@ public abstract class MeterDevice<T> {
      * @param obis the OBIS code which value should be retrieved.
      * @return the OBIS value as String if available - otherwise null.
      */
+    @Nullable
     public String getValue(String obisId) {
         MeterValue<?> smlValue = getSmlValue(obisId);
         if (smlValue != null) {
@@ -101,6 +106,7 @@ public abstract class MeterDevice<T> {
      * @return the OBIS value if available - otherwise null.
      */
     @SuppressWarnings("unchecked")
+    @Nullable
     public <Q extends Quantity<Q>> MeterValue<Q> getSmlValue(String obisId) {
 
         if (valueCache.containsKey(obisId)) {
@@ -126,9 +132,6 @@ public abstract class MeterDevice<T> {
      * @throws Exception
      */
     public Disposable readValues(ScheduledExecutorService executorService, Duration period) throws Exception {
-        if (connector == null) {
-            throw new IllegalArgumentException("{}: connector is not instantiated: " + this.toString());
-        }
 
         try {
             Flowable<T> meterValuesFlowable = Flowable.fromPublisher(connector.getMeterValues(initMessage, period))

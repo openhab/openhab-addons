@@ -11,7 +11,8 @@ package org.openhab.binding.meterreader.internal;
 import javax.measure.Quantity;
 import javax.measure.Unit;
 
-import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Represents one value of the meter device.
@@ -19,21 +20,24 @@ import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
  * @author MatthiasS
  *
  */
+@NonNullByDefault
 public class MeterValue<Q extends Quantity<Q>> {
 
     private String obis;
     private String value;
+    @Nullable
     private Unit<? extends Q> unit;
+    @Nullable
     private String status;
 
-    public MeterValue(String obis, String value, Unit<? extends Q> unit, String status) {
+    public MeterValue(String obis, String value, @Nullable Unit<? extends Q> unit, @Nullable String status) {
         this.obis = obis;
         this.unit = unit;
         this.value = value;
         this.status = status;
     }
 
-    public MeterValue(String obis, String value, Unit<Q> unit) {
+    public MeterValue(String obis, String value, @Nullable Unit<Q> unit) {
         this(obis, value, unit, null);
     }
 
@@ -42,8 +46,8 @@ public class MeterValue<Q extends Quantity<Q>> {
      *
      * @return the string representation of the values unit - otherwise null.
      */
-    public Unit<? extends Q> getUnit() {
-        return unit == null ? (Unit<? extends Q>) SmartHomeUnits.ONE : unit;
+    public @Nullable Unit<? extends Q> getUnit() {
+        return unit;
     }
 
     /**
@@ -67,7 +71,7 @@ public class MeterValue<Q extends Quantity<Q>> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (this == obj) {
             return true;
         }
@@ -118,7 +122,7 @@ public class MeterValue<Q extends Quantity<Q>> {
         return this.obis;
     }
 
-    public String getStatus() {
+    public @Nullable String getStatus() {
         return status;
     }
 

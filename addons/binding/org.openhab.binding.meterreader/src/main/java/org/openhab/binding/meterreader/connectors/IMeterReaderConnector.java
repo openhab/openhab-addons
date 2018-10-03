@@ -11,6 +11,8 @@ package org.openhab.binding.meterreader.connectors;
 import java.io.IOException;
 import java.time.Duration;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.reactivestreams.Publisher;
 
 /**
@@ -19,6 +21,7 @@ import org.reactivestreams.Publisher;
  * @author Mathias Gilhuber
  * @since 1.7.0
  */
+@NonNullByDefault
 public interface IMeterReaderConnector<T> {
 
     /**
@@ -30,7 +33,7 @@ public interface IMeterReaderConnector<T> {
      * @return native encoded SML informations from a device.
      * @throws IOException
      */
-    Publisher<T> getMeterValues(byte[] initMessage, Duration period) throws IOException;
+    Publisher<T> getMeterValues(byte @Nullable [] initMessage, Duration period) throws IOException;
 
     /**
      * Open connection.

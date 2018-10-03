@@ -10,6 +10,7 @@ package org.openhab.binding.meterreader.internal;
 
 import javax.measure.Quantity;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +19,7 @@ import org.slf4j.LoggerFactory;
  * @author MatthiasS
  *
  */
+@NonNullByDefault
 public interface MeterValueListener {
 
     static Logger logger = LoggerFactory.getLogger(MeterValueListener.class);

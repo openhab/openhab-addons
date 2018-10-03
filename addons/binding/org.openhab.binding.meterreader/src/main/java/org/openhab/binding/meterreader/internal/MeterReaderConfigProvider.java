@@ -14,29 +14,33 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.ConfigOptionProvider;
 import org.eclipse.smarthome.config.core.ParameterOption;
 import org.openhab.binding.meterreader.MeterReaderBindingConstants;
+import org.openhab.binding.meterreader.internal.conformity.Conformity;
 import org.openhab.binding.meterreader.internal.helper.Baudrate;
 import org.openhab.binding.meterreader.internal.helper.ProtocolMode;
+import org.osgi.service.component.annotations.Component;
 
 /**
  *
  * @author MatthiasS
  *
  */
+@NonNullByDefault
+@Component
 public class MeterReaderConfigProvider implements ConfigOptionProvider {
 
     @Override
-    public Collection<ParameterOption> getParameterOptions(URI uri, String param, String context, Locale locale) {
+    public @Nullable Collection<ParameterOption> getParameterOptions(URI uri, String param, @Nullable String context,
+            @Nullable Locale locale) {
         return ConfigOptionProvider.super.getParameterOptions(uri, param, context, locale);
     }
 
     @Override
-    public Collection<ParameterOption> getParameterOptions(URI uri, String param, Locale locale) {
-        if (uri == null) {
-            return null;
-        }
+    public @Nullable Collection<ParameterOption> getParameterOptions(URI uri, String param, @Nullable Locale locale) {
 
         if (!MeterReaderBindingConstants.THING_TYPE_SMLREADER.getAsString().equals(uri.getSchemeSpecificPart())) {
             return null;

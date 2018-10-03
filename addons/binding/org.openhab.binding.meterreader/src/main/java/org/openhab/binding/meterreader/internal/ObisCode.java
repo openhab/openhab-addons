@@ -12,6 +12,8 @@ import java.util.Formatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.meterreader.MeterReaderBindingConstants;
 
 /**
@@ -19,6 +21,7 @@ import org.openhab.binding.meterreader.MeterReaderBindingConstants;
  * @author MatthiasS
  *
  */
+@NonNullByDefault
 public class ObisCode {
     /**
      * For more information see https://de.wikipedia.org/wiki/OBIS-Kennzahlen
@@ -26,10 +29,11 @@ public class ObisCode {
     public static final String OBIS_PATTERN = "((?<A>[0-9]{1,3})-(?<B>[0-9]{1,3}):)?(?<C>[0-9]{1,3}).(?<D>[0-9]{1,3}).(?<E>[0-9]{1,3})(\\*(?<F>[0-9][0-9]{1,3}))?";
 
     private static Pattern obisPattern = Pattern.compile(OBIS_PATTERN);
+    @Nullable
+    private Byte a, b, f;
+    private Byte c, d, e;
 
-    private Byte a, b, c, d, e, f;
-
-    private ObisCode(Byte a, Byte b, Byte c, Byte d, Byte e, Byte f) {
+    private ObisCode(@Nullable Byte a, @Nullable Byte b, Byte c, Byte d, Byte e, @Nullable Byte f) {
         this.a = a;
         this.b = b;
         this.c = c;
@@ -68,27 +72,27 @@ public class ObisCode {
         }
     }
 
-    public byte getAGroup() {
+    public @Nullable Byte getAGroup() {
         return a;
     }
 
-    public byte getBGroup() {
+    public @Nullable Byte getBGroup() {
         return b;
     }
 
-    public byte getCGroup() {
+    public @Nullable Byte getCGroup() {
         return c;
     }
 
-    public byte getDGroup() {
+    public @Nullable Byte getDGroup() {
         return d;
     }
 
-    public byte getEGroup() {
+    public @Nullable Byte getEGroup() {
         return e;
     }
 
-    public byte getFGroup() {
+    public @Nullable Byte getFGroup() {
         return f;
     }
 
@@ -97,7 +101,7 @@ public class ObisCode {
         return asDecimalString();
     }
 
-    public boolean matches(Byte a, Byte b, Byte c, Byte d, Byte e, Byte f) {
+    public boolean matches(@Nullable Byte a, @Nullable Byte b, Byte c, Byte d, Byte e, @Nullable Byte f) {
         return (this.a == null || a == null || this.a.equals(a)) && (this.b == null || b == null || this.b.equals(b))
                 && this.c.equals(c) && this.d.equals(d) && this.e.equals(e)
                 && (this.f == null || f == null || this.f.equals(f));

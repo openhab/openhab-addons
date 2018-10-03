@@ -4,7 +4,7 @@
 
     <name>MeterReader Binding</name>
     <description>
-        The meter reader binding is able to read SML messages (PUSH) and supports IEC 62056-21 modes A,B,C (PULL)and D (PUSH).
+        The meter reader binding is able to read SML messages (PUSH) and supports IEC 62056-21 modes A,B,C (PULL) and D (PUSH).
     </description>
 
 </binding:binding>

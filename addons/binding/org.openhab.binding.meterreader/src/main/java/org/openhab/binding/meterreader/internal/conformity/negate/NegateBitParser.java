@@ -6,11 +6,12 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.meterreader.internal;
+package org.openhab.binding.meterreader.internal.conformity.negate;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.meterreader.MeterReaderBindingConstants;
 
 /**
@@ -18,6 +19,7 @@ import org.openhab.binding.meterreader.MeterReaderBindingConstants;
  * @author MatthiasS
  *
  */
+@NonNullByDefault
 public class NegateBitParser {
 
     /**

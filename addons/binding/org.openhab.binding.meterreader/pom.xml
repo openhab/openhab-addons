@@ -20,31 +20,6 @@
 		    <!-- Following is used for j62056 lib as it is depending on jrxtx. 
 		    jrxtx creates a specific implementation of gnu.io.SerialPort (namely RXTXPort). 
 		    As this binding is also supporting RFC2217 which is using an instance of TelnetSerialPort, the org.openmuc.jrxtx.JRxTxPort is shaded and modified -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<version>3.0.2</version>
-				<executions>
-					<execution>
-						<id>unpack</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>unpack</goal>
-						</goals>
-						<configuration>
-							<artifactItems>
-								<artifactItem>
-									<groupId>org.openmuc</groupId>
-									<artifactId>jrxtx</artifactId>
-									<version>1.0.1</version>
-									<outputDirectory>${project.build.outputDirectory}</outputDirectory>
-									<excludes>gnu/**</excludes>
-								</artifactItem>
-							</artifactItems>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>

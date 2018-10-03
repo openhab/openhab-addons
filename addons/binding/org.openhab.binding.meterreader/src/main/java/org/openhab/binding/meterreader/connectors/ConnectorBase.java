@@ -13,6 +13,8 @@ import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +31,7 @@ import io.reactivex.FlowableEmitter;
  * @author Mathias Gilhuber
  * @since 1.7.0
  */
+@NonNullByDefault
 public abstract class ConnectorBase<T> implements IMeterReaderConnector<T> {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
@@ -56,7 +59,7 @@ public abstract class ConnectorBase<T> implements IMeterReaderConnector<T> {
      * @return
      * @throws IOException
      */
-    protected abstract T readNext(byte[] initMessage) throws IOException;
+    protected abstract T readNext(byte @Nullable [] initMessage) throws IOException;
 
     /**
      * Whether to periodically emit values.
@@ -103,7 +106,7 @@ public abstract class ConnectorBase<T> implements IMeterReaderConnector<T> {
     }
 
     @Override
-    public Publisher<T> getMeterValues(byte[] initMessage, Duration period) throws IOException {
+    public Publisher<T> getMeterValues(byte @Nullable [] initMessage, Duration period) throws IOException {
         Flowable<T> itemPublisher = Flowable.create((emitter) -> {
             emitValues(initMessage, emitter);
         }, BackpressureStrategy.DROP);
@@ -125,7 +128,7 @@ public abstract class ConnectorBase<T> implements IMeterReaderConnector<T> {
 
     }
 
-    protected void emitValues(byte[] initMessage, FlowableEmitter<T> emitter) throws IOException {
+    protected void emitValues(byte @Nullable [] initMessage, FlowableEmitter<@Nullable T> emitter) throws IOException {
         if (!emitter.isCancelled()) {
 
             emitter.onNext(readNext(initMessage));

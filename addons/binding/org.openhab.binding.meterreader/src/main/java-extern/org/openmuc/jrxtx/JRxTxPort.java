@@ -16,8 +16,18 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
-@SuppressWarnings("deprecation")
-class JRxTxPort implements SerialPort {
+/**
+ * <b>This class is a workaround:</b>
+ * jrxtx library includes <code>gnu.io.*</code> classes and <code>j62056.jar</code> is depending on that. As we are
+ * using nrjavaserial as an implementation of gnu.io, we can't go that way!
+ * -> As a workaround I shaded the {@link JRxTxPort} class which is used by <code>j62056.jar</code> and modified it to
+ * work with any implementation of {@link SerialPort} (formerly it was just working with the implementation
+ * <code>gnu.io.RXTXPort</code>).
+ * 
+ * @author MatthiasS
+ *
+ */
+class JRxTxPort implements org.openmuc.jrxtx.SerialPort {
 
     private volatile boolean closed;
 

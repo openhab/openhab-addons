@@ -6,28 +6,42 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.meterreader.internal;
+package org.openhab.binding.meterreader.internal.conformity.negate;
 
 import java.util.function.Function;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.meterreader.internal.MeterValue;
 
 /**
  *
  * @author MatthiasS
  *
  */
+@NonNullByDefault
 public class NegateHandler {
 
     public static boolean shouldNegateState(String negateProperty,
-            Function<String, MeterValue<?>> getObisValueFunction) {
+            Function<String, @Nullable MeterValue<?>> getObisValueFunction) {
         NegateBitModel negateModel = NegateBitParser.parseNegateProperty(negateProperty);
         MeterValue<?> value = getObisValueFunction.apply(negateModel.getNegateChannelId());
+        boolean isStatus = negateModel.isStatus();
         if (value != null) {
-            boolean negateBit = isNegateSet(negateModel.isStatus() ? value.getStatus() : value.getValue(),
-                    negateModel.getNegatePosition());
+            String status = value.getStatus();
+            String stringValue;
+            ;
+            if (isStatus && status != null) {
+                stringValue = status;
+            } else {
+                stringValue = value.getValue();
+            }
+            boolean negateBit = isNegateSet(stringValue, negateModel.getNegatePosition());
 
             return negateBit == negateModel.isNegateBit();
+        } else {
+            return false;
         }
-        return false;
     }
 
     public static boolean isNegateSet(String value, int negatePosition) {
