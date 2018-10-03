@@ -8,12 +8,11 @@
  */
 package org.openhab.binding.ipp.internal;
 
-import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import com.google.common.collect.Lists;
 
 /**
  * The {@link IppBindingConstants} class defines common constants, which are
@@ -38,6 +37,5 @@ public class IppBindingConstants {
     public static final String PRINTER_PARAMETER_NAME = "name";
     public static final String PRINTER_PARAMETER_REFRESH_INTERVAL = "refresh";
 
-    public static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists
-            .newArrayList(IppBindingConstants.PRINTER_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(PRINTER_THING_TYPE);
 }
