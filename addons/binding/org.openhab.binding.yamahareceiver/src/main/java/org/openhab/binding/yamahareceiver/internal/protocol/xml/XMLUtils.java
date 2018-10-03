@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
-import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Zone;
+import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone;
 import org.openhab.binding.yamahareceiver.internal.protocol.ReceivedMessageParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

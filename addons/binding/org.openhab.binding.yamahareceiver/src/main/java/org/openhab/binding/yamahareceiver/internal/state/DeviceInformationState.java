@@ -10,7 +10,7 @@ package org.openhab.binding.yamahareceiver.internal.state;
 
 import java.util.*;
 
-import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
+import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants;
 
 /**
  * Basic AVR state (name, version, available zones, etc)

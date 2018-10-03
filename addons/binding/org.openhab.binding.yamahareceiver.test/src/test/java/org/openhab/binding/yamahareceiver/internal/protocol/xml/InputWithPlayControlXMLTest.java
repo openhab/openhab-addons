@@ -22,9 +22,8 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.openhab.binding.yamahareceiver.TestModels.RX_S601D;
-import static org.openhab.binding.yamahareceiver.TestModels.RX_V3900;
-import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Inputs.*;
+import static org.openhab.binding.yamahareceiver.internal.TestModels.*;
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Inputs.*;
 
 /**
  * Unit test for {@link InputWithPlayControlXML}.

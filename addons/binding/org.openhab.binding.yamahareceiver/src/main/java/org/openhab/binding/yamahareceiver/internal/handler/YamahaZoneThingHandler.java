@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.yamahareceiver.handler;
+package org.openhab.binding.yamahareceiver.internal.handler;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.*;
@@ -28,15 +28,15 @@ import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.*;
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Inputs.INPUT_SPOTIFY;
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Inputs.INPUT_TUNER;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.*;
-import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Inputs.INPUT_SPOTIFY;
-import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Inputs.INPUT_TUNER;
 
 /**
  * The {@link YamahaZoneThingHandler} is managing one zone of an Yamaha AVR.

@@ -16,8 +16,8 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import static org.junit.Assert.assertTrue;
-import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Feature.*;
-import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Zone.*;
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Feature.*;
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone.*;
 
 /**
  * Unit test for {@link DeviceInformationXML}.
