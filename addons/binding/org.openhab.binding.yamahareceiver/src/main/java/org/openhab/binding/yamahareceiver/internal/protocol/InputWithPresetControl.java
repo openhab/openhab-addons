@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toSet;
-import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Inputs.*;
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Inputs.*;
 
 /**
  * The preset control protocol interface

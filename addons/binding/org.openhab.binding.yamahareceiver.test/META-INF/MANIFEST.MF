@@ -6,7 +6,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.yamahareceiver.test;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
-Export-Package: org.openhab.binding.yamahareceiver;uses:="org.eclipse.smarthome.test"
 Fragment-Host: org.openhab.binding.yamahareceiver
 Import-Package: 
  org.apache.commons.io,
@@ -26,7 +25,6 @@ Import-Package:
  org.mockito,
  org.mockito.invocation,
  org.mockito.stubbing,
- org.openhab.binding.yamahareceiver,
  org.osgi.framework,
  org.osgi.service.device,
  org.slf4j

@@ -14,8 +14,8 @@ import java.util.Collection;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
-import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Zone;
+import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants;
+import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone;
 import org.openhab.binding.yamahareceiver.internal.protocol.*;
 import org.openhab.binding.yamahareceiver.internal.state.AvailableInputState;
 import org.openhab.binding.yamahareceiver.internal.state.AvailableInputStateListener;

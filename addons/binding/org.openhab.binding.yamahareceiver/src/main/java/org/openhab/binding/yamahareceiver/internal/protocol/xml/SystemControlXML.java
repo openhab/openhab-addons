@@ -24,8 +24,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.*;
-import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Models.RX_A2000;
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.*;
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Models.RX_A2000;
 import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLConstants.*;
 import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLProtocolService.getResponse;
 import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLProtocolService.getZoneResponse;

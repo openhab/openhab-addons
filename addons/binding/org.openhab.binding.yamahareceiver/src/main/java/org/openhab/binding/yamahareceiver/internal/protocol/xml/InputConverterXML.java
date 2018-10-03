@@ -21,8 +21,8 @@ import java.util.*;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toSet;
-import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.*;
-import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Inputs.*;
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.*;
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Inputs.*;
 
 /**
  * XML implementation of {@link InputConverter}.

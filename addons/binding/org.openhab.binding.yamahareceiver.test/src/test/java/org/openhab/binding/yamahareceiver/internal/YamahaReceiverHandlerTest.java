@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.yamahareceiver;
+package org.openhab.binding.yamahareceiver.internal;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -16,8 +16,8 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.openhab.binding.yamahareceiver.handler.YamahaBridgeHandler;
 import org.openhab.binding.yamahareceiver.internal.config.YamahaBridgeConfig;
+import org.openhab.binding.yamahareceiver.internal.handler.YamahaBridgeHandler;
 import org.openhab.binding.yamahareceiver.internal.protocol.ConnectionStateListener;
 import org.openhab.binding.yamahareceiver.internal.protocol.DeviceInformation;
 import org.openhab.binding.yamahareceiver.internal.protocol.ProtocolFactory;

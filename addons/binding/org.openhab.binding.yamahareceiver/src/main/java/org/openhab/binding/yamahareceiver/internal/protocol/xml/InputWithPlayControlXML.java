@@ -23,7 +23,7 @@ import org.w3c.dom.Node;
 
 import java.io.IOException;
 
-import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Inputs.*;
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Inputs.*;
 import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLConstants.Commands.PLAYBACK_STATUS_CMD;
 import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLProtocolService.getResponse;
 import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.*;

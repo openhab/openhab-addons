@@ -9,8 +9,8 @@
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
 import org.apache.commons.lang.StringUtils;
-import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Feature;
-import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Zone;
+import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Feature;
+import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone;
 import org.openhab.binding.yamahareceiver.internal.config.YamahaUtils;
 import org.openhab.binding.yamahareceiver.internal.state.DeviceInformationState;
 import org.slf4j.Logger;

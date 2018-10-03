@@ -18,14 +18,14 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.*;
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Configs.CONFIG_HOST_NAME;
+
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
-import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.*;
-import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Configs.CONFIG_HOST_NAME;
 
 /**
  * The {@link YamahaDiscoveryParticipant} is responsible for processing the

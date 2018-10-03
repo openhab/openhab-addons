@@ -21,7 +21,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
-import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Zone.Zone_2;
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone.Zone_2;
 
 /**
  * Unit test for {@link ProtocolFactory}.

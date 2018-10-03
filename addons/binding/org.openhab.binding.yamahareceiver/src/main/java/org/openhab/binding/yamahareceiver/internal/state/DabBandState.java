@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.yamahareceiver.internal.state;
 
-import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.VALUE_EMPTY;
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.VALUE_EMPTY;
 
 /**
  * The band state for DAB tuners.
