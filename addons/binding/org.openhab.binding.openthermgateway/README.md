@@ -35,24 +35,24 @@ The thing currently supports the follow channels:
 ### demo.things:
 
 ```
-Thing openthermgateway:main:1 [ipaddress="192.168.1.100", port="8000"]
+Thing openthermgateway:otgw:1 [ipaddress="192.168.1.100", port="8000"]
 ```
 
 ### demo.items:
 
 ```
-Number:Temperature RoomTemperature {channel="openthermgateway:main:1:roomtemp"}
-Number:Temperature RoomSetpoint {channel="openthermgateway:main:1:roomsetpoint"}
-Number:Temperature BoilerWaterTemperature {channel="openthermgateway:main:1:flowtemp"}
-Number:Temperature ReturnWaterTemperature {channel="openthermgateway:main:1:returntemp"}
-Number:Temperature OutsideTemperature {channel="openthermgateway:main:1:outsidetemp"}
-Switch CentralHeatingEnabled {channel="openthermgateway:main:1:ch_enable"}
-Switch CentralHeatingActive {channel="openthermgateway:main:1:ch_mode"}
-Switch DomesticHotWaterEnabled {channel="openthermgateway:main:1:dhw_enable"}
-Switch DomesticHotWaterActive {channel="openthermgateway:main:1:dhw_mode"}
-Switch BurnerActive {channel="openthermgateway:main:1:flame"}
-Number RelativeModulationLevel {channel="openthermgateway:main:1:modulevel"}
-Number MaximumRelativeModulationLevel {channel="openthermgateway:main:1:maxrelmdulevel"}
+Number:Temperature RoomTemperature {channel="openthermgateway:otgw:1:roomtemp"}
+Number:Temperature RoomSetpoint {channel="openthermgateway:otgw:1:roomsetpoint"}
+Number:Temperature BoilerWaterTemperature {channel="openthermgateway:otgw:1:flowtemp"}
+Number:Temperature ReturnWaterTemperature {channel="openthermgateway:otgw:1:returntemp"}
+Number:Temperature OutsideTemperature {channel="openthermgateway:otgw:1:outsidetemp"}
+Switch CentralHeatingEnabled {channel="openthermgateway:otgw:1:ch_enable"}
+Switch CentralHeatingActive {channel="openthermgateway:otgw:1:ch_mode"}
+Switch DomesticHotWaterEnabled {channel="openthermgateway:otgw:1:dhw_enable"}
+Switch DomesticHotWaterActive {channel="openthermgateway:otgw:1:dhw_mode"}
+Switch BurnerActive {channel="openthermgateway:otgw:1:flame"}
+Number RelativeModulationLevel {channel="openthermgateway:otgw:1:modulevel"}
+Number MaximumRelativeModulationLevel {channel="openthermgateway:otgw:1:maxrelmdulevel"}
 ```
 
 ### demo.sitemap:
