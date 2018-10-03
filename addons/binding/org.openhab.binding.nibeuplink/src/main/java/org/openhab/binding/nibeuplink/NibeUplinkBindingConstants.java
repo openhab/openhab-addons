@@ -8,12 +8,13 @@
  */
 package org.openhab.binding.nibeuplink;
 
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * The {@link NibeUplinkBindingConstants} class defines common constants, which are
@@ -61,7 +62,8 @@ public final class NibeUplinkBindingConstants {
     public static final String DATA_API_FIELD_DATA = "variables";
     public static final String DATA_API_FIELD_DATA_DEFAULT_VALUE = "0";
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_VVM320,
-            THING_TYPE_VVM310, THING_TYPE_F730, THING_TYPE_F750, THING_TYPE_F1145, THING_TYPE_F1155);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(THING_TYPE_VVM320, THING_TYPE_VVM310, THING_TYPE_F730, THING_TYPE_F750,
+                    THING_TYPE_F1145, THING_TYPE_F1155).collect(Collectors.toSet()));
 
 }
