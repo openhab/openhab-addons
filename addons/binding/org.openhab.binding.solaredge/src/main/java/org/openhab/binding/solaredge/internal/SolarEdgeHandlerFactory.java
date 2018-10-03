@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Alexander Friese - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.solaredge")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.solaredge")
 public class SolarEdgeHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(SolarEdgeHandlerFactory.class);

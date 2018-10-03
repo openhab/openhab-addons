@@ -52,7 +52,6 @@ import org.openhab.io.neeo.internal.models.NeeoSystemInfo;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
@@ -67,11 +66,9 @@ import org.slf4j.LoggerFactory;
  * @author Tim Roberts - Initial Contribution
  */
 @NonNullByDefault
-@Component(service = org.eclipse.smarthome.core.events.EventSubscriber.class, configurationPolicy = ConfigurationPolicy.OPTIONAL, immediate = true, property = {
+@Component(service = EventSubscriber.class, immediate = true, property = {
         "service.pid=org.openhab.io.neeo.NeeoService", "service.config.description.uri=io:neeo",
-        "service.config.label=NEEO Integration", "service.config.category=io" }
-
-)
+        "service.config.label=NEEO Integration", "service.config.category=io" })
 public class NeeoService implements EventSubscriber, NetworkAddressChangeListener {
 
     /** The logger */

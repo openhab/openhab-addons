@@ -29,7 +29,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Mattias Markehed - Initial contribution
  */
-@Component(service = MDNSDiscoveryParticipant.class, immediate = true)
+@Component(immediate = true)
 public class MinecraftMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     @Override

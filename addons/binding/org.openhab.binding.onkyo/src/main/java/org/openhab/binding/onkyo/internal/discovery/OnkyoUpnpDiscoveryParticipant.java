@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Paul Frank - Initial contribution
  */
-@Component(service = UpnpDiscoveryParticipant.class, immediate = true)
+@Component(immediate = true)
 public class OnkyoUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(OnkyoUpnpDiscoveryParticipant.class);
