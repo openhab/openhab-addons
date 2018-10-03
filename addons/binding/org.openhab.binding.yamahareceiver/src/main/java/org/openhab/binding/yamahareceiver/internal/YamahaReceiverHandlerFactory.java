@@ -8,7 +8,12 @@
  */
 package org.openhab.binding.yamahareceiver.internal;
 
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.*;
+
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -22,8 +27,6 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Sets;
-
 /**
  * The {@link YamahaReceiverHandlerFactory} is responsible for creating things and thing
  * handlers.
@@ -32,9 +35,8 @@ import com.google.common.collect.Sets;
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.yamahareceiver")
 public class YamahaReceiverHandlerFactory extends BaseThingHandlerFactory {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.union(
-            YamahaReceiverBindingConstants.BRIDGE_THING_TYPES_UIDS,
-            YamahaReceiverBindingConstants.ZONE_THING_TYPES_UIDS);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
+            .concat(BRIDGE_THING_TYPES_UIDS.stream(), ZONE_THING_TYPES_UIDS.stream()).collect(Collectors.toSet()));
     private Logger logger = LoggerFactory.getLogger(YamahaReceiverHandlerFactory.class);
 
     @Override
@@ -46,9 +48,9 @@ public class YamahaReceiverHandlerFactory extends BaseThingHandlerFactory {
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(YamahaReceiverBindingConstants.BRIDGE_THING_TYPE)) {
+        if (thingTypeUID.equals(BRIDGE_THING_TYPE)) {
             return new YamahaBridgeHandler((Bridge) thing);
-        } else if (thingTypeUID.equals(YamahaReceiverBindingConstants.ZONE_THING_TYPE)) {
+        } else if (thingTypeUID.equals(ZONE_THING_TYPE)) {
             return new YamahaZoneThingHandler(thing);
         }
 
