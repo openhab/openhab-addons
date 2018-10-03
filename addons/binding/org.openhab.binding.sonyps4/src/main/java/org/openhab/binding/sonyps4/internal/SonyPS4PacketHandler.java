@@ -60,6 +60,7 @@ public class SonyPS4PacketHandler {
     private static final int OSK_START_REQ = 0x0c;
     private static final int OSK_CHANGE_STRING_REQ = 0x0e;
     private static final int OSK_CONTROL_REQ = 0x10;
+    private static final int UNKNOWN_1_RSP = 0x12;
     private static final int STATUS_REQ = 0x14;
     private static final int STANDBY_REQ = 0x1a;
     private static final int STANDBY_RSP = 0x1b;
@@ -76,8 +77,6 @@ public class SonyPS4PacketHandler {
     private Cipher aesDecryptCipher;
     private Cipher ps4Cipher;
 
-    // packet.put(VERSION.getBytes());
-
     public SonyPS4PacketHandler() {
         new SecureRandom().nextBytes(randomSeed);
         ps4Cipher = getRsaCipher(PUBLIC_KEY);
@@ -85,6 +84,14 @@ public class SonyPS4PacketHandler {
 
     private ByteBuffer newPacketOfSize(int size) {
         ByteBuffer packet = ByteBuffer.allocate(size).order(ByteOrder.LITTLE_ENDIAN);
+        packet.putInt(size);
+        return packet;
+    }
+
+    private ByteBuffer newPacketForEncryption(int size) {
+        // Size should always be a multiple of 16.
+        int realSize = (((size + 15) >> 4) << 4);
+        ByteBuffer packet = ByteBuffer.allocate(realSize).order(ByteOrder.LITTLE_ENDIAN);
         packet.putInt(size);
         return packet;
     }
@@ -100,25 +107,18 @@ public class SonyPS4PacketHandler {
     }
 
     public byte[] handleLoginResponse(byte[] input) {
-        byte[] output = null;
         try {
-            output = aesDecryptCipher.doFinal(input);
+            return aesDecryptCipher.doFinal(input);
         } catch (IllegalBlockSizeException e) {
             e.printStackTrace();
         } catch (BadPaddingException e) {
             e.printStackTrace();
         }
-        return output;
+        return new byte[0];
     }
 
     public byte[] makeSearchPacket() {
         StringBuilder packet = new StringBuilder("SRCH * HTTP/1.1\n");
-        packet.append("device-discovery-protocol-version:" + DDP_VERSION + "\n");
-        return packet.toString().getBytes();
-    }
-
-    public byte[] makeLaunchPacket() {
-        StringBuilder packet = new StringBuilder("LAUNCH * HTTP/1.1\n");
         packet.append("device-discovery-protocol-version:" + DDP_VERSION + "\n");
         return packet.toString().getBytes();
     }
@@ -132,17 +132,18 @@ public class SonyPS4PacketHandler {
         return packet.toString().getBytes();
     }
 
+    public byte[] makeLaunchPacket(String userCredential) {
+        StringBuilder packet = new StringBuilder("LAUNCH * HTTP/1.1\n");
+        packet.append("user-credential:" + userCredential + "\n");
+        packet.append("device-discovery-protocol-version:" + DDP_VERSION + "\n");
+        return packet.toString().getBytes();
+    }
+
     public byte[] makeHelloPacket() {
         ByteBuffer packet = newPacketOfSize(28);
         packet.putInt(HELLO_REQ);
         packet.putInt(REQ_VERSION);
         packet.put(new byte[16]); // Seed = 16 bytes
-        return packet.array();
-    }
-
-    public byte[] makeByebyePacket() {
-        ByteBuffer packet = newPacketOfSize(8);
-        packet.putInt(BYEBYE_REQ);
         return packet.array();
     }
 
@@ -163,12 +164,14 @@ public class SonyPS4PacketHandler {
         return packet.array();
     }
 
-    public byte[] makeLoginPacket(String userCredential) {
-        ByteBuffer packet = newPacketOfSize(16 + 64 + 256 + 16 + 16 + 16);
+    public byte[] makeLoginPacket(String userCredential, String pinCode) {
+        ByteBuffer packet = newPacketForEncryption(16 + 64 + 256 + 16 + 16 + 16);
         packet.putInt(LOGIN_REQ);
-        packet.putInt(0); // PIN Code
+        packet.put(pinCode.getBytes()); // PIN Code
+        packet.position(12);
         packet.putInt(0x0201); // Magic number
         packet.put(userCredential.getBytes(StandardCharsets.US_ASCII));
+        packet.position(16 + 64);
         packet.put("OpenHAB PlayStation Binding".getBytes(StandardCharsets.UTF_8)); // app_label
         packet.position(16 + 64 + 256);
         packet.put("4.4".getBytes()); // os_version
@@ -178,13 +181,12 @@ public class SonyPS4PacketHandler {
         packet.put(new byte[16]); // pass_code
 
         SecretKeySpec keySpec = new SecretKeySpec(randomSeed, "AES");
-        byte[] output = null;
         try {
             aesEncryptCipher = Cipher.getInstance("AES/CBC/NoPadding");
             aesEncryptCipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec);
             aesDecryptCipher = Cipher.getInstance("AES/CBC/NoPadding");
             aesDecryptCipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec);
-            output = aesEncryptCipher.update(packet.array());
+            return aesEncryptCipher.update(packet.array());
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (NoSuchPaddingException e) {
@@ -194,20 +196,32 @@ public class SonyPS4PacketHandler {
         } catch (InvalidAlgorithmParameterException e) {
             e.printStackTrace();
         }
-        return output;
+        return new byte[0];
     }
 
     public byte[] makeStatusPacket(int status) {
-        ByteBuffer packet = newPacketOfSize(12);
+        ByteBuffer packet = newPacketForEncryption(16);
         packet.putInt(STATUS_REQ);
         packet.putInt(status); // status
-        return packet.array();
+        return aesEncryptCipher.update(packet.array());
     }
 
     public byte[] makeStandbyPacket() {
-        ByteBuffer packet = newPacketOfSize(16);
+        ByteBuffer packet = newPacketForEncryption(8);
         packet.putInt(STANDBY_REQ);
-        packet.putLong(0); // Padding
+        return aesEncryptCipher.update(packet.array());
+    }
+
+    public byte[] makeApplicationPacket(String applicationName) {
+        ByteBuffer packet = newPacketForEncryption(8 + 16 + 8);
+        packet.putInt(APP_START_REQ);
+        packet.put(applicationName.getBytes()); // AppName
+        return aesEncryptCipher.update(packet.array());
+    }
+
+    public byte[] makeByebyePacket() {
+        ByteBuffer packet = newPacketForEncryption(8);
+        packet.putInt(BYEBYE_REQ);
         return aesEncryptCipher.update(packet.array());
     }
 

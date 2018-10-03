@@ -48,12 +48,17 @@ public class SonyPS4Configuration {
     /**
      * IP-port of PS4.
      */
-    private String ipPort;
+    private Integer ipPort;
 
     /**
      * host-id of PS4.
      */
     private String hostId;
+
+    /**
+     * pin code for user.
+     */
+    private String pinCode;
 
     public String getIpAddress() {
         return ipAddress;
@@ -71,11 +76,11 @@ public class SonyPS4Configuration {
         this.userCredential = userCredential;
     }
 
-    public String getIpPort() {
+    public Integer getIpPort() {
         return ipPort;
     }
 
-    public void setIpPort(String ipPort) {
+    public void setIpPort(Integer ipPort) {
         this.ipPort = ipPort;
     }
 
@@ -85,6 +90,14 @@ public class SonyPS4Configuration {
 
     public void setHostId(String hostId) {
         this.hostId = hostId;
+    }
+
+    public String getPinCode() {
+        return pinCode;
+    }
+
+    public void setPinCode(String pinCode) {
+        this.pinCode = pinCode;
     }
 
     @Override

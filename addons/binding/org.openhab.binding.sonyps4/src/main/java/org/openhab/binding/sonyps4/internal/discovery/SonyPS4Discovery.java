@@ -148,7 +148,7 @@ public class SonyPS4Discovery extends AbstractDiscoveryService {
         logger.debug("Adding a new Sony {} with IP '{}' and host-ID '{}' to inbox", hostType, ipAddress, hostId);
         Map<String, Object> properties = new HashMap<>();
         properties.put(IP_ADDRESS, ipAddress);
-        properties.put(IP_PORT, hostPort);
+        properties.put(IP_PORT, Integer.valueOf(hostPort));
         properties.put(Thing.PROPERTY_MODEL_ID, hostType.equals("PS4") ? "PlayStation 4" : hostType);
         properties.put(Thing.PROPERTY_HARDWARE_VERSION, hostIdToHWVersion(hostId));
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, systemVersion);

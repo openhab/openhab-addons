@@ -57,7 +57,9 @@ public class SonyPS4Handler extends BaseThingHandler {
 
     // State of PS4
     private String currentApplication = "";
+    private String currentApplicationId = "";
     private OnOffType currentPower = OnOffType.OFF;
+    private Integer currentComPort = 997;
 
     public SonyPS4Handler(Thing thing) {
         super(thing);
@@ -78,6 +80,12 @@ public class SonyPS4Handler extends BaseThingHandler {
             }
             if (CHANNEL_APPLICATION.equals(channelUID.getId())) {
             }
+            if (CHANNEL_APPLICATION_ID.equals(channelUID.getId()) && command instanceof StringType) {
+                if (!currentApplicationId.equals(command)) {
+                    currentApplicationId = ((StringType) command).toString();
+                    startApplication(currentApplicationId);
+                }
+            }
         }
     }
 
@@ -85,6 +93,7 @@ public class SonyPS4Handler extends BaseThingHandler {
     public void initialize() {
         // logger.debug("Start initializing!");
         config = getConfigAs(SonyPS4Configuration.class);
+        currentComPort = config.getIpPort();
 
         // TODO: Initialize the handler.
         // The framework requires you to return from this method quickly. Also, before leaving this method a thing
@@ -152,6 +161,9 @@ public class SonyPS4Handler extends BaseThingHandler {
             case CHANNEL_APPLICATION:
                 updateState(channelUID, StringType.valueOf(currentApplication));
                 break;
+            case CHANNEL_APPLICATION_ID:
+                updateState(channelUID, StringType.valueOf(currentApplicationId));
+                break;
             default:
                 logger.warn("Channel refresh for {} not implemented!", channelUID.getId());
         }
@@ -161,7 +173,6 @@ public class SonyPS4Handler extends BaseThingHandler {
         try (DatagramSocket socket = new DatagramSocket()) {
             socket.setBroadcast(false);
             socket.setSoTimeout(SOCKET_TIMEOUT_SECONDS * 1000);
-
             InetAddress inetAddress = InetAddress.getByName(config.getIpAddress());
 
             // send discover
@@ -173,7 +184,6 @@ public class SonyPS4Handler extends BaseThingHandler {
             byte[] rxbuf = new byte[256];
             packet = new DatagramPacket(rxbuf, rxbuf.length);
             socket.receive(packet);
-
             parsePacket(packet);
         } catch (SocketTimeoutException e) {
             updateStatus(ThingStatus.OFFLINE);
@@ -203,10 +213,9 @@ public class SonyPS4Handler extends BaseThingHandler {
             socket.setBroadcast(false);
             InetAddress inetAddress = InetAddress.getByName(config.getIpAddress());
             // send launch
-            byte[] launch = ps4PacketHandler.makeLaunchPacket();
+            byte[] launch = ps4PacketHandler.makeLaunchPacket(config.getUserCredential());
             DatagramPacket packet = new DatagramPacket(launch, launch.length, inetAddress, BROADCAST_PORT);
             socket.send(packet);
-
             return true;
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE);
@@ -215,64 +224,81 @@ public class SonyPS4Handler extends BaseThingHandler {
         return false;
     }
 
+    private boolean login(SocketChannel channel) throws IOException {
+        logger.debug("PS4 tcp connecting");
+        String hostName = config.getIpAddress();
+        channel.configureBlocking(true);
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e1) {
+            logger.debug("PS4 coms interrupted: {}", e1);
+        }
+        channel.connect(new InetSocketAddress(hostName, 997));
+        channel.finishConnect();
+
+        logger.debug("PS4 sending hello packet");
+        byte[] outPacket = ps4PacketHandler.makeHelloPacket();
+        channel.write(ByteBuffer.wrap(outPacket));
+
+        // read hello response
+        final ByteBuffer readBuffer = ByteBuffer.allocate(512);
+        int responseLength = channel.read(readBuffer);
+        if (responseLength > 0) {
+            logger.debug("PS4 hello response received: {}", readBuffer);
+            ps4PacketHandler.handleHelloResponse(readBuffer);
+        } else {
+            return false;
+        }
+
+        logger.debug("PS4 sending handshake packet");
+        outPacket = ps4PacketHandler.makeHandshakePacket();
+        channel.write(ByteBuffer.wrap(outPacket));
+
+        // Send login request
+        logger.debug("PS4 sending login packet");
+        outPacket = ps4PacketHandler.makeLoginPacket(config.getUserCredential(), config.getPinCode());
+        channel.write(ByteBuffer.wrap(outPacket));
+
+        // Read login response
+        readBuffer.clear();
+        responseLength = channel.read(readBuffer);
+        if (responseLength > 0) {
+            byte[] respBuff = new byte[responseLength];
+            readBuffer.position(0);
+            readBuffer.get(respBuff, 0, responseLength);
+            byte[] loginDecrypt = ps4PacketHandler.decryptResponsePacket(respBuff);
+            logger.debug("PS4 login response: {}", loginDecrypt);
+            return true;
+        } else {
+            logger.warn("PS4 no login response!");
+            return false;
+        }
+    }
+
     private void turnOffPS4() {
         if (!openComs()) {
             return;
         }
         try (SocketChannel channel = SocketChannel.open()) {
-            Thread.sleep(1000);
-            logger.debug("PS4 tcp connecting");
-            String hostName = config.getIpAddress();
-            channel.configureBlocking(true);
-            channel.connect(new InetSocketAddress(hostName, 997));
-            channel.finishConnect();
+            if (!login(channel)) {
+                return;
+            }
 
-            logger.debug("PS4 sending hello packet");
-            byte[] outPacket = ps4PacketHandler.makeHelloPacket();
+            // Send standby request
+            logger.debug("PS4 sending standby packet");
+            byte[] outPacket = ps4PacketHandler.makeStandbyPacket();
             channel.write(ByteBuffer.wrap(outPacket));
 
-            // read hello response
-            final ByteBuffer readBuffer = ByteBuffer.allocate(1024);
-            channel.read(readBuffer);
-            logger.debug("PS4 hello response received: {}", readBuffer);
-            ps4PacketHandler.handleHelloResponse(readBuffer);
-
-            logger.debug("PS4 sending handshake packet");
-            outPacket = ps4PacketHandler.makeHandshakePacket();
-            channel.write(ByteBuffer.wrap(outPacket));
-
-            logger.debug("PS4 sending login packet");
-            outPacket = ps4PacketHandler.makeLoginPacket(config.getUserCredential());
-            channel.write(ByteBuffer.wrap(outPacket));
-
-            // read login response
-            readBuffer.clear();
+            // Read standby response
+            final ByteBuffer readBuffer = ByteBuffer.allocate(512);
             int responseLength = channel.read(readBuffer);
             if (responseLength > 0) {
                 byte[] respBuff = new byte[responseLength];
                 readBuffer.position(0);
                 readBuffer.get(respBuff, 0, responseLength);
-                logger.debug("PS4 login response received: {}", respBuff);
-                byte[] loginDecrypt = ps4PacketHandler.decryptResponsePacket(respBuff);
-                logger.debug("PS4 login decrypted: {}", loginDecrypt);
-            } else {
-                logger.warn("PS4 no login response!");
-            }
-
-            logger.debug("PS4 sending standby packet");
-            outPacket = ps4PacketHandler.makeStandbyPacket();
-            channel.write(ByteBuffer.wrap(outPacket));
-
-            // read standby response
-            readBuffer.clear();
-            responseLength = channel.read(readBuffer);
-            if (responseLength > 0) {
-                byte[] respBuff = new byte[responseLength];
-                readBuffer.position(0);
-                readBuffer.get(respBuff, 0, responseLength);
-                logger.debug("PS4 standby response received: {}", respBuff);
                 byte[] standbyDecrypt = ps4PacketHandler.decryptResponsePacket(respBuff);
-                logger.debug("PS4 standby decrypted: {}", standbyDecrypt);
+                logger.debug("PS4 standby response: {}", standbyDecrypt);
             } else {
                 logger.warn("PS4 no standby response!");
             }
@@ -283,15 +309,48 @@ public class SonyPS4Handler extends BaseThingHandler {
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE);
             logger.debug("No PS4 device found. Diagnostic: {}", e.getMessage());
-        } catch (InterruptedException e1) {
-            logger.debug("PS4 coms interrupted: {}", e1);
+        }
+    }
+
+    private void startApplication(String application) {
+        if (!openComs()) {
+            return;
+        }
+        try (SocketChannel channel = SocketChannel.open()) {
+            if (!login(channel)) {
+                return;
+            }
+
+            // Send application request
+            logger.debug("PS4 sending application packet");
+            byte[] outPacket = ps4PacketHandler.makeApplicationPacket(application);
+            channel.write(ByteBuffer.wrap(outPacket));
+
+            // Read application response
+            final ByteBuffer readBuffer = ByteBuffer.allocate(512);
+            int responseLength = channel.read(readBuffer);
+            if (responseLength > 0) {
+                byte[] respBuff = new byte[responseLength];
+                readBuffer.position(0);
+                readBuffer.get(respBuff, 0, responseLength);
+                byte[] appDecrypt = ps4PacketHandler.decryptResponsePacket(respBuff);
+                logger.debug("PS4 application response: {}", appDecrypt);
+            } else {
+                logger.warn("PS4 no application response!");
+            }
+
+        } catch (SocketTimeoutException e) {
+            updateStatus(ThingStatus.OFFLINE);
+            logger.debug("PS4 communication timeout. Diagnostic: {}", e.getMessage());
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE);
+            logger.debug("No PS4 device found. Diagnostic: {}", e.getMessage());
         }
     }
 
     private void parsePacket(DatagramPacket packet) {
         byte[] data = packet.getData();
         String message = new String(data, StandardCharsets.UTF_8);
-        String applicationTitleId = "";
 
         String[] ss = message.trim().split("\n");
         for (String row : ss) {
@@ -330,8 +389,18 @@ public class SonyPS4Handler extends BaseThingHandler {
                     }
                     break;
                 case RESPONSE_RUNNING_APP_TITLEID:
-                    applicationTitleId = value;
-                    logger.debug("PS4 current application title id: {}", applicationTitleId);
+                    if (!currentApplicationId.equals(value)) {
+                        currentApplicationId = value;
+                    }
+                    logger.debug("PS4 current application title id: {}", currentApplicationId);
+                    break;
+                case RESPONSE_HOST_REQUEST_PORT:
+                    Integer port = Integer.valueOf(value);
+                    if (!currentComPort.equals(port)) {
+                        currentComPort = port;
+                        config.setIpPort(port);
+                    }
+                    logger.debug("PS4 host request port: {}", port);
                     break;
 
                 default:
