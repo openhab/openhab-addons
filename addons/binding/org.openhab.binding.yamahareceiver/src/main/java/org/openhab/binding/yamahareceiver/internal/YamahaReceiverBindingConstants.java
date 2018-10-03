@@ -10,11 +10,11 @@ package org.openhab.binding.yamahareceiver.internal;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import com.google.common.collect.Sets;
 
 /**
  * The {@link YamahaReceiverBindingConstants} class defines common constants, which are
@@ -64,10 +64,11 @@ public class YamahaReceiverBindingConstants {
     public static final String CHANNEL_NAVIGATION_CURRENT_ITEM = "navigation_current_item"; // DecType
     public static final String CHANNEL_NAVIGATION_TOTAL_ITEMS = "navigation_total_items"; // DecType
 
-    public static final Set<String> CHANNELS_NAVIGATION = Sets.newHashSet(CHANNEL_NAVIGATION_MENU,
-            CHANNEL_NAVIGATION_CURRENT_ITEM, CHANNEL_NAVIGATION_UPDOWN, CHANNEL_NAVIGATION_LEFTRIGHT,
-            CHANNEL_NAVIGATION_SELECT, CHANNEL_NAVIGATION_BACK, CHANNEL_NAVIGATION_BACKTOROOT, CHANNEL_NAVIGATION_LEVEL,
-            CHANNEL_NAVIGATION_TOTAL_ITEMS);
+    public static final Set<String> CHANNELS_NAVIGATION = Collections.unmodifiableSet(Stream
+            .of(CHANNEL_NAVIGATION_MENU, CHANNEL_NAVIGATION_CURRENT_ITEM, CHANNEL_NAVIGATION_UPDOWN,
+                    CHANNEL_NAVIGATION_LEFTRIGHT, CHANNEL_NAVIGATION_SELECT, CHANNEL_NAVIGATION_BACK,
+                    CHANNEL_NAVIGATION_BACKTOROOT, CHANNEL_NAVIGATION_LEVEL, CHANNEL_NAVIGATION_TOTAL_ITEMS)
+            .collect(Collectors.toSet()));
 
     // List of channel IDs for Tuner DAB control
     public static final String CHANNEL_TUNER_BAND = "tuner_band"; // band name for DAB tuner; RW
@@ -84,8 +85,9 @@ public class YamahaReceiverBindingConstants {
     public static final String CHANNEL_PLAYBACK_SONG = "playback_song";
     public static final String CHANNEL_PLAYBACK_SONG_IMAGE_URL = "playback_song_image_url";
 
-    public static final Set<String> CHANNELS_PLAYBACK = Sets.newHashSet(CHANNEL_PLAYBACK, CHANNEL_PLAYBACK_STATION,
-            CHANNEL_PLAYBACK_ARTIST, CHANNEL_PLAYBACK_ALBUM, CHANNEL_PLAYBACK_SONG, CHANNEL_PLAYBACK_SONG_IMAGE_URL);
+    public static final Set<String> CHANNELS_PLAYBACK = Collections.unmodifiableSet(
+            Stream.of(CHANNEL_PLAYBACK, CHANNEL_PLAYBACK_STATION, CHANNEL_PLAYBACK_ARTIST, CHANNEL_PLAYBACK_ALBUM,
+                    CHANNEL_PLAYBACK_SONG, CHANNEL_PLAYBACK_SONG_IMAGE_URL).collect(Collectors.toSet()));
 
     public static final String UPNP_TYPE = "MediaRenderer";
     public static final String UPNP_MANUFACTURER = "YAMAHA";
@@ -149,7 +151,8 @@ public class YamahaReceiverBindingConstants {
         public static final String INPUT_SPOTIFY = "Spotify";
         public static final String INPUT_BLUETOOTH = "Bluetooth";
         public static final String INPUT_NET_RADIO = "NET RADIO";
-        // Note (TM): We should only 'NET RADIO' (as the canonical input name), the NET_RADIO seems to be only used in the XML nodes when commands are sent.
+        // Note (TM): We should only 'NET RADIO' (as the canonical input name), the NET_RADIO seems to be only used in
+        // the XML nodes when commands are sent.
         public static final String INPUT_NET_RADIO_LEGACY = "NET_RADIO";
         public static final String INPUT_MUSIC_CAST_LINK = "MusicCast Link";
         public static final String INPUT_SERVER = "SERVER";
