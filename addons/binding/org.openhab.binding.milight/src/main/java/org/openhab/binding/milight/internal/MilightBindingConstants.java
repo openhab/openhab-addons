@@ -8,12 +8,13 @@
  */
 package org.openhab.binding.milight.internal;
 
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import com.google.common.collect.Sets;
 
 /**
  * The {@link MilightBinding} class defines common constants, which are
@@ -37,10 +38,11 @@ public class MilightBindingConstants {
     public static final ThingTypeUID RGB_W_THING_TYPE = new ThingTypeUID(BINDING_ID, "rgbwLed");
     public static final ThingTypeUID WHITE_THING_TYPE = new ThingTypeUID(BINDING_ID, "whiteLed");
 
-    public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Sets.newHashSet(BRIDGEV3_THING_TYPE,
-            BRIDGEV6_THING_TYPE);
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(RGB_V2_THING_TYPE,
-            RGB_THING_TYPE, WHITE_THING_TYPE, RGB_W_THING_TYPE, RGB_CW_WW_THING_TYPE, RGB_IBOX_THING_TYPE);
+    public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(BRIDGEV3_THING_TYPE, BRIDGEV6_THING_TYPE).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(RGB_V2_THING_TYPE, RGB_THING_TYPE, WHITE_THING_TYPE, RGB_W_THING_TYPE,
+                    RGB_CW_WW_THING_TYPE, RGB_IBOX_THING_TYPE).collect(Collectors.toSet()));
 
     // List of all Channel ids
     public static final String CHANNEL_COLOR = "ledcolor";
