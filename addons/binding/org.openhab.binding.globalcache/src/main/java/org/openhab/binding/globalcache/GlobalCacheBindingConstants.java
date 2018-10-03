@@ -8,12 +8,13 @@
  */
 package org.openhab.binding.globalcache;
 
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * The {@link GlobalCacheBindingConstants} class defines common constants that are
@@ -38,9 +39,9 @@ public class GlobalCacheBindingConstants {
     public static final ThingTypeUID THING_TYPE_GC_100_12 = new ThingTypeUID(BINDING_ID, "gc100_12");
     public static final ThingTypeUID THING_TYPE_ZMOTE = new ThingTypeUID(BINDING_ID, "zmote");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_ITACH_IR,
-            THING_TYPE_ITACH_CC, THING_TYPE_ITACH_SL, THING_TYPE_ITACH_FLEX, THING_TYPE_GC_100_06, THING_TYPE_GC_100_12,
-            THING_TYPE_ZMOTE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
+            Stream.of(THING_TYPE_ITACH_IR, THING_TYPE_ITACH_CC, THING_TYPE_ITACH_SL, THING_TYPE_ITACH_FLEX,
+                    THING_TYPE_GC_100_06, THING_TYPE_GC_100_12, THING_TYPE_ZMOTE).collect(Collectors.toSet()));
 
     // GlobalCache-specific thing properties
     public static final String THING_PROPERTY_UID = "uid";
