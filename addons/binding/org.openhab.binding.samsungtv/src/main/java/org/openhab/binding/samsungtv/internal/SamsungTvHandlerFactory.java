@@ -10,7 +10,8 @@ package org.openhab.binding.samsungtv.internal;
 
 import static org.openhab.binding.samsungtv.internal.SamsungTvBindingConstants.SAMSUNG_TV_THING_TYPE;
 
-import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 import org.eclipse.smarthome.config.discovery.DiscoveryServiceRegistry;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -21,8 +22,6 @@ import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
 import org.jupnp.UpnpService;
 import org.openhab.binding.samsungtv.internal.handler.SamsungTvHandler;
 
-import com.google.common.collect.Lists;
-
 /**
  * The {@link SamsungTvHandlerFactory} is responsible for creating things and
  * thing handlers.
@@ -31,8 +30,7 @@ import com.google.common.collect.Lists;
  */
 public class SamsungTvHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists
-            .newArrayList(SAMSUNG_TV_THING_TYPE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(SAMSUNG_TV_THING_TYPE);
 
     private UpnpIOService upnpIOService;
     private DiscoveryServiceRegistry discoveryServiceRegistry;
