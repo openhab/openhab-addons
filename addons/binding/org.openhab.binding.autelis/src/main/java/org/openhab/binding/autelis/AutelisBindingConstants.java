@@ -33,4 +33,12 @@ public class AutelisBindingConstants {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(POOLCONTROL_THING_TYPE_UID,
             PENTAIR_THING_TYPE_UID, JANDY_THING_TYPE_UID);
+
+    public static final String CMD_LIGHTS = "lightscmd";
+    public static final String CMD_REBOOT = "reboot";
+    public static final String CMD_EQUIPMENT = "equipment";
+    public static final String CMD_TEMP = "temp";
+    public static final String CMD_CHEM = "chem";
+    public static final String CMD_PUMPS = "pumps";
+
 }
