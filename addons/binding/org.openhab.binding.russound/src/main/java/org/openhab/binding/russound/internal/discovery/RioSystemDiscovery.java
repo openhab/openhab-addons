@@ -38,8 +38,6 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.ImmutableSet;
-
 /**
  * This implementation of {@link DiscoveryService} will scan the network for any Russound RIO system devices. The scan
  * will occur against all network interfaces.
@@ -65,7 +63,7 @@ public class RioSystemDiscovery extends AbstractDiscoveryService {
      * 120 seconds (depending on how many network interfaces there are)
      */
     public RioSystemDiscovery() {
-        super(ImmutableSet.of(RioConstants.BRIDGE_TYPE_RIO), 120);
+        super(Collections.singleton(RioConstants.BRIDGE_TYPE_RIO), 120);
     }
 
     /**
