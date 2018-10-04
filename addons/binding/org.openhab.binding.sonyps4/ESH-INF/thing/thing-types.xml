@@ -10,8 +10,9 @@
 
 		<channels>
 			<channel id="power" typeId="power-channel" />
-			<channel id="application" typeId="application-channel" />
-            <channel id="applicationId" typeId="applicationId-channel" />
+            <channel id="applicationName" typeId="application-channel" />
+            <channel id="applicationTitleid" typeId="applicationId-channel" />
+            <channel id="applicationImage" typeId="applicationImage-channel" />
 		</channels>
 
 		<properties>
@@ -26,6 +27,12 @@
 				<label>IP address</label>
 				<description>The local IP address or hostname of the PlayStation 4.</description>
 			</parameter>
+            <parameter name="ipPort" type="integer">
+                <label>IP port</label>
+                <description>The TCP port used to communicate with the PlayStation 4.</description>
+                <default>997</default>
+                <advanced>true</advanced>
+            </parameter>
             <parameter name="userCredential" type="text" required="true">
                 <label>User credential</label>
                 <description>User credential to communicate with the PlayStation 4, 64 hex characters.</description>
@@ -61,6 +68,12 @@
                 <option value="CUSA00342">Other game</option>
             </options>
         </state>
+    </channel-type>
+    <channel-type id="applicationImage-channel">
+        <item-type>Image</item-type>
+        <label>Artwork</label>
+        <description>Application artwork channel for SonyPS4 Binding.</description>
+        <state readOnly="true" />
     </channel-type>
 
 </thing:thing-descriptions>

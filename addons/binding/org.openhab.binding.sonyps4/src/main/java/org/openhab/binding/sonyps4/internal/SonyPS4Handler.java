@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -32,6 +33,9 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,6 +63,7 @@ public class SonyPS4Handler extends BaseThingHandler {
     private String currentApplication = "";
     private String currentApplicationId = "";
     private OnOffType currentPower = OnOffType.OFF;
+    private State currentImage = UnDefType.UNDEF;
     private Integer currentComPort = 997;
 
     public SonyPS4Handler(Thing thing) {
@@ -78,11 +83,11 @@ public class SonyPS4Handler extends BaseThingHandler {
                     turnOffPS4();
                 }
             }
-            if (CHANNEL_APPLICATION.equals(channelUID.getId())) {
+            if (CHANNEL_APPLICATION_NAME.equals(channelUID.getId())) {
             }
-            if (CHANNEL_APPLICATION_ID.equals(channelUID.getId()) && command instanceof StringType) {
-                if (!currentApplicationId.equals(command)) {
-                    currentApplicationId = ((StringType) command).toString();
+            if (CHANNEL_APPLICATION_TITLEID.equals(channelUID.getId()) && command instanceof StringType) {
+                if (!currentApplicationId.equals(((StringType) command).toString())) {
+                    updateApplicationTitleid(((StringType) command).toString());
                     startApplication(currentApplicationId);
                 }
             }
@@ -93,7 +98,10 @@ public class SonyPS4Handler extends BaseThingHandler {
     public void initialize() {
         // logger.debug("Start initializing!");
         config = getConfigAs(SonyPS4Configuration.class);
-        currentComPort = config.getIpPort();
+        Integer port = config.getIpPort();
+        if (port != null) {
+            currentComPort = port;
+        }
 
         // TODO: Initialize the handler.
         // The framework requires you to return from this method quickly. Also, before leaving this method a thing
@@ -158,11 +166,15 @@ public class SonyPS4Handler extends BaseThingHandler {
             case CHANNEL_POWER:
                 updateState(channelUID, currentPower);
                 break;
-            case CHANNEL_APPLICATION:
+            case CHANNEL_APPLICATION_NAME:
                 updateState(channelUID, StringType.valueOf(currentApplication));
                 break;
-            case CHANNEL_APPLICATION_ID:
+            case CHANNEL_APPLICATION_TITLEID:
                 updateState(channelUID, StringType.valueOf(currentApplicationId));
+                break;
+            case CHANNEL_APPLICATION_IMAGE:
+                updateApplicationTitleid(currentApplicationId);
+                updateState(channelUID, currentImage);
                 break;
             default:
                 logger.warn("Channel refresh for {} not implemented!", channelUID.getId());
@@ -234,7 +246,7 @@ public class SonyPS4Handler extends BaseThingHandler {
         } catch (InterruptedException e1) {
             logger.debug("PS4 coms interrupted: {}", e1);
         }
-        channel.connect(new InetSocketAddress(hostName, 997));
+        channel.connect(new InetSocketAddress(hostName, currentComPort));
         channel.finishConnect();
 
         logger.debug("PS4 sending hello packet");
@@ -382,17 +394,15 @@ public class SonyPS4Handler extends BaseThingHandler {
                 case RESPONSE_RUNNING_APP_NAME:
                     if (!currentApplication.equals(value)) {
                         currentApplication = value;
-                        // String appName = String.
-                        ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_APPLICATION);
+                        ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_APPLICATION_NAME);
                         updateState(channel, StringType.valueOf(value));
                         logger.debug("PS4 current application: {}", value);
                     }
                     break;
                 case RESPONSE_RUNNING_APP_TITLEID:
                     if (!currentApplicationId.equals(value)) {
-                        currentApplicationId = value;
+                        updateApplicationTitleid(value);
                     }
-                    logger.debug("PS4 current application title id: {}", currentApplicationId);
                     break;
                 case RESPONSE_HOST_REQUEST_PORT:
                     Integer port = Integer.valueOf(value);
@@ -409,4 +419,16 @@ public class SonyPS4Handler extends BaseThingHandler {
         }
     }
 
+    private void updateApplicationTitleid(String titleid) {
+        currentApplicationId = titleid;
+        RawType artWork = HttpUtil
+                .downloadImage("https://store.playstation.com/store/api/chihiro/00_09_000/titlecontainer/US/en/999/"
+                        + titleid + "_00/image", 1000);
+        if (artWork != null) {
+            currentImage = artWork;
+            ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_APPLICATION_IMAGE);
+            updateState(channel, artWork);
+        }
+        logger.debug("PS4 current application title id: {}", currentApplicationId);
+    }
 }

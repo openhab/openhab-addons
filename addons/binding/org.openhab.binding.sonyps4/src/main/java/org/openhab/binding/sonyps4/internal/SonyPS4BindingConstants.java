@@ -32,9 +32,10 @@ public class SonyPS4BindingConstants {
 
     // List of all Channel ids
     public static final String CHANNEL_POWER = "power";
-    public static final String CHANNEL_APPLICATION = "application";
-    public static final String CHANNEL_APPLICATION_ID = "applicationId";
-    public static final String CHANNEL_NAME = "name";
+    public static final String CHANNEL_APPLICATION_NAME = "applicationName";
+    public static final String CHANNEL_APPLICATION_TITLEID = "applicationTitleid";
+    public static final String CHANNEL_APPLICATION_IMAGE = "applicationImage";
+    public static final String CHANNEL_HOST_NAME = "hostName";
 
     // List of all properties in the response from the PS4
     public static final String RESPONSE_HOST_ID = "host-id";
