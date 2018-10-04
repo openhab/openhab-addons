@@ -10,6 +10,8 @@
             <channel id="roomtemp" typeId="roomtemp" />
             <channel id="roomsetpoint" typeId="roomsetpoint" />
             <channel id="overridesetpoint" typeId="overridesetpoint" />
+            <channel id="tdhwset" typeId="tdhwset" />
+            <channel id="overridedhwsetpoint" typeId="overridedhwsetpoint" />
             <channel id="flowtemp" typeId="flowtemp" />
             <channel id="returntemp" typeId="returntemp" />
             <channel id="outsidetemp" typeId="outsidetemp" />

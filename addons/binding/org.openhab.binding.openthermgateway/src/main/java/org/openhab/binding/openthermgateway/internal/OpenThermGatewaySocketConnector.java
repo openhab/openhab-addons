@@ -81,8 +81,11 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
 
             String msg = command.getMessage(message);
 
+            // msg = msg + "\r\n";
+
             callback.log(LogLevel.Debug, "Sending message: %s", msg);
             writer.println(msg);
+            writer.flush();
         } else {
             callback.log(LogLevel.Warning, "No command found for commandType %s", commandType.toString());
         }

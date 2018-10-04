@@ -34,6 +34,7 @@ public class OpenThermGatewayBindingConstants {
     public static final ThingTypeUID MAIN_THING_TYPE = new ThingTypeUID(BINDING_ID, "otgw");
 
     public static final String CHANNEL_OVERRIDE_SETPOINT = "overridesetpoint";
+    public static final String CHANNEL_OVERRIDE_DHW_SETPOINT = "overridedhwsetpoint";
 
     // List of all Channel id's
     public static final String CHANNEL_ROOM_TEMPERATURE = "roomtemp";
@@ -45,6 +46,7 @@ public class OpenThermGatewayBindingConstants {
     public static final String CHANNEL_CENTRAL_HEATING_MODE = "ch_mode";
     public static final String CHANNEL_DOMESTIC_HOT_WATER_ENABLED = "dhw_enable";
     public static final String CHANNEL_DOMESTIC_HOT_WATER_MODE = "dhw_mode";
+    public static final String CHANNEL_DOMESTIC_HOT_WATER_SETPOINT = "tdhwset";
     public static final String CHANNEL_FLAME = "flame";
     public static final String CHANNEL_RELATIVE_MODULATION_LEVEL = "modulevel";
     public static final String CHANNEL_MAXIMUM_MODULATION_LEVEL = "maxrelmdulevel";
@@ -52,6 +54,6 @@ public class OpenThermGatewayBindingConstants {
     public static final Set<String> SUPPORTED_CHANNEL_IDS = ImmutableSet.of(CHANNEL_ROOM_TEMPERATURE,
             CHANNEL_ROOM_SETPOINT, CHANNEL_FLOW_TEMPERATURE, CHANNEL_RETURN_TEMPERATURE, CHANNEL_OUTSIDE_TEMPERATURE,
             CHANNEL_CENTRAL_HEATING_ENABLED, CHANNEL_CENTRAL_HEATING_MODE, CHANNEL_DOMESTIC_HOT_WATER_ENABLED,
-            CHANNEL_DOMESTIC_HOT_WATER_MODE, CHANNEL_FLAME, CHANNEL_RELATIVE_MODULATION_LEVEL,
-            CHANNEL_MAXIMUM_MODULATION_LEVEL);
+            CHANNEL_DOMESTIC_HOT_WATER_MODE, CHANNEL_DOMESTIC_HOT_WATER_SETPOINT, CHANNEL_FLAME,
+            CHANNEL_RELATIVE_MODULATION_LEVEL, CHANNEL_MAXIMUM_MODULATION_LEVEL);
 }

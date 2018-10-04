@@ -83,6 +83,8 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
 
                 if (channel.equals(OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_SETPOINT)) {
                     connector.sendCommand(CommandType.TemperatureTemporary, command.toFullString());
+                } else if (channel.equals(OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_DHW_SETPOINT)) {
+                    connector.sendCommand(CommandType.SetpointWater, command.toFullString());
                 } else if (channel.equals(OpenThermGatewayBindingConstants.CHANNEL_OUTSIDE_TEMPERATURE)) {
                     connector.sendCommand(CommandType.TemperatureOutside, command.toFullString());
                 }

@@ -30,6 +30,22 @@
         </state>
     </channel-type>
     
+    <channel-type id="tdhwset">
+        <item-type>Number</item-type>
+        <label>Domestic hot water setpoint</label>
+        <description>Domestic hot water temperature setpoint</description>
+        <state readOnly="true" pattern="%.1f °C">
+        </state>
+    </channel-type>
+    
+    <channel-type id="overridedhwsetpoint">
+        <item-type>Number</item-type>
+        <label>Domestic hot water override setpoint</label>
+        <description>Domestic hot water temperature override setpoint</description>        
+        <state readOnly="false" pattern="%.1f °C">
+        </state>
+    </channel-type>    
+    
     <channel-type id="flowtemp">
         <item-type>Number</item-type>
         <label>Boiler water temperature</label>
