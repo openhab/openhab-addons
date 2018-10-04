@@ -24,6 +24,8 @@ import org.openhab.binding.energenie.internal.api.JsonGateway;
 import org.openhab.binding.energenie.internal.api.JsonResponseUtil;
 import org.openhab.binding.energenie.internal.api.JsonSubdevice;
 import org.openhab.binding.energenie.internal.api.constants.JsonResponseConstants;
+import org.openhab.binding.energenie.internal.exceptions.UnsuccessfulHttpResponseException;
+import org.openhab.binding.energenie.internal.exceptions.UnsuccessfulJsonResponseException;
 import org.openhab.binding.energenie.internal.rest.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,17 +61,14 @@ public class EnergenieApiManagerImpl implements EnergenieApiManager {
 
     private EnergenieApiConfiguration configuration;
     private RestClient restClient;
-    private FailingRequestHandler failingRequestHandler;
 
     private Gson gson = new Gson();
 
     private final Logger logger = LoggerFactory.getLogger(EnergenieApiManagerImpl.class);
 
-    public EnergenieApiManagerImpl(EnergenieApiConfiguration configuration, RestClient restClient,
-            FailingRequestHandler requestHandler) {
+    public EnergenieApiManagerImpl(EnergenieApiConfiguration configuration, RestClient restClient) {
         this.configuration = configuration;
         this.restClient = restClient;
-        this.failingRequestHandler = requestHandler;
     }
 
     @Override
@@ -78,19 +77,28 @@ public class EnergenieApiManagerImpl implements EnergenieApiManager {
     }
 
     @Override
-    public JsonGateway[] listGateways() {
+    public JsonGateway[] listGateways()
+            throws IOException, UnsuccessfulJsonResponseException, UnsuccessfulHttpResponseException {
         JsonObject result = execute(CONTROLLER_DEVICES, ACTION_LIST);
-        return JsonResponseUtil.getObject(result, JsonGateway[].class);
+        // The result may come as a JsonObject or as an JsonObcect[] with a single element
+        if (result != null && result.has("data") && result.get("data") instanceof JsonObject) {
+            JsonGateway res = JsonResponseUtil.getObject(result, JsonGateway.class);
+            return new JsonGateway[] { res };
+        } else {
+            return JsonResponseUtil.getObject(result, JsonGateway[].class);
+        }
     }
 
     @Override
-    public JsonSubdevice[] listSubdevices() {
+    public JsonSubdevice[] listSubdevices()
+            throws IOException, UnsuccessfulJsonResponseException, UnsuccessfulHttpResponseException {
         JsonObject result = execute(CONTROLLER_SUBDEVICES, ACTION_LIST);
         return JsonResponseUtil.getObject(result, JsonSubdevice[].class);
     }
 
     @Override
-    public JsonSubdevice showSubdeviceInfo(int id) {
+    public JsonSubdevice showSubdeviceInfo(int id)
+            throws IOException, UnsuccessfulJsonResponseException, UnsuccessfulHttpResponseException {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(DEVICE_ID_KEY, id);
         // With this parameter we exclude the historical usage data ("1" - to include, "0" - to exclude)
@@ -102,7 +110,8 @@ public class EnergenieApiManagerImpl implements EnergenieApiManager {
     }
 
     @Override
-    public String getFirmwareInformation(int id) {
+    public String getFirmwareInformation(int id)
+            throws IOException, UnsuccessfulJsonResponseException, UnsuccessfulHttpResponseException {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(DEVICE_ID_KEY, id);
         JsonObject result = execute(CONTROLLER_DEVICES, ACTION_SHOW_FIRMWARE_INFORMATION, parameters);
@@ -114,11 +123,13 @@ public class EnergenieApiManagerImpl implements EnergenieApiManager {
         return firmwareVersion;
     }
 
-    private JsonObject execute(String controller, String action) {
+    private JsonObject execute(String controller, String action)
+            throws IOException, UnsuccessfulJsonResponseException, UnsuccessfulHttpResponseException {
         return execute(controller, action, new HashMap<>());
     }
 
-    private JsonObject execute(String controller, String action, Map<String, Object> content) {
+    private JsonObject execute(String controller, String action, Map<String, Object> content)
+            throws IOException, UnsuccessfulJsonResponseException, UnsuccessfulHttpResponseException {
 
         Properties httpHeaders = new Properties();
 
@@ -157,13 +168,12 @@ public class EnergenieApiManagerImpl implements EnergenieApiManager {
         } catch (UnsupportedEncodingException e) {
             logger.error("Content encoding is not supported: {}", e.getMessage(), e);
             String failedUrl = restClient.getBaseURL() + "/" + controller + "/" + action;
-            failingRequestHandler.handleIOException(failedUrl, e);
-            return null;
+            throw new UnsupportedEncodingException(failedUrl);
+
         } catch (IOException e) {
             logger.error("Request execution failed: {}", e.getMessage(), e);
             String failedUrl = restClient.getBaseURL() + "/" + controller + "/" + action;
-            failingRequestHandler.handleIOException(failedUrl, e);
-            return null;
+            throw new IOException(failedUrl);
         }
 
         if (!responseBody.isEmpty()) {
@@ -171,7 +181,7 @@ public class EnergenieApiManagerImpl implements EnergenieApiManager {
             if (statusCode != HttpStatus.OK_200) {
                 String statusLine = statusCode + " " + contentResponse.getReason();
                 logger.debug("HTTP request was not successfull: {}", statusLine);
-                failingRequestHandler.handleFailingHttpRequest(contentResponse);
+                throw new UnsuccessfulHttpResponseException(contentResponse);
             } else {
                 JsonObject jsonResponse = null;
                 try {
@@ -183,8 +193,7 @@ public class EnergenieApiManagerImpl implements EnergenieApiManager {
                 if (JsonResponseUtil.isRequestSuccessful(jsonResponse)) {
                     return jsonResponse;
                 } else {
-                    failingRequestHandler.handleFailingJsonRequest(jsonResponse);
-                    return null;
+                    throw new UnsuccessfulJsonResponseException(jsonResponse);
                 }
             }
         }

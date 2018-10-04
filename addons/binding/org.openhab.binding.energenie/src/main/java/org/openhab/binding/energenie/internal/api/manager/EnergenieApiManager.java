@@ -8,8 +8,12 @@
  */
 package org.openhab.binding.energenie.internal.api.manager;
 
+import java.io.IOException;
+
 import org.openhab.binding.energenie.internal.api.JsonGateway;
 import org.openhab.binding.energenie.internal.api.JsonSubdevice;
+import org.openhab.binding.energenie.internal.exceptions.UnsuccessfulHttpResponseException;
+import org.openhab.binding.energenie.internal.exceptions.UnsuccessfulJsonResponseException;
 
 /**
  * A helper class for executing requests to the Mi|Home REST API.
@@ -34,30 +38,46 @@ public interface EnergenieApiManager {
      *
      * @return all gateway devices in the account, along with information about available firmware
      *         upgrades
+     * @throws UnsuccessfulJsonResponseException
+     * @throws IOException
+     * @throws UnsuccessfulHttpResponseException
      */
-    public JsonGateway[] listGateways();
+    public JsonGateway[] listGateways()
+            throws IOException, UnsuccessfulJsonResponseException, UnsuccessfulHttpResponseException;
 
     /**
      * This method lists all subdevices in your account, along with information, basic status and usage information.
      *
      * @return all subdevices, properties may vary between objects depending on their type
+     * @throws UnsuccessfulJsonResponseException
+     * @throws IOException
+     * @throws UnsuccessfulHttpResponseException
      */
-    public JsonSubdevice[] listSubdevices();
+    public JsonSubdevice[] listSubdevices()
+            throws IOException, UnsuccessfulJsonResponseException, UnsuccessfulHttpResponseException;
 
     /**
      * This method will show information about a particular subdevice.
      *
      * @param id the ID of the subdevice
      * @return the subdevice
+     * @throws UnsuccessfulJsonResponseException
+     * @throws IOException
+     * @throws UnsuccessfulHttpResponseException
      */
-    public JsonSubdevice showSubdeviceInfo(int id);
+    public JsonSubdevice showSubdeviceInfo(int id)
+            throws IOException, UnsuccessfulJsonResponseException, UnsuccessfulHttpResponseException;
 
     /**
      * This method will show information about firmware version
      *
      * @param id the ID of the gateway
+     * @throws UnsuccessfulJsonResponseException
+     * @throws IOException
+     * @throws UnsuccessfulHttpResponseException
      *
      */
-    public String getFirmwareInformation(int id);
+    public String getFirmwareInformation(int id)
+            throws IOException, UnsuccessfulJsonResponseException, UnsuccessfulHttpResponseException;
 
 }

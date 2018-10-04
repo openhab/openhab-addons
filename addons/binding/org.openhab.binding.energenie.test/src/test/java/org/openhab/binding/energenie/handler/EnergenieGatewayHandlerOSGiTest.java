@@ -2,10 +2,8 @@ package org.openhab.binding.energenie.handler;
 
 import static org.junit.Assert.*;
 
-import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -38,6 +36,7 @@ public class EnergenieGatewayHandlerOSGiTest extends AbstractEnergenieOSGiTest {
         if (gatewayThing != null) {
             removeBridge(thingRegistry, gatewayThing);
             unregisterServlet(PATH_LIST_GATEWAYS);
+            unregisterServlet(PATH_FIRMWARE_INFORMATION);
         }
     }
 
@@ -58,12 +57,6 @@ public class EnergenieGatewayHandlerOSGiTest extends AbstractEnergenieOSGiTest {
     public void assertInitializedThingUpdatesTheProperties() {
         // register servlet representing successful gateway registration
         JsonGateway gatewayDevice = createTestGateway();
-        JsonObject contentResponse = generateShowJsonDeviceServerResponse(JsonResponseConstants.RESPONSE_SUCCESS,
-                gatewayDevice);
-
-        String content = contentResponse.toString();
-        EnergenieServlet successfullGatewayRegistrationServlet = new EnergenieServlet(content);
-        registerServlet("", successfullGatewayRegistrationServlet);
 
         // create gateway Thing
         gatewayThing = createBridge(thingRegistry, TEST_PASSWORD, TEST_USERNAME, TEST_GATEWAY_ID);
@@ -120,53 +113,6 @@ public class EnergenieGatewayHandlerOSGiTest extends AbstractEnergenieOSGiTest {
 
         waitForAssert(() -> {
             assertEquals(ThingStatus.OFFLINE, gatewayThing.getStatus());
-        }, getWaitingTime(gatewayHandler), JavaTest.DFL_SLEEP_TIME);
-    }
-
-    @Test
-    public void assertThatChangingTheGatewayConfigurationIsHandledProperly() {
-
-        // register servlet representing successful gateway registration
-        JsonGateway gatewayDevice = createTestGateway();
-        JsonObject content = generateShowJsonDeviceServerResponse(JsonResponseConstants.RESPONSE_SUCCESS,
-                gatewayDevice);
-        EnergenieServlet successfullGatewayRegistrationServlet = new EnergenieServlet(content.toString());
-
-        // Create a gateway with valid configuration and verify its online status
-        gatewayThing = createBridge(thingRegistry, TEST_PASSWORD, TEST_USERNAME, TEST_GATEWAY_ID);
-        assertNotNull(gatewayThing);
-
-        thingRegistry.add(gatewayThing);
-
-        EnergenieGatewayHandler gatewayHandler = (EnergenieGatewayHandler) gatewayThing.getHandler();
-
-        waitForAssert(() -> {
-            assertNotNull(gatewayHandler);
-            assertEquals(ThingStatus.ONLINE, gatewayThing.getStatus());
-        });
-
-        // update the gateway with a non-valid configuration (email address) and verify its offline status
-        HashMap<String, Object> invalidConfig = new HashMap<>();
-        invalidConfig.put(EnergenieBindingConstants.CONFIG_USERNAME, "notValidEmailAddress");
-        invalidConfig.put(EnergenieBindingConstants.CONFIG_PASSWORD, TEST_PASSWORD);
-        invalidConfig.put(EnergenieBindingConstants.CONFIG_UPDATE_INTERVAL, new BigDecimal(TEST_UPDATE_INTERVAL));
-
-        gatewayHandler.handleConfigurationUpdate(invalidConfig);
-
-        waitForAssert(() -> {
-            assertEquals(ThingStatus.OFFLINE, gatewayThing.getStatus());
-        });
-
-        // change the configuration back to valid and verify gateway's online status
-        HashMap<String, Object> validConfig = new HashMap<>();
-        validConfig.put(EnergenieBindingConstants.CONFIG_USERNAME, TEST_USERNAME);
-        validConfig.put(EnergenieBindingConstants.CONFIG_PASSWORD, TEST_PASSWORD);
-        validConfig.put(EnergenieBindingConstants.CONFIG_UPDATE_INTERVAL, new BigDecimal(TEST_UPDATE_INTERVAL));
-
-        gatewayHandler.handleConfigurationUpdate(validConfig);
-
-        waitForAssert(() -> {
-            assertEquals(ThingStatus.ONLINE, gatewayThing.getStatus());
         }, getWaitingTime(gatewayHandler), JavaTest.DFL_SLEEP_TIME);
     }
 

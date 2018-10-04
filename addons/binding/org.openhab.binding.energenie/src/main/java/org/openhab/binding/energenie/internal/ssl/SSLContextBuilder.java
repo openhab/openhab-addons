@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A helper class for building a {@link SSLContext}
  *
- * @author Svilen Valkanov
+ * @author Svilen Valkanov - Initial contribution
  */
 
 public class SSLContextBuilder {

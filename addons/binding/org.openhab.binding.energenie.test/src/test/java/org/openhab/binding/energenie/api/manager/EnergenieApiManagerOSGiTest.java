@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.server.HttpConfiguration;
@@ -43,11 +44,10 @@ import org.openhab.binding.energenie.internal.api.JsonDevice;
 import org.openhab.binding.energenie.internal.api.manager.EnergenieApiConfiguration;
 import org.openhab.binding.energenie.internal.api.manager.EnergenieApiManager;
 import org.openhab.binding.energenie.internal.api.manager.EnergenieApiManagerImpl;
-import org.openhab.binding.energenie.internal.api.manager.FailingRequestHandler;
+import org.openhab.binding.energenie.internal.exceptions.UnsuccessfulHttpResponseException;
+import org.openhab.binding.energenie.internal.exceptions.UnsuccessfulJsonResponseException;
 import org.openhab.binding.energenie.internal.rest.RestClient;
-import org.openhab.binding.energenie.internal.rest.RestClientImpl;
 import org.openhab.binding.energenie.internal.ssl.SSLContextBuilder;
-import org.openhab.binding.energenie.test.FailingRequestHandlerMock;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -63,6 +63,8 @@ import com.google.gson.Gson;
 @RunWith(Parameterized.class)
 public class EnergenieApiManagerOSGiTest extends JavaOSGiTest {
 
+    private static final String REQUEST_PATH_SEPARATOR = "/";
+
     private Logger logger = LoggerFactory.getLogger(EnergenieApiManagerOSGiTest.class);
 
     // Parameters for the parameterized test
@@ -76,20 +78,23 @@ public class EnergenieApiManagerOSGiTest extends JavaOSGiTest {
     /** A callback object that executes the request */
     private Callback callback;
 
-    /** HTTP status of the server's response */
-    private HttpStatus status;
-
     /** Determines if the status of the HTTP request is expected to be anything different from OK_200 */
-    private boolean httpRequestFailed;
+    private boolean httpResponseExceptionExpected;
+
+    /** Is set to true if {@link UnsuccessfulHttpResponseException} is caught */
+    private static boolean httpResponseExceptionCaught;
 
     /** Determines if the status of the JSON request is expected to be anything different from "status":"success" */
-    private boolean jsonRequestFailed;
+    private boolean jsonResponseExceptionExpected;
+
+    /** Is set to true if {@link UnsuccessfulJsonResponseException} is caught */
+    private static boolean jsonResponseExceptionCaught;
 
     /** Determines if an IOException is expected to be thrown */
-    private boolean IOExceptionCaught;
+    private boolean ioExceptionExpected;
 
-    /** An instance of the {@link FailingRequestHandler} */
-    private FailingRequestHandlerMock failingRequestHandler;
+    /** Is set to true if IOException is caught */
+    private static boolean ioExceptionCaught;
 
     private static Gson gson = new Gson();
 
@@ -117,11 +122,14 @@ public class EnergenieApiManagerOSGiTest extends JavaOSGiTest {
     HttpServlet servlet;
     static EnergenieApiManager apiManager;
 
-    public EnergenieApiManagerOSGiTest(Logger logger, String path, HttpServlet servlet) {
-        super();
-        this.logger = logger;
+    public EnergenieApiManagerOSGiTest(String path, String requestContent, Callback callback, boolean HTTPRequestFailed,
+            boolean jsonRequestFailed, boolean IOExceptionCaught) {
         this.path = path;
-        this.servlet = servlet;
+        this.requestContent = requestContent;
+        this.callback = callback;
+        this.httpResponseExceptionExpected = HTTPRequestFailed;
+        this.jsonResponseExceptionExpected = jsonRequestFailed;
+        this.ioExceptionExpected = IOExceptionCaught;
     }
 
     interface Callback {
@@ -139,13 +147,23 @@ public class EnergenieApiManagerOSGiTest extends JavaOSGiTest {
         // The sixth parameter indicates whether the JSON request is expected to fail
         // The seventh parameter indicates whether an IOException is expected
 
-        Object[][] cases = new Object[11][6];
+        Object[][] cases = new Object[6][6];
         // See <a href="https://mihome4u.co.uk/docs/api-documentation/subdevices-api/list-all-subdevices"/a>
         // for information about the expected parameters
-        cases[0][0] = EnergenieApiManagerImpl.CONTROLLER_SUBDEVICES + "/" + EnergenieApiManagerImpl.ACTION_LIST;
+        cases[0][0] = createServerExpectedRequestPath(EnergenieApiManagerImpl.CONTROLLER_SUBDEVICES,
+                EnergenieApiManagerImpl.ACTION_LIST);
         cases[0][1] = MiHomeServlet.EMPTY_JSON;
         Callback firstCallback = () -> {
-            return apiManager.listSubdevices();
+            try {
+                return apiManager.listSubdevices();
+            } catch (IOException e) {
+                ioExceptionCaught = true;
+            } catch (UnsuccessfulJsonResponseException e) {
+                jsonResponseExceptionCaught = true;
+            } catch (UnsuccessfulHttpResponseException e) {
+                httpResponseExceptionCaught = true;
+            }
+            return null;
         };
         cases[0][2] = firstCallback;
         cases[0][3] = false;
@@ -153,14 +171,23 @@ public class EnergenieApiManagerOSGiTest extends JavaOSGiTest {
         cases[0][5] = false;
 
         // See <a href="https://mihome4u.co.uk/docs/api-documentation/subdevices-api/show-subdevice-information"/a>
-        cases[1][0] = EnergenieApiManagerImpl.CONTROLLER_SUBDEVICES + "/" + EnergenieApiManagerImpl.ACTION_SHOW;
-        Map<String, String> firstProperties = new LinkedHashMap<>();
-        firstProperties.put(EnergenieApiManagerImpl.DEVICE_ID_KEY, Integer.toString(TEST_SUBDEVICE_ID));
-        firstProperties.put(EnergenieApiManagerImpl.SUBDEVICE_INCLUDE_USAGE_DATA, "0");
+        cases[1][0] = createServerExpectedRequestPath(EnergenieApiManagerImpl.CONTROLLER_SUBDEVICES,
+                EnergenieApiManagerImpl.ACTION_SHOW);
+        Map<String, Integer> firstProperties = new LinkedHashMap<>();
+        firstProperties.put(EnergenieApiManagerImpl.DEVICE_ID_KEY, TEST_SUBDEVICE_ID);
+        firstProperties.put(EnergenieApiManagerImpl.SUBDEVICE_INCLUDE_USAGE_DATA, 0);
         cases[1][1] = gson.toJson(firstProperties);
         Callback secondCallback = () -> {
             JsonDevice[] jsonDevices = new JsonDevice[1];
-            jsonDevices[0] = apiManager.showSubdeviceInfo(TEST_SUBDEVICE_ID);
+            try {
+                jsonDevices[0] = apiManager.showSubdeviceInfo(TEST_SUBDEVICE_ID);
+            } catch (IOException e) {
+                ioExceptionCaught = true;
+            } catch (UnsuccessfulJsonResponseException e) {
+                jsonResponseExceptionCaught = true;
+            } catch (UnsuccessfulHttpResponseException e) {
+                httpResponseExceptionCaught = true;
+            }
             return jsonDevices;
         };
         cases[1][2] = secondCallback;
@@ -169,10 +196,20 @@ public class EnergenieApiManagerOSGiTest extends JavaOSGiTest {
         cases[1][5] = false;
 
         // See <a href="https://mihome4u.co.uk/docs/api-documentation/devices-api/list-all-devices"/a>
-        cases[2][0] = EnergenieApiManagerImpl.CONTROLLER_DEVICES + "/" + EnergenieApiManagerImpl.ACTION_LIST;
+        cases[2][0] = createServerExpectedRequestPath(EnergenieApiManagerImpl.CONTROLLER_DEVICES,
+                EnergenieApiManagerImpl.ACTION_LIST);
         cases[2][1] = MiHomeServlet.EMPTY_JSON;
         Callback thirdCallback = () -> {
-            return apiManager.listGateways();
+            try {
+                return apiManager.listGateways();
+            } catch (IOException e) {
+                ioExceptionCaught = true;
+            } catch (UnsuccessfulJsonResponseException e) {
+                jsonResponseExceptionCaught = true;
+            } catch (UnsuccessfulHttpResponseException e) {
+                httpResponseExceptionCaught = true;
+            }
+            return null;
         };
         cases[2][2] = thirdCallback;
         cases[2][3] = false;
@@ -180,10 +217,20 @@ public class EnergenieApiManagerOSGiTest extends JavaOSGiTest {
         cases[2][5] = false;
 
         // test if failing HTTP request is handled properly. In this case the type of the request does not matter
-        cases[3][0] = EnergenieApiManagerImpl.CONTROLLER_DEVICES + "/" + EnergenieApiManagerImpl.ACTION_LIST;
+        cases[3][0] = createServerExpectedRequestPath(EnergenieApiManagerImpl.CONTROLLER_DEVICES,
+                EnergenieApiManagerImpl.ACTION_LIST);
         cases[3][1] = MiHomeServlet.EMPTY_JSON;
         Callback fourthCallback = () -> {
-            return apiManager.listGateways();
+            try {
+                return apiManager.listGateways();
+            } catch (IOException e) {
+                ioExceptionCaught = true;
+            } catch (UnsuccessfulJsonResponseException e) {
+                jsonResponseExceptionCaught = true;
+            } catch (UnsuccessfulHttpResponseException e) {
+                httpResponseExceptionCaught = true;
+            }
+            return null;
         };
         cases[3][2] = fourthCallback;
         cases[3][3] = true;
@@ -191,10 +238,20 @@ public class EnergenieApiManagerOSGiTest extends JavaOSGiTest {
         cases[3][5] = false;
 
         // test if failing JSON request is handled properly. In this case the type of the request does not matter
-        cases[4][0] = EnergenieApiManagerImpl.CONTROLLER_DEVICES + "/" + EnergenieApiManagerImpl.ACTION_LIST;
+        cases[4][0] = createServerExpectedRequestPath(EnergenieApiManagerImpl.CONTROLLER_DEVICES,
+                EnergenieApiManagerImpl.ACTION_LIST);
         cases[4][1] = MiHomeServlet.EMPTY_JSON;
         Callback fifthCallback = () -> {
-            return apiManager.listGateways();
+            try {
+                return apiManager.listGateways();
+            } catch (IOException e) {
+                ioExceptionCaught = true;
+            } catch (UnsuccessfulJsonResponseException e) {
+                jsonResponseExceptionCaught = true;
+            } catch (UnsuccessfulHttpResponseException e) {
+                httpResponseExceptionCaught = true;
+            }
+            return null;
         };
         cases[4][2] = fifthCallback;
         cases[4][3] = false;
@@ -202,10 +259,20 @@ public class EnergenieApiManagerOSGiTest extends JavaOSGiTest {
         cases[4][5] = false;
 
         // test if an IOException is handled properly. In this case the type of the request does not matter
-        cases[5][0] = EnergenieApiManagerImpl.CONTROLLER_DEVICES + "/" + EnergenieApiManagerImpl.ACTION_LIST;
+        cases[5][0] = createServerExpectedRequestPath(EnergenieApiManagerImpl.CONTROLLER_DEVICES,
+                EnergenieApiManagerImpl.ACTION_LIST);
         cases[5][1] = MiHomeServlet.EMPTY_JSON;
         Callback sixthCallback = () -> {
-            return apiManager.listGateways();
+            try {
+                return apiManager.listGateways();
+            } catch (IOException e) {
+                ioExceptionCaught = true;
+            } catch (UnsuccessfulJsonResponseException e) {
+                jsonResponseExceptionCaught = true;
+            } catch (UnsuccessfulHttpResponseException e) {
+                httpResponseExceptionCaught = true;
+            }
+            return null;
         };
         cases[5][2] = sixthCallback;
         cases[5][3] = false;
@@ -228,9 +295,9 @@ public class EnergenieApiManagerOSGiTest extends JavaOSGiTest {
             this.expectedContent = expectedContent;
             this.timeout = timeout;
 
-            if (!httpRequestFailed && !jsonRequestFailed && !IOExceptionCaught) {
+            if (!httpResponseExceptionExpected && !jsonResponseExceptionExpected && !ioExceptionExpected) {
                 this.responseContent = "{\"status\":\"success\"}";
-            } else if (jsonRequestFailed) {
+            } else if (jsonResponseExceptionExpected) {
                 this.responseContent = "{\"status\":\"not-found\"}";
             } else {
                 this.responseContent = "{}";
@@ -249,14 +316,14 @@ public class EnergenieApiManagerOSGiTest extends JavaOSGiTest {
             String jsonString = IOUtils.toString(req.getInputStream());
             assertEquals(jsonString, expectedContent);
 
-            if (IOExceptionCaught) {
+            if (ioExceptionExpected) {
                 try {
                     Thread.sleep(TEST_CONNECTION_TIMEOUT + 1000);
                 } catch (InterruptedException e) {
                     logger.debug("Thread is interrupted {} ", e.getMessage(), e);
                 }
             }
-            if (httpRequestFailed) {
+            if (httpResponseExceptionExpected) {
                 // setting a status different from OK_200
                 resp.setStatus(HttpStatus.FORBIDDEN_403);
             } else {
@@ -291,20 +358,19 @@ public class EnergenieApiManagerOSGiTest extends JavaOSGiTest {
     @After
     public void tearDown() {
         unregisterServlet(path);
-        failingRequestHandler.setHttpRequestFailed(false);
-        failingRequestHandler.setJsonRequestFailed(false);
-        failingRequestHandler.setInputOutputException(false);
+        ioExceptionCaught = false;
+        jsonResponseExceptionCaught = false;
+        httpResponseExceptionCaught = false;
     }
 
     @Test
     public void test() throws Exception {
         waitForAssert(() -> {
-            JsonDevice[] response = callback.execute();
-            assertEquals("Unexpected HTTP status", httpRequestFailed, failingRequestHandler.isHttpRequestFailed());
-            assertEquals("Unexpected IO exception handling", IOExceptionCaught,
-                    failingRequestHandler.isInputOutputExceptionCaught());
-            assertEquals("Unexpected JSON response handling", jsonRequestFailed,
-                    failingRequestHandler.isJsonRequestFailed());
+            callback.execute();
+            assertEquals("Unexpected HTTP status", httpResponseExceptionExpected, httpResponseExceptionCaught);
+            assertEquals("Unexpected IO exception handling", ioExceptionExpected, ioExceptionCaught);
+            assertEquals("Unexpected JSON response handling", jsonResponseExceptionExpected,
+                    jsonResponseExceptionCaught);
         });
     }
 
@@ -322,7 +388,8 @@ public class EnergenieApiManagerOSGiTest extends JavaOSGiTest {
         SSLContext context = SSLContextBuilder
                 .create(FrameworkUtil.getBundle(EnergenieApiManagerOSGiTest.class).getBundleContext())
                 .withKeyStore(KEYSTORE_PATH, KEYSTORE_NAME, KEYSTORE_PASSWORD).build();
-        assertNotNull("Couldn't load key store from /" + KEYSTORE_PATH + "/" + KEYSTORE_NAME, context);
+        assertNotNull("Couldn't load key store from /" + KEYSTORE_PATH + REQUEST_PATH_SEPARATOR + KEYSTORE_NAME,
+                context);
         SslContextFactory sslContextFactory = new SslContextFactory();
         sslContextFactory.setSslContext(context);
 
@@ -346,18 +413,18 @@ public class EnergenieApiManagerOSGiTest extends JavaOSGiTest {
         SSLContext sslContext = SSLContextBuilder
                 .create(FrameworkUtil.getBundle(EnergenieApiManagerOSGiTest.class).getBundleContext())
                 .withTrustStore(KEYSTORE_PATH, KEYSTORE_NAME, KEYSTORE_PASSWORD).build();
-        assertNotNull("Couldn't load key store from /" + KEYSTORE_PATH + "/" + KEYSTORE_NAME, sslContext);
+        assertNotNull("Couldn't load key store from /" + KEYSTORE_PATH + REQUEST_PATH_SEPARATOR + KEYSTORE_NAME,
+                sslContext);
 
         // Inject the test SSLContext
-        RestClientImpl client = getServiceFromStaticContext(RestClientImpl.class);
+        RestClient client = getServiceFromStaticContext(RestClient.class);
         assertNotNull(client);
         client.getHttpClient().stop();
         client.getHttpClient().getSslContextFactory().setSslContext(sslContext);
         client.getHttpClient().start();
         client.setBaseURL(TEST_URL);
         client.setConnectionTimeout(TEST_CONNECTION_TIMEOUT);
-        failingRequestHandler = new FailingRequestHandlerMock();
-        return new EnergenieApiManagerImpl(config, client, failingRequestHandler);
+        return new EnergenieApiManagerImpl(config, client);
     }
 
     protected void registerServlet(String path) throws ServletException, NamespaceException {
@@ -406,4 +473,7 @@ public class EnergenieApiManagerOSGiTest extends JavaOSGiTest {
         return serviceReference != null ? bundleContext.getService(serviceReference) : null;
     }
 
+    private static String createServerExpectedRequestPath(String... strings) {
+        return REQUEST_PATH_SEPARATOR.concat(StringUtils.join(strings, REQUEST_PATH_SEPARATOR));
+    }
 }

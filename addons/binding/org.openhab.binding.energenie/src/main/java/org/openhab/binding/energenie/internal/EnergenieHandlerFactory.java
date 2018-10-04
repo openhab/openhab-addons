@@ -26,8 +26,6 @@ import org.openhab.binding.energenie.handler.EnergenieSubdevicesHandler;
 import org.openhab.binding.energenie.internal.api.manager.EnergenieApiConfiguration;
 import org.openhab.binding.energenie.internal.api.manager.EnergenieApiManager;
 import org.openhab.binding.energenie.internal.api.manager.EnergenieApiManagerImpl;
-import org.openhab.binding.energenie.internal.api.manager.FailingRequestHandler;
-import org.openhab.binding.energenie.internal.api.manager.FailingRequestHandlerImpl;
 import org.openhab.binding.energenie.internal.discovery.EnergenieDiscoveryService;
 import org.openhab.binding.energenie.internal.rest.RestClient;
 import org.osgi.service.component.ComponentContext;
@@ -66,8 +64,7 @@ public class EnergenieHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private void registerEnergenieDiscoveryService(EnergenieApiConfiguration config) {
-        FailingRequestHandler handler = new FailingRequestHandlerImpl();
-        EnergenieApiManager apiManager = new EnergenieApiManagerImpl(config, restClient, handler);
+        EnergenieApiManager apiManager = new EnergenieApiManagerImpl(config, restClient);
         EnergenieDiscoveryService service = new EnergenieDiscoveryService(apiManager);
         bundleContext.registerService(DiscoveryService.class.getName(), service, new Hashtable<String, Object>());
     }

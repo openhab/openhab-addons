@@ -10,6 +10,7 @@ package org.openhab.binding.energenie.handler;
 
 import static org.openhab.binding.energenie.EnergenieBindingConstants.*;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -36,11 +37,16 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.energenie.EnergenieBindingConstants;
+import org.openhab.binding.energenie.internal.api.JsonResponseUtil;
 import org.openhab.binding.energenie.internal.api.JsonSubdevice;
+import org.openhab.binding.energenie.internal.api.constants.JsonResponseConstants;
+import org.openhab.binding.energenie.internal.exceptions.UnsuccessfulHttpResponseException;
+import org.openhab.binding.energenie.internal.exceptions.UnsuccessfulJsonResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
+import com.google.gson.JsonObject;
 
 /**
  * Handler for the Mi|Home Subdevices
@@ -130,7 +136,18 @@ public class EnergenieSubdevicesHandler extends BaseThingHandler {
             logger.debug("Device with ID {} is already paired", deviceID);
 
             this.energenieID = deviceID;
-            JsonSubdevice subdevice = gatewayHandler.getSubdeviceData(this.energenieID);
+            JsonSubdevice subdevice = null;
+            try {
+                subdevice = gatewayHandler.getSubdeviceData(this.energenieID);
+            } catch (IOException e) {
+                logger.error("An error occurred while trying to get subdevice data. Please check your connection", e);
+            } catch (UnsuccessfulJsonResponseException e) {
+                JsonObject responseData = e.getResponse().get(JsonResponseConstants.DATA_KEY).getAsJsonObject();
+                String errorMessage = JsonResponseUtil.getErrorMessageFromResponse(responseData);
+                logger.error(errorMessage);
+            } catch (UnsuccessfulHttpResponseException e) {
+                logger.error("HTTP request failed: {}", e.getResponse().getReason());
+            }
 
             if (subdevice != null) {
                 updateStatus(ThingStatus.ONLINE);
@@ -182,7 +199,23 @@ public class EnergenieSubdevicesHandler extends BaseThingHandler {
         Runnable runnable = () -> {
             try {
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
-                    JsonSubdevice subdevice = gatewayHandler.getSubdeviceData(energenieID);
+                    JsonSubdevice subdevice = null;
+                    try {
+                        subdevice = gatewayHandler.getSubdeviceData(energenieID);
+                    } catch (IOException e) {
+                        logger.error(
+                                "An error occurred while trying to get subdivice data for divice with ID: {}. Please check your connection",
+                                energenieID, e);
+                    } catch (UnsuccessfulJsonResponseException e) {
+                        JsonObject responseData = e.getResponse().get(JsonResponseConstants.DATA_KEY).getAsJsonObject();
+                        String errorMessage = JsonResponseUtil.getErrorMessageFromResponse(responseData);
+                        logger.error("The JSON response status is: {} and it contains the following error: {}",
+                                responseData, errorMessage);
+                    } catch (UnsuccessfulHttpResponseException e) {
+                        logger.error(
+                                "EnergenieApiManager returned unsuccessful http response: {} while trying to find gateway with ID {}.",
+                                e.getResponse().getReason(), energenieID);
+                    }
                     if (subdevice != null) {
                         // Update the channels
                         List<Channel> channels = getThing().getChannels();
@@ -282,7 +315,19 @@ public class EnergenieSubdevicesHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         ThingStatus status = getThing().getStatus();
         if (status == ThingStatus.ONLINE) {
-            JsonSubdevice subdevice = gatewayHandler.getSubdeviceData(energenieID);
+            JsonSubdevice subdevice = null;
+            try {
+                subdevice = gatewayHandler.getSubdeviceData(energenieID);
+            } catch (IOException e) {
+                logger.error("An error occurred while trying to execute: {}. Please check your connection",
+                        e.getMessage(), e);
+            } catch (UnsuccessfulJsonResponseException e) {
+                JsonObject responseData = e.getResponse().get(JsonResponseConstants.DATA_KEY).getAsJsonObject();
+                String errorMessage = JsonResponseUtil.getErrorMessageFromResponse(responseData);
+                logger.error(errorMessage);
+            } catch (UnsuccessfulHttpResponseException e) {
+                logger.error("HTTP request failed: {}", e.getResponse().getReason());
+            }
             if (subdevice != null) {
                 if (command instanceof RefreshType && channelUID.getId().equals(CHANNEL_STATE)) {
                     updateChannelState(subdevice, channelUID);

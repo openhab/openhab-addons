@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.energenie.handler;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.time.Duration;
@@ -38,16 +39,19 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.energenie.EnergenieBindingConstants;
 import org.openhab.binding.energenie.internal.api.JsonGateway;
+import org.openhab.binding.energenie.internal.api.JsonResponseUtil;
 import org.openhab.binding.energenie.internal.api.JsonSubdevice;
+import org.openhab.binding.energenie.internal.api.constants.JsonResponseConstants;
 import org.openhab.binding.energenie.internal.api.manager.EnergenieApiConfiguration;
 import org.openhab.binding.energenie.internal.api.manager.EnergenieApiManager;
 import org.openhab.binding.energenie.internal.api.manager.EnergenieApiManagerImpl;
-import org.openhab.binding.energenie.internal.api.manager.FailingRequestHandler;
-import org.openhab.binding.energenie.internal.api.manager.FailingRequestHandlerImpl;
-import org.openhab.binding.energenie.internal.api.manager.ThingCallback;
+import org.openhab.binding.energenie.internal.exceptions.UnsuccessfulHttpResponseException;
+import org.openhab.binding.energenie.internal.exceptions.UnsuccessfulJsonResponseException;
 import org.openhab.binding.energenie.internal.rest.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonObject;
 
 /**
  * Handler for the Mi|Home Gateway (MIHO001). The gateway is a central communication hub between the individual devices.
@@ -64,6 +68,7 @@ public class EnergenieGatewayHandler extends BaseBridgeHandler {
     private static final String INVALID_USER_MESSAGE = "Invalid email address. Please enter the email address that you used when registering in https://mihome4u.co.uk/";
     private static final String REJECTED_EXECUTION_OF_UPDATE_TASK_MESSAGE = "The update task cannot be scheduled for execution.";
     private static final String UNSUCCESSFUL_DATE_PARSING_MESSAGE = "Could not get the 'inactive' time interval of the gateway. Something went wrong with the parsing.";
+    private static final String ERROR_IN_JSON_RESPONSE_ERROR_MESSAGE = "The JSON response status is: %s and it contains the following error: %s";
     private static final int INITIAL_REFRESH_DELAY_SECONDS = 10;
 
     /**
@@ -154,8 +159,8 @@ public class EnergenieGatewayHandler extends BaseBridgeHandler {
             checkGateway();
         };
         try {
-            scheduler.scheduleWithFixedDelay(refreshRunnable, INITIAL_REFRESH_DELAY_SECONDS, updateInterval,
-                    TimeUnit.SECONDS);
+            updateTaskResult = scheduler.scheduleWithFixedDelay(refreshRunnable, INITIAL_REFRESH_DELAY_SECONDS,
+                    updateInterval, TimeUnit.SECONDS);
         } catch (RejectedExecutionException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     REJECTED_EXECUTION_OF_UPDATE_TASK_MESSAGE);
@@ -179,7 +184,42 @@ public class EnergenieGatewayHandler extends BaseBridgeHandler {
          * information. So in order to check when was the last time it was seen
          * you need to list all gateways and find the one you want by its id.
          */
-        JsonGateway gateway = getGatewayById(gatewayId);
+        JsonGateway gateway = null;
+        try {
+            gateway = getGatewayById(gatewayId);
+        } catch (IOException e) {
+            logger.error("The gateway with ID {} cannot be found. Changing thing status to offline", gatewayId, e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            return;
+        } catch (UnsuccessfulHttpResponseException e) {
+            logger.error(
+                    "EnergenieApiManager returned unsuccessful response: {} while trying to find gateway with ID {}. Changing thing status to offline",
+                    e.getResponse().getReason(), gatewayId, e);
+            logger.error("Changing thing status to offline:  {}", e.getResponse().getReason());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getResponse().getReason());
+            return;
+        } catch (UnsuccessfulJsonResponseException e) {
+            String responseStatus = JsonResponseUtil.getResponseStatus(e.getResponse());
+            JsonObject responseData = e.getResponse().get(JsonResponseConstants.DATA_KEY).getAsJsonObject();
+            String jsonErrorMessage = JsonResponseUtil.getErrorMessageFromResponse(responseData);
+            String detailedErrorMessage = String.format(ERROR_IN_JSON_RESPONSE_ERROR_MESSAGE, responseStatus,
+                    jsonErrorMessage);
+            switch (responseStatus) {
+                case JsonResponseConstants.RESPONSE_ACCESS_DENIED:
+                case JsonResponseConstants.RESPONSE_INTERNAL_SERVER_ERROR:
+                case JsonResponseConstants.RESPONSE_MAINTENANCE:
+                case JsonResponseConstants.RESPONSE_PARAMETER_ERROR:
+                case JsonResponseConstants.RESPONSE_VALIDATION_ERROR:
+                    logger.error(detailedErrorMessage);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, detailedErrorMessage);
+                    break;
+                case JsonResponseConstants.RESPONSE_NOT_FOUND:
+                    logger.warn("{}", jsonErrorMessage);
+                    break;
+            }
+            return;
+        }
+
         if (gateway != null) {
             setProperties(gateway);
 
@@ -225,8 +265,12 @@ public class EnergenieGatewayHandler extends BaseBridgeHandler {
      *
      * @param id the id of the searched gateway
      * @return the gateway with the given id if it is registered or null if it is not
+     * @throws UnsuccessfulJsonResponseException
+     * @throws IOException
+     * @throws UnsuccessfulHttpResponseException
      */
-    private JsonGateway getGatewayById(int searchedId) {
+    private JsonGateway getGatewayById(int searchedId)
+            throws IOException, UnsuccessfulJsonResponseException, UnsuccessfulHttpResponseException {
         JsonGateway[] gateways = apiManager.listGateways();
 
         for (JsonGateway gateway : gateways) {
@@ -296,25 +340,7 @@ public class EnergenieGatewayHandler extends BaseBridgeHandler {
             EnergenieApiConfiguration restConfig = new EnergenieApiConfiguration(username, password);
             restClient.setConnectionTimeout(RestClient.DEFAULT_REQUEST_TIMEOUT);
 
-            ThingCallback callback = new ThingCallback() {
-                @Override
-                public void updateThingStatus(ThingStatus status, ThingStatusDetail statusDetail, String description) {
-                    updateStatus(status, statusDetail, description);
-                }
-
-                @Override
-                public void updateThingStatus(ThingStatus status, ThingStatusDetail statusDetail) {
-                    updateStatus(status, statusDetail);
-                }
-
-                @Override
-                public void updateThingStatus(ThingStatus status) {
-                    updateStatus(status);
-                }
-            };
-
-            FailingRequestHandler handler = new FailingRequestHandlerImpl(callback);
-            apiManager = new EnergenieApiManagerImpl(restConfig, restClient, handler);
+            apiManager = new EnergenieApiManagerImpl(restConfig, restClient);
         }
     }
 
@@ -399,8 +425,12 @@ public class EnergenieGatewayHandler extends BaseBridgeHandler {
      *
      * @return array with subdevices or null if no devices are registered or the
      *         request isn't successful
+     * @throws UnsuccessfulJsonResponseException
+     * @throws IOException
+     * @throws UnsuccessfulHttpResponseException
      */
-    public JsonSubdevice[] listSubdevices() {
+    public JsonSubdevice[] listSubdevices()
+            throws IOException, UnsuccessfulJsonResponseException, UnsuccessfulHttpResponseException {
         return apiManager.listSubdevices();
     }
 
@@ -410,8 +440,12 @@ public class EnergenieGatewayHandler extends BaseBridgeHandler {
      * @param subdeviceID the ID of the subdevice
      * @return JsonObject containing the requested data or null if the request
      *         isn't successful
+     * @throws UnsuccessfulJsonResponseException
+     * @throws IOException
+     * @throws UnsuccessfulHttpResponseException
      */
-    public JsonSubdevice getSubdeviceData(int subdeviceID) {
+    public JsonSubdevice getSubdeviceData(int subdeviceID)
+            throws IOException, UnsuccessfulJsonResponseException, UnsuccessfulHttpResponseException {
         return apiManager.showSubdeviceInfo(subdeviceID);
     }
 

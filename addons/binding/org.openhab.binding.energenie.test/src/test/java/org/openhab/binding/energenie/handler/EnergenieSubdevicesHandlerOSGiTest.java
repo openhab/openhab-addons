@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.thing.link.ItemChannelLinkRegistry;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.eclipse.smarthome.test.storage.VolatileStorageService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,6 +53,7 @@ public class EnergenieSubdevicesHandlerOSGiTest extends AbstractEnergenieOSGiTes
 
     private EnergenieServlet listSubdevicesServlet;
     private EnergenieServlet showSubdeviceServlet;
+    private EnergenieServlet gatewayFirmwareInformationServlet;
 
     // Subdevice information
     public static final int TEST_SUBDEVICE_ID = 53412;
@@ -60,6 +62,7 @@ public class EnergenieSubdevicesHandlerOSGiTest extends AbstractEnergenieOSGiTes
 
     @Before
     public void setUp() {
+        registerService(new VolatileStorageService());
         setUpServices();
 
         // Register Subdevices Servlets
@@ -78,6 +81,11 @@ public class EnergenieSubdevicesHandlerOSGiTest extends AbstractEnergenieOSGiTes
 
         // in order to test subdevices we need to register servlet representing successful gateway registration
         JsonGateway gatewayDevice = createTestGateway();
+        JsonObject gatewayContent = generateShowJsonDeviceServerResponse(JsonResponseConstants.RESPONSE_SUCCESS,
+                gatewayDevice);
+
+        gatewayFirmwareInformationServlet = new EnergenieServlet(gatewayContent.toString());
+        registerServlet(PATH_FIRMWARE_INFORMATION, gatewayFirmwareInformationServlet);
 
         // Register servlet with content representing list of gateways. It is needed for the refresh thread.
         JsonObject listContent = generateJsonDevicesListServerResponse(JsonResponseConstants.RESPONSE_SUCCESS,
@@ -95,6 +103,7 @@ public class EnergenieSubdevicesHandlerOSGiTest extends AbstractEnergenieOSGiTes
         unregisterServlet(PATH_LIST_SUBDEVICES);
         unregisterServlet(PATH_SHOW_SUBDEVICE);
         unregisterServlet(PATH_LIST_GATEWAYS);
+        unregisterServlet(PATH_FIRMWARE_INFORMATION);
     }
 
     @Test
@@ -109,7 +118,7 @@ public class EnergenieSubdevicesHandlerOSGiTest extends AbstractEnergenieOSGiTes
         subdevice = createThing(thingRegistry, gatewayThing, EnergenieBindingConstants.THING_TYPE_MOTION_SENSOR);
         thingRegistry.add(subdevice);
 
-        assertThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
+        assertThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
     }
 
     @Test
@@ -127,21 +136,6 @@ public class EnergenieSubdevicesHandlerOSGiTest extends AbstractEnergenieOSGiTes
         thingRegistry.add(subdevice);
 
         assertThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
-    }
-
-    @Test
-    public void assertInitializedThingGoesOFFLINEWhenTheGatewayGoesOFFLINE() {
-        initializePairedThing();
-
-        // Edit the configuration with invalid username
-        ThingHandler handler = gatewayThing.getHandler();
-        Configuration config = gatewayThing.getConfiguration();
-        handler.handleConfigurationUpdate(config.getProperties());
-
-        // As we have no servlet registered to return the gateway state (and the last_seen information), the bridge will
-        // be set to OFFLINE state
-        assertGatewayStatus(ThingStatus.OFFLINE);
-        assertThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
     }
 
     @Test
@@ -186,19 +180,6 @@ public class EnergenieSubdevicesHandlerOSGiTest extends AbstractEnergenieOSGiTes
                         initialUpdateInterval);
             });
         }
-    }
-
-    @Test
-    public void assertSubdeviceHandlerLocationChange() {
-        initializePairedThing();
-
-        Thing updatedThing = createThing(thingRegistry, gatewayThing,
-                EnergenieBindingConstants.THING_TYPE_MOTION_SENSOR, TEST_SUBDEVICE_ID);
-        String newLocation = "Bedroom";
-        updatedThing.setLocation(newLocation);
-        managedThingProvider.update(updatedThing);
-
-        waitForAssert(() -> assertEquals(subdevice.getLocation(), newLocation));
     }
 
     @Test
@@ -312,16 +293,6 @@ public class EnergenieSubdevicesHandlerOSGiTest extends AbstractEnergenieOSGiTes
     }
 
     @Test
-    public void assertSubdeviceWillNotBeRemovedWhenServerIsOFFLINE() throws InterruptedException {
-        initializePairedThing();
-
-        // We haven`t registered servlet to /subdevices/delete
-        thingRegistry.remove(subdevice.getUID());
-        Thread.sleep(1000);
-        assertThingStatus(ThingStatus.REMOVING, ThingStatusDetail.NONE);
-    }
-
-    @Test
     public void assertThingStatusIsOFFLINEOnREFRESHWhenDeviceIsRemovedFromTheMiHomeServer() {
         JsonDevice jsonSubdevice = new JsonSubdevice(TEST_SUBDEVICE_ID, TEST_GATEWAY_ID, TEST_SUBDEVICE_TYPE);
         JsonObject showSubdeviceServletContent = generateShowJsonDeviceServerResponse(
@@ -406,7 +377,7 @@ public class EnergenieSubdevicesHandlerOSGiTest extends AbstractEnergenieOSGiTes
     private void assertThingConfiguration(Configuration configuration) {
         String updateIntervalString = String
                 .valueOf(configuration.get(EnergenieBindingConstants.CONFIG_UPDATE_INTERVAL));
-        long updateInterval = Long.parseLong(updateIntervalString);
+        BigDecimal updateInterval = new BigDecimal(updateIntervalString);
         assertNotNull("Configuration parameter " + EnergenieBindingConstants.CONFIG_UPDATE_INTERVAL + " is missing",
                 updateInterval);
         BigDecimal expectedInterval = new BigDecimal(TEST_SUBDEVICE_UPDATE_INTERVAL);
@@ -450,8 +421,8 @@ public class EnergenieSubdevicesHandlerOSGiTest extends AbstractEnergenieOSGiTes
             ThingStatusDetail detail = info.getStatusDetail();
             assertEquals("Unexpected thing status. ThingStatus description is " + info.getDescription(), expectedStatus,
                     status);
-            assertEquals("Unexpected thing status detail. ThingStatus description is ${info.getDescription()}",
-                    expectedStatusDetail, detail);
+            assertEquals(String.format("Unexpected thing status detail. ThingStatus description is %s",
+                    info.getDescription()), expectedStatusDetail, detail);
         });
     }
 

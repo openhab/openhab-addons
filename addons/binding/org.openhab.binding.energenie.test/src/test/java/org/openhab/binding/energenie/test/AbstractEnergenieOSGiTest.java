@@ -33,6 +33,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.test.java.JavaOSGiTest;
 import org.openhab.binding.energenie.EnergenieBindingConstants;
 import org.openhab.binding.energenie.internal.EnergenieHandlerFactory;
+import org.openhab.binding.energenie.internal.api.EnergenieDeviceTypes;
 import org.openhab.binding.energenie.internal.api.JsonDevice;
 import org.openhab.binding.energenie.internal.api.JsonGateway;
 import org.openhab.binding.energenie.internal.api.JsonResponseUtil;
@@ -74,6 +75,7 @@ public abstract class AbstractEnergenieOSGiTest extends JavaOSGiTest {
     public static final String TEST_LABEL = "New Gateway";
     public static final String TEST_AUTH_CODE = "a21f913b022d";
     public static final String TEST_FIRMWARE_VERSION = "13";
+    public static final String TEST_RUNNING_FIRMWARE_VERSION_NAME = "1.5.9 12062018";
 
     /**
      * Test update interval for the subdevices in seconds
@@ -82,6 +84,8 @@ public abstract class AbstractEnergenieOSGiTest extends JavaOSGiTest {
 
     public static final String PATH_LIST_GATEWAYS = "/" + EnergenieApiManagerImpl.CONTROLLER_DEVICES + "/"
             + EnergenieApiManagerImpl.ACTION_LIST;
+    public static final String PATH_FIRMWARE_INFORMATION = "/" + EnergenieApiManagerImpl.CONTROLLER_DEVICES + "/"
+            + EnergenieApiManagerImpl.ACTION_SHOW_FIRMWARE_INFORMATION;
 
     protected ManagedThingProvider managedThingProvider;
     protected ThingRegistry thingRegistry;
@@ -99,11 +103,11 @@ public abstract class AbstractEnergenieOSGiTest extends JavaOSGiTest {
             String authCode) {
         handlerFactory.setApiConfig(new EnergenieApiConfiguration(userName, apiKey));
 
-        Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(EnergenieBindingConstants.PROPERTY_DEVICE_ID, new BigDecimal(gatewayID));
+        Map<String, Object> configProperties = new HashMap<String, Object>();
+        configProperties.put(EnergenieBindingConstants.PROPERTY_DEVICE_ID, new BigDecimal(gatewayID));
         // We set the auth_code to pretend that the device registration has passed correctly
         if (authCode != null) {
-            properties.put(EnergenieBindingConstants.PROPERTY_AUTH_CODE, authCode);
+            configProperties.put(EnergenieBindingConstants.PROPERTY_AUTH_CODE, authCode);
         }
         String bridgeID;
         if (gatewayID != null) {
@@ -112,10 +116,21 @@ public abstract class AbstractEnergenieOSGiTest extends JavaOSGiTest {
             bridgeID = "Unknown";
         }
 
-        Configuration configuration = new Configuration(properties);
+        Configuration configuration = new Configuration(configProperties);
 
         Bridge gateway = (Bridge) thingRegistry.createThingOfType(EnergenieBindingConstants.THING_TYPE_GATEWAY,
                 new ThingUID(EnergenieBindingConstants.THING_TYPE_GATEWAY, bridgeID), null, "Label", configuration);
+
+        Map<String, String> properties = new HashMap<String, String>();
+        properties.put(EnergenieBindingConstants.PROPERTY_DEVICE_ID, gatewayID.toString());
+        properties.put(EnergenieBindingConstants.PROPERTY_USER_ID, Integer.toString(TEST_USER_ID));
+        properties.put(EnergenieBindingConstants.PROPERTY_TYPE, EnergenieDeviceTypes.GATEWAY.toString());
+        properties.put(EnergenieBindingConstants.PROPERTY_MAC_ADDRESS, TEST_MAC_ADDRESS);
+        properties.put(EnergenieBindingConstants.PROPERTY_IP_ADDRESS, TEST_IP_ADDRESS);
+        properties.put(EnergenieBindingConstants.PROPERTY_PORT, Integer.toString(TEST_PORT));
+        properties.put(EnergenieBindingConstants.PROPERTY_FIRMWARE_VERSION, TEST_FIRMWARE_VERSION);
+        gateway.setProperties(properties);
+
         return gateway;
     }
 
@@ -245,7 +260,7 @@ public abstract class AbstractEnergenieOSGiTest extends JavaOSGiTest {
         String timeStamp = new SimpleDateFormat(EnergenieBindingConstants.DATE_TIME_PATTERN).format(currentDate);
 
         return new JsonGateway(TEST_USER_ID, TEST_GATEWAY_ID, TEST_LABEL, TEST_AUTH_CODE, TEST_MAC_ADDRESS,
-                TEST_IP_ADDRESS, TEST_PORT, TEST_FIRMWARE_VERSION, timeStamp);
+                TEST_IP_ADDRESS, TEST_PORT, TEST_FIRMWARE_VERSION, TEST_RUNNING_FIRMWARE_VERSION_NAME, timeStamp);
     }
 
 }

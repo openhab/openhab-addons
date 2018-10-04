@@ -37,6 +37,9 @@ public class JsonGateway extends JsonDevice {
     @SerializedName("firmware_version_id")
     String firmwareVersionID;
 
+    @SerializedName("running_firmware_version_name")
+    String runningFirmwareVersionName;
+
     @SerializedName("last_seen_at")
     String lastSeenAt;
 
@@ -45,7 +48,7 @@ public class JsonGateway extends JsonDevice {
     }
 
     public JsonGateway(int userID, int id, String label, String authCode, String macAddress, String ipAddress, int port,
-            String firmwareVersionID, String lastSeenAt) {
+            String firmwareVersionID, String runningFirmwareVersionName, String lastSeenAt) {
         super(EnergenieDeviceTypes.GATEWAY, id, label);
         this.authCode = authCode;
         this.userID = userID;
@@ -53,6 +56,7 @@ public class JsonGateway extends JsonDevice {
         this.ipAddress = ipAddress;
         this.port = port;
         this.firmwareVersionID = firmwareVersionID;
+        this.runningFirmwareVersionName = runningFirmwareVersionName;
         this.lastSeenAt = lastSeenAt;
     }
 

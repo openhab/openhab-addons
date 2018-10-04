@@ -155,6 +155,7 @@ public class RestClientImpl implements RestClient {
         this.timeout = timeout;
     }
 
+    @Override
     public HttpClient getHttpClient() {
         return httpClient;
     }

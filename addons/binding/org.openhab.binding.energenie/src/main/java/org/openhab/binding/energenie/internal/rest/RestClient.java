@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpMethod;
 
@@ -67,4 +68,6 @@ public interface RestClient {
     public int getConnectionTimeout();
 
     public void setConnectionTimeout(int timeout);
+
+    HttpClient getHttpClient();
 }

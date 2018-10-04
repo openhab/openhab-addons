@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.energenie.internal.discovery;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -27,11 +28,17 @@ import org.openhab.binding.energenie.handler.EnergenieGatewayHandler;
 import org.openhab.binding.energenie.handler.EnergenieSubdevicesHandler;
 import org.openhab.binding.energenie.internal.api.EnergenieDeviceTypes;
 import org.openhab.binding.energenie.internal.api.JsonGateway;
+import org.openhab.binding.energenie.internal.api.JsonResponseUtil;
 import org.openhab.binding.energenie.internal.api.JsonSubdevice;
+import org.openhab.binding.energenie.internal.api.constants.JsonResponseConstants;
 import org.openhab.binding.energenie.internal.api.manager.EnergenieApiConfiguration;
 import org.openhab.binding.energenie.internal.api.manager.EnergenieApiManager;
+import org.openhab.binding.energenie.internal.exceptions.UnsuccessfulHttpResponseException;
+import org.openhab.binding.energenie.internal.exceptions.UnsuccessfulJsonResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonObject;
 
 /**
  * A discovery service for Energenie Mi|Home devices using the Energenie Mi|Home REST API.
@@ -78,7 +85,19 @@ public class EnergenieDiscoveryService extends AbstractDiscoveryService implemen
             logger.debug("Your binding is not configured yet. Please set the credentials first.");
         } else {
             // List all registered gateways from profile
-            JsonGateway[] allRegisteredGateways = apiManager.listGateways();
+            JsonGateway[] allRegisteredGateways = null;
+            try {
+                allRegisteredGateways = apiManager.listGateways();
+            } catch (IOException e) {
+                logger.error("An error occured while trying to execute: {}. Please check your connection",
+                        e.getMessage(), e);
+            } catch (UnsuccessfulJsonResponseException e) {
+                JsonObject responseData = e.getResponse().get(JsonResponseConstants.DATA_KEY).getAsJsonObject();
+                String errorMessage = JsonResponseUtil.getErrorMessageFromResponse(responseData);
+                logger.error(errorMessage);
+            } catch (UnsuccessfulHttpResponseException e) {
+                logger.error("HTTP request failed: {}", e.getResponse().getReason());
+            }
             if (allRegisteredGateways != null) {
                 for (JsonGateway gateway : allRegisteredGateways) {
                     createGatewayDiscoveryResult(gateway);
@@ -88,7 +107,20 @@ public class EnergenieDiscoveryService extends AbstractDiscoveryService implemen
             }
 
             // List all subdevices
-            JsonSubdevice[] allRegisteredSubdevices = apiManager.listSubdevices();
+            JsonSubdevice[] allRegisteredSubdevices = null;
+            try {
+                allRegisteredSubdevices = apiManager.listSubdevices();
+            } catch (IOException e) {
+                logger.error("An error occured while trying to execute: {}. Please check your connection",
+                        e.getMessage(), e);
+            } catch (UnsuccessfulJsonResponseException e) {
+                String responseStatus = JsonResponseUtil.getResponseStatus(e.getResponse());
+                JsonObject responseData = e.getResponse().get(JsonResponseConstants.DATA_KEY).getAsJsonObject();
+                String errorMessage = JsonResponseUtil.getErrorMessageFromResponse(responseData);
+                logger.error(errorMessage);
+            } catch (UnsuccessfulHttpResponseException e) {
+                logger.error("HTTP request failed: {}", e.getResponse().getReason());
+            }
             if (allRegisteredSubdevices != null) {
                 for (JsonSubdevice subdevice : allRegisteredSubdevices) {
                     createSubdeviceDiscoveryResult(subdevice);
@@ -121,10 +153,8 @@ public class EnergenieDiscoveryService extends AbstractDiscoveryService implemen
         String gatewayCode = gateway.getAuthCode();
         ThingTypeUID thingTypeUID = EnergenieBindingConstants.THING_TYPE_GATEWAY;
         ThingUID thingUID = new ThingUID(thingTypeUID, Integer.toString(deviceID));
-        System.out.println("Thing UID is " + thingUID);
 
         Thing existingThing = discoveryServiceCallback.getExistingThing(thingUID);
-        System.out.println(existingThing);
 
         if (existingThing != null) {
             logger.debug("Gateway {} already exists", thingUID);

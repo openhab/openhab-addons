@@ -9,20 +9,26 @@
 package org.openhab.binding.energenie.internal.discovery;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryListener;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingRegistry;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.builder.BridgeBuilder;
@@ -30,6 +36,8 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.openhab.binding.energenie.EnergenieBindingConstants;
 import org.openhab.binding.energenie.handler.EnergenieGatewayHandler;
 import org.openhab.binding.energenie.handler.EnergenieSubdevicesHandler;
@@ -39,6 +47,8 @@ import org.openhab.binding.energenie.internal.api.JsonGateway;
 import org.openhab.binding.energenie.internal.api.JsonSubdevice;
 import org.openhab.binding.energenie.internal.api.manager.EnergenieApiConfiguration;
 import org.openhab.binding.energenie.internal.api.manager.EnergenieApiManager;
+import org.openhab.binding.energenie.internal.exceptions.UnsuccessfulHttpResponseException;
+import org.openhab.binding.energenie.internal.exceptions.UnsuccessfulJsonResponseException;
 import org.openhab.binding.energenie.test.AbstractEnergenieOSGiTest;
 
 /**
@@ -71,41 +81,54 @@ public class EnergenieDiscoveryOSGiTest {
     private JsonDevice[] listSubdevicesResponse;
     private List<Thing> registeredThings = new ArrayList<Thing>();
 
-    EnergenieApiManager mockedApiManager = new EnergenieApiManager() {
-
-        @Override
-        public JsonSubdevice showSubdeviceInfo(int id) {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public JsonSubdevice[] listSubdevices() {
-            return (JsonSubdevice[]) listSubdevicesResponse;
-        }
-
-        @Override
-        public JsonGateway[] listGateways() {
-            return (JsonGateway[]) listGatewaysResponse;
-        }
-
-        @Override
-        public String getFirmwareInformation(int id) {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public EnergenieApiConfiguration getConfiguration() {
-            return new EnergenieApiConfiguration(AbstractEnergenieOSGiTest.TEST_USERNAME,
-                    AbstractEnergenieOSGiTest.TEST_PASSWORD);
-        }
-    };
+    EnergenieApiManager mockedApiManager;
+    ThingRegistry mockedThingRegistry;
+    DiscoveryServiceCallback mockedDiscoveryServiceCallback;
 
     @Before
-    public void setUp() {
+    public void setUp() throws IOException, UnsuccessfulJsonResponseException, UnsuccessfulHttpResponseException {
+        initMocks();
         discoveryService = new EnergenieDiscoveryService(mockedApiManager);
+        discoveryService.setDiscoveryServiceCallback(mockedDiscoveryServiceCallback);
         isResultExpected = true;
+    }
+
+    private void initMocks() throws IOException, UnsuccessfulJsonResponseException, UnsuccessfulHttpResponseException {
+        mockedApiManager = mock(EnergenieApiManager.class);
+        when(mockedApiManager.listSubdevices()).thenAnswer(new Answer<JsonSubdevice[]>() {
+            @Override
+            public JsonSubdevice[] answer(InvocationOnMock invocation) {
+                return (JsonSubdevice[]) listSubdevicesResponse;
+            }
+        });
+        when(mockedApiManager.listGateways()).thenAnswer(new Answer<JsonGateway[]>() {
+            @Override
+            public JsonGateway[] answer(InvocationOnMock arg0) throws Throwable {
+                return (JsonGateway[]) listGatewaysResponse;
+            }
+        });
+        when(mockedApiManager.getConfiguration()).thenReturn(new EnergenieApiConfiguration(
+                AbstractEnergenieOSGiTest.TEST_USERNAME, AbstractEnergenieOSGiTest.TEST_PASSWORD));
+
+        mockedThingRegistry = mock(ThingRegistry.class);
+        when(mockedThingRegistry.get(any(ThingUID.class))).thenAnswer(new Answer<Thing>() {
+            @Override
+            public Thing answer(InvocationOnMock arg0) throws Throwable {
+                ThingUID uid = (ThingUID) arg0.getArgument(0);
+                Optional<Thing> optionalThing = registeredThings.stream().filter(x -> x.getUID().equals(uid))
+                        .findFirst();
+                return optionalThing.orElse(null);
+            }
+        });
+
+        mockedDiscoveryServiceCallback = mock(DiscoveryServiceCallback.class);
+        when(mockedDiscoveryServiceCallback.getExistingThing(any(ThingUID.class))).thenAnswer(new Answer<Thing>() {
+            @Override
+            public Thing answer(InvocationOnMock arg0) throws Throwable {
+                ThingUID thingUID = arg0.getArgument(0);
+                return mockedThingRegistry.get(thingUID);
+            }
+        });
     }
 
     @After
@@ -259,7 +282,6 @@ public class EnergenieDiscoveryOSGiTest {
 
         discoveryService.addDiscoveryListener(discoveryListenerMock);
         discoveryService.startScan();
-
         assertFalse(isResultExpected);
     }
 
