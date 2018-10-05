@@ -33,7 +33,7 @@ public class KM200BindingConstants {
     public static final ThingTypeUID THING_TYPE_HEAT_SOURCE = new ThingTypeUID(BINDING_ID, "heatSource");
     public static final ThingTypeUID THING_TYPE_SYSTEM = new ThingTypeUID(BINDING_ID, "system");
     public static final ThingTypeUID THING_TYPE_SYSTEM_APPLIANCE = new ThingTypeUID(BINDING_ID, "appliance");
-    public static final ThingTypeUID THING_TYPE_SYSTEM_HOLIDAYMODES = new ThingTypeUID(BINDING_ID, "holidayModes");
+    public static final ThingTypeUID THING_TYPE_SYSTEM_HOLIDAYMODES = new ThingTypeUID(BINDING_ID, "holidayMode");
     public static final ThingTypeUID THING_TYPE_SYSTEM_SENSOR = new ThingTypeUID(BINDING_ID, "sensor");
     public static final ThingTypeUID THING_TYPE_NOTIFICATION = new ThingTypeUID(BINDING_ID, "notification");
     public static final ThingTypeUID THING_TYPE_SWITCH_PROGRAM = new ThingTypeUID(BINDING_ID, "switchProgram");
