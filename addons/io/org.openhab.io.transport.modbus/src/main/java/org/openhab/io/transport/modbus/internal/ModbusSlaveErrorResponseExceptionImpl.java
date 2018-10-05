@@ -31,7 +31,7 @@ public class ModbusSlaveErrorResponseExceptionImpl extends ModbusSlaveErrorRespo
     }
 
     /**
-     * @return the modbus exception code that happened
+     * @return the Modbus exception code that happened
      */
     @Override
     public int getExceptionCode() {
