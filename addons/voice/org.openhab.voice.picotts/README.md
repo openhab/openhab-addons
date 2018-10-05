@@ -15,7 +15,7 @@ In Arch Linux the pico2wave binaries are available in an Arch User repository (A
 https://aur.archlinux.org/packages/svox-pico-bin/
 
 ##  Availability via PaperUI
-After manual install to make options selectable from PaperUI download the .jar file and place in addons folder.  
+After manual install if no options are selectable from PaperUI download the .jar file and place in addons folder.  
 
 
 ## Configuration
