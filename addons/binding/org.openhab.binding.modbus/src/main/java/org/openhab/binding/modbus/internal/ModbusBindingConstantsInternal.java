@@ -24,7 +24,7 @@ import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
  * @author Sami Salonen - Initial contribution
  */
 @NonNullByDefault
-public class ModbusBindingConstants {
+public class ModbusBindingConstantsInternal {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_MODBUS_TCP = new ThingTypeUID(BINDING_ID, "tcp");
