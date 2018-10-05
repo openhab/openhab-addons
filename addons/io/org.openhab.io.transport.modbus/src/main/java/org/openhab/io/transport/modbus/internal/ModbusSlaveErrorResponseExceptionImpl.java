@@ -17,6 +17,7 @@ import net.wimpi.modbus.ModbusSlaveException;
  * Exception for explicit exception responses from Modbus slave
  *
  * @author Sami Salonen - Initial contribution
+ * @author Nagy Attila Gabor - added getter for error type
  *
  */
 @NonNullByDefault
@@ -27,6 +28,14 @@ public class ModbusSlaveErrorResponseExceptionImpl extends ModbusSlaveErrorRespo
 
     public ModbusSlaveErrorResponseExceptionImpl(ModbusSlaveException e) {
         type = e.getType();
+    }
+
+    /**
+     * @return the Modbus exception code that happened
+     */
+    @Override
+    public int getExceptionCode() {
+        return type;
     }
 
     @Override
