@@ -99,7 +99,7 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         if (!getDevice().getInited() && !isInitialized()) {
-            logger.info("Update KM50/100/200 gateway configuration, it takes a minute....");
+            logger.debug("Update KM50/100/200 gateway configuration, it takes a minute....");
             getConfiguration();
             if (getDevice().isConfigured()) {
                 if (!checkConfiguration()) {
@@ -119,7 +119,7 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
                 SendKM200Runnable sendRunnable = new SendKM200Runnable(sendMap, getDevice());
                 GetKM200Runnable receivingRunnable = new GetKM200Runnable(sendMap, this, getDevice());
                 executor.scheduleWithFixedDelay(receivingRunnable, 30, refreshInterval, TimeUnit.SECONDS);
-                executor.scheduleWithFixedDelay(sendRunnable, 60, refreshInterval, TimeUnit.SECONDS);
+                executor.scheduleWithFixedDelay(sendRunnable, 60, refreshInterval * 2, TimeUnit.SECONDS);
             }
         }
     }
@@ -226,7 +226,7 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
                     "No communication possible with gateway");
             return false;
         }
-        logger.info("Test of the communication to the gateway was successful..");
+        logger.debug("Test of the communication to the gateway was successful..");
 
         /* Testing the received data, is decryption working? */
         try {
