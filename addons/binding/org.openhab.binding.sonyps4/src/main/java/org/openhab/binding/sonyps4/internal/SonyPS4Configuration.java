@@ -51,6 +51,11 @@ public class SonyPS4Configuration {
     private Integer ipPort;
 
     /**
+     * Size of artwork for applications.
+     */
+    private Integer artworkSize;
+
+    /**
      * host-id of PS4.
      */
     private String hostId;
@@ -82,6 +87,14 @@ public class SonyPS4Configuration {
 
     public void setIpPort(Integer ipPort) {
         this.ipPort = ipPort;
+    }
+
+    public Integer getArtworkSize() {
+        return artworkSize;
+    }
+
+    public void setArtworkSize(Integer artworkSize) {
+        this.artworkSize = artworkSize;
     }
 
     public String getHostId() {

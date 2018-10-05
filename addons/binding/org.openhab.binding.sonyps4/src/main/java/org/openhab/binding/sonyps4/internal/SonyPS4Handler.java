@@ -30,12 +30,12 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,9 +52,11 @@ public class SonyPS4Handler extends BaseThingHandler {
     private final SonyPS4PacketHandler ps4PacketHandler = new SonyPS4PacketHandler();
     private static final int BROADCAST_PORT = 987;
     private static final int SOCKET_TIMEOUT_SECONDS = 4;
+    private static final int POST_CONNECT_SENDKEY_DELAY = 1500;
+    private static final int MIN_SENDKEY_DELAY = 200; // min delay between sendKey sends
+    private static final boolean SHOULD_LOGIN = true;
 
-    @Nullable
-    private SonyPS4Configuration config;
+    private SonyPS4Configuration config = getConfigAs(SonyPS4Configuration.class);
 
     @Nullable
     private ScheduledFuture<?> refreshTimer;
@@ -63,7 +65,7 @@ public class SonyPS4Handler extends BaseThingHandler {
     private String currentApplication = "";
     private String currentApplicationId = "";
     private OnOffType currentPower = OnOffType.OFF;
-    private State currentImage = UnDefType.UNDEF;
+    private State currentArtwork = UnDefType.UNDEF;
     private Integer currentComPort = 997;
 
     public SonyPS4Handler(Thing thing) {
@@ -78,7 +80,7 @@ public class SonyPS4Handler extends BaseThingHandler {
             if (CHANNEL_POWER.equals(channelUID.getId()) && command instanceof OnOffType) {
                 currentPower = (OnOffType) command;
                 if (currentPower.equals(OnOffType.ON)) {
-                    wakeUpPS4();
+                    turnOnPS4();
                 } else if (currentPower.equals(OnOffType.OFF)) {
                     turnOffPS4();
                 }
@@ -91,52 +93,31 @@ public class SonyPS4Handler extends BaseThingHandler {
                     startApplication(currentApplicationId);
                 }
             }
+            if (CHANNEL_KEY_ENTER.equals(channelUID.getId()) && command instanceof OnOffType) {
+                sendRemoteKey(PS4_KEY_ENTER);
+            }
+            if (CHANNEL_KEY_BACK.equals(channelUID.getId()) && command instanceof OnOffType) {
+                sendRemoteKey(PS4_KEY_BACK);
+            }
+            if (CHANNEL_KEY_PS.equals(channelUID.getId()) && command instanceof OnOffType) {
+                sendRemoteKey(PS4_KEY_PS);
+            }
         }
     }
 
     @Override
     public void initialize() {
-        // logger.debug("Start initializing!");
+        logger.debug("Start initializing!");
         config = getConfigAs(SonyPS4Configuration.class);
         Integer port = config.getIpPort();
         if (port != null) {
             currentComPort = port;
         }
 
-        // TODO: Initialize the handler.
-        // The framework requires you to return from this method quickly. Also, before leaving this method a thing
-        // status from one of ONLINE, OFFLINE or UNKNOWN must be set. This might already be the real thing status in
-        // case you can decide it directly.
-        // In case you can not decide the thing status directly (e.g. for long running connection handshake using WAN
-        // access or similar) you should set status UNKNOWN here and then decide the real status asynchronously in the
-        // background.
-
-        // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
-        // the framework is then able to reuse the resources from the thing handler initialization.
-        // we set this upfront to reliably check status updates in unit tests.
         updateStatus(ThingStatus.UNKNOWN);
-
         setupRefreshTimer(1);
-        // Example for background initialization:
-        /*
-         * scheduler.execute(() -> {
-         * boolean thingReachable = true; // <background task with long running initialization here>
-         * // when done do:
-         * if (thingReachable) {
-         * updateStatus(ThingStatus.ONLINE);
-         * } else {
-         * updateStatus(ThingStatus.OFFLINE);
-         * }
-         * });
-         */
 
-        // logger.debug("Finished initializing!");
-
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
+        logger.debug("Finished initializing!");
     }
 
     @Override
@@ -157,7 +138,7 @@ public class SonyPS4Handler extends BaseThingHandler {
         if (refreshTimer != null) {
             refreshTimer.cancel(false);
         }
-        refreshTimer = scheduler.scheduleWithFixedDelay(() -> updateAllChannels(), initialWaitTime, 30,
+        refreshTimer = scheduler.scheduleWithFixedDelay(() -> updateAllChannels(), initialWaitTime, 10,
                 TimeUnit.SECONDS);
     }
 
@@ -174,7 +155,7 @@ public class SonyPS4Handler extends BaseThingHandler {
                 break;
             case CHANNEL_APPLICATION_IMAGE:
                 updateApplicationTitleid(currentApplicationId);
-                updateState(channelUID, currentImage);
+                updateState(channelUID, currentArtwork);
                 break;
             default:
                 logger.warn("Channel refresh for {} not implemented!", channelUID.getId());
@@ -198,10 +179,10 @@ public class SonyPS4Handler extends BaseThingHandler {
             socket.receive(packet);
             parsePacket(packet);
         } catch (SocketTimeoutException e) {
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             logger.info("PS4 communication timeout. Diagnostic: {}", e.getMessage());
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             logger.info("PS4 device not found. Diagnostic: {}", e.getMessage());
         }
     }
@@ -215,7 +196,7 @@ public class SonyPS4Handler extends BaseThingHandler {
             DatagramPacket packet = new DatagramPacket(wakeup, wakeup.length, inetAddress, BROADCAST_PORT);
             socket.send(packet);
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             logger.info("PS4 device not found. Diagnostic: {}", e.getMessage());
         }
     }
@@ -230,7 +211,7 @@ public class SonyPS4Handler extends BaseThingHandler {
             socket.send(packet);
             return true;
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             logger.info("PS4 device not found. Diagnostic: {}", e.getMessage());
         }
         return false;
@@ -244,7 +225,7 @@ public class SonyPS4Handler extends BaseThingHandler {
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e1) {
-            logger.debug("PS4 coms interrupted: {}", e1);
+            logger.debug("PS4 login interrupted: {}", e1);
         }
         channel.connect(new InetSocketAddress(hostName, currentComPort));
         channel.finishConnect();
@@ -253,7 +234,7 @@ public class SonyPS4Handler extends BaseThingHandler {
         byte[] outPacket = ps4PacketHandler.makeHelloPacket();
         channel.write(ByteBuffer.wrap(outPacket));
 
-        // read hello response
+        // Read hello response
         final ByteBuffer readBuffer = ByteBuffer.allocate(512);
         int responseLength = channel.read(readBuffer);
         if (responseLength > 0) {
@@ -281,10 +262,35 @@ public class SonyPS4Handler extends BaseThingHandler {
             readBuffer.get(respBuff, 0, responseLength);
             byte[] loginDecrypt = ps4PacketHandler.decryptResponsePacket(respBuff);
             logger.debug("PS4 login response: {}", loginDecrypt);
+            // Todo! Here we should probably do some checks that we are actually logged in.
             return true;
         } else {
             logger.warn("PS4 no login response!");
             return false;
+        }
+    }
+
+    private void turnOnPS4() {
+        wakeUpPS4();
+        if (!SHOULD_LOGIN) {
+            return;
+        }
+        try {
+            Thread.sleep(15000);
+        } catch (InterruptedException e1) {
+            logger.debug("PS4 login interrupted: {}", e1);
+        }
+        if (!openComs()) {
+            return;
+        }
+        try (SocketChannel channel = SocketChannel.open()) {
+            login(channel);
+        } catch (SocketTimeoutException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            logger.debug("PS4 communication timeout. Diagnostic: {}", e.getMessage());
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            logger.debug("No PS4 device found. Diagnostic: {}", e.getMessage());
         }
     }
 
@@ -316,10 +322,10 @@ public class SonyPS4Handler extends BaseThingHandler {
             }
 
         } catch (SocketTimeoutException e) {
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             logger.debug("PS4 communication timeout. Diagnostic: {}", e.getMessage());
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             logger.debug("No PS4 device found. Diagnostic: {}", e.getMessage());
         }
     }
@@ -352,10 +358,63 @@ public class SonyPS4Handler extends BaseThingHandler {
             }
 
         } catch (SocketTimeoutException e) {
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             logger.debug("PS4 communication timeout. Diagnostic: {}", e.getMessage());
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            logger.debug("No PS4 device found. Diagnostic: {}", e.getMessage());
+        }
+    }
+
+    private void sendRemoteKey(int pushedKey) {
+        if (!openComs()) {
+            return;
+        }
+        try (SocketChannel channel = SocketChannel.open()) {
+            if (!login(channel)) {
+                return;
+            }
+
+            try {
+                Thread.sleep(POST_CONNECT_SENDKEY_DELAY);
+                logger.debug("PS4 sending remoteKey");
+                byte[] outPacket = ps4PacketHandler.makeRemoteControlPacket(PS4_KEY_OPEN_RC);
+                channel.write(ByteBuffer.wrap(outPacket));
+
+                Thread.sleep(MIN_SENDKEY_DELAY);
+                // Send remote key
+                outPacket = ps4PacketHandler.makeRemoteControlPacket(pushedKey);
+                channel.write(ByteBuffer.wrap(outPacket));
+
+                Thread.sleep(MIN_SENDKEY_DELAY);
+                outPacket = ps4PacketHandler.makeRemoteControlPacket(PS4_KEY_OFF);
+                channel.write(ByteBuffer.wrap(outPacket));
+
+                Thread.sleep(MIN_SENDKEY_DELAY);
+                outPacket = ps4PacketHandler.makeRemoteControlPacket(PS4_KEY_CLOSE_RC);
+                channel.write(ByteBuffer.wrap(outPacket));
+
+                // // Read remoteKey response
+                // final ByteBuffer readBuffer = ByteBuffer.allocate(512);
+                // int responseLength = channel.read(readBuffer);
+                // if (responseLength > 0) {
+                // byte[] respBuff = new byte[responseLength];
+                // readBuffer.position(0);
+                // readBuffer.get(respBuff, 0, responseLength);
+                // byte[] appDecrypt = ps4PacketHandler.decryptResponsePacket(respBuff);
+                // logger.debug("PS4 remoteKey response: {}", appDecrypt);
+                // } else {
+                // logger.warn("PS4 no remoteKey response!");
+                // }
+
+            } catch (InterruptedException e1) {
+                logger.debug("PS4 remoteKey interrupted: {}", e1);
+            }
+        } catch (SocketTimeoutException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            logger.debug("PS4 communication timeout. Diagnostic: {}", e.getMessage());
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             logger.debug("No PS4 device found. Diagnostic: {}", e.getMessage());
         }
     }
@@ -384,7 +443,8 @@ public class SonyPS4Handler extends BaseThingHandler {
                         updateStatus(ThingStatus.ONLINE);
                     }
                 } else {
-                    updateStatus(ThingStatus.OFFLINE);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Could not determine power status.");
                 }
                 continue;
             }
@@ -408,9 +468,8 @@ public class SonyPS4Handler extends BaseThingHandler {
                     Integer port = Integer.valueOf(value);
                     if (!currentComPort.equals(port)) {
                         currentComPort = port;
-                        config.setIpPort(port);
+                        logger.info("PS4 host request port: {}", port);
                     }
-                    logger.debug("PS4 host request port: {}", port);
                     break;
 
                 default:
@@ -421,14 +480,14 @@ public class SonyPS4Handler extends BaseThingHandler {
 
     private void updateApplicationTitleid(String titleid) {
         currentApplicationId = titleid;
-        RawType artWork = HttpUtil
-                .downloadImage("https://store.playstation.com/store/api/chihiro/00_09_000/titlecontainer/US/en/999/"
-                        + titleid + "_00/image", 1000);
+        logger.debug("PS4 current application title id: {}", currentApplicationId);
+        RawType artWork = SonyPS4ArtworkHandler.fetchArtworkForTitleid(titleid, config.getArtworkSize());
         if (artWork != null) {
-            currentImage = artWork;
+            currentArtwork = artWork;
             ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_APPLICATION_IMAGE);
             updateState(channel, artWork);
+        } else {
+            logger.info("Couldn't fetch artwork for title id: {}", currentApplicationId);
         }
-        logger.debug("PS4 current application title id: {}", currentApplicationId);
     }
 }

@@ -35,6 +35,15 @@ public class SonyPS4BindingConstants {
     public static final String CHANNEL_APPLICATION_NAME = "applicationName";
     public static final String CHANNEL_APPLICATION_TITLEID = "applicationTitleid";
     public static final String CHANNEL_APPLICATION_IMAGE = "applicationImage";
+    public static final String CHANNEL_KEY_UP = "keyUp";
+    public static final String CHANNEL_KEY_DOWN = "keyDown";
+    public static final String CHANNEL_KEY_RIGHT = "keyRight";
+    public static final String CHANNEL_KEY_LEFT = "keyLeft";
+    public static final String CHANNEL_KEY_ENTER = "keyEnter";
+    public static final String CHANNEL_KEY_BACK = "keyBack";
+    public static final String CHANNEL_KEY_OPTION = "keyOption";
+    public static final String CHANNEL_KEY_PS = "keyPS";
+
     public static final String CHANNEL_HOST_NAME = "hostName";
 
     // List of all properties in the response from the PS4
@@ -55,4 +64,19 @@ public class SonyPS4BindingConstants {
     public static final String PS4HW_CUH2100 = "CUH-2100";
     public static final String PS4HW_CUH7000 = "CUH-7000";
     public static final String PS4HW_CUH7100 = "CUH-7100";
+
+    public static final int PS4_KEY_UP = 1 << 0;
+    public static final int PS4_KEY_DOWN = 1 << 1;
+    public static final int PS4_KEY_RIGHT = 1 << 2;
+    public static final int PS4_KEY_LEFT = 1 << 3;
+    public static final int PS4_KEY_ENTER = 1 << 4;
+    public static final int PS4_KEY_BACK = 1 << 5;
+    public static final int PS4_KEY_OPTION = 1 << 6;
+    public static final int PS4_KEY_PS = 1 << 7;
+    public static final int PS4_KEY_OFF = 1 << 8;
+    public static final int PS4_KEY_CANCEL = 1 << 9;
+    public static final int PS4_KEY_OPEN_RC = 1 << 10;
+    public static final int PS4_KEY_CLOSE_RC = 1 << 11;
+
+    public static final String PS4COMS_SYNC = "Ps4Sync";
 }

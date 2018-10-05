@@ -10,9 +10,17 @@
 
 		<channels>
 			<channel id="power" typeId="power-channel" />
-            <channel id="applicationName" typeId="application-channel" />
-            <channel id="applicationTitleid" typeId="applicationId-channel" />
-            <channel id="applicationImage" typeId="applicationImage-channel" />
+			<channel id="applicationName" typeId="application-channel" />
+			<channel id="applicationTitleid" typeId="applicationId-channel" />
+			<channel id="applicationImage" typeId="applicationImage-channel" />
+			<channel id="keyUp" typeId="keyUp-channel" />
+			<channel id="keyDown" typeId="keyDown-channel" />
+			<channel id="keyRight" typeId="keyRight-channel" />
+			<channel id="keyLeft" typeId="keyLeft-channel" />
+			<channel id="keyEnter" typeId="keyEnter-channel" />
+			<channel id="keyBack" typeId="keyBack-channel" />
+			<channel id="keyOption" typeId="keyOption-channel" />
+			<channel id="keyPS" typeId="keyPS-channel" />
 		</channels>
 
 		<properties>
@@ -27,20 +35,26 @@
 				<label>IP address</label>
 				<description>The local IP address or hostname of the PlayStation 4.</description>
 			</parameter>
-            <parameter name="ipPort" type="integer">
-                <label>IP port</label>
-                <description>The TCP port used to communicate with the PlayStation 4.</description>
-                <default>997</default>
-                <advanced>true</advanced>
-            </parameter>
-            <parameter name="userCredential" type="text" required="true">
-                <label>User credential</label>
-                <description>User credential to communicate with the PlayStation 4, 64 hex characters.</description>
-            </parameter>
-            <parameter name="pinCode" type="text">
-                <label>Pin code</label>
-                <description>Pin code to log in to PlayStation 4, optional, 4 numbers.</description>
-            </parameter>
+			<parameter name="ipPort" type="integer">
+				<label>IP port</label>
+				<description>The TCP port used to communicate with the PlayStation 4.</description>
+				<default>997</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="artworkSize" type="integer" min="128" max="1024">
+				<label>Artwork size</label>
+				<description>The width and height of the downloaded artwork.</description>
+				<default>320</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="userCredential" type="text" required="true">
+				<label>User credential</label>
+				<description>User credential to communicate with the PlayStation 4, 64 hex characters.</description>
+			</parameter>
+			<parameter name="pinCode" type="text">
+				<label>Pin code</label>
+				<description>Pin code to log in to PlayStation 4, optional, 4 numbers.</description>
+			</parameter>
 		</config-description>
 
 	</thing-type>
@@ -56,24 +70,41 @@
 		<description>Application channel for SonyPS4 Binding.</description>
 		<state pattern="%s" readOnly="true" />
 	</channel-type>
-    <channel-type id="applicationId-channel">
-        <item-type>String</item-type>
-        <label>Application ID</label>
-        <description>Application ID channel for SonyPS4 Binding.</description>
-        <state>
-            <options>
-                <option value="CUSA00127">Netflix</option>
-                <option value="CUSA01116">Youtube</option>
-                <option value="CUSA11993">Marvel's Spider-Man</option>
-                <option value="CUSA00342">Other game</option>
-            </options>
-        </state>
-    </channel-type>
-    <channel-type id="applicationImage-channel">
-        <item-type>Image</item-type>
-        <label>Artwork</label>
-        <description>Application artwork channel for SonyPS4 Binding.</description>
-        <state readOnly="true" />
+	<channel-type id="applicationId-channel">
+		<item-type>String</item-type>
+		<label>Application ID</label>
+		<description>Application ID channel for SonyPS4 Binding.</description>
+		<state>
+			<options>
+				<option value="CUSA00127">Netflix</option>
+				<option value="CUSA01116">Youtube</option>
+				<option value="CUSA00124">Viaplay</option>
+				<option value="CUSA02827">HBO</option>
+				<option value="CUSA11993">Marvel's Spider-Man</option>
+				<option value="CUSA00342">Other game</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="applicationImage-channel">
+		<item-type>Image</item-type>
+		<label>Artwork</label>
+		<description>Application artwork channel.</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="keyEnter-channel">
+		<item-type>Switch</item-type>
+		<label>Enter button</label>
+		<description>Push Enter button.</description>
+	</channel-type>
+	<channel-type id="keyBack-channel">
+		<item-type>Switch</item-type>
+		<label>Back button</label>
+		<description>Push Back button.</description>
+	</channel-type>
+    <channel-type id="keyPS-channel">
+        <item-type>Switch</item-type>
+        <label>PS button</label>
+        <description>Push PS button.</description>
     </channel-type>
 
 </thing:thing-descriptions>

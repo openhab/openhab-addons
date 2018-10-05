@@ -28,6 +28,8 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,9 +39,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author Fredrik Ahlström - Initial contribution
  */
+@NonNullByDefault
 public class SonyPS4PacketHandler {
 
-    private static final String VERSION = "1.1";
+    private static final String OS_VERSION = "4.4";
     private static final String DDP_VERSION = "00020020";
     private static final String PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----"
             + "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxfAO/MDk5ovZpp7xlG9J"
@@ -60,7 +63,7 @@ public class SonyPS4PacketHandler {
     private static final int OSK_START_REQ = 0x0c;
     private static final int OSK_CHANGE_STRING_REQ = 0x0e;
     private static final int OSK_CONTROL_REQ = 0x10;
-    private static final int UNKNOWN_1_RSP = 0x12;
+    private static final int SERVER_STATUS_RSP = 0x12;
     private static final int STATUS_REQ = 0x14;
     private static final int STANDBY_REQ = 0x1a;
     private static final int STANDBY_RSP = 0x1b;
@@ -72,12 +75,16 @@ public class SonyPS4PacketHandler {
     private final Logger logger = LoggerFactory.getLogger(SonyPS4PacketHandler.class);
     private final byte[] remoteSeed = new byte[16];
     private final byte[] randomSeed = new byte[16];
+    @Nullable
     private IvParameterSpec ivSpec;
+    @Nullable
     private Cipher aesEncryptCipher;
+    @Nullable
     private Cipher aesDecryptCipher;
+    @Nullable
     private Cipher ps4Cipher;
 
-    public SonyPS4PacketHandler() {
+    SonyPS4PacketHandler() {
         new SecureRandom().nextBytes(randomSeed);
         ps4Cipher = getRsaCipher(PUBLIC_KEY);
     }
@@ -96,34 +103,32 @@ public class SonyPS4PacketHandler {
         return packet;
     }
 
-    public void handleHelloResponse(ByteBuffer helloBuffer) {
+    void handleHelloResponse(ByteBuffer helloBuffer) {
         helloBuffer.position(20);
         helloBuffer.get(remoteSeed, 0, 16);
         ivSpec = new IvParameterSpec(remoteSeed);
     }
 
-    public byte[] decryptResponsePacket(byte[] input) {
+    byte[] decryptResponsePacket(byte[] input) {
         return aesDecryptCipher.update(input);
     }
 
-    public byte[] handleLoginResponse(byte[] input) {
+    byte[] handleLoginResponse(byte[] input) {
         try {
             return aesDecryptCipher.doFinal(input);
-        } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
-        } catch (BadPaddingException e) {
-            e.printStackTrace();
+        } catch (IllegalBlockSizeException | BadPaddingException e) {
+            logger.warn("Can not decrypt PS4 response: {}", e);
         }
         return new byte[0];
     }
 
-    public byte[] makeSearchPacket() {
+    byte[] makeSearchPacket() {
         StringBuilder packet = new StringBuilder("SRCH * HTTP/1.1\n");
         packet.append("device-discovery-protocol-version:" + DDP_VERSION + "\n");
         return packet.toString().getBytes();
     }
 
-    public byte[] makeWakeupPacket(String userCredential) {
+    byte[] makeWakeupPacket(String userCredential) {
         StringBuilder packet = new StringBuilder("WAKEUP * HTTP/1.1\n");
         packet.append("client-type:i\n");
         packet.append("auth-type:C\n");
@@ -132,14 +137,14 @@ public class SonyPS4PacketHandler {
         return packet.toString().getBytes();
     }
 
-    public byte[] makeLaunchPacket(String userCredential) {
+    byte[] makeLaunchPacket(String userCredential) {
         StringBuilder packet = new StringBuilder("LAUNCH * HTTP/1.1\n");
         packet.append("user-credential:" + userCredential + "\n");
         packet.append("device-discovery-protocol-version:" + DDP_VERSION + "\n");
         return packet.toString().getBytes();
     }
 
-    public byte[] makeHelloPacket() {
+    byte[] makeHelloPacket() {
         ByteBuffer packet = newPacketOfSize(28);
         packet.putInt(HELLO_REQ);
         packet.putInt(REQ_VERSION);
@@ -147,7 +152,7 @@ public class SonyPS4PacketHandler {
         return packet.array();
     }
 
-    public byte[] makeHandshakePacket() {
+    byte[] makeHandshakePacket() {
         byte[] msg = null;
         try {
             msg = ps4Cipher.doFinal(randomSeed);
@@ -164,19 +169,17 @@ public class SonyPS4PacketHandler {
         return packet.array();
     }
 
-    public byte[] makeLoginPacket(String userCredential, String pinCode) {
+    byte[] makeLoginPacket(String userCredential, String pinCode) {
         ByteBuffer packet = newPacketForEncryption(16 + 64 + 256 + 16 + 16 + 16);
         packet.putInt(LOGIN_REQ);
-        packet.put(pinCode.getBytes()); // PIN Code
-        packet.position(12);
+        packet.put(pinCode.getBytes(), 0, 4); // PIN Code
         packet.putInt(0x0201); // Magic number
-        packet.put(userCredential.getBytes(StandardCharsets.US_ASCII));
-        packet.position(16 + 64);
-        packet.put("OpenHAB PlayStation Binding".getBytes(StandardCharsets.UTF_8)); // app_label
+        packet.put(userCredential.getBytes(StandardCharsets.US_ASCII), 0, 64);
+        packet.put("OpenHAB PlayStation 4 Binding".getBytes(StandardCharsets.UTF_8)); // app_label
         packet.position(16 + 64 + 256);
-        packet.put("4.4".getBytes()); // os_version
+        packet.put(OS_VERSION.getBytes()); // os_version
         packet.position(16 + 64 + 256 + 16);
-        packet.put("PS4 Waker".getBytes()); // model
+        packet.put("OpenHAB PS4".getBytes()); // model
         packet.position(16 + 64 + 256 + 16 + 16);
         packet.put(new byte[16]); // pass_code
 
@@ -187,44 +190,48 @@ public class SonyPS4PacketHandler {
             aesDecryptCipher = Cipher.getInstance("AES/CBC/NoPadding");
             aesDecryptCipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec);
             return aesEncryptCipher.update(packet.array());
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (InvalidAlgorithmParameterException e) {
-            e.printStackTrace();
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
+                | InvalidAlgorithmParameterException e) {
+            logger.error("Can not initialize cipher: {}", e);
         }
         return new byte[0];
     }
 
-    public byte[] makeStatusPacket(int status) {
+    byte[] makeStatusPacket(int status) {
         ByteBuffer packet = newPacketForEncryption(16);
         packet.putInt(STATUS_REQ);
         packet.putInt(status); // status
         return aesEncryptCipher.update(packet.array());
     }
 
-    public byte[] makeStandbyPacket() {
+    byte[] makeStandbyPacket() {
         ByteBuffer packet = newPacketForEncryption(8);
         packet.putInt(STANDBY_REQ);
         return aesEncryptCipher.update(packet.array());
     }
 
-    public byte[] makeApplicationPacket(String applicationName) {
+    byte[] makeApplicationPacket(String applicationName) {
         ByteBuffer packet = newPacketForEncryption(8 + 16 + 8);
         packet.putInt(APP_START_REQ);
         packet.put(applicationName.getBytes()); // AppName
         return aesEncryptCipher.update(packet.array());
     }
 
-    public byte[] makeByebyePacket() {
+    byte[] makeByebyePacket() {
         ByteBuffer packet = newPacketForEncryption(8);
         packet.putInt(BYEBYE_REQ);
         return aesEncryptCipher.update(packet.array());
     }
 
+    byte[] makeRemoteControlPacket(int pushedKey) {
+        ByteBuffer packet = newPacketForEncryption(16);
+        packet.putInt(REMOTE_CONTROL_REQ);
+        packet.putInt(pushedKey);
+        packet.putInt(0); // HoldTime
+        return aesEncryptCipher.update(packet.array());
+    }
+
+    @Nullable
     private Cipher getRsaCipher(String key) {
         try {
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
