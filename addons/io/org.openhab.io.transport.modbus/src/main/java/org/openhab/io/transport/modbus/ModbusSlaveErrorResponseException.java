@@ -40,7 +40,7 @@ abstract public class ModbusSlaveErrorResponseException extends ModbusTransportE
      * A value contained in the query data field is not an allowable value for the slave. This indicates a fault in the
      * structure of remainder of a complex request, such as that the implied length is incorrect. It specifically does
      * NOT mean that a data item submitted for storage in a register has a value outside the expectation of the
-     * application program, since the MODBUS protocol is unaware of the significance of any particular value of any
+     * application program, since the Modbus protocol is unaware of the significance of any particular value of any
      * particular register.
      */
     public static final int ILLEGAL_DATA_VALUE = 3;
@@ -61,7 +61,7 @@ abstract public class ModbusSlaveErrorResponseException extends ModbusTransportE
     /**
      * Specialized use in conjunction with programming commands.
      * The slave is engaged in processing a long-duration program command. The master should retransmit the message
-     * later when the slave is free..
+     * later when the slave is free.
      */
     public static final int SLAVE_DEVICE_BUSY = 6;
 
@@ -99,7 +99,7 @@ abstract public class ModbusSlaveErrorResponseException extends ModbusTransportE
     private static final long serialVersionUID = -1435199498550990487L;
 
     /**
-     * @return the modbus exception code that happened
+     * @return the Modbus exception code that happened
      */
     abstract public int getExceptionCode();
 
