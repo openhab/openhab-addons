@@ -93,9 +93,6 @@ abstract public class ModbusSlaveErrorResponseException extends ModbusTransportE
      */
     public static final int GATEWAY_TARGET_DEVICE_FAILED_TO_RESPOND = 11;
 
-    /**
-     *
-     */
     private static final long serialVersionUID = -1435199498550990487L;
 
     /**
