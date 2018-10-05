@@ -65,8 +65,9 @@ public class GPSTrackerTriggerSwitchProfile implements TriggerProfile {
     @Override
     public void onTriggerFromHandler(String payload) {
         if (payload.startsWith(regionName)) {
-            callback.sendCommand(payload.endsWith("enter") ? OnOffType.ON : OnOffType.OFF);
-            logger.debug("Transition trigger {} handled for region {} by profile.", payload, regionName);
+            OnOffType state = payload.endsWith("enter") ? OnOffType.ON : OnOffType.OFF;
+            callback.sendCommand(state);
+            logger.debug("Transition trigger {} handled for region {} by profile: {}", payload, regionName, state);
         }
     }
 }

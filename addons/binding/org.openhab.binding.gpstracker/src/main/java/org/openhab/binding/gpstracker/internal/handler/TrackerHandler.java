@@ -264,6 +264,7 @@ public class TrackerHandler extends BaseThingHandler {
             lastTriggeredStates.put(regionName, newState);
             logger.trace("Triggering {} for {}/{}", regionName, trackerId, payload);
         }
+        lastTriggeredStates.put(regionName, newState);
     }
 
     /**
@@ -277,24 +278,22 @@ public class TrackerHandler extends BaseThingHandler {
         String trackerId = message.getTrackerId();
         logger.debug("Updating distance channels tracker {}", trackerId);
         distanceChannelMap.values()
-                .forEach(c -> {
-                    updateDistanceChannelFromMessage(message, c);
-                });
+                .forEach(c -> updateDistanceChannelFromMessage(message, c));
     }
 
     private void updateDistanceChannelFromMessage(LocationMessage message, Channel c) {
+        String regionName = ConfigHelper.getRegionName(c.getConfiguration());
         PointType center = ConfigHelper.getRegionCenterLocation(c.getConfiguration());
-        PointType newLocation = message.getTrackerLocation();
+         PointType newLocation = message.getTrackerLocation();
         if (center != null) {
             double newDistance = newLocation.distanceFrom(center).doubleValue();
             updateState(c.getUID(), new QuantityType<>(newDistance / 1000, MetricPrefix.KILO(SIUnits.METRE)));
-            logger.trace("Region center distance from tracker location {} is {}m", newLocation.toString(), newDistance);
+            logger.trace("Region {} center distance from tracker location {} is {}m", regionName, newLocation.toString(), newDistance);
 
             //fire trigger based on distance calculation only in case of pure location message
             if (!(message instanceof TransitionMessage)) {
                 //convert into meters which is the unit of the calculated distance
                 double radiusMeter = convertRadiusToMeters(ConfigHelper.getRegionRadius(c.getConfiguration()));
-                String regionName = ConfigHelper.getRegionName(c.getConfiguration());
                 if (radiusMeter > newDistance) {
                     triggerRegionChannel(regionName, EVENT_ENTER);
                 } else {

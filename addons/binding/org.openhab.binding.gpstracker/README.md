@@ -7,7 +7,7 @@ Currently two applications are supported:
 * [GPSLogger](https://gpslogger.app/) - Android
 
 GPS location reports are sent to openHAB using HTTP protocol. 
-Please be aware that this communication uses the public network so make sure your openHAB installation is [secured](https://www.openhab.org/docs/installation/security.html#encrypted-communication)
+Please be aware that this communication uses the public network so make sure your openHAB installation is [secured](https://www.openhab.org/docs/installation/security.html#encrypted-communication) (but accessible from public internet through myopenhab.org or using a reverse proxy)
 and you configured HTTP**S** access in tracking applications.
 
 The binding can process two message types received from trackers:
@@ -92,35 +92,52 @@ Basic channels provided by the tracker things:
 
 #### Distance Calculation
 
-Tracker thing can be extended with **Distance** channels if a distance calculation is needed for a region. 
+Tracker thing can be extended with **Distance** channels (channel type is `regionDistance`) if a distance calculation is needed for a region. 
 These dynamic channels require the following parameters:
 
 | Parameter | Type |Description |
 | --- | --- | --- |
 | Region Name | String | Region name. If the region is configured in the tracker app as well use the same name. Distance channels can also be defined as binding only regions (not configured in trackers) | 
 | Region center | Location | Region center location |
+| Region Radius | Integer | Geofence radius |
 
-Distance values will be updated each time a GPS log record is received from the tracker.
+Distance values will be updated each time a GPS location log record is received from the tracker. 
 
-#### Geofences
+When this calculated distance is less than the defined geofence radius the binding also fires event on Region Trigger channel. 
 
-Switch type items can be linked to **regionTrigger** and **regionDistance** channels with the following parameters:
+* When the tracker is approaching (the new calculated distance is less then the previous one) the payload is <<region_name>>/enter. 
+* If the tracker is distancing (the new calculated distance is greater then the previous one) payload is <<region_name>>/leave. 
 
-| Channel | Parameter | Type |Description |
-| --- | --- | --- | --- |
-| Region Trigger | Region Name | String | Region name which should be the same as used in the tracker application |
-| Region Distance | Region Circle Radius | Number | Region radius |
+If the tracker is moving inside/outside the region (both the previous and the current calculated distance value is less/greater than the radius) no events are fired. 
+This means that the region events are triggered **ONLY IN CASE THE REGION BORDER IS CROSSED**.
 
-Each time the **Region Trigger** channel is triggered by an entering transition message the binding turns ON the linked switch and turns if OFF in case the region is left.
-For distance channels if the distance is less than the preset radius for the link the binding turns ON the switch and turns it OFF otherwise.
+**Note**: In case the location is set for openHAB installation (Configuration/System/Regional Settings) the binding automatically creates the System Distance channel (gpstracker:tracker:??:distanceSystem) with region name set to **System**.
+
+#### Tracker Location Status
+
+By default the binding notifies the openHAB about entering/leaving event through region trigger channel. 
+In order to have this state available in stateful switch items (e.g. for rule logic) switch type items can be linked to **regionTrigger** channel. 
+There is a special profile (gpstracker:trigger-geofence) that transforms trigger enter/leave events to switch states:
+
+* **<<region_name>>/enter** will update the switch state to **ON**
+* **<<region_name>>/leave** will update the switch state to **OFF**
+
+To link a switch item to regionTrigger channel the following parameters are required by the item link:
+
+| Parameter | Type |Description |
+| --- | --- | --- |
+| Profile Name | Selection | Select the Geofence(gpstracker:trigger-geofence) from dropdown|
+| Region Name | String | Region name which should be the same as used in the tracker application or defined for distance channels |
  
 ## Manual Configuration
 
 ### Things
 
 ```
-//trackers
+//tracker definition
 Thing gpstracker:tracker:1   "XY tracker" [trackerId="XY"]
+
+//tracker definition with extra distance channel
 Thing gpstracker:tracker:EX   "EX tracker" [trackerId="EX"] {
     Channels:
             Type regionDistance : homeDistance "Distance from Home" [
@@ -139,8 +156,11 @@ Location	locationEX	"Location"		{channel="gpstracker:tracker:1:lastLocation"}
 DateTime	lastSeenEX	"Last seen"		{channel="gpstracker:tracker:1:lastReport"}
 Number		batteryEX	"Battery level"		{channel="gpstracker:tracker:1:batteryLevel"}
 
-//linking to the distance channel
-Switch atHomeEX "Home presence" {channel="gpstracker:tracker:EX:homeDistance", profile="gpstracker:trigger-geofence"}
+//linking switch item to regionTrigger channel. assuming the Home distance channel is defined in the binding config (see above)
+Switch atHomeEX "Home presence" {channel="gpstracker:tracker:EX:regionTrigger" [profile="gpstracker:trigger-geofence", regionName="Home"]}
+
+//another switch for work region. assuming the OTWork is defined in OwnTracks application (no distance channel is needed like for Home)
+Switch atWorkEX "Work presence" {channel="gpstracker:tracker:EX:regionTrigger" [profile="gpstracker:trigger-geofence", regionName="OTWork"]}
 ```
 
 ### Sitemaps
@@ -155,3 +175,123 @@ sitemap gpstracker label="GPSTracker Binding" {
     Mapview item=locationEX height=4
 }
 ```
+
+## Debug
+
+As the setup is not that simple here are some hints for debugging.
+In order to see the debug information in log enable TRACE for the binding in the console:
+
+```
+>log:set TRACE org.openhab.binding.gpstracker
+```
+
+### Binding Start
+
+```
+2018-10-03 18:12:38.950 [DEBUG] [org.openhab.binding.gpstracker      ] - ServiceEvent REGISTERED - {org.eclipse.smarthome.config.discovery.DiscoveryService, org.openhab.binding.gpstracker.internal.discovery.TrackerDiscoveryService}={service.id=425, service.bundleid=183, service.scope=bundle, component.name=org.openhab.binding.gpstracker.internal.discovery.TrackerDiscoveryService, component.id=268} - org.openhab.binding.gpstracker
+2018-10-03 18:12:38.965 [DEBUG] [org.openhab.binding.gpstracker      ] - ServiceEvent REGISTERED - {org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory, org.eclipse.smarthome.config.core.ConfigOptionProvider}={location=47.536178,19.169812, service.id=426, service.bundleid=183, service.scope=bundle, radius=100, name=Home, component.name=org.openhab.binding.gpstracker.internal.GPSTrackerHandlerFactory, component.id=267, additionalRegionsJSON=[
+], triggerEvent=false, service.pid=binding.gpstracker} - org.openhab.binding.gpstracker
+2018-10-03 18:12:38.994 [DEBUG] [er.internal.GPSTrackerHandlerFactory] - Initializing callback servlets
+2018-10-03 18:12:39.013 [DEBUG] [org.openhab.binding.gpstracker      ] - ServiceEvent REGISTERED - {javax.servlet.ServletContext}={osgi.web.version=2.4.0.201809241418, osgi.web.contextpath=/, service.id=427, osgi.web.symbolicname=org.openhab.binding.gpstracker, service.bundleid=183, service.scope=singleton, osgi.web.contextname=default} - org.openhab.binding.gpstracker
+2018-10-03 18:12:39.047 [DEBUG] [er.internal.GPSTrackerHandlerFactory] - Started GPSTracker Callback servlet on /gpstracker/owntracks
+2018-10-03 18:12:39.058 [DEBUG] [er.internal.GPSTrackerHandlerFactory] - Started GPSTracker Callback servlet on /gpstracker/gpslogger
+2018-10-03 18:12:39.072 [DEBUG] [org.openhab.binding.gpstracker      ] - ServiceEvent REGISTERED - {org.eclipse.smarthome.core.thing.profiles.ProfileFactory, org.eclipse.smarthome.core.thing.profiles.ProfileAdvisor, org.eclipse.smarthome.core.thing.profiles.ProfileTypeProvider}={service.id=428, service.bundleid=183, service.scope=bundle, component.name=org.openhab.binding.gpstracker.internal.profile.GPSTrackerProfileFactory, component.id=269} - org.openhab.binding.gpstracker
+2018-10-03 18:12:39.092 [DEBUG] [org.openhab.binding.gpstracker      ] - BundleEvent STARTING - org.openhab.binding.gpstracker
+2018-10-03 18:12:39.098 [DEBUG] [org.openhab.binding.gpstracker      ] - BundleEvent STARTED - org.openhab.binding.gpstracker
+```
+
+Please note the lines about started servlets:
+
+```
+Started GPSTracker Callback servlet on /gpstracker/owntracks
+Started GPSTracker Callback servlet on /gpstracker/gpslogger
+```
+
+### Registration
+
+In case the discovery is used the first message from a tracker registers it in the inbox:
+
+```
+2018-10-05 08:36:14.283 [DEBUG] [nal.provider.AbstractCallbackServlet] - Post message received from OwnTracks tracker: {"_type":"location","tid":"XX","acc":10.0,"lat":41.53,"lon":16.16,"tst":1527966973,"wtst":1524244195,"batt":96}
+2018-10-05 08:36:14.286 [DEBUG] [nal.provider.AbstractCallbackServlet] - There is no handler for tracker XX. Check the inbox for the new tracker.
+```
+
+### Location Update
+
+The next location message already calculates the distance for System location:
+
+```
+2018-10-05 08:38:33.916 [DEBUG] [nal.provider.AbstractCallbackServlet] - Post message received from OwnTracks tracker: {"_type":"location","tid":"XX","acc":10.0,"lat":41.53,"lon":16.16,"tst":1527966973,"wtst":1524244195,"batt":96}
+2018-10-05 08:38:33.917 [DEBUG] [cker.internal.handler.TrackerHandler] - Update base channels for tracker XX from message: org.openhab.binding.gpstracker.internal.message.LocationMessage@31dfed63
+2018-10-05 08:38:33.941 [TRACE] [cker.internal.handler.TrackerHandler] - batteryLevel -> 96
+2018-10-05 08:38:33.942 [TRACE] [cker.internal.handler.TrackerHandler] - lastLocation -> 41.53,16.16
+2018-10-05 08:38:33.943 [TRACE] [cker.internal.handler.TrackerHandler] - lastReport -> 2018-06-02T19:16:13.000+0000
+2018-10-05 08:38:33.943 [DEBUG] [cker.internal.handler.TrackerHandler] - Updating distance channels tracker XX
+2018-10-05 08:38:33.944 [TRACE] [cker.internal.handler.TrackerHandler] - Region center distance from tracker location 41.53,16.16 is 709835.1673811453m
+2018-10-05 08:38:33.944 [TRACE] [cker.internal.handler.TrackerHandler] - System uses SI measurement units. No conversion is needed.
+
+```
+
+### Distance Channel and Presence Switch
+
+Assumptions:
+
+* A Home distance channel is added to the tracker with parameters:
+  * Channel ID: distanceHome
+  * Region Name: Home
+  * Region Radius: 100
+  * Region Center: 42.53,16.16
+* Presence switch is linked to the regionTrigger channel with parameters:
+  * Profile: Geofence(gpstracker:trigger-geofence)
+  * Region Name: Home
+  
+![Image](doc/example.png)
+
+After a location message received from the tracker the log should contain these lines:
+
+```
+2018-10-05 09:27:58.768 [DEBUG] [nal.provider.AbstractCallbackServlet] - Post message received from OwnTracks tracker: {"_type":"location","tid":"XX","acc":10.0,"lat":42.53,"lon":17.16,"tst":1527966973,"wtst":1524244195,"batt":96}
+2018-10-05 09:27:58.769 [DEBUG] [cker.internal.handler.TrackerHandler] - Update base channels for tracker XX from message: org.openhab.binding.gpstracker.internal.message.LocationMessage@67e5d438
+2018-10-05 09:27:58.770 [TRACE] [cker.internal.handler.TrackerHandler] - batteryLevel -> 96
+2018-10-05 09:27:58.771 [TRACE] [cker.internal.handler.TrackerHandler] - lastLocation -> 42.53,17.16
+2018-10-05 09:27:58.772 [TRACE] [cker.internal.handler.TrackerHandler] - lastReport -> 2018-06-02T19:16:13.000+0000
+2018-10-05 09:27:58.773 [DEBUG] [cker.internal.handler.TrackerHandler] - Updating distance channels tracker XX
+2018-10-05 09:27:58.774 [TRACE] [cker.internal.handler.TrackerHandler] - Region Home center distance from tracker location 42.53,17.16 is 82033.47272145993m
+2018-10-05 09:27:58.775 [TRACE] [cker.internal.handler.TrackerHandler] - System uses SI measurement units. No conversion is needed.
+2018-10-05 09:27:58.779 [DEBUG] [ofile.GPSTrackerTriggerSwitchProfile] - Trigger switch profile created for region Home
+2018-10-05 09:27:58.779 [DEBUG] [ofile.GPSTrackerTriggerSwitchProfile] - Transition trigger Home/leave handled for region Home by profile: OFF
+2018-10-05 09:27:58.792 [TRACE] [cker.internal.handler.TrackerHandler] - Triggering Home for XX/Home/leave
+2018-10-05 09:27:58.793 [TRACE] [cker.internal.handler.TrackerHandler] - Region System center distance from tracker location 42.53,17.16 is 579224.192171576m
+2018-10-05 09:27:58.794 [TRACE] [cker.internal.handler.TrackerHandler] - System uses SI measurement units. No conversion is needed.
+```
+
+**Note**: If the binding was restarted or the distance channel is new (this is the first location message for the channel) only the second location update will trigger event as the binding has to know the previous state.
+
+### External Region and Presence Switch
+
+Assumptions:
+
+* A **shared** region is defined in OwnTracks application. Lets call it Work.
+* Presence switch is linked to the regionTrigger channel with parameters:
+  * Profile: Geofence(gpstracker:trigger-geofence)
+  * Region Name: Work
+  
+```
+2018-10-05 09:35:27.203 [DEBUG] [nal.provider.AbstractCallbackServlet] - Post message received from OwnTracks tracker: {"_type":"transition","tid":"XX","acc":10.0,"desc":"Work","event":"enter","lat":42.53,"lon":18.22,"tst":1527966973,"wtst":1524244195,"t":"c"}
+2018-10-05 09:35:27.204 [DEBUG] [cker.internal.handler.TrackerHandler] - ConfigHelper transition event received: Work
+2018-10-05 09:35:27.204 [DEBUG] [cker.internal.handler.TrackerHandler] - Update base channels for tracker XX from message: org.openhab.binding.gpstracker.internal.message.TransitionMessage@5e5b0d59
+2018-10-05 09:35:27.204 [TRACE] [cker.internal.handler.TrackerHandler] - lastLocation -> 42.53,18.22
+2018-10-05 09:35:27.205 [TRACE] [cker.internal.handler.TrackerHandler] - lastReport -> 2018-06-02T19:16:13.000+0000
+2018-10-05 09:35:27.205 [DEBUG] [cker.internal.handler.TrackerHandler] - Updating distance channels tracker XX
+2018-10-05 09:35:27.206 [TRACE] [cker.internal.handler.TrackerHandler] - Region Home center distance from tracker location 42.53,18.22 is 168985.77453131412m
+2018-10-05 09:35:27.207 [TRACE] [cker.internal.handler.TrackerHandler] - Region System center distance from tracker location 42.53,18.22 is 562259.467093007m
+2018-10-05 09:35:27.208 [TRACE] [cker.internal.handler.TrackerHandler] - Triggering Work for XX/Work/enter
+2018-10-05 09:35:27.208 [DEBUG] [ofile.GPSTrackerTriggerSwitchProfile] - Trigger switch profile created for region Home
+2018-10-05 09:35:27.210 [DEBUG] [ofile.GPSTrackerTriggerSwitchProfile] - Trigger switch profile created for region Work
+2018-10-05 09:35:27.210 [DEBUG] [ofile.GPSTrackerTriggerSwitchProfile] - Transition trigger Work/enter handled for region Work by profile: ON
+```
+
+**Note**: 
+
+* If the binding was restarted only the second transition update will trigger event as the binding has to know the previous state.
+* The distance is not calculated for Work as the binding doesn't know the Work region center.
