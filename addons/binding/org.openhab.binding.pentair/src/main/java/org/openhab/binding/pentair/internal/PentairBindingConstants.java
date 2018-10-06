@@ -8,12 +8,13 @@
  */
 package org.openhab.binding.pentair.internal;
 
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * The {@link PentairBindingConstants} class defines common constants, which are
@@ -88,6 +89,7 @@ public class PentairBindingConstants {
     public static final Integer PROPERTY_PORT = 10000;
 
     // Set of all supported Thing Type UIDs
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(IP_BRIDGE_THING_TYPE,
-            SERIAL_BRIDGE_THING_TYPE, EASYTOUCH_THING_TYPE, INTELLIFLO_THING_TYPE, INTELLICHLOR_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(IP_BRIDGE_THING_TYPE, SERIAL_BRIDGE_THING_TYPE, EASYTOUCH_THING_TYPE,
+                    INTELLIFLO_THING_TYPE, INTELLICHLOR_THING_TYPE).collect(Collectors.toSet()));
 }
