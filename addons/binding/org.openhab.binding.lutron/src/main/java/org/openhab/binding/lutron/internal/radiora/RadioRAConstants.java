@@ -10,7 +10,7 @@ package org.openhab.binding.lutron.internal.radiora;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.openhab.binding.lutron.LutronBindingConstants;
+import org.openhab.binding.lutron.internal.LutronBindingConstants;
 
 /**
  * The {@link RadioRAConstants} class defines common constants for RadioRA classic devices

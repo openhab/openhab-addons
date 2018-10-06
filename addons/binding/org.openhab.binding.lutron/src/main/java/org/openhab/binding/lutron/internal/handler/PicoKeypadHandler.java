@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.lutron.handler;
+package org.openhab.binding.lutron.internal.handler;
 
 import java.util.Arrays;
 

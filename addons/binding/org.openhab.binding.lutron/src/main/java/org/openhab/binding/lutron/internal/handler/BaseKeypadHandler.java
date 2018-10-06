@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.lutron.handler;
+package org.openhab.binding.lutron.internal.handler;
 
-import static org.openhab.binding.lutron.LutronBindingConstants.BINDING_ID;
+import static org.openhab.binding.lutron.internal.LutronBindingConstants.BINDING_ID;
 
 import java.util.ArrayList;
 import java.util.List;

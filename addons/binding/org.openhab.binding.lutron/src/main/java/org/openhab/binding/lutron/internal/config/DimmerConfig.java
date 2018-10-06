@@ -11,7 +11,7 @@ package org.openhab.binding.lutron.internal.config;
 import java.math.BigDecimal;
 
 /**
- * Configuration settings for a {@link org.openhab.binding.lutron.handler.DimmerHandler}.
+ * Configuration settings for a {@link org.openhab.binding.lutron.internal.handler.DimmerHandler}.
  *
  * @author Allan Tong - Initial contribution
  */

@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.lutron.internal.discovery;
 
-import static org.openhab.binding.lutron.LutronBindingConstants.*;
+import static org.openhab.binding.lutron.internal.LutronBindingConstants.*;
 
 import java.io.IOException;
 import java.net.DatagramPacket;

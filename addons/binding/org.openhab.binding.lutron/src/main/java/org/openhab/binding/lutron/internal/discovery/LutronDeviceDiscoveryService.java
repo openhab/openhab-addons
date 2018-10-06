@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.lutron.internal.discovery;
 
-import static org.openhab.binding.lutron.LutronBindingConstants.*;
+import static org.openhab.binding.lutron.internal.LutronBindingConstants.*;
 
 import java.io.IOException;
 import java.net.URL;
@@ -23,7 +23,6 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.lutron.handler.IPBridgeHandler;
 import org.openhab.binding.lutron.internal.LutronHandlerFactory;
 import org.openhab.binding.lutron.internal.discovery.project.Area;
 import org.openhab.binding.lutron.internal.discovery.project.Device;
@@ -33,6 +32,7 @@ import org.openhab.binding.lutron.internal.discovery.project.DeviceType;
 import org.openhab.binding.lutron.internal.discovery.project.Output;
 import org.openhab.binding.lutron.internal.discovery.project.OutputType;
 import org.openhab.binding.lutron.internal.discovery.project.Project;
+import org.openhab.binding.lutron.internal.handler.IPBridgeHandler;
 import org.openhab.binding.lutron.internal.xml.DbXmlInfoReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
