@@ -8,12 +8,15 @@
  */
 package org.openhab.binding.pulseaudio.internal;
 
+import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -33,8 +36,6 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Sets;
-
 /**
  * The {@link PulseaudioHandlerFactory} is responsible for creating things and thing
  * handlers.
@@ -45,8 +46,9 @@ import com.google.common.collect.Sets;
 public class PulseaudioHandlerFactory extends BaseThingHandlerFactory {
     private Logger logger = LoggerFactory.getLogger(PulseaudioHandlerFactory.class);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
-            .union(PulseaudioBridgeHandler.SUPPORTED_THING_TYPES_UIDS, PulseaudioHandler.SUPPORTED_THING_TYPES_UIDS);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.concat(PulseaudioBridgeHandler.SUPPORTED_THING_TYPES_UIDS.stream(),
+                    PulseaudioHandler.SUPPORTED_THING_TYPES_UIDS.stream()).collect(Collectors.toSet()));
 
     private Map<ThingHandler, ServiceRegistration<?>> discoveryServiceReg = new HashMap<>();
 

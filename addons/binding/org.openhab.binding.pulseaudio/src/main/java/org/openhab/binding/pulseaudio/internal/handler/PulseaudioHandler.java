@@ -11,10 +11,13 @@ package org.openhab.binding.pulseaudio.internal.handler;
 import static org.openhab.binding.pulseaudio.internal.PulseaudioBindingConstants.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.core.Configuration;
@@ -35,14 +38,11 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.pulseaudio.internal.PulseaudioBindingConstants;
 import org.openhab.binding.pulseaudio.internal.items.AbstractAudioDeviceConfig;
 import org.openhab.binding.pulseaudio.internal.items.Sink;
 import org.openhab.binding.pulseaudio.internal.items.SinkInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Sets;
 
 /**
  * The {@link PulseaudioHandler} is responsible for handling commands, which are
@@ -52,8 +52,9 @@ import com.google.common.collect.Sets;
  */
 public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusListener {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(SINK_THING_TYPE,
-            COMBINED_SINK_THING_TYPE, SINK_INPUT_THING_TYPE, SOURCE_THING_TYPE, SOURCE_OUTPUT_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(SINK_THING_TYPE, COMBINED_SINK_THING_TYPE, SINK_INPUT_THING_TYPE,
+                    SOURCE_THING_TYPE, SOURCE_OUTPUT_THING_TYPE).collect(Collectors.toSet()));
 
     private int refresh = 60; // refresh every minute as default
     private ScheduledFuture<?> refreshJob;
@@ -71,7 +72,7 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
     @Override
     public void initialize() {
         Configuration config = getThing().getConfiguration();
-        name = (String) config.get(PulseaudioBindingConstants.DEVICE_PARAMETER_NAME);
+        name = (String) config.get(DEVICE_PARAMETER_NAME);
 
         // until we get an update put the Thing offline
         updateStatus(ThingStatus.OFFLINE);
@@ -153,7 +154,7 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
             return;
         } else {
             State updateState = UnDefType.UNDEF;
-            if (channelUID.getId().equals(PulseaudioBindingConstants.VOLUME_CHANNEL)) {
+            if (channelUID.getId().equals(VOLUME_CHANNEL)) {
                 if (command instanceof IncreaseDecreaseType) {
                     // refresh to get the current volume level
                     bridge.getClient().update();
@@ -177,12 +178,12 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
                     bridge.getClient().setVolume(device, volume.intValue());
                     updateState = (DecimalType) command;
                 }
-            } else if (channelUID.getId().equals(PulseaudioBindingConstants.MUTE_CHANNEL)) {
+            } else if (channelUID.getId().equals(MUTE_CHANNEL)) {
                 if (command instanceof OnOffType) {
                     bridge.getClient().setMute(device, OnOffType.ON.equals(command));
                     updateState = (OnOffType) command;
                 }
-            } else if (channelUID.getId().equals(PulseaudioBindingConstants.SLAVES_CHANNEL)) {
+            } else if (channelUID.getId().equals(SLAVES_CHANNEL)) {
                 if (device instanceof Sink && ((Sink) device).isCombinedSink()) {
                     if (command instanceof StringType) {
                         List<Sink> slaves = new ArrayList<>();
@@ -199,7 +200,7 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
                 } else {
                     logger.error("{} is no combined sink", device);
                 }
-            } else if (channelUID.getId().equals(PulseaudioBindingConstants.ROUTE_TO_SINK_CHANNEL)) {
+            } else if (channelUID.getId().equals(ROUTE_TO_SINK_CHANNEL)) {
                 if (device instanceof SinkInput) {
                     Sink newSink = null;
                     if (command instanceof DecimalType) {
@@ -227,19 +228,19 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
     public void onDeviceStateChanged(ThingUID bridge, AbstractAudioDeviceConfig device) {
         if (device.getPaName().equals(name)) {
             updateStatus(ThingStatus.ONLINE);
-            logger.debug("Updating states of {} id: {}", device, PulseaudioBindingConstants.VOLUME_CHANNEL);
-            updateState(PulseaudioBindingConstants.VOLUME_CHANNEL, new PercentType(device.getVolume()));
-            updateState(PulseaudioBindingConstants.MUTE_CHANNEL, device.isMuted() ? OnOffType.ON : OnOffType.OFF);
-            updateState(PulseaudioBindingConstants.STATE_CHANNEL,
+            logger.debug("Updating states of {} id: {}", device, VOLUME_CHANNEL);
+            updateState(VOLUME_CHANNEL, new PercentType(device.getVolume()));
+            updateState(MUTE_CHANNEL, device.isMuted() ? OnOffType.ON : OnOffType.OFF);
+            updateState(STATE_CHANNEL,
                     device.getState() != null ? new StringType(device.getState().toString()) : new StringType("-"));
             if (device instanceof SinkInput) {
-                updateState(PulseaudioBindingConstants.ROUTE_TO_SINK_CHANNEL,
+                updateState(ROUTE_TO_SINK_CHANNEL,
                         ((SinkInput) device).getSink() != null
                                 ? new StringType(((SinkInput) device).getSink().getPaName())
                                 : new StringType("-"));
             }
             if (device instanceof Sink && ((Sink) device).isCombinedSink()) {
-                updateState(PulseaudioBindingConstants.SLAVES_CHANNEL,
+                updateState(SLAVES_CHANNEL,
                         new StringType(StringUtils.join(((Sink) device).getCombinedSinkNames(), ",")));
             }
         }
