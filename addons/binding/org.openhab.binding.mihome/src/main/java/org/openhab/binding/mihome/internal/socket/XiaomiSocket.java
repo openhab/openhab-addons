@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.openhab.binding.mihome.handler.XiaomiBridgeHandler;
 import org.openhab.binding.mihome.internal.discovery.XiaomiBridgeDiscoveryService;
+import org.openhab.binding.mihome.internal.handler.XiaomiBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
