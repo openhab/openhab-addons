@@ -14,6 +14,8 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -38,8 +40,6 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Sets;
-
 /**
  * The {@link FreeboxHandlerFactory} is responsible for creating things and thing
  * handlers.
@@ -62,8 +62,10 @@ public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
     // url (scheme+server+port) to use for playing notification sounds
     private String callbackUrl;
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.union(
-            FreeboxBindingConstants.SUPPORTED_BRIDGE_TYPES_UIDS, FreeboxBindingConstants.SUPPORTED_THING_TYPES_UIDS);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
+            .concat(FreeboxBindingConstants.SUPPORTED_BRIDGE_TYPES_UIDS.stream(),
+                    FreeboxBindingConstants.SUPPORTED_THING_TYPES_UIDS.stream())
+            .collect(Collectors.toSet());
 
     @Override
     protected void activate(ComponentContext componentContext) {

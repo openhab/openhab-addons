@@ -10,8 +10,6 @@ package org.openhab.binding.freebox.internal.handler;
 
 import static org.openhab.binding.freebox.internal.FreeboxBindingConstants.*;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
@@ -36,15 +34,13 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.matmaul.freeboxos.FreeboxException;
-import org.matmaul.freeboxos.airmedia.AirMediaReceiver;
-import org.matmaul.freeboxos.airmedia.AirMediaReceiverRequest;
-import org.matmaul.freeboxos.call.CallEntry;
-import org.matmaul.freeboxos.lan.LanHostConfig;
-import org.matmaul.freeboxos.lan.LanHostL3Connectivity;
-import org.matmaul.freeboxos.lan.LanHostsConfig;
-import org.matmaul.freeboxos.phone.PhoneStatus;
 import org.openhab.binding.freebox.internal.FreeboxBindingConstants;
+import org.openhab.binding.freebox.internal.api.FreeboxException;
+import org.openhab.binding.freebox.internal.api.model.FreeboxAirMediaReceiver;
+import org.openhab.binding.freebox.internal.api.model.FreeboxCallEntry;
+import org.openhab.binding.freebox.internal.api.model.FreeboxLanHost;
+import org.openhab.binding.freebox.internal.api.model.FreeboxLanHostL3Connectivity;
+import org.openhab.binding.freebox.internal.api.model.FreeboxPhoneStatus;
 import org.openhab.binding.freebox.internal.config.FreeboxAirPlayDeviceConfiguration;
 import org.openhab.binding.freebox.internal.config.FreeboxNetDeviceConfiguration;
 import org.openhab.binding.freebox.internal.config.FreeboxNetInterfaceConfiguration;
@@ -57,10 +53,11 @@ import org.slf4j.LoggerFactory;
  * any Freebox thing types except the bridge thing type.
  *
  * @author Laurent Garnier - Initial contribution
+ * @author Laurent Garnier - use new internal API manager
  */
 public class FreeboxThingHandler extends BaseThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(FreeboxThingHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(FreeboxThingHandler.class);
 
     private ScheduledFuture<?> phoneJob;
     private ScheduledFuture<?> callsJob;
@@ -76,26 +73,29 @@ public class FreeboxThingHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if ((getThing().getStatus() == ThingStatus.OFFLINE)
-                && ((getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE)
-                        || (getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR))) {
+        if (command instanceof RefreshType) {
             return;
         }
-        try {
-            if (command instanceof RefreshType) {
-                return;
-            } else if (command instanceof StringType && PLAYURL.equals(channelUID.getId())) {
-                playMedia(command.toString());
-            } else if (command instanceof OnOffType && STOP.equals(channelUID.getId())) {
-                stopMedia();
-            } else {
+        if (getThing().getStatus() == ThingStatus.UNKNOWN || (getThing().getStatus() == ThingStatus.OFFLINE
+                && (getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE
+                        || getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_UNINITIALIZED
+                        || getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR))) {
+            return;
+        }
+        if (bridgeHandler == null) {
+            return;
+        }
+        switch (channelUID.getId()) {
+            case PLAYURL:
+                playMedia(channelUID, command);
+                break;
+            case STOP:
+                stopMedia(channelUID, command);
+                break;
+            default:
                 logger.debug("Thing {}: unexpected command {} from channel {}", getThing().getUID(), command,
                         channelUID.getId());
-            }
-        } catch (FreeboxException e) {
-            logger.debug("Thing {}: error while handling command {} from channel {}", getThing().getUID(), command,
-                    channelUID.getId(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                break;
         }
     }
 
@@ -121,117 +121,123 @@ public class FreeboxThingHandler extends BaseThingHandler {
         }
     }
 
-    private void initializeThing(ThingHandler thingHandler, ThingStatus bridgeStatus) {
-        logger.debug("initializeThing {}", bridgeStatus);
-        if (thingHandler != null && bridgeStatus != null) {
+    private void initializeThing(ThingHandler bridgeHandler, ThingStatus bridgeStatus) {
+        if (bridgeHandler != null && bridgeStatus != null) {
             if (bridgeStatus == ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE);
-
-                bridgeHandler = (FreeboxHandler) thingHandler;
+                this.bridgeHandler = (FreeboxHandler) bridgeHandler;
 
                 if (getThing().getThingTypeUID().equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_PHONE)) {
+                    updateStatus(ThingStatus.ONLINE);
                     lastPhoneCheck = Calendar.getInstance();
-
                     if (phoneJob == null || phoneJob.isCancelled()) {
                         long pollingInterval = getConfigAs(FreeboxPhoneConfiguration.class).refreshPhoneInterval;
                         if (pollingInterval > 0) {
                             logger.debug("Scheduling phone state job every {} seconds...", pollingInterval);
-                            phoneJob = scheduler.scheduleWithFixedDelay(phoneRunnable, 1, pollingInterval,
-                                    TimeUnit.SECONDS);
+                            phoneJob = scheduler.scheduleWithFixedDelay(() -> {
+                                try {
+                                    pollPhoneState();
+                                } catch (Exception e) {
+                                    logger.info("Phone state job failed: {}", e.getMessage(), e);
+                                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                            e.getMessage());
+                                }
+                            }, 1, pollingInterval, TimeUnit.SECONDS);
                         }
                     }
-
                     if (callsJob == null || callsJob.isCancelled()) {
                         long pollingInterval = getConfigAs(FreeboxPhoneConfiguration.class).refreshPhoneCallsInterval;
                         if (pollingInterval > 0) {
                             logger.debug("Scheduling phone calls job every {} seconds...", pollingInterval);
-                            callsJob = scheduler.scheduleWithFixedDelay(callsRunnable, 1, pollingInterval,
-                                    TimeUnit.SECONDS);
+                            callsJob = scheduler.scheduleWithFixedDelay(() -> {
+                                try {
+                                    pollPhoneCalls();
+                                } catch (Exception e) {
+                                    logger.info("Phone calls job failed: {}", e.getMessage(), e);
+                                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                            e.getMessage());
+                                }
+                            }, 1, pollingInterval, TimeUnit.SECONDS);
                         }
                     }
-
                 } else if (getThing().getThingTypeUID().equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_DEVICE)) {
+                    updateStatus(ThingStatus.ONLINE);
                     netAddress = getConfigAs(FreeboxNetDeviceConfiguration.class).macAddress;
+                    netAddress = (netAddress == null) ? "" : netAddress;
                 } else if (getThing().getThingTypeUID()
                         .equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_INTERFACE)) {
+                    updateStatus(ThingStatus.ONLINE);
                     netAddress = getConfigAs(FreeboxNetInterfaceConfiguration.class).ipAddress;
+                    netAddress = (netAddress == null) ? "" : netAddress;
                 } else if (getThing().getThingTypeUID().equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_AIRPLAY)) {
+                    updateStatus(ThingStatus.UNKNOWN);
                     airPlayName = getConfigAs(FreeboxAirPlayDeviceConfiguration.class).name;
+                    airPlayName = (airPlayName == null) ? "" : airPlayName;
                     airPlayPassword = getConfigAs(FreeboxAirPlayDeviceConfiguration.class).password;
+                    airPlayPassword = (airPlayPassword == null) ? "" : airPlayPassword;
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 
-    private Runnable phoneRunnable = () -> {
+    private void pollPhoneState() {
         logger.debug("Polling phone state...");
-
         try {
-            fetchPhone();
-
-            if (getThing().getStatus() == ThingStatus.OFFLINE) {
+            FreeboxPhoneStatus phoneStatus = bridgeHandler.getApiManager().getPhoneStatus();
+            updateGroupChannelSwitchState(STATE, ONHOOK, phoneStatus.isOnHook());
+            updateGroupChannelSwitchState(STATE, RINGING, phoneStatus.isRinging());
+            updateStatus(ThingStatus.ONLINE);
+        } catch (FreeboxException e) {
+            if (e.isMissingRights()) {
+                logger.debug("Phone state job: missing right {}", e.getResponse().getMissingRight());
                 updateStatus(ThingStatus.ONLINE);
-            }
-
-        } catch (Throwable t) {
-            if (t instanceof FreeboxException) {
-                logger.error("Phone state job - FreeboxException: {}", ((FreeboxException) t).getMessage());
-            } else if (t instanceof Exception) {
-                logger.error("Phone state job - Exception: {}", ((Exception) t).getMessage());
-            } else if (t instanceof Error) {
-                logger.error("Phone state job - Error: {}", ((Error) t).getMessage());
             } else {
-                logger.error("Phone state job - Unexpected error");
-            }
-            StringWriter sw = new StringWriter();
-            if ((t instanceof RuntimeException) && (t.getCause() != null)) {
-                t.getCause().printStackTrace(new PrintWriter(sw));
-            } else {
-                t.printStackTrace(new PrintWriter(sw));
-            }
-            logger.error("{}", sw);
-            if (getThing().getStatus() == ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                logger.debug("Phone state job failed: {}", e.getMessage(), e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
-    };
+    }
 
-    private Runnable callsRunnable = () -> {
+    private void pollPhoneCalls() {
         logger.debug("Polling phone calls...");
-
         try {
-            fetchNewCalls();
+            List<FreeboxCallEntry> callEntries = bridgeHandler.getApiManager().getCallEntries();
+            if (callEntries != null) {
+                PhoneCallComparator comparator = new PhoneCallComparator();
+                Collections.sort(callEntries, comparator);
 
-            if (getThing().getStatus() == ThingStatus.OFFLINE) {
+                for (FreeboxCallEntry call : callEntries) {
+                    Calendar callEndTime = call.getTimeStamp();
+                    callEndTime.add(Calendar.SECOND, call.getDuration());
+                    if ((call.getDuration() > 0) && callEndTime.after(lastPhoneCheck)) {
+                        updateCall(call, ANY);
+
+                        if (call.isAccepted()) {
+                            updateCall(call, ACCEPTED);
+                        } else if (call.isMissed()) {
+                            updateCall(call, MISSED);
+                        } else if (call.isOutGoing()) {
+                            updateCall(call, OUTGOING);
+                        }
+
+                        lastPhoneCheck = callEndTime;
+                    }
+                }
+            }
+            updateStatus(ThingStatus.ONLINE);
+        } catch (FreeboxException e) {
+            if (e.isMissingRights()) {
+                logger.debug("Phone calls job: missing right {}", e.getResponse().getMissingRight());
                 updateStatus(ThingStatus.ONLINE);
-            }
-
-        } catch (Throwable t) {
-            if (t instanceof FreeboxException) {
-                logger.error("Phone calls job - FreeboxException: {}", ((FreeboxException) t).getMessage());
-            } else if (t instanceof Exception) {
-                logger.error("Phone calls job - Exception: {}", ((Exception) t).getMessage());
-            } else if (t instanceof Error) {
-                logger.error("Phone calls job - Error: {}", ((Error) t).getMessage());
             } else {
-                logger.error("Phone calls job - Unexpected error");
-            }
-            StringWriter sw = new StringWriter();
-            if ((t instanceof RuntimeException) && (t.getCause() != null)) {
-                t.getCause().printStackTrace(new PrintWriter(sw));
-            } else {
-                t.printStackTrace(new PrintWriter(sw));
-            }
-            logger.error("{}", sw);
-            if (getThing().getStatus() == ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                logger.debug("Phone calls job failed: {}", e.getMessage(), e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
-    };
+    }
 
     @Override
     public void dispose() {
@@ -247,162 +253,155 @@ public class FreeboxThingHandler extends BaseThingHandler {
         super.dispose();
     }
 
-    private void fetchPhone() throws FreeboxException {
-        List<PhoneStatus> phoneStatus;
-        phoneStatus = bridgeHandler.getFbClient().getPhoneManager().getPhoneStatus();
-        updateState(new ChannelUID(getThing().getUID(), STATE, ONHOOK),
-                phoneStatus.get(0).getOn_hook() ? OnOffType.ON : OnOffType.OFF);
-        updateState(new ChannelUID(getThing().getUID(), STATE, RINGING),
-                phoneStatus.get(0).getIs_ringing() ? OnOffType.ON : OnOffType.OFF);
-    }
-
-    private void fetchNewCalls() throws FreeboxException {
-        List<CallEntry> callEntries = bridgeHandler.getFbClient().getCallManager().getCallEntries();
-        PhoneCallComparator comparator = new PhoneCallComparator();
-        Collections.sort(callEntries, comparator);
-
-        for (CallEntry call : callEntries) {
-            Calendar callEndTime = call.getTimeStamp();
-            callEndTime.add(Calendar.SECOND, (int) (call.getDuration()));
-            if ((call.getDuration() > 0) && callEndTime.after(lastPhoneCheck)) {
-                updateCall(call, ANY);
-
-                if (call.getType().equalsIgnoreCase("accepted")) {
-                    updateCall(call, ACCEPTED);
-                } else if (call.getType().equalsIgnoreCase("missed")) {
-                    updateCall(call, MISSED);
-                } else if (call.getType().equalsIgnoreCase("outgoing")) {
-                    updateCall(call, OUTGOING);
-                }
-
-                lastPhoneCheck = callEndTime;
-            }
-        }
-    }
-
-    private void updateCall(CallEntry call, String channelGroup) {
+    private void updateCall(FreeboxCallEntry call, String channelGroup) {
         if (channelGroup != null) {
-            updateState(new ChannelUID(getThing().getUID(), channelGroup, CALLNUMBER),
-                    new StringType(call.getNumber()));
-            updateState(new ChannelUID(getThing().getUID(), channelGroup, CALLDURATION),
-                    new DecimalType(call.getDuration()));
+            updateGroupChannelStringState(channelGroup, CALLNUMBER, call.getNumber());
+            updateGroupChannelDecimalState(channelGroup, CALLDURATION, call.getDuration());
             ZonedDateTime zoned = ZonedDateTime.ofInstant(Instant.ofEpochMilli(call.getTimeStamp().getTimeInMillis()),
                     TimeZone.getDefault().toZoneId());
-            updateState(new ChannelUID(getThing().getUID(), channelGroup, CALLTIMESTAMP), new DateTimeType(zoned));
-            updateState(new ChannelUID(getThing().getUID(), channelGroup, CALLNAME), new StringType(call.getName()));
+            updateGroupChannelDateTimeState(channelGroup, CALLTIMESTAMP, zoned);
+            updateGroupChannelStringState(channelGroup, CALLNAME, call.getName());
             if (channelGroup.equals(ANY)) {
-                updateState(new ChannelUID(getThing().getUID(), channelGroup, CALLSTATUS),
-                        new StringType(call.getType()));
+                updateGroupChannelStringState(channelGroup, CALLSTATUS, call.getType());
             }
         }
     }
 
-    public void updateNetInfo(LanHostsConfig config) {
-        if ((config != null) && (getThing().getStatus() == ThingStatus.ONLINE)
-                && (getThing().getThingTypeUID().equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_DEVICE)
-                        || getThing().getThingTypeUID()
-                                .equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_INTERFACE))) {
-            boolean found = false;
-            boolean reachable = false;
-            String vendor = null;
-            for (LanHostConfig hostConfig : config.getConfig()) {
-                if ((getThing().getThingTypeUID().equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_DEVICE))
-                        && (hostConfig.getMAC() != null) && hostConfig.getMAC().equals(netAddress)) {
+    public void updateNetInfo(List<FreeboxLanHost> hosts) {
+        if (!getThing().getThingTypeUID().equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_DEVICE)
+                && !getThing().getThingTypeUID().equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_INTERFACE)) {
+            return;
+        }
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            return;
+        }
+
+        boolean found = false;
+        boolean reachable = false;
+        String vendor = null;
+        if (hosts != null) {
+            for (FreeboxLanHost host : hosts) {
+                if (getThing().getThingTypeUID().equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_DEVICE)
+                        && netAddress.equals(host.getMAC())) {
                     found = true;
-                    reachable = hostConfig.getReachable();
-                    vendor = hostConfig.getVendorName();
+                    reachable = host.isReachable();
+                    vendor = host.getVendorName();
                     break;
                 }
-                if (hostConfig.getL3connectivities() != null) {
-                    for (LanHostL3Connectivity l3 : hostConfig.getL3connectivities()) {
-                        if ((getThing().getThingTypeUID()
-                                .equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_INTERFACE))
-                                && (l3.getAddr() != null) && l3.getAddr().equals(netAddress)) {
+                if (host.getL3connectivities() != null) {
+                    for (FreeboxLanHostL3Connectivity l3 : host.getL3connectivities()) {
+                        if (getThing().getThingTypeUID()
+                                .equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_INTERFACE)
+                                && netAddress.equals(l3.getAddr())) {
                             found = true;
-                            if (l3.getReachable()) {
+                            if (l3.isReachable()) {
                                 reachable = true;
-                                vendor = hostConfig.getVendorName();
+                                vendor = host.getVendorName();
                                 break;
                             }
                         }
                     }
                 }
             }
-            if (found) {
-                updateState(new ChannelUID(getThing().getUID(), FreeboxBindingConstants.REACHABLE),
-                        reachable ? OnOffType.ON : OnOffType.OFF);
-            }
-            if ((vendor != null) && !vendor.isEmpty()) {
-                updateProperty(Thing.PROPERTY_VENDOR, vendor);
-            }
+        }
+        if (found) {
+            updateState(new ChannelUID(getThing().getUID(), FreeboxBindingConstants.REACHABLE),
+                    reachable ? OnOffType.ON : OnOffType.OFF);
+        }
+        if (vendor != null && !vendor.isEmpty()) {
+            updateProperty(Thing.PROPERTY_VENDOR, vendor);
         }
     }
 
-    public void updateAirPlayDevice(List<AirMediaReceiver> receivers) {
-        if (getThing().getThingTypeUID().equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_AIRPLAY)) {
-            // The Freebox API allows pushing media only to receivers with photo or video capabilities
-            // but not to receivers with only audio capability
-            boolean found = false;
-            boolean usable = false;
-            if (receivers != null) {
-                for (AirMediaReceiver receiver : receivers) {
-                    if (airPlayName.equals(receiver.getName())) {
-                        found = true;
-                        usable = Boolean.TRUE.equals(receiver.isVideoCapable());
-                        break;
-                    }
+    public void updateAirPlayDevice(List<FreeboxAirMediaReceiver> receivers) {
+        if (!getThing().getThingTypeUID().equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_AIRPLAY)) {
+            return;
+        }
+
+        // The Freebox API allows pushing media only to receivers with photo or video capabilities
+        // but not to receivers with only audio capability
+        boolean found = false;
+        boolean usable = false;
+        if (receivers != null) {
+            for (FreeboxAirMediaReceiver receiver : receivers) {
+                if (airPlayName.equals(receiver.getName())) {
+                    found = true;
+                    usable = receiver.isVideoCapable();
+                    break;
                 }
             }
-            if (!found) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "AirPlay device not found");
-            } else if (!usable) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "AirPlay device without video capability");
-            } else {
-                updateStatus(ThingStatus.ONLINE);
-            }
+        }
+        if (!found) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "AirPlay device not found");
+        } else if (!usable) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "AirPlay device without video capability");
+        } else {
+            updateStatus(ThingStatus.ONLINE);
         }
     }
 
     public void playMedia(String url) throws FreeboxException {
         if (bridgeHandler != null && url != null) {
-            stopMedia();
-
-            AirMediaReceiverRequest request = new AirMediaReceiverRequest();
-            request.setAction("start");
-            request.setMediaType("video");
-            if (airPlayPassword != null && !airPlayPassword.isEmpty()) {
-                request.setPassword(airPlayPassword);
-            }
-            request.setMedia(url);
-            bridgeHandler.getFbClient().getAirMediaManager().sendRequestToReceiver(airPlayName, request);
+            bridgeHandler.getApiManager().stopMedia(airPlayName, airPlayPassword);
+            bridgeHandler.getApiManager().playMedia(url, airPlayName, airPlayPassword);
         }
     }
 
-    private void stopMedia() throws FreeboxException {
-        if (bridgeHandler != null) {
-            AirMediaReceiverRequest request = new AirMediaReceiverRequest();
-            request.setAction("stop");
-            request.setMediaType("video");
-            if (airPlayPassword != null && !airPlayPassword.isEmpty()) {
-                request.setPassword(airPlayPassword);
+    private void playMedia(ChannelUID channelUID, Command command) {
+        if (command instanceof StringType) {
+            try {
+                playMedia(command.toString());
+            } catch (FreeboxException e) {
+                bridgeHandler.logCommandException(e, channelUID, command);
             }
-            bridgeHandler.getFbClient().getAirMediaManager().sendRequestToReceiver(airPlayName, request);
+        } else {
+            logger.debug("Thing {}: invalid command {} from channel {}", getThing().getUID(), command,
+                    channelUID.getId());
         }
+    }
+
+    private void stopMedia(ChannelUID channelUID, Command command) {
+        if (command instanceof OnOffType) {
+            try {
+                bridgeHandler.getApiManager().stopMedia(airPlayName, airPlayPassword);
+            } catch (FreeboxException e) {
+                bridgeHandler.logCommandException(e, channelUID, command);
+            }
+        } else {
+            logger.debug("Thing {}: invalid command {} from channel {}", getThing().getUID(), command,
+                    channelUID.getId());
+        }
+    }
+
+    private void updateGroupChannelSwitchState(String group, String channel, boolean state) {
+        updateState(new ChannelUID(getThing().getUID(), group, channel), state ? OnOffType.ON : OnOffType.OFF);
+    }
+
+    private void updateGroupChannelStringState(String group, String channel, String state) {
+        updateState(new ChannelUID(getThing().getUID(), group, channel), new StringType(state));
+    }
+
+    private void updateGroupChannelDecimalState(String group, String channel, int state) {
+        updateState(new ChannelUID(getThing().getUID(), group, channel), new DecimalType(state));
+    }
+
+    private void updateGroupChannelDateTimeState(String group, String channel, ZonedDateTime zonedDateTime) {
+        updateState(new ChannelUID(getThing().getUID(), group, channel), new DateTimeType(zonedDateTime));
     }
 
     /**
      * A comparator of phone calls by ascending end date and time
      */
-    private class PhoneCallComparator implements Comparator<CallEntry> {
+    private class PhoneCallComparator implements Comparator<FreeboxCallEntry> {
 
         @Override
-        public int compare(CallEntry call1, CallEntry call2) {
+        public int compare(FreeboxCallEntry call1, FreeboxCallEntry call2) {
             int result = 0;
             Calendar callEndTime1 = call1.getTimeStamp();
-            callEndTime1.add(Calendar.SECOND, (int) (call1.getDuration()));
+            callEndTime1.add(Calendar.SECOND, call1.getDuration());
             Calendar callEndTime2 = call2.getTimeStamp();
-            callEndTime2.add(Calendar.SECOND, (int) (call2.getDuration()));
+            callEndTime2.add(Calendar.SECOND, call2.getDuration());
             if (callEndTime1.before(callEndTime2)) {
                 result = -1;
             } else if (callEndTime1.after(callEndTime2)) {

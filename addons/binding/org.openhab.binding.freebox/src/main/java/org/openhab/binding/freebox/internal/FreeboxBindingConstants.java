@@ -8,12 +8,13 @@
  */
 package org.openhab.binding.freebox.internal;
 
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * The {@link FreeboxBinding} class defines common constants, which are
@@ -36,11 +37,13 @@ public class FreeboxBindingConstants {
     public static final ThingTypeUID FREEBOX_THING_TYPE_AIRPLAY = new ThingTypeUID(BINDING_ID, "airplay");
 
     // All supported Bridge types
-    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES_UIDS = ImmutableSet.of(FREEBOX_BRIDGE_TYPE_SERVER);
+    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(FREEBOX_BRIDGE_TYPE_SERVER).collect(Collectors.toSet()));
 
     // All supported Thing types
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(FREEBOX_THING_TYPE_PHONE,
-            FREEBOX_THING_TYPE_NET_DEVICE, FREEBOX_THING_TYPE_NET_INTERFACE, FREEBOX_THING_TYPE_AIRPLAY);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(FREEBOX_THING_TYPE_PHONE, FREEBOX_THING_TYPE_NET_DEVICE,
+                    FREEBOX_THING_TYPE_NET_INTERFACE, FREEBOX_THING_TYPE_AIRPLAY).collect(Collectors.toSet()));
 
     // List of properties
     public static final String API_BASE_URL = "apiBaseUrl";
