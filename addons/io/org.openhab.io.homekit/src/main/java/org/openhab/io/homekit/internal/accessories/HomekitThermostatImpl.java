@@ -9,6 +9,7 @@
 package org.openhab.io.homekit.internal.accessories;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.smarthome.core.items.GenericItem;
@@ -181,7 +182,8 @@ class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<Grou
     @Override
     public void setTargetTemperature(Double value) throws Exception {
         NumberItem item = getGenericItem(targetTemperatureItemName);
-        item.send(new DecimalType(BigDecimal.valueOf(convertFromCelsius(value))));
+        BigDecimal ret = BigDecimal.valueOf(convertFromCelsius(value));
+        item.send(new DecimalType(ret.setScale(2, RoundingMode.CEILING)));
     }
 
     @Override
