@@ -8,7 +8,12 @@
  */
 package org.openhab.binding.phc.internal;
 
+import static org.openhab.binding.phc.internal.PHCBindingConstants.*;
+
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -22,8 +27,6 @@ import org.openhab.binding.phc.internal.handler.PHCBridgeHandler;
 import org.openhab.binding.phc.internal.handler.PHCHandler;
 import org.osgi.service.component.annotations.Component;
 
-import com.google.common.collect.Sets;
-
 /**
  * The {@link PHCHandlerFactory} is responsible for creating things and thing
  * handlers.
@@ -33,9 +36,8 @@ import com.google.common.collect.Sets;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.phc")
 public class PHCHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(
-            PHCBindingConstants.THING_TYPE_BRIDGE, PHCBindingConstants.THING_TYPE_AM, PHCBindingConstants.THING_TYPE_EM,
-            PHCBindingConstants.THING_TYPE_JRM);
+    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
+            Stream.of(THING_TYPE_BRIDGE, THING_TYPE_AM, THING_TYPE_EM, THING_TYPE_JRM).collect(Collectors.toSet()));
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -50,12 +52,11 @@ public class PHCHandlerFactory extends BaseThingHandlerFactory {
 
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
 
-            if (thingTypeUID.equals(PHCBindingConstants.THING_TYPE_BRIDGE)) {
+            if (thingTypeUID.equals(THING_TYPE_BRIDGE)) {
                 thing = super.createThing(thingTypeUID, configuration, thingUID, null);
 
             } else {
-                ThingUID phcThingUID = new ThingUID(thingTypeUID,
-                        configuration.get(PHCBindingConstants.ADDRESS).toString().toUpperCase());
+                ThingUID phcThingUID = new ThingUID(thingTypeUID, configuration.get(ADDRESS).toString().toUpperCase());
                 thing = super.createThing(thingTypeUID, configuration, phcThingUID, bridgeUID);
             }
 
@@ -74,7 +75,7 @@ public class PHCHandlerFactory extends BaseThingHandlerFactory {
 
         ThingHandler handler = null;
 
-        if (thingTypeUID.equals(PHCBindingConstants.THING_TYPE_BRIDGE)) {
+        if (thingTypeUID.equals(THING_TYPE_BRIDGE)) {
             handler = new PHCBridgeHandler((Bridge) thing);
         } else if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             handler = new PHCHandler(thing);
