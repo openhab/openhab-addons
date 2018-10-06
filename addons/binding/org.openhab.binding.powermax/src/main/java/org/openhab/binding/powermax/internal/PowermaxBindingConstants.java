@@ -8,11 +8,12 @@
  */
 package org.openhab.binding.powermax.internal;
 
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * The {@link PowermaxBinding} class defines common constants, which are
@@ -31,11 +32,12 @@ public class PowermaxBindingConstants {
     public static final ThingTypeUID THING_TYPE_X10 = new ThingTypeUID(BINDING_ID, "x10");
 
     // All supported Bridge types
-    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES_UIDS = ImmutableSet.of(BRIDGE_TYPE_SERIAL,
-            BRIDGE_TYPE_IP);
+    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(BRIDGE_TYPE_SERIAL, BRIDGE_TYPE_IP).collect(Collectors.toSet()));
 
     // All supported Thing types
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_ZONE, THING_TYPE_X10);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(THING_TYPE_ZONE, THING_TYPE_X10).collect(Collectors.toSet()));
 
     // List of all Channel ids
     public static final String MODE = "mode";
