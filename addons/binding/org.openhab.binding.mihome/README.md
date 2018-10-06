@@ -8,6 +8,7 @@ The devices are very affordable and you can get them from your favourite chinese
 After setup, you can disconnect the gateway from the internet to keep your sensor information private.
 
 ## Supported devices
+
 | Device | Picture |
 | --- | --- |
 | Gateway v2 (with radio support) or v3  | ![](https://ae01.alicdn.com/kf/HTB1gF76ciqAXuNjy1Xdq6yYcVXa4/Original-Xiaomi-Mi-Gateway-2-Smart-Home-Kit-Multi-functional-Gateway-Work-with-Mi-Door-Sensor.jpg_300x300.jpg) |
@@ -30,11 +31,6 @@ After setup, you can disconnect the gateway from the internet to keep your senso
 | Aqara Water Leak Sensor | ![](https://ae01.alicdn.com/kf/HTB1zWulSVXXXXaVXXXXq6xXFXXXW/2018-Newest-Xiaomi-Mijia-Aqara-Water-Immersing-Sensor-Flood-Water-Leak-Detector-for-Home-Remote-Alarm.jpg_300x300.jpg) |
 | Honeywell Gas Detector | ![](https://ae01.alicdn.com/kf/HTB1F_ffQpXXXXaxXpXXq6xXFXXXS/Xiaomi-Mijia-Honeywell-Smart-Gas-Alarm-CH4-berwachung-Decke-Wand-Montiert-Einfach-Installieren-Typ-Mihome-APP.jpg_300x300.jpg) |
 | Honeywell Smoke Detector | ![](https://ae01.alicdn.com/kf/HTB12DGKQpXXXXaeaXXXq6xXFXXXK/Xiaomi-Mijia-Honeywell-Smart-Fire-Alarm-Detector-Progressive-Sound-Photoelectric-Smoke-Sensor-Remote-Linkage-Mihome-APP.jpg_300x300.jpg) |
-
-___Coming soon___
-
-| Device | Picture |
-| --- | --- |
 | Aqara Fingerprint & Keyless Card & PIN Lock | ![](https://ae01.alicdn.com/kf/HTB1lsuqjjuhSKJjSspaq6xFgFXaD/Original-xiaomi-Mijia-aqara-Smart-door-lock-Digital-Touch-Screen-Keyless-Fingerprint-Password-work-to-mi.jpg_300x300.jpg) |
 
 ## Setup
@@ -42,24 +38,23 @@ ___Coming soon___
 *   Install the binding
 *   Is your gateway already configured to connect to your WiFi? If not:
 
-    	1. Install MiHome app from [Google Play](https://play.google.com/store/apps/details?id=com.xiaomi.smarthome) or [AppStore](https://itunes.apple.com/app/mi-home-xiaomi-for-your-smarthome/id957323480) (your phone may need to be changed to English language first)
+    	1.  Install MiHome app from [Google Play](https://play.google.com/store/apps/details?id=com.xiaomi.smarthome) or [AppStore](https://itunes.apple.com/app/mi-home-xiaomi-for-your-smarthome/id957323480) (your phone may need to be changed to English language first)
     	2.  In the app create a Mi Home account and make sure to set your region to Mainland (China) under Settings -> Locale
     	3.  If asked, update your gateway to the latest firmware (note that update window may pop up sequentially)
 
 *   Enable developer mode of your gateway:
 
-        1.  Select your Gateway in the MiHome app
-        2.  Go to the "..." menu on the top right corner and click "About"
-        3.  Tap the version number "Plug-in version : 2.XX.X" at the bottom of the screen repeatedly until you enable developer mode
-        4.  You should now have 2 extra options listed: `wireless communication protocol` and `hub info`
-        5.  Choose `wireless communication protocol`
-        6.  Tap the toggle switch to enable WiFi functions. Note down the developer key (aka password), something like: 91bg8zfkf9vd6uw7
-        7.  Make sure you hit the OK button (to the right of the cancel button) to save your changes
+    1.  Select your Gateway in the MiHome app
+    2.  Go to the "..." menu on the top right corner and click "About"
+    3.  Tap the version number "Plug-in version : 2.XX.X" at the bottom of the screen repeatedly until you enable developer mode
+    4.  You should now have 2 extra options listed: `wireless communication protocol` and `hub info`
+    5.  Choose `wireless communication protocol`
+    6.  Tap the toggle switch to enable WiFi functions. Note down the developer key (aka password), something like: 91bg8zfkf9vd6uw7
+    7.  Make sure you hit the OK button (to the right of the cancel button) to save your changes
 
 *   In openHAB you should now be able to discover the Xiaomi Gateway
 *   From now on you don't really need the app anymore. Only if you want to update the gateway firmware or if you want to add devices (see below). But adding devices can also be done without the app (see below)
-*   Enter the previously noted developer key in openHAB Paper UI -> Configuration -> Things -> Xiaomi Gateway -> Edit -> Developer Key. Save
-    (This is required if you want to be able to send controls to the devices like the light of the gateway)
+*   Enter the previously noted developer key in openHAB Paper UI -> Configuration -> Things -> Xiaomi Gateway -> Edit -> Developer Key. Save (This is required if you want to be able to send controls to the devices like the light of the gateway)
 
 ## Connecting devices to the gateway
 
@@ -75,11 +70,12 @@ There are three ways of connecting supported devices to the gateway:
     5.  The device appears in openHAB thing Inbox
 
 __If you don't want to hear the Chinese voice every time, you can disable it by setting the volume to minimum in the MiHome App (same for the blinking light)__
+
 * With the binding
 
-    - after adding the gateway make sure you have entered the right developer key
-    - setup a Switch Item for the channel `mihome:gateway:xxxxxxxxxxx:joinPermission` (see Examples) or control the switch via PaperUI
-    - after switching you have 30 seconds to include your new device
+    1.  after adding the gateway make sure you have entered the right developer key
+    2.  setup a Switch Item for the channel `mihome:gateway:xxxxxxxxxxx:joinPermission` (see Examples) or control the switch via PaperUI
+    3.  after switching you have 30 seconds to include your new device
 
 __The devices don't need an Internet connection to be working after you have set up the developer mode BUT you won't be able to connect to them via App anymore - easiest way is to block their outgoing Internet connection in your router and enable it later, when you want to check for updates etc__
 
@@ -412,13 +408,16 @@ sitemap xiaomi label="Xiaomi" {
 ```
 
 ## Supporting new devices
+
 The Xiaomi ecosystem grows at a steady rate. So there is a good chance that in the future even more devices get added to the suite. This section describes, how to get the necessary information to support new device types.
 
 ### Preconditions
+
 - you know how to access the [openHAB Console](https://www.openhab.org/docs/administration/console.html)
 - you have connected your gateway to openHAB and the communication is working
 
 ### Enable debug logging for the binding
+
 - Enter ```log:set TRACE org.openhab.binding.mihome``` in the console to enable full logs.
 
     _When you are done you can disable the extended logging with ```log:set DEFAULT org.openhab.binding.mihome```_
@@ -426,15 +425,16 @@ The Xiaomi ecosystem grows at a steady rate. So there is a good chance that in t
 - Exit the console and start [viewing the logs](https://www.openhab.org/docs/tutorial/logs.html).
 
 ### Connect the new device
+
 - Go through the normal procedure to add a device to the gateway
 - The device won't show up in your inbox, but it will send messages to the gateway which you can see in the logs
 - Analyse the logs and find the model name of the new device
-
 _Example: Aqara Vibration Sensor_
 
     2018-09-08 00:58:14.903 [DEBUG] [discovery.XiaomiItemDiscoveryService] - Unknown discovered model: vibration
 
 ### Gather information about the new device
+
 The devices send different types of messages to the gateway.
 You have to capture as many of them as possible, so that the device is fully supported in the end.
 
@@ -478,4 +478,5 @@ user@computer:~$ tail -f /var/log/openhab2/openhab.log -f /var/log/openhab2/even
 ```
 
 ### Open a new issue or get your hands dirty
+
 Every little help is welcome, be part of the community!

@@ -14,7 +14,7 @@
 			<channel id="isOpen" typeId="isOpen" />
 			<channel id="lastOpened" typeId="lastOpened" />
 			<channel id="isOpenAlarmTimer" typeId="isOpenAlarmTimer" />
-			<channel id="isOpenAlarm" typeId="isOpenAlarm" />
+			<channel id="isOpenAlarm" typeId="alarm" />
 			<channel id="batteryLevel" typeId="system.battery-level" />
 			<channel id="lowBattery" typeId="system.low-battery" />
 		</channels>

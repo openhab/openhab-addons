@@ -37,6 +37,7 @@ public class XiaomiGatewayBindingConstants {
     public static final ThingTypeUID THING_TYPE_SENSOR_AQARA_SWITCH = new ThingTypeUID(BINDING_ID, "sensor_switch_aq2");
     public static final ThingTypeUID THING_TYPE_SENSOR_MAGNET = new ThingTypeUID(BINDING_ID, "sensor_magnet");
     public static final ThingTypeUID THING_TYPE_SENSOR_AQARA_MAGNET = new ThingTypeUID(BINDING_ID, "sensor_magnet_aq2");
+    public static final ThingTypeUID THING_TYPE_SENSOR_AQARA_LOCK = new ThingTypeUID(BINDING_ID, "sensor_lock_aq1");
     public static final ThingTypeUID THING_TYPE_SENSOR_CUBE = new ThingTypeUID(BINDING_ID, "sensor_cube");
     public static final ThingTypeUID THING_TYPE_SENSOR_AQARA_VIBRATION = new ThingTypeUID(BINDING_ID,
             "sensor_vibration");
@@ -107,11 +108,14 @@ public class XiaomiGatewayBindingConstants {
     public static final String CHANNEL_CURTAIN_CONTROL = "curtainControl";
     // gas & smoke sensor
     public static final String CHANNEL_ALARM = "alarm";
-    public static final String CHANNEL_ALARM_STATUS = "status";
+    public static final String CHANNEL_STATUS = "status";
     // smoke sensor
     public static final String CHANNEL_DENSITY = "density";
     // water leak sensor
     public static final String CHANNEL_LEAK = "leak";
+    // aqara lock
+    public static final String CHANNEL_ID = "id";
+    public static final String CHANNEL_WRONG_ACCESS = "wrongAccess";
     // Bridge config properties
     public static final String SERIAL_NUMBER = "serialNumber";
     public static final String HOST = "ipAddress";

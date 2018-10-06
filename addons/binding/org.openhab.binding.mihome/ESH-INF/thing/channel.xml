@@ -142,10 +142,10 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="isOpenAlarm">
+	<channel-type id="alarm">
 		<kind>trigger</kind>
-		<label>Opened window alarm</label>
-		<description>Triggers ALARM event, when window sensor is not getting "closed" for configured amount of time</description>
+		<label>Alarm Trigger</label>
+		<description>Triggers ALARM event</description>
 		<event>
 			<options>
 				<option value="ALARM">alarm</option>
@@ -156,14 +156,14 @@
 	<channel-type id="isOpenAlarmTimer">
 		<item-type>Number</item-type>
 		<label>Alarm Timer</label>
-		<description>Time in seconds, after which ALARM event is triggered, when window is open (Default 300 sec, Min 30 sec)</description>
+		<description>Time in seconds, after which ALARM event is triggered, when open (Default 300 sec, Min 30 sec)</description>
 		<state readOnly="false" min="30" pattern="%d s" step="1"></state>
 	</channel-type>
 
 	<channel-type id="lastOpened">
 		<item-type>DateTime</item-type>
 		<label>Last Time Opened (Date/Time)</label>
-		<description>Date/time when window was last opened</description>
+		<description>Date/time when last opened</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -245,6 +245,12 @@
 				<option value="LONG_RELEASED">long click release</option>
 			</options>
 		</event>
+	</channel-type>
+
+	<channel-type id="idNumber">
+		<item-type>Number</item-type>
+		<label>ID</label>
+		<state readOnly="true"></state>
 	</channel-type>
 
 </thing:thing-descriptions>
