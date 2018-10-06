@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 @Component(immediate = true)
 public class FreeboxServerDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
-    private Logger logger = LoggerFactory.getLogger(FreeboxServerDiscoveryParticipant.class);
+    private final Logger logger = LoggerFactory.getLogger(FreeboxServerDiscoveryParticipant.class);
 
     private static final String SERVICE_TYPE = "_fbx-api._tcp.local.";
 
