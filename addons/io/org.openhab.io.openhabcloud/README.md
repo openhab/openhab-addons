@@ -28,6 +28,9 @@ After installing this add-on, you will find configuration options in the Paper U
 
 ![Configuration](doc/cfg.png)
 
+Please note, that you don't need to expose all your items in this settings dialog.
+You just need to expose those items, which you want to be accessible by a third party service.
+
 Alternatively, you can configure the settings in the file `conf/services/openhabcloud.cfg`:
 
 ```
