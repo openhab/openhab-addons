@@ -269,12 +269,12 @@ Number Freebox_sys_temp_cpum "Temp cpum [%d Â°C]" <temperature> {channel="free
 Number Freebox_sys_temp_cpub "Temp cpub [%d Â°C]" <temperature> {channel="freebox:server:fb:tempcpub"}
 Number Freebox_sys_temp_sw "Temp sw [%d Â°C]" <temperature> {channel="freebox:server:fb:tempswitch"}
 Number Freebox_sys_fan_rpm "Fan [%d rpm]" <fan> {channel="freebox:server:fb:fanspeed"}
-Switch FreeboWifi "Wifi" {autoupdate="false", channel="freebox:server:fb:wifi_status"}
-Switch FreeboxFTP "FTP" {autoupdate="false", channel="freebox:server:fb:ftp_status"}
-Switch FreeboxUPnPAV "UPnP AV" {autoupdate="false", channel="freebox:server:fb:upnpav_status"}
-Switch FreeboxAirMedia "AirMedia" {autoupdate="false", channel="freebox:server:fb:airmedia_status"}
-Switch FreeboxSambaFiles "Win File Share" {autoupdate="false", channel="freebox:server:fb:sambafileshare_status"}
-Switch FreeboxSambaPrinters "Win Print Share" {autoupdate="false", channel="freebox:server:fb:sambaprintershare_status"}
+Switch FreeboWifi "Wifi" {channel="freebox:server:fb:wifi_status"}
+Switch FreeboxFTP "FTP" {channel="freebox:server:fb:ftp_status"}
+Switch FreeboxUPnPAV "UPnP AV" {channel="freebox:server:fb:upnpav_status"}
+Switch FreeboxAirMedia "AirMedia" {channel="freebox:server:fb:airmedia_status"}
+Switch FreeboxSambaFiles "Win File Share" {channel="freebox:server:fb:sambafileshare_status"}
+Switch FreeboxSambaPrinters "Win Print Share" {channel="freebox:server:fb:sambaprintershare_status"}
 Number Freebox_lcd_brightness "Brightness [%d %%]" {channel="freebox:server:fb:lcd_brightness"}
 Number Freebox_lcd_orientation "Orientation [%d Â°]" {channel="freebox:server:fb:lcd_orientation"}
 Switch Freebox_lcd_forced "LCD Forced" {channel="freebox:server:fb:lcd_forced"}
