@@ -8,13 +8,12 @@
  */
 package org.openhab.binding.silvercrestwifisocket.internal;
 
+import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.silvercrestwifisocket.internal.enums.SilvercrestWifiSocketVendor;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * The {@link SilvercrestWifiSocketBindingConstants} class defines common constants, which are
@@ -44,7 +43,7 @@ public class SilvercrestWifiSocketBindingConstants {
     /**
      * The supported thing types.
      */
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_WIFI_SOCKET);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_WIFI_SOCKET);
 
     // -------------- Configuration arguments ----------------
     /**
