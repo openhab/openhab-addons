@@ -2,9 +2,11 @@
 
 This binding is used to integrate the OpenTherm Gateway into OpenHAB2. The OpenTherm Gateway is a module designed by Schelte Bron that is connected in between a boiler and a thermostat that communicates using the OpenTherm protocol.
 
+More information on the OpenTherm Gateway can be found at http://otgw.tclcode.com/
+
 This binding is still under development. Please visit https://github.com/ArjenKorevaar/openhab2-openthermgateway-binary to download the lastest compiled test version.
 
-More information on the OpenTherm Gateway can be found at http://otgw.tclcode.com/
+Comments can be submitted to the topic on OpenHAB community at https://community.openhab.org/t/39160
 
 ## Supported Things
 
@@ -12,7 +14,7 @@ The OpenTherm Gateway binding currently only supports one thing, and that's the 
 
 ## Discovery
 
-The binding supports auto discovery.
+The binding does not support auto discovery.
 
 ## Binding Configuration
 
