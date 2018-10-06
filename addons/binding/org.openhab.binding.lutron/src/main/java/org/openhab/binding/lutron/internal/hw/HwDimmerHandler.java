@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.lutron.internal.hw;
 
-import static org.openhab.binding.lutron.LutronBindingConstants.CHANNEL_LIGHTLEVEL;
+import static org.openhab.binding.lutron.internal.LutronBindingConstants.CHANNEL_LIGHTLEVEL;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;

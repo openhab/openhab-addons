@@ -11,7 +11,7 @@ package org.openhab.binding.lutron.internal.config;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * Configuration settings for an {@link org.openhab.binding.lutron.handler.IPBridgeHandler}.
+ * Configuration settings for an {@link org.openhab.binding.lutron.internal.handler.IPBridgeHandler}.
  *
  * @author Allan Tong - Initial contribution
  */

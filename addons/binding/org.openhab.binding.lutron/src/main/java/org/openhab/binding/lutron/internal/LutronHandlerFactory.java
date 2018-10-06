@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.lutron.internal;
 
-import static org.openhab.binding.lutron.LutronBindingConstants.*;
+import static org.openhab.binding.lutron.internal.LutronBindingConstants.*;
 
 import java.util.Set;
 
@@ -17,22 +17,22 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.lutron.handler.CcoHandler;
-import org.openhab.binding.lutron.handler.DimmerHandler;
-import org.openhab.binding.lutron.handler.IPBridgeHandler;
-import org.openhab.binding.lutron.handler.KeypadHandler;
-import org.openhab.binding.lutron.handler.MaintainedCcoHandler;
-import org.openhab.binding.lutron.handler.OccupancySensorHandler;
-import org.openhab.binding.lutron.handler.PicoKeypadHandler;
-import org.openhab.binding.lutron.handler.PulsedCcoHandler;
-import org.openhab.binding.lutron.handler.ShadeHandler;
-import org.openhab.binding.lutron.handler.SwitchHandler;
-import org.openhab.binding.lutron.handler.TabletopKeypadHandler;
-import org.openhab.binding.lutron.handler.VcrxHandler;
-import org.openhab.binding.lutron.handler.VirtualKeypadHandler;
 import org.openhab.binding.lutron.internal.grxprg.GrafikEyeHandler;
 import org.openhab.binding.lutron.internal.grxprg.PrgBridgeHandler;
 import org.openhab.binding.lutron.internal.grxprg.PrgConstants;
+import org.openhab.binding.lutron.internal.handler.CcoHandler;
+import org.openhab.binding.lutron.internal.handler.DimmerHandler;
+import org.openhab.binding.lutron.internal.handler.IPBridgeHandler;
+import org.openhab.binding.lutron.internal.handler.KeypadHandler;
+import org.openhab.binding.lutron.internal.handler.MaintainedCcoHandler;
+import org.openhab.binding.lutron.internal.handler.OccupancySensorHandler;
+import org.openhab.binding.lutron.internal.handler.PicoKeypadHandler;
+import org.openhab.binding.lutron.internal.handler.PulsedCcoHandler;
+import org.openhab.binding.lutron.internal.handler.ShadeHandler;
+import org.openhab.binding.lutron.internal.handler.SwitchHandler;
+import org.openhab.binding.lutron.internal.handler.TabletopKeypadHandler;
+import org.openhab.binding.lutron.internal.handler.VcrxHandler;
+import org.openhab.binding.lutron.internal.handler.VirtualKeypadHandler;
 import org.openhab.binding.lutron.internal.hw.HwConstants;
 import org.openhab.binding.lutron.internal.hw.HwDimmerHandler;
 import org.openhab.binding.lutron.internal.hw.HwSerialBridgeHandler;
@@ -63,9 +63,8 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
     // Other types that can be initiated but not discovered
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_IPBRIDGE,
             PrgConstants.THING_TYPE_PRGBRIDGE, PrgConstants.THING_TYPE_GRAFIKEYE, RadioRAConstants.THING_TYPE_RS232,
-            RadioRAConstants.THING_TYPE_DIMMER, RadioRAConstants.THING_TYPE_SWITCH,
-            RadioRAConstants.THING_TYPE_PHANTOM, HwConstants.THING_TYPE_HWSERIALBRIDGE,
-            THING_TYPE_CCO);
+            RadioRAConstants.THING_TYPE_DIMMER, RadioRAConstants.THING_TYPE_SWITCH, RadioRAConstants.THING_TYPE_PHANTOM,
+            HwConstants.THING_TYPE_HWSERIALBRIDGE, THING_TYPE_CCO);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

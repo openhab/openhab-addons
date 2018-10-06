@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.lutron.internal.hw;
 
-import static org.openhab.binding.lutron.LutronBindingConstants.BINDING_ID;
+import static org.openhab.binding.lutron.internal.LutronBindingConstants.BINDING_ID;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 

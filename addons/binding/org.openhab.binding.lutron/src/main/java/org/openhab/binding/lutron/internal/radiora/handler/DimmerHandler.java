@@ -17,7 +17,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.lutron.LutronBindingConstants;
+import org.openhab.binding.lutron.internal.LutronBindingConstants;
 import org.openhab.binding.lutron.internal.radiora.config.DimmerConfig;
 import org.openhab.binding.lutron.internal.radiora.protocol.LocalZoneChangeFeedback;
 import org.openhab.binding.lutron.internal.radiora.protocol.RadioRAFeedback;
