@@ -4,7 +4,7 @@ This binding is used to integrate the OpenTherm Gateway into OpenHAB2. The OpenT
 
 This binding is still under development. Please visit https://github.com/ArjenKorevaar/openhab2-openthermgateway-binary to download the lastest compiled test version.
 
-More info on the OpenTherm Gateway can be found at http://otgw.tclcode.com/
+More information on the OpenTherm Gateway can be found at http://otgw.tclcode.com/
 
 ## Supported Things
 
@@ -26,9 +26,9 @@ Future types of connections may require other settings, such as a COM port.
 
 ## Channels
 
-The thing currently supports the follow channels:
+The OTGW thing currently supports the follow channels:
 
-![](Screenshot.png)
+![](doc/otgw.png)
 
 ## Full Example
 
@@ -59,7 +59,7 @@ Number OpenThermGateway_RelativeModulationLevel "Relative modulation level [%d %
 Number OpenThermGateway_MaxRelativeModulationLevel "Maximum relative modulation level [%d %%]" {channel="openthermgateway:otgw:1:maxrelmdulevel"}
 ```
 
-### demo.sitemap (not up to date):
+### demo.sitemap:
 
 ```
 sitemap demo label="Main Menu" {
