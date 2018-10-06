@@ -8,12 +8,13 @@
  */
 package org.openhab.binding.toon.internal;
 
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * The {@link ToonBindingConstants} class defines common constants, which are
@@ -63,10 +64,10 @@ public class ToonBindingConstants {
     public static final String PROPERTY_DEV_TYPE = "devType";
 
     // List of all supported physical devices and modules
-    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = ImmutableSet.of(MAIN_THING_TYPE,
-            SMOKE_THING_TYPE, PLUG_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(MAIN_THING_TYPE, SMOKE_THING_TYPE, PLUG_THING_TYPE).collect(Collectors.toSet()));
 
     // List of all adressable things in OH = SUPPORTED_DEVICE_THING_TYPES_UIDS + the virtual bridge
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(MAIN_THING_TYPE,
-            SMOKE_THING_TYPE, PLUG_THING_TYPE, APIBRIDGE_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
+            .of(MAIN_THING_TYPE, SMOKE_THING_TYPE, PLUG_THING_TYPE, APIBRIDGE_THING_TYPE).collect(Collectors.toSet()));
 }
