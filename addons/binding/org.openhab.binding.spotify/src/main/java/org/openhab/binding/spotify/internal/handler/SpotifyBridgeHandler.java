@@ -308,11 +308,10 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
      * @param playing true if the current active device is playing
      */
     private void updateDevicesStatus(List<Device> spotifyDevices, boolean playing) {
-        getThing().getThings().stream().filter(thing -> !spotifyDevices.stream().anyMatch(sd -> {
-            SpotifyDeviceHandler handler = (SpotifyDeviceHandler) thing.getHandler();
-
-            return handler == null ? false : handler.updateDeviceStatus(sd, playing);
-        })).forEach(thing -> ((SpotifyDeviceHandler) thing.getHandler()).setStatusGone());
+        getThing().getThings().stream().filter(thing -> thing.getHandler() instanceof SpotifyDeviceHandler)
+                .filter(thing -> !spotifyDevices.stream()
+                        .anyMatch(sd -> ((SpotifyDeviceHandler) thing.getHandler()).updateDeviceStatus(sd, playing)))
+                .forEach(thing -> ((SpotifyDeviceHandler) thing.getHandler()).setStatusGone());
     }
 
     /**
