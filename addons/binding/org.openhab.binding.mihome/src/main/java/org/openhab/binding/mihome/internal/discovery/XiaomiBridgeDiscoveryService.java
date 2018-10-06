@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.mihome.internal.discovery;
 
-import static org.openhab.binding.mihome.XiaomiGatewayBindingConstants.*;
+import static org.openhab.binding.mihome.internal.XiaomiGatewayBindingConstants.*;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,7 +24,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.mihome.handler.XiaomiBridgeHandler;
+import org.openhab.binding.mihome.internal.handler.XiaomiBridgeHandler;
 import org.openhab.binding.mihome.internal.socket.XiaomiDiscoverySocket;
 import org.openhab.binding.mihome.internal.socket.XiaomiSocketListener;
 import org.osgi.service.component.annotations.Component;

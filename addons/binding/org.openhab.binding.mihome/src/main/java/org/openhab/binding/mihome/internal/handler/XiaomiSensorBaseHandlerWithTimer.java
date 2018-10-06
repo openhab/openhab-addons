@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.mihome.handler;
+package org.openhab.binding.mihome.internal.handler;
 
 import java.util.Timer;
 import java.util.TimerTask;

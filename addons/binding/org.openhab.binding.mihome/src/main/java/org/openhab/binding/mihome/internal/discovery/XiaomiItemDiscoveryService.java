@@ -8,8 +8,8 @@
  */
 package org.openhab.binding.mihome.internal.discovery;
 
-import static org.openhab.binding.mihome.XiaomiGatewayBindingConstants.ITEM_ID;
 import static org.openhab.binding.mihome.internal.ModelMapper.*;
+import static org.openhab.binding.mihome.internal.XiaomiGatewayBindingConstants.ITEM_ID;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -21,8 +21,8 @@ import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
 import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.mihome.handler.XiaomiBridgeHandler;
 import org.openhab.binding.mihome.internal.XiaomiItemUpdateListener;
+import org.openhab.binding.mihome.internal.handler.XiaomiBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

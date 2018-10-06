@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.mihome.internal;
 
-import static org.openhab.binding.mihome.XiaomiGatewayBindingConstants.*;
+import static org.openhab.binding.mihome.internal.XiaomiGatewayBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
