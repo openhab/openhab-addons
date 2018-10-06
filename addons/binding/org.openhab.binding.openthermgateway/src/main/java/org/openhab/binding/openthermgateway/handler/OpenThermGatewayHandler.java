@@ -63,14 +63,7 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
 
         updateStatus(ThingStatus.OFFLINE);
 
-        config = getConfigAs(OpenThermGatewayConfiguration.class);
-
-        // TODO: support different kinds of connectors, such as USB, serial port
-
-        connector = new OpenThermGatewaySocketConnector(this, config.ipaddress, config.port);
-
-        connectorThread = new Thread(connector);
-        connectorThread.start();
+        connect();
     }
 
     @Override
@@ -78,7 +71,7 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
         logger.debug("Received channel: {}, command: {}", channelUID, command);
 
         try {
-            if (connector != null && connector.isConnected() && command.toFullString() != "REFRESH") {
+            if (command.toFullString() != "REFRESH" && connect()) {
                 String channel = channelUID.getId();
 
                 if (channel.equals(OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_SETPOINT)) {
@@ -95,6 +88,13 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
     }
 
     @Override
+    public void handleRemoval() {
+        logger.debug("Removing OpenTherm Gateway handler");
+        disconnect();
+        super.handleRemoval();
+    }
+
+    @Override
     public void connecting() {
         updateStatus(ThingStatus.OFFLINE);
     }
@@ -106,7 +106,10 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
 
     @Override
     public void disconnected() {
-        updateStatus(ThingStatus.OFFLINE);
+        try {
+            updateStatus(ThingStatus.OFFLINE);
+        } catch (IllegalStateException ex) {
+        }
     }
 
     @Override
@@ -199,6 +202,38 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
                 break;
             default:
                 break;
+        }
+    }
+
+    private boolean connect() {
+        if (connector != null && connector.isConnected()) {
+            return true;
+        }
+
+        try {
+            config = getConfigAs(OpenThermGatewayConfiguration.class);
+
+            logger.info("Connecting to the OpenTherm Gateway at {}:{}", config.ipaddress, config.port);
+
+            disconnect();
+
+            // TODO: support different kinds of connectors, such as USB, serial port
+            connector = new OpenThermGatewaySocketConnector(this, config.ipaddress, config.port);
+            connectorThread = new Thread(connector);
+            connectorThread.start();
+
+            return true;
+        } catch (Exception ex) {
+            logger.error("error", ex);
+        }
+
+        return false;
+    }
+
+    private void disconnect() {
+        if (connector != null) {
+            logger.info("Disconnecting the OpenTherm Gateway");
+            connector.stop();
         }
     }
 }

@@ -4,4 +4,6 @@ public interface OpenThermGatewayConnector extends Runnable {
     public void sendCommand(CommandType command, String message);
 
     public boolean isConnected();
+
+    public void stop();
 }

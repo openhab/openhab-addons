@@ -25,8 +25,14 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
         this.port = port;
     }
 
-    public void stop() {
+    @Override
+    public synchronized void stop() {
+        callback.log(LogLevel.Debug, "Stopping OpenThermGatewaySocketConnector");
         stopping = true;
+    }
+
+    private synchronized boolean keepRunning() {
+        return stopping == false;
     }
 
     @Override
@@ -49,24 +55,36 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
             // PS=0 causes the OTGW to report every message it receives and transmits
             sendCommand(CommandType.PrintSummary, "0");
 
-            while (!stopping && !Thread.interrupted()) {
+            while (keepRunning()) {
                 String message = reader.readLine();
                 handleMessage(message);
             }
-
-            callback.log(LogLevel.Debug, "Stopping OpenThermGatewaySocketConnector");
-
-            reader.close();
-            writer.close();
-            socket.close();
         } catch (UnknownHostException e) {
             callback.log(LogLevel.Error, "An error occured in OpenThermGatewaySocketConnector", e);
         } catch (IOException e) {
             callback.log(LogLevel.Error, "An error occured in OpenThermGatewaySocketConnector", e);
-        }
+        } finally {
+            callback.log(LogLevel.Debug, "Disconnecting OpenThermGatewaySocketConnector");
 
-        socket = null;
-        callback.disconnected();
+            if (writer != null) {
+                writer.flush();
+                writer.close();
+            }
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                }
+            }
+            if (socket != null) {
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                }
+            }
+
+            callback.disconnected();
+        }
     }
 
     @Override
@@ -81,7 +99,7 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
 
             String msg = command.getMessage(message);
 
-            // msg = msg + "\r\n";
+            msg = msg + "\r\n";
 
             callback.log(LogLevel.Debug, "Sending message: %s", msg);
             writer.println(msg);

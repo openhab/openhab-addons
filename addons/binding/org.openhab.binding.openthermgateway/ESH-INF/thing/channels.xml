@@ -23,12 +23,21 @@
 
     <channel-type id="overridesetpoint">
         <item-type>Number</item-type>
-        <label>Override room setpoint</label>
+        <label>Room setpoint override</label>
         <description>Remote override room temperature setpoint</description>
         <category>temperature</category>
         <state readOnly="false" pattern="%.1f °C">
         </state>
     </channel-type>
+    
+    <channel-type id="dhwtemp">
+        <item-type>Number</item-type>
+        <label>Domestic hot water temperature</label>
+        <description>Domestic hot water temperature</description>
+        <category>temperature</category>
+        <state readOnly="true" pattern="%.1f °C">
+        </state>
+    </channel-type>    
     
     <channel-type id="tdhwset">
         <item-type>Number</item-type>
@@ -40,8 +49,8 @@
     
     <channel-type id="overridedhwsetpoint">
         <item-type>Number</item-type>
-        <label>Domestic hot water override setpoint</label>
-        <description>Domestic hot water temperature override setpoint</description>        
+        <label>Domestic hot water setpoint override</label>
+        <description>Domestic hot water temperature setpoint override</description>        
         <state readOnly="false" pattern="%.1f °C">
         </state>
     </channel-type>    
