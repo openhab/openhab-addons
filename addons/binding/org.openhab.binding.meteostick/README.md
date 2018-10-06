@@ -139,6 +139,10 @@ then
 	val pw = 'your_password'
 	val sdf = new SimpleDateFormat('yyyy-MM-dd HH:mm:ss')
 	sdf.setTimeZone(TimeZone.getTimeZone('UTC'))
+	val double rh = DavisVantageVueHumidity.getStateAs(DecimalType).doubleValue
+	val double tempc = DavisVantageVueOutdoorTemperature.getStateAs(QuantityType).toUnit('°C').doubleValue
+	val double dewptc = 243.04 * (Math.log(rh/100) + ((17.625 * tempc) / (243.04 + tempc))) / (17.625 - Math.log(rh/100) - ((17.625 * tempc) / (243.04 + tempc)))
+	val double dewptf = new QuantityType(dewptc, CELSIUS).toUnit('°F').doubleValue
 	val Map<String, Object> params = newLinkedHashMap(
 		'action' ->           'updateraw',
 		'ID' ->               id,
@@ -151,10 +155,11 @@ then
 		'windspdmph_avg2m' -> DavisVantageVueWindSpeedAverage.getStateAs(QuantityType).toUnit('mph').doubleValue,
 		'winddir_avg2m' ->    DavisVantageVueWindDirectionAverage.getStateAs(QuantityType).toUnit('°').intValue,
 		'humidity' ->         DavisVantageVueHumidity.state,
+		'dewptf' ->           dewptf,
 		'tempf' ->            DavisVantageVueOutdoorTemperature.getStateAs(QuantityType).toUnit('°F').doubleValue,
 		'rainin' ->           DavisVantageVueRainCurrentHour.getStateAs(QuantityType).toUnit('in').doubleValue,
 		'baromin' ->          MeteoStickPressure.getStateAs(QuantityType).toUnit('inHg').doubleValue,
-		'softwaretype' ->     'openHAB 2.3')
+		'softwaretype' ->     'openHAB 2.4')
 
 	var url = 'https://weatherstation.wunderground.com/weatherstation/updateweatherstation.php?'
 	var first = true
