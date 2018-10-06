@@ -43,19 +43,19 @@ public class XiaomiSensorVibrationHandler extends XiaomiSensorBaseHandler {
         } else if (data.has(TILT_ANGLE)) {
             updateState(CHANNEL_TILT_ANGLE, new DecimalType(Integer.parseInt((data.get(TILT_ANGLE).getAsString()))));
         } else if (data.has(ORIENTATIONS)) {
-            Integer X = 0;
-            Integer Y = 0;
-            Integer Z = 0;
+            Integer x = 0;
+            Integer y = 0;
+            Integer z = 0;
             try {
-                X = Integer.parseInt((data.get(ORIENTATIONS).getAsString().split(",")[0]));
-                Y = Integer.parseInt((data.get(ORIENTATIONS).getAsString().split(",")[1]));
-                Z = Integer.parseInt((data.get(ORIENTATIONS).getAsString().split(",")[2]));
+                x = Integer.parseInt((data.get(ORIENTATIONS).getAsString().split(",")[0]));
+                y = Integer.parseInt((data.get(ORIENTATIONS).getAsString().split(",")[1]));
+                z = Integer.parseInt((data.get(ORIENTATIONS).getAsString().split(",")[2]));
             } catch (NumberFormatException e) {
                 logger.error("Could not parse coordinates", e);
             }
-            updateState(CHANNEL_ORIENTATION_X, new DecimalType(X));
-            updateState(CHANNEL_ORIENTATION_Y, new DecimalType(Y));
-            updateState(CHANNEL_ORIENTATION_Z, new DecimalType(Z));
+            updateState(CHANNEL_ORIENTATION_X, new DecimalType(x));
+            updateState(CHANNEL_ORIENTATION_Y, new DecimalType(y));
+            updateState(CHANNEL_ORIENTATION_Z, new DecimalType(z));
         } else if (data.has(BED_ACTIVITY)) {
             updateState(CHANNEL_BED_ACTIVITY,
                     new DecimalType(Integer.parseInt((data.get(BED_ACTIVITY).getAsString()))));

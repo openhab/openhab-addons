@@ -36,6 +36,7 @@ import org.openhab.binding.mihome.handler.XiaomiDeviceBaseHandler;
 import org.openhab.binding.mihome.handler.XiaomiSensorCubeHandler;
 import org.openhab.binding.mihome.handler.XiaomiSensorGasHandler;
 import org.openhab.binding.mihome.handler.XiaomiSensorHtHandler;
+import org.openhab.binding.mihome.handler.XiaomiSensorLockHandler;
 import org.openhab.binding.mihome.handler.XiaomiSensorMagnetHandler;
 import org.openhab.binding.mihome.handler.XiaomiSensorMotionHandler;
 import org.openhab.binding.mihome.handler.XiaomiSensorSmokeHandler;
@@ -94,7 +95,6 @@ public class XiaomiHandlerFactory extends BaseThingHandlerFactory {
 
     private ThingUID getThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration,
             ThingUID bridgeUID) {
-
         if (thingUID == null) {
             String itemId = (String) configuration.get(ITEM_ID);
             return new ThingUID(thingTypeUID, itemId, bridgeUID.getId());
@@ -154,6 +154,8 @@ public class XiaomiHandlerFactory extends BaseThingHandlerFactory {
             return new XiaomiSensorMotionHandler(thing);
         } else if (THING_TYPE_SENSOR_AQARA_VIBRATION.equals(thingTypeUID)) {
             return new XiaomiSensorVibrationHandler(thing);
+        } else if (THING_TYPE_SENSOR_AQARA_LOCK.equals(thingTypeUID)) {
+            return new XiaomiSensorLockHandler(thing);
         } else {
             return null;
         }

@@ -43,6 +43,7 @@ public class ModelMapper {
         THING_MAP.put("cube", THING_TYPE_SENSOR_CUBE);
         THING_MAP.put("sensor_cube.aqgl01", THING_TYPE_SENSOR_CUBE);
         THING_MAP.put("sensor_ht", THING_TYPE_SENSOR_HT);
+        THING_MAP.put("lock.aq1", THING_TYPE_SENSOR_AQARA_LOCK);
         THING_MAP.put("magnet", THING_TYPE_SENSOR_MAGNET);
         THING_MAP.put("motion", THING_TYPE_SENSOR_MOTION);
         THING_MAP.put("natgas", THING_TYPE_SENSOR_GAS);
@@ -70,6 +71,7 @@ public class ModelMapper {
         LABEL_MAP.put("cube", "Xiaomi Mi Smart Cube");
         LABEL_MAP.put("sensor_cube.aqgl01", "Xiaomi Mi Smart Cube");
         LABEL_MAP.put("sensor_ht", "Xiaomi Mi Temperature & Humidity Sensor");
+        LABEL_MAP.put("lock.aq1", "Xiaomi Aqara Fingerprint Door Lock");
         LABEL_MAP.put("magnet", "Xiaomi Door/Window Sensor");
         LABEL_MAP.put("motion", "Xiaomi Mi Motion Sensor");
         LABEL_MAP.put("natgas", "Xiaomi Mijia Honeywell Gas Alarm Detector");
