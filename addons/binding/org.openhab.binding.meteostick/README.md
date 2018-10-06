@@ -126,9 +126,9 @@ import java.util.Date
 import java.util.Map
 import java.util.TimeZone
 
-/* Uploads weather station data using this format:
+/* Uploads weather station data using the format documented here:
 
-   http://wiki.wunderground.com/index.php/PWS_-_Upload_Protocol
+   https://feedback.weather.com/customer/en/portal/articles/2924682-pws-upload-protocol?b_id=17298
  */
 
 rule PWS
