@@ -14,8 +14,6 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
-import com.google.common.collect.Sets;
-
 /**
  * The {@link TankerkoenigBinding} class defines common constants, which are
  * used across the whole binding.
@@ -32,7 +30,7 @@ public class TankerkoenigBindingConstants {
     public static final ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, "webservice");
 
     public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Collections.singleton(BRIDGE_THING_TYPE);
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_TANKSTELLE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_TANKSTELLE);
 
     // List of all Channel ids
     public static final String CHANNEL_DIESEL = "diesel";
