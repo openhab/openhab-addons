@@ -24,7 +24,7 @@ The IP Gateway is the most commonly used way to connect to the KNX bus. At its b
 | Name                | Required     | Description                                                                                                  | Default value                                        |
 |---------------------|--------------|--------------------------------------------------------------------------------------------------------------|------------------------------------------------------|
 | type                | Yes          | The IP connection type for connecting to the KNX bus (`TUNNEL` or `ROUTER`)                                  | -                                                    |
-| ipAddress           | for `TUNNEL` | Network address of the KNX/IP gateway                                                                        | -                                                    |
+| ipAddress           | for `TUNNEL` | Network address of the KNX/IP gateway                                                                        | for `TUNNEL` : \<nothing\> for `ROUTER` : 224.0.23.12 |
 | portNumber          | for `TUNNEL` | Port number of the KNX/IP gateway                                                                            | 3671                                                 |
 | localIp             | No           | Network address of the local host to be used to set up the connection to the KNX/IP gateway                  | the system-wide configured primary interface address |
 | localSourceAddr     | No           | The group address for identification of this KNX/IP gateway within the KNX bus                               | 0.0.0                                                |
