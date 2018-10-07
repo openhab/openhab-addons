@@ -17,23 +17,23 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
-import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.BasicBitArray;
+import org.openhab.io.transport.modbus.BasicModbusReadRequestBlueprint;
+import org.openhab.io.transport.modbus.BasicModbusWriteCoilRequestBlueprint;
+import org.openhab.io.transport.modbus.BasicPollTaskImpl;
+import org.openhab.io.transport.modbus.BasicWriteTask;
+import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusConnectionException;
 import org.openhab.io.transport.modbus.ModbusManagerListener;
 import org.openhab.io.transport.modbus.ModbusReadCallback;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
-import org.openhab.io.transport.modbus.BasicModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.io.transport.modbus.ModbusResponse;
 import org.openhab.io.transport.modbus.ModbusSlaveErrorResponseException;
 import org.openhab.io.transport.modbus.ModbusSlaveIOException;
 import org.openhab.io.transport.modbus.ModbusWriteCallback;
-import org.openhab.io.transport.modbus.BasicModbusWriteCoilRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusWriteRequestBlueprint;
-import org.openhab.io.transport.modbus.BasicPollTaskImpl;
-import org.openhab.io.transport.modbus.BasicWriteTask;
 import org.openhab.io.transport.modbus.endpoint.EndpointPoolConfiguration;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 import org.openhab.io.transport.modbus.endpoint.ModbusTCPSlaveEndpoint;
@@ -556,7 +556,8 @@ public class SmokeTest extends IntegrationTestSupport {
 
         BitArray bits = new BasicBitArray(true);
         BasicWriteTask task = new BasicWriteTask(endpoint,
-                new BasicModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 300, bits, false, 1), new ModbusWriteCallback() {
+                new BasicModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 300, bits, false, 1),
+                new ModbusWriteCallback() {
 
                     @Override
                     public void onWriteResponse(ModbusWriteRequestBlueprint request, ModbusResponse response) {
@@ -591,7 +592,7 @@ public class SmokeTest extends IntegrationTestSupport {
      * @throws InterruptedException
      */
     @Test
-    public void testRegularReadEvery50msWithCoil() throws InterruptedException {
+    public void testRegularReadEvery150msWithCoil() throws InterruptedException {
         generateData();
         ModbusSlaveEndpoint endpoint = getEndpoint();
 
@@ -630,18 +631,10 @@ public class SmokeTest extends IntegrationTestSupport {
                     }
                 });
         long start = System.currentTimeMillis();
-        modbusManager.registerRegularPoll(task, 50, 0);
+        modbusManager.registerRegularPoll(task, 150, 0);
         callbackCalled.await(5, TimeUnit.SECONDS);
         long end = System.currentTimeMillis();
-        int responses = dataReceived.get();
-        assertTrue(responses > 1);
-
-        assertThat(unexpectedCount.get(), is(equalTo(0)));
-
-        float averagePollPeriodMillis = ((float) (end - start)) / (responses - 1);
-        assertTrue(String.valueOf(averagePollPeriodMillis), averagePollPeriodMillis > 45);
-        // Sometimes the CI slow, so allow average poll period of 100ms even though it should be 50ms
-        assertTrue(String.valueOf(averagePollPeriodMillis), averagePollPeriodMillis < 100);
+        assertPollDetails(unexpectedCount, dataReceived, start, end, 145, 500);
     }
 
     /**
@@ -693,15 +686,7 @@ public class SmokeTest extends IntegrationTestSupport {
         modbusManager.registerRegularPoll(task, 150, 0);
         callbackCalled.await(5, TimeUnit.SECONDS);
         long end = System.currentTimeMillis();
-        int responses = dataReceived.get();
-        assertTrue(responses > 1);
-
-        assertThat(unexpectedCount.get(), is(equalTo(0)));
-
-        float averagePollPeriodMillis = ((float) (end - start)) / (responses - 1);
-        assertTrue(String.valueOf(averagePollPeriodMillis), averagePollPeriodMillis > 145);
-        // Sometimes the CI slow, so allow average poll period of 300ms even though it should be 150ms
-        assertTrue(String.valueOf(averagePollPeriodMillis), averagePollPeriodMillis < 300);
+        assertPollDetails(unexpectedCount, dataReceived, start, end, 145, 500);
     }
 
     @Test
@@ -746,27 +731,32 @@ public class SmokeTest extends IntegrationTestSupport {
         modbusManager.registerRegularPoll(task, 150, 0);
         callbackCalled.await(5, TimeUnit.SECONDS);
         modbusManager.unregisterRegularPoll(task);
-        long countAfter = callbackCalled.getCount();
-
-        //
-        // Test poll rate
-        //
         long end = System.currentTimeMillis();
-        int responses = dataReceived.get();
+        assertPollDetails(unexpectedCount, dataReceived, start, end, 145, 500);
+    }
+
+    /**
+     *
+     * @param unexpectedCount number of unexpected callback calls
+     * @param callbackCalled number of callback calls (including unexpected)
+     * @param dataReceived number of expected callback calls (onBits or onRegisters)
+     * @param pollStartMillis poll start time in milliepoch
+     * @param expectedPollAverageMin average poll period should be at least greater than this
+     * @param expectedPollAverageMax average poll period less than this
+     * @throws InterruptedException
+     */
+    private void assertPollDetails(AtomicInteger unexpectedCount, AtomicInteger expectedCount, long pollStartMillis,
+            long pollEndMillis, int expectedPollAverageMin, int expectedPollAverageMax) throws InterruptedException {
+        int responses = expectedCount.get();
+        assertThat(unexpectedCount.get(), is(equalTo(0)));
         assertTrue(responses > 1);
 
-        assertThat(unexpectedCount.get(), is(equalTo(0)));
-
-        float averagePollPeriodMillis = ((float) (end - start)) / (responses - 1);
-        assertTrue(String.valueOf(averagePollPeriodMillis), averagePollPeriodMillis > 145);
-        // Sometimes the CI slow, so allow average poll period of 300ms even though it should be 150ms
-        assertTrue(String.valueOf(averagePollPeriodMillis), averagePollPeriodMillis < 300);
-
-        // Sleep for half a second, well enough time for some more polls
-        Thread.sleep(500);
-        // ensure that no polls happened (since polling was unregistered)
-        assertThat(callbackCalled.getCount(), is(equalTo(countAfter)));
-
+        float averagePollPeriodMillis = ((float) (pollEndMillis - pollStartMillis)) / (responses - 1);
+        assertTrue(String.format(
+                "Measured avarage poll period %f ms (%d responses in %d ms) is not withing expected limits [%d, %d]",
+                averagePollPeriodMillis, responses, pollEndMillis - pollStartMillis, expectedPollAverageMin,
+                expectedPollAverageMax),
+                averagePollPeriodMillis > expectedPollAverageMin && averagePollPeriodMillis < expectedPollAverageMax);
     }
 
     @Test
@@ -810,22 +800,12 @@ public class SmokeTest extends IntegrationTestSupport {
         modbusManager.registerRegularPoll(task, 200, 0);
         callbackCalled.await(5, TimeUnit.SECONDS);
         modbusManager.unregisterRegularPoll(task);
-        int countAfterUnregister = expectedReceived.get();
-
-        //
-        // Test polling ratre
-        //
         long end = System.currentTimeMillis();
-        int responses = expectedReceived.get();
-        assertTrue(responses > 1);
+        assertPollDetails(unexpectedCount, expectedReceived, start, end, 190, 600);
 
+        // wait some more and ensure nothing comes back
+        Thread.sleep(500);
         assertThat(unexpectedCount.get(), is(equalTo(0)));
-        assertThat(errorCount.get(), is(equalTo(1))); // one error expected, when there is initally no data
-
-        float averagePollPeriodMillis = ((float) (end - start)) / (responses - 1);
-        assertTrue(String.valueOf(averagePollPeriodMillis), averagePollPeriodMillis > 190);
-        // Sometimes the CI slow, so allow average poll period of 400ms even though it should be 200ms
-        assertTrue(String.valueOf(averagePollPeriodMillis), averagePollPeriodMillis < 400);
     }
 
     @SuppressWarnings("null")
