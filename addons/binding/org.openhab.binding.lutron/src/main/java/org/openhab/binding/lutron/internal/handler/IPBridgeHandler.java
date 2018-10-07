@@ -65,8 +65,8 @@ public class IPBridgeHandler extends BaseBridgeHandler {
 
     private static final String DEFAULT_USER = "lutron";
     private static final String DEFAULT_PASSWORD = "integration";
-    private static final int DEFAULT_RECONNECT = 5;
-    private static final int DEFAULT_HEARTBEAT = 5;
+    private static final int DEFAULT_RECONNECT_MINUTES = 5;
+    private static final int DEFAULT_HEARTBEAT_MINUTES = 5;
 
     private final Logger logger = LoggerFactory.getLogger(IPBridgeHandler.class);
 
@@ -124,8 +124,8 @@ public class IPBridgeHandler extends BaseBridgeHandler {
 
         if (validConfiguration(this.config)) {
             LutronDeviceDiscoveryService discovery = new LutronDeviceDiscoveryService(this);
-            reconnectInterval = (config.getReconnect() > 0) ? config.getReconnect() : DEFAULT_RECONNECT;
-            heartbeatInterval = (config.getHeartbeat() > 0) ? config.getHeartbeat() : DEFAULT_HEARTBEAT;
+            reconnectInterval = (config.getReconnect() > 0) ? config.getReconnect() : DEFAULT_RECONNECT_MINUTES;
+            heartbeatInterval = (config.getHeartbeat() > 0) ? config.getHeartbeat() : DEFAULT_HEARTBEAT_MINUTES;
 
             this.discoveryServiceRegistration = this.bundleContext.registerService(DiscoveryService.class, discovery,
                     null);

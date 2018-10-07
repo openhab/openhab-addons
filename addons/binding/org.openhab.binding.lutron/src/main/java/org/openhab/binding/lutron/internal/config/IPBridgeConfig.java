@@ -20,13 +20,13 @@ public class IPBridgeConfig {
     private String ipAddress;
     private String user;
     private String password;
-    private int reconnect = 0;
-    private int heartbeat = 0;
+    private int reconnect;
+    private int heartbeat;
 
     public boolean sameConnectionParameters(IPBridgeConfig config) {
-        return StringUtils.equals(this.ipAddress, config.ipAddress) && StringUtils.equals(this.user, config.user)
-                && StringUtils.equals(this.password, config.password) && (this.reconnect == config.reconnect)
-                && (this.heartbeat == config.heartbeat);
+        return StringUtils.equals(ipAddress, config.ipAddress) && StringUtils.equals(user, config.user)
+                && StringUtils.equals(password, config.password) && (reconnect == config.reconnect)
+                && (heartbeat == config.heartbeat);
     }
 
     public String getIpAddress() {
