@@ -19,7 +19,7 @@
 			</parameter>
 			<parameter name="pollingInterval" type="integer" min="0" unit="s">
 				<label>Polling interval</label>
-				<description>Time in seconds after a refresh is triggerd, 0 to disable</description>
+				<description>Time in seconds after a refresh is triggered, 0 to disable</description>
 				<default>300</default>
 			</parameter>
 			<parameter name="sendingEEPId" type="text">
@@ -27,6 +27,7 @@
 				<options>
 					<option value="A5_3F_7F_EltakoFSB">Eltako FSB14/61/71</option>
 					<option value="D2_05_00">D2-05-00 Rollershutter (like SIN-2-RS-01)</option>
+					<option value="A5_38_08_07">Gateway command - blinds (A5_38_08 sub command 0x07)</option>
 				</options>
 				<default>A5_3F_7F_EltakoFSB</default>
 				<limitToOptions>true</limitToOptions>
@@ -41,6 +42,7 @@
 				<options>
 					<option value="A5_3F_7F_EltakoFSB">Eltako FSB14/61/71</option>
 					<option value="D2_05_00">D2-05-00 Rollershutter (like SIN-2-RS-01)</option>
+					<option value="A5_11_03">A5-11-03 Rollershutter</option>
 				</options>
 				<multipleLimit>4</multipleLimit>
 				<limitToOptions>true</limitToOptions>

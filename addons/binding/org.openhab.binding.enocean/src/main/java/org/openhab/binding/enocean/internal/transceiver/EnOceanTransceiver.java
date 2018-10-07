@@ -84,13 +84,10 @@ public abstract class EnOceanTransceiver {
                     if (currentRequest != null && currentRequest.RequestPacket != null) {
                         synchronized (currentRequest) {
 
-                            logger.trace("sending request");
-
                             byte[] b = currentRequest.RequestPacket.serialize();
 
-                            if (logger.isDebugEnabled()) {
-                                logger.debug("{}", HexUtils.bytesToHex(b));
-                            }
+                            logger.trace("<< Sending data, type {}, payload {}",
+                                    currentRequest.RequestPacket.getPacketType().name(), HexUtils.bytesToHex(b));
 
                             outputStream.write(b);
                             outputStream.flush();
@@ -99,7 +96,6 @@ public abstract class EnOceanTransceiver {
                             // Todo tweak sending intervall (250 ist just a first try)
                             timeOut = scheduler.schedule(() -> {
                                 try {
-                                    logger.debug("sendNext");
                                     sendNext();
                                 } catch (IOException e) {
                                     errorListener.ErrorOccured(e);
@@ -247,7 +243,7 @@ public abstract class EnOceanTransceiver {
                                     logger.trace("Received sub_msg");
                                 }
 
-                                logger.trace("Received header, data length {} optional length {} packet type {}",
+                                logger.trace(">> Received header, data length {} optional length {} packet type {}",
                                         dataLength, optionalLength, packetType);
                             } else {
                                 // check if we find a sync byte in current buffer
@@ -284,36 +280,59 @@ public abstract class EnOceanTransceiver {
                                         packetType, dataBuffer);
 
                                 if (packet != null) {
-                                    if (packet.getPacketType() == ESPPacketType.RESPONSE) {
-                                        logger.trace("publish response");
+                                    switch (packet.getPacketType()) {
+                                        case COMMON_COMMAND:
+                                            break;
+                                        case EVENT:
+                                            break;
+                                        case RADIO_ERP1:
+                                            ERP1Message msg = (ERP1Message) packet;
 
-                                        if (currentRequest != null) {
-                                            if (currentRequest.ResponseListener != null) {
+                                            byte[] d = new byte[dataLength + optionalLength];
+                                            System.arraycopy(dataBuffer, 0, d, 0, d.length);
 
-                                                logger.trace("response received");
-                                                currentRequest.ResponsePacket = (Response) packet;
-                                                try {
-                                                    currentRequest.ResponseListener
-                                                            .handleResponse(currentRequest.ResponsePacket);
-                                                } catch (Exception e) {
-                                                }
+                                            logger.debug("{} with RORG {} for {} payload {}",
+                                                    packet.getPacketType().name(), msg.getRORG().name(),
+                                                    HexUtils.bytesToHex(msg.getSenderId()), HexUtils.bytesToHex(d));
 
-                                                logger.trace("handled request");
-                                            } else {
-                                                logger.trace("request without listener");
-                                            }
-                                        }
-                                    } else if (packet instanceof ERP1Message) {
+                                            informListeners(msg);
+                                            break;
+                                        case RADIO_ERP2:
+                                            break;
+                                        case RADIO_MESSAGE:
+                                            break;
+                                        case RADIO_SUB_TEL:
+                                            break;
+                                        case REMOTE_MAN_COMMAND:
+                                            break;
+                                        case RESPONSE:
+                                            byte[] dd = new byte[dataLength + optionalLength];
+                                            System.arraycopy(dataBuffer, 0, dd, 0, dd.length);
 
-                                        ERP1Message msg = (ERP1Message) packet;
+                                            logger.debug("{} with code {} payload {}", packet.getPacketType().name(),
+                                                    ((Response) packet).getResponseType().name(),
+                                                    HexUtils.bytesToHex(dd));
 
-                                        logger.debug("publish event for: {}", HexUtils.bytesToHex(msg.getSenderId()));
+	                                        if (currentRequest != null) {
+	                                            if (currentRequest.ResponseListener != null) {
+	                                                currentRequest.ResponsePacket = (Response) packet;
+	                                                try {
+	                                                    currentRequest.ResponseListener
+	                                                            .handleResponse(currentRequest.ResponsePacket);
+	                                                } catch (Exception e) {
+	                                                }
+	
+	                                                    logger.trace("Response handled");
+	                                            } else {
+	                                                    logger.trace("Response without listener");
+	                                            }
+	                                        }
+                                            break;
+                                        case SMART_ACK_COMMAND:
+                                            break;
+                                        default:
+                                            break;
 
-                                        byte[] d = new byte[dataLength + optionalLength];
-                                        System.arraycopy(dataBuffer, 0, d, 0, d.length);
-                                        logger.debug("{}", HexUtils.bytesToHex(d));
-
-                                        informListeners(msg);
                                     }
                                 } else {
                                     logger.trace("Unknown ESP3Packet");
@@ -350,7 +369,8 @@ public abstract class EnOceanTransceiver {
             return;
         }
 
-        logger.debug("new request arrived");
+        logger.debug("Enqueue new send request with ESP3 type {} {} callback", packet.getPacketType().name(),
+                responseCallback == null ? "without" : "with");
         Request r = new Request();
         r.RequestPacket = packet;
         r.ResponseListener = responseCallback;
@@ -386,7 +406,7 @@ public abstract class EnOceanTransceiver {
                 }
             }
         } catch (Exception e) {
-
+            logger.error("Exception in informListeners", e);
         }
     }
 

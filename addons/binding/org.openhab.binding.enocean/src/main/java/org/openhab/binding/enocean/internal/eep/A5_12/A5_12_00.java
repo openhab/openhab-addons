@@ -17,19 +17,19 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message;
  *
  * @author Dominik Krickl-Vorreiter - Initial contribution
  */
-public class A5_12_01 extends A5_12 {
+public class A5_12_00 extends A5_12 {
 
-    public A5_12_01(ERP1Message packet) {
+    public A5_12_00(ERP1Message packet) {
         super(packet);
     }
 
     @Override
     protected State calcCumulativeValue(float value) {
-        return new QuantityType<>(value, SmartHomeUnits.KILOWATT_HOUR);
+        return new QuantityType<>(value, SmartHomeUnits.ONE);
     }
 
     @Override
     protected State calcCurrentValue(float value) {
-        return new QuantityType<>(value, SmartHomeUnits.WATT);
+        return new QuantityType<>(value, SmartHomeUnits.ONE);
     }
 }

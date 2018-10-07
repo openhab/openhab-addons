@@ -62,6 +62,15 @@
 		</config-description>
 	</channel-type>
 
+    <!-- Angle Channel -->
+    <channel-type id="angle">
+        <item-type>Number:Angle</item-type>
+        <label>Angle</label>
+        <description>Blind angle</description>
+        <category>Blinds</category>
+        <state pattern="%d°" />
+    </channel-type>
+
 	<!-- Dimmer Channel -->
 	<channel-type id="dimmer">
 		<item-type>Dimmer</item-type>

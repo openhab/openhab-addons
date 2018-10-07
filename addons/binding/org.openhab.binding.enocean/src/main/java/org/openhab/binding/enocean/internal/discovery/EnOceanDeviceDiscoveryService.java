@@ -91,6 +91,9 @@ public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService
     public void espPacketReceived(ESP3Packet packet) {
         ERP1Message msg = (ERP1Message) packet;
 
+        logger.info("EnOcean Package discovered, RORG {}, payload {}, additional {}", msg.getRORG().name(),
+                HexUtils.bytesToHex(msg.getPayload()), HexUtils.bytesToHex(msg.getOptionalPayload()));
+
         EEP eep = EEPFactory.buildEEPFromTeachInERP1(msg);
         if (eep == null) {
             return;

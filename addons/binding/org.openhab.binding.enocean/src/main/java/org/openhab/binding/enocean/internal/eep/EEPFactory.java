@@ -10,6 +10,7 @@ package org.openhab.binding.enocean.internal.eep;
 
 import java.lang.reflect.InvocationTargetException;
 
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.enocean.internal.eep.Base.UTEResponse;
 import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
 import org.openhab.binding.enocean.internal.eep.D5_00.D5_00_01;
@@ -52,6 +53,10 @@ public class EEPFactory {
             return cl.getConstructor(ERP1Message.class).newInstance(packet);
         } catch (IllegalAccessException | InstantiationException | IllegalArgumentException | InvocationTargetException
                 | NoSuchMethodException | SecurityException e) {
+            logger.error("Cannot instantiate EEP {}-{}-{}: {}",
+                    HexUtils.bytesToHex(new byte[] { eepType.getRORG().getValue() }),
+                    HexUtils.bytesToHex(new byte[] { (byte) eepType.getFunc() }),
+                    HexUtils.bytesToHex(new byte[] { (byte) eepType.getType() }), e.getMessage());
             throw new IllegalArgumentException(e);
         }
     }
@@ -112,6 +117,11 @@ public class EEPFactory {
                 int func = db_3 >>> 2;
                 int type = ((db_3 & 0b11) << 5) + (db_2 >>> 3);
                 int manufId = ((db_2 & 0b111) << 8) + (db_1 & 0xff);
+
+                logger.info("Received 4BS Teach In with EEP A5-{}-{} and manufacturerID {}",
+                        HexUtils.bytesToHex(new byte[] { (byte) func }),
+                        HexUtils.bytesToHex(new byte[] { (byte) type }),
+                        HexUtils.bytesToHex(new byte[] { (byte) manufId }));
 
                 EEPType eepType = EEPType.getType(RORG._4BS, func, type, manufId);
                 if (eepType == null) {
