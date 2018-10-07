@@ -45,7 +45,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.openhab.binding.modbus.internal.ModbusBindingConstants;
+import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
 import org.openhab.binding.modbus.internal.handler.ModbusDataThingHandler;
 import org.openhab.binding.modbus.internal.handler.ModbusPollerThingHandler;
 import org.openhab.binding.modbus.internal.handler.ModbusPollerThingHandlerImpl;
@@ -77,13 +77,13 @@ public class ModbusPollerThingHandlerTest {
     private ThingHandlerCallback thingCallback;
 
     public static BridgeBuilder createTcpThingBuilder(String id) {
-        return BridgeBuilder.create(ModbusBindingConstants.THING_TYPE_MODBUS_TCP,
-                new ThingUID(ModbusBindingConstants.THING_TYPE_MODBUS_TCP, id)).withLabel("label for " + id);
+        return BridgeBuilder.create(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_TCP,
+                new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_TCP, id)).withLabel("label for " + id);
     }
 
     public static BridgeBuilder createPollerThingBuilder(String id) {
-        return BridgeBuilder.create(ModbusBindingConstants.THING_TYPE_MODBUS_POLLER,
-                new ThingUID(ModbusBindingConstants.THING_TYPE_MODBUS_POLLER, id)).withLabel("label for " + id);
+        return BridgeBuilder.create(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER,
+                new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER, id)).withLabel("label for " + id);
     }
 
     private void registerThingToMockRegistry(Thing thing) {
@@ -168,7 +168,7 @@ public class ModbusPollerThingHandlerTest {
         pollerConfig.put("refresh", 0L); // 0 -> non polling
         pollerConfig.put("start", 5);
         pollerConfig.put("length", 9);
-        pollerConfig.put("type", ModbusBindingConstants.READ_TYPE_HOLDING_REGISTER);
+        pollerConfig.put("type", ModbusBindingConstantsInternal.READ_TYPE_HOLDING_REGISTER);
         poller = createPollerThingBuilder("poller").withConfiguration(pollerConfig).withBridge(endpoint.getUID())
                 .build();
         registerThingToMockRegistry(poller);

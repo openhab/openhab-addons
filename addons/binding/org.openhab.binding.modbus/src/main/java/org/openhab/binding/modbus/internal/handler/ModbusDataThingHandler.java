@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.modbus.internal.handler;
 
-import static org.openhab.binding.modbus.internal.ModbusBindingConstants.*;
+import static org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal.*;
 
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -46,7 +46,9 @@ import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.modbus.internal.ModbusBindingConstants;
+import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
+import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
+import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
 import org.openhab.binding.modbus.internal.ModbusConfigurationException;
 import org.openhab.binding.modbus.internal.Transformation;
 import org.openhab.binding.modbus.internal.config.ModbusDataConfiguration;
@@ -92,19 +94,19 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
     private static final Map<String, List<Class<? extends State>>> CHANNEL_ID_TO_ACCEPTED_TYPES = new HashMap<>();
 
     static {
-        CHANNEL_ID_TO_ACCEPTED_TYPES.put(ModbusBindingConstants.CHANNEL_SWITCH,
+        CHANNEL_ID_TO_ACCEPTED_TYPES.put(ModbusBindingConstantsInternal.CHANNEL_SWITCH,
                 new SwitchItem("").getAcceptedDataTypes());
-        CHANNEL_ID_TO_ACCEPTED_TYPES.put(ModbusBindingConstants.CHANNEL_CONTACT,
+        CHANNEL_ID_TO_ACCEPTED_TYPES.put(ModbusBindingConstantsInternal.CHANNEL_CONTACT,
                 new ContactItem("").getAcceptedDataTypes());
-        CHANNEL_ID_TO_ACCEPTED_TYPES.put(ModbusBindingConstants.CHANNEL_DATETIME,
+        CHANNEL_ID_TO_ACCEPTED_TYPES.put(ModbusBindingConstantsInternal.CHANNEL_DATETIME,
                 new DateTimeItem("").getAcceptedDataTypes());
-        CHANNEL_ID_TO_ACCEPTED_TYPES.put(ModbusBindingConstants.CHANNEL_DIMMER,
+        CHANNEL_ID_TO_ACCEPTED_TYPES.put(ModbusBindingConstantsInternal.CHANNEL_DIMMER,
                 new DimmerItem("").getAcceptedDataTypes());
-        CHANNEL_ID_TO_ACCEPTED_TYPES.put(ModbusBindingConstants.CHANNEL_NUMBER,
+        CHANNEL_ID_TO_ACCEPTED_TYPES.put(ModbusBindingConstantsInternal.CHANNEL_NUMBER,
                 new NumberItem("").getAcceptedDataTypes());
-        CHANNEL_ID_TO_ACCEPTED_TYPES.put(ModbusBindingConstants.CHANNEL_STRING,
+        CHANNEL_ID_TO_ACCEPTED_TYPES.put(ModbusBindingConstantsInternal.CHANNEL_STRING,
                 new StringItem("").getAcceptedDataTypes());
-        CHANNEL_ID_TO_ACCEPTED_TYPES.put(ModbusBindingConstants.CHANNEL_ROLLERSHUTTER,
+        CHANNEL_ID_TO_ACCEPTED_TYPES.put(ModbusBindingConstantsInternal.CHANNEL_ROLLERSHUTTER,
                 new RollershutterItem("").getAcceptedDataTypes());
     }
 
@@ -692,7 +694,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                     error.getMessage(), error);
         }
         Map<@NonNull ChannelUID, @NonNull State> states = new HashMap<>();
-        states.put(new ChannelUID(getThing().getUID(), ModbusBindingConstants.CHANNEL_LAST_READ_ERROR),
+        states.put(new ChannelUID(getThing().getUID(), ModbusBindingConstantsInternal.CHANNEL_LAST_READ_ERROR),
                 new DateTimeType());
 
         synchronized (this) {
@@ -727,7 +729,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                     error.getMessage(), error);
         }
         Map<@NonNull ChannelUID, @NonNull State> states = new HashMap<>();
-        states.put(new ChannelUID(getThing().getUID(), ModbusBindingConstants.CHANNEL_LAST_WRITE_ERROR),
+        states.put(new ChannelUID(getThing().getUID(), ModbusBindingConstantsInternal.CHANNEL_LAST_WRITE_ERROR),
                 new DateTimeType());
 
         synchronized (this) {
@@ -752,7 +754,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         logger.debug("Successful write, matching request {}", request);
         DateTimeType now = new DateTimeType();
         updateStatus(ThingStatus.ONLINE);
-        updateState(ModbusBindingConstants.CHANNEL_LAST_WRITE_SUCCESS, now);
+        updateState(ModbusBindingConstantsInternal.CHANNEL_LAST_WRITE_SUCCESS, now);
     }
 
     /**
@@ -813,7 +815,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             }
         });
 
-        states.put(new ChannelUID(getThing().getUID(), ModbusBindingConstants.CHANNEL_LAST_READ_SUCCESS),
+        states.put(new ChannelUID(getThing().getUID(), ModbusBindingConstantsInternal.CHANNEL_LAST_READ_SUCCESS),
                 new DateTimeType());
 
         synchronized (this) {

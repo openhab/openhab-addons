@@ -29,8 +29,10 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
+import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
 import org.openhab.binding.modbus.internal.AtomicStampedKeyValue;
-import org.openhab.binding.modbus.internal.ModbusBindingConstants;
+import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
 import org.openhab.binding.modbus.internal.config.ModbusPollerConfiguration;
 import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusManager;
@@ -222,14 +224,14 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
     private static class ModbusPollerReadRequest extends BasicModbusReadRequestBlueprint {
 
         private static ModbusReadFunctionCode getFunctionCode(@Nullable String type) {
-            if (!ModbusBindingConstants.READ_FUNCTION_CODES.containsKey(type)) {
-                Object[] acceptedTypes = ModbusBindingConstants.READ_FUNCTION_CODES.keySet().toArray();
+            if (!ModbusBindingConstantsInternal.READ_FUNCTION_CODES.containsKey(type)) {
+                Object[] acceptedTypes = ModbusBindingConstantsInternal.READ_FUNCTION_CODES.keySet().toArray();
                 Arrays.sort(acceptedTypes);
                 throw new IllegalArgumentException(
                         String.format("No function code found for type='%s'. Was expecting one of: %s", type,
                                 StringUtils.join(acceptedTypes, ", ")));
             }
-            ModbusReadFunctionCode functionCode = ModbusBindingConstants.READ_FUNCTION_CODES.get(type);
+            ModbusReadFunctionCode functionCode = ModbusBindingConstantsInternal.READ_FUNCTION_CODES.get(type);
             return functionCode;
         }
 
