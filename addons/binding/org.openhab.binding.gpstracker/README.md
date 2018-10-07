@@ -86,6 +86,7 @@ If the things are not defined in **.things** files the first time the tracker se
 Basic channels provided by the tracker things:
 
 * **Location** - Current location of the tracker
+* **Accuracy** - GPS accuracy
 * **Last Report** - Timestamp of the last location report
 * **Battery Level** - Battery level of the device running the tracker application
 * **Region trigger channel** - Used by regions defined in tracker application. Event is fired with payload of the region name when the binding receives a **transition** log record or a distance calculation for a **location** record indicates that the tracker is outside of the region circle. Payload is suffixed with `/enter` for entering and with `/leave` for leaving events.
@@ -155,6 +156,7 @@ Thing gpstracker:tracker:EX   "EX tracker" [trackerId="EX"] {
 Location	locationEX	"Location"		{channel="gpstracker:tracker:1:lastLocation"}
 DateTime	lastSeenEX	"Last seen"		{channel="gpstracker:tracker:1:lastReport"}
 Number		batteryEX	"Battery level"		{channel="gpstracker:tracker:1:batteryLevel"}
+Number		accurayEX	"GPS Accuracy [%d m]"		{channel="gpstracker:tracker:1:gpsAccuracy"}
 
 //linking switch item to regionTrigger channel. assuming the Home distance channel is defined in the binding config (see above)
 Switch atHomeEX "Home presence" {channel="gpstracker:tracker:EX:regionTrigger" [profile="gpstracker:trigger-geofence", regionName="Home"]}
@@ -172,6 +174,7 @@ sitemap gpstracker label="GPSTracker Binding" {
     Text item=atHomeEX
     Text item=lastSeenEX
     Text item=batteryEX
+    Text item=accurayEX
     Mapview item=locationEX height=4
 }
 ```
