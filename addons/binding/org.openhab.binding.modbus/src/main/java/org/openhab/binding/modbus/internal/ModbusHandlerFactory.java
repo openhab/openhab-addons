@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.modbus.internal;
 
-import static org.openhab.binding.modbus.internal.ModbusBindingConstants.*;
+import static org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal.*;
 
 import java.util.HashSet;
 import java.util.Set;

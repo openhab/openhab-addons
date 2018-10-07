@@ -28,7 +28,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.openhab.binding.modbus.internal.ModbusBindingConstants;
+import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
 import org.openhab.binding.modbus.internal.handler.ModbusTcpThingHandler;
 import org.openhab.io.transport.modbus.ModbusManager;
 import org.openhab.io.transport.modbus.endpoint.EndpointPoolConfiguration;
@@ -42,8 +42,8 @@ public class ModbusTcpThingHandlerTest {
     private ModbusManager modbusManager;
 
     private static BridgeBuilder createTcpThingBuilder(String id) {
-        return BridgeBuilder.create(ModbusBindingConstants.THING_TYPE_MODBUS_TCP,
-                new ThingUID(ModbusBindingConstants.THING_TYPE_MODBUS_TCP, id));
+        return BridgeBuilder.create(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_TCP,
+                new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_TCP, id));
     }
 
     @SuppressWarnings("null")

@@ -6,19 +6,20 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.modbus.internal.handler;
+package org.openhab.binding.modbus;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Signals that {@link ModbusEndpointThingHandler} is not properly initialized yet, and the requested operation cannot
- * be completed.
+ * The {@link ModbusBinding} class defines some constants
+ * public that might be used from other bundles as well.
  *
  * @author Sami Salonen - Initial contribution
+ * @author Nagy Attila Gabor - Split the original ModbusBindingConstants in two
  */
 @NonNullByDefault
-public class EndpointNotInitializedException extends Exception {
+public class ModbusBindingConstants {
 
-    private static final long serialVersionUID = -6721646244844348903L;
+    public static final String BINDING_ID = "modbus";
 
 }

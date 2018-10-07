@@ -83,11 +83,13 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.openhab.binding.modbus.internal.ModbusBindingConstants;
+import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
 import org.openhab.binding.modbus.internal.handler.ModbusDataThingHandler;
 import org.openhab.binding.modbus.internal.handler.ModbusPollerThingHandler;
 import org.openhab.binding.modbus.internal.handler.ModbusPollerThingHandlerImpl;
 import org.openhab.binding.modbus.internal.handler.ModbusTcpThingHandler;
+import org.openhab.io.transport.modbus.BasicModbusRegister;
+import org.openhab.io.transport.modbus.BasicModbusRegisterArray;
 import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusConstants;
 import org.openhab.io.transport.modbus.ModbusConstants.ValueType;
@@ -96,8 +98,6 @@ import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusRegister;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
-import org.openhab.io.transport.modbus.BasicModbusRegisterArray;
-import org.openhab.io.transport.modbus.BasicModbusRegister;
 import org.openhab.io.transport.modbus.ModbusResponse;
 import org.openhab.io.transport.modbus.ModbusWriteCoilRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusWriteFunctionCode;
@@ -225,13 +225,13 @@ public class ModbusDataHandlerTest extends JavaTest {
 
     private static final Map<String, Class<? extends Item>> channelToItemClass = new HashMap<>();
     static {
-        channelToItemClass.put(ModbusBindingConstants.CHANNEL_SWITCH, SwitchItem.class);
-        channelToItemClass.put(ModbusBindingConstants.CHANNEL_CONTACT, ContactItem.class);
-        channelToItemClass.put(ModbusBindingConstants.CHANNEL_DATETIME, DateTimeItem.class);
-        channelToItemClass.put(ModbusBindingConstants.CHANNEL_DIMMER, DimmerItem.class);
-        channelToItemClass.put(ModbusBindingConstants.CHANNEL_NUMBER, NumberItem.class);
-        channelToItemClass.put(ModbusBindingConstants.CHANNEL_STRING, StringItem.class);
-        channelToItemClass.put(ModbusBindingConstants.CHANNEL_ROLLERSHUTTER, RollershutterItem.class);
+        channelToItemClass.put(ModbusBindingConstantsInternal.CHANNEL_SWITCH, SwitchItem.class);
+        channelToItemClass.put(ModbusBindingConstantsInternal.CHANNEL_CONTACT, ContactItem.class);
+        channelToItemClass.put(ModbusBindingConstantsInternal.CHANNEL_DATETIME, DateTimeItem.class);
+        channelToItemClass.put(ModbusBindingConstantsInternal.CHANNEL_DIMMER, DimmerItem.class);
+        channelToItemClass.put(ModbusBindingConstantsInternal.CHANNEL_NUMBER, NumberItem.class);
+        channelToItemClass.put(ModbusBindingConstantsInternal.CHANNEL_STRING, StringItem.class);
+        channelToItemClass.put(ModbusBindingConstantsInternal.CHANNEL_ROLLERSHUTTER, RollershutterItem.class);
     }
 
     private List<Thing> things = new ArrayList<>();
@@ -256,15 +256,17 @@ public class ModbusDataHandlerTest extends JavaTest {
     Map<ChannelUID, List<State>> stateUpdates = new HashMap<>();
 
     private Map<String, String> channelToAcceptedType = ImmutableMap.<String, String> builder()
-            .put(ModbusBindingConstants.CHANNEL_SWITCH, "Switch").put(ModbusBindingConstants.CHANNEL_CONTACT, "Contact")
-            .put(ModbusBindingConstants.CHANNEL_DATETIME, "DateTime")
-            .put(ModbusBindingConstants.CHANNEL_DIMMER, "Dimmer").put(ModbusBindingConstants.CHANNEL_NUMBER, "Number")
-            .put(ModbusBindingConstants.CHANNEL_STRING, "String")
-            .put(ModbusBindingConstants.CHANNEL_ROLLERSHUTTER, "Rollershutter")
-            .put(ModbusBindingConstants.CHANNEL_LAST_READ_SUCCESS, "DateTime")
-            .put(ModbusBindingConstants.CHANNEL_LAST_WRITE_SUCCESS, "DateTime")
-            .put(ModbusBindingConstants.CHANNEL_LAST_WRITE_ERROR, "DateTime")
-            .put(ModbusBindingConstants.CHANNEL_LAST_READ_ERROR, "DateTime").build();
+            .put(ModbusBindingConstantsInternal.CHANNEL_SWITCH, "Switch")
+            .put(ModbusBindingConstantsInternal.CHANNEL_CONTACT, "Contact")
+            .put(ModbusBindingConstantsInternal.CHANNEL_DATETIME, "DateTime")
+            .put(ModbusBindingConstantsInternal.CHANNEL_DIMMER, "Dimmer")
+            .put(ModbusBindingConstantsInternal.CHANNEL_NUMBER, "Number")
+            .put(ModbusBindingConstantsInternal.CHANNEL_STRING, "String")
+            .put(ModbusBindingConstantsInternal.CHANNEL_ROLLERSHUTTER, "Rollershutter")
+            .put(ModbusBindingConstantsInternal.CHANNEL_LAST_READ_SUCCESS, "DateTime")
+            .put(ModbusBindingConstantsInternal.CHANNEL_LAST_WRITE_SUCCESS, "DateTime")
+            .put(ModbusBindingConstantsInternal.CHANNEL_LAST_WRITE_ERROR, "DateTime")
+            .put(ModbusBindingConstantsInternal.CHANNEL_LAST_READ_ERROR, "DateTime").build();
 
     private void registerThingToMockRegistry(Thing thing) {
         things.add(thing);
@@ -330,8 +332,8 @@ public class ModbusDataHandlerTest extends JavaTest {
     private Bridge createPollerMock(String pollerId, PollTask task) {
 
         final Bridge poller;
-        ThingUID thingUID = new ThingUID(ModbusBindingConstants.THING_TYPE_MODBUS_POLLER, pollerId);
-        BridgeBuilder builder = BridgeBuilder.create(ModbusBindingConstants.THING_TYPE_MODBUS_POLLER, thingUID)
+        ThingUID thingUID = new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER, pollerId);
+        BridgeBuilder builder = BridgeBuilder.create(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER, thingUID)
                 .withLabel("label for " + pollerId);
         for (Entry<String, String> entry : channelToAcceptedType.entrySet()) {
             String channelId = entry.getKey();
@@ -379,8 +381,8 @@ public class ModbusDataHandlerTest extends JavaTest {
     private ModbusDataThingHandler createDataHandler(String id, Bridge bridge,
             Function<ThingBuilder, ThingBuilder> builderConfigurator, BundleContext context,
             boolean autoCreateItemsAndLinkToChannels) {
-        ThingUID thingUID = new ThingUID(ModbusBindingConstants.THING_TYPE_MODBUS_DATA, id);
-        ThingBuilder builder = ThingBuilder.create(ModbusBindingConstants.THING_TYPE_MODBUS_DATA, thingUID)
+        ThingUID thingUID = new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_DATA, id);
+        ThingBuilder builder = ThingBuilder.create(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_DATA, thingUID)
                 .withLabel("label for " + id);
         for (Entry<String, String> entry : channelToAcceptedType.entrySet()) {
             String channelId = entry.getKey();
@@ -701,31 +703,32 @@ public class ModbusDataHandlerTest extends JavaTest {
 
         assertThat(stateUpdates.size(), is(equalTo(1)));
         assertThat(
-                stateUpdates.get(
-                        dataHandler.getThing().getChannel(ModbusBindingConstants.CHANNEL_LAST_READ_ERROR).getUID()),
+                stateUpdates.get(dataHandler.getThing()
+                        .getChannel(ModbusBindingConstantsInternal.CHANNEL_LAST_READ_ERROR).getUID()),
                 is(notNullValue()));
     }
 
     @Test
     public void testOnRegistersInt16StaticTransformation() {
         ModbusDataThingHandler dataHandler = testReadHandlingGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
-                "0", "-3", ModbusConstants.ValueType.INT16, null,
-                new BasicModbusRegisterArray(new ModbusRegister[] { new BasicModbusRegister((byte) 0xff, (byte) 0xfd) }),
+                "0", "-3", ModbusConstants.ValueType.INT16, null, new BasicModbusRegisterArray(
+                        new ModbusRegister[] { new BasicModbusRegister((byte) 0xff, (byte) 0xfd) }),
                 null);
 
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_LAST_READ_SUCCESS,
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_LAST_READ_SUCCESS,
                 is(notNullValue(State.class)));
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_LAST_READ_ERROR,
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_LAST_READ_ERROR,
                 is(nullValue(State.class)));
 
         // -3 converts to "true"
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_CONTACT, is(nullValue(State.class)));
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_SWITCH, is(nullValue(State.class)));
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_DIMMER, is(nullValue(State.class)));
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_NUMBER, new DecimalType(-3));
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_CONTACT,
+                is(nullValue(State.class)));
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_SWITCH, is(nullValue(State.class)));
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_DIMMER, is(nullValue(State.class)));
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_NUMBER, new DecimalType(-3));
         // roller shutter fails since -3 is invalid value (not between 0...100)
-        // assertThatStateContains(state, ModbusBindingConstants.CHANNEL_ROLLERSHUTTER, new PercentType(1));
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_STRING, new StringType("-3"));
+        // assertThatStateContains(state, ModbusBindingConstantsInternal.CHANNEL_ROLLERSHUTTER, new PercentType(1));
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_STRING, new StringType("-3"));
         // no datetime, conversion not possible without transformation
     }
 
@@ -746,22 +749,25 @@ public class ModbusDataHandlerTest extends JavaTest {
         });
         ModbusDataThingHandler dataHandler = testReadHandlingGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 "0", "MULTIPLY(10)", ModbusConstants.ValueType.INT16, null,
-                new BasicModbusRegisterArray(new ModbusRegister[] { new BasicModbusRegister((byte) 0xff, (byte) 0xfd) }),
+                new BasicModbusRegisterArray(
+                        new ModbusRegister[] { new BasicModbusRegister((byte) 0xff, (byte) 0xfd) }),
                 null, bundleContext);
 
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_LAST_READ_SUCCESS,
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_LAST_READ_SUCCESS,
                 is(notNullValue(State.class)));
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_LAST_READ_ERROR,
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_LAST_READ_ERROR,
                 is(nullValue(State.class)));
 
         // -3 converts to "true"
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_CONTACT, is(nullValue(State.class)));
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_SWITCH, is(nullValue(State.class)));
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_DIMMER, is(nullValue(State.class)));
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_NUMBER, new DecimalType(-30));
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_CONTACT,
+                is(nullValue(State.class)));
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_SWITCH, is(nullValue(State.class)));
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_DIMMER, is(nullValue(State.class)));
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_NUMBER, new DecimalType(-30));
         // roller shutter fails since -3 is invalid value (not between 0...100)
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_ROLLERSHUTTER, is(nullValue(State.class)));
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_STRING, new StringType("-30"));
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_ROLLERSHUTTER,
+                is(nullValue(State.class)));
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_STRING, new StringType("-30"));
         // no datetime, conversion not possible without transformation
     }
 
@@ -776,23 +782,26 @@ public class ModbusDataHandlerTest extends JavaTest {
         });
         ModbusDataThingHandler dataHandler = testReadHandlingGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 "0", "MULTIPLY(10)", ModbusConstants.ValueType.INT16, null,
-                new BasicModbusRegisterArray(new ModbusRegister[] { new BasicModbusRegister((byte) 0xff, (byte) 0xfd) }),
+                new BasicModbusRegisterArray(
+                        new ModbusRegister[] { new BasicModbusRegister((byte) 0xff, (byte) 0xfd) }),
                 null, bundleContext,
                 // Not linking items and channels
                 false);
 
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_LAST_READ_SUCCESS,
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_LAST_READ_SUCCESS,
                 is(notNullValue(State.class)));
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_LAST_READ_ERROR,
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_LAST_READ_ERROR,
                 is(nullValue(State.class)));
 
         // Since channles are not linked, they are not updated (are null)
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_CONTACT, is(nullValue(State.class)));
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_SWITCH, is(nullValue(State.class)));
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_DIMMER, is(nullValue(State.class)));
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_NUMBER, is(nullValue(State.class)));
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_ROLLERSHUTTER, is(nullValue(State.class)));
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_STRING, is(nullValue(State.class)));
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_CONTACT,
+                is(nullValue(State.class)));
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_SWITCH, is(nullValue(State.class)));
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_DIMMER, is(nullValue(State.class)));
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_NUMBER, is(nullValue(State.class)));
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_ROLLERSHUTTER,
+                is(nullValue(State.class)));
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_STRING, is(nullValue(State.class)));
     }
 
     @Test
@@ -806,20 +815,24 @@ public class ModbusDataHandlerTest extends JavaTest {
         });
         ModbusDataThingHandler dataHandler = testReadHandlingGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 "0", "ONOFF(10)", ModbusConstants.ValueType.INT16, null,
-                new BasicModbusRegisterArray(new ModbusRegister[] { new BasicModbusRegister((byte) 0xff, (byte) 0xfd) }),
+                new BasicModbusRegisterArray(
+                        new ModbusRegister[] { new BasicModbusRegister((byte) 0xff, (byte) 0xfd) }),
                 null, bundleContext);
 
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_LAST_READ_SUCCESS,
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_LAST_READ_SUCCESS,
                 is(notNullValue(State.class)));
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_LAST_READ_ERROR,
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_LAST_READ_ERROR,
                 is(nullValue(State.class)));
 
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_CONTACT, is(nullValue(State.class)));
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_SWITCH, is(equalTo(OnOffType.ON)));
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_DIMMER, is(equalTo(OnOffType.ON)));
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_NUMBER, is(nullValue(State.class)));
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_ROLLERSHUTTER, is(nullValue(State.class)));
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_STRING, is(equalTo(new StringType("ON"))));
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_CONTACT,
+                is(nullValue(State.class)));
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_SWITCH, is(equalTo(OnOffType.ON)));
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_DIMMER, is(equalTo(OnOffType.ON)));
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_NUMBER, is(nullValue(State.class)));
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_ROLLERSHUTTER,
+                is(nullValue(State.class)));
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_STRING,
+                is(equalTo(new StringType("ON"))));
     }
 
     @Test
@@ -835,9 +848,9 @@ public class ModbusDataHandlerTest extends JavaTest {
                 ModbusConstants.ValueType.BIT, "coil", ModbusWriteFunctionCode.WRITE_COIL, "number",
                 new DecimalType("2"), null, bundleContext);
 
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_LAST_WRITE_SUCCESS,
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_LAST_WRITE_SUCCESS,
                 is(notNullValue(State.class)));
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_LAST_WRITE_ERROR,
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_LAST_WRITE_ERROR,
                 is(nullValue(State.class)));
         assertThat(writeTasks.size(), is(equalTo(1)));
         WriteTask writeTask = writeTasks.get(0);
@@ -861,9 +874,9 @@ public class ModbusDataHandlerTest extends JavaTest {
                 ModbusConstants.ValueType.BIT, "coil", ModbusWriteFunctionCode.WRITE_COIL, "number",
                 new DecimalType("2"), null, bundleContext);
 
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_LAST_WRITE_SUCCESS,
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_LAST_WRITE_SUCCESS,
                 is(notNullValue(State.class)));
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_LAST_WRITE_ERROR,
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_LAST_WRITE_ERROR,
                 is(nullValue(State.class)));
         assertThat(writeTasks.size(), is(equalTo(1)));
         WriteTask writeTask = writeTasks.get(0);
@@ -887,9 +900,9 @@ public class ModbusDataHandlerTest extends JavaTest {
                 ModbusConstants.ValueType.INT16, "holding", ModbusWriteFunctionCode.WRITE_SINGLE_REGISTER, "number",
                 new DecimalType("2"), null, bundleContext);
 
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_LAST_WRITE_SUCCESS,
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_LAST_WRITE_SUCCESS,
                 is(notNullValue(State.class)));
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_LAST_WRITE_ERROR,
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_LAST_WRITE_ERROR,
                 is(nullValue(State.class)));
         assertThat(writeTasks.size(), is(equalTo(1)));
         WriteTask writeTask = writeTasks.get(0);
@@ -932,9 +945,9 @@ public class ModbusDataHandlerTest extends JavaTest {
                 ModbusConstants.ValueType.INT16, "holding", ModbusWriteFunctionCode.WRITE_MULTIPLE_REGISTERS, "number",
                 new DecimalType("2"), null, bundleContext);
 
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_LAST_WRITE_SUCCESS,
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_LAST_WRITE_SUCCESS,
                 is(notNullValue(State.class)));
-        assertSingleStateUpdate(dataHandler, ModbusBindingConstants.CHANNEL_LAST_WRITE_ERROR,
+        assertSingleStateUpdate(dataHandler, ModbusBindingConstantsInternal.CHANNEL_LAST_WRITE_ERROR,
                 is(nullValue(State.class)));
         assertThat(writeTasks.size(), is(equalTo(2)));
         {

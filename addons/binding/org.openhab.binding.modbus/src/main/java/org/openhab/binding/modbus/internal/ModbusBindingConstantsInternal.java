@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.modbus.internal;
 
+import static org.openhab.binding.modbus.ModbusBindingConstants.BINDING_ID;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,9 +24,7 @@ import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
  * @author Sami Salonen - Initial contribution
  */
 @NonNullByDefault
-public class ModbusBindingConstants {
-
-    public static final String BINDING_ID = "modbus";
+public class ModbusBindingConstantsInternal {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_MODBUS_TCP = new ThingTypeUID(BINDING_ID, "tcp");
