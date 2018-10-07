@@ -5,7 +5,7 @@
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/main/resources"/>
 	<classpathentry kind="src" path="src/gen/java"/>
-	<classpathentry exported="true" kind="lib" path="lib/rrd4j-2.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/rrd4j-3.3.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/sqlite-jdbc-3.8.7.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

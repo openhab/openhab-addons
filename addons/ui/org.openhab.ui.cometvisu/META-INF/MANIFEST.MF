@@ -4,7 +4,7 @@ Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.openhab.ui.cometvisu.internal.CvActivator
 Bundle-ClassPath: 
  .,
- lib/rrd4j-2.2.jar,
+ lib/rrd4j-3.3.1.jar,
  lib/sqlite-jdbc-3.8.7.jar
 Bundle-ManifestVersion: 2
 Bundle-Name: CometVisu backend
