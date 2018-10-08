@@ -10,10 +10,13 @@ package org.openhab.binding.mihome.internal;
 
 import static org.openhab.binding.mihome.internal.XiaomiGatewayBindingConstants.*;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -47,8 +50,6 @@ import org.openhab.binding.mihome.internal.handler.XiaomiSensorWaterHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 
-import com.google.common.collect.Sets;
-
 /**
  * The {@link XiaomiHandlerFactory} is responsible for creating things and thing
  * handlers.
@@ -61,8 +62,9 @@ import com.google.common.collect.Sets;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.mihome")
 public class XiaomiHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
-            .union(XiaomiBridgeHandler.SUPPORTED_THING_TYPES, XiaomiDeviceBaseHandler.SUPPORTED_THING_TYPES);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.concat(XiaomiBridgeHandler.SUPPORTED_THING_TYPES.stream(),
+                    XiaomiDeviceBaseHandler.SUPPORTED_THING_TYPES.stream()).collect(Collectors.toSet()));
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 

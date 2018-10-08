@@ -44,13 +44,13 @@ After setup, you can disconnect the gateway from the internet to keep your senso
 
 *   Enable developer mode of your gateway:
 
-    1.  Select your Gateway in the MiHome app
-    2.  Go to the "..." menu on the top right corner and click "About"
-    3.  Tap the version number "Plug-in version : 2.XX.X" at the bottom of the screen repeatedly until you enable developer mode
-    4.  You should now have 2 extra options listed: `wireless communication protocol` and `hub info`
-    5.  Choose `wireless communication protocol`
-    6.  Tap the toggle switch to enable WiFi functions. Note down the developer key (aka password), something like: 91bg8zfkf9vd6uw7
-    7.  Make sure you hit the OK button (to the right of the cancel button) to save your changes
+        1.  Select your Gateway in the MiHome app
+        2.  Go to the "..." menu on the top right corner and click "About"
+        3.  Tap the version number "Plug-in version : 2.XX.X" at the bottom of the screen repeatedly until you enable developer mode
+        4.  You should now have 2 extra options listed: `wireless communication protocol` and `hub info`
+        5.  Choose `wireless communication protocol`
+        6.  Tap the toggle switch to enable WiFi functions. Note down the developer key (aka password), something like: 91bg8zfkf9vd6uw7
+        7.  Make sure you hit the OK button (to the right of the cancel button) to save your changes
 
 *   In openHAB you should now be able to discover the Xiaomi Gateway
 *   From now on you don't really need the app anymore. Only if you want to update the gateway firmware or if you want to add devices (see below). But adding devices can also be done without the app (see below)
@@ -429,6 +429,7 @@ The Xiaomi ecosystem grows at a steady rate. So there is a good chance that in t
 - Go through the normal procedure to add a device to the gateway
 - The device won't show up in your inbox, but it will send messages to the gateway which you can see in the logs
 - Analyse the logs and find the model name of the new device
+
 _Example: Aqara Vibration Sensor_
 
     2018-09-08 00:58:14.903 [DEBUG] [discovery.XiaomiItemDiscoveryService] - Unknown discovered model: vibration
