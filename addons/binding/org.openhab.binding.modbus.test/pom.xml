@@ -28,7 +28,6 @@
         <groupId>${tycho-groupid}</groupId>
         <artifactId>target-platform-configuration</artifactId>
         <configuration>
-          <environments combine.self="override"></environments>
           <dependency-resolution>
             <extraRequirements>
               <dependency>
