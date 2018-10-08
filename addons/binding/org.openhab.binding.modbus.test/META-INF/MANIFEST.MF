@@ -9,7 +9,6 @@ Bundle-Version: 2.4.0.qualifier
 Fragment-Host: org.openhab.binding.modbus
 Require-Bundle: org.hamcrest
 Import-Package: 
- com.google.common.collect,
  net.bytebuddy.dynamic.loading,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
