@@ -172,6 +172,7 @@ public class OpenDaikinAcUnitHandler extends BaseThingHandler {
 
             updateState(OpenDaikinBindingConstants.CHANNEL_AC_MODE, new StringType(controlInfo.mode.name()));
             updateState(OpenDaikinBindingConstants.CHANNEL_AC_FAN_SPEED, new StringType(controlInfo.fanSpeed.name()));
+            updateState(OpenDaikinBindingConstants.CHANNEL_AC_FAN_DIR, new StringType(controlInfo.fanMovement.name()));
         }
 
         SensorInfo sensorInfo = webTargets.getSensorInfo();
@@ -227,9 +228,8 @@ public class OpenDaikinAcUnitHandler extends BaseThingHandler {
     }
 
     private boolean useFahrenheitForChannel(String channel) {
-        return this.getThing().getChannel(channel) != null
-                && Boolean.TRUE.equals(this.getThing().getChannel(channel).getConfiguration()
-                        .get(OpenDaikinBindingConstants.SETTING_USE_FAHRENHEIT));
+        return this.getThing().getChannel(channel) != null && Boolean.TRUE.equals(this.getThing().getChannel(channel)
+                .getConfiguration().get(OpenDaikinBindingConstants.SETTING_USE_FAHRENHEIT));
     }
 
     private void changeMode(ControlInfo.Mode mode) throws OpenDaikinCommunicationException {
@@ -243,7 +243,7 @@ public class OpenDaikinAcUnitHandler extends BaseThingHandler {
         info.fanSpeed = fanSpeed;
         webTargets.setControlInfo(info);
     }
-    
+
     private void changeFanDir(ControlInfo.FanMovement fanDir) throws OpenDaikinCommunicationException {
         ControlInfo info = webTargets.getControlInfo();
         info.fanMovement = fanDir;
