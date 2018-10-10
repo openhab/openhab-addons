@@ -362,6 +362,7 @@ Please see [HomeWorks RS232 Protocol Guide](http://www.lutron.com/TechnicalDocum
 * Dimmers
 
 Supported in future updates:
+
 * Keypads
 * Keypad LEDs
 

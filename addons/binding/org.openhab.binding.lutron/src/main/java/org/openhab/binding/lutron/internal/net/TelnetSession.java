@@ -99,8 +99,8 @@ public class TelnetSession implements Closeable {
         synchronized (this.charBuffer) {
             logger.trace("TelnetSession open called");
             try {
-                this.telnetClient.connect(host, port);
-                this.telnetClient.setKeepAlive(true);
+                telnetClient.connect(host, port);
+                telnetClient.setKeepAlive(true);
             } catch (IOException e) {
                 logger.debug("TelnetSession open: error connecting: {}", e.getMessage());
                 throw (e);
@@ -152,7 +152,7 @@ public class TelnetSession implements Closeable {
         synchronized (charBuffer) {
             if (reader != null) {
                 try {
-                    reader.read(this.charBuffer);
+                    reader.read(charBuffer);
                 } catch (IOException e) {
                     logger.debug("TelnetSession readInput: error reading: {}", e.getMessage());
                     throw (e);
