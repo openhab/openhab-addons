@@ -59,6 +59,7 @@
     <module>org.openhab.binding.ipp</module>
     <module>org.openhab.binding.irtrans</module>
     <module>org.openhab.binding.jeelink</module>
+    <module>org.openhab.binding.jsupla</module>
     <module>org.openhab.binding.keba</module>
     <module>org.openhab.binding.knx</module>
     <module>org.openhab.binding.knx.test</module>

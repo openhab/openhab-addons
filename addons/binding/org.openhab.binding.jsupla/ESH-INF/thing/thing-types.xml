@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="jsupla"
+						  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+						  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+						  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="server-bridge"/>
+		</supported-bridge-type-refs>
+		<label>Supla Device</label>
+		<description>Generic type for all Supla devices. Channels will be provided by device at runtime</description>
+		<!-- Note: Channels will be discovered at runtime -->
+		<config-description>
+			<parameter name="jsupla-device-guid" type="text" required="true">
+				<label>GUID</label>
+				<description>This is GUID of device. It can be found on website during device configuration.
+				</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="light-channel">
+		<item-type>Switch</item-type>
+		<label>Light switch</label>
+		<description>Allows you to turn light ON/OFF</description>
+		<category>Light</category>
+	</channel-type>
+
+	<channel-type id="switch-channel">
+		<item-type>Switch</item-type>
+		<label>ON/OFF switch</label>
+		<description>Allows you to turn thing ON/OFF</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="decimal-channel">
+		<item-type>Number</item-type>
+		<label>Decimal value</label>
+		<category>This channel represents plain decimal value</category>
+	</channel-type>
+
+	<channel-type id="percentage-channel">
+		<item-type>Number</item-type>
+		<label>Percentage value</label>
+	</channel-type>
+
+	<channel-type id="rgb-channel">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<description>Pick desired color</description>
+	</channel-type>
+
+	<channel-type id="roller-shutter-channel">
+		<item-type>Rollershutter</item-type>
+		<label>Roller shutter</label>
+	</channel-type>
+
+	<channel-type id="temperature-channel">
+		<item-type>Number</item-type>
+		<label>Temperature</label>
+		<category>Temperature</category>
+	</channel-type>
+
+	<channel-type id="temperature-and-humidity-channel">
+		<item-type>Number</item-type>
+		<label>Temperature and Humidity</label>
+	</channel-type>
+
+	<channel-type id="unknown-channel">
+		<item-type>String</item-type>
+		<label>Unknown channel</label>
+		<description>This version of jSupla binding does not know how to handle this channel. Try updating your binding
+			or visit &lt;a href="forum.supla.org"&gt;forum.supla.org&lt;/a&gt; for more info.
+		</description>
+	</channel-type>
+</thing:thing-descriptions>

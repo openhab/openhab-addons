@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="jsupla" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				 xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+				 xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+
+	<name>jSupla Binding</name>
+	<description>This binding is able to create native server for Supla devices.
+		For more information visit &lt;a href="https://github.com/magx2/jSupla"&gt;https://github.com/magx2/jSupla&lt;/a&gt;
+		To get familiar with Supla system visit &lt;a href="https://www.supla.org"&gt;https://www.supla.org&lt;/a&gt;
+	</description>
+	<author>Martin Grzeslowski</author>
+
+</binding:binding>
