@@ -32,6 +32,7 @@ public class ModbusTcpConfiguration {
     private int connectMaxTries;
     private int reconnectAfterMillis;
     private int connectTimeoutMillis;
+    private boolean enableDiscovery;
 
     public @Nullable String getHost() {
         return host;
@@ -95,6 +96,14 @@ public class ModbusTcpConfiguration {
 
     public void setConnectTimeoutMillis(int connectTimeoutMillis) {
         this.connectTimeoutMillis = connectTimeoutMillis;
+    }
+
+    public boolean isDiscoveryEnabled() {
+        return enableDiscovery;
+    }
+
+    public void setDiscoveryEnabled(boolean enableDiscovery) {
+        this.enableDiscovery = enableDiscovery;
     }
 
 }

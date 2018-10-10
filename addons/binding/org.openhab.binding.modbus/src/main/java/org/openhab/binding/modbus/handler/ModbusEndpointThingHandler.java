@@ -16,6 +16,8 @@ import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.common.registry.Identifiable;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.io.transport.modbus.ModbusManager;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 
@@ -26,7 +28,7 @@ import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
  *
  */
 @NonNullByDefault
-public interface ModbusEndpointThingHandler {
+public interface ModbusEndpointThingHandler extends Identifiable<ThingUID> {
 
     /**
      * Gets the {@link ModbusSlaveEndpoint} represented by the thing
@@ -51,4 +53,11 @@ public interface ModbusEndpointThingHandler {
      * @return reference to ModbusManager
      */
     public Supplier<ModbusManager> getManagerRef();
+
+    /**
+     * Return true if auto discovery is enabled for this endpoint
+     *
+     * @return boolean true if the discovery is enabled
+     */
+    public boolean isDiscoveryEnabled();
 }
