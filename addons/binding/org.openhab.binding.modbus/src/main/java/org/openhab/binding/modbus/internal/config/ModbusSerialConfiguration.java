@@ -43,6 +43,7 @@ public class ModbusSerialConfiguration {
     private int timeBetweenTransactionsMillis;
     private int connectMaxTries;
     private int connectTimeoutMillis;
+    private boolean enableDiscovery;
 
     public @Nullable String getPort() {
         return port;
@@ -156,4 +157,11 @@ public class ModbusSerialConfiguration {
         this.connectTimeoutMillis = connectTimeoutMillis;
     }
 
+    public boolean isDiscoveryEnabled() {
+        return enableDiscovery;
+    }
+
+    public void setDiscoveryEnabled(boolean enableDiscovery) {
+        this.enableDiscovery = enableDiscovery;
+    }
 }
