@@ -12,7 +12,6 @@ import static org.eclipse.smarthome.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.binding.max.internal.MaxBindingConstants.*;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -21,8 +20,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
-import javax.measure.quantity.Temperature;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -40,7 +37,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.max.internal.MaxBindingConstants;
 import org.openhab.binding.max.internal.command.CCommand;
 import org.openhab.binding.max.internal.command.QCommand;
 import org.openhab.binding.max.internal.command.SConfigCommand;
@@ -93,8 +89,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
             final String configDeviceId = (String) config.get(Thing.PROPERTY_SERIAL_NUMBER);
 
             try {
-                refreshActualRate = ((BigDecimal) config.get(MaxBindingConstants.PROPERTY_REFRESH_ACTUAL_RATE))
-                        .intValueExact();
+                refreshActualRate = ((BigDecimal) config.get(PROPERTY_REFRESH_ACTUAL_RATE)).intValueExact();
             } catch (Exception e) {
                 refreshActualRate = 0;
             }
@@ -343,12 +338,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
                 if (refreshingActuals) {
                     refreshActualsRestore();
                 }
-                Command tempCommand = command;
-                if (command instanceof QuantityType) {
-                    tempCommand = new QuantityType<>(((QuantityType<Temperature>) command).toUnit(CELSIUS)
-                            .toBigDecimal().setScale(1, RoundingMode.HALF_UP), CELSIUS);
-                }
-                maxCubeBridge.queueCommand(new SendCommand(maxDeviceSerial, channelUID, tempCommand));
+                maxCubeBridge.queueCommand(new SendCommand(maxDeviceSerial, channelUID, command));
                 break;
             case CHANNEL_MODE:
                 if (refreshingActuals) {
@@ -357,7 +347,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
                 maxCubeBridge.queueCommand(new SendCommand(maxDeviceSerial, channelUID, command));
                 break;
             default:
-                logger.warn("Setting of channel {} not possible. Read-only", channelUID);
+                logger.warn("Setting of channel '{}' not possible, channel is read-only.", channelUID);
                 break;
         }
     }
@@ -532,7 +522,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
             Map<String, String> properties = editProperties();
             properties.put(Thing.PROPERTY_MODEL_ID, device.getType().toString());
             properties.put(Thing.PROPERTY_SERIAL_NUMBER, device.getSerialNumber());
-            properties.put(Thing.PROPERTY_VENDOR, MaxBindingConstants.PROPERTY_VENDOR_NAME);
+            properties.put(Thing.PROPERTY_VENDOR, PROPERTY_VENDOR_NAME);
             updateProperties(properties);
             logger.debug("properties updated");
             propertiesSet = true;
@@ -557,10 +547,10 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
         try {
             logger.debug("MAX! {} {} configuration update", device.getType(), device.getSerialNumber());
             Configuration configuration = editConfiguration();
-            configuration.put(MaxBindingConstants.PROPERTY_ROOMNAME, device.getRoomName());
-            configuration.put(MaxBindingConstants.PROPERTY_ROOMID, new BigDecimal(device.getRoomId()));
-            configuration.put(MaxBindingConstants.PROPERTY_DEVICENAME, device.getName());
-            configuration.put(MaxBindingConstants.PROPERTY_RFADDRESS, device.getRFAddress());
+            configuration.put(PROPERTY_ROOMNAME, device.getRoomName());
+            configuration.put(PROPERTY_ROOMID, new BigDecimal(device.getRoomId()));
+            configuration.put(PROPERTY_DEVICENAME, device.getName());
+            configuration.put(PROPERTY_RFADDRESS, device.getRFAddress());
             // Add additional device config entries
             for (Map.Entry<String, Object> entry : device.getProperties().entrySet()) {
                 configuration.put(entry.getKey(), entry.getValue());
