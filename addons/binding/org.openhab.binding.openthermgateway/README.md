@@ -28,8 +28,7 @@ Future types of connections may require other settings, such as a COM port.
 
 ## Channels
 
-The OTGW thing currently supports the follow channels:
-
+The OTGW thing currently supports the follow channels (needs updating):
 ![](doc/otgw.png)
 
 ## Full Example
@@ -46,22 +45,23 @@ Thing openthermgateway:otgw:1 [ipaddress="192.168.1.100", port="8000"]
 Number RoomTemperature "Room temperature [%.1f °C]" <temperature> {channel="openthermgateway:otgw:1:roomtemp"}
 Number RoomSetpoint "Room setpoint [%.1f °C]" <temperature> {channel="openthermgateway:otgw:1:roomsetpoint"}
 Number RoomSetpointOverride "Room setpoint override [%.1f °C]" <temperature> {channel="openthermgateway:otgw:1:overridesetpoint"}
+Number ControlSetpoint "Control setpoint [%.1f °C]" <temperature> {channel="openthermgateway:otgw:1:controlsetpoint"}
 Number DomesticHotWaterTemperature "Domestic hot water temperature [%.1f °C]" <temperature> {channel="openthermgateway:otgw:1:dhwtemp"}
 Number DomesticHotWaterSetpoint "Domestic hot water setpoint [%.1f °C]" <temperature> {channel="openthermgateway:otgw:1:tdhwset"}
 Number DomesticHotWaterSetpointOverride "Domestic hot water setpoint override [%.1f °C]" <temperature> {channel="openthermgateway:otgw:1:overridedhwsetpoint"}
 Number BoilerWaterTemperature "Boiler water temperature [%.1f °C]" <temperature> {channel="openthermgateway:otgw:1:flowtemp"}
 Number ReturnWaterTemperature "Return water temperature [%.1f °C]" <temperature> {channel="openthermgateway:otgw:1:returntemp"}
 Number OutsideTemperature "Outside temperature [%.1f °C]" <temperature> {channel="openthermgateway:otgw:1:outsidetemp"}
+Number CentralHeatingWaterPressure "Central heating water pressure [%.1f bar]" {channel="openthermgateway:otgw:1:waterpressure"}
 Switch CentralHeatingEnabled "Central heating enabled" <switch> {channel="openthermgateway:otgw:1:ch_enable"}
 Switch CentralHeatingMode "Central heating active" <switch> {channel="openthermgateway:otgw:1:ch_mode"}
 Switch DomesticHotWaterEnabled "Domestic hot water enabled" <switch> {channel="openthermgateway:otgw:1:dhw_enable"}
 Switch DomesticHotWaterMode "Domestic hot water active" <switch> {channel="openthermgateway:otgw:1:dhw_mode"}
 Switch FlameMode "Burner active" <fire> {channel="openthermgateway:otgw:1:flame"}
 Number RelativeModulationLevel "Relative modulation level [%d %%]" {channel="openthermgateway:otgw:1:modulevel"}
-Number MaxRelativeModulationLevel "Maximum relative modulation level [%d %%]" {channel="openthermgateway:otgw:1:maxrelmdulevel"}
-```
+Number MaxRelativeModulationLevel "Maximum relative modulation level [%d %%]" {channel="openthermgateway:otgw:1:maxrelmdulevel"}```
 
-### demo.sitemap
+### demo.sitemap (needs updating)
 
 ```
 sitemap demo label="Main Menu" {
