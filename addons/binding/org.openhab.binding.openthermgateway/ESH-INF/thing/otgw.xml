@@ -5,17 +5,19 @@
 
 	<thing-type id="otgw">
 		<label>OpenTherm Gateway</label>
-		<description>OpenTherm Gateway</description>
+		<description>OpenTherm Gateway 0.2.0</description>
 		<channels>
             <channel id="roomtemp" typeId="roomtemp" />
             <channel id="roomsetpoint" typeId="roomsetpoint" />            
             <channel id="overridesetpoint" typeId="overridesetpoint" />
+            <channel id="controlsetpoint" typeId="controlsetpoint" />            
             <channel id="dhwtemp" typeId="dhwtemp" />
             <channel id="tdhwset" typeId="tdhwset" />
             <channel id="overridedhwsetpoint" typeId="overridedhwsetpoint" />
             <channel id="flowtemp" typeId="flowtemp" />
             <channel id="returntemp" typeId="returntemp" />
             <channel id="outsidetemp" typeId="outsidetemp" />
+            <channel id="waterpressure" typeId="waterpressure" />
             <channel id="ch_enable" typeId="ch_enable" />
             <channel id="ch_mode" typeId="ch_mode" />
             <channel id="dhw_enable" typeId="dhw_enable" />

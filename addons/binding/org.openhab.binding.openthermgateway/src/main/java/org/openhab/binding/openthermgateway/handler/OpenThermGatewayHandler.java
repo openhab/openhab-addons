@@ -88,13 +88,6 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
     }
 
     @Override
-    public void handleRemoval() {
-        logger.debug("Removing OpenTherm Gateway handler");
-        disconnect();
-        super.handleRemoval();
-    }
-
-    @Override
     public void connecting() {
         updateStatus(ThingStatus.OFFLINE);
     }
@@ -203,6 +196,19 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
             default:
                 break;
         }
+    }
+
+    @Override
+    public void handleRemoval() {
+        logger.debug("Removing OpenTherm Gateway handler");
+        disconnect();
+        super.handleRemoval();
+    }
+
+    @Override
+    public void dispose() {
+        disconnect();
+        super.dispose();
     }
 
     private boolean connect() {

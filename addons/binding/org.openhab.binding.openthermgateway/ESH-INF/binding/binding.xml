@@ -4,11 +4,11 @@
 		 xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
 		 xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
-	<name>OpenTherm Gateway Binding</name>
-	<description>
-	   This is the binding for the OpenTherm Gateway, designed by Schelte Bron.
-	   For more information about the OpenTherm Gateway please see http://otgw.tclcode.com/
+    <name>OpenTherm Gateway Binding</name>
+    <description>
+        This is the binding for the OpenTherm Gateway, designed by Schelte Bron.
+        For more information about the OpenTherm Gateway please see http://otgw.tclcode.com/
     </description>
-	<author>Arjen Korevaar</author>
+    <author>Arjen Korevaar</author>
 
 </binding:binding>

@@ -8,8 +8,7 @@
         <label>Room temperature</label>
         <description>Current sensed room temperature</description>
         <category>temperature</category>
-        <state readOnly="true" pattern="%.1f °C">
-        </state>
+        <state readOnly="true" pattern="%.1f °C"></state>
     </channel-type>
     
     <channel-type id="roomsetpoint">
@@ -17,8 +16,7 @@
         <label>Room setpoint</label>
         <description>Current room temperature setpoint</description>
         <category>temperature</category>
-        <state readOnly="true" pattern="%.1f °C">
-        </state>
+        <state readOnly="true" pattern="%.1f °C"></state>
     </channel-type>
 
     <channel-type id="overridesetpoint">
@@ -26,8 +24,15 @@
         <label>Room setpoint override</label>
         <description>Remote override room temperature setpoint</description>
         <category>temperature</category>
-        <state readOnly="false" pattern="%.1f °C">
-        </state>
+        <state readOnly="false" min="0" max="100" step="0.1" pattern="%.1f °C"></state>
+    </channel-type>
+
+    <channel-type id="controlsetpoint">
+        <item-type>Number</item-type>
+        <label>Control setpoint</label>
+        <description>Central heating water setpoint</description>
+        <category>temperature</category>
+        <state readOnly="true" pattern="%.1f °C"></state>
     </channel-type>
     
     <channel-type id="dhwtemp">
@@ -35,24 +40,21 @@
         <label>Domestic hot water temperature</label>
         <description>Domestic hot water temperature</description>
         <category>temperature</category>
-        <state readOnly="true" pattern="%.1f °C">
-        </state>
+        <state readOnly="true" pattern="%.1f °C"></state>
     </channel-type>    
     
     <channel-type id="tdhwset">
         <item-type>Number</item-type>
         <label>Domestic hot water setpoint</label>
         <description>Domestic hot water temperature setpoint</description>
-        <state readOnly="true" pattern="%.1f °C">
-        </state>
+        <state readOnly="true" pattern="%.1f °C"></state>
     </channel-type>
     
     <channel-type id="overridedhwsetpoint">
         <item-type>Number</item-type>
         <label>Domestic hot water setpoint override</label>
         <description>Domestic hot water temperature setpoint override</description>        
-        <state readOnly="false" pattern="%.1f °C">
-        </state>
+        <state readOnly="false" min="0" max="100" step="0.1" pattern="%.1f °C"></state>
     </channel-type>    
     
     <channel-type id="flowtemp">
@@ -60,8 +62,7 @@
         <label>Boiler water temperature</label>
         <description>Boiler water temperature</description>
         <category>temperature</category>
-        <state readOnly="true" pattern="%.1f °C">
-        </state>
+        <state readOnly="true" pattern="%.1f °C"></state>
     </channel-type>
 
     <channel-type id="returntemp">
@@ -69,8 +70,7 @@
         <label>Return water temperature</label>
         <description>Return water temperature</description>
         <category>temperature</category>
-        <state readOnly="true" pattern="%.1f °C">
-        </state>
+        <state readOnly="true" pattern="%.1f °C"></state>
     </channel-type>    
 
     <channel-type id="outsidetemp">
@@ -78,8 +78,14 @@
         <label>Outside temperature</label>
         <description>Outside temperature</description>
         <category>temperature</category>
-        <state readOnly="false" pattern="%.1f °C">
-        </state>
+        <state readOnly="false" min="0" max="100" step="0.1" pattern="%.1f °C"></state>
+    </channel-type>
+    
+    <channel-type id="waterpressure">
+        <item-type>Number</item-type>
+        <label>Central heating water pressure</label>
+        <description>Central heating water pressure</description>
+        <state readOnly="true" pattern="%.1f bar"></state>
     </channel-type>
     
     <channel-type id="ch_enable">
@@ -118,19 +124,17 @@
     </channel-type>
     
     <channel-type id="modulevel">
-		<item-type>Number</item-type>
-		<label>Relative modulation level</label>
-		<description>Relative modulation level</description>
-		<state readOnly="true" pattern="%.1f %%">
-		</state>
+        <item-type>Number</item-type>
+        <label>Relative modulation level</label>
+        <description>Relative modulation level</description>
+        <state readOnly="true" pattern="%.1f %%"></state>
     </channel-type>
     
     <channel-type id="maxrelmdulevel">
-		<item-type>Number</item-type>
-		<label>Maximum relative modulation level</label>
-		<description>Maximum relative modulation level</description>
-		<state readOnly="true" pattern="%.1f %%">
-		</state>
+        <item-type>Number</item-type>
+        <label>Maximum relative modulation level</label>
+        <description>Maximum relative modulation level</description>
+        <state readOnly="true" pattern="%.1f %%"></state>
     </channel-type>
-    
+
 </thing:thing-descriptions>
