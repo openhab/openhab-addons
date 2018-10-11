@@ -12,11 +12,10 @@
  */
 package org.openhab.binding.gmailparadoxparser.internal;
 
-import static org.openhab.binding.gmailparadoxparser.internal.GmailParadoxParserBindingConstants.*;
+import static org.openhab.binding.gmailparadoxparser.internal.GmailParadoxParserBindingConstants.PARTITION_CHANNEL_ID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.gmailparadoxparser.internal.GmailParadoxParserConfiguration;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -46,11 +45,11 @@ public class GmailParadoxParserHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_1.equals(channelUID.getId())) {
+        if (PARTITION_CHANNEL_ID.equals(channelUID.getId())) {
             if (command instanceof RefreshType) {
-                // TODO: handle data refresh
+
             }
-            
+
             // TODO: handle command
 
             // Note: if communication with thing fails for some reason,
@@ -66,8 +65,8 @@ public class GmailParadoxParserHandler extends BaseThingHandler {
         config = getConfigAs(GmailParadoxParserConfiguration.class);
 
         // TODO: Initialize the handler.
-        // The framework requires you to return from this method quickly. Also, before leaving this method a thing 
-        // status from one of ONLINE, OFFLINE or UNKNOWN must be set. This might already be the real thing status in 
+        // The framework requires you to return from this method quickly. Also, before leaving this method a thing
+        // status from one of ONLINE, OFFLINE or UNKNOWN must be set. This might already be the real thing status in
         // case you can decide it directly.
         // In case you can not decide the thing status directly (e.g. for long running connection handshake using WAN
         // access or similar) you should set status UNKNOWN here and then decide the real status asynchronously in the
@@ -77,7 +76,7 @@ public class GmailParadoxParserHandler extends BaseThingHandler {
         // the framework is then able to reuse the resources from the thing handler initialization.
         // we set this upfront to reliably check status updates in unit tests.
         updateStatus(ThingStatus.UNKNOWN);
-        
+
         // Example for background initialization:
         scheduler.execute(() -> {
             boolean thingReachable = true; // <background task with long running initialization here>

@@ -37,7 +37,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.gmailparadoxparser", service = ThingHandlerFactory.class)
 public class GmailParadoxParserHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SAMPLE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(PARTITION_THING_TYPE_UID);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -48,7 +48,7 @@ public class GmailParadoxParserHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_SAMPLE.equals(thingTypeUID)) {
+        if (PARTITION_THING_TYPE_UID.equals(thingTypeUID)) {
             return new GmailParadoxParserHandler(thing);
         }
 
