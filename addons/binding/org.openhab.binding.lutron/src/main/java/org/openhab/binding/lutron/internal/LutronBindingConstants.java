@@ -45,7 +45,7 @@ public class LutronBindingConstants {
     public static final String CHANNEL_SWITCH = "switchstatus";
     public static final String CHANNEL_OCCUPANCYSTATUS = "occupancystatus";
 
-    // Bridge config properties
+    // Bridge config properties (used by discovery service)
     public static final String HOST = "ipAddress";
     public static final String USER = "user";
     public static final String PASSWORD = "password";

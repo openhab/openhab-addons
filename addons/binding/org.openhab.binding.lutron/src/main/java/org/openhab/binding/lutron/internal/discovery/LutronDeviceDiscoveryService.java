@@ -91,7 +91,6 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
             for (Area area : project.getAreas()) {
                 processArea(area, locationContext);
             }
-
         } else {
             logger.info("Could not read project file at {}", address);
         }

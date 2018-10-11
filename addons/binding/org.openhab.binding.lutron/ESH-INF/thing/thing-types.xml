@@ -23,6 +23,20 @@
 				<label>Password</label>
 				<description>The user password to log in to the integration access point</description>
 			</parameter>
+			<parameter name="reconnect" type="integer" min="1" max="60" unit="min">
+				<label>Reconnect Interval</label>
+				<description>The period in minutes that the handler will wait between connection attempts</description>
+				<unitLabel>minutes</unitLabel>
+				<default>5</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="heartbeat" type="integer" min="1" max="60" unit="min">
+				<label>Keepalive Heartbeat Interval</label>
+				<description>The period in minutes between connection heartbeat checks</description>
+				<unitLabel>minutes</unitLabel>
+				<default>5</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</bridge-type>
 
