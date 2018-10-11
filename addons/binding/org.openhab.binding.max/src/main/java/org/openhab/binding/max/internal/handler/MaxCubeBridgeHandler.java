@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.max.internal.handler;
 
+import static org.eclipse.smarthome.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.binding.max.internal.MaxBindingConstants.*;
 
 import java.io.BufferedReader;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.net.SocketException;
@@ -414,12 +416,11 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
         // Temperature setting
         if (channelUID.getId().equals(CHANNEL_SETTEMP)) {
-            if (command instanceof DecimalType || command instanceof QuantityType || command instanceof OnOffType) {
+            if (command instanceof QuantityType || command instanceof OnOffType) {
                 double setTemp = DEFAULT_OFF_TEMPERATURE;
-                if (command instanceof DecimalType) {
-                    setTemp = ((DecimalType) command).doubleValue();
-                } else if (command instanceof QuantityType) {
-                    setTemp = ((QuantityType<Temperature>) command).doubleValue();
+                if (command instanceof QuantityType) {
+                    setTemp = ((QuantityType<Temperature>) command).toUnit(CELSIUS).toBigDecimal()
+                            .setScale(1, RoundingMode.HALF_UP).doubleValue();
                 } else if (command instanceof OnOffType) {
                     setTemp = OnOffType.ON.equals(command) ? DEFAULT_ON_TEMPERATURE : DEFAULT_OFF_TEMPERATURE;
                 }
@@ -510,11 +511,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         if (deviceStatusListener == null) {
             throw new IllegalArgumentException("It's not allowed to pass a null deviceStatusListener.");
         }
-        boolean result = deviceStatusListeners.add(deviceStatusListener);
-        if (result) {
-            // onUpdate();
-        }
-        return result;
+        return deviceStatusListeners.add(deviceStatusListener);
     }
 
     public boolean unregisterDeviceStatusListener(DeviceStatusListener deviceStatusListener) {

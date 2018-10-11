@@ -12,7 +12,6 @@ import static org.eclipse.smarthome.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.binding.max.internal.MaxBindingConstants.*;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -21,8 +20,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
-import javax.measure.quantity.Temperature;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -341,12 +338,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
                 if (refreshingActuals) {
                     refreshActualsRestore();
                 }
-                Command tempCommand = command;
-                if (command instanceof QuantityType) {
-                    tempCommand = new QuantityType<>(((QuantityType<Temperature>) command).toUnit(CELSIUS)
-                            .toBigDecimal().setScale(1, RoundingMode.HALF_UP), CELSIUS);
-                }
-                maxCubeBridge.queueCommand(new SendCommand(maxDeviceSerial, channelUID, tempCommand));
+                maxCubeBridge.queueCommand(new SendCommand(maxDeviceSerial, channelUID, command));
                 break;
             case CHANNEL_MODE:
                 if (refreshingActuals) {
