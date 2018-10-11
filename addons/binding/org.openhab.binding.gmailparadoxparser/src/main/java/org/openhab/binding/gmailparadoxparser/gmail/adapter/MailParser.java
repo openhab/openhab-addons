@@ -3,13 +3,15 @@ package org.openhab.binding.gmailparadoxparser.gmail.adapter;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+
 public class MailParser {
 
     private static MailParser instance;
-    private MyLogger logger = MyLogger.getInstance();
+    private Logger logger;
 
     private MailParser() {
-
+        logger = new MyLogger();
     }
 
     public static MailParser getInstance() {
@@ -26,9 +28,9 @@ public class MailParser {
             String[] split = lines[i].split(": ");
             if (split.length > 1) {
                 result.put(split[0], split[1]);
-                logger.logDebug("Key: " + split[0] + "\tValue: " + split[1]);
+                logger.debug("Key: " + split[0] + "\tValue: " + split[1]);
             } else {
-                logger.logDebug("Message cannot be split: " + lines[i]);
+                logger.debug("Message cannot be split: " + lines[i]);
             }
 
         }
