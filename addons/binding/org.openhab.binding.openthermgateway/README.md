@@ -59,10 +59,11 @@ Switch DomesticHotWaterEnabled "Domestic hot water enabled" <switch> {channel="o
 Switch DomesticHotWaterMode "Domestic hot water active" <switch> {channel="openthermgateway:otgw:1:dhw_mode"}
 Switch FlameMode "Burner active" <fire> {channel="openthermgateway:otgw:1:flame"}
 Number RelativeModulationLevel "Relative modulation level [%d %%]" {channel="openthermgateway:otgw:1:modulevel"}
-Number MaxRelativeModulationLevel "Maximum relative modulation level [%d %%]" {channel="openthermgateway:otgw:1:maxrelmdulevel"}```
+Number MaxRelativeModulationLevel "Maximum relative modulation level [%d %%]" {channel="openthermgateway:otgw:1:maxrelmdulevel"}
+```
 
-### demo.sitemap (needs updating)
-
+### demo.sitemap
+(needs updating)
 ```
 sitemap demo label="Main Menu" {
     Frame label="OpenTherm Gateway" {
