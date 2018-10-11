@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
  * Handler responsible for communicating with the main Lutron control hub.
  *
  * @author Allan Tong - Initial contribution
+ * @author Bob Adair - Added reconnect and heartbeat config parameters
  */
 public class IPBridgeHandler extends BaseBridgeHandler {
     private static final Pattern STATUS_REGEX = Pattern.compile("~(OUTPUT|DEVICE|SYSTEM),([^,]+),(.*)");
@@ -64,10 +65,14 @@ public class IPBridgeHandler extends BaseBridgeHandler {
 
     private static final String DEFAULT_USER = "lutron";
     private static final String DEFAULT_PASSWORD = "integration";
+    private static final int DEFAULT_RECONNECT_MINUTES = 5;
+    private static final int DEFAULT_HEARTBEAT_MINUTES = 5;
 
     private final Logger logger = LoggerFactory.getLogger(IPBridgeHandler.class);
 
     private IPBridgeConfig config;
+    private int reconnectInterval;
+    private int heartbeatInterval;
 
     private TelnetSession session;
     private BlockingQueue<LutronCommand> sendQueue = new LinkedBlockingQueue<>();
@@ -75,6 +80,7 @@ public class IPBridgeHandler extends BaseBridgeHandler {
     private ScheduledFuture<?> messageSender;
     private ScheduledFuture<?> keepAlive;
     private ScheduledFuture<?> keepAliveReconnect;
+    private ScheduledFuture<?> connectRetryJob;
 
     private Date lastDbUpdateDate;
     private ServiceRegistration<DiscoveryService> discoveryServiceRegistration;
@@ -118,6 +124,8 @@ public class IPBridgeHandler extends BaseBridgeHandler {
 
         if (validConfiguration(this.config)) {
             LutronDeviceDiscoveryService discovery = new LutronDeviceDiscoveryService(this);
+            reconnectInterval = (config.getReconnect() > 0) ? config.getReconnect() : DEFAULT_RECONNECT_MINUTES;
+            heartbeatInterval = (config.getHeartbeat() > 0) ? config.getHeartbeat() : DEFAULT_HEARTBEAT_MINUTES;
 
             this.discoveryServiceRegistration = this.bundleContext.registerService(DiscoveryService.class, discovery,
                     null);
@@ -147,6 +155,11 @@ public class IPBridgeHandler extends BaseBridgeHandler {
         return true;
     }
 
+    private void scheduleConnectRetry(long waitMinutes) {
+        logger.debug("Scheduling connection retry in {} minutes", waitMinutes);
+        connectRetryJob = scheduler.schedule(this::connect, waitMinutes, TimeUnit.MINUTES);
+    }
+
     private synchronized void connect() {
         if (this.session.isConnected()) {
             return;
@@ -172,11 +185,13 @@ public class IPBridgeHandler extends BaseBridgeHandler {
         } catch (LutronSafemodeException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "main repeater is in safe mode");
             disconnect();
+            scheduleConnectRetry(reconnectInterval); // Possibly a temporary problem. Try again later.
 
             return;
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             disconnect();
+            scheduleConnectRetry(reconnectInterval); // Possibly a temporary problem. Try again later.
 
             return;
         } catch (InterruptedException e) {
@@ -197,12 +212,8 @@ public class IPBridgeHandler extends BaseBridgeHandler {
 
         updateStatus(ThingStatus.ONLINE);
 
-        this.keepAlive = this.scheduler.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                sendKeepAlive();
-            }
-        }, 5, 5, TimeUnit.MINUTES);
+        keepAlive = scheduler.scheduleWithFixedDelay(this::sendKeepAlive, heartbeatInterval, heartbeatInterval,
+                TimeUnit.MINUTES);
     }
 
     private void sendCommands() {
@@ -234,6 +245,10 @@ public class IPBridgeHandler extends BaseBridgeHandler {
 
     private synchronized void disconnect() {
         logger.debug("Disconnecting from bridge");
+
+        if (connectRetryJob != null) {
+            connectRetryJob.cancel(true);
+        }
 
         if (this.keepAlive != null) {
             this.keepAlive.cancel(true);

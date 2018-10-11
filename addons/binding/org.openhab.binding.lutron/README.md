@@ -49,7 +49,13 @@ If a thing will not come online, but instead has the status "UNKNOWN: Awaiting i
 ### Bridge
 
 The bridge may currently be a RadioRA 2 main repeater or a Caseta Smart Bridge Pro.
+A Homeworks QS Processor should also work, but support is still experimental.
 The bridge configuration requires the IP address of the bridge as well as the telnet username and password to log in to the bridge.
+The optional advanced parameter `heartbeat` can be used to set the interval between connection keepalive heartbeat messages, in minutes.
+It defaults to 5.
+Note that the handler will wait up to 30 seconds for a heartbeat response before attempting to reconnect.
+The optional advanced parameter `reconnect` can be used to set the connection retry interval, in minutes.
+It also defaults to 5.
 
 ```
 Thing lutron:ipbridge:radiora2 [ ipAddress="192.168.1.2", user="lutron", password="integration" ]
@@ -356,6 +362,7 @@ Please see [HomeWorks RS232 Protocol Guide](http://www.lutron.com/TechnicalDocum
 * Dimmers
 
 Supported in future updates:
+
 * Keypads
 * Keypad LEDs
 
