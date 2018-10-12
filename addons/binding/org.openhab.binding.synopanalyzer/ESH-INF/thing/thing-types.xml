@@ -9,12 +9,11 @@
 		<description>The Synop Analyzer binding decodes Synop messages</description>
 
 		<channels>
-			<channel id="temperature" typeId="temperature" />
-			<channel id="pressure" typeId="pressure" />
-			<channel id="wind-angle" typeId="wind-angle" />
+			<channel id="temperature" typeId="system.outdoor-temperature" />
+			<channel id="pressure" typeId="system.barometric-pressure" />
+			<channel id="wind-angle" typeId="system.wind-direction" />
 			<channel id="wind-direction" typeId="wind-direction" />
-			<channel id="wind-speed-ms" typeId="wind-speed-ms" />
-			<channel id="wind-speed-knots" typeId="wind-speed-knots" />
+			<channel id="wind-speed" typeId="system.wind-speed" />
 			<channel id="wind-speed-beaufort" typeId="wind-speed-beaufort" />
 			<channel id="overcast" typeId="overcast" />
 			<channel id="octa" typeId="octa" />
@@ -38,31 +37,12 @@
 
 	</thing-type>
 
-	<channel-type id="temperature">
+	<channel-type id="wind-speed-beaufort">
 		<item-type>Number</item-type>
-		<label>Temperature</label>
-		<description>Current temperature in degrees celsius</description>
-		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f °C">
-		</state>
-	</channel-type>
-
-	<channel-type id="pressure">
-		<item-type>Number</item-type>
-		<label>Pressure</label>
-		<description>Current pressure in millibar</description>
-		<category>Pressure</category>
-		<state readOnly="true" pattern="%.1f mb">
-		</state>
-	</channel-type>
-
-	<channel-type id="wind-angle">
-		<item-type>Number</item-type>
-		<label>Wind Angle</label>
-		<description>Wind angle</description>
+		<label>Beaufort</label>
+		<description>Wind speed in Beaufort Scale</description>
 		<category>Wind</category>
-		<state readOnly="true" pattern="%.0f °">
-		</state>
+		<state readOnly="true" pattern="%d" />
 	</channel-type>
 
 	<channel-type id="wind-direction">
@@ -90,33 +70,6 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="wind-speed-ms">
-		<item-type>Number</item-type>
-		<label>Wind Speed</label>
-		<description>Wind speed</description>
-		<category>Wind</category>
-		<state readOnly="true" pattern="%d m/s">
-		</state>
-	</channel-type>
-
-	<channel-type id="wind-speed-knots" advanced="true">
-		<item-type>Number</item-type>
-		<label>Wind Speed</label>
-		<description>Wind speed</description>
-		<category>Wind</category>
-		<state readOnly="true" pattern="%d knots">
-		</state>
-	</channel-type>
-
-	<channel-type id="wind-speed-beaufort">
-		<item-type>Number</item-type>
-		<label>Beaufort</label>
-		<description>Wind speed in Beaufort Scale</description>
-		<category>Wind</category>
-		<state readOnly="true" pattern="%d">
-		</state>
-	</channel-type>
-
 	<channel-type id="overcast" advanced="true">
 		<item-type>String</item-type>
 		<label>Overcast</label>
@@ -128,8 +81,8 @@
 
 	<channel-type id="horizontal-visibility" advanced="true">
 		<item-type>String</item-type>
-		<label>Horizontal-visibility</label>
-		<description>Horizontal-visibility</description>
+		<label>Horizontal Visibility</label>
+		<description>Horizontal visibility range</description>
 		<category>Wind</category>
 		<state readOnly="true" pattern="%s km">
 		</state>

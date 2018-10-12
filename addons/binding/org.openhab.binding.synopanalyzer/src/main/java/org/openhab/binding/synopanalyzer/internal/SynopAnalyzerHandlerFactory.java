@@ -13,6 +13,8 @@ import static org.openhab.binding.synopanalyzer.internal.SynopAnalyzerBindingCon
 import java.util.Collections;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -29,6 +31,7 @@ import org.osgi.service.component.annotations.Component;
  */
 
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.synopanalyzer")
+@NonNullByDefault
 public class SynopAnalyzerHandlerFactory extends BaseThingHandlerFactory {
 
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_SYNOP);
@@ -39,7 +42,7 @@ public class SynopAnalyzerHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         return thingTypeUID.equals(THING_SYNOP) ? new SynopAnalyzerHandler(thing) : null;

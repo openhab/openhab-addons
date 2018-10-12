@@ -20,19 +20,19 @@ Synop message are typically updated every hour.
 
 The weather information that is retrieved is available as these channels:
 
-| Channel Type ID     | Item Type | Description                                |
-|---------------------|-----------|--------------------------------------------|
-| temperature         | Number    | The current temperature in degrees Celsius |
-| pressure            | Number    | The current pressure in millibar (mb)      |
-| wind-angle          | Number    | Wind angle in degrees                      |
-| wind-direction      | String    | Wind direction                             |
-| wind-speed-ms       | Number    | Wind speed in m/s                          |
-| wind-speed-knots    | Number    | Wind speed in knots                        |
-| wind-speed-beaufort | Number    | Wind speed according to Beaufort scale     |
-| overcast            | String    | Appreciation of the cloud cover            |
-| octa                | Number    | Part of the sky covered by clouds (in 8th) |
-| attenuation-factor* | Number    | Cloud layer attenuation factor             |
-| time-utc            | DateTime  | Observation time of the Synop message      |
+| Channel Type ID       | Item Type          | Description                                |
+|-----------------------|--------------------|--------------------------------------------|
+| temperature           | Number:Temperature | Current temperature                        |
+| pressure              | Number:Pressure    | Current pressure                           |
+| wind-speed            | Number:Speed       | Current wind speed                         |
+| wind-speed-beaufort   | Number             | Wind speed according to Beaufort scale     |
+| wind-angle            | Number:Angle       | Current wind direction                     |
+| wind-direction        | String             | Wind direction                             |
+| overcast              | String             | Appreciation of the cloud cover            |
+| octa                  | Number             | Part of the sky covered by clouds (in 8th) |
+| attenuation-factor*   | Number             | Cloud layer attenuation factor             |
+| time-utc              | DateTime           | Observation time of the Synop message      |
+| horizontal-visibility | String             | Horizontal visibility range                |
 
 *   ”cloud attenuation factor” (Kc) as defined by Kasten and Czeplak (1980)
 
