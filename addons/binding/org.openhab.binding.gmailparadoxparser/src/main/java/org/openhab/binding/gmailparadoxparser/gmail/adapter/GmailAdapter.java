@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
-import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.slf4j.Logger;
 
 import com.google.api.client.auth.oauth2.Credential;
@@ -32,7 +31,7 @@ import com.google.api.services.gmail.model.MessagePart;
 import com.google.api.services.gmail.model.MessagePartBody;
 
 public class GmailAdapter implements MailAdapter {
-    private static final String USER = "me";
+    private static final String USER = "polyopenhabtest@gmail.com";
     private static final String APPLICATION_NAME = "Gmail Paradox mail parser";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
@@ -78,9 +77,8 @@ public class GmailAdapter implements MailAdapter {
     public ArrayList<String> retrieveAllMessagesContents(List<Message> messages) throws IOException {
         ArrayList<String> result = new ArrayList<String>();
         if (messages == null || messages.isEmpty()) {
-            logger.debug("No mails found.");
+            logger.debug("No new emails found.");
         } else {
-            logger.debug("Messages:");
             for (Message message : messages) {
                 String msgId = message.getId();
                 Message mail = googleService.users().messages().get(user, msgId).setFormat("full").execute();
@@ -93,7 +91,7 @@ public class GmailAdapter implements MailAdapter {
                 MessagePartBody body = payload.getBody();
                 String encodedContent = body.getData();
                 String content = new String(Base64.decodeBase64(encodedContent.getBytes()), "UTF-8");
-                logger.debug("Payload content: " + content);
+                // logger.debug("Payload content: " + content);
 
                 result.add(content);
             }
@@ -140,14 +138,4 @@ public class GmailAdapter implements MailAdapter {
                         .setAccessType("offline").build();
         return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
     }
-
-    public void updateStatus(ThingStatus unknown) {
-        // TODO Auto-generated method stub
-
-    }
-
-    public Logger getLogger() {
-        return logger;
-    }
-
 }

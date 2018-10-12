@@ -5,7 +5,7 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Sample Thing Type -->
-	<thing-type id="gmailParadoxParser">
+	<thing-type id="ParadoxSystem">
 		<label>GmailParadoxParser Binding Thing</label>
 		<description>Paradox Partition status</description>
 

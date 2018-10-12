@@ -44,9 +44,9 @@ public class MailParser {
             String[] split = lines[i].split(": ");
             if (split.length > 1) {
                 result.put(split[0], split[1]);
-                logger.debug("Key: " + split[0] + "\tValue: " + split[1]);
+                // logger.debug("Key: " + split[0] + "\tValue: " + split[1]);
             } else {
-                logger.debug("Message cannot be split: " + lines[i]);
+                // logger.debug("Message cannot be split: " + lines[i]);
             }
 
         }

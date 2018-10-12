@@ -44,6 +44,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class GmailParadoxParserHandler extends BaseThingHandler {
 
+    private static final int INITIAL_DELAY = 10; // sec
+    private static final int DEFAULT_REFRESH_INTERVAL = 60; // sec
+
     private final Logger logger = LoggerFactory.getLogger(GmailParadoxParserHandler.class);
     private MailAdapter mailAdapter;
 
@@ -93,7 +96,7 @@ public class GmailParadoxParserHandler extends BaseThingHandler {
 
         scheduler.scheduleAtFixedRate(() -> {
             refreshData();
-        }, 30, 15, TimeUnit.SECONDS);
+        }, INITIAL_DELAY, DEFAULT_REFRESH_INTERVAL, TimeUnit.SECONDS);
 
         logger.debug("Finished initializing!");
 
