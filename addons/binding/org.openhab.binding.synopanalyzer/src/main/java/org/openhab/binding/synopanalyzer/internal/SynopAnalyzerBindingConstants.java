@@ -8,7 +8,17 @@
  */
 package org.openhab.binding.synopanalyzer.internal;
 
+import static org.eclipse.smarthome.core.library.unit.MetricPrefix.HECTO;
+
+import javax.measure.Unit;
+import javax.measure.quantity.Angle;
+import javax.measure.quantity.Pressure;
+import javax.measure.quantity.Speed;
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -34,9 +44,16 @@ public class SynopAnalyzerBindingConstants {
     public static final String TEMPERATURE = "temperature";
     public static final String WIND_ANGLE = "wind-angle";
     public static final String WIND_DIRECTION = "wind-direction";
-    public static final String WIND_SPEED_MS = "wind-speed-ms";
-    public static final String WIND_SPEED_KNOTS = "wind-speed-knots";
+    public static final String WIND_STRENGTH = "wind-speed";
     public static final String WIND_SPEED_BEAUFORT = "wind-speed-beaufort";
     public static final String TIME_UTC = "time-utc";
 
+    // Default units
+    public static final Unit<Temperature> TEMPERATURE_UNIT = SIUnits.CELSIUS;
+    public static final Unit<Pressure> PRESSURE_UNIT = HECTO(SIUnits.PASCAL);
+    public static final Unit<Speed> WIND_SPEED_UNIT_MS = SIUnits.METRE_PER_SECOND;
+    public static final Unit<Speed> WIND_SPEED_UNIT_KNOT = SmartHomeUnits.KNOT;
+    public static final Unit<Angle> WIND_DIRECTION_UNIT = SmartHomeUnits.DEGREE_ANGLE;
+    public static final String[] WIND_DIRECTIONS = new String[] { "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S",
+            "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW" };
 }
