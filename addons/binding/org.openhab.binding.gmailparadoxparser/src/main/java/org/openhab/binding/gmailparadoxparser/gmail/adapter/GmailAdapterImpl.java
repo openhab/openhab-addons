@@ -7,10 +7,14 @@ import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.codec.binary.Base64;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.openhab.binding.gmailparadoxparser.model.ParadoxPartition;
 import org.slf4j.Logger;
 
 import com.google.api.client.auth.oauth2.Credential;
@@ -36,24 +40,31 @@ public class GmailAdapterImpl implements GmailAdapter {
     private static final String APPLICATION_NAME = "Gmail Paradox mail parser";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
-    private static final String QUERY_UNREAD = "label:unread ";
     private static final List<String> SCOPES = Collections.singletonList(GmailScopes.MAIL_GOOGLE_COM);
     private static final String CREDENTIALS_FILE_PATH = "credentials.json";
 
     private static Gmail googleService;
-    private Logger logger;
+    private static Logger logger;
+
     private String user;
 
     public static void main(String... args) throws IOException, GeneralSecurityException {
         GmailAdapter adapter = new GmailAdapterImpl(new MyLogger());
 
-        List<Message> allUnreadMessages = adapter.retrieveMessages(QUERY_UNREAD);
-        List<String> mailContents = adapter.retrieveAllMessagesContents(allUnreadMessages);
+        List<String> mailContents = adapter.retrieveAllMessagesContents(QUERY_UNREAD);
+        Set<ParadoxPartition> partitionsState = new HashSet<>();
         for (String mail : mailContents) {
             String[] split = mail.split(System.getProperty("line.separator"));
-            MailParser.getInstance().parseToMap(split);
+            Map<String, String> mailResultMap = MailParser.getInstance().parseToMap(split);
+            partitionsState.add(new ParadoxPartition(mailResultMap.get("Message"), mailResultMap.get("Partition"),
+                    mailResultMap.get("By"), mailResultMap.get("Time")));
         }
 
+        for (ParadoxPartition paradoxPartition : partitionsState) {
+            logger.info("Partition \"" + paradoxPartition.getPartition() + "\" is in state: "
+                    + paradoxPartition.getState() + ".\tUser: " + paradoxPartition.getActivatedBy() + "\tTime: "
+                    + paradoxPartition.getTime());
+        }
     }
 
     public GmailAdapterImpl(Logger logger) throws GeneralSecurityException, IOException {
@@ -66,7 +77,7 @@ public class GmailAdapterImpl implements GmailAdapter {
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
         googleService = new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
                 .setApplicationName(APPLICATION_NAME).build();
-        this.logger = logger;
+        GmailAdapterImpl.logger = logger;
         this.user = user;
     }
 
@@ -146,6 +157,10 @@ public class GmailAdapterImpl implements GmailAdapter {
     public void updateStatus(ThingStatus unknown) {
         // TODO Auto-generated method stub
 
+    }
+
+    public Logger getLogger() {
+        return logger;
     }
 
 }

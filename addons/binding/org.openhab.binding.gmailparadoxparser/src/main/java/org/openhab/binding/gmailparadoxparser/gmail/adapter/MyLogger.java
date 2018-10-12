@@ -10,13 +10,13 @@ public class MyLogger implements Logger {
 
     @Override
     public void debug(String arg0) {
-        System.out.printf("DEBUG: %s" + arg0);
+        System.out.printf("DEBUG: %s\n", arg0);
 
     }
 
     @Override
     public void debug(String arg0, Object arg1) {
-        System.out.printf("DEBUG: " + arg0, arg1);
+        System.out.printf("DEBUG: %s %s\n", arg0, arg1);
     }
 
     @Override
@@ -135,7 +135,7 @@ public class MyLogger implements Logger {
 
     @Override
     public void info(String arg0) {
-        System.out.printf("INFO: %s", arg0);
+        System.out.printf("INFO: %s\n", arg0);
     }
 
     @Override
