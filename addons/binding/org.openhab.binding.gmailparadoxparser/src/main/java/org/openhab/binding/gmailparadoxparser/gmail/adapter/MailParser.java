@@ -1,8 +1,12 @@
 package org.openhab.binding.gmailparadoxparser.gmail.adapter;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.openhab.binding.gmailparadoxparser.model.ParadoxPartition;
 import org.slf4j.Logger;
 
 public class MailParser {
@@ -21,7 +25,19 @@ public class MailParser {
         return instance;
     }
 
-    public Map<String, String> parseToMap(String[] lines) {
+    public Set<ParadoxPartition> parseToParadoxPartitionStates(List<String> mailContents) {
+        Set<ParadoxPartition> partitionsStates = new HashSet<>();
+        for (String mail : mailContents) {
+            String[] split = mail.split(System.getProperty("line.separator"));
+            Map<String, String> mailResultMap = MailParser.getInstance().parseToMap(split);
+            partitionsStates.add(new ParadoxPartition(mailResultMap.get("Message"), mailResultMap.get("Partition"),
+                    mailResultMap.get("By"), mailResultMap.get("Time")));
+        }
+
+        return partitionsStates;
+    }
+
+    private Map<String, String> parseToMap(String[] lines) {
         Map<String, String> result = new HashMap<>();
 
         for (int i = 0; i < lines.length; i++) {

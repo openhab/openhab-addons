@@ -7,14 +7,10 @@ import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.codec.binary.Base64;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.openhab.binding.gmailparadoxparser.model.ParadoxPartition;
 import org.slf4j.Logger;
 
 import com.google.api.client.auth.oauth2.Credential;
@@ -50,19 +46,7 @@ public class GmailAdapter implements MailAdapter {
 
     public static void main(String... args) throws IOException, GeneralSecurityException {
         MailAdapter adapter = new GmailAdapter(new MyLogger());
-
-        List<String> mailContents = adapter.retrieveAllMessagesContents(QUERY_UNREAD);
-        Set<ParadoxPartition> partitionsState = new HashSet<>();
-        for (String mail : mailContents) {
-            String[] split = mail.split(System.getProperty("line.separator"));
-            Map<String, String> mailResultMap = MailParser.getInstance().parseToMap(split);
-            partitionsState.add(new ParadoxPartition(mailResultMap.get("Message"), mailResultMap.get("Partition"),
-                    mailResultMap.get("By"), mailResultMap.get("Time")));
-        }
-
-        for (ParadoxPartition paradoxPartition : partitionsState) {
-            logger.info(paradoxPartition.toString());
-        }
+        List<String> mailContents = adapter.retrieveAllMessagesContentsAndMarkAllRead(QUERY_UNREAD);
     }
 
     public GmailAdapter(Logger logger) throws GeneralSecurityException, IOException {
@@ -71,11 +55,16 @@ public class GmailAdapter implements MailAdapter {
 
     public GmailAdapter(String user, String credentialsFile, Logger logger)
             throws GeneralSecurityException, IOException {
-        // Build a new authorized API client service.
-        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-        googleService = new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
-                .setApplicationName(APPLICATION_NAME).build();
         GmailAdapter.logger = logger;
+        // Build a new authorized API client service.
+        if (googleService == null) {
+            logger.info("Initializing Google Gmail service...");
+            final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+            googleService = new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
+                    .setApplicationName(APPLICATION_NAME).build();
+        } else {
+            logger.info("Google Gmail service already initialized.");
+        }
         this.user = user;
     }
 

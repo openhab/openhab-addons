@@ -14,10 +14,11 @@ public interface MailAdapter {
 
     public List<String> retrieveAllMessagesContents(List<Message> messages) throws IOException;
 
-    default public List<String> retrieveAllMessagesContents(String query) throws IOException {
+    public void markMessagesRead(List<Message> messages) throws IOException;
+
+    default public List<String> retrieveAllMessagesContentsAndMarkAllRead(String query) throws IOException {
         List<Message> retrievedMessages = retrieveMessages(query);
+        markMessagesRead(retrievedMessages);
         return retrieveAllMessagesContents(retrievedMessages);
     }
-
-    public void markMessagesRead(List<Message> msgIds) throws IOException;
 }

@@ -16,6 +16,9 @@ import static org.openhab.binding.gmailparadoxparser.internal.GmailParadoxParser
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -26,6 +29,9 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.gmailparadoxparser.gmail.adapter.GmailAdapter;
+import org.openhab.binding.gmailparadoxparser.gmail.adapter.MailAdapter;
+import org.openhab.binding.gmailparadoxparser.gmail.adapter.MailParser;
+import org.openhab.binding.gmailparadoxparser.model.ParadoxPartition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +45,7 @@ import org.slf4j.LoggerFactory;
 public class GmailParadoxParserHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(GmailParadoxParserHandler.class);
-    private GmailAdapter parser;
+    private MailAdapter mailAdapter;
 
     @Nullable
     private GmailParadoxParserConfiguration config;
@@ -53,15 +59,22 @@ public class GmailParadoxParserHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (PARTITION_CHANNEL_ID.equals(channelUID.getId())) {
             if (command instanceof RefreshType) {
-
+                refreshData();
             }
+        }
+    }
 
-            // TODO: handle command
-
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information:
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
+    private void refreshData() {
+        try {
+            List<String> retrievedMessages = mailAdapter
+                    .retrieveAllMessagesContentsAndMarkAllRead(MailAdapter.QUERY_UNREAD);
+            Set<ParadoxPartition> partitionsStates = MailParser.getInstance()
+                    .parseToParadoxPartitionStates(retrievedMessages);
+            for (ParadoxPartition state : partitionsStates) {
+                logger.debug(state.toString());
+            }
+        } catch (IOException e) {
+            logger.debug(e.getMessage());
         }
     }
 
@@ -70,38 +83,19 @@ public class GmailParadoxParserHandler extends BaseThingHandler {
         logger.debug("Start initializing!");
         config = getConfigAs(GmailParadoxParserConfiguration.class);
         try {
-            parser = new GmailAdapter(logger);
+            mailAdapter = new GmailAdapter(logger);
         } catch (IOException | GeneralSecurityException e) {
-            logger.debug(e.getMessage());
+            logger.trace(e.getMessage(), e);
+            updateStatus(ThingStatus.UNINITIALIZED);
             return;
         }
-        parser.
+        updateStatus(ThingStatus.ONLINE);
 
-        // TODO: Initialize the handler.
-        // The framework requires you to return from this method quickly. Also, before leaving this method a thing
-        // status from one of ONLINE, OFFLINE or UNKNOWN must be set. This might already be the real thing status in
-        // case you can decide it directly.
-        // In case you can not decide the thing status directly (e.g. for long running connection handshake using WAN
-        // access or similar) you should set status UNKNOWN here and then decide the real status asynchronously in the
-        // background.
+        scheduler.scheduleAtFixedRate(() -> {
+            refreshData();
+        }, 30, 15, TimeUnit.SECONDS);
 
-        // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
-        // the framework is then able to reuse the resources from the thing handler initialization.
-        // we set this upfront to reliably check status updates in unit tests.
-                updateStatus(ThingStatus.UNKNOWN);
-
-        // Example for background initialization:
-        scheduler.execute(() -> {
-            boolean thingReachable = true; // <background task with long running initialization here>
-            // when done do:
-            if (thingReachable) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
-            }
-        });
-
-        // logger.debug("Finished initializing!");
+        logger.debug("Finished initializing!");
 
         // Note: When initialization can NOT be done set the status with more details for further
         // analysis. See also class ThingStatusDetail for all available status details.
@@ -109,4 +103,5 @@ public class GmailParadoxParserHandler extends BaseThingHandler {
         // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
         // "Can not access device as username and/or password are invalid");
     }
+
 }
