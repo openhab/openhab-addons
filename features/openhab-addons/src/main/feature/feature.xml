@@ -154,7 +154,12 @@
         <feature>openhab-runtime-base</feature>
         <feature>esh-transform-map</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.globalcache/${project.version}</bundle>
-    </feature>
+    </feature> 
+	
+	 <feature name="openhab-binding-gmailparadoxparser" description="Gmail Paradox mails parser Binding" version="${project.version}"> 
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/gmailparadoxparser/${project.version}</bundle>
+    </feature> 
 
     <feature name="openhab-binding-gpstracker" description="GPSTracker Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
