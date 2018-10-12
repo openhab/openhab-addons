@@ -1,19 +1,19 @@
 # GPSTracker Binding
 
-This binding allows you to connect mobile GPS tracker applications to openHAB and process GPS location reports. 
+This binding allows you to connect mobile GPS tracker applications to openHAB and process GPS location reports.
 Currently two applications are supported:
 
 * [OwnTracks](https://owntracks.org/booklet/) - iOS, Android
 * [GPSLogger](https://gpslogger.app/) - Android
 
-GPS location reports are sent to openHAB using HTTP protocol. 
+GPS location reports are sent to openHAB using HTTP protocol.
 Please be aware that this communication uses the public network so make sure your openHAB installation is [secured](https://www.openhab.org/docs/installation/security.html#encrypted-communication) (but accessible from public internet through myopenhab.org or using a reverse proxy)
 and you configured HTTP**S** access in tracking applications.
 
 The binding can process two message types received from trackers:
 
 * **Location** - This is a simple location report with coordinates extended with some extra information about the tracker (e.g. tracker device battery level). [OwnTracks, GPSLogger]
-* **Transition** - This report is based on regions defined in tracker application. A message is sent every time the tracker enters or leaves a region. [OwnTracks only]
+* **Transition** - This report is based on regions defined in tracker application only. A message is sent every time the tracker enters or leaves a region. [OwnTracks only]
 
 ## Configuration
 
@@ -30,18 +30,18 @@ Go to Preferences/Connection and set:
   * Set username and password to be able to reach your openHAB server
   * Device ID is not important. Set it to e.g. phone
   * Tracker ID - This id identifies the tracker as a thing. I use initials here.
-  
+
 ![Image](doc/owntracks_setup.png)
 
 ### GPSLogger
 
-Install [GPSLogger for Android](https://play.google.com/store/apps/details?id=com.mendhak.gpslogger) on your device. 
-After the launch, go to General Options. 
+Install [GPSLogger for Android](https://play.google.com/store/apps/details?id=com.mendhak.gpslogger) on your device.
+After the launch, go to General Options.
 Enable Start on boot-up and Start on app launch.
 
 ![Image](doc/gpslogger_1.png)
 
-Go to Logging details and disable Log to GPX, Log to KML and Log to NMEA. 
+Go to Logging details and disable Log to GPX, Log to KML and Log to NMEA.
 Enable Log to custom URL.
 
 ![Image](doc/gpslogger_2.png)
@@ -63,7 +63,7 @@ Right after enabling, the app takes you to the Log to custom URL settings and mo
 }
 ```
 
-**Note**: The value of "tid" is the tracker id that identifies the tracker as a thing in openHAB. 
+**Note**: The value of "tid" is the tracker id that identifies the tracker as a thing in openHAB.
 This must be unique for each tracker connected to the same openHAB instance (e.g. family members).
 
 * **HTTP Method** - type in: **POST**
@@ -73,8 +73,8 @@ This must be unique for each tracker connected to the same openHAB instance (e.g
 
 ### Things
 
-It is possible to define things manually or to use the discovery feature of the openHAB. 
-An important detail for both methods is that a tracker is identified by a **tracker id** configured on mobile devices. 
+It is possible to define things manually or to use the discovery feature of the openHAB.
+An important detail for both methods is that a tracker is identified by a **tracker id** configured on mobile devices.
 Make sure these tracker ids are unique in group of trackers connected to a single openHAB instance.
 
 #### Discovery
@@ -93,31 +93,32 @@ Basic channels provided by the tracker things:
 
 #### Distance Calculation
 
-Tracker thing can be extended with **Distance** channels (channel type is `regionDistance`) if a distance calculation is needed for a region. 
+Tracker thing can be extended with **Distance** channels (channel type is `regionDistance`) if a distance calculation is needed for a region.
 These dynamic channels require the following parameters:
 
-| Parameter | Type |Description |
-| --- | --- | --- |
-| Region Name | String | Region name. If the region is configured in the tracker app as well use the same name. Distance channels can also be defined as binding only regions (not configured in trackers) | 
-| Region center | Location | Region center location |
-| Region Radius | Integer | Geofence radius |
+| Parameter     | Type     | Description                                                                                                                                                                       |
+|---------------|----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Region Name   | String   | Region name. If the region is configured in the tracker app as well use the same name. Distance channels can also be defined as binding only regions (not configured in trackers) |
+| Region center | Location | Region center location                                                                                                                                                            |
+| Region Radius | Integer  | Geofence radius                                                                                                                                                                   |
 
-Distance values will be updated each time a GPS location log record is received from the tracker. 
+Distance values will be updated each time a GPS location log record is received from the tracker.
 
-When this calculated distance is less than the defined geofence radius the binding also fires event on Region Trigger channel. 
+When this calculated distance is less than the defined geofence radius the binding also fires event on Region Trigger channel.
 
-* When the tracker is approaching (the new calculated distance is less then the previous one) the payload is <<region_name>>/enter. 
-* If the tracker is distancing (the new calculated distance is greater then the previous one) payload is <<region_name>>/leave. 
+* When the tracker is approaching (the new calculated distance is less then the previous one) the payload is <<region_name>>/enter.
+* If the tracker is distancing (the new calculated distance is greater then the previous one) payload is <<region_name>>/leave.
 
-If the tracker is moving inside/outside the region (both the previous and the current calculated distance value is less/greater than the radius) no events are fired. 
+If the tracker is moving inside/outside the region (both the previous and the current calculated distance value is less/greater than the radius) no events are fired.
 This means that the region events are triggered **ONLY IN CASE THE REGION BORDER IS CROSSED**.
 
 **Note**: In case the location is set for openHAB installation (Configuration/System/Regional Settings) the binding automatically creates the System Distance channel (gpstracker:tracker:??:distanceSystem) with region name set to **System**.
 
 #### Tracker Location Status
 
-By default the binding notifies the openHAB about entering/leaving event through region trigger channel. 
-In order to have this state available in stateful switch items (e.g. for rule logic) switch type items can be linked to **regionTrigger** channel. 
+In case external regions are defined in mobile application the binding fires entering/leaving events on region trigger channel.
+These events are fired in case of distance channels as well when the tracker crosses the geofence (the distance from the region center becomes less/greater than the radius).
+In order to have this state available in stateful switch items (e.g. for rule logic) switch type items can be linked to **regionTrigger** channel.
 There is a special profile (gpstracker:trigger-geofence) that transforms trigger enter/leave events to switch states:
 
 * **<<region_name>>/enter** will update the switch state to **ON**
@@ -125,11 +126,11 @@ There is a special profile (gpstracker:trigger-geofence) that transforms trigger
 
 To link a switch item to regionTrigger channel the following parameters are required by the item link:
 
-| Parameter | Type |Description |
-| --- | --- | --- |
-| Profile Name | Selection | Select the Geofence(gpstracker:trigger-geofence) from dropdown|
-| Region Name | String | Region name which should be the same as used in the tracker application or defined for distance channels |
- 
+| Parameter    | Type      | Description                                                                                              |
+|--------------|-----------|----------------------------------------------------------------------------------------------------------|
+| Profile Name | Selection | Select the Geofence(gpstracker:trigger-geofence) from dropdown                                           |
+| Region Name  | String    | Region name which should be the same as used in the tracker application or defined for distance channels |
+
 ## Manual Configuration
 
 ### Things
@@ -156,7 +157,7 @@ Thing gpstracker:tracker:EX   "EX tracker" [trackerId="EX"] {
 Location	locationEX	"Location"		{channel="gpstracker:tracker:1:lastLocation"}
 DateTime	lastSeenEX	"Last seen"		{channel="gpstracker:tracker:1:lastReport"}
 Number		batteryEX	"Battery level"		{channel="gpstracker:tracker:1:batteryLevel"}
-Number		accurayEX	"GPS Accuracy [%d m]"		{channel="gpstracker:tracker:1:gpsAccuracy"}
+Number:Length		accuracyEX	"GPS Accuracy [%d m]"		{channel="gpstracker:tracker:1:gpsAccuracy"}
 
 //linking switch item to regionTrigger channel. assuming the Home distance channel is defined in the binding config (see above)
 Switch atHomeEX "Home presence" {channel="gpstracker:tracker:EX:regionTrigger" [profile="gpstracker:trigger-geofence", regionName="Home"]}
@@ -182,11 +183,7 @@ sitemap gpstracker label="GPSTracker Binding" {
 ## Debug
 
 As the setup is not that simple here are some hints for debugging.
-In order to see the debug information in log enable TRACE for the binding in the console:
-
-```
->log:set TRACE org.openhab.binding.gpstracker
-```
+In order to see detailed debug information [set TRACE debug level](https://www.openhab.org/docs/administration/logging.html) for `org.openhab.binding.gpstracker` package.
 
 ### Binding Start
 
@@ -247,7 +244,7 @@ Assumptions:
 * Presence switch is linked to the regionTrigger channel with parameters:
   * Profile: Geofence(gpstracker:trigger-geofence)
   * Region Name: Home
-  
+
 ![Image](doc/example.png)
 
 After a location message received from the tracker the log should contain these lines:
@@ -278,7 +275,7 @@ Assumptions:
 * Presence switch is linked to the regionTrigger channel with parameters:
   * Profile: Geofence(gpstracker:trigger-geofence)
   * Region Name: Work
-  
+
 ```
 2018-10-05 09:35:27.203 [DEBUG] [nal.provider.AbstractCallbackServlet] - Post message received from OwnTracks tracker: {"_type":"transition","tid":"XX","acc":10.0,"desc":"Work","event":"enter","lat":42.53,"lon":18.22,"tst":1527966973,"wtst":1524244195,"t":"c"}
 2018-10-05 09:35:27.204 [DEBUG] [cker.internal.handler.TrackerHandler] - ConfigHelper transition event received: Work
@@ -294,7 +291,7 @@ Assumptions:
 2018-10-05 09:35:27.210 [DEBUG] [ofile.GPSTrackerTriggerSwitchProfile] - Transition trigger Work/enter handled for region Work by profile: ON
 ```
 
-**Note**: 
+**Note**:
 
 * If the binding was restarted only the second transition update will trigger event as the binding has to know the previous state.
 * The distance is not calculated for Work as the binding doesn't know the Work region center.
