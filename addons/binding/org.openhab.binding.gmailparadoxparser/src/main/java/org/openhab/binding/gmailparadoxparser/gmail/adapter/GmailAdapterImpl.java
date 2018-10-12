@@ -61,9 +61,7 @@ public class GmailAdapterImpl implements GmailAdapter {
         }
 
         for (ParadoxPartition paradoxPartition : partitionsState) {
-            logger.info("Partition \"" + paradoxPartition.getPartition() + "\" is in state: "
-                    + paradoxPartition.getState() + ".\tUser: " + paradoxPartition.getActivatedBy() + "\tTime: "
-                    + paradoxPartition.getTime());
+            logger.info(paradoxPartition.toString());
         }
     }
 

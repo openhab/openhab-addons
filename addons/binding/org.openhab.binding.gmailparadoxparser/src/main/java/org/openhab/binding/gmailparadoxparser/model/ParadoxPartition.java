@@ -21,6 +21,12 @@ public class ParadoxPartition implements Comparable<ParadoxPartition> {
         this.state = message;
     }
 
+    @Override
+    public String toString() {
+        return "ParadoxPartition [partition= \"" + partition + "\", state=" + state + ", activatedBy=" + activatedBy
+                + ", time=" + time + "]";
+    }
+
     public String getPartition() {
         return partition;
     }
