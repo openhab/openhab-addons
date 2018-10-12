@@ -31,7 +31,8 @@ import com.google.api.services.gmail.model.Message;
 import com.google.api.services.gmail.model.MessagePart;
 import com.google.api.services.gmail.model.MessagePartBody;
 
-public class GmailParadoxParser {
+public class GmailAdapterImpl implements GmailAdapter {
+    private static final String USER = "me";
     private static final String APPLICATION_NAME = "Gmail Paradox mail parser";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
@@ -41,24 +42,13 @@ public class GmailParadoxParser {
 
     private static Gmail googleService;
     private Logger logger;
-
-    public GmailParadoxParser(Logger logger) throws GeneralSecurityException, IOException {
-        this(QUERY_UNREAD, CREDENTIALS_FILE_PATH, logger);
-    }
-
-    public GmailParadoxParser(String filterLabel, String credentialsFile, Logger logger)
-            throws GeneralSecurityException, IOException {
-        // Build a new authorized API client service.
-        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-        googleService = new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
-                .setApplicationName(APPLICATION_NAME).build();
-        this.logger = logger;
-    }
+    private String user;
 
     public static void main(String... args) throws IOException, GeneralSecurityException {
-        GmailParadoxParser parser = new GmailParadoxParser(new MyLogger());
+        GmailAdapter adapter = new GmailAdapterImpl(new MyLogger());
 
-        List<String> mailContents = parser.retrieveAllMailsContents();
+        List<Message> allUnreadMessages = adapter.retrieveMessages(QUERY_UNREAD);
+        List<String> mailContents = adapter.retrieveAllMessagesContents(allUnreadMessages);
         for (String mail : mailContents) {
             String[] split = mail.split(System.getProperty("line.separator"));
             MailParser.getInstance().parseToMap(split);
@@ -66,23 +56,39 @@ public class GmailParadoxParser {
 
     }
 
-    public List<String> retrieveAllMailsContents() throws IOException, UnsupportedEncodingException {
-        // Print the messages in the user's account.
+    public GmailAdapterImpl(Logger logger) throws GeneralSecurityException, IOException {
+        this(USER, CREDENTIALS_FILE_PATH, logger);
+    }
+
+    public GmailAdapterImpl(String user, String credentialsFile, Logger logger)
+            throws GeneralSecurityException, IOException {
+        // Build a new authorized API client service.
+        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+        googleService = new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
+                .setApplicationName(APPLICATION_NAME).build();
+        this.logger = logger;
+        this.user = user;
+    }
+
+    @Override
+    public List<Message> retrieveMessages(String query) throws IOException, UnsupportedEncodingException {
+        ListMessagesResponse listResponse = googleService.users().messages().list(user).setQ(query).execute();
+        return listResponse.getMessages();
+    }
+
+    @Override
+    public ArrayList<String> retrieveAllMessagesContents(List<Message> messages) throws IOException {
         ArrayList<String> result = new ArrayList<String>();
-        String user = "me";
-        ListMessagesResponse listResponse = googleService.users().messages().list(user).setQ(QUERY_UNREAD).execute();
-        List<Message> messages = listResponse.getMessages();
         if (messages == null || messages.isEmpty()) {
             logger.debug("No mails found.");
         } else {
-            List<String> msgIds = new ArrayList<>();
-            System.out.println("Messages:");
+            logger.debug("Messages:");
             for (Message message : messages) {
                 String msgId = message.getId();
                 Message mail = googleService.users().messages().get(user, msgId).setFormat("full").execute();
                 MessagePart payload = mail.getPayload();
                 if (payload == null) {
-                    logger.debug("Payload is null");
+                    logger.info("Payload is null");
                     continue;
                 }
 
@@ -91,22 +97,30 @@ public class GmailParadoxParser {
                 String content = new String(Base64.decodeBase64(encodedContent.getBytes()), "UTF-8");
                 logger.debug("Payload content: " + content);
 
-                msgIds.add(msgId);
                 result.add(content);
             }
-            BatchModifyMessagesRequest modifyRequest = new BatchModifyMessagesRequest().setIds(msgIds)
-                    // .setAddLabelIds();
-                    .setRemoveLabelIds(Collections.singletonList("UNREAD"));
-            googleService.users().messages().batchModify(user, modifyRequest).execute();
         }
         return result;
     }
 
-    private void initializeGoogleService() throws GeneralSecurityException, IOException {
-        // Build a new authorized API client service.
-        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-        googleService = new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
-                .setApplicationName(APPLICATION_NAME).build();
+    @Override
+    public void markMessagesRead(List<Message> messages) throws IOException {
+        if (messages == null || messages.isEmpty()) {
+            return;
+        }
+        List<String> msgIds = retrieveMessageIds(messages);
+        BatchModifyMessagesRequest modifyRequest = new BatchModifyMessagesRequest().setIds(msgIds)
+                // // .setAddLabelIds();
+                .setRemoveLabelIds(Collections.singletonList("UNREAD"));
+        googleService.users().messages().batchModify(user, modifyRequest).execute();
+    }
+
+    private List<String> retrieveMessageIds(List<Message> messages) {
+        List<String> msgIds = new ArrayList<>();
+        for (Message message : messages) {
+            msgIds.add(message.getId());
+        }
+        return msgIds;
     }
 
     /**
@@ -118,7 +132,7 @@ public class GmailParadoxParser {
      */
     private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
         // Load client secrets.
-        InputStream in = GmailParadoxParser.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
+        InputStream in = GmailAdapterImpl.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
         GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
 
         // Build flow and trigger user authorization request.

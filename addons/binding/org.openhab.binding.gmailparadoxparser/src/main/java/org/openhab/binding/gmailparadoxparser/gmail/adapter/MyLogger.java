@@ -8,13 +8,9 @@ public class MyLogger implements Logger {
 
     }
 
-    public void logDebug(String message) {
-        System.out.println("DEBUG: " + message);
-    }
-
     @Override
     public void debug(String arg0) {
-        System.out.println("DEBUG: " + arg0);
+        System.out.printf("DEBUG: %s" + arg0);
 
     }
 
@@ -139,8 +135,7 @@ public class MyLogger implements Logger {
 
     @Override
     public void info(String arg0) {
-        // TODO Auto-generated method stub
-
+        System.out.printf("INFO: %s", arg0);
     }
 
     @Override

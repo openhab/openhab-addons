@@ -25,7 +25,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.gmailparadoxparser.gmail.adapter.GmailParadoxParser;
+import org.openhab.binding.gmailparadoxparser.gmail.adapter.GmailAdapterImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 public class GmailParadoxParserHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(GmailParadoxParserHandler.class);
-    private GmailParadoxParser parser;
+    private GmailAdapterImpl parser;
 
     @Nullable
     private GmailParadoxParserConfiguration config;
@@ -70,7 +70,7 @@ public class GmailParadoxParserHandler extends BaseThingHandler {
         logger.debug("Start initializing!");
         config = getConfigAs(GmailParadoxParserConfiguration.class);
         try {
-            parser = new GmailParadoxParser(logger);
+            parser = new GmailAdapterImpl(logger);
         } catch (IOException | GeneralSecurityException e) {
             logger.debug(e.getMessage());
             return;
