@@ -249,8 +249,12 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
 
     private synchronized void disconnect() {
         if (connector != null) {
-            logger.info("Stopping OpenTherm Gateway connector");
-            connector.stop();
+            if (connector.isConnected()) {
+                logger.info("Stopping OpenTherm Gateway connector");
+                connector.stop();
+            }
+
+            connector = null;
         }
     }
 }

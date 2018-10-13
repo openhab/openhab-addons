@@ -16,6 +16,7 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
     private PrintWriter writer;
 
     private volatile boolean stopping;
+    private boolean connected;
     private Message previousMessage;
 
     public OpenThermGatewaySocketConnector(OpenThermGatewayCallback callback, String ipaddress, int port) {
@@ -33,6 +34,7 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
     @Override
     public void run() {
         stopping = false;
+        connected = false;
 
         try {
             callback.log(LogLevel.Debug,
@@ -44,13 +46,15 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
             writer = new PrintWriter(socket.getOutputStream(), true);
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
+            connected = true;
+
             callback.connected();
 
             callback.log(LogLevel.Debug, "OpenThermGatewaySocketConnector connected");
 
             sendCommand(CommandType.PrintReport, "A");
 
-            // PS=0 causes the OTGW to report every message it receives and transmits
+            // Set the OTGW to report every message it receives and transmits
             sendCommand(CommandType.PrintSummary, "0");
 
             while (!stopping && !Thread.currentThread().isInterrupted()) {
@@ -81,6 +85,8 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
                 }
             }
 
+            connected = false;
+
             callback.log(LogLevel.Debug, "OpenThermGatewaySocketConnector disconnected");
             callback.disconnected();
         }
@@ -88,7 +94,7 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
 
     @Override
     public boolean isConnected() {
-        return (socket != null && socket.isConnected());
+        return connected;
     }
 
     @Override
@@ -98,10 +104,13 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
 
             String msg = command.getMessage(message);
 
-            callback.log(LogLevel.Debug, "Sending message: %s", msg);
-
-            writer.printf("%s\r\n", msg);
-            // writer.flush(); no longer needed ? needs testing
+            if (connected) {
+                callback.log(LogLevel.Debug, "Sending message: %s", msg);
+                writer.printf("%s\r\n", msg);
+            } else {
+                callback.log(LogLevel.Debug,
+                        "Unable to send message: %s. OpenThermGatewaySocketConnector is not connected.", msg);
+            }
         } else {
             callback.log(LogLevel.Warning, "No command found for commandType %s", commandType.toString());
         }

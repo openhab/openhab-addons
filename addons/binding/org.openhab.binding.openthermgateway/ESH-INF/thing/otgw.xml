@@ -2,7 +2,6 @@
 <thing:thing-descriptions bindingId="openthermgateway" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
-
 	<thing-type id="otgw">
 		<label>OpenTherm Gateway</label>
 		<description>OpenTherm Gateway binding</description>
@@ -28,7 +27,7 @@
             <channel id="maxrelmdulevel" typeId="maxrelmdulevel" />
         </channels>
         <properties>
-             <property name="version">0.4.0</property>
+             <property name="version">0.5.0</property>
         </properties>
 		<config-description-ref uri="thing-type:openthermgateway:otgw" />
 	</thing-type>
