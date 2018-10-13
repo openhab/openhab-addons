@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnector {
     private OpenThermGatewayCallback callback;
@@ -16,7 +15,7 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
     private BufferedReader reader;
     private PrintWriter writer;
 
-    private boolean stopping;
+    private volatile boolean stopping;
     private Message previousMessage;
 
     public OpenThermGatewaySocketConnector(OpenThermGatewayCallback callback, String ipaddress, int port) {
@@ -31,16 +30,13 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
         stopping = true;
     }
 
-    private synchronized boolean keepRunning() {
-        return stopping == false;
-    }
-
     @Override
     public void run() {
         stopping = false;
 
         try {
-            callback.log(LogLevel.Debug, "Starting OpenThermGatewaySocketConnector");
+            callback.log(LogLevel.Debug,
+                    String.format("Connecting OpenThermGatewaySocketConnector to %s:%s", this.ipaddress, this.port));
 
             callback.connecting();
 
@@ -52,19 +48,21 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
 
             callback.log(LogLevel.Debug, "OpenThermGatewaySocketConnector connected");
 
+            sendCommand(CommandType.PrintReport, "A");
+
             // PS=0 causes the OTGW to report every message it receives and transmits
             sendCommand(CommandType.PrintSummary, "0");
 
-            while (keepRunning()) {
+            while (!stopping && !Thread.currentThread().isInterrupted()) {
                 String message = reader.readLine();
                 handleMessage(message);
             }
-        } catch (UnknownHostException e) {
-            callback.log(LogLevel.Error, "An error occured in OpenThermGatewaySocketConnector", e);
-        } catch (IOException e) {
+
+            callback.log(LogLevel.Debug, "Stopping OpenThermGatewaySocketConnector");
+
+        } catch (Exception e) {
             callback.log(LogLevel.Error, "An error occured in OpenThermGatewaySocketConnector", e);
         } finally {
-            callback.log(LogLevel.Debug, "Disconnecting OpenThermGatewaySocketConnector");
 
             if (writer != null) {
                 writer.flush();
@@ -83,6 +81,7 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
                 }
             }
 
+            callback.log(LogLevel.Debug, "OpenThermGatewaySocketConnector disconnected");
             callback.disconnected();
         }
     }

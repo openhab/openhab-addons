@@ -4,14 +4,40 @@
     xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
     <config-description uri="thing-type:openthermgateway:otgw">
-        <parameter name="ipaddress" type="text" required="true">
+        <parameter-group name="connection">
+            <label>Connection</label>
+            <description>Connection settings.</description>
+        </parameter-group>
+
+        <!-- 
+        <parameter-group name="otgw">
+            <label>OpenTherm Gateway</label>
+            <description>OpenTherm Gateway settings.</description>
+        </parameter-group>
+        -->
+        
+        <parameter name="ipaddress" type="text" required="true" groupName="connection">
 		    <label>Hostname or IP address</label>
 		    <description>The hostname or IP address to connect to the OpenTherm Gateway.</description>
 		</parameter>
-		<parameter name="port" type="integer" required="true">
+		
+		<parameter name="port" type="integer" required="true" groupName="connection">
 		    <label>Port</label>
 		    <description>The port used to connect to the OpenTherm Gateway.</description>
-		</parameter>
+		</parameter>				
+		
+        <!-- 
+        <parameter name="setpointcommand" type="text" required="true" groupName="otgw">
+            <label>Setpoint command</label>
+            <description>The command used to override the room temperature setpoint.</description>
+            <default>TT</default>
+            <options>
+                <option value="TT">Temperature Temporary (TT)</option>
+                <option value="TC">Temperature Constant (TC)</option>
+            </options>
+        </parameter>
+        -->
+        		 
     </config-description>
 
 </config-description:config-descriptions>

@@ -50,9 +50,6 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
     @Nullable
     private OpenThermGatewayConnector connector;
 
-    @Nullable
-    private Thread connectorThread;
-
     public OpenThermGatewayHandler(Thing thing) {
         super(thing);
     }
@@ -63,6 +60,8 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
 
         updateStatus(ThingStatus.OFFLINE);
 
+        config = getConfigAs(OpenThermGatewayConfiguration.class);
+
         connect();
     }
 
@@ -71,15 +70,24 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
         logger.debug("Received channel: {}, command: {}", channelUID, command);
 
         try {
-            if (command.toFullString() != "REFRESH" && connect()) {
+            if (command.toFullString() != "REFRESH" && checkConnection()) {
                 String channel = channelUID.getId();
 
-                if (channel.equals(OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_SETPOINT)) {
-                    connector.sendCommand(CommandType.TemperatureTemporary, command.toFullString());
-                } else if (channel.equals(OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_DHW_SETPOINT)) {
-                    connector.sendCommand(CommandType.SetpointWater, command.toFullString());
-                } else if (channel.equals(OpenThermGatewayBindingConstants.CHANNEL_OUTSIDE_TEMPERATURE)) {
-                    connector.sendCommand(CommandType.TemperatureOutside, command.toFullString());
+                switch (channel) {
+                    case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_SETPOINT_TEMPORARY:
+                        connector.sendCommand(CommandType.TemperatureTemporary, command.toFullString());
+                        break;
+                    case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_SETPOINT_CONSTANT:
+                        connector.sendCommand(CommandType.TemperatureConstant, command.toFullString());
+                        break;
+                    case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_DHW_SETPOINT:
+                        connector.sendCommand(CommandType.SetpointWater, command.toFullString());
+                        break;
+                    case OpenThermGatewayBindingConstants.CHANNEL_OUTSIDE_TEMPERATURE:
+                        connector.sendCommand(CommandType.TemperatureOutside, command.toFullString());
+                        break;
+                    default:
+                        break;
                 }
             }
         } catch (Exception ex) {
@@ -211,22 +219,25 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
         super.dispose();
     }
 
-    private boolean connect() {
+    private boolean checkConnection() {
         if (connector != null && connector.isConnected()) {
             return true;
         }
 
+        return connect();
+    }
+
+    private synchronized boolean connect() {
         try {
-            config = getConfigAs(OpenThermGatewayConfiguration.class);
-
-            logger.info("Connecting to the OpenTherm Gateway at {}:{}", config.ipaddress, config.port);
-
             disconnect();
+
+            logger.info("Starting OpenTherm Gateway connector");
 
             // TODO: support different kinds of connectors, such as USB, serial port
             connector = new OpenThermGatewaySocketConnector(this, config.ipaddress, config.port);
-            connectorThread = new Thread(connector);
-            connectorThread.start();
+            new Thread(connector).start();
+
+            logger.info("OpenTherm Gateway connector started");
 
             return true;
         } catch (Exception ex) {
@@ -236,9 +247,9 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
         return false;
     }
 
-    private void disconnect() {
+    private synchronized void disconnect() {
         if (connector != null) {
-            logger.info("Disconnecting the OpenTherm Gateway");
+            logger.info("Stopping OpenTherm Gateway connector");
             connector.stop();
         }
     }

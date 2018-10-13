@@ -19,14 +19,22 @@
         <state readOnly="true" pattern="%.1f °C"></state>
     </channel-type>
 
-    <channel-type id="overridesetpoint">
+    <channel-type id="temperaturetemporary">
         <item-type>Number</item-type>
-        <label>Room setpoint override</label>
-        <description>Remote override room temperature setpoint</description>
+        <label>Temporary room setpoint override</label>
+        <description>Temporary override room temperature setpoint</description>
         <category>temperature</category>
-        <state readOnly="false" min="0" max="100" step="0.1" pattern="%.1f °C"></state>
+        <state readOnly="false" min="0" max="30" step="0.1" pattern="%.1f °C"></state>
     </channel-type>
-
+    
+     <channel-type id="temperatureconstant">
+        <item-type>Number</item-type>
+        <label>Constant room setpoint override</label>
+        <description>Constant override room temperature setpoint</description>
+        <category>temperature</category>
+        <state readOnly="false" min="0" max="30" step="0.1" pattern="%.1f °C"></state>
+    </channel-type>
+    
     <channel-type id="controlsetpoint">
         <item-type>Number</item-type>
         <label>Control setpoint</label>
@@ -78,7 +86,7 @@
         <label>Outside temperature</label>
         <description>Outside temperature</description>
         <category>temperature</category>
-        <state readOnly="false" min="0" max="100" step="0.1" pattern="%.1f °C"></state>
+        <state readOnly="false" min="-40" max="100" step="0.1" pattern="%.1f °C"></state>
     </channel-type>
     
     <channel-type id="waterpressure">
