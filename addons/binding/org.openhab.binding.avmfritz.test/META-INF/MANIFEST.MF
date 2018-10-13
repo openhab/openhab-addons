@@ -9,6 +9,7 @@ Bundle-Version: 2.4.0.qualifier
 Fragment-Host: org.openhab.binding.avmfritz
 Import-Package: 
  org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.jetty.client,
  org.eclipse.jetty.http,
  org.eclipse.jetty.util,
  org.eclipse.jetty.util.component,
