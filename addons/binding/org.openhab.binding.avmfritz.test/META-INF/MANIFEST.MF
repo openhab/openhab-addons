@@ -9,6 +9,9 @@ Bundle-Version: 2.4.0.qualifier
 Fragment-Host: org.openhab.binding.avmfritz
 Import-Package: 
  org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.jetty.client,
+ org.eclipse.jetty.http,
+ org.eclipse.jetty.util,
  org.eclipse.jetty.util.component,
  org.eclipse.smarthome.core.common.registry,
  org.eclipse.smarthome.core.events,
@@ -16,6 +19,7 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.util,
+ org.eclipse.smarthome.test,
  org.eclipse.smarthome.test.java,
  org.eclipse.smarthome.test.storage,
  org.junit;version="4.0.0",
