@@ -94,6 +94,9 @@ public class SomfyTahomaBindingConstants {
     // Pergola
     public static final ThingTypeUID THING_TYPE_PERGOLA = new ThingTypeUID(BINDING_ID, "pergola");
 
+    // Window handle
+    public static final ThingTypeUID THING_TYPE_WINDOW_HANDLE = new ThingTypeUID(BINDING_ID, "windowhandle");
+
     // List of all Channel ids
     // Gateway
     public static final String STATUS = "status";
@@ -137,7 +140,8 @@ public class SomfyTahomaBindingConstants {
     public static final String BATTERY_LEVEL = "battery_level";
     public static final String TARGET_HEATING_LEVEL = "target_heating_level";
 
-
+    // Window handle
+    public static final String HANDLE_STATE = "handle_state";
 
     //Constants
     final private static String API_URL = "https://www.tahomalink.com/enduser-mobile-web/";
@@ -188,6 +192,7 @@ public class SomfyTahomaBindingConstants {
     final public static String HEATINGSYSTEM = "HeatingSystem";
     final public static String DOORLOCK = "DoorLock";
     final public static String PERGOLA = "Pergola";
+    final public static String WINDOWHANDLE = "WindowHandle";
 
     // unsupported uiClasses
     final public static String PROTOCOLGATEWAY = "ProtocolGateway";
