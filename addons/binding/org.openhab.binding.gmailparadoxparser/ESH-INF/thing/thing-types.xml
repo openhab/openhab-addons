@@ -6,17 +6,20 @@
 
 	<!-- Sample Thing Type -->
 	<thing-type id="ParadoxSystem">
-		<label>GmailParadoxParser Binding Thing</label>
+		<label>Paradox monitoring system status</label>
 		<description>Paradox Partition status</description>
 
 		<channels>
-			<channel id="partition" typeId="partition" />
+			<channel id="partition1" typeId="partitionId" />
+			<channel id="partition2" typeId="partitionId" />
+			<channel id="partition3" typeId="partitionId" />
+			<channel id="partition4" typeId="partitionId" />
 		</channels>
 
 		<config-description>
 			<parameter name="partitionId" type="text" required="true">
 				<label>Partition Id</label>
-				<description>This is the partition ID from the email</description>
+				<description>This is the partition ID of the Paradox partition</description>
 			</parameter>
 			<parameter name="refresh" type="integer" min="1" max="600">
 	            <label>Refresh interval</label>

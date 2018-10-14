@@ -12,22 +12,22 @@
  */
 package org.openhab.binding.gmailparadoxparser.internal;
 
-import static org.openhab.binding.gmailparadoxparser.internal.GmailParadoxParserBindingConstants.PARTITION_CHANNEL_ID;
-
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.gmailparadoxparser.gmail.adapter.GmailAdapter;
 import org.openhab.binding.gmailparadoxparser.gmail.adapter.MailAdapter;
 import org.openhab.binding.gmailparadoxparser.gmail.adapter.MailParser;
@@ -52,6 +52,7 @@ public class GmailParadoxParserHandler extends BaseThingHandler {
 
     @Nullable
     private GmailParadoxParserConfiguration config;
+    private static Set<ParadoxPartition> partitionsStates = new HashSet<ParadoxPartition>();
 
     @SuppressWarnings("null")
     public GmailParadoxParserHandler(Thing thing) {
@@ -60,24 +61,45 @@ public class GmailParadoxParserHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (PARTITION_CHANNEL_ID.equals(channelUID.getId())) {
-            if (command instanceof RefreshType) {
-                refreshData();
-            }
-        }
+        refreshData();
     }
 
+    @SuppressWarnings("null")
     private void refreshData() {
         try {
             List<String> retrievedMessages = mailAdapter
                     .retrieveAllMessagesContentsAndMarkAllRead(MailAdapter.QUERY_UNREAD);
-            Set<ParadoxPartition> partitionsStates = MailParser.getInstance()
+            Set<ParadoxPartition> partitionsUpdatedStates = MailParser.getInstance()
                     .parseToParadoxPartitionStates(retrievedMessages);
-            for (ParadoxPartition state : partitionsStates) {
-                logger.debug(state.toString());
+            updateCachePartitionsState(partitionsUpdatedStates);
+            for (ParadoxPartition partitionState : partitionsStates) {
+                if (config.partitionId.equals(partitionState.getPartition())) {
+                    updateState(GmailParadoxParserBindingConstants.PARTITION_1_ID,
+                            new StringType(partitionState.getState()));
+                }
             }
         } catch (IOException e) {
             logger.debug(e.getMessage());
+        }
+    }
+
+    @Override
+    protected void updateState(String channelUID, State state) {
+        logger.debug("ChannelUID: " + channelUID + ", " + config.partitionId + "updated state to " + state);
+        super.updateState(channelUID, state);
+    }
+
+    private void updateCachePartitionsState(Set<ParadoxPartition> partitionsUpdatedStates) {
+        if (partitionsUpdatedStates.isEmpty()) {
+            logger.debug("Received empty set. Nothing to update.");
+            return;
+        }
+
+        for (ParadoxPartition paradoxPartition : partitionsUpdatedStates) {
+            if (partitionsStates.contains(paradoxPartition)) {
+                partitionsStates.remove(paradoxPartition);
+            }
+            partitionsStates.add(paradoxPartition);
         }
     }
 
@@ -87,12 +109,12 @@ public class GmailParadoxParserHandler extends BaseThingHandler {
         config = getConfigAs(GmailParadoxParserConfiguration.class);
         try {
             mailAdapter = new GmailAdapter(logger);
+            updateStatus(ThingStatus.ONLINE);
         } catch (IOException | GeneralSecurityException e) {
             logger.trace(e.getMessage(), e);
             updateStatus(ThingStatus.UNINITIALIZED);
             return;
         }
-        updateStatus(ThingStatus.ONLINE);
 
         scheduler.scheduleAtFixedRate(() -> {
             refreshData();

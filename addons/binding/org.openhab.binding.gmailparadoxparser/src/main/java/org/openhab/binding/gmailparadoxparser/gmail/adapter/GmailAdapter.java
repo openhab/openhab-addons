@@ -46,6 +46,10 @@ public class GmailAdapter implements MailAdapter {
     public static void main(String... args) throws IOException, GeneralSecurityException {
         MailAdapter adapter = new GmailAdapter(new MyLogger());
         List<String> mailContents = adapter.retrieveAllMessagesContentsAndMarkAllRead(QUERY_UNREAD);
+        for (String mail : mailContents) {
+            logger.debug("Mail contents:");
+            logger.debug(mail);
+        }
     }
 
     public GmailAdapter(Logger logger) throws GeneralSecurityException, IOException {
@@ -89,7 +93,16 @@ public class GmailAdapter implements MailAdapter {
                 }
 
                 MessagePartBody body = payload.getBody();
+                if (body == null) {
+                    logger.info("body is null");
+                    continue;
+                }
                 String encodedContent = body.getData();
+                if (encodedContent == null) {
+                    logger.debug("body data is null. Will try to get message part [0] body");
+                    encodedContent = payload.getParts().get(0).getBody().getData();
+                }
+
                 String content = new String(Base64.decodeBase64(encodedContent.getBytes()), "UTF-8");
                 // logger.debug("Payload content: " + content);
 

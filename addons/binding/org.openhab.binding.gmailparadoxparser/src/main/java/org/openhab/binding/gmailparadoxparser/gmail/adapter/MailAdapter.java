@@ -18,7 +18,7 @@ public interface MailAdapter {
 
     default public List<String> retrieveAllMessagesContentsAndMarkAllRead(String query) throws IOException {
         List<Message> retrievedMessages = retrieveMessages(query);
-        markMessagesRead(retrievedMessages);
+        // markMessagesRead(retrievedMessages);
         return retrieveAllMessagesContents(retrievedMessages);
     }
 }
