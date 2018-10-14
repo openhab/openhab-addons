@@ -9,10 +9,15 @@
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>D5-00 - Single input contact</label>
-		<description>Single input contact which sends EEP D5-00-01</description>
+		<label>Single input contact</label>
+		<description>Single input contact sensor (EEP: D5-00)</description>
 
 		<config-description>
+			<parameter name="enoceanId" type="text">
+				<label>EnOceanId</label>
+				<description>EnOceanId of device this thing belongs to</description>
+				<required>true</required>
+			</parameter>
 			<parameter name="receivingEEPId" type="text">
 				<label>EEP</label>
 				<description>EEP which is used by contact</description>

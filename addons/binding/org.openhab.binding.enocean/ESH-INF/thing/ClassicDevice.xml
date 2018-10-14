@@ -5,13 +5,13 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<!-- RockerSwitch -->
-	<thing-type id="virtualRockerSwitch">
+	<thing-type id="classicDevice">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>F6-02 - Virtual Rocker Switch</label>
-		<description>Virtual Rocker Switch to emit rocker messages</description>
+		<label>Classic device</label>
+		<description>This thing lets you control classic EnOcean devices by rocker switch messages (EEP: F6-02)</description>
 
 		<config-description>
 			<parameter name="senderIdOffset" type="integer">
@@ -20,7 +20,7 @@
 			</parameter>
 			<parameter name="sendingEEPId" type="text">
 				<label>EEP</label>
-				<description>EEP which is used by virtual rocker switch</description>
+				<description>EEP which is used to control device</description>
 				<options>
 					<option value="F6_02_01_Virtual">F6-02-01 (upper rocker => DIR1)</option>
 					<option value="F6_02_02_Virtual">F6-02-02 (upper rocker => DIR2)</option>

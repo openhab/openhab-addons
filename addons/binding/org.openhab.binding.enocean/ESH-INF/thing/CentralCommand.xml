@@ -9,10 +9,15 @@
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>A5-38 - Central command</label>
-		<description>Send a command to an actor by using A5-38 EEP</description>
+		<label>Switching and Dimming actuator</label>
+		<description>Controls a switching or dimming actuator (EEP: A5-38)</description>
 
 		<config-description>
+			<parameter name="enoceanId" type="text">
+				<label>EnOceanId</label>
+				<description>EnOceanId of device this thing belongs to</description>
+				<required>true</required>
+			</parameter>
 			<parameter name="senderIdOffset" type="integer">
 				<label>Sender Id</label>
 				<description>Id is used to generate the EnOcean Id (Int between [1-127]). If not specified the next free Id will be determined by bridge</description>

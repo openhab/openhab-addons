@@ -39,17 +39,16 @@ public class EnOceanBindingConstants {
     // List of all Thing Type UIDs
     public final static ThingTypeUID THING_TYPE_PUSHBUTTON = new ThingTypeUID(BINDING_ID, "pushButton");
     public final static ThingTypeUID THING_TYPE_ROCKERSWITCH = new ThingTypeUID(BINDING_ID, "rockerSwitch");
-    public final static ThingTypeUID THING_TYPE_VIRTUALROCKERSWITCH = new ThingTypeUID(BINDING_ID,
-            "virtualRockerSwitch");
-    // public final static ThingTypeUID THING_TYPE_UNIVERSALACTUATOR = new ThingTypeUID(BINDING_ID, "universalCommand");
+    public final static ThingTypeUID THING_TYPE_CLASSICDEVICE = new ThingTypeUID(BINDING_ID, "classicDevice");
+
     public final static ThingTypeUID THING_TYPE_CENTRALCOMMAND = new ThingTypeUID(BINDING_ID, "centralCommand");
     public final static ThingTypeUID THING_TYPE_ROOMOPERATINGPANEL = new ThingTypeUID(BINDING_ID, "roomOperatingPanel");
     public final static ThingTypeUID THING_TYPE_MECHANICALHANDLE = new ThingTypeUID(BINDING_ID, "mechanicalHandle");
     public final static ThingTypeUID THING_TYPE_CONTACT = new ThingTypeUID(BINDING_ID, "contact");
     public final static ThingTypeUID THING_TYPE_MEASUREMENTSWITCH = new ThingTypeUID(BINDING_ID, "measurementSwitch");
     public final static ThingTypeUID THING_TYPE_TEMPERATURESENSOR = new ThingTypeUID(BINDING_ID, "temperatureSensor");
-    public final static ThingTypeUID THING_TYPE_HUMIDITYTEMPERATURESENSOR = new ThingTypeUID(BINDING_ID,
-            "humidityTemperatureSensor");
+    public final static ThingTypeUID THING_TYPE_TEMPERATUREHUMIDITYSENSOR = new ThingTypeUID(BINDING_ID,
+            "temperatureHumiditySensor");
     public final static ThingTypeUID THING_TYPE_AUTOMATEDMETERSENSOR = new ThingTypeUID(BINDING_ID,
             "automatedMeterSensor");
     public final static ThingTypeUID THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR = new ThingTypeUID(BINDING_ID,
@@ -58,9 +57,9 @@ public class EnOceanBindingConstants {
     public final static ThingTypeUID THING_TYPE_ROLLERSHUTTER = new ThingTypeUID(BINDING_ID, "rollershutter");
 
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(Arrays.asList(
-            THING_TYPE_PUSHBUTTON, THING_TYPE_ROCKERSWITCH, THING_TYPE_VIRTUALROCKERSWITCH, THING_TYPE_CENTRALCOMMAND,
+            THING_TYPE_PUSHBUTTON, THING_TYPE_ROCKERSWITCH, THING_TYPE_CLASSICDEVICE, THING_TYPE_CENTRALCOMMAND,
             THING_TYPE_ROOMOPERATINGPANEL, THING_TYPE_MECHANICALHANDLE, THING_TYPE_CONTACT,
-            THING_TYPE_MEASUREMENTSWITCH, THING_TYPE_TEMPERATURESENSOR, THING_TYPE_HUMIDITYTEMPERATURESENSOR,
+            THING_TYPE_MEASUREMENTSWITCH, THING_TYPE_TEMPERATURESENSOR, THING_TYPE_TEMPERATUREHUMIDITYSENSOR,
             THING_TYPE_GENERICTHING, THING_TYPE_ROLLERSHUTTER, THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR));
 
     // List of all Channel Type Ids, these type ids are also used as channel ids during dynamic creation of channels
@@ -74,6 +73,7 @@ public class EnOceanBindingConstants {
 
     public final static String CHANNEL_DIMMER = "dimmer";
     public final static String CHANNEL_ROLLERSHUTTER = "rollershutter";
+    public final static String CHANNEL_ANGLE = "angle";
     public final static String CHANNEL_TEMPERATURE = "temperature";
     public final static String CHANNEL_HUMIDITY = "humidity";
     public final static String CHANNEL_SETPOINT = "setPoint";
@@ -95,6 +95,9 @@ public class EnOceanBindingConstants {
     public final static String CHANNEL_TEACHINCMD = "teachInCMD";
     public final static String CHANNEL_INSTANTPOWER = "instantpower";
     public final static String CHANNEL_TOTALUSAGE = "totalusage";
+    public final static String CHANNEL_INSTANTLITRE = "amrLitre";
+    public final static String CHANNEL_TOTALCUBICMETRE = "amrCubicMetre";
+
     public final static String CHANNEL_AUTOOFF = "autoOFF";
     public final static String CHANNEL_DELAYRADIOOFF = "delayRadioOFF";
     public final static String CHANNEL_EXTERNALINTERFACEMODE = "externalInterfaceMode";
@@ -131,6 +134,8 @@ public class EnOceanBindingConstants {
                             CoreItemFactory.DIMMER));
                     put(CHANNEL_ROLLERSHUTTER, new ChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_ROLLERSHUTTER), CoreItemFactory.ROLLERSHUTTER));
+                    put(CHANNEL_ANGLE, new ChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_ANGLE),
+                            CoreItemFactory.NUMBER));
                     put(CHANNEL_TEMPERATURE, new ChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_TEMPERATURE),
                             CoreItemFactory.NUMBER));
                     put(CHANNEL_HUMIDITY, new ChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_HUMIDITY),
@@ -245,13 +250,15 @@ public class EnOceanBindingConstants {
     public static final String PARAMETER_EEPID = "eepId";
 
     public static final String PARAMETER_BROADCASTMESSAGES = "broadcastMessages";
+    public static final String PARAMETER_ENOCEANID = "enoceanId";
 
     // Channel config parameter
     public static final String PARAMETER_CHANNEL_TeachInMSG = "teachInMSG";
 
     @NonNull
     public static final Set<ProfileTypeUID> SUPPORTED_PROFILETYPES_UIDS = new HashSet<ProfileTypeUID>(
-            Arrays.asList(EnOceanProfileTypes.RockerSwitchToPlayPause, EnOceanProfileTypes.RockerSwitchFromOnOff));
+            Arrays.asList(EnOceanProfileTypes.RockerSwitchToPlayPause, EnOceanProfileTypes.RockerSwitchToRollershutter,
+                    EnOceanProfileTypes.RockerSwitchFromOnOff, EnOceanProfileTypes.RockerSwitchFromRollershutter));
 
     // Manufacturer Ids - used to recognize special EEPs during auto discovery
     public static final int EltakoId = 0x00d;

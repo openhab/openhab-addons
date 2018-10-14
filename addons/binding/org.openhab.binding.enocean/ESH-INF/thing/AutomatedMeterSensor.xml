@@ -9,15 +9,22 @@
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>A5-12 - Automated meter sensor</label>
+		<label>Automated meter sensor</label>
 		<description>Sensor for different meters like energy measurement (EEP: A5-12)</description>
 
 		<config-description>
+			<parameter name="enoceanId" type="text">
+				<label>EnOceanId</label>
+				<description>EnOceanId of device this thing belongs to</description>
+				<required>true</required>
+			</parameter>
 			<parameter name="receivingEEPId" type="text">
 				<label>EEP</label>
 				<description>EEP which is used by panel</description>
 				<options>
-					<option value="A5_12_01">A5-12-01 temperature sensor, set point, fan speed and occupancy control</option>					
+					<option value="A5_12_01">A5-12-01 Electricity</option>
+					<option value="A5_12_02">A5-12-02 Gas</option>
+					<option value="A5_12_03">A5-12-03 Water</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
 				<required>true</required>

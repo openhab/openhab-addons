@@ -4,15 +4,20 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="humidityTemperatureSensor">
+	<thing-type id="temperatureHumiditySensor">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>A5-04 - Temperature and humidity sensor</label>
-		<description>Temperature and humidity sensor which sends EEP A5-04</description>
+		<label>Temperature and humidity sensor</label>
+		<description>Sensor which sends temperature and humidity data (EEP: A5-04)</description>
 
 		<config-description>
+			<parameter name="enoceanId" type="text">
+				<label>EnOceanId</label>
+				<description>EnOceanId of device this thing belongs to</description>
+				<required>true</required>
+			</parameter>
 			<parameter name="receivingEEPId" type="text">
 				<label>EEP</label>
 				<description>EEP which is used by sensor</description>

@@ -36,6 +36,7 @@ import org.eclipse.smarthome.core.util.HexUtils;
 import org.eclipse.smarthome.io.transport.serial.PortInUseException;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.enocean.internal.EnOceanConfigStatusMessage;
+import org.openhab.binding.enocean.internal.config.EnOceanBaseConfig;
 import org.openhab.binding.enocean.internal.messages.BaseResponse;
 import org.openhab.binding.enocean.internal.messages.ESP3Packet;
 import org.openhab.binding.enocean.internal.messages.ESP3PacketFactory;
@@ -292,7 +293,8 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
     }
 
     public int getNextSenderId(Thing sender) {
-        return getNextSenderId(sender.getUID().getId());
+        // TODO: change id to enoceanId
+        return getNextSenderId(sender.getConfiguration().as(EnOceanBaseConfig.class).enoceanId);
     }
 
     public int getNextSenderId(String senderId) {
@@ -307,7 +309,8 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
         }
 
         for (byte i = 1; i < sendingThings.length; i++) {
-            if (sendingThings[i] == null || sendingThings[i].getUID().getId().equals(senderId)) {
+            if (sendingThings[i] == null || sendingThings[i].getConfiguration().as(EnOceanBaseConfig.class).enoceanId
+                    .equalsIgnoreCase(senderId)) {
                 return i;
             }
         }
@@ -316,7 +319,8 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
     }
 
     public boolean existsSender(int id, Thing sender) {
-        return sendingThings[id] != null && !sendingThings[id].getUID().getId().equals(sender.getUID().getId());
+        return sendingThings[id] != null && !sendingThings[id].getConfiguration().as(EnOceanBaseConfig.class).enoceanId
+                .equalsIgnoreCase(sender.getConfiguration().as(EnOceanBaseConfig.class).enoceanId);
     }
 
     public void addSender(int id, Thing thing) {

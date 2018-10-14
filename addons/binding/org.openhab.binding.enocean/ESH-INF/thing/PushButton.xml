@@ -10,10 +10,15 @@
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>F6-01 - Simple push button</label>
-		<description>Represents a physical push button (triggers "PRESSED" and "RELEASED" events)</description>
+		<label>Simple push button</label>
+		<description>Represents a physical push button (EEP: F6-01)</description>
 
 		<config-description>
+			<parameter name="enoceanId" type="text">
+				<label>EnOceanId</label>
+				<description>EnOceanId of device this thing belongs to</description>
+				<required>true</required>
+			</parameter>
 			<parameter name="receivingEEPId" type="text">
 				<label>EEP</label>
 				<description>EEP which is used by push button</description>

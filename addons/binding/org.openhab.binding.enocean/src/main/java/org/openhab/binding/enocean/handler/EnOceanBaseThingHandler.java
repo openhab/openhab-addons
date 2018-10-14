@@ -32,6 +32,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.enocean.ChannelDescription;
+import org.openhab.binding.enocean.internal.config.EnOceanBaseConfig;
 import org.openhab.binding.enocean.internal.eep.EEPType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,13 +46,14 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
     private EnOceanBridgeHandler gateway = null;
     protected Logger logger = LoggerFactory.getLogger(EnOceanBaseThingHandler.class);
 
-    protected String enoceanId;
     protected String configurationErrorDescription;
 
     private Hashtable<String, Channel> linkedChannels = null;
 
     protected Hashtable<String, State> channelState = null;
     protected Hashtable<String, String> lastEvents = null;
+
+    protected EnOceanBaseConfig config = null;
 
     public EnOceanBaseThingHandler(Thing thing) {
         super(thing);
@@ -60,8 +62,9 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
     @SuppressWarnings("null")
     @Override
     public void initialize() {
-        logger.debug("Initializing open ocean base thing handler.");
+        logger.debug("Initializing enocean base thing handler.");
         this.gateway = null; // reset gateway in case we change the bridge
+        this.config = null;
         initializeThing((getBridge() == null) ? null : getBridge().getStatus());
     }
 
@@ -70,6 +73,7 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
 
         if (getBridgeHandler() != null) {
             if (bridgeStatus == ThingStatus.ONLINE) {
+                initializeConfig();
                 if (validateConfig()) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
@@ -100,6 +104,8 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
             }
         }
     }
+
+    abstract void initializeConfig();
 
     abstract boolean validateConfig();
 

@@ -43,4 +43,4 @@ Import-Package:
  org.eclipse.smarthome.io.transport.serial,
  org.eclipse.smarthome.io.transport.serial.rxtx
 Service-Component: OSGI-INF/*.xml 
-Require-Capability: osgi.service;objectClass:List<String>="org.eclipse.smarthome.io.transport.serial.SerialPortManager"
+

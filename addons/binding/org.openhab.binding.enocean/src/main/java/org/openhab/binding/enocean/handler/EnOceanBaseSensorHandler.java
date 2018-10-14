@@ -44,11 +44,10 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
     // List of all thing types which support receiving of eep messages
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>(
             Arrays.asList(THING_TYPE_ROOMOPERATINGPANEL, THING_TYPE_MECHANICALHANDLE, THING_TYPE_CONTACT,
-                    THING_TYPE_TEMPERATURESENSOR, THING_TYPE_HUMIDITYTEMPERATURESENSOR, THING_TYPE_ROCKERSWITCH,
+                    THING_TYPE_TEMPERATURESENSOR, THING_TYPE_TEMPERATUREHUMIDITYSENSOR, THING_TYPE_ROCKERSWITCH,
                     THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR, THING_TYPE_PUSHBUTTON));
 
     protected Hashtable<RORG, EEPType> receivingEEPTypes = null;
-    protected String enoceanId; // enoceanId to listen to. This is the thingId
 
     public EnOceanBaseSensorHandler(Thing thing) {
         super(thing);
@@ -66,23 +65,28 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
     }
 
     @Override
+    void initializeConfig() {
+        config = getConfigAs(EnOceanBaseConfig.class);
+        setReceivingEEP(config);
+    }
+
+    @Override
     boolean validateConfig() {
-        receivingEEPTypes = new Hashtable<>();
-        EnOceanBaseConfig cfg = getConfigAs(EnOceanBaseConfig.class);
-        setReceivingEEP(cfg);
+        receivingEEPTypes = null;
 
         try {
-            if (cfg.getReceivingEEPId() != null && !cfg.getReceivingEEPId().isEmpty()) {
-
+            if (config.getReceivingEEPId() != null && !config.getReceivingEEPId().isEmpty()) {
                 boolean first = true;
-                for (String receivingEEP : cfg.getReceivingEEPId()) {
+                receivingEEPTypes = new Hashtable<>();
+
+                for (String receivingEEP : config.getReceivingEEPId()) {
                     if (receivingEEP == null) {
                         continue;
                     }
 
                     EEPType receivingEEPType = EEPType.getType(receivingEEP);
                     if (receivingEEPTypes.containsKey(receivingEEPType.getRORG())) {
-                        configurationErrorDescription = "Receiving more than one EEP of the same RORG is not dupported";
+                        configurationErrorDescription = "Receiving more than one EEP of the same RORG is not supported";
                         return false;
                     }
 
@@ -98,21 +102,20 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
             return false;
         }
 
-        enoceanId = thing.getUID().getId();
-        if (validateEnoceanId(enoceanId)) {
-            if (receivingEEPTypes != null) {
-                getBridgeHandler().addPacketListener(this);
+        if (receivingEEPTypes != null) {
+            if (!validateEnoceanId(config.enoceanId)) {
+                configurationErrorDescription = "EnOceanId is not a valid EnOceanId";
+                return false;
             }
-            return true;
+            getBridgeHandler().addPacketListener(this);
         }
 
-        configurationErrorDescription = "Thing Id is not a valid Enocean Id";
-        return false;
+        return true;
     }
 
     @Override
     public long getSenderIdToListenTo() {
-        return Long.parseLong(enoceanId, 16);
+        return Long.parseLong(config.enoceanId, 16);
     }
 
     @Override
@@ -146,8 +149,8 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
             }
 
             EEP eep = EEPFactory.buildEEP(receivingEEPType, (ERP1Message) packet);
-            logger.debug("ESP Packet {} for {} received", HexUtils.bytesToHex(packet.getPayload()),
-                    this.getThing().getUID().getId());
+            logger.debug("ESP Packet payload {} for {} received", HexUtils.bytesToHex(packet.getPayload()),
+                    config.enoceanId);
 
             if (eep.isValid()) {
 
@@ -159,11 +162,11 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
                             }
 
                             Channel channel = getLinkedChannels().get(id);
-                            Configuration config = channel.getConfiguration();
+                            Configuration channelConfig = channel.getConfiguration();
                             switch (channel.getKind()) {
                                 case STATE:
                                     State currentState = channelState.get(id);
-                                    State result = eep.convertToState(id, config, currentState);
+                                    State result = eep.convertToState(id, channelConfig, currentState);
 
                                     // if message can be interpreted (result != UnDefType.UNDEF) => update item state
                                     if (result != null && result != UnDefType.UNDEF) {
@@ -173,7 +176,7 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
                                     break;
                                 case TRIGGER:
                                     String lastEvent = lastEvents.get(id);
-                                    String event = eep.convertToEvent(id, lastEvent, config);
+                                    String event = eep.convertToEvent(id, lastEvent, channelConfig);
                                     if (event != null) {
                                         triggerChannel(channel.getUID(), event);
                                         lastEvents.put(id, event);
