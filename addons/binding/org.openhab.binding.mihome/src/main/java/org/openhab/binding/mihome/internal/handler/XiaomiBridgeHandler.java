@@ -154,6 +154,7 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
 
         updateDeviceStatus(sid);
         updateStatus(ThingStatus.ONLINE);
+        startTimer();
         switch (command) {
             case "iam":
                 return;
