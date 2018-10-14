@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.NotImplementedException;
@@ -52,6 +53,9 @@ import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
 import org.openhab.binding.modbus.internal.ModbusConfigurationException;
 import org.openhab.binding.modbus.internal.Transformation;
 import org.openhab.binding.modbus.internal.config.ModbusDataConfiguration;
+import org.openhab.io.transport.modbus.BasicModbusWriteCoilRequestBlueprint;
+import org.openhab.io.transport.modbus.BasicModbusWriteRegisterRequestBlueprint;
+import org.openhab.io.transport.modbus.BasicWriteTask;
 import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusBitUtilities;
 import org.openhab.io.transport.modbus.ModbusConnectionException;
@@ -65,11 +69,8 @@ import org.openhab.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.io.transport.modbus.ModbusResponse;
 import org.openhab.io.transport.modbus.ModbusTransportException;
 import org.openhab.io.transport.modbus.ModbusWriteCallback;
-import org.openhab.io.transport.modbus.BasicModbusWriteCoilRequestBlueprint;
-import org.openhab.io.transport.modbus.BasicModbusWriteRegisterRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusWriteRequestBlueprint;
 import org.openhab.io.transport.modbus.PollTask;
-import org.openhab.io.transport.modbus.BasicWriteTask;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 import org.openhab.io.transport.modbus.json.WriteRequestJsonUtilities;
 import org.slf4j.Logger;
@@ -131,6 +132,8 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
     private volatile boolean transformationOnlyInWrite;
     private volatile boolean childOfEndpoint;
     private volatile @Nullable ModbusPollerThingHandler pollerHandler;
+    private volatile Map<String, ChannelUID> linkedChannels = new ConcurrentHashMap<>(
+            CHANNEL_ID_TO_ACCEPTED_TYPES.size());
 
     public ModbusDataThingHandler(Thing thing) {
         super(thing);
@@ -389,6 +392,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         transformationOnlyInWrite = false;
         childOfEndpoint = false;
         pollerHandler = null;
+        linkedChannels = new ConcurrentHashMap<>(CHANNEL_ID_TO_ACCEPTED_TYPES.size());
     }
 
     @Override
@@ -766,54 +770,56 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
      */
     private Map<ChannelUID, State> processUpdatedValue(DecimalType numericState, boolean boolValue) {
         Map<@NonNull ChannelUID, @NonNull State> states = new HashMap<>();
-        CHANNEL_ID_TO_ACCEPTED_TYPES.keySet().stream().filter(channelId -> isLinked(channelId)).forEach(channelId -> {
-            ChannelUID channelUID = new ChannelUID(getThing().getUID(), channelId);
-            List<Class<? extends State>> acceptedDataTypes = CHANNEL_ID_TO_ACCEPTED_TYPES.get(channelId);
-            if (acceptedDataTypes.isEmpty()) {
-                return;
-            }
+        CHANNEL_ID_TO_ACCEPTED_TYPES.keySet().stream().map(channelId -> linkedChannels.get(channelId))
+                .filter(channelUID -> channelUID != null).forEach(channelUID -> {
+                    List<Class<? extends State>> acceptedDataTypes = CHANNEL_ID_TO_ACCEPTED_TYPES
+                            .get(channelUID.getId());
+                    if (acceptedDataTypes.isEmpty()) {
+                        return;
+                    }
 
-            State boolLikeState;
-            if (containsOnOff(acceptedDataTypes)) {
-                boolLikeState = boolValue ? OnOffType.ON : OnOffType.OFF;
-            } else if (containsOpenClosed(acceptedDataTypes)) {
-                boolLikeState = boolValue ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
-            } else {
-                boolLikeState = null;
-            }
+                    State boolLikeState;
+                    if (containsOnOff(acceptedDataTypes)) {
+                        boolLikeState = boolValue ? OnOffType.ON : OnOffType.OFF;
+                    } else if (containsOpenClosed(acceptedDataTypes)) {
+                        boolLikeState = boolValue ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+                    } else {
+                        boolLikeState = null;
+                    }
 
-            State transformedState;
-            if (readTransformation.isIdentityTransform()) {
-                if (boolLikeState != null) {
-                    // A bit of smartness for ON/OFF and OPEN/CLOSED with boolean like items
-                    transformedState = boolLikeState;
-                } else {
-                    // Numeric states always go through transformation. This allows value of 17.5 to be
-                    // converted to
-                    // 17.5% with percent types (instead of raising error)
-                    transformedState = readTransformation.transformState(bundleContext, acceptedDataTypes,
-                            numericState);
-                }
-            } else {
-                transformedState = readTransformation.transformState(bundleContext, acceptedDataTypes, numericState);
-            }
+                    State transformedState;
+                    if (readTransformation.isIdentityTransform()) {
+                        if (boolLikeState != null) {
+                            // A bit of smartness for ON/OFF and OPEN/CLOSED with boolean like items
+                            transformedState = boolLikeState;
+                        } else {
+                            // Numeric states always go through transformation. This allows value of 17.5 to be
+                            // converted to
+                            // 17.5% with percent types (instead of raising error)
+                            transformedState = readTransformation.transformState(bundleContext, acceptedDataTypes,
+                                    numericState);
+                        }
+                    } else {
+                        transformedState = readTransformation.transformState(bundleContext, acceptedDataTypes,
+                                numericState);
+                    }
 
-            if (transformedState != null) {
-                logger.trace(
-                        "Channel {} will be updated to '{}' (type {}). Input data: number value {} (value type '{}' taken into account) and bool value {}. Transformation: {}",
-                        channelUID, transformedState, transformedState.getClass().getSimpleName(), numericState,
-                        readValueType, boolValue,
-                        readTransformation.isIdentityTransform() ? "<identity>" : readTransformation);
-                states.put(channelUID, transformedState);
-            } else {
-                String types = StringUtils.join(acceptedDataTypes.stream().map(cls -> cls.getSimpleName()).toArray(),
-                        ", ");
-                logger.warn(
-                        "Channel {} will not be updated since transformation was unsuccessful. Channel is expecting the following data types [{}]. Input data: number value {} (value type '{}' taken into account) and bool value {}. Transformation: {}",
-                        channelUID, types, numericState, readValueType, boolValue,
-                        readTransformation.isIdentityTransform() ? "<identity>" : readTransformation);
-            }
-        });
+                    if (transformedState != null) {
+                        logger.trace(
+                                "Channel {} will be updated to '{}' (type {}). Input data: number value {} (value type '{}' taken into account) and bool value {}. Transformation: {}",
+                                channelUID, transformedState, transformedState.getClass().getSimpleName(), numericState,
+                                readValueType, boolValue,
+                                readTransformation.isIdentityTransform() ? "<identity>" : readTransformation);
+                        states.put(channelUID, transformedState);
+                    } else {
+                        String types = StringUtils
+                                .join(acceptedDataTypes.stream().map(cls -> cls.getSimpleName()).toArray(), ", ");
+                        logger.warn(
+                                "Channel {} will not be updated since transformation was unsuccessful. Channel is expecting the following data types [{}]. Input data: number value {} (value type '{}' taken into account) and bool value {}. Transformation: {}",
+                                channelUID, types, numericState, readValueType, boolValue,
+                                readTransformation.isIdentityTransform() ? "<identity>" : readTransformation);
+                    }
+                });
 
         states.put(new ChannelUID(getThing().getUID(), ModbusBindingConstantsInternal.CHANNEL_LAST_READ_SUCCESS),
                 new DateTimeType());
@@ -836,6 +842,18 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                     Optional.ofNullable(state).map(s -> s.getClass().getName()).orElse("null"), uid,
                     e.getClass().getName(), e.getMessage());
         }
+    }
+
+    @Override
+    public void channelLinked(ChannelUID channelUID) {
+        super.channelLinked(channelUID);
+        linkedChannels.put(channelUID.getId(), channelUID);
+    }
+
+    @Override
+    public void channelUnlinked(ChannelUID channelUID) {
+        super.channelUnlinked(channelUID);
+        linkedChannels.remove(channelUID.getId());
     }
 
 }
