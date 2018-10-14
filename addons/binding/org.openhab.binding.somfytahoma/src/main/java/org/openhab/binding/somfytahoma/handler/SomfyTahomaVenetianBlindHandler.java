@@ -52,13 +52,13 @@ public class SomfyTahomaVenetianBlindHandler extends SomfyTahomaBaseThingHandler
             updateChannelState(channelUID);
         } else {
             String cmd = getTahomaCommand(command.toString(), channelUID.getId());
-            //Check if the rollershutter is not moving
-            String executionId = getCurrentExecutions();
-            if (executionId != null) {
-                //STOP command should be interpreted if rollershutter moving
-                //otherwise do nothing
-                if (cmd.equals(COMMAND_MY)) {
+            if (cmd.equals(COMMAND_MY)) {
+                String executionId = getCurrentExecutions();
+                if (executionId != null) {
+                    //Check if the venetian blind is moving and MY is sent => STOP it
                     cancelExecution(executionId);
+                } else {
+                    sendCommand(COMMAND_MY, "[]");
                 }
             } else {
                 String param = (cmd.equals(COMMAND_SET_CLOSURE) || cmd.equals(COMMAND_SET_ORIENTATION)) ? "[" + command.toString() + "]" : "[]";

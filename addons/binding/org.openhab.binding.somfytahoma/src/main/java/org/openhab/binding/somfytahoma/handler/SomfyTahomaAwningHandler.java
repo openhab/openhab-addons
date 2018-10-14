@@ -51,13 +51,13 @@ public class SomfyTahomaAwningHandler extends SomfyTahomaBaseThingHandler {
             updateChannelState(channelUID);
         } else {
             String cmd = getTahomaCommand(command.toString());
-            //Check if the rollershutter is not moving
-            String executionId = getCurrentExecutions();
-            if (executionId != null) {
-                //STOP command should be interpreted if rollershutter moving
-                //otherwise do nothing
-                if (cmd.equals(COMMAND_MY)) {
+            if (cmd.equals(COMMAND_MY)) {
+                String executionId = getCurrentExecutions();
+                if (executionId != null) {
+                    //Check if the awning is moving and MY is sent => STOP it
                     cancelExecution(executionId);
+                } else {
+                    sendCommand(COMMAND_MY, "[]");
                 }
             } else {
                 String param = cmd.equals(COMMAND_SET_DEPLOYMENT) ? "[" + command.toString() + "]" : "[]";

@@ -51,25 +51,24 @@ public class SomfyTahomaSilentRollerShutterHandler extends SomfyTahomaBaseThingH
         if (command.equals(RefreshType.REFRESH)) {
             updateChannelState(channelUID);
         } else {
-            if (channelUID.getId().equals(CONTROL)) {
-                String cmd = getTahomaCommand(command.toString());
-                //Check if the rollershutter is not moving
+            String cmd = getTahomaCommand(command.toString());
+            if (cmd.equals(COMMAND_MY)) {
                 String executionId = getCurrentExecutions();
                 if (executionId != null) {
-                    //STOP command should be interpreted if rollershutter is moving
-                    //otherwise do nothing
-                    if (cmd.equals(COMMAND_MY)) {
-                        cancelExecution(executionId);
-                    }
+                    //Check if the roller shutter is moving and MY is sent => STOP it
+                    cancelExecution(executionId);
+                } else {
+                    sendCommand(COMMAND_MY, "[]");
+                }
+            } else {
+                if (channelUID.getId().equals(CONTROL_SILENT) && cmd.equals(COMMAND_SET_CLOSURE)) {
+                    // move the roller shutter to the specific position at low speed
+                    String param = "[" + command.toString() + ", \"lowspeed\"]";
+                    sendCommand(COMMAND_SET_CLOSURESPEED, param);
                 } else {
                     String param = cmd.equals(COMMAND_SET_CLOSURE) ? "[" + command.toString() + "]" : "[]";
                     sendCommand(cmd, param);
                 }
-            } else {
-                // POSITION_SILENT
-                String param = "[" + command.toString() + ", \"lowspeed\"]";
-                sendCommand(COMMAND_SET_CLOSURESPEED, param);
-
             }
         }
     }
