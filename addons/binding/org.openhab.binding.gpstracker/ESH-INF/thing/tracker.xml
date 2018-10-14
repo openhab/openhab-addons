@@ -13,6 +13,7 @@
 			<channel id="batteryLevel" typeId="system.battery-level"/>
 			<channel id="regionTrigger" typeId="regionTrigger"/>
 			<channel id="lastReport" typeId="lastReport"/>
+			<channel id="gpsAccuracy" typeId="gpsAccuracy"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:gpstracker:tracker"/>
@@ -25,6 +26,12 @@
 		<description>Distance from region</description>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 		<config-description-ref uri="channel-type:gpstracker:distance"/>
+	</channel-type>
+	<channel-type id="gpsAccuracy">
+		<item-type>Number:Length</item-type>
+		<label>Accuracy</label>
+		<description>GPS accuracy</description>
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="lastReport">
 		<item-type>DateTime</item-type>

@@ -33,6 +33,7 @@ public abstract class GPSTrackerBindingConstants {
     public static final String CHANNEL_LAST_LOCATION = "lastLocation";
     public static final String CHANNEL_BATTERY_LEVEL = "batteryLevel";
     private static final String CHANNEL_REGION_DISTANCE = "regionDistance";
+    public static final String CHANNEL_GPS_ACCURACY = "gpsAccuracy";
 
     //system distance channel
     public static final String CHANNEL_DISTANCE_SYSTEM_ID = "distanceSystem";

@@ -49,6 +49,12 @@ public class LocationMessage {
     private BigDecimal longitude;
 
     /**
+     * GPS accuracy
+     */
+    @SerializedName("acc")
+    private BigDecimal gpsAccuracy;
+
+    /**
      * Battery level (iOS,Android/integer/percent/optional)
      */
     @SerializedName("batt")
@@ -100,5 +106,9 @@ public class LocationMessage {
             return new DecimalType(batteryLevel);
         }
         return null;
+    }
+
+    public BigDecimal getGpsAccuracy() {
+        return gpsAccuracy;
     }
 }
