@@ -175,7 +175,7 @@ sitemap gpstracker label="GPSTracker Binding" {
     Text item=atHomeEX
     Text item=lastSeenEX
     Text item=batteryEX
-    Text item=accurayEX
+    Text item=accuracyEX
     Mapview item=locationEX height=4
 }
 ```
@@ -229,7 +229,6 @@ The next location message already calculates the distance for System location:
 2018-10-05 08:38:33.943 [DEBUG] [cker.internal.handler.TrackerHandler] - Updating distance channels tracker XX
 2018-10-05 08:38:33.944 [TRACE] [cker.internal.handler.TrackerHandler] - Region center distance from tracker location 41.53,16.16 is 709835.1673811453m
 2018-10-05 08:38:33.944 [TRACE] [cker.internal.handler.TrackerHandler] - System uses SI measurement units. No conversion is needed.
-
 ```
 
 ### Distance Channel and Presence Switch
