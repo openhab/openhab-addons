@@ -55,13 +55,15 @@
         <item-type>Number</item-type>
         <label>Domestic hot water setpoint</label>
         <description>Domestic hot water temperature setpoint</description>
+		<category>temperature</category>
         <state readOnly="true" pattern="%.1f °C"></state>
     </channel-type>
     
     <channel-type id="overridedhwsetpoint">
         <item-type>Number</item-type>
         <label>Domestic hot water setpoint override</label>
-        <description>Domestic hot water temperature setpoint override</description>        
+        <description>Domestic hot water temperature setpoint override</description>
+		<category>temperature</category>		
         <state readOnly="false" min="0" max="100" step="0.1" pattern="%.1f °C"></state>
     </channel-type>    
     
