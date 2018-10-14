@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -230,6 +231,9 @@ public class TrackerHandler extends BaseThingHandler {
                 case CHANNEL_BATTERY_LEVEL:
                     updateBaseChannels(lastMessage, CHANNEL_BATTERY_LEVEL);
                     break;
+                case CHANNEL_GPS_ACCURACY:
+                    updateBaseChannels(lastMessage, CHANNEL_GPS_ACCURACY);
+                    break;
                 default: //distance channels
                     @Nullable Channel channel = thing.getChannel(channelId);
                     if (channel != null) {
@@ -264,6 +268,7 @@ public class TrackerHandler extends BaseThingHandler {
             lastTriggeredStates.put(regionName, newState);
             logger.trace("Triggering {} for {}/{}", regionName, trackerId, payload);
         }
+        lastTriggeredStates.put(regionName, newState);
     }
 
     /**
@@ -272,29 +277,27 @@ public class TrackerHandler extends BaseThingHandler {
      * @param message Message.
      */
     private void updateChannelsWithLocation(LocationMessage message) {
-        updateBaseChannels(message, CHANNEL_BATTERY_LEVEL, CHANNEL_LAST_LOCATION, CHANNEL_LAST_REPORT);
+        updateBaseChannels(message, CHANNEL_BATTERY_LEVEL, CHANNEL_LAST_LOCATION, CHANNEL_LAST_REPORT, CHANNEL_GPS_ACCURACY);
 
         String trackerId = message.getTrackerId();
         logger.debug("Updating distance channels tracker {}", trackerId);
         distanceChannelMap.values()
-                .forEach(c -> {
-                    updateDistanceChannelFromMessage(message, c);
-                });
+                .forEach(c -> updateDistanceChannelFromMessage(message, c));
     }
 
     private void updateDistanceChannelFromMessage(LocationMessage message, Channel c) {
+        String regionName = ConfigHelper.getRegionName(c.getConfiguration());
         PointType center = ConfigHelper.getRegionCenterLocation(c.getConfiguration());
         PointType newLocation = message.getTrackerLocation();
         if (center != null) {
             double newDistance = newLocation.distanceFrom(center).doubleValue();
             updateState(c.getUID(), new QuantityType<>(newDistance / 1000, MetricPrefix.KILO(SIUnits.METRE)));
-            logger.trace("Region center distance from tracker location {} is {}m", newLocation.toString(), newDistance);
+            logger.trace("Region {} center distance from tracker location {} is {}m", regionName, newLocation, newDistance);
 
             //fire trigger based on distance calculation only in case of pure location message
             if (!(message instanceof TransitionMessage)) {
                 //convert into meters which is the unit of the calculated distance
                 double radiusMeter = convertRadiusToMeters(ConfigHelper.getRegionRadius(c.getConfiguration()));
-                String regionName = ConfigHelper.getRegionName(c.getConfiguration());
                 if (radiusMeter > newDistance) {
                     triggerRegionChannel(regionName, EVENT_ENTER);
                 } else {
@@ -350,6 +353,14 @@ public class TrackerHandler extends BaseThingHandler {
                         updateState(CHANNEL_BATTERY_LEVEL, batteryLevel);
                         logger.trace("{} -> {}", CHANNEL_BATTERY_LEVEL, batteryLevel);
                     }
+                    break;
+                case CHANNEL_GPS_ACCURACY:
+                    BigDecimal accuracy = message.getGpsAccuracy();
+                    if (accuracy != null) {
+                        updateState(CHANNEL_GPS_ACCURACY, new QuantityType<>(accuracy.intValue(), SIUnits.METRE));
+                        logger.trace("{} -> {}", CHANNEL_GPS_ACCURACY, accuracy);
+                    }
+                    break;
             }
         }
     }
