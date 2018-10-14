@@ -62,25 +62,25 @@ Thing openthermgateway:otgw:1 [ipaddress="192.168.1.100", port="8000"]
 
 ### demo.items
 ```
-Number RoomTemperature "Room temperature [%.1f °C]" <temperature> {channel="openthermgateway:otgw:1:roomtemp}
-Number RoomSetpoint "Room setpoint [%.1f °C]" <temperature> {channel="openthermgateway:otgw:1:roomsetpoint}
-Number TemporaryRoomSetpointOverride "Temporary room setpoint override [%.1f °C]" <temperature> {channel="openthermgateway:otgw:1:temperaturetemporary}
-Number ConstantRoomSetpointOverride "Constant room setpoint override [%.1f °C]" <temperature> {channel="openthermgateway:otgw:1:temperatureconstant}
-Number ControlSetpoint "Control setpoint [%.1f °C]" <temperature> {channel="openthermgateway:otgw:1:controlsetpoint}
-Number DomesticHotWaterTemperature "Domestic hot water temperature [%.1f °C]" <temperature> {channel="openthermgateway:otgw:1:dhwtemp}
-Number DomesticHotWaterSetpoint "Domestic hot water setpoint [%.1f °C]" <temperature> {channel="openthermgateway:otgw:1:tdhwset}
-Number DomesticHotWaterSetpointOverride "Domestic hot water setpoint override [%.1f °C]" <temperature> {channel="openthermgateway:otgw:1:overridedhwsetpoint}
-Number BoilerWaterTemperature "Boiler water temperature [%.1f °C]" <temperature> {channel="openthermgateway:otgw:1:flowtemp}
-Number ReturnWaterTemperature "Return water temperature [%.1f °C]" <temperature> {channel="openthermgateway:otgw:1:returntemp}
-Number OutsideTemperature "Outside temperature [%.1f °C]" <temperature> {channel="openthermgateway:otgw:1:outsidetemp}
-Number CentralHeatingWaterPressure "Central heating water pressure [%.1f bar]" {channel="openthermgateway:otgw:1:waterpressure}
-Switch CentralHeatingEnabled "Central heating enabled" <switch> {channel="openthermgateway:otgw:1:ch_enable}
-Switch CentralHeatingActive "Central heating active" <switch> {channel="openthermgateway:otgw:1:ch_mode}
-Switch DomesticHotWaterEnabled "Domestic hot water enabled" <switch> {channel="openthermgateway:otgw:1:dhw_enable}
-Switch DomesticHotWaterActive "Domestic hot water active" <switch> {channel="openthermgateway:otgw:1:dhw_mode}
-Switch BurnerActive "Burner active" <switch> {channel="openthermgateway:otgw:1:flame}
-Number RelativeModulationLevel "Relative modulation level [%.1f %%]" {channel="openthermgateway:otgw:1:modulevel}
-Number MaximumRelativeModulationLevel "Maximum relative modulation level [%.1f %%]" {channel="openthermgateway:otgw:1:maxrelmdulevel}
+Number RoomTemperature "Room temperature [%.1f °C]" <temperature> {channel="openthermgateway:otgw:1:roomtemp"}
+Number RoomSetpoint "Room setpoint [%.1f °C]" <temperature> {channel="openthermgateway:otgw:1:roomsetpoint"}
+Number TemporaryRoomSetpointOverride "Temporary room setpoint override [%.1f °C]" <temperature> {channel="openthermgateway:otgw:1:temperaturetemporary"}
+Number ConstantRoomSetpointOverride "Constant room setpoint override [%.1f °C]" <temperature> {channel="openthermgateway:otgw:1:temperatureconstant"}
+Number ControlSetpoint "Control setpoint [%.1f °C]" <temperature> {channel="openthermgateway:otgw:1:controlsetpoint"}
+Number DomesticHotWaterTemperature "Domestic hot water temperature [%.1f °C]" <temperature> {channel="openthermgateway:otgw:1:dhwtemp"}
+Number DomesticHotWaterSetpoint "Domestic hot water setpoint [%.1f °C]" <temperature> {channel="openthermgateway:otgw:1:tdhwset"}
+Number DomesticHotWaterSetpointOverride "Domestic hot water setpoint override [%.1f °C]" <temperature> {channel="openthermgateway:otgw:1:overridedhwsetpoint"}
+Number BoilerWaterTemperature "Boiler water temperature [%.1f °C]" <temperature> {channel="openthermgateway:otgw:1:flowtemp"}
+Number ReturnWaterTemperature "Return water temperature [%.1f °C]" <temperature> {channel="openthermgateway:otgw:1:returntemp"}
+Number OutsideTemperature "Outside temperature [%.1f °C]" <temperature> {channel="openthermgateway:otgw:1:outsidetemp"}
+Number CentralHeatingWaterPressure "Central heating water pressure [%.1f bar]" {channel="openthermgateway:otgw:1:waterpressure"}
+Switch CentralHeatingEnabled "Central heating enabled" <switch> {channel="openthermgateway:otgw:1:ch_enable"}
+Switch CentralHeatingActive "Central heating active" <switch> {channel="openthermgateway:otgw:1:ch_mode"}
+Switch DomesticHotWaterEnabled "Domestic hot water enabled" <switch> {channel="openthermgateway:otgw:1:dhw_enable"}
+Switch DomesticHotWaterActive "Domestic hot water active" <switch> {channel="openthermgateway:otgw:1:dhw_mode"}
+Switch BurnerActive "Burner active" <switch> {channel="openthermgateway:otgw:1:flame"}
+Number RelativeModulationLevel "Relative modulation level [%.1f %%]" {channel="openthermgateway:otgw:1:modulevel"}
+Number MaximumRelativeModulationLevel "Maximum relative modulation level [%.1f %%]" {channel="openthermgateway:otgw:1:maxrelmdulevel"}
 
 ```
 
