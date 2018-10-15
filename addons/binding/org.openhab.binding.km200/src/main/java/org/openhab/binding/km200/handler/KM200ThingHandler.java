@@ -63,7 +63,7 @@ public class KM200ThingHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(KM200ThingHandler.class);
     private static URI configDescriptionUriChannel;
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_DHW_CIRCUIT,
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_DHW_CIRCUIT,
             THING_TYPE_HEATING_CIRCUIT, THING_TYPE_SOLAR_CIRCUIT, THING_TYPE_HEAT_SOURCE, THING_TYPE_SYSTEM_APPLIANCE,
             THING_TYPE_SYSTEM_HOLIDAYMODES, THING_TYPE_SYSTEM_SENSOR, THING_TYPE_GATEWAY, THING_TYPE_NOTIFICATION,
             THING_TYPE_SYSTEM);
@@ -186,7 +186,6 @@ public class KM200ThingHandler extends BaseThingHandler {
         } else {
             newChannel = ChannelBuilder.create(channelUID, type).withType(channelTypeUID).withDescription(description)
                     .withLabel(label).withKind(ChannelKind.STATE).build();
-
         }
         return newChannel;
     }
@@ -255,7 +254,6 @@ public class KM200ThingHandler extends BaseThingHandler {
                         new ChannelUID(thing.getUID(), negName), service + "/" + negName, "Number", currentPathName,
                         "Negative switch of the cycle, like 'Night' 'Off'", negName, true, true, state, "minutes");
                 subChannels.add(newChannel);
-
             }
             ThingBuilder thingBuilder = editThing();
             List<Channel> actChannels = thing.getChannels();

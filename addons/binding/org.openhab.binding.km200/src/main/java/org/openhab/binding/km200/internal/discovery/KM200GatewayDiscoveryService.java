@@ -38,12 +38,12 @@ public class KM200GatewayDiscoveryService extends AbstractDiscoveryService imple
 
     private final Logger logger = LoggerFactory.getLogger(KM200GatewayDiscoveryService.class);
 
-    private static int TIMEOUT = 120;
+    private static int timeOut = 120;
 
     KM200GatewayHandler gateway;
 
     public KM200GatewayDiscoveryService(KM200GatewayHandler gateway) {
-        super(KM200GatewayHandler.SUPPORTED_THING_TYPES_UIDS, TIMEOUT, true);
+        super(KM200GatewayHandler.SUPPORTED_THING_TYPES_UIDS, timeOut, true);
         logger.debug("KM200GatewayDiscoveryService {}", gateway);
         this.gateway = gateway;
         this.gateway.addGatewayStatusListener(this);

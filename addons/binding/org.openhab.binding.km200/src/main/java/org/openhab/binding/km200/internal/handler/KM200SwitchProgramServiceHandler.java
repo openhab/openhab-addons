@@ -359,7 +359,7 @@ public class KM200SwitchProgramServiceHandler {
                         } else {
                             negativeSwitch = setpoint;
                         }
-                        if (positiveSwitch != negativeSwitch) {
+                        if (!positiveSwitch.equals(negativeSwitch)) {
                             break;
                         }
                     }
@@ -381,7 +381,7 @@ public class KM200SwitchProgramServiceHandler {
                                     negativeSwitch = key;
                                 }
                             }
-                            if (positiveSwitch != negativeSwitch) {
+                            if (!positiveSwitch.equalsIgnoreCase(negativeSwitch)) {
                                 break;
                             }
                         }

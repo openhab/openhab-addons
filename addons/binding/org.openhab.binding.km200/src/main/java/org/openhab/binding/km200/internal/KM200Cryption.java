@@ -56,12 +56,12 @@ public class KM200Cryption {
      *
      */
     private byte[] addZeroPadding(byte[] bdata, int bSize, String cSet) throws UnsupportedEncodingException {
-        int encrypt_padchar = bSize - (bdata.length % bSize);
-        byte[] padchars = new String(new char[encrypt_padchar]).getBytes(cSet);
-        byte[] padded_data = new byte[bdata.length + padchars.length];
-        System.arraycopy(bdata, 0, padded_data, 0, bdata.length);
-        System.arraycopy(padchars, 0, padded_data, bdata.length, padchars.length);
-        return padded_data;
+        int encryptPadchar = bSize - (bdata.length % bSize);
+        byte[] padchars = new String(new char[encryptPadchar]).getBytes(cSet);
+        byte[] paddedData = new byte[bdata.length + padchars.length];
+        System.arraycopy(bdata, 0, paddedData, 0, bdata.length);
+        System.arraycopy(padchars, 0, paddedData, bdata.length, padchars.length);
+        return paddedData;
     }
 
     /**
@@ -124,9 +124,9 @@ public class KM200Cryption {
     public void recreateKeys() {
         if (StringUtils.isNotBlank(remoteDevice.getGatewayPassword())
                 && StringUtils.isNotBlank(remoteDevice.getPrivatePassword()) && remoteDevice.getMD5Salt() != null) {
-            byte[] MD5_K1 = null;
-            byte[] MD5_K2_Init = null;
-            byte[] MD5_K2_Private = null;
+            byte[] md5K1 = null;
+            byte[] md5K2Init = null;
+            byte[] md5K2Private = null;
             byte[] bytesOfGatewayPassword = null;
             byte[] bytesOfPrivatePassword = null;
 
@@ -148,14 +148,14 @@ public class KM200Cryption {
                 logger.error("No such encoding, UTF-8: {}", e.getMessage());
                 return;
             }
-            byte[] CombParts1 = new byte[bytesOfGatewayPassword.length + remoteDevice.getMD5Salt().length];
-            System.arraycopy(bytesOfGatewayPassword, 0, CombParts1, 0, bytesOfGatewayPassword.length);
-            System.arraycopy(remoteDevice.getMD5Salt(), 0, CombParts1, bytesOfGatewayPassword.length,
+            byte[] combParts1 = new byte[bytesOfGatewayPassword.length + remoteDevice.getMD5Salt().length];
+            System.arraycopy(bytesOfGatewayPassword, 0, combParts1, 0, bytesOfGatewayPassword.length);
+            System.arraycopy(remoteDevice.getMD5Salt(), 0, combParts1, bytesOfGatewayPassword.length,
                     remoteDevice.getMD5Salt().length);
-            MD5_K1 = md.digest(CombParts1);
+            md5K1 = md.digest(combParts1);
 
             /* Second half of the key: - Initial: MD5 of ( Salt) */
-            MD5_K2_Init = md.digest(remoteDevice.getMD5Salt());
+            md5K2Init = md.digest(remoteDevice.getMD5Salt());
 
             /* Second half of the key: - private: MD5 of ( Salt . PrivatePassword) */
             try {
@@ -164,21 +164,21 @@ public class KM200Cryption {
                 logger.error("No such encoding, UTF-8: {}", e.getMessage());
                 return;
             }
-            byte[] CombParts2 = new byte[bytesOfPrivatePassword.length + remoteDevice.getMD5Salt().length];
-            System.arraycopy(remoteDevice.getMD5Salt(), 0, CombParts2, 0, remoteDevice.getMD5Salt().length);
-            System.arraycopy(bytesOfPrivatePassword, 0, CombParts2, remoteDevice.getMD5Salt().length,
+            byte[] combParts2 = new byte[bytesOfPrivatePassword.length + remoteDevice.getMD5Salt().length];
+            System.arraycopy(remoteDevice.getMD5Salt(), 0, combParts2, 0, remoteDevice.getMD5Salt().length);
+            System.arraycopy(bytesOfPrivatePassword, 0, combParts2, remoteDevice.getMD5Salt().length,
                     bytesOfPrivatePassword.length);
-            MD5_K2_Private = md.digest(CombParts2);
+            md5K2Private = md.digest(combParts2);
 
             /* Create Keys */
-            cryptKeyInit = new byte[MD5_K1.length + MD5_K2_Init.length];
-            System.arraycopy(MD5_K1, 0, cryptKeyInit, 0, MD5_K1.length);
-            System.arraycopy(MD5_K2_Init, 0, cryptKeyInit, MD5_K1.length, MD5_K2_Init.length);
+            cryptKeyInit = new byte[md5K1.length + md5K2Init.length];
+            System.arraycopy(md5K1, 0, cryptKeyInit, 0, md5K1.length);
+            System.arraycopy(md5K2Init, 0, cryptKeyInit, md5K1.length, md5K2Init.length);
             remoteDevice.setCryptKeyInit(cryptKeyInit);
 
-            cryptKeyPriv = new byte[MD5_K1.length + MD5_K2_Private.length];
-            System.arraycopy(MD5_K1, 0, cryptKeyPriv, 0, MD5_K1.length);
-            System.arraycopy(MD5_K2_Private, 0, cryptKeyPriv, MD5_K1.length, MD5_K2_Private.length);
+            cryptKeyPriv = new byte[md5K1.length + md5K2Private.length];
+            System.arraycopy(md5K1, 0, cryptKeyPriv, 0, md5K1.length);
+            System.arraycopy(md5K2Private, 0, cryptKeyPriv, md5K1.length, md5K2Private.length);
             remoteDevice.setCryptKeyPriv(cryptKeyPriv);
         }
     }

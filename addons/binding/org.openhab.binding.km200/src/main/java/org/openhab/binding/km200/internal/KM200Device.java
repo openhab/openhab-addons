@@ -53,7 +53,7 @@ public class KM200Device {
     protected byte[] cryptKeyPriv;
 
     /* Buderus_MD5Salt */
-    protected byte[] MD5Salt;
+    protected byte[] md5Salt;
 
     /* Device services */
     public HashMap<String, KM200ServiceObject> serviceTreeMap;
@@ -92,7 +92,7 @@ public class KM200Device {
     }
 
     public byte[] getMD5Salt() {
-        return MD5Salt;
+        return md5Salt;
     }
 
     public byte[] getCryptKeyInit() {
@@ -134,7 +134,7 @@ public class KM200Device {
     }
 
     public void setMD5Salt(String salt) {
-        MD5Salt = DatatypeConverter.parseHexBinary(salt);
+        md5Salt = DatatypeConverter.parseHexBinary(salt);
         comCryption.recreateKeys();
     }
 

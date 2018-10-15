@@ -106,10 +106,8 @@ public class KM200HandlerFactory extends BaseThingHandlerFactory {
      * @param gatewayHandler
      */
     private synchronized void registerKM200GatewayDiscoveryService(KM200GatewayHandler gatewayHandler) {
-
         KM200GatewayDiscoveryService discoveryService = new KM200GatewayDiscoveryService(gatewayHandler);
         this.discoveryServiceRegs.put(gatewayHandler.getThing().getUID(), bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
     }
-
 }

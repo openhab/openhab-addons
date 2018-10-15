@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class KM200Utils {
-    private static final Logger logger = LoggerFactory.getLogger(KM200Utils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(KM200Utils.class);
 
     /**
      * Translates a service name to a service path (Replaces # through /)
@@ -71,12 +71,12 @@ public class KM200Utils {
         Map<String, String> paraNames = new HashMap<String, String>();
         if (channel.getConfiguration().containsKey("on")) {
             paraNames.put("on", channel.getConfiguration().get("on").toString());
-            logger.debug("Added ON: {}", channel.getConfiguration().get("on"));
+            LOGGER.debug("Added ON: {}", channel.getConfiguration().get("on"));
         }
 
         if (channel.getConfiguration().containsKey("off")) {
             paraNames.put("off", channel.getConfiguration().get("off").toString());
-            logger.debug("Added OFF: {}", channel.getConfiguration().get("off"));
+            LOGGER.debug("Added OFF: {}", channel.getConfiguration().get("off"));
         }
         return paraNames;
     }
