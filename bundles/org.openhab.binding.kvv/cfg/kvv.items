@@ -1,0 +1,39 @@
+String KVV_Volkswohnung_train0_name         "[%s]"  <kvvstation-train-name>         {channel="kvv:kvvstation:35068d67:train0_name"}
+String KVV_Volkswohnung_train0_destination  "[%s]"  <kvvstation-train-destination>  {channel="kvv:kvvstation:35068d67:train0_destination"}
+String KVV_Volkswohnung_train0_eta          "[%s]"  <kvvstation-train-eta>          {channel="kvv:kvvstation:35068d67:train0_eta"}
+
+String KVV_Volkswohnung_train1_name         "[%s]"  <kvvstation-train-name>         {channel="kvv:kvvstation:35068d67:train1_name"}
+String KVV_Volkswohnung_train1_destination  "[%s]"  <kvvstation-train-destination>  {channel="kvv:kvvstation:35068d67:train1_destination"}
+String KVV_Volkswohnung_train1_eta          "[%s]"  <kvvstation-train-eta>          {channel="kvv:kvvstation:35068d67:train1_eta"}
+
+String KVV_Volkswohnung_train2_name         "[%s]"  <kvvstation-train-name>         {channel="kvv:kvvstation:35068d67:train2_name"}
+String KVV_Volkswohnung_train2_destination  "[%s]"  <kvvstation-train-destination>  {channel="kvv:kvvstation:35068d67:train2_destination"}
+String KVV_Volkswohnung_train2_eta          "[%s]"  <kvvstation-train-eta>          {channel="kvv:kvvstation:35068d67:train2_eta"}
+
+String KVV_Volkswohnung_train3_name         "[%s]"  <kvvstation-train-name>         {channel="kvv:kvvstation:35068d67:train3_name"}
+String KVV_Volkswohnung_train3_destination  "[%s]"  <kvvstation-train-destination>  {channel="kvv:kvvstation:35068d67:train3_destination"}
+String KVV_Volkswohnung_train3_eta          "[%s]"  <kvvstation-train-eta>          {channel="kvv:kvvstation:35068d67:train3_eta"}
+
+String KVV_Volkswohnung_train4_name         "[%s]"  <kvvstation-train-name>         {channel="kvv:kvvstation:35068d67:train4_name"}
+String KVV_Volkswohnung_train4_destination  "[%s]"  <kvvstation-train-destination>  {channel="kvv:kvvstation:35068d67:train4_destination"}
+String KVV_Volkswohnung_train4_eta          "[%s]"  <kvvstation-train-eta>          {channel="kvv:kvvstation:35068d67:train4_eta"}
+
+String KVV_Volkswohnung_train5_name         "[%s]"  <kvvstation-train-name>         {channel="kvv:kvvstation:35068d67:train5_name"}
+String KVV_Volkswohnung_train5_destination  "[%s]"  <kvvstation-train-destination>  {channel="kvv:kvvstation:35068d67:train5_destination"}
+String KVV_Volkswohnung_train5_eta          "[%s]"  <kvvstation-train-eta>          {channel="kvv:kvvstation:35068d67:train5_eta"}
+
+String KVV_Volkswohnung_train6_name         "[%s]"  <kvvstation-train-name>         {channel="kvv:kvvstation:35068d67:train6_name"}
+String KVV_Volkswohnung_train6_destination  "[%s]"  <kvvstation-train-destination>  {channel="kvv:kvvstation:35068d67:train6_destination"}
+String KVV_Volkswohnung_train6_eta          "[%s]"  <kvvstation-train-eta>          {channel="kvv:kvvstation:35068d67:train6_eta"}
+
+String KVV_Volkswohnung_train7_name         "[%s]"  <kvvstation-train-name>         {channel="kvv:kvvstation:35068d67:train7_name"}
+String KVV_Volkswohnung_train7_destination  "[%s]"  <kvvstation-train-destination>  {channel="kvv:kvvstation:35068d67:train7_destination"}
+String KVV_Volkswohnung_train7_eta          "[%s]"  <kvvstation-train-eta>          {channel="kvv:kvvstation:35068d67:train7_eta"}
+
+String KVV_Volkswohnung_train8_name         "[%s]"  <kvvstation-train-name>         {channel="kvv:kvvstation:35068d67:train8_name"}
+String KVV_Volkswohnung_train8_destination  "[%s]"  <kvvstation-train-destination>  {channel="kvv:kvvstation:35068d67:train8_destination"}
+String KVV_Volkswohnung_train8_eta          "[%s]"  <kvvstation-train-eta>          {channel="kvv:kvvstation:35068d67:train8_eta"}
+
+String KVV_Volkswohnung_train9_name         "[%s]"  <kvvstation-train-name>         {channel="kvv:kvvstation:35068d67:train9_name"}
+String KVV_Volkswohnung_train9_destination  "[%s]"  <kvvstation-train-destination>  {channel="kvv:kvvstation:35068d67:train9_destination"}
+String KVV_Volkswohnung_train9_eta          "[%s]"  <kvvstation-train-eta>          {channel="kvv:kvvstation:35068d67:train9_eta"}

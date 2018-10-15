@@ -1,0 +1,55 @@
+<style>
+td {text-align: left;}
+</style>
+  <table>
+    <tr>
+      <td width="50px">{{itemValue('KVV_Volkswohnung_train0_name')}}</td>
+      <td width="250px">{{itemValue('KVV_Volkswohnung_train0_destination')}}</td>
+      <td>{{itemValue('KVV_Volkswohnung_train0_eta')}}</td>
+    </tr>
+    <tr>
+      <td>{{itemValue('KVV_Volkswohnung_train1_name')}}</td>
+      <td>{{itemValue('KVV_Volkswohnung_train1_destination')}}</td>
+      <td>{{itemValue('KVV_Volkswohnung_train1_eta')}}</td>
+    </tr>
+    <tr>
+      <td>{{itemValue('KVV_Volkswohnung_train2_name')}}</td>
+      <td>{{itemValue('KVV_Volkswohnung_train2_destination')}}</td>
+      <td>{{itemValue('KVV_Volkswohnung_train2_eta')}}</td>
+    </tr>
+    <tr>
+      <td>{{itemValue('KVV_Volkswohnung_train3_name')}}</td>
+      <td>{{itemValue('KVV_Volkswohnung_train3_destination')}}</td>
+      <td>{{itemValue('KVV_Volkswohnung_train3_eta')}}</td>
+    </tr>
+    <tr>
+      <td>{{itemValue('KVV_Volkswohnung_train4_name')}}</td>
+      <td>{{itemValue('KVV_Volkswohnung_train4_destination')}}</td>
+      <td>{{itemValue('KVV_Volkswohnung_train4_eta')}}</td>
+    </tr>
+    <tr>
+      <td>{{itemValue('KVV_Volkswohnung_train5_name')}}</td>
+      <td>{{itemValue('KVV_Volkswohnung_train5_destination')}}</td>
+      <td>{{itemValue('KVV_Volkswohnung_train5_eta')}}</td>
+    </tr>
+    <tr>
+      <td>{{itemValue('KVV_Volkswohnung_train6_name')}}</td>
+      <td>{{itemValue('KVV_Volkswohnung_train6_destination')}}</td>
+      <td>{{itemValue('KVV_Volkswohnung_train6_eta')}}</td>
+    </tr>
+    <tr>
+      <td>{{itemValue('KVV_Volkswohnung_train7_name')}}</td>
+      <td>{{itemValue('KVV_Volkswohnung_train7_destination')}}</td>
+      <td>{{itemValue('KVV_Volkswohnung_train7_eta')}}</td>
+    </tr>
+    <tr>
+      <td>{{itemValue('KVV_Volkswohnung_train8_name')}}</td>
+      <td>{{itemValue('KVV_Volkswohnung_train8_destination')}}</td>
+      <td>{{itemValue('KVV_Volkswohnung_train8_eta')}}</td>
+    </tr>
+    <tr>
+      <td>{{itemValue('KVV_Volkswohnung_train9_name')}}</td>
+      <td>{{itemValue('KVV_Volkswohnung_train9_destination')}}</td>
+      <td>{{itemValue('KVV_Volkswohnung_train9_eta')}}</td>
+    </tr>
+  </table>
