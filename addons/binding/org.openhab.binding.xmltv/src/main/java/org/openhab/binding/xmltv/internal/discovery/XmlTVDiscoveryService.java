@@ -10,6 +10,8 @@ package org.openhab.binding.xmltv.internal.discovery;
 
 import static org.openhab.binding.xmltv.XmlTVBindingConstants.XMLTV_CHANNEL_THING_TYPE;
 
+import java.util.logging.Logger;
+
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -19,7 +21,6 @@ import org.openhab.binding.xmltv.XmlTVBindingConstants;
 import org.openhab.binding.xmltv.handler.XmlTVHandler;
 import org.openhab.binding.xmltv.internal.configuration.XmlChannelConfiguration;
 import org.openhab.binding.xmltv.internal.jaxb.Tv;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
