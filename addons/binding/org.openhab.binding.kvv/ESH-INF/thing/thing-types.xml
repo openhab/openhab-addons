@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="kvv"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- KVV Thing Type -->
+	<thing-type id="kvvstation">
+		<label>KVV Station</label>
+		<description>Sample thing for KVV Binding</description>
+
+		<channels>
+			<channel id="train0_name"        typeId="kvvstation-train-name" />
+			<channel id="train0_destination" typeId="kvvstation-train-destination" />
+			<channel id="train0_eta"         typeId="kvvstation-train-eta" />
+			<channel id="train1_name"        typeId="kvvstation-train-name" />
+			<channel id="train1_destination" typeId="kvvstation-train-destination" />
+			<channel id="train1_eta"         typeId="kvvstation-train-eta" />
+			<channel id="train2_name"        typeId="kvvstation-train-name" />
+			<channel id="train2_destination" typeId="kvvstation-train-destination" />
+			<channel id="train2_eta"         typeId="kvvstation-train-eta" />
+			<channel id="train3_name"        typeId="kvvstation-train-name" />
+			<channel id="train3_destination" typeId="kvvstation-train-destination" />
+			<channel id="train3_eta"         typeId="kvvstation-train-eta" />
+			<channel id="train4_name"        typeId="kvvstation-train-name" />
+			<channel id="train4_destination" typeId="kvvstation-train-destination" />
+			<channel id="train4_eta"         typeId="kvvstation-train-eta" />
+			<channel id="train5_name"        typeId="kvvstation-train-name" />
+			<channel id="train5_destination" typeId="kvvstation-train-destination" />
+			<channel id="train5_eta"         typeId="kvvstation-train-eta" />
+			<channel id="train6_name"        typeId="kvvstation-train-name" />
+			<channel id="train6_destination" typeId="kvvstation-train-destination" />
+			<channel id="train6_eta"         typeId="kvvstation-train-eta" />
+			<channel id="train7_name"        typeId="kvvstation-train-name" />
+			<channel id="train7_destination" typeId="kvvstation-train-destination" />
+			<channel id="train7_eta"         typeId="kvvstation-train-eta" />
+			<channel id="train8_name"        typeId="kvvstation-train-name" />
+			<channel id="train8_destination" typeId="kvvstation-train-destination" />
+			<channel id="train8_eta"         typeId="kvvstation-train-eta" />
+			<channel id="train9_name"        typeId="kvvstation-train-name" />
+			<channel id="train9_destination" typeId="kvvstation-train-destination" />
+			<channel id="train9_eta"         typeId="kvvstation-train-eta" />
+		</channels>
+
+		<config-description>
+			<parameter name="stationId" type="text" required="true">
+				<label>Station id</label>
+				<description>Station id.</description>
+			</parameter>
+			<parameter name="updateInterval" type="integer" required="true">
+				<label>Update interval</label>
+				<description>Update interval.</description>
+			</parameter>
+			<parameter name="name" type="text" required="true">
+				<label>Name of the station</label>
+				<description>Name of the station.</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="kvvstation-train-name">
+		<item-type>String</item-type>
+		<label>Name of a train.</label>
+		<description>Name of a train.</description>
+	</channel-type>
+	<channel-type id="kvvstation-train-destination">
+		<item-type>String</item-type>
+		<label>Destination of a train.</label>
+		<description>Destination of a train.</description>
+	</channel-type>
+	<channel-type id="kvvstation-train-eta">
+		<item-type>String</item-type>
+		<label>ETA of a train.</label>
+		<description>ETA of a train.</description>
+	</channel-type>
+
+
+</thing:thing-descriptions>
