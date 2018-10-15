@@ -163,7 +163,6 @@ public class SpotifyAuthServlet extends HttpServlet {
         if (StringUtil.isBlank(spotifyUser)) {
             map.put(PLAYER_AUTHORIZED_CLASS, "");
             map.put(PLAYER_SPOTIFY_USER_ID, "");
-
         } else {
             map.put(PLAYER_AUTHORIZED_CLASS, " authorized");
             map.put(PLAYER_SPOTIFY_USER_ID, String.format(" (Authorized user: %s)", spotifyUser));

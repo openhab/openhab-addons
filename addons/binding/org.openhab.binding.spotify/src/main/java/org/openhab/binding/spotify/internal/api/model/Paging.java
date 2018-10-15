@@ -8,25 +8,17 @@
  */
 package org.openhab.binding.spotify.internal.api.model;
 
+import java.util.List;
+
 /**
- * Spotify Web Api user data class.
+ * Spotify Web Api generic paging object class.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
-public class Me {
-    private String displayName;
-    private String id;
-    private String product;
+public class Paging<T> {
+    List<T> items;
 
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getProduct() {
-        return product;
+    public List<T> getItems() {
+        return items;
     }
 }

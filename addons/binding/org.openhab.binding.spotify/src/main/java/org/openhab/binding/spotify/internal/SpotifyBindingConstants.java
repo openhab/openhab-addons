@@ -28,8 +28,8 @@ public class SpotifyBindingConstants {
     /**
      * Spotify scopes needed by this binding to work.
      */
-    public static final String SPOTIFY_SCOPES = Arrays.asList("user-read-playback-state", "user-modify-playback-state")
-            .stream().collect(Collectors.joining("%20"));
+    public static final String SPOTIFY_SCOPES = Arrays.asList("user-read-playback-state", "user-modify-playback-state",
+            "playlist-read-private", "playlist-read-collaborative").stream().collect(Collectors.joining("%20"));
     public static final String SPOTIFY_API_URL = "https://api.spotify.com/v1/me";
     public static final String SPOTIFY_API_PLAYER_URL = SPOTIFY_API_URL + "/player";
 
@@ -48,6 +48,8 @@ public class SpotifyBindingConstants {
     public static final String CHANNEL_TRACKPLAY = "trackPlay";
     public static final String CHANNEL_TRACKPLAYER = "trackPlayer";
     public static final String CHANNEL_TRACKREPEAT = "trackRepeat";
+
+    public static final String CHANNEL_PLAYLIST = "playlist";
 
     public static final String CHANNEL_PLAYED_TRACKID = "trackId";
     public static final String CHANNEL_PLAYED_TRACKURI = "trackUri";

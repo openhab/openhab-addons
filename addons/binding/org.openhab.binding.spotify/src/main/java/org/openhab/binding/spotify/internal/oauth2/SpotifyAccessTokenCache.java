@@ -6,14 +6,15 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.spotify.internal.api;
+package org.openhab.binding.spotify.internal.oauth2;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyAuthorizationException;
-import org.openhab.binding.spotify.internal.api.model.AuthorizationCodeCredentials;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * @author Hilbrand Bouwkamp - Initial contribution
  */
 @NonNullByDefault
-class SpotifyAccessTokenCache {
+public class SpotifyAccessTokenCache {
 
     /**
      * Subtract this value from the actual provided expiring time so the refresh call be certainly be done before it's
@@ -34,7 +35,7 @@ class SpotifyAccessTokenCache {
     private final Logger logger = LoggerFactory.getLogger(SpotifyAccessTokenCache.class);
 
     private final SpotifyAuthorizer authorizer;
-    private final SpotifyAccessTokenChangeHandler accessTokenChangeHandler;
+    private final List<AccessTokenRefreshListener> listeners = new ArrayList<>();
 
     private String accessToken = "";
     private String refreshToken = "";
@@ -46,10 +47,12 @@ class SpotifyAccessTokenCache {
      * @param authorizer The authorizer used to call the Spotify Web Api refresh method.
      * @param accessTokenChangeHandler handler to be called when the access token has changed.
      */
-    public SpotifyAccessTokenCache(SpotifyAuthorizer authorizer,
-            SpotifyAccessTokenChangeHandler accessTokenChangeHandler) {
+    public SpotifyAccessTokenCache(SpotifyAuthorizer authorizer) {
         this.authorizer = authorizer;
-        this.accessTokenChangeHandler = accessTokenChangeHandler;
+    }
+
+    public void addAccessTokenRefreshListener(AccessTokenRefreshListener accessTokenRefreshListener) {
+        listeners.add(accessTokenRefreshListener);
     }
 
     /**
@@ -57,7 +60,7 @@ class SpotifyAccessTokenCache {
      *
      * @param credentials The authorization credentials
      */
-    public void setAuthorizationCodeCredentials(AuthorizationCodeCredentials credentials) {
+    public void setAuthorizationCodeCredentials(AccessTokenResponse credentials) {
         refreshToken = credentials.getRefreshToken() == null ? "" : credentials.getRefreshToken();
         updateAccessToken(credentials);
     }
@@ -90,12 +93,12 @@ class SpotifyAccessTokenCache {
      *
      * @param credentials credentials to update values from
      */
-    private void updateAccessToken(AuthorizationCodeCredentials credentials) {
-        accessToken = credentials.getAccessToken();
+    private void updateAccessToken(AccessTokenResponse credentials) {
+        accessToken = credentials.getAccessToken() == null ? "" : credentials.getAccessToken();
         long expiresInNanos = TimeUnit.SECONDS.toNanos(credentials.getExpiresIn());
         // Guard minimal expires time so it will never be less then the value provided by Spotify
         expiresAt = System.nanoTime() + Math.min(expiresInNanos, expiresInNanos - EXPIRE_MARGIN_NANO);
-        accessTokenChangeHandler.onAccessTokenChanged(accessToken);
+        listeners.forEach(l -> l.onTokenResponse(credentials));
     }
 
     /**

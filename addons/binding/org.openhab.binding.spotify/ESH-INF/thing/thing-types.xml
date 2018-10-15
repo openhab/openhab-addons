@@ -22,6 +22,8 @@ register a bridge for each account. Go to http://your openHAB address::8080/conn
 			<channel id="deviceVolume" typeId="activeDeviceVolume" />
 			<channel id="deviceShuffle" typeId="activeDeviceShuffle" />
 
+			<channel typeId="playlist" id="playlist"></channel>
+
 			<channel id="trackPlay" typeId="trackPlay" />
 			<channel id="trackPlayer" typeId="trackPlayer" />
 			<channel id="trackRepeat" typeId="trackRepeat" />
@@ -130,18 +132,19 @@ bridge you have configured.</description>
 		<item-type>String</item-type>
 		<label>Active Device Id</label>
 		<description>Channel to get/set active device id</description>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="activeDeviceName">
 		<item-type>String</item-type>
 		<label>Active Device Name</label>
 		<description>Channel reports active device name</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="activeDeviceType" advanced="true">
 		<item-type>String</item-type>
 		<label>Active Device Type</label>
 		<description>Channel reports active device type</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="activeDeviceVolume">
 		<item-type>Dimmer</item-type>
@@ -153,6 +156,13 @@ bridge you have configured.</description>
 		<item-type>Switch</item-type>
 		<label>Active Device Shuffle</label>
 		<description>Channel to get/set shuffle for active device</description>
+	</channel-type>
+
+	<channel-type id="playlist">
+		<item-type>String</item-type>
+		<label>Playlist</label>
+		<description>Channel with the users playlists. Select playlist to play</description>
+		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="trackPlay" advanced="true">
@@ -182,154 +192,154 @@ bridge you have configured.</description>
 		<item-type>String</item-type>
 		<label>Track Id</label>
 		<description>Channel reports track id currently being played.</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="currentlyPlayedTrackHref" advanced="true">
 		<item-type>String</item-type>
 		<label>Track href</label>
 		<description>Channel reports track href currently played</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="currentlyPlayedTrackUri" advanced="true">
 		<item-type>String</item-type>
 		<label>Track Uri</label>
 		<description>Channel reports track Uri currently played</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="currentlyPlayedTrackName">
 		<item-type>String</item-type>
 		<label>Track Name</label>
 		<description>Channel reports currently played track name</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="currentlyPlayedTrackType" advanced="true">
 		<item-type>String</item-type>
 		<label>Track Type</label>
 		<description>Channel reports currently played track type</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="currentlyPlayedTrackDurationMs" advanced="true">
 		<item-type>Number</item-type>
 		<label>Track Duration ms</label>
 		<description>Channel reports currently played track duration (ms)</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="currentlyPlayedTrackProgressMs" advanced="true">
 		<item-type>Number</item-type>
 		<label>Track Progress ms</label>
 		<description>Channel reports currently played track progress (ms)</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="currentlyPlayedTrackDuration">
 		<item-type>String</item-type>
 		<label>Track Duration (m:ss)</label>
 		<description>Channel reports currently played track duration formatted (m:ss)</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="currentlyPlayedTrackProgress">
 		<item-type>String</item-type>
 		<label>Track Progress (m:ss)</label>
 		<description>Channel reports currently played track progress formatted (m:ss)</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="currentlyPlayedTrackNumber" advanced="true">
 		<item-type>Number</item-type>
 		<label>Track Number</label>
 		<description>Channel reports currently played track number</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="currentlyPlayedTrackDiscNumber" advanced="true">
 		<item-type>Number</item-type>
 		<label>Track Disc Number</label>
 		<description>Channel reports currently played track disc number</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="currentlyPlayedTrackPopularity" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Track Popularity</label>
 		<description>Channel reports currently played track popularity</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="currentlyPlayedAlbumId" advanced="true">
 		<item-type>String</item-type>
 		<label>Album href</label>
 		<description>Channel reports currently played album href</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="currentlyPlayedAlbumHref" advanced="true">
 		<item-type>String</item-type>
 		<label>Album href</label>
 		<description>Channel reports currently played album href</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="currentlyPlayedAlbumUri" advanced="true">
 		<item-type>String</item-type>
 		<label>Album href</label>
 		<description>Channel reports currently played album Uri</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="currentlyPlayedAlbumName">
 		<item-type>String</item-type>
 		<label>Album Name</label>
 		<description>Channel reports currently played album name</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="currentlyPlayedAlbumType" advanced="true">
 		<item-type>String</item-type>
 		<label>Album Type</label>
 		<description>Channel reports currently played album type</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="currentlyPlayedAlbumImage">
 		<item-type>Image</item-type>
 		<label>Album Image</label>
 		<description>Channel reports currently played album image</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="currentlyPlayedArtistId" advanced="true">
 		<item-type>String</item-type>
 		<label>Artist Id</label>
 		<description>Channel reports currently played artist Id</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="currentlyPlayedArtistHref" advanced="true">
 		<item-type>String</item-type>
 		<label>Artist href</label>
 		<description>Channel reports currently played artist href</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="currentlyPlayedArtistUri" advanced="true">
 		<item-type>String</item-type>
 		<label>Artist Uri</label>
 		<description>Channel reports currently played artist Uri</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="currentlyPlayedArtistName">
 		<item-type>String</item-type>
 		<label>Artist Name</label>
 		<description>Channel reports currently played artist name</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="currentlyPlayedArtistType" advanced="true">
 		<item-type>String</item-type>
 		<label>Artist Type</label>
 		<description>Channel reports currently played artist type</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="deviceName">
 		<item-type>String</item-type>
 		<label>Device Name</label>
 		<description>Channel reports active device name</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="deviceType" advanced="true">
 		<item-type>String</item-type>
 		<label>Device Type</label>
 		<description>Channel reports device type</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="devicePlayer">
 		<item-type>Player</item-type>

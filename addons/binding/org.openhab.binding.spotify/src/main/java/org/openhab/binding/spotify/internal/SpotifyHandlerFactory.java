@@ -27,9 +27,10 @@ import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.spotify.internal.discovery.SpotifyDeviceDiscoveryService;
 import org.openhab.binding.spotify.internal.handler.SpotifyBridgeHandler;
 import org.openhab.binding.spotify.internal.handler.SpotifyDeviceHandler;
+import org.openhab.binding.spotify.internal.handler.SpotifyDynamicStateDescriptionProvider;
+import org.openhab.binding.spotify.internal.oauth2.OAuthFactory;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Reference;
 
 /**
@@ -40,14 +41,16 @@ import org.osgi.service.component.annotations.Reference;
  * @author Matthew Bowman - Initial contribution
  * @author Hilbrand Bouwkamp - Added registration of discovery service to binding to this class
  */
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.spotify")
 @NonNullByDefault
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.spotify", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class SpotifyHandlerFactory extends BaseThingHandlerFactory {
 
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
+    private @NonNullByDefault({}) OAuthFactory oAuthFactory;
     private @NonNullByDefault({}) SpotifyAuthService authService;
     private @NonNullByDefault({}) HttpClient httpClient;
+    private @NonNullByDefault({}) SpotifyDynamicStateDescriptionProvider spotifyDynamicStateDescriptionProvider;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -60,7 +63,8 @@ public class SpotifyHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SpotifyBindingConstants.THING_TYPE_PLAYER.equals(thingTypeUID)) {
-            SpotifyBridgeHandler handler = new SpotifyBridgeHandler((Bridge) thing, httpClient);
+            SpotifyBridgeHandler handler = new SpotifyBridgeHandler((Bridge) thing, oAuthFactory, httpClient,
+                    spotifyDynamicStateDescriptionProvider);
             authService.addSpotifyAccountHandler(handler);
             registerDiscoveryService(handler);
             return handler;
@@ -104,6 +108,15 @@ public class SpotifyHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Reference
+    protected void setOAuthFactory(OAuthFactory oAuthFactory) {
+        this.oAuthFactory = oAuthFactory;
+    }
+
+    protected void unsetOAuthFactory(OAuthFactory oAuthFactory) {
+        this.oAuthFactory = null;
+    }
+
+    @Reference
     protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
     }
@@ -113,11 +126,20 @@ public class SpotifyHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Reference
-    protected void bindAuthService(SpotifyAuthService service) {
+    protected void setAuthService(SpotifyAuthService service) {
         this.authService = service;
     }
 
-    protected void unbindAuthService(SpotifyAuthService service) {
+    protected void unsetAuthService(SpotifyAuthService service) {
         this.authService = null;
+    }
+
+    @Reference
+    protected void setDynamicStateDescriptionProvider(SpotifyDynamicStateDescriptionProvider provider) {
+        this.spotifyDynamicStateDescriptionProvider = provider;
+    }
+
+    protected void unsetDynamicStateDescriptionProvider(SpotifyDynamicStateDescriptionProvider provider) {
+        this.spotifyDynamicStateDescriptionProvider = null;
     }
 }

@@ -10,6 +10,7 @@ package org.openhab.binding.spotify.internal.handler;
 
 import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.*;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
@@ -43,21 +44,23 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.spotify.internal.SpotifyAccountHandler;
 import org.openhab.binding.spotify.internal.SpotifyBridgeConfiguration;
-import org.openhab.binding.spotify.internal.SpotifyHandleCommands;
-import org.openhab.binding.spotify.internal.api.SpotifyAccessTokenChangeHandler;
 import org.openhab.binding.spotify.internal.api.SpotifyApi;
-import org.openhab.binding.spotify.internal.api.SpotifyAuthorizer;
-import org.openhab.binding.spotify.internal.api.SpotifyConnector;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyAuthorizationException;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyException;
 import org.openhab.binding.spotify.internal.api.model.Album;
 import org.openhab.binding.spotify.internal.api.model.Artist;
-import org.openhab.binding.spotify.internal.api.model.AuthorizationCodeCredentials;
 import org.openhab.binding.spotify.internal.api.model.CurrentlyPlayingContext;
 import org.openhab.binding.spotify.internal.api.model.Device;
 import org.openhab.binding.spotify.internal.api.model.Image;
 import org.openhab.binding.spotify.internal.api.model.Item;
 import org.openhab.binding.spotify.internal.api.model.Me;
+import org.openhab.binding.spotify.internal.api.model.Playlist;
+import org.openhab.binding.spotify.internal.oauth2.AccessTokenRefreshListener;
+import org.openhab.binding.spotify.internal.oauth2.AccessTokenResponse;
+import org.openhab.binding.spotify.internal.oauth2.OAuthClientService;
+import org.openhab.binding.spotify.internal.oauth2.OAuthException;
+import org.openhab.binding.spotify.internal.oauth2.OAuthFactory;
+import org.openhab.binding.spotify.internal.oauth2.OAuthResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +72,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SpotifyBridgeHandler extends BaseBridgeHandler
-        implements SpotifyAccountHandler, SpotifyAccessTokenChangeHandler {
+        implements SpotifyAccountHandler, AccessTokenRefreshListener {
 
     private static final CurrentlyPlayingContext EMPTY_CURRENTLYPLAYINGCONTEXT = new CurrentlyPlayingContext();
     private static final Album EMPTY_ALBUM = new Album();
@@ -90,17 +93,20 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     private static final long PROGRESS_STEP_MS = TimeUnit.SECONDS.toMillis(PROGRESS_STEP_S);
 
     private final Logger logger = LoggerFactory.getLogger(SpotifyBridgeHandler.class);
-    private final SpotifyConnector spotifyConnector;
     private final ProgressUpdater progressUpdater = new ProgressUpdater();
     private final AlbumUpdater albumUpdater = new AlbumUpdater();
+    private final OAuthFactory oAuthFactory;
+    private final HttpClient httpClient;
+    private final SpotifyDynamicStateDescriptionProvider spotifyDynamicStateDescriptionProvider;
 
     // Field members assigned in initialize method
     private @NonNullByDefault({}) Future<?> pollingFuture;
-    private @NonNullByDefault({}) SpotifyAuthorizer spotifyAuthorizer;
+    private @NonNullByDefault({}) OAuthClientService oAuthService;
     private @NonNullByDefault({}) SpotifyApi spotifyApi;
     private @NonNullByDefault({}) SpotifyBridgeConfiguration configuration;
     private @NonNullByDefault({}) SpotifyHandleCommands handleCommand;
     private @NonNullByDefault({}) ExpiringCache<CurrentlyPlayingContext> playingContextCache;
+    private @NonNullByDefault({}) ExpiringCache<List<Playlist>> playlistCache;
     private @NonNullByDefault({}) ExpiringCache<List<Device>> devicesCache;
 
     /**
@@ -108,10 +114,14 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
      */
     private volatile boolean active;
     private State lastTrackId = StringType.EMPTY;
+    private String activeDeviceId = "";
 
-    public SpotifyBridgeHandler(Bridge bridge, HttpClient httpClient) {
+    public SpotifyBridgeHandler(Bridge bridge, OAuthFactory oAuthFactory, HttpClient httpClient,
+            SpotifyDynamicStateDescriptionProvider spotifyDynamicStateDescriptionProvider) {
         super(bridge);
-        spotifyConnector = new SpotifyConnector(scheduler, httpClient);
+        this.oAuthFactory = oAuthFactory;
+        this.httpClient = httpClient;
+        this.spotifyDynamicStateDescriptionProvider = spotifyDynamicStateDescriptionProvider;
     }
 
     @Override
@@ -120,10 +130,11 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
             albumUpdater.refreshAlbumImage(channelUID);
         } else {
             try {
-                if (handleCommand != null && handleCommand.handleCommand(channelUID, command, true)) {
+                if (handleCommand != null && handleCommand.handleCommand(channelUID, command, true, activeDeviceId)) {
                     scheduler.schedule(() -> {
                         boolean statusNoPolling = pollingFuture == null || pollingFuture.isCancelled();
                         playingContextCache.invalidateValue();
+                        playlistCache.invalidateValue();
                         devicesCache.invalidateValue();
 
                         if (pollStatus() && statusNoPolling) {
@@ -140,6 +151,10 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     @Override
     public void dispose() {
         active = false;
+        if (oAuthService != null) {
+            oAuthService.removeAccessTokenRefreshListener(this);
+        }
+        oAuthFactory.ungetOAuthService(thing.getUID().getAsString());
         cancelSchedulers();
     }
 
@@ -175,57 +190,64 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
 
     @Override
     public String formatAuthorizationUrl(String redirectUri) {
-        return spotifyAuthorizer.formatAuthorizationUrl(redirectUri, configuration.clientId,
-                thing.getUID().getAsString());
+        try {
+            return oAuthService.getAuthorizationUrl(redirectUri, null, thing.getUID().getAsString());
+        } catch (OAuthException e) {
+            logger.debug("Error constructing AuthorizationUrl: ", e);
+            return "";
+        }
     }
 
     @Override
-    public AuthorizationCodeCredentials authorize(String redirectUri, String reqCode) {
+    public String authorize(String redirectUri, String reqCode) {
         try {
-            AuthorizationCodeCredentials credentials = spotifyAuthorizer.requestTokens(redirectUri, reqCode);
-
+            AccessTokenResponse credentials = oAuthService.getAccessTokenResponseByAuthorizationCode(reqCode,
+                    redirectUri);
             updateConfiguration(credentials);
-            updateProperties(credentials);
+            String user = updateProperties(credentials);
             startPolling();
-            return credentials;
-        } catch (RuntimeException e) {
+            return user;
+        } catch (RuntimeException | OAuthException | IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-            throw e;
+            throw new SpotifyException(e.getMessage());
+        } catch (OAuthResponseException e) {
+            throw new SpotifyAuthorizationException(e.getMessage());
         }
     }
 
-    private void updateConfiguration(AuthorizationCodeCredentials credentials) {
-        if (spotifyApi != null) {
-            spotifyApi.setAuthorizationCodeCredentials(credentials);
-            Configuration conf = editConfiguration();
+    private void updateConfiguration(AccessTokenResponse credentials) {
+        Configuration conf = editConfiguration();
 
-            conf.put(CONFIGURATION_CLIENT_REFRESH_TOKEN, credentials.getRefreshToken());
-            updateConfiguration(conf);
-        }
+        conf.put(CONFIGURATION_CLIENT_REFRESH_TOKEN, credentials.getRefreshToken());
+        updateConfiguration(conf);
     }
 
-    private void updateProperties(AuthorizationCodeCredentials credentials) {
+    private String updateProperties(AccessTokenResponse credentials) {
         if (spotifyApi != null) {
             Me me = spotifyApi.getMe();
-            credentials.setUser(me.getDisplayName() == null ? me.getId() : me.getDisplayName());
+            String user = me.getDisplayName() == null ? me.getId() : me.getDisplayName();
             Map<String, String> props = editProperties();
 
-            props.put(PROPERTY_SPOTIFY_USER, credentials.getUser());
+            props.put(PROPERTY_SPOTIFY_USER, user);
             updateProperties(props);
+            return user;
         }
+        return "";
     }
 
     @Override
     public void initialize() {
         active = true;
         configuration = getConfigAs(SpotifyBridgeConfiguration.class);
-        spotifyAuthorizer = new SpotifyAuthorizer(spotifyConnector, configuration.clientId, configuration.clientSecret);
-        spotifyApi = new SpotifyApi(spotifyConnector, spotifyAuthorizer, this);
+        oAuthService = oAuthFactory.getOrCreateOAuthClientService(thing.getUID().getAsString(), SPOTIFY_API_TOKEN_URL,
+                SPOTIFY_AUTHORIZE_URL, configuration.clientId, configuration.clientSecret, SPOTIFY_SCOPES, true,
+                scheduler, httpClient, configuration.refreshToken);
+        oAuthService.addAccessTokenRefreshListener(this);
+        spotifyApi = new SpotifyApi(oAuthService, scheduler, httpClient);
         handleCommand = new SpotifyHandleCommands(spotifyApi, "");
-        spotifyApi.setAuthorizationCodeCredentials(new AuthorizationCodeCredentials(
-                getThing().getProperties().get(PROPERTY_SPOTIFY_USER), configuration.refreshToken));
         playingContextCache = new ExpiringCache<>(configuration.refreshPeriod, spotifyApi::getPlayerInfo);
-        devicesCache = new ExpiringCache<>(configuration.refreshPeriod, spotifyApi::listDevices);
+        playlistCache = new ExpiringCache<>(configuration.refreshPeriod, spotifyApi::getPlaylists);
+        devicesCache = new ExpiringCache<>(configuration.refreshPeriod, spotifyApi::getDevices);
         updateStatus(ThingStatus.UNKNOWN);
         // start with update status by calling Spotify. If no credentials available no polling should be started.
         if (pollStatus()) {
@@ -248,6 +270,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         cancelSchedulers();
         if (active) {
             playingContextCache.invalidateValue();
+            playlistCache.invalidateValue();
             devicesCache.invalidateValue();
             pollingFuture = scheduler.scheduleWithFixedDelay(this::pollStatus, 0, configuration.refreshPeriod,
                     TimeUnit.SECONDS);
@@ -255,17 +278,20 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     }
 
     private boolean pollStatus() {
-        // No synchronation on this because method calls asynchronously other methods that also call synchronized
-        // methods, which could result in a deadlock.
-        synchronized (spotifyConnector) {
+        synchronized (scheduler) {
             try {
                 CurrentlyPlayingContext pc = playingContextCache.getValue();
                 CurrentlyPlayingContext playingContext = pc == null ? EMPTY_CURRENTLYPLAYINGCONTEXT : pc;
                 updateStatus(ThingStatus.ONLINE);
                 updatePlayerInfo(playingContext);
+
+                List<Playlist> playlists = playlistCache.getValue();
+                spotifyDynamicStateDescriptionProvider
+                        .setPlayList(playlists == null ? Collections.emptyList() : playlists);
+
                 List<Device> ld = devicesCache.getValue();
                 List<Device> listDevices = ld == null ? Collections.emptyList() : ld;
-
+                spotifyDynamicStateDescriptionProvider.setDevices(listDevices);
                 updateDevicesStatus(listDevices, playingContext.isPlaying());
                 return true;
             } catch (SpotifyAuthorizationException e) {
@@ -279,6 +305,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
 
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (RuntimeException e) {
+                // This only should catch RuntimeException as the apiCall don't throw other exceptions.
                 logger.info("Unexpected error during polling status, please report if this keeps ocurring: ", e);
 
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
@@ -298,13 +325,14 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     }
 
     @Override
-    public void onAccessTokenChanged(String accessToken) {
-        updateChannelState(CHANNEL_ACCESSTOKEN, new StringType(accessToken));
+    public void onTokenResponse(AccessTokenResponse tokenResponse) {
+        updateChannelState(CHANNEL_ACCESSTOKEN, new StringType(tokenResponse.getAccessToken()));
     }
 
     /**
      * Updates the status of all child Spotify Device Things.
      *
+     * @param spotifyDevices list of Spotify devices
      * @param playing true if the current active device is playing
      */
     private void updateDevicesStatus(List<Device> spotifyDevices, boolean playing) {
@@ -316,6 +344,8 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
 
     /**
      * Update the player data.
+     *
+     * @param playerInfo The object with the current playing context
      */
     private void updatePlayerInfo(CurrentlyPlayingContext playerInfo) {
         updateChannelState(CHANNEL_TRACKPLAYER, playerInfo.isPlaying() ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
@@ -336,6 +366,10 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
                 updateChannelState(CHANNEL_PLAYED_TRACKDURATION_FMT,
                         MUSIC_TIME_FORMAT.format(new Date(item.getDurationMs())));
             }
+            updateChannelState(CHANNEL_PLAYLIST,
+                    valueOrEmpty(playerInfo.getContext() != null && "playlist".equals(playerInfo.getContext().getType())
+                            ? playerInfo.getContext().getUri()
+                            : ""));
             updateChannelState(CHANNEL_PLAYED_TRACKID, lastTrackId);
             updateChannelState(CHANNEL_PLAYED_TRACKHREF, valueOrEmpty(item.getHref()));
             updateChannelState(CHANNEL_PLAYED_TRACKURI, valueOrEmpty(item.getUri()));
@@ -365,9 +399,10 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
             updateChannelState(CHANNEL_PLAYED_ARTISTTYPE, valueOrEmpty(firstArtist.getType()));
         }
         Device device = playerInfo.getDevice() == null ? EMPTY_DEVICE : playerInfo.getDevice();
-        updateChannelState(CHANNEL_DEVICEID, valueOrEmpty(device.getId()));
+        activeDeviceId = device.getId() == null ? "" : device.getId();
+        updateChannelState(CHANNEL_DEVICEID, valueOrEmpty(activeDeviceId));
         updateChannelState(CHANNEL_DEVICEACTIVE, device.isActive() ? OnOffType.ON : OnOffType.OFF);
-        updateChannelState(CHANNEL_DEVICENAME, valueOrEmpty(device.getName()));
+        updateChannelState(CHANNEL_DEVICENAME, valueOrEmpty(activeDeviceId));
         updateChannelState(CHANNEL_DEVICETYPE, valueOrEmpty(device.getType()));
 
         // experienced situations where volume seemed to be undefined...
@@ -413,6 +448,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         if (channel != null && isLinked(channel.getUID())) {
             updateState(channel.getUID(), state);
         }
+
     }
 
     /**

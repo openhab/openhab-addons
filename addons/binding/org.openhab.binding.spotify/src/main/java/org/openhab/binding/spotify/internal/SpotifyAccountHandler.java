@@ -12,7 +12,6 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.spotify.internal.api.model.AuthorizationCodeCredentials;
 import org.openhab.binding.spotify.internal.api.model.Device;
 
 /**
@@ -51,11 +50,11 @@ public interface SpotifyAccountHandler {
     /**
      * Calls Spotify Api to obtain refresh and access tokens and persist data with Thing.
      *
-     * @param redirectUrl The redirect url Spotify calls back to.
-     * @param reqCode The unique code passed by Spotify to obtain the refresh and access tokens.
-     * @return the initialized {@link AuthorizationCodeCredentials}
+     * @param redirectUrl The redirect url Spotify calls back to
+     * @param reqCode The unique code passed by Spotify to obtain the refresh and access tokens
+     * @return returns the name of the Spotify user that is authorized
      */
-    AuthorizationCodeCredentials authorize(String redirectUrl, String reqCode);
+    String authorize(String redirectUrl, String reqCode);
 
     /**
      * Returns true if the given Thing UID relates to this {@link SpotifyAccountHandler} instance.

@@ -9,24 +9,9 @@
 package org.openhab.binding.spotify.internal.api.model;
 
 /**
- * Spotify Web Api user data class.
+ * Spotify Web Api Playlists data class.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
-public class Me {
-    private String displayName;
-    private String id;
-    private String product;
-
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getProduct() {
-        return product;
-    }
+public class Playlists extends Paging<Playlist> {
 }

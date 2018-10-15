@@ -15,12 +15,12 @@ package org.openhab.binding.spotify.internal.api.model;
  * @author Hilbrand Bouwkamp - Moved to it's own class
  */
 public class Context {
-    private ModelObjectType type;
+    private String type;
     private String href;
     private ExternalUrl externalUrls;
     private String uri;
 
-    public ModelObjectType getType() {
+    public String getType() {
         return type;
     }
 

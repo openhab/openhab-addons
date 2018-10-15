@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.spotify.internal;
+package org.openhab.binding.spotify.internal.handler;
 
 import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.*;
 
@@ -20,7 +20,6 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.spotify.internal.api.SpotifyApi;
-import org.openhab.binding.spotify.internal.handler.SpotifyDeviceHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * @author Hilbrand Bouwkamp - Moved to separate class, general refactoring and bug fixes
  */
 @NonNullByDefault
-public class SpotifyHandleCommands {
+class SpotifyHandleCommands {
 
     private final Logger logger = LoggerFactory.getLogger(SpotifyDeviceHandler.class);
 
@@ -57,12 +56,24 @@ public class SpotifyHandleCommands {
      * @param active true if the device this command is send to is the active device
      * @return true if the command was done or else if no channel or command matched
      */
-    public boolean handleCommand(ChannelUID channelUID, Command command, boolean active) {
+    public boolean handleCommand(ChannelUID channelUID, Command command, boolean active, String activeDeviceId) {
         logger.debug("Received channel: {}, command: {}", channelUID, command);
         boolean commandRun = false;
         String channel = channelUID.getId();
 
         switch (channel) {
+            case CHANNEL_DEVICENAME:
+                if (command instanceof StringType) {
+                    String newDeviceId = command.toString();
+
+                    if (activeDeviceId.isEmpty() || activeDeviceId.equals(newDeviceId)) {
+                        spotifyApi.play(newDeviceId);
+                    } else {
+                        spotifyApi.transferPlay(newDeviceId, true);
+                    }
+                    commandRun = true;
+                }
+                break;
             case CHANNEL_DEVICEPLAYER:
             case CHANNEL_TRACKPLAYER:
                 commandRun = handleDevicePlay(command, active);
@@ -92,6 +103,7 @@ public class SpotifyHandleCommands {
                 }
                 break;
             case CHANNEL_TRACKPLAY:
+            case CHANNEL_PLAYLIST:
                 if (command instanceof StringType) {
                     spotifyApi.playTrack(deviceId, command.toString());
                     commandRun = true;

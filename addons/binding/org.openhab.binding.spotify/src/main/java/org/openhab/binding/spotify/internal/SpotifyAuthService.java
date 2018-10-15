@@ -44,8 +44,8 @@ import org.slf4j.LoggerFactory;
  * @author Andreas Stenlund - Initial contribution
  * @author Hilbrand Bouwkamp - Made this the service class instead of only interface. Added templates
  */
-@NonNullByDefault
 @Component(service = SpotifyAuthService.class, immediate = true, configurationPid = "binding.spotify.authService")
+@NonNullByDefault
 public class SpotifyAuthService {
 
     private static final String TEMPLATE_PATH = "templates/";
@@ -126,7 +126,7 @@ public class SpotifyAuthService {
                     state);
             throw new SpotifyException(ERROR_UKNOWN_BRIDGE);
         } else {
-            return listener.authorize(servletBaseURL, code).getUser();
+            return listener.authorize(servletBaseURL, code);
         }
     }
 

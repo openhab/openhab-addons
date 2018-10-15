@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.spotify.internal.api.model;
+package org.openhab.binding.spotify.internal.oauth2;
 
 /**
  * This class and its inner classes represents the Spotify Web API response of an authorization request
@@ -14,7 +14,7 @@ package org.openhab.binding.spotify.internal.api.model;
  * @author Andreas Stenlund - Initial contribution
  * @author Hilbrand Bouwkamp - Moved to it's own class
  */
-public class AuthorizationCodeCredentials {
+public class AccessTokenResponse {
 
     private String accessToken;
     private String refreshToken;
@@ -22,16 +22,10 @@ public class AuthorizationCodeCredentials {
     private String scope;
     private int expiresIn;
 
-    /**
-     *
-     */
-    private String user;
-
-    public AuthorizationCodeCredentials() {
+    public AccessTokenResponse() {
     }
 
-    public AuthorizationCodeCredentials(String user, String refreshToken) {
-        this.user = user;
+    public AccessTokenResponse(String refreshToken) {
         this.refreshToken = refreshToken;
         this.accessToken = "";
     }
@@ -40,8 +34,16 @@ public class AuthorizationCodeCredentials {
         return accessToken;
     }
 
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
     public String getRefreshToken() {
         return refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 
     public String getTokenType() {
@@ -56,17 +58,9 @@ public class AuthorizationCodeCredentials {
         return expiresIn;
     }
 
-    public String getUser() {
-        return user;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
-    }
-
     @Override
     public String toString() {
         return "AuthorizationCodeCredentials [accessToken=" + accessToken + ", refreshToken=" + refreshToken
-                + ", tokenType=" + tokenType + ", scope=" + scope + ", expiresIn=" + expiresIn + ", user=" + user + "]";
+                + ", tokenType=" + tokenType + ", scope=" + scope + ", expiresIn=" + expiresIn + "]";
     }
 }

@@ -26,7 +26,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.spotify.internal.SpotifyHandleCommands;
 import org.openhab.binding.spotify.internal.api.SpotifyApi;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyException;
 import org.openhab.binding.spotify.internal.api.model.Device;
@@ -45,12 +44,12 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(SpotifyDeviceHandler.class);
     private @NonNullByDefault({}) SpotifyHandleCommands commandHandler;
     private @NonNullByDefault({}) SpotifyApi spotifyApi;
-    private @NonNullByDefault({}) String id;
+    private @NonNullByDefault({}) String deviceId;
 
     private boolean active;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param thing Thing representing this device.
      */
@@ -62,7 +61,7 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
             if (commandHandler != null) {
-                commandHandler.handleCommand(channelUID, command, active);
+                commandHandler.handleCommand(channelUID, command, active, deviceId);
             }
         } catch (SpotifyException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
@@ -75,8 +74,8 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
         spotifyApi = bridgeHandler.getSpotifyApi();
 
         Configuration config = thing.getConfiguration();
-        id = (String) config.get(PROPERTY_SPOTIFY_DEVICE_ID);
-        commandHandler = new SpotifyHandleCommands(spotifyApi, id);
+        deviceId = (String) config.get(PROPERTY_SPOTIFY_DEVICE_ID);
+        commandHandler = new SpotifyHandleCommands(spotifyApi, deviceId);
         updateStatus(ThingStatus.UNKNOWN);
     }
 
@@ -97,7 +96,7 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
      * @return returns true if given device matches with this handler
      */
     public boolean updateDeviceStatus(Device device, boolean playing) {
-        if (id.equals(device.getId())) {
+        if (deviceId.equals(device.getId())) {
             logger.debug("Updating status of Thing: {} Device [ {} {}, {} ]", thing.getUID(), device.getId(),
                     device.getName(), device.getType());
             boolean online = setOnlineStatus(device.isRestricted());

@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.spotify.internal.api;
+package org.openhab.binding.spotify.internal.oauth2;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -16,12 +16,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Hilbrand Bouwkamp - Initial contribution
  */
 @NonNullByDefault
-public interface SpotifyAccessTokenChangeHandler {
+public interface AccessTokenRefreshListener {
 
     /**
      * Called when the access token has changed.
-     * 
+     *
      * @param accessToken the new access token
      */
-    void onAccessTokenChanged(String accessToken);
+    void onTokenResponse(AccessTokenResponse accessToken);
 }

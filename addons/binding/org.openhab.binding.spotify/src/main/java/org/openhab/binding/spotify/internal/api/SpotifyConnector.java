@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.spotify.internal.api;
 
+import static org.eclipse.jetty.http.HttpStatus.*;
+
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -15,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -35,23 +38,10 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
+@NonNullByDefault
 public class SpotifyConnector {
 
-    // HTTP status codes returned by Spotify
-    private static final int HTTP_OK = 200;
-    private static final int HTTP_CREATED = 201;
-    private static final int HTTP_ACCEPTED = 202;
-    private static final int HTTP_NO_CONTENT = 204;
-    private static final int HTTP_NOT_MODIFIED = 304;
-    private static final int HTTP_BAD_REQUEST = 400;
-    private static final int HTTP_UNAUTHORIZED = 401;
-    private static final int HTTP_FORBIDDEN = 403;
-    private static final int HTTP_NOT_FOUND = 404;
-    private static final int HTTP_RATE_LIMIT_EXCEEDED = 429;
-    private static final int HTTP_INTERNAL_SERVER_ERROR = 500;
-    private static final int HTTP_BAD_GATEWAY = 502;
-    private static final int HTTP_SERVICE_UNAVAILABLE = 503;
-
+    private static final String RETRY_AFTER_HEADER = "Retry-After";
     private static final String AUTHORIZATION_HEADER = "Authorization";
 
     private static final int HTTP_CLIENT_TIMEOUT_SECONDS = 30;
@@ -105,7 +95,7 @@ public class SpotifyConnector {
 
     /**
      * Class to handle a call to the Spotify Web Api. In case of rate limiting or not finished jobs it will retry in a
-     * specified time frame. It reties a number of times and then gives up with an exception.
+     * specified time frame. It retries a number of times and then gives up with an exception.
      *
      * @author Hilbrand Bouwkamp - Initial contribution
      */
@@ -167,11 +157,11 @@ public class SpotifyConnector {
         }
 
         /**
-         * Processes the response of the Spotify Web Api call and handles the http status codes. The method returns true
+         * Processes the response of the Spotify Web Api call and handles the HTTP status codes. The method returns true
          * if the response indicates a successful and false if the call should be retried. If there were other problems
          * a Spotify exception is thrown indicating no retry should be done an the user should be informed.
          *
-         * @param response the reponse given by the Spotify Web Api
+         * @param response the response given by the Spotify Web Api
          * @return true if the response indicated a successful call, false if the call should be retried
          */
         private boolean processResponse(ContentResponse response) {
@@ -182,42 +172,42 @@ public class SpotifyConnector {
                 logger.trace("Response Data: {}", response.getContentAsString());
             }
             switch (response.getStatus()) {
-                case HTTP_OK:
-                case HTTP_CREATED:
-                case HTTP_NO_CONTENT:
-                case HTTP_NOT_MODIFIED:
+                case OK_200:
+                case CREATED_201:
+                case NO_CONTENT_204:
+                case NOT_MODIFIED_304:
                     future.complete(response);
                     success = true;
                     break;
-                case HTTP_ACCEPTED:
-                case HTTP_SERVICE_UNAVAILABLE:
+                case ACCEPTED_202:
                     logger.debug(
                             "Spotify Web API returned code 202 - The request has been accepted for processing, but the processing has not been completed. Retrying...");
                     delaySeconds = DEFAULT_RETRY_DELAY_SECONDS;
                     break;
-                case HTTP_BAD_REQUEST:
+                case BAD_REQUEST_400:
                     throw new SpotifyException(processErrorState(response));
-                case HTTP_UNAUTHORIZED:
+                case UNAUTHORIZED_401:
                     throw new SpotifyAuthorizationException(processErrorState(response));
-                case HTTP_RATE_LIMIT_EXCEEDED:
+                case TOO_MANY_REQUESTS_429:
                     // Response Code 429 means requests rate limits exceeded.
-                    String retryAfter = response.getHeaders().get("Retry-After");
+                    String retryAfter = response.getHeaders().get(RETRY_AFTER_HEADER);
 
                     logger.debug(
                             "Spotify Web API returned code 429 (rate limit exceeded). Retry After {} seconds. Decrease polling interval of bridge! Going to sleep...",
                             retryAfter);
                     delaySeconds = Integer.parseInt(retryAfter);
                     break;
-                case HTTP_FORBIDDEN:
+                case FORBIDDEN_403:
                     // Process for authorization error, and logging.
                     processErrorState(response);
                     future.complete(response);
                     success = true;
                     break;
-                case HTTP_NOT_FOUND:
+                case NOT_FOUND_404:
                     throw new SpotifyException(processErrorState(response));
-                case HTTP_INTERNAL_SERVER_ERROR:
-                case HTTP_BAD_GATEWAY:
+                case SERVICE_UNAVAILABLE_503:
+                case INTERNAL_SERVER_ERROR_500:
+                case BAD_GATEWAY_502:
                 default:
                     throw new SpotifyException("Spotify returned with error status: " + response.getStatus());
             }

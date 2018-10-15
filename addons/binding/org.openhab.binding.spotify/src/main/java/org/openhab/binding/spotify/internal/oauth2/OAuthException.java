@@ -6,27 +6,15 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.spotify.internal.api.model;
+package org.openhab.binding.spotify.internal.oauth2;
 
 /**
- * Spotify Web Api user data class.
+ * OAuthException class modeled after the ESH OAuth2 service. Used to have the same interface. This exception is not
+ * thrown by the current implementation.
+ * This class will be removed when the ESH OAuth2 service can be used with this binding.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
-public class Me {
-    private String displayName;
-    private String id;
-    private String product;
+public class OAuthException extends Exception {
 
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getProduct() {
-        return product;
-    }
 }

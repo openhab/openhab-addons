@@ -11,9 +11,11 @@ package org.openhab.binding.spotify.internal.api;
 import static org.eclipse.jetty.http.HttpMethod.*;
 import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.*;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -25,13 +27,19 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyAuthorizationException;
+import org.openhab.binding.spotify.internal.api.exception.SpotifyException;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyTokenExpiredException;
-import org.openhab.binding.spotify.internal.api.model.AuthorizationCodeCredentials;
 import org.openhab.binding.spotify.internal.api.model.CurrentlyPlayingContext;
 import org.openhab.binding.spotify.internal.api.model.Device;
 import org.openhab.binding.spotify.internal.api.model.Devices;
 import org.openhab.binding.spotify.internal.api.model.Me;
 import org.openhab.binding.spotify.internal.api.model.ModelUtil;
+import org.openhab.binding.spotify.internal.api.model.Playlist;
+import org.openhab.binding.spotify.internal.api.model.Playlists;
+import org.openhab.binding.spotify.internal.oauth2.AccessTokenResponse;
+import org.openhab.binding.spotify.internal.oauth2.OAuthClientService;
+import org.openhab.binding.spotify.internal.oauth2.OAuthException;
+import org.openhab.binding.spotify.internal.oauth2.OAuthResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,29 +60,19 @@ public class SpotifyApi {
 
     private final Logger logger = LoggerFactory.getLogger(SpotifyApi.class);
 
+    private final OAuthClientService oAuthClientService;
     private final SpotifyConnector connector;
-    private final SpotifyAccessTokenCache accessTokenCache;
 
     /**
      * Constructor.
      *
-     * @param connector The Spotify connector handling the Web Api calls to Spotify
      * @param authorizer The authorizer used to refresh the access token when expired
-     * @param accessTokenChangeHandler handler to be called when the access token has changed.
+     * @param connector The Spotify connector handling the Web Api calls to Spotify
      */
-    public SpotifyApi(SpotifyConnector connector, SpotifyAuthorizer authorizer,
-            SpotifyAccessTokenChangeHandler accessTokenChangeHandler) {
-        this.connector = connector;
-        accessTokenCache = new SpotifyAccessTokenCache(authorizer, accessTokenChangeHandler);
-    }
-
-    /**
-     * Sets the AuthorizationCodeCredentials.
-     *
-     * @param credentials AuthorizationCodeCredentials to set
-     */
-    public void setAuthorizationCodeCredentials(AuthorizationCodeCredentials credentials) {
-        accessTokenCache.setAuthorizationCodeCredentials(credentials);
+    public SpotifyApi(OAuthClientService oAuthClientService, ScheduledExecutorService scheduler,
+            HttpClient httpClient) {
+        this.oAuthClientService = oAuthClientService;
+        connector = new SpotifyConnector(scheduler, httpClient);
     }
 
     /**
@@ -203,12 +201,22 @@ public class SpotifyApi {
     /**
      * @return Calls Spotify Api and returns the list of device or an empty list if nothing was returned
      */
-    public List<Device> listDevices() {
+    public List<Device> getDevices() {
         ContentResponse response = requestPlayer(GET, "devices");
         Devices deviceList = ModelUtil.gsonInstance().fromJson(response.getContentAsString(), Devices.class);
 
         return deviceList == null || deviceList.getDevices() == null ? Collections.emptyList()
                 : deviceList.getDevices();
+    }
+
+    /**
+     * @return Returns the playlists of the user.
+     */
+    public List<Playlist> getPlaylists() {
+        ContentResponse response = request(GET, SPOTIFY_API_URL + "/playlists", "");
+        Playlists playlists = ModelUtil.gsonInstance().fromJson(response.getContentAsString(), Playlists.class);
+
+        return playlists == null || playlists.getItems() == null ? Collections.emptyList() : playlists.getItems();
     }
 
     /**
@@ -260,19 +268,26 @@ public class SpotifyApi {
         logger.debug("Request: ({}) {} - {}", method, url, requestData);
         Function<HttpClient, Request> call = httpClient -> httpClient.newRequest(url).method(method)
                 .header("Accept", CONTENT_TYPE).content(new StringContentProvider(requestData), CONTENT_TYPE);
-
         try {
-            String accessToken = accessTokenCache.getAccessToken();
+            try {
+                AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessToken();
+                String accessToken = accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();
 
-            if (accessToken == null || accessToken.isEmpty()) {
-                throw new SpotifyAuthorizationException("No spotify accesstoken. Is this thing authorized?");
-            } else {
-                return connector.request(call, BEARER + accessToken);
+                if (accessToken == null || accessToken.isEmpty()) {
+                    throw new SpotifyAuthorizationException("No spotify accesstoken. Is this thing authorized?");
+                } else {
+                    return connector.request(call, BEARER + accessToken);
+                }
+            } catch (SpotifyTokenExpiredException e) {
+                // Retry with new access token
+                return connector.request(call, BEARER + oAuthClientService.refreshToken().getAccessToken());
             }
-        } catch (SpotifyTokenExpiredException e) {
-            // Retry with new access token
-            accessTokenCache.invalidateValue();
-            return connector.request(call, BEARER + accessTokenCache.getAccessToken());
+        } catch (OAuthException | IOException e) {
+            logger.debug("Request failed to during refresh token: ", e);
+            throw new SpotifyException(e.getMessage());
+        } catch (OAuthResponseException e) {
+            logger.debug("Request authorization failed to during refresh token: ", e);
+            throw new SpotifyAuthorizationException(e.getMessage());
         }
     }
 }
