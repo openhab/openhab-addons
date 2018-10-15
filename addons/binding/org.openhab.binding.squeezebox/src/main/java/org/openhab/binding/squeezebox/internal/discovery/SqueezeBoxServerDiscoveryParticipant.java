@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.squeezebox.internal.discovery;
 
-import static org.openhab.binding.squeezebox.SqueezeBoxBindingConstants.SQUEEZEBOXSERVER_THING_TYPE;
+import static org.openhab.binding.squeezebox.internal.SqueezeBoxBindingConstants.SQUEEZEBOXSERVER_THING_TYPE;
 
 import java.net.URI;
 import java.util.Collections;

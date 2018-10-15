@@ -9,7 +9,7 @@
 package org.openhab.binding.chromecast.internal;
 
 import static org.eclipse.smarthome.core.thing.ThingStatusDetail.COMMUNICATION_ERROR;
-import static org.openhab.binding.chromecast.ChromecastBindingConstants.*;
+import static org.openhab.binding.chromecast.internal.ChromecastBindingConstants.*;
 
 import java.io.IOException;
 

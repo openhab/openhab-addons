@@ -49,8 +49,12 @@ public class EnOceanProfileFactory implements ProfileFactory, ProfileAdvisor, Pr
 
         if (profileTypeUID.equals(EnOceanProfileTypes.RockerSwitchToPlayPause)) {
             return new RockerSwitchToPlayPauseProfile(callback);
+        } else if (profileTypeUID.equals(EnOceanProfileTypes.RockerSwitchToRollershutter)) {
+            return new RockerSwitchToRollershutterProfile(callback);
         } else if (profileTypeUID.equals(EnOceanProfileTypes.RockerSwitchFromOnOff)) {
             return new RockerSwitchFromOnOffProfile(callback, profileContext);
+        } else if (profileTypeUID.equals(EnOceanProfileTypes.RockerSwitchFromRollershutter)) {
+            return new RockerSwitchFromUpDownProfile(callback, profileContext);
         }
 
         return null;
@@ -70,12 +74,17 @@ public class EnOceanProfileFactory implements ProfileFactory, ProfileAdvisor, Pr
             return null;
         }
 
-        if (DefaultSystemChannelTypeProvider.SYSTEM_RAWROCKER.getUID().equals(channelType.getUID())
-                || VirtualRockerSwitchChannelType.equals(channelType.getUID())) {
+        if (DefaultSystemChannelTypeProvider.SYSTEM_RAWROCKER.getUID().equals(channelType.getUID())) {
             if (CoreItemFactory.PLAYER.equalsIgnoreCase(itemType)) {
                 return EnOceanProfileTypes.RockerSwitchToPlayPause;
-            } else if (CoreItemFactory.SWITCH.equalsIgnoreCase(itemType)) {
+            } else if (CoreItemFactory.ROLLERSHUTTER.equalsIgnoreCase(itemType)) {
+                return EnOceanProfileTypes.RockerSwitchToRollershutter;
+            }
+        } else if (VirtualRockerSwitchChannelType.equals(channelType.getUID())) {
+            if (CoreItemFactory.SWITCH.equalsIgnoreCase(itemType)) {
                 return EnOceanProfileTypes.RockerSwitchFromOnOff;
+            } else if (CoreItemFactory.ROLLERSHUTTER.equalsIgnoreCase(itemType)) {
+                return EnOceanProfileTypes.RockerSwitchFromRollershutter;
             }
         }
 
@@ -91,7 +100,8 @@ public class EnOceanProfileFactory implements ProfileFactory, ProfileAdvisor, Pr
     @Override
     public Collection<@NonNull ProfileType> getProfileTypes(@Nullable Locale locale) {
         return new HashSet<ProfileType>(Arrays.asList(EnOceanProfileTypes.RockerSwitchToPlayPauseType,
-                EnOceanProfileTypes.RockerSwitchFromOnOffType));
+                EnOceanProfileTypes.RockerSwitchToRollershutterType, EnOceanProfileTypes.RockerSwitchFromOnOffType,
+                EnOceanProfileTypes.RockerSwitchFromRollershutterType));
     }
 
     @Reference

@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.onebusaway.internal.handler;
 
-import static org.openhab.binding.onebusaway.OneBusAwayBindingConstants.THING_TYPE_API;
+import static org.openhab.binding.onebusaway.internal.OneBusAwayBindingConstants.THING_TYPE_API;
 
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;

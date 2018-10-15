@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.openhab.binding.tplinksmarthome.TPLinkSmartHomeBindingConstants;
 
 /**
  * ThingType enum with all supported TP-Link Smart Home devices.

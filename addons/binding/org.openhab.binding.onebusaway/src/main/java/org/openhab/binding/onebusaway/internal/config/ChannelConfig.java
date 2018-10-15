@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.onebusaway.internal.config;
 
-import static org.openhab.binding.onebusaway.OneBusAwayBindingConstants.CHANNEL_CONFIG_OFFSET;
+import static org.openhab.binding.onebusaway.internal.OneBusAwayBindingConstants.CHANNEL_CONFIG_OFFSET;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 

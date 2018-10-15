@@ -7,9 +7,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.nest.test;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
-Export-Package: 
- org.openhab.binding.nest;uses:="org.eclipse
- .smarthome.test"
 Fragment-Host: org.openhab.binding.nest
 Import-Package: 
  com.google.gson.reflect,
@@ -18,9 +15,9 @@ Import-Package:
  javax.servlet,
  javax.servlet.http,
  org.eclipse.jdt.annotation;resolution:=optional,
- org.eclipse.jetty.server;version="[9.3.15,9.4.0)",
- org.eclipse.jetty.server.handler;version="[9.3.15,9.4.0)",
- org.eclipse.jetty.servlet;version="[9.3.15,9.4.0)",
+ org.eclipse.jetty.server,
+ org.eclipse.jetty.server.handler,
+ org.eclipse.jetty.servlet,
  org.eclipse.smarthome.core.common.registry,
  org.eclipse.smarthome.core.events,
  org.eclipse.smarthome.core.items,
@@ -37,7 +34,6 @@ Import-Package:
  org.junit;version="4.0.0",
  org.mockito,
  org.mockito.stubbing,
- org.openhab.binding.nest,
  org.osgi.framework,
  org.osgi.service.component,
  org.osgi.service.device,

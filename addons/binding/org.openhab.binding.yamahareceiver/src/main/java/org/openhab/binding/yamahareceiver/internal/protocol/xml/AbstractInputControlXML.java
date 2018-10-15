@@ -8,18 +8,17 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
-import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Feature;
+import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Feature;
 import org.openhab.binding.yamahareceiver.internal.config.YamahaUtils;
 import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
 import org.openhab.binding.yamahareceiver.internal.state.DeviceInformationState;
 import org.slf4j.Logger;
 
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Inputs.*;
+
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Inputs.*;
-import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Inputs.INPUT_USB;
 
 /**
  * Provides basis for all input controls

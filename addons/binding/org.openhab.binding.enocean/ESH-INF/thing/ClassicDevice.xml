@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="enocean"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- RockerSwitch -->
+	<thing-type id="classicDevice">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>Classic device</label>
+		<description>This thing lets you control classic EnOcean devices by rocker switch messages (EEP: F6-02)</description>
+
+		<config-description>
+			<parameter name="senderIdOffset" type="integer">
+				<label>Sender Id</label>
+				<description>Id is used to generate the EnOcean Id (Int between [1-127]). If not specified the next free Id will be determined by bridge</description>
+			</parameter>
+			<parameter name="sendingEEPId" type="text">
+				<label>EEP</label>
+				<description>EEP which is used to control device</description>
+				<options>
+					<option value="F6_02_01_Virtual">F6-02-01 (upper rocker => DIR1)</option>
+					<option value="F6_02_02_Virtual">F6-02-02 (upper rocker => DIR2)</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<default>F6_02_01_Virtual</default>
+				<required>true</required>
+			</parameter>
+			<parameter name="broadcastMessages" type="boolean">
+				<label>Send broadcast messages</label>
+				<default>true</default>
+			</parameter>
+			<parameter name="suppressRepeating" type="boolean">
+				<label>Suppress repeating of messages</label>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

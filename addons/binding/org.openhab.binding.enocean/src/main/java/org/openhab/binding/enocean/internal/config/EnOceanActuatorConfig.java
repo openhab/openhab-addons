@@ -26,12 +26,4 @@ public class EnOceanActuatorConfig extends EnOceanBaseConfig {
     public boolean broadcastMessages;
 
     public boolean suppressRepeating;
-
-    public String getSendingEEPId() {
-        if (sendingEEPId == null || sendingEEPId.isEmpty()) {
-            return eepId;
-        }
-
-        return sendingEEPId;
-    }
 }

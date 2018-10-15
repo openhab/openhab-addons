@@ -47,7 +47,7 @@ public abstract class A5_12 extends _4BSMessage {
 
             switch (div) {
                 case 0:
-                    factor /= 1;
+                    factor = 1;
                     break;
                 case 1:
                     factor /= 10;
@@ -62,8 +62,8 @@ public abstract class A5_12 extends _4BSMessage {
                     return UnDefType.UNDEF;
             }
 
-            float cumulativeValue = Long
-                    .parseLong(HexUtils.bytesToHex(new byte[] { 0x00, getDB_3(), getDB_2(), getDB_1() }), 16) * factor;
+            float cumulativeValue = Long.parseLong(HexUtils.bytesToHex(new byte[] { getDB_3(), getDB_2(), getDB_1() }),
+                    16) * factor;
             return calcCumulativeValue(cumulativeValue);
         }
 
@@ -81,7 +81,7 @@ public abstract class A5_12 extends _4BSMessage {
 
             switch (div) {
                 case 0:
-                    factor /= 1;
+                    factor = 1;
                     break;
                 case 1:
                     factor /= 10;
@@ -96,8 +96,8 @@ public abstract class A5_12 extends _4BSMessage {
                     return UnDefType.UNDEF;
             }
 
-            float currentValue = Long
-                    .parseLong(HexUtils.bytesToHex(new byte[] { 0x00, getDB_3(), getDB_2(), getDB_1() }), 16) * factor;
+            float currentValue = Long.parseLong(HexUtils.bytesToHex(new byte[] { getDB_3(), getDB_2(), getDB_1() }), 16)
+                    * factor;
 
             return calcCurrentValue(currentValue);
         }
@@ -109,8 +109,10 @@ public abstract class A5_12 extends _4BSMessage {
     protected State convertToStateImpl(String channelId, State currentState, Configuration config) {
         switch (channelId) {
             case CHANNEL_INSTANTPOWER:
+            case CHANNEL_INSTANTLITRE:
                 return getCurrentValue();
             case CHANNEL_TOTALUSAGE:
+            case CHANNEL_TOTALCUBICMETRE:
                 return getCumulativeValue();
         }
 

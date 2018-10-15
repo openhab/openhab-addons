@@ -54,6 +54,7 @@ public class EnOceanSerialTransceiver extends EnOceanTransceiver implements Seri
 
         // There is currently a bug in nrjavaserial (https://github.com/NeuronRobotics/nrjavaserial/pull/121) so
         // directly use RXTXCommDriver on windows os
+
         if (System.getProperty("os.name").toLowerCase().indexOf("windows") != -1
                 && path.toLowerCase().indexOf("com") != -1) {
             try {
@@ -72,6 +73,7 @@ public class EnOceanSerialTransceiver extends EnOceanTransceiver implements Seri
                 throw new UnsupportedCommOperationException(e);
             }
         } else {
+
             SerialPortIdentifier id = serialPortManager.getIdentifier(path);
             if (id == null) {
                 throw new IOException("Could not find a gateway on given path");

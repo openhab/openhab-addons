@@ -14,7 +14,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.openhab.binding.dsmr.DSMRBindingConstants;
+import org.openhab.binding.dsmr.internal.DSMRBindingConstants;
 import org.openhab.binding.dsmr.internal.device.cosem.CosemObject;
 import org.openhab.binding.dsmr.internal.device.cosem.CosemObjectType;
 import org.slf4j.Logger;

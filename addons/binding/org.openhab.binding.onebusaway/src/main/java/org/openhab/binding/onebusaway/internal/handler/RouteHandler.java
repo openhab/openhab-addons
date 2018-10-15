@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.onebusaway.internal.handler;
 
-import static org.openhab.binding.onebusaway.OneBusAwayBindingConstants.*;
+import static org.openhab.binding.onebusaway.internal.OneBusAwayBindingConstants.*;
 
 import java.util.Calendar;
 import java.util.List;

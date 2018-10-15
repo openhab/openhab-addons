@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.samsungtv.internal.discovery;
 
-import static org.openhab.binding.samsungtv.SamsungTvBindingConstants.SAMSUNG_TV_THING_TYPE;
+import static org.openhab.binding.samsungtv.internal.SamsungTvBindingConstants.SAMSUNG_TV_THING_TYPE;
 import static org.openhab.binding.samsungtv.internal.config.SamsungTvConfiguration.HOST_NAME;
 
 import java.util.Collections;

@@ -7,7 +7,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.dsmr.test;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
-Export-Package: org.openhab.binding.dsmr;uses:="org.eclipse.smarthome.test"
 Fragment-Host: org.openhab.binding.dsmr
 Import-Package: 
  org.apache.commons.io,
@@ -19,6 +18,7 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.util,
+ org.eclipse.smarthome.io.transport.serial,
  org.eclipse.smarthome.test,
  org.eclipse.smarthome.test.java,
  org.eclipse.smarthome.test.storage,
@@ -29,12 +29,10 @@ Import-Package:
  org.mockito.hamcrest,
  org.mockito.invocation,
  org.mockito.stubbing,
- org.openhab.binding.dsmr,
- org.openhab.binding.dsmr.handler,
  org.osgi.framework,
  org.osgi.service.component,
  org.osgi.service.device,
  org.slf4j
-Require-Bundle: org.eclipse.smarthome.core,
+Require-Bundle: 
  org.hamcrest,
  org.junit

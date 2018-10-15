@@ -13,8 +13,8 @@ import static org.openhab.binding.tado.internal.api.TadoApiTypeUtils.*;
 import java.io.IOException;
 import java.util.List;
 
-import org.openhab.binding.tado.TadoBindingConstants.HvacMode;
-import org.openhab.binding.tado.TadoBindingConstants.TemperatureUnit;
+import org.openhab.binding.tado.internal.TadoBindingConstants.HvacMode;
+import org.openhab.binding.tado.internal.TadoBindingConstants.TemperatureUnit;
 import org.openhab.binding.tado.internal.api.ApiException;
 import org.openhab.binding.tado.internal.api.model.AcFanSpeed;
 import org.openhab.binding.tado.internal.api.model.AcMode;

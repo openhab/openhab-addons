@@ -42,15 +42,13 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
 
     // List of thing types which support sending of eep messages
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>(
-            Arrays.asList(THING_TYPE_CENTRALCOMMAND, THING_TYPE_VIRTUALROCKERSWITCH, THING_TYPE_MEASUREMENTSWITCH,
+            Arrays.asList(THING_TYPE_CENTRALCOMMAND, THING_TYPE_CLASSICDEVICE, THING_TYPE_MEASUREMENTSWITCH,
                     THING_TYPE_GENERICTHING, THING_TYPE_ROLLERSHUTTER));
 
-    protected byte[] senderId; // base id of bridge + senderIdOffset
-    protected byte[] destinationId; // in case of broadcast FFFFFFFF otherwise a valid enocean device id
+    protected byte[] senderId; // base id of bridge + senderIdOffset, used for sending msg
+    protected byte[] destinationId; // in case of broadcast FFFFFFFF otherwise the enocean id of the device
 
     protected EEPType sendingEEPType = null;
-    protected boolean broadcastMessages = true;
-    protected boolean suppressRepeating = false;
 
     private ScheduledFuture<?> refreshJob; // used for polling current status of thing
 
@@ -80,33 +78,39 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
     }
 
     @Override
+    void initializeConfig() {
+        config = getConfigAs(EnOceanActuatorConfig.class);
+        setReceivingEEP(config);
+    }
+
+    protected EnOceanActuatorConfig getConfiguration() {
+        return (EnOceanActuatorConfig) config;
+    }
+
+    @Override
     boolean validateConfig() {
         if (super.validateConfig()) {
-            EnOceanActuatorConfig config = thing.getConfiguration().as(EnOceanActuatorConfig.class);
-
-            this.broadcastMessages = config.broadcastMessages;
-            this.suppressRepeating = config.suppressRepeating;
 
             try {
-                sendingEEPType = EEPType.getType(config.getSendingEEPId());
+                sendingEEPType = EEPType.getType(getConfiguration().sendingEEPId);
                 updateChannels(sendingEEPType, true);
 
                 if (sendingEEPType.getSupportsRefresh()) {
-                    if (config.pollingInterval > 0) {
+                    if (getConfiguration().pollingInterval > 0) {
                         refreshJob = scheduler.scheduleWithFixedDelay(() -> {
                             try {
                                 refreshStates();
                             } catch (Exception e) {
 
                             }
-                        }, 30, config.pollingInterval, TimeUnit.SECONDS);
+                        }, 30, getConfiguration().pollingInterval, TimeUnit.SECONDS);
                     }
                 }
 
-                if (this.broadcastMessages) {
+                if (getConfiguration().broadcastMessages) {
                     destinationId = new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff };
                 } else {
-                    destinationId = HexUtils.hexToBytes(thing.getUID().getId());
+                    destinationId = HexUtils.hexToBytes(config.enoceanId);
                 }
 
             } catch (Exception e) {
@@ -114,7 +118,7 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
                 return false;
             }
 
-            if (validateSenderIdOffset(config.senderIdOffset)) {
+            if (validateSenderIdOffset(getConfiguration().senderIdOffset)) {
                 return initializeIdForSending();
             } else {
                 configurationErrorDescription = "Sender Id is not valid for bridge";
@@ -125,16 +129,13 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
     }
 
     private boolean initializeIdForSending() {
-        EnOceanActuatorConfig cfg = getConfigAs(EnOceanActuatorConfig.class);
-        int senderId = cfg.senderIdOffset;
-
         // Generic things are treated as actuator things, however to support also generic sensors one can define a
-        // senderId of -1
+        // senderIdOffset of -1
         // TODO: seperate generic actuators from generic sensors?
-        String thingId = this.getThing().getThingTypeUID().getId();
+        String thingTypeId = this.getThing().getThingTypeUID().getId();
         String genericThingTypeId = THING_TYPE_GENERICTHING.getId();
 
-        if (senderId == -1 && thingId.equals(genericThingTypeId)) {
+        if (getConfiguration().senderIdOffset == -1 && thingTypeId.equals(genericThingTypeId)) {
             return true;
         }
 
@@ -143,25 +144,24 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
             return false;
         }
 
-        // if senderId is not set (=> defaults to -1) or set to -1, the next free senderIdOffset is determined
-        // TODO: senderId vs senderIdOffset vs deviceId => refactor to same name
-        if (senderId == -1) {
-            Configuration config = editConfiguration();
-            senderId = bridgeHandler.getNextSenderId(thing);
-            if (senderId == -1) {
+        // if senderIdOffset is not set (=> defaults to -1) or set to -1, the next free senderIdOffset is determined
+        if (getConfiguration().senderIdOffset == -1) {
+            Configuration updateConfig = editConfiguration();
+            getConfiguration().senderIdOffset = bridgeHandler.getNextSenderId(thing);
+            if (getConfiguration().senderIdOffset == -1) {
                 configurationErrorDescription = "Could not get a free sender Id from Bridge";
                 return false;
             }
-            config.put(PARAMETER_SENDERIDOFFSET, senderId);
-            updateConfiguration(config);
+            updateConfig.put(PARAMETER_SENDERIDOFFSET, getConfiguration().senderIdOffset);
+            updateConfiguration(updateConfig);
         }
 
         byte[] baseId = bridgeHandler.getBaseId();
-        baseId[3] = (byte) ((baseId[3] & 0xFF) + senderId);
+        baseId[3] = (byte) ((baseId[3] & 0xFF) + getConfiguration().senderIdOffset);
         this.senderId = baseId;
 
         this.updateProperty(PROPERTY_Enocean_ID, HexUtils.bytesToHex(this.senderId));
-        bridgeHandler.addSender(senderId, thing);
+        bridgeHandler.addSender(getConfiguration().senderIdOffset, thing);
 
         return true;
     }
@@ -202,7 +202,7 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
 
         try {
             EEP eep = EEPFactory.createEEP(sendingEEPType);
-            Configuration config = channel.getConfiguration();
+            Configuration channelConfig = channel.getConfiguration();
 
             // Eltako rollershutter do not support absolute value just values relative to the current position
             // If we want to go to 80% we must know the current position to determine how long the rollershutter has
@@ -211,8 +211,8 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
             State currentState = channelState.get(channelId);
 
             ESP3Packet msg = eep.setSenderId(senderId).setDestinationId(destinationId)
-                    .convertFromCommand(channelId, command, currentState, config)
-                    .setSuppressRepeating(suppressRepeating).getERP1Message();
+                    .convertFromCommand(channelId, command, currentState, channelConfig)
+                    .setSuppressRepeating(getConfiguration().suppressRepeating).getERP1Message();
 
             getBridgeHandler().sendMessage(msg, null);
         } catch (Exception e) {
@@ -222,11 +222,10 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
 
     @Override
     public void handleRemoval() {
-        EnOceanActuatorConfig config = thing.getConfiguration().as(EnOceanActuatorConfig.class);
-        if (config.senderIdOffset > 0) {
+        if (getConfiguration().senderIdOffset > 0) {
             EnOceanBridgeHandler bridgeHandler = getBridgeHandler();
             if (bridgeHandler != null) {
-                bridgeHandler.removeSender(config.senderIdOffset);
+                bridgeHandler.removeSender(getConfiguration().senderIdOffset);
             }
         }
 

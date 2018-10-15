@@ -13,9 +13,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.systeminfo;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
-Export-Package: 
- org.openhab.binding.systeminfo,
- org.openhab.binding.systeminfo.handler
 Import-Package: 
  com.google.common.collect,
  org.apache.commons.lang,
@@ -29,7 +26,5 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.openhab.binding.systeminfo,
- org.openhab.binding.systeminfo.handler,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

@@ -8,12 +8,14 @@
  */
 package org.openhab.binding.miele.internal;
 
-import static org.openhab.binding.miele.MieleBindingConstants.*;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -23,20 +25,21 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.miele.handler.DishWasherHandler;
-import org.openhab.binding.miele.handler.FridgeFreezerHandler;
-import org.openhab.binding.miele.handler.FridgeHandler;
-import org.openhab.binding.miele.handler.HobHandler;
-import org.openhab.binding.miele.handler.HoodHandler;
-import org.openhab.binding.miele.handler.MieleApplianceHandler;
-import org.openhab.binding.miele.handler.MieleBridgeHandler;
-import org.openhab.binding.miele.handler.OvenHandler;
-import org.openhab.binding.miele.handler.TumbleDryerHandler;
-import org.openhab.binding.miele.handler.WashingMachineHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.miele.internal.discovery.MieleApplianceDiscoveryService;
+import org.openhab.binding.miele.internal.handler.CoffeeMachineHandler;
+import org.openhab.binding.miele.internal.handler.DishWasherHandler;
+import org.openhab.binding.miele.internal.handler.FridgeFreezerHandler;
+import org.openhab.binding.miele.internal.handler.FridgeHandler;
+import org.openhab.binding.miele.internal.handler.HobHandler;
+import org.openhab.binding.miele.internal.handler.HoodHandler;
+import org.openhab.binding.miele.internal.handler.MieleApplianceHandler;
+import org.openhab.binding.miele.internal.handler.MieleBridgeHandler;
+import org.openhab.binding.miele.internal.handler.OvenHandler;
+import org.openhab.binding.miele.internal.handler.TumbleDryerHandler;
+import org.openhab.binding.miele.internal.handler.WashingMachineHandler;
 import org.osgi.framework.ServiceRegistration;
-
-import com.google.common.collect.Sets;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * The {@link MieleHandlerFactory} is responsible for creating things and thing
@@ -44,10 +47,13 @@ import com.google.common.collect.Sets;
  *
  * @author Karel Goderis - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.miele")
 public class MieleHandlerFactory extends BaseThingHandlerFactory {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
-            .union(MieleBridgeHandler.SUPPORTED_THING_TYPES, MieleApplianceHandler.SUPPORTED_THING_TYPES);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
+            .concat(MieleBridgeHandler.SUPPORTED_THING_TYPES.stream(),
+                    MieleApplianceHandler.SUPPORTED_THING_TYPES.stream())
+            .collect(Collectors.toSet());
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
@@ -102,10 +108,12 @@ public class MieleHandlerFactory extends BaseThingHandlerFactory {
             if (thing.getThingTypeUID().equals(THING_TYPE_DISHWASHER)) {
                 return new DishWasherHandler(thing);
             }
+            if (thing.getThingTypeUID().equals(THING_TYPE_COFFEEMACHINE)) {
+                return new CoffeeMachineHandler(thing);
+            }
         }
 
         return null;
-
     }
 
     private ThingUID getBridgeThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration) {
@@ -129,21 +137,22 @@ public class MieleHandlerFactory extends BaseThingHandlerFactory {
     private synchronized void registerApplianceDiscoveryService(MieleBridgeHandler bridgeHandler) {
         MieleApplianceDiscoveryService discoveryService = new MieleApplianceDiscoveryService(bridgeHandler);
         discoveryService.activate();
-        this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+        this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof MieleBridgeHandler) {
-            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
+            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.remove(thingHandler.getThing().getUID());
             if (serviceReg != null) {
                 // remove discovery service, if bridge handler is removed
                 MieleApplianceDiscoveryService service = (MieleApplianceDiscoveryService) bundleContext
                         .getService(serviceReg.getReference());
-                service.deactivate();
                 serviceReg.unregister();
-                discoveryServiceRegs.remove(thingHandler.getThing().getUID());
+                if (service != null) {
+                    service.deactivate();
+                }
             }
         }
     }

@@ -11,9 +11,6 @@ Bundle-ClassPath: .,
  lib/ftplet-api-1.1.0.jar,
  lib/ftpserver-core-1.1.0.jar,
  lib/mina-core-2.0.16.jar
-Export-Package: 
- org.openhab.binding.ftpupload,
- org.openhab.binding.ftpupload.handler
 Import-Package: 
  org.apache.commons.lang,
  org.eclipse.jdt.annotation;resolution:=optional,

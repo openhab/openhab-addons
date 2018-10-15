@@ -17,7 +17,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.openhab.binding.yamahareceiver.TestModels.HTR_4069;
+import static org.openhab.binding.yamahareceiver.internal.TestModels.HTR_4069;
 
 /**
  * Unit test for {@link ZoneBControlXML}.

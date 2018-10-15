@@ -35,13 +35,7 @@ Import-Package:
  org.glassfish.jersey.filter,
  org.jupnp.model.meta,
  org.jupnp.model.types,
- org.openhab.binding.lametrictime,
- org.openhab.binding.lametrictime.config,
- org.openhab.binding.lametrictime.handler,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.lametrictime,
- org.openhab.binding.lametrictime.config;x-internal:=true,
- org.openhab.binding.lametrictime.handler
 Bundle-ActivationPolicy: lazy

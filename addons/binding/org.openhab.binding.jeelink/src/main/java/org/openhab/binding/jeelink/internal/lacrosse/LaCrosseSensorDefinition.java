@@ -9,7 +9,7 @@
 package org.openhab.binding.jeelink.internal.lacrosse;
 
 import org.eclipse.smarthome.core.thing.Thing;
-import org.openhab.binding.jeelink.JeeLinkBindingConstants;
+import org.openhab.binding.jeelink.internal.JeeLinkBindingConstants;
 import org.openhab.binding.jeelink.internal.JeeLinkReadingConverter;
 import org.openhab.binding.jeelink.internal.JeeLinkSensorHandler;
 import org.openhab.binding.jeelink.internal.SensorDefinition;

@@ -14,9 +14,9 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 
-import org.openhab.binding.silvercrestwifisocket.handler.SilvercrestWifiSocketMediator;
 import org.openhab.binding.silvercrestwifisocket.internal.exceptions.NotOneResponsePacketException;
 import org.openhab.binding.silvercrestwifisocket.internal.exceptions.PacketIntegrityErrorException;
+import org.openhab.binding.silvercrestwifisocket.internal.handler.SilvercrestWifiSocketMediator;
 import org.openhab.binding.silvercrestwifisocket.internal.utils.WifiSocketPacketConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class NikoHomeControlDiscover {
 
-    private Logger logger = LoggerFactory.getLogger(NikoHomeControlDiscover.class);
+    private final Logger logger = LoggerFactory.getLogger(NikoHomeControlDiscover.class);
 
     private InetAddress addr;
     private String nhcBridgeId;

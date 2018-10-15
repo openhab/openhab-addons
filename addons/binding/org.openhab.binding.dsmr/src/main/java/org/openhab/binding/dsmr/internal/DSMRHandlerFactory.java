@@ -24,10 +24,10 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.dsmr.DSMRBindingConstants;
-import org.openhab.binding.dsmr.handler.DSMRBridgeHandler;
-import org.openhab.binding.dsmr.handler.DSMRMeterHandler;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.dsmr.internal.discovery.DSMRMeterDiscoveryService;
+import org.openhab.binding.dsmr.internal.handler.DSMRBridgeHandler;
+import org.openhab.binding.dsmr.internal.handler.DSMRMeterHandler;
 import org.openhab.binding.dsmr.internal.meter.DSMRMeterType;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
@@ -49,8 +49,8 @@ public class DSMRHandlerFactory extends BaseThingHandlerFactory {
 
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
+    private @NonNullByDefault({}) SerialPortManager serialPortManager;
     private @NonNullByDefault({}) LocaleProvider localeProvider;
-
     private @NonNullByDefault({}) TranslationProvider i18nProvider;
 
     /**
@@ -94,7 +94,7 @@ public class DSMRHandlerFactory extends BaseThingHandlerFactory {
         logger.debug("Searching for thingTypeUID {}", thingTypeUID);
 
         if (DSMRBindingConstants.THING_TYPE_DSMR_BRIDGE.equals(thingTypeUID)) {
-            DSMRBridgeHandler handler = new DSMRBridgeHandler((Bridge) thing);
+            DSMRBridgeHandler handler = new DSMRBridgeHandler((Bridge) thing, serialPortManager);
             registerDiscoveryService(handler);
             return handler;
         } else if (DSMRMeterType.METER_THING_TYPES.contains(thingTypeUID)) {
@@ -121,20 +121,26 @@ public class DSMRHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof DSMRBridgeHandler) {
-            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
-
+            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.remove(thingHandler.getThing().getUID());
             if (serviceReg != null) {
                 DSMRMeterDiscoveryService service = (DSMRMeterDiscoveryService) getBundleContext()
                         .getService(serviceReg.getReference());
+                serviceReg.unregister();
                 if (service != null) {
                     service.unsetLocaleProvider();
                     service.unsetTranslationProvider();
                 }
-                // remove discovery service, if bridge handler is removed
-                serviceReg.unregister();
-                discoveryServiceRegs.remove(thingHandler.getThing().getUID());
             }
         }
+    }
+
+    @Reference
+    protected void setSerialPortManager(final SerialPortManager serialPortManager) {
+        this.serialPortManager = serialPortManager;
+    }
+
+    protected void unsetSerialPortManager(final SerialPortManager serialPortManager) {
+        this.serialPortManager = null;
     }
 
     @Reference

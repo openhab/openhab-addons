@@ -44,7 +44,7 @@ public class FritzAhaDiscoveryCallback extends FritzAhaReauthCallback {
      * Constructor
      *
      * @param webIface Webinterface to FRITZ!Box
-     * @param service  Discovery service to call with result.
+     * @param service Discovery service to call with result.
      */
     public FritzAhaDiscoveryCallback(FritzAhaWebInterface webIface, AVMFritzDiscoveryService service) {
         super(WEBSERVICE_PATH, "switchcmd=getdevicelistinfos", webIface, GET, 1);
@@ -64,7 +64,7 @@ public class FritzAhaDiscoveryCallback extends FritzAhaReauthCallback {
                         service.onDeviceAddedInternal(device);
                     }
                 } else {
-                    logger.warn("no model in response");
+                    logger.debug("no model in response");
                 }
             } catch (JAXBException e) {
                 logger.error("Exception creating Unmarshaller: {}", e.getLocalizedMessage(), e);

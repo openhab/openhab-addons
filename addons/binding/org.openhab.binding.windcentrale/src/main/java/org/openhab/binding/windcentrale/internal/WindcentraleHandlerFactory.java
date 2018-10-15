@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.windcentrale.internal;
 
-import static org.openhab.binding.windcentrale.WindcentraleBindingConstants.*;
+import static org.openhab.binding.windcentrale.internal.WindcentraleBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -17,7 +17,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.windcentrale.handler.WindcentraleHandler;
+import org.openhab.binding.windcentrale.internal.handler.WindcentraleHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**

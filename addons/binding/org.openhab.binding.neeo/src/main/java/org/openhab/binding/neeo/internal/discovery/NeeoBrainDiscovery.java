@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.neeo.internal.discovery;
 
-import static org.openhab.binding.neeo.NeeoConstants.BRIDGE_TYPE_BRAIN;
+import static org.openhab.binding.neeo.internal.NeeoConstants.BRIDGE_TYPE_BRAIN;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -28,7 +28,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.neeo.NeeoConstants;
+import org.openhab.binding.neeo.internal.NeeoConstants;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * @author Tim Roberts - initial contribution
  */
 @NonNullByDefault
-@Component(service = MDNSDiscoveryParticipant.class, immediate = true)
+@Component(immediate = true)
 public class NeeoBrainDiscovery implements MDNSDiscoveryParticipant {
 
     /** The logger */

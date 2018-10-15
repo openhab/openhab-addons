@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.systeminfo.internal.discovery;
 
-import static org.openhab.binding.systeminfo.SysteminfoBindingConstants.THING_TYPE_COMPUTER;
+import static org.openhab.binding.systeminfo.internal.SysteminfoBindingConstants.THING_TYPE_COMPUTER;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -21,7 +21,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.systeminfo.SysteminfoBindingConstants;
+import org.openhab.binding.systeminfo.internal.SysteminfoBindingConstants;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

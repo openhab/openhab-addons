@@ -11,7 +11,7 @@ package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.openhab.binding.yamahareceiver.TestModels;
+import org.openhab.binding.yamahareceiver.internal.TestModels;
 import org.openhab.binding.yamahareceiver.internal.protocol.ReceivedMessageParseException;
 import org.openhab.binding.yamahareceiver.internal.state.DeviceInformationState;
 import org.openhab.binding.yamahareceiver.internal.state.SystemControlState;

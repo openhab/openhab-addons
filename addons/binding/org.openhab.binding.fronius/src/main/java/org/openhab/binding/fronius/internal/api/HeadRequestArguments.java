@@ -27,6 +27,9 @@ public class HeadRequestArguments {
     private String scope;
 
     public String getDataCollection() {
+        if (null == dataCollection) {
+            dataCollection = "";
+        }
         return dataCollection;
     }
 
@@ -35,6 +38,9 @@ public class HeadRequestArguments {
     }
 
     public String getDeviceClass() {
+        if (null == deviceClass) {
+            deviceClass = "";
+        }
         return deviceClass;
     }
 
@@ -43,6 +49,9 @@ public class HeadRequestArguments {
     }
 
     public String getDeviceId() {
+        if (null == deviceId) {
+            deviceId = "";
+        }
         return deviceId;
     }
 
@@ -51,6 +60,9 @@ public class HeadRequestArguments {
     }
 
     public String getScope() {
+        if (null == scope) {
+            scope = "";
+        }
         return scope;
     }
 

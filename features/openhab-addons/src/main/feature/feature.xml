@@ -150,19 +150,29 @@
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.ftpupload/${project.version}</bundle>
     </feature>
-
+    
     <feature name="openhab-binding-gardena" description="Gardena Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.gardena/${project.version}</bundle>
     </feature>
 
-     <feature name="openhab-binding-globalcache" description="GlobalCache Binding" version="${project.version}">
+    <feature name="openhab-binding-globalcache" description="GlobalCache Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>esh-transform-map</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.globalcache/${project.version}</bundle>
     </feature>
 
-     <feature name="openhab-binding-harmonyhub" description="Harmony Hub Binding" version="${project.version}">
+    <feature name="openhab-binding-gpstracker" description="GPSTracker Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.gpstracker/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-binding-groheondus" description="GROHE ONDUS Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.groheondus/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-binding-harmonyhub" description="Harmony Hub Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.harmonyhub/${project.version}</bundle>
     </feature>
@@ -361,6 +371,11 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.nibeheatpump/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-nibeuplink" description="NibeUplink Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.nibeuplink/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-nikohomecontrol" description="Niko Home Control Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.nikohomecontrol/${project.version}</bundle>
@@ -425,6 +440,12 @@
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-serial</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.plugwise/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-binding-powermax" description="Powermax Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-serial</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.powermax/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-pulseaudio" description="Pulseaudio Binding" version="${project.version}">
@@ -503,6 +524,12 @@
     <feature name="openhab-binding-smaenergymeter" description="SMA Energy Monitor Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.smaenergymeter/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-binding-somfytahoma" description="Somfy Tahoma Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-http</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.somfytahoma/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-solaredge" description="SolarEdge Binding" version="${project.version}">

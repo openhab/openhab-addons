@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.dsmr.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,20 +38,17 @@ public final class TelegramReaderUtil {
      * @return The raw bytes of a telegram
      */
     public static byte[] readRawTelegram(String telegramName) {
-        byte[] telegram = null;
-
         try (InputStream is = TelegramReaderUtil.class.getResourceAsStream(telegramName + TELEGRAM_EXT)) {
-            telegram = IOUtils.toByteArray(is);
+            return IOUtils.toByteArray(is);
         } catch (IOException e) {
-            fail("IOException reading telegram data:" + e);
+            throw new AssertionError("IOException reading telegram data: ", e);
         }
-        return telegram;
     }
 
     /**
      * Reads a telegram given the file relative to this package and returns the objects.
      *
-     * @param telegramName          name of the telegram file to read
+     * @param telegramName name of the telegram file to read
      * @param expectedTelegramState expected state of the telegram read
      * @return a P1Telegram object
      */

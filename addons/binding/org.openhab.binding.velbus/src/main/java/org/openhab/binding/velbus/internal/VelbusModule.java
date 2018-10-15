@@ -8,14 +8,14 @@
  */
 package org.openhab.binding.velbus.internal;
 
-import static org.openhab.binding.velbus.VelbusBindingConstants.*;
+import static org.openhab.binding.velbus.internal.VelbusBindingConstants.*;
 
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.velbus.handler.VelbusBridgeHandler;
+import org.openhab.binding.velbus.internal.handler.VelbusBridgeHandler;
 import org.openhab.binding.velbus.internal.packets.VelbusChannelNameRequestPacket;
 
 /**

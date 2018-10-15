@@ -57,6 +57,7 @@ public class EEPFactory {
                     HexUtils.bytesToHex(new byte[] { eepType.getRORG().getValue() }),
                     HexUtils.bytesToHex(new byte[] { (byte) eepType.getFunc() }),
                     HexUtils.bytesToHex(new byte[] { (byte) eepType.getType() }), e.getMessage());
+
             throw new IllegalArgumentException(e);
         }
     }

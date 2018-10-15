@@ -62,15 +62,6 @@
 		</config-description>
 	</channel-type>
 
-    <!-- Angle Channel -->
-    <channel-type id="angle">
-        <item-type>Number:Angle</item-type>
-        <label>Angle</label>
-        <description>Blind angle</description>
-        <category>Blinds</category>
-        <state pattern="%d°" />
-    </channel-type>
-
 	<!-- Dimmer Channel -->
 	<channel-type id="dimmer">
 		<item-type>Dimmer</item-type>
@@ -254,11 +245,34 @@
 		<description>Switch state according to specific on/off positions (otherwise toggle)</description>
 		<category>Switch</category>
 	</channel-type>
-	
+
 	<channel-type id="ecoMode">
-        <item-type>Switch</item-type>
-        <label>Eco mode</label>
-        <description>Activates eco mode (disables certain messages)</description>
-    </channel-type>
+		<item-type>Switch</item-type>
+		<label>Eco mode</label>
+		<description>Activates eco mode (disables certain messages)</description>
+	</channel-type>
+
+	<!-- Angle Channel -->
+	<channel-type id="angle">
+		<item-type>Number:Angle</item-type>
+		<label>Angle</label>
+		<description>Blind angle</description>
+		<category>Blinds</category>
+		<state pattern="%d %unit%" />
+	</channel-type>
+
+	<!-- Litre Channel -->
+	<channel-type id="amrLitre">
+		<item-type>Number:Litre</item-type>
+		<label>Litre per second</label>
+		<state pattern="%d %unit%" readOnly="true" />
+	</channel-type>
+
+	<!-- Litre Channel -->
+	<channel-type id="amrCubicMetre">
+		<item-type>Number:Litre</item-type>
+		<label>Cubic metre</label>
+		<state pattern="%d %unit%" readOnly="true" />
+	</channel-type>
 
 </thing:thing-descriptions>

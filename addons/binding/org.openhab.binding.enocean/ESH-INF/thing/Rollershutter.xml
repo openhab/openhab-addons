@@ -9,10 +9,15 @@
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>Rollershutter</label>
-		<description>Rollershutter (like Eltako FSB14/61/71 or NodOn SIN-2-RS-01)</description>
+		<label>Rollershutter actuator</label>
+		<description>Rollershutter like Eltako FSB14/61/71 or NodOn SIN-2-RS-01 (EEP: A5-37, D2-05)</description>
 
 		<config-description>
+			<parameter name="enoceanId" type="text">
+				<label>EnOceanId</label>
+				<description>EnOceanId of device this thing belongs to</description>
+				<required>true</required>
+			</parameter>
 			<parameter name="senderIdOffset" type="integer">
 				<label>Sender Id</label>
 				<description>Id is used to generate the EnOcean Id (Int between [1-127]). If not specified the next free Id will be determined by bridge</description>

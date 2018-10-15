@@ -26,7 +26,6 @@ import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationExcepti
 import org.openhab.binding.enocean.internal.EnOceanException;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.binding.enocean.internal.messages.ESP3Packet;
-import org.openhab.binding.enocean.internal.messages.ESP3Packet.ESPPacketType;
 import org.openhab.binding.enocean.internal.messages.ESP3PacketFactory;
 import org.openhab.binding.enocean.internal.messages.Response;
 import org.slf4j.Logger;
@@ -85,7 +84,6 @@ public abstract class EnOceanTransceiver {
                         synchronized (currentRequest) {
 
                             byte[] b = currentRequest.RequestPacket.serialize();
-
                             logger.trace("<< Sending data, type {}, payload {}",
                                     currentRequest.RequestPacket.getPacketType().name(), HexUtils.bytesToHex(b));
 
@@ -285,7 +283,7 @@ public abstract class EnOceanTransceiver {
                                             break;
                                         case EVENT:
                                             break;
-                                        case RADIO_ERP1:
+                                        case RADIO_ERP1: {
                                             ERP1Message msg = (ERP1Message) packet;
 
                                             byte[] d = new byte[dataLength + optionalLength];
@@ -296,6 +294,7 @@ public abstract class EnOceanTransceiver {
                                                     HexUtils.bytesToHex(msg.getSenderId()), HexUtils.bytesToHex(d));
 
                                             informListeners(msg);
+                                        }
                                             break;
                                         case RADIO_ERP2:
                                             break;
@@ -305,34 +304,34 @@ public abstract class EnOceanTransceiver {
                                             break;
                                         case REMOTE_MAN_COMMAND:
                                             break;
-                                        case RESPONSE:
-                                            byte[] dd = new byte[dataLength + optionalLength];
-                                            System.arraycopy(dataBuffer, 0, dd, 0, dd.length);
+                                        case RESPONSE: {
+                                            byte[] d = new byte[dataLength + optionalLength];
+                                            System.arraycopy(dataBuffer, 0, d, 0, d.length);
 
                                             logger.debug("{} with code {} payload {}", packet.getPacketType().name(),
                                                     ((Response) packet).getResponseType().name(),
-                                                    HexUtils.bytesToHex(dd));
+                                                    HexUtils.bytesToHex(d));
 
-	                                        if (currentRequest != null) {
-	                                            if (currentRequest.ResponseListener != null) {
-	                                                currentRequest.ResponsePacket = (Response) packet;
-	                                                try {
-	                                                    currentRequest.ResponseListener
-	                                                            .handleResponse(currentRequest.ResponsePacket);
-	                                                } catch (Exception e) {
-	                                                }
-	
-	                                                    logger.trace("Response handled");
-	                                            } else {
-	                                                    logger.trace("Response without listener");
-	                                            }
-	                                        }
+                                            if (currentRequest != null) {
+                                                if (currentRequest.ResponseListener != null) {
+                                                    currentRequest.ResponsePacket = (Response) packet;
+                                                    try {
+                                                        currentRequest.ResponseListener
+                                                                .handleResponse(currentRequest.ResponsePacket);
+                                                    } catch (Exception e) {
+                                                    }
+
+                                                    logger.trace("Response handled");
+                                                } else {
+                                                    logger.trace("Response without listener");
+                                                }
+                                            }
+                                        }
                                             break;
                                         case SMART_ACK_COMMAND:
                                             break;
                                         default:
                                             break;
-
                                     }
                                 } else {
                                     logger.trace("Unknown ESP3Packet");
@@ -384,7 +383,6 @@ public abstract class EnOceanTransceiver {
             byte[] senderId = msg.getSenderId();
 
             if (senderId != null) {
-
                 if (filteredDeviceId != null && senderId[0] == filteredDeviceId[0] && senderId[1] == filteredDeviceId[1]
                         && senderId[2] == filteredDeviceId[2]) {
                     // filter away own messages which are received through a repeater

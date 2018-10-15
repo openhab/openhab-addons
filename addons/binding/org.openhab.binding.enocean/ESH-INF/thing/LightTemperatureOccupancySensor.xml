@@ -9,10 +9,15 @@
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>A5-08 - Light, temperature and occupancy sensor</label>
-		<description>Light, temperature and occupancy sensor which sends EEP A5-08</description>
+		<label>Light, temperature and occupancy sensor</label>
+		<description>Sensor which sends light, temperature and occupancy data (EEP: A5-08)</description>
 
 		<config-description>
+			<parameter name="enoceanId" type="text">
+				<label>EnOceanId</label>
+				<description>EnOceanId of device this thing belongs to</description>
+				<required>true</required>
+			</parameter>
 			<parameter name="receivingEEPId" type="text">
 				<label>EEP</label>
 				<description>EEP which is used by sensor</description>

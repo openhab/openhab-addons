@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.kodi.internal.discovery;
 
-import static org.openhab.binding.kodi.KodiBindingConstants.*;
+import static org.openhab.binding.kodi.internal.KodiBindingConstants.*;
 
 import java.util.Dictionary;
 import java.util.HashMap;
@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * @author Paul Frank - Initial contribution
  * @author Christoph Weitkamp - Use "discovery.kodi:background=false" to disable discovery service
  */
-@Component(service = UpnpDiscoveryParticipant.class, immediate = true, configurationPid = "discovery.kodi")
+@Component(immediate = true, configurationPid = "discovery.kodi")
 @NonNullByDefault
 public class KodiUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
 

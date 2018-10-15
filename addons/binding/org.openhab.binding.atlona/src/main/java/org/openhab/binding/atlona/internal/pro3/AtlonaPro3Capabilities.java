@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.openhab.binding.atlona.handler.AtlonaCapabilities;
+import org.openhab.binding.atlona.internal.handler.AtlonaCapabilities;
 
 /**
  * The capabilities class for the Atlona PRO3 line. Each PRO3 model differs in the number of (output) ports that can be

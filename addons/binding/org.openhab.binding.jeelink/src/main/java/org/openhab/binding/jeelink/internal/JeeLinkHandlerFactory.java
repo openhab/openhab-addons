@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.jeelink.internal;
 
-import static org.openhab.binding.jeelink.JeeLinkBindingConstants.*;
+import static org.openhab.binding.jeelink.internal.JeeLinkBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -70,10 +70,9 @@ public class JeeLinkHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof JeeLinkHandler) {
-            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
+            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.remove(thingHandler.getThing().getUID());
             if (serviceReg != null) {
                 serviceReg.unregister();
-                discoveryServiceRegs.remove(thingHandler.getThing().getUID());
             }
         }
     }

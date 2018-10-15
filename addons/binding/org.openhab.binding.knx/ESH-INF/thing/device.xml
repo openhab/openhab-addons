@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="device"
-		extensible="switch, switch-control, dimmer, dimmer-control, rollershutter, rollershutter-control, contact, contact-control, number, number-control, string, string-control, datetime, datetime-control">
+		extensible="switch, switch-control, dimmer, dimmer-control, rollershutter, rollershutter-control, color, color-control, contact, contact-control, number, number-control, string, string-control, datetime, datetime-control">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ip" />
 			<bridge-type-ref id="serial" />
@@ -76,6 +76,20 @@
 		<label>Rollershutter Control</label>
 		<description>Control a rollershutter item (i.e. the status is not owned by KNX)</description>
 		<config-description-ref uri="channel-type:knx:rollershutter" />
+	</channel-type>
+
+	<!-- Color -->
+	<channel-type id="color">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<description>A channel to control color information (RGB)</description>
+		<config-description-ref uri="channel-type:knx:color" />
+	</channel-type>
+	<channel-type id="color-control">
+		<item-type>Color</item-type>
+		<label>Color Control</label>
+		<description>Control a color item (i.e. the status is not owned by KNX)</description>
+		<config-description-ref uri="channel-type:knx:color-control" />
 	</channel-type>
 
 	<!-- Contact -->
