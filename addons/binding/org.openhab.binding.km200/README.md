@@ -54,18 +54,15 @@ This binding supports 11 different things types
 | `notification`   |               | This thing is representing the notifications.                                        |
 | `switchProgram`  |       X       | This thing is representing a switch program.                                         |
 
-
 ### Channels
 
 This binding is creating the channels depending on the connected heating system full automatically. Every thing has a lot of channels. This channels are depending on the connected heating system. 
 You can see the complete list of supported channels in the PaperUI after the creation of a thing. 
 There is no official documentation for the parameters availible so the names of the channels are all what we have. 
 
-
 ### Items
 
 In the items file it's possible to map the services. You can take the correct names from the channels in the PaperUI.
-
 There is nothing specific in the sitemap configuration.
 
 ## Full Examples
