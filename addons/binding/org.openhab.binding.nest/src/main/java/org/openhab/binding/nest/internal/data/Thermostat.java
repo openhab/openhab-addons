@@ -21,7 +21,8 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Gson class to encapsulate the data for the Nest thermostat.
  *
- * @author David Bennett - Initial Contribution
+ * @author David Bennett - Initial contribution
+ * @author Wouter Born - Add equals and hashCode methods
  */
 public class Thermostat extends BaseNestDevice {
 
@@ -250,6 +251,288 @@ public class Thermostat extends BaseNestDevice {
         COOLING,
         @SerializedName("off")
         OFF
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Thermostat other = (Thermostat) obj;
+        if (ambientTemperatureC == null) {
+            if (other.ambientTemperatureC != null) {
+                return false;
+            }
+        } else if (!ambientTemperatureC.equals(other.ambientTemperatureC)) {
+            return false;
+        }
+        if (ambientTemperatureF == null) {
+            if (other.ambientTemperatureF != null) {
+                return false;
+            }
+        } else if (!ambientTemperatureF.equals(other.ambientTemperatureF)) {
+            return false;
+        }
+        if (canCool == null) {
+            if (other.canCool != null) {
+                return false;
+            }
+        } else if (!canCool.equals(other.canCool)) {
+            return false;
+        }
+        if (canHeat == null) {
+            if (other.canHeat != null) {
+                return false;
+            }
+        } else if (!canHeat.equals(other.canHeat)) {
+            return false;
+        }
+        if (ecoTemperatureHighC == null) {
+            if (other.ecoTemperatureHighC != null) {
+                return false;
+            }
+        } else if (!ecoTemperatureHighC.equals(other.ecoTemperatureHighC)) {
+            return false;
+        }
+        if (ecoTemperatureHighF == null) {
+            if (other.ecoTemperatureHighF != null) {
+                return false;
+            }
+        } else if (!ecoTemperatureHighF.equals(other.ecoTemperatureHighF)) {
+            return false;
+        }
+        if (ecoTemperatureLowC == null) {
+            if (other.ecoTemperatureLowC != null) {
+                return false;
+            }
+        } else if (!ecoTemperatureLowC.equals(other.ecoTemperatureLowC)) {
+            return false;
+        }
+        if (ecoTemperatureLowF == null) {
+            if (other.ecoTemperatureLowF != null) {
+                return false;
+            }
+        } else if (!ecoTemperatureLowF.equals(other.ecoTemperatureLowF)) {
+            return false;
+        }
+        if (fanTimerActive == null) {
+            if (other.fanTimerActive != null) {
+                return false;
+            }
+        } else if (!fanTimerActive.equals(other.fanTimerActive)) {
+            return false;
+        }
+        if (fanTimerDuration == null) {
+            if (other.fanTimerDuration != null) {
+                return false;
+            }
+        } else if (!fanTimerDuration.equals(other.fanTimerDuration)) {
+            return false;
+        }
+        if (fanTimerTimeout == null) {
+            if (other.fanTimerTimeout != null) {
+                return false;
+            }
+        } else if (!fanTimerTimeout.equals(other.fanTimerTimeout)) {
+            return false;
+        }
+        if (hasFan == null) {
+            if (other.hasFan != null) {
+                return false;
+            }
+        } else if (!hasFan.equals(other.hasFan)) {
+            return false;
+        }
+        if (hasLeaf == null) {
+            if (other.hasLeaf != null) {
+                return false;
+            }
+        } else if (!hasLeaf.equals(other.hasLeaf)) {
+            return false;
+        }
+        if (humidity == null) {
+            if (other.humidity != null) {
+                return false;
+            }
+        } else if (!humidity.equals(other.humidity)) {
+            return false;
+        }
+        if (hvacMode != other.hvacMode) {
+            return false;
+        }
+        if (hvacState != other.hvacState) {
+            return false;
+        }
+        if (isLocked == null) {
+            if (other.isLocked != null) {
+                return false;
+            }
+        } else if (!isLocked.equals(other.isLocked)) {
+            return false;
+        }
+        if (isUsingEmergencyHeat == null) {
+            if (other.isUsingEmergencyHeat != null) {
+                return false;
+            }
+        } else if (!isUsingEmergencyHeat.equals(other.isUsingEmergencyHeat)) {
+            return false;
+        }
+        if (lockedTempMaxC == null) {
+            if (other.lockedTempMaxC != null) {
+                return false;
+            }
+        } else if (!lockedTempMaxC.equals(other.lockedTempMaxC)) {
+            return false;
+        }
+        if (lockedTempMaxF == null) {
+            if (other.lockedTempMaxF != null) {
+                return false;
+            }
+        } else if (!lockedTempMaxF.equals(other.lockedTempMaxF)) {
+            return false;
+        }
+        if (lockedTempMinC == null) {
+            if (other.lockedTempMinC != null) {
+                return false;
+            }
+        } else if (!lockedTempMinC.equals(other.lockedTempMinC)) {
+            return false;
+        }
+        if (lockedTempMinF == null) {
+            if (other.lockedTempMinF != null) {
+                return false;
+            }
+        } else if (!lockedTempMinF.equals(other.lockedTempMinF)) {
+            return false;
+        }
+        if (previousHvacMode != other.previousHvacMode) {
+            return false;
+        }
+        if (sunlightCorrectionActive == null) {
+            if (other.sunlightCorrectionActive != null) {
+                return false;
+            }
+        } else if (!sunlightCorrectionActive.equals(other.sunlightCorrectionActive)) {
+            return false;
+        }
+        if (sunlightCorrectionEnabled == null) {
+            if (other.sunlightCorrectionEnabled != null) {
+                return false;
+            }
+        } else if (!sunlightCorrectionEnabled.equals(other.sunlightCorrectionEnabled)) {
+            return false;
+        }
+        if (targetTemperatureC == null) {
+            if (other.targetTemperatureC != null) {
+                return false;
+            }
+        } else if (!targetTemperatureC.equals(other.targetTemperatureC)) {
+            return false;
+        }
+        if (targetTemperatureF == null) {
+            if (other.targetTemperatureF != null) {
+                return false;
+            }
+        } else if (!targetTemperatureF.equals(other.targetTemperatureF)) {
+            return false;
+        }
+        if (targetTemperatureHighC == null) {
+            if (other.targetTemperatureHighC != null) {
+                return false;
+            }
+        } else if (!targetTemperatureHighC.equals(other.targetTemperatureHighC)) {
+            return false;
+        }
+        if (targetTemperatureHighF == null) {
+            if (other.targetTemperatureHighF != null) {
+                return false;
+            }
+        } else if (!targetTemperatureHighF.equals(other.targetTemperatureHighF)) {
+            return false;
+        }
+        if (targetTemperatureLowC == null) {
+            if (other.targetTemperatureLowC != null) {
+                return false;
+            }
+        } else if (!targetTemperatureLowC.equals(other.targetTemperatureLowC)) {
+            return false;
+        }
+        if (targetTemperatureLowF == null) {
+            if (other.targetTemperatureLowF != null) {
+                return false;
+            }
+        } else if (!targetTemperatureLowF.equals(other.targetTemperatureLowF)) {
+            return false;
+        }
+        if (temperatureScale == null) {
+            if (other.temperatureScale != null) {
+                return false;
+            }
+        } else if (!temperatureScale.equals(other.temperatureScale)) {
+            return false;
+        }
+        if (timeToTarget == null) {
+            if (other.timeToTarget != null) {
+                return false;
+            }
+        } else if (!timeToTarget.equals(other.timeToTarget)) {
+            return false;
+        }
+        if (whereName == null) {
+            if (other.whereName != null) {
+                return false;
+            }
+        } else if (!whereName.equals(other.whereName)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((ambientTemperatureC == null) ? 0 : ambientTemperatureC.hashCode());
+        result = prime * result + ((ambientTemperatureF == null) ? 0 : ambientTemperatureF.hashCode());
+        result = prime * result + ((canCool == null) ? 0 : canCool.hashCode());
+        result = prime * result + ((canHeat == null) ? 0 : canHeat.hashCode());
+        result = prime * result + ((ecoTemperatureHighC == null) ? 0 : ecoTemperatureHighC.hashCode());
+        result = prime * result + ((ecoTemperatureHighF == null) ? 0 : ecoTemperatureHighF.hashCode());
+        result = prime * result + ((ecoTemperatureLowC == null) ? 0 : ecoTemperatureLowC.hashCode());
+        result = prime * result + ((ecoTemperatureLowF == null) ? 0 : ecoTemperatureLowF.hashCode());
+        result = prime * result + ((fanTimerActive == null) ? 0 : fanTimerActive.hashCode());
+        result = prime * result + ((fanTimerDuration == null) ? 0 : fanTimerDuration.hashCode());
+        result = prime * result + ((fanTimerTimeout == null) ? 0 : fanTimerTimeout.hashCode());
+        result = prime * result + ((hasFan == null) ? 0 : hasFan.hashCode());
+        result = prime * result + ((hasLeaf == null) ? 0 : hasLeaf.hashCode());
+        result = prime * result + ((humidity == null) ? 0 : humidity.hashCode());
+        result = prime * result + ((hvacMode == null) ? 0 : hvacMode.hashCode());
+        result = prime * result + ((hvacState == null) ? 0 : hvacState.hashCode());
+        result = prime * result + ((isLocked == null) ? 0 : isLocked.hashCode());
+        result = prime * result + ((isUsingEmergencyHeat == null) ? 0 : isUsingEmergencyHeat.hashCode());
+        result = prime * result + ((lockedTempMaxC == null) ? 0 : lockedTempMaxC.hashCode());
+        result = prime * result + ((lockedTempMaxF == null) ? 0 : lockedTempMaxF.hashCode());
+        result = prime * result + ((lockedTempMinC == null) ? 0 : lockedTempMinC.hashCode());
+        result = prime * result + ((lockedTempMinF == null) ? 0 : lockedTempMinF.hashCode());
+        result = prime * result + ((previousHvacMode == null) ? 0 : previousHvacMode.hashCode());
+        result = prime * result + ((sunlightCorrectionActive == null) ? 0 : sunlightCorrectionActive.hashCode());
+        result = prime * result + ((sunlightCorrectionEnabled == null) ? 0 : sunlightCorrectionEnabled.hashCode());
+        result = prime * result + ((targetTemperatureC == null) ? 0 : targetTemperatureC.hashCode());
+        result = prime * result + ((targetTemperatureF == null) ? 0 : targetTemperatureF.hashCode());
+        result = prime * result + ((targetTemperatureHighC == null) ? 0 : targetTemperatureHighC.hashCode());
+        result = prime * result + ((targetTemperatureHighF == null) ? 0 : targetTemperatureHighF.hashCode());
+        result = prime * result + ((targetTemperatureLowC == null) ? 0 : targetTemperatureLowC.hashCode());
+        result = prime * result + ((targetTemperatureLowF == null) ? 0 : targetTemperatureLowF.hashCode());
+        result = prime * result + ((temperatureScale == null) ? 0 : temperatureScale.hashCode());
+        result = prime * result + ((timeToTarget == null) ? 0 : timeToTarget.hashCode());
+        result = prime * result + ((whereName == null) ? 0 : whereName.hashCode());
+        return result;
     }
 
     @Override

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.openhab.io</groupId>
+		<artifactId>pom</artifactId>
+		<version>2.4.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>org.openhab.io.transport.modbus.test</artifactId>
+	<name>openHAB Modbus Transport Test</name>
+	<packaging>eclipse-test-plugin</packaging>
+
+	<build>
+		<plugins>			
+			<plugin>
+				<groupId>${tycho-groupid}</groupId>
+				<artifactId>tycho-surefire-plugin</artifactId>
+				<configuration>
+					<providerHint>junit47</providerHint>
+					<dependencies>
+						<!-- Required Bundles to enable LOGGING -->
+						<dependency>
+							<type>eclipse-plugin</type>
+							<artifactId>ch.qos.logback.classic</artifactId>
+							<version>0.0.0</version>
+						</dependency>
+						<dependency>
+							<type>eclipse-plugin</type>
+							<artifactId>ch.qos.logback.core</artifactId>
+							<version>0.0.0</version>
+						</dependency>
+						<dependency>
+							<type>eclipse-plugin</type>
+							<artifactId>ch.qos.logback.slf4j</artifactId>
+							<version>0.0.0</version>
+						</dependency>
+					</dependencies>
+					<defaultStartLevel>
+						<level>4</level>
+						<autoStart>true</autoStart>
+					</defaultStartLevel>
+					<redirectTestOutputToFile>false</redirectTestOutputToFile>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

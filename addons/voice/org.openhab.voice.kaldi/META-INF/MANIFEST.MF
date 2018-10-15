@@ -1,10 +1,11 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.voice.kaldi
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: 
  .,
  lib/net-speech-api-0.2.0.jar
 Bundle-ManifestVersion: 2
-Bundle-Name: Kaldi Voice Integration
+Bundle-Name: Kaldi Speech-to-Text
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.voice.kaldi;singleton:=true
 Bundle-Vendor: openHAB

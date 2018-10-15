@@ -15,7 +15,6 @@ import java.util.List;
  * {@link Feed} is used by the CometVisu rss-plugin
  * 
  * @author Tobias Bräutigam
- * @since 2.0.0
  */
 public class Feed {
     public String feedUrl;

@@ -9,8 +9,7 @@
 package org.openhab.binding.tado.internal.adapter;
 
 import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.OffsetDateTime;
 
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -21,9 +20,9 @@ import org.eclipse.smarthome.core.library.unit.ImperialUnits;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.tado.TadoBindingConstants.HvacMode;
-import org.openhab.binding.tado.TadoBindingConstants.OperationMode;
-import org.openhab.binding.tado.TadoBindingConstants.TemperatureUnit;
+import org.openhab.binding.tado.internal.TadoBindingConstants.HvacMode;
+import org.openhab.binding.tado.internal.TadoBindingConstants.OperationMode;
+import org.openhab.binding.tado.internal.TadoBindingConstants.TemperatureUnit;
 import org.openhab.binding.tado.internal.api.model.ActivityDataPoints;
 import org.openhab.binding.tado.internal.api.model.CoolingZoneSetting;
 import org.openhab.binding.tado.internal.api.model.GenericZoneSetting;
@@ -185,10 +184,8 @@ public class TadoZoneStateAdapter {
         return new DecimalType(decimal);
     }
 
-    private static DateTimeType toDateTimeType(Date date) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        return new DateTimeType(cal);
+    private static DateTimeType toDateTimeType(OffsetDateTime offsetDateTime) {
+        return new DateTimeType(offsetDateTime.toZonedDateTime());
     }
 
     private static State toTemperatureState(TemperatureObject temperature, TemperatureUnit temperatureUnit) {

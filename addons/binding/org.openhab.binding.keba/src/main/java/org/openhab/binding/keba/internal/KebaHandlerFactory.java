@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.keba.internal;
 
-import static org.openhab.binding.keba.KebaBindingConstants.THING_TYPE_KECONTACTP20;
+import static org.openhab.binding.keba.internal.KebaBindingConstants.THING_TYPE_KECONTACTP20;
 
 import java.util.Collections;
 import java.util.Set;
@@ -18,7 +18,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.keba.handler.KeContactHandler;
+import org.openhab.binding.keba.internal.handler.KeContactHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**

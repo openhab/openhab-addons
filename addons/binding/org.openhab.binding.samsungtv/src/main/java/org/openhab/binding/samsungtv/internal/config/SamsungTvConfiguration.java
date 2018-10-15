@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.samsungtv.internal.config;
 
-import org.openhab.binding.samsungtv.handler.SamsungTvHandler;
+import org.openhab.binding.samsungtv.internal.handler.SamsungTvHandler;
 
 /**
  * Configuration class for {@link SamsungTvHandler}.

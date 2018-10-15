@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.voice.marytts
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: 
  .,
@@ -22,7 +23,7 @@ Bundle-ClassPath:
  lib/voice-cmu-slt-hsmm-5.0.jar,
  lib/log4j-over-slf4j-1.7.21.jar
 Bundle-ManifestVersion: 2
-Bundle-Name: MaryTTS Voice Service
+Bundle-Name: Mary Text-to-Speech
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.voice.marytts;singleton:=true
 Bundle-Vendor: openHAB

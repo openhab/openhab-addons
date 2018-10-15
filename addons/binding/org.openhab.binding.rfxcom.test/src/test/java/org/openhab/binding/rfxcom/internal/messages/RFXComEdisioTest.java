@@ -17,7 +17,6 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageNotImplemente
  * Test for RFXCom-binding
  *
  * @author Martin van Wingerden
- * @since 2.0.0
  */
 public class RFXComEdisioTest {
     @Test(expected = RFXComMessageNotImplementedException.class)

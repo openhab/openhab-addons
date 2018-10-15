@@ -15,7 +15,7 @@ Niko Home Control alarm and notice messages are retrieved and made available in 
 ## Supported Things
 
 The Niko Home Control Controller is represented as a bridge in the binding.
-Connected to a bridge, the Niko Home Control Binding supports on/off actions (e.g. for lights or groups of lights), dimmers and rollershutters or blinds.
+Connected to a bridge, the Niko Home Control Binding supports on/off actions (e.g. for lights or groups of lights), dimmers, rollershutters or blinds and thermostats.
 
 ## Binding Configuration
 
@@ -50,11 +50,11 @@ Locations can subsequently be changed through the thing location parameter in Pa
 
 Besides using PaperUI to manually configure things or adding automatically discovered things through PaperUI, you can add thing definitions in the things file.
 
-The Thing configuration for the bridge uses the following syntax:
+The Thing configuration for the **bridge** uses the following syntax:
 
 ```
 Bridge nikohomecontrol:bridge:<bridgeId> [ addr="<IP-address of IP-interface>", port=<listening port>,
-                                           refresh="<Refresh interval>" ]
+                                           refresh=<Refresh interval> ]
 ```
 
 `bridgeId` can have any value.
@@ -63,7 +63,7 @@ Bridge nikohomecontrol:bridge:<bridgeId> [ addr="<IP-address of IP-interface>", 
 `port` will be the port used to connect and is 8000 by default.
 `refresh` is the interval to restart the communication in minutes (300 by default), if 0 or omitted the connection will not restart at regular intervals.
 
-The thing configuration for the actions has the following syntax:
+The Thing configuration for **Niko Home Control actions** has the following syntax:
 
 ```
 Thing nikohomecontrol:<thing type>:<bridgeId>:<thingId> "Label" @ "Location"
@@ -78,7 +78,7 @@ or nested in the bridge configuration:
                          step=<dimmer increase/decrease step value> ]
 ```
 
-The following thing types are valid for configuration:
+The following action thing types are valid for the configuration:
 
 ```
 onOff, dimmer, blind
@@ -88,15 +88,40 @@ onOff, dimmer, blind
 
 `"Label"` is an optional label for the thing.
 
-`@ "Location"` is optional, and represents the location of the thing. Auto-discovery would have assigned a value automatically.
+`@ "Location"` is optional, and represents the location of the Thing. Auto-discovery would have assigned a value automatically.
 
 The `actionId` parameter is the unique ip Interface Object ID (`ipInterfaceObjectId`) as automatically assigned in the Niko Home Control Controller when programming the Niko Home Control system using the Niko Home Control programming software.
 It is not directly visible in the Niko Home Control programming or user software, but will be detected and automatically set by openHAB discovery.
-For textual configuration, you can be manually retrieve it from the content of the .nhcp configuration file created by the programming software.
+For textual configuration, you can manually retrieve it from the content of the .nhcp configuration file created by the programming software.
 Open the file with an unzip tool to read it's content.
 
 The `step` parameter is only available for dimmers.
 It sets a step value for dimmer increase/decrease actions. The parameter is optional and set to 10 by default.
+
+The Thing configuration for **Niko Home Control thermostats** has the following syntax:
+
+```
+Thing nikohomecontrol:thermostat:<bridgeId>:<thingId> "Label" @ "Location"
+                        [ thermostatId=<Niko Home Control thermostat ID> ]
+```
+
+or nested in the bridge configuration:
+
+```
+thermostat <thingId> "Label" @ "Location" [ thermostatId=<Niko Home Control thermostat ID> ]
+```
+
+`thingId` can have any value, but will be set to the same value as the thermostatId parameter if discovery is used.
+
+`"Label"` is an optional label for the Thing.
+
+`@ "Location"` is optional, and represents the location of the thing. Auto-discovery would have assigned a value automatically.
+
+The `thermostatId` parameter is the unique ip Interface Object ID as automatically assigned in the Niko Home Control Controller when programming the Niko Home Control system using the Niko Home Control programming software.
+It is not directly visible in the Niko Home Control programming or user software, but will be detected and automatically set by openHAB discovery.
+For textual configuration, it can be retrieved from the .nhcp configuration file.
+
+The `overruleTime` parameter is used to set the standard overrule duration when you set a new setpoint without providing an overrule duration. The default value is 60 minutes.
 
 ## Channels
 
@@ -109,6 +134,12 @@ Note that sending an ON command will switch the dimmer to the value stored when 
 This can be changed with the Niko Home Control programming software.
 
 For thing type `blind` the supported channel is `rollershutter`. UpDown, StopMove and Percent command types are supported.
+
+For thing type `thermostat` the supported channels are `measured`, `mode`, `setpoint` and `overruletime`.
+`measured` gives the current temperature in QuantityType<Temperature>, allowing for different temperature units. This channel is read only.
+`mode` can be set and shows the current thermostat mode. Allowed values are 0 (day), 1 (night), 2 (eco), 3 (off), 4 (coll), 5 (prog 1), 6 (prog 2), 7 (prog 3). If mode is set, the `setpoint` temperature will return to its standard value from the mode.
+`setpoint` can be set and shows the current thermostat setpoint value in QuantityType<Temperature>. When updating `setpoint`, it will overrule the temperature setpoint defined by the thermostat mode for `overruletime` duration.
+`overruletime` is used to set the total duration to apply the setpoint temperature set in the setpoint channel before the thermostat returns to the setting in its mode.
 
 The bridge has two trigger channels `alarm` and `notice`.
 It can be used as a trigger to rules. The event message is the alarm or notice text coming from Niko Home Control.
@@ -123,7 +154,7 @@ The action events implemented are limited to onOff, dimmer and rollershutter or 
 Other actions have not been implemented.
 It is not possible to tilt the slats of venetian blinds.
 
-Beyond action events, the Niko Home Control communication also supports thermostats and electricity usage data.
+Beyond action and thermostat events, the Niko Home Control communication also supports electricity usage data.
 This has not been implemented.
 
 ## Example
@@ -135,21 +166,27 @@ Bridge nikohomecontrol:bridge:nhc1 [ addr="192.168.0.70", port=8000, refresh=300
     onOff 1 "LivingRoom" @ "Downstairs" [ actionId=1 ]
     dimmer 2 "TVRoom" [ actionId=2, step=5 ]
     blind 3 [ actionId=3 ]
+    thermostat 4 [ thermostatId=0 ]
 }
 
 Bridge nikohomecontrol:bridge:nhc2 [ addr="192.168.0.110" ] {
     onOff 11 @ "Upstairs"[ actionId=11 ]
     dimmer 12 [ actionId=12, step=5 ]
     blind 13 [ actionId=13 ]
+    thermostat 14 [ thermostatId=10 ]
 }
 ```
 
 .items:
 
 ```
-Switch LivingRoom       {channel="nikohomecontrol:onOff:nhc1:1:switch"}          # Switch for onOff type action
-Dimmer TVRoom           {channel="nikohomecontrol:dimmer:nhc1:2:brightness"}     # Changing brightness dimmer type action
-Rollershutter Kitchen   {channel="nikohomecontrol:blind:nhc1:3:rollershutter"}   # Controlling rollershutter or blind type action
+Switch LivingRoom       {channel="nikohomecontrol:onOff:nhc1:1:switch"}           # Switch for onOff type action
+Dimmer TVRoom           {channel="nikohomecontrol:dimmer:nhc1:2:brightness"}      # Changing brightness dimmer type action
+Rollershutter Kitchen   {channel="nikohomecontrol:blind:nhc1:3:rollershutter"}    # Controlling rollershutter or blind type action
+Number:Temperature CurTemperature   "[%.1f °F]"  {channel="nikohomecontrol:thermostat:nhc1:4:measured"}   # Getting measured temperature from thermostat in °F, read only
+Number ThermostatMode   {channel="nikohomecontrol:thermostat:nhc1:4:mode"}        # Get and set thermostat mode
+Number:Temperature SetTemperature   "[%.1f °C]"  {channel="nikohomecontrol:thermostat:nhc1:4:setpoint"}   # Get and set target temperature in °C
+Number OverruleDuration {channel="nikohomecontrol:thermostat:nhc1:4:overruletime} # Get and set the overrule time
 ```
 
 .sitemap:
@@ -159,6 +196,10 @@ Switch item=LivingRoom
 Slider item=TVRoom
 Switch item=TVRoom          # allows switching dimmer item off or on (with controller defined behavior)
 Rollershutter item=Kitchen
+Text item=CurTemperature
+Selection item=ThermostatMode mappings="[0="day", 1="night", 2="eco", 3="off", 4="cool", 5="prog 1", 6="prog 2", 7="prog 3"]
+Setpoint item=SetTemperature minValue=0 maxValue=30
+Slider item=OverruleDuration minValue=0 maxValue=120
 ```
 
 Example trigger rule:

@@ -1,7 +1,8 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.voice.voicerss
 Bundle-ActivationPolicy: lazy
 Bundle-ManifestVersion: 2
-Bundle-Name: VoiceRSS TTS Voice Service
+Bundle-Name: VoiceRSS Text-to-Speech
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.voice.voicerss;singleton:=true
 Bundle-Vendor: openHAB

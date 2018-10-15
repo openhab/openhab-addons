@@ -12,7 +12,7 @@
 			<parameter name="host" type="text" required="true">
 				<label>Host</label>
 				<description>The Host address of the PowerView Hub.</description>
-				<context>network_address</context>
+				<context>network-address</context>
 			</parameter>
 			<parameter name="refresh" type="integer" required="false">
 				<label>Refresh Interval</label>

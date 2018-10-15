@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.zway.internal.config;
 
-import static org.openhab.binding.zway.ZWayBindingConstants.*;
+import static org.openhab.binding.zway.internal.ZWayBindingConstants.*;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 

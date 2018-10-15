@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.nikohomecontrol.internal.discovery;
 
-import static org.openhab.binding.nikohomecontrol.NikoHomeControlBindingConstants.*;
+import static org.openhab.binding.nikohomecontrol.internal.NikoHomeControlBindingConstants.*;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -21,7 +21,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.nikohomecontrol.NikoHomeControlBindingConstants;
+import org.openhab.binding.nikohomecontrol.internal.NikoHomeControlBindingConstants;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlDiscover;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.nikohomecontrol")
 public class NikoHomeControlBridgeDiscoveryService extends AbstractDiscoveryService {
 
-    private Logger logger = LoggerFactory.getLogger(NikoHomeControlBridgeDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(NikoHomeControlBridgeDiscoveryService.class);
 
     private ScheduledFuture<?> nhcDiscoveryJob;
 

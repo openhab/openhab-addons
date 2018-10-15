@@ -16,8 +16,7 @@ import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
  * Requests generic device information. This message is answered by an {@link InformationResponseMessage} which contains
  * the device information.
  *
- * @author Karel Goderis
- * @author Wouter Born - Initial contribution
+ * @author Wouter Born, Karel Goderis - Initial contribution
  */
 public class InformationRequestMessage extends Message {
 

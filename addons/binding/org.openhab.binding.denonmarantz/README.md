@@ -58,27 +58,26 @@ The DenonMarantz AVR supports the following channels (some channels are model sp
 
 | Channel Type ID         | Item Type    | Description  |
 |-------------------------|--------------|--------------|
-| General
+| *General*
 |  general#power            | Switch (RW) | Power on/off 
 |  general#surroundProgram  | String (R) | current surround program (e.g. STEREO)
 |  general#artist | String (R) | artist of current track
 |  general#album | String (R) |  album of current track
 |  general#track | String (R) |  title of current track
 |  general#command          | String (W) | Command to send to the AVR (for use in Rules)
-|Now Playing
-| Main zone
+| *Main zone*
 |  mainZone#power    | Switch (RW) | Main zone power on/off
 |  mainZone#volume       | Dimmer (RW) | Main zone volume
 |  mainZone#volumeDB     | Number (RW) | Main zone volume in dB (-80 offset)
 |  mainZone#mute             | Switch (RW) | Main zone mute
 |  mainZone#input            | String (RW) | Main zone input (e.g. TV, TUNER, ..)
-|  Zone 2
+|  *Zone 2*
 |  zone2#power | Switch (RW) | Zone 2 power on/off
 |  zone2#volume | Dimmer (RW) | Zone 2 volume
 |  zone2#volumeDB | Number (RW) | Zone 2 volume in dB (-80 offset)
 |  zone2#mute | Switch (RW) | Zone 2 mute
 |  zone2#input | String (RW) | Zone 2 input
-|  Zone 3
+|  *Zone 3*
 |  zone3#power | Switch (RW) | Zone 3 power on/off
 |  zone3#volume | Dimmer (RW) | Zone 3 volume
 |  zone3#volumeDB | Number (RW) | Zone 3 volume in dB (-80 offset)

@@ -8,14 +8,14 @@
  */
 package org.openhab.binding.dlinksmarthome.internal;
 
-import static org.openhab.binding.dlinksmarthome.DLinkSmartHomeBindingConstants.*;
+import static org.openhab.binding.dlinksmarthome.internal.DLinkSmartHomeBindingConstants.*;
 
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.dlinksmarthome.handler.DLinkMotionSensorHandler;
+import org.openhab.binding.dlinksmarthome.internal.handler.DLinkMotionSensorHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**

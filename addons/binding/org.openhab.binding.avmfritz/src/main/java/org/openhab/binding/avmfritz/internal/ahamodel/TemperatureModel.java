@@ -20,7 +20,6 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  *
  * @author Robert Bausdorf - Initial contribution
  * @author Christoph Weitkamp - Refactoring of temperature conversion from celsius to FRITZ!Box values
- *
  */
 @XmlRootElement(name = "temperature")
 @XmlType(propOrder = { "celsius", "offset" })

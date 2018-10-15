@@ -18,7 +18,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.openhab.binding.nikohomecontrol.handler.NikoHomeControlBridgeHandler;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,12 +44,16 @@ import com.google.gson.JsonParseException;
  *
  * @author Mark Herwege - Initial Contribution
  */
+@NonNullByDefault
 public final class NikoHomeControlCommunication {
 
-    private Logger logger = LoggerFactory.getLogger(NikoHomeControlCommunication.class);
+    private final Logger logger = LoggerFactory.getLogger(NikoHomeControlCommunication.class);
 
+    @Nullable
     private Socket nhcSocket;
+    @Nullable
     private PrintWriter nhcOut;
+    @Nullable
     private BufferedReader nhcIn;
 
     private boolean listenerStopped;
@@ -60,7 +66,9 @@ public final class NikoHomeControlCommunication {
     private final NhcSystemInfo systemInfo = new NhcSystemInfo();
     private final Map<Integer, NhcLocation> locations = new HashMap<>();
     private final Map<Integer, NhcAction> actions = new HashMap<>();
+    private final Map<Integer, NhcThermostat> thermostats = new HashMap<>();
 
+    @Nullable
     private NikoHomeControlBridgeHandler bridgeCallBack;
 
     /**
@@ -84,6 +92,7 @@ public final class NikoHomeControlCommunication {
      *
      */
     public synchronized void startCommunication() {
+        NikoHomeControlBridgeHandler handler = this.bridgeCallBack;
         try {
             for (int i = 1; nhcEventsRunning && (i <= 5); i++) {
                 // the events listener thread did not finish yet, so wait max 5000ms before restarting
@@ -96,13 +105,17 @@ public final class NikoHomeControlCommunication {
                 throw new IOException();
             }
 
-            InetAddress addr = bridgeCallBack.getAddr();
-            int port = bridgeCallBack.getPort();
+            if (handler == null) {
+                throw new IOException();
+            }
+            InetAddress addr = handler.getAddr();
+            int port = handler.getPort();
 
-            this.nhcSocket = new Socket(addr, port);
-            this.nhcOut = new PrintWriter(this.nhcSocket.getOutputStream(), true);
-            this.nhcIn = new BufferedReader(new InputStreamReader(this.nhcSocket.getInputStream()));
-            logger.debug("Niko Home Control: connected via local port {} from thread {}", nhcSocket.getLocalPort(),
+            Socket socket = new Socket(addr, port);
+            this.nhcSocket = socket;
+            this.nhcOut = new PrintWriter(socket.getOutputStream(), true);
+            this.nhcIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            logger.debug("Niko Home Control: connected via local port {} from thread {}", socket.getLocalPort(),
                     Thread.currentThread().getId());
 
             // initialize all info in local fields
@@ -116,7 +129,9 @@ public final class NikoHomeControlCommunication {
             logger.warn("Niko Home Control: error initializing communication from thread {}",
                     Thread.currentThread().getId());
             stopCommunication();
-            this.bridgeCallBack.bridgeOffline();
+            if (handler != null) {
+                handler.bridgeOffline();
+            }
         }
     }
 
@@ -127,9 +142,10 @@ public final class NikoHomeControlCommunication {
     public synchronized void stopCommunication() {
         this.listenerStopped = true;
 
-        if (this.nhcSocket != null) {
+        Socket socket = this.nhcSocket;
+        if (socket != null) {
             try {
-                this.nhcSocket.close();
+                socket.close();
             } catch (IOException ignore) {
                 // ignore IO Error when trying to close the socket if the intention is to close it anyway
             }
@@ -175,9 +191,16 @@ public final class NikoHomeControlCommunication {
         listenerStopped = false;
         nhcEventsRunning = true;
 
+        BufferedReader reader = this.nhcIn;
+
         try {
-            while (!listenerStopped & ((nhcMessage = nhcIn.readLine()) != null)) {
-                readMessage(nhcMessage);
+            if (reader == null) {
+                throw new IOException();
+            }
+            while (!listenerStopped & ((nhcMessage = reader.readLine()) != null)) {
+                if (nhcMessage != null) {
+                    readMessage(nhcMessage);
+                }
             }
         } catch (IOException e) {
             if (!listenerStopped) {
@@ -217,10 +240,16 @@ public final class NikoHomeControlCommunication {
                 cmdListLocations(((NhcMessageListMap) nhcMessageGson).getData());
             } else if ("listactions".equals(cmd)) {
                 cmdListActions(((NhcMessageListMap) nhcMessageGson).getData());
+            } else if (("listthermostat").equals(cmd)) {
+                cmdListThermostat(((NhcMessageListMap) nhcMessageGson).getData());
             } else if ("executeactions".equals(cmd)) {
                 cmdExecuteActions(((NhcMessageMap) nhcMessageGson).getData());
+            } else if ("executethermostat".equals(cmd)) {
+                cmdExecuteThermostat(((NhcMessageMap) nhcMessageGson).getData());
             } else if ("listactions".equals(event)) {
                 eventListActions(((NhcMessageListMap) nhcMessageGson).getData());
+            } else if ("listthermostat".equals(event)) {
+                eventListThermostat(((NhcMessageListMap) nhcMessageGson).getData());
             } else if ("getalarms".equals(event)) {
                 eventGetAlarms(((NhcMessageMap) nhcMessageGson).getData());
             } else {
@@ -253,7 +282,11 @@ public final class NikoHomeControlCommunication {
 
     private void sendAndReadMessage(String command) throws IOException {
         sendMessage(new NhcMessageCmd(command));
-        readMessage(this.nhcIn.readLine());
+        BufferedReader reader = this.nhcIn;
+        if (reader == null) {
+            throw new IOException("Cannot read from socket, reader not connected.");
+        }
+        readMessage(reader.readLine());
     }
 
     private void cmdSystemInfo(Map<String, String> data) {
@@ -322,8 +355,10 @@ public final class NikoHomeControlCommunication {
             int id = Integer.parseInt(action.get("id"));
             Integer state = Integer.valueOf(action.get("value1"));
             String value2 = action.get("value2");
+            @SuppressWarnings("null")
             Integer closeTime = (value2 == null ? null : Integer.valueOf(value2));
             String value3 = action.get("value3");
+            @SuppressWarnings("null")
             Integer openTime = (value3 == null ? null : Integer.valueOf(value3));
 
             if (!this.actions.containsKey(id)) {
@@ -331,7 +366,7 @@ public final class NikoHomeControlCommunication {
                 String name = action.get("name");
                 Integer type = Integer.valueOf(action.get("type"));
                 Integer locationId = Integer.valueOf(action.get("location"));
-                String location = null;
+                String location = "";
                 if (locationId != null) {
                     location = this.locations.get(locationId).getName();
                 }
@@ -348,10 +383,58 @@ public final class NikoHomeControlCommunication {
         }
     }
 
+    private void cmdListThermostat(List<Map<String, String>> data) {
+        logger.debug("Niko Home Control: list thermostats");
+
+        for (Map<String, String> thermostat : data) {
+
+            int id = Integer.parseInt(thermostat.get("id"));
+            Integer measured = Integer.valueOf(thermostat.get("measured"));
+            Integer setpoint = Integer.valueOf(thermostat.get("setpoint"));
+            Integer mode = Integer.valueOf(thermostat.get("mode"));
+            Integer overrule = Integer.valueOf(thermostat.get("overrule"));
+            // overruletime received in "HH:MM" format
+            String[] overruletimeStrings = thermostat.get("overruletime").split(":");
+            Integer overruletime = 0;
+            if (overruletimeStrings.length == 2) {
+                overruletime = Integer.valueOf(overruletimeStrings[0]) * 60 + Integer.valueOf(overruletimeStrings[1]);
+            }
+            Integer ecosave = Integer.valueOf(thermostat.get("ecosave"));
+
+            if (!this.thermostats.containsKey(id)) {
+                // Initial instantiation of NhcThermostat class for thermostat object
+                String name = thermostat.get("name");
+                Integer locationId = Integer.valueOf(thermostat.get("location"));
+                String location = "";
+                if (locationId != null) {
+                    location = this.locations.get(locationId).getName();
+                }
+                NhcThermostat nhcThermostat = new NhcThermostat(id, name, location);
+                nhcThermostat.updateState(measured, setpoint, mode, overrule, overruletime, ecosave);
+                nhcThermostat.setNhcComm(this);
+                this.thermostats.put(id, nhcThermostat);
+            } else {
+                // Thermostat object already exists, so only update state.
+                // If we would re-instantiate thermostat, we would lose pointer back from thermostat to thing handler
+                // that was set in thing handler initialize().
+                this.thermostats.get(id).updateState(measured, setpoint, mode, overrule, overruletime, ecosave);
+            }
+        }
+    }
+
     private void cmdExecuteActions(Map<String, String> data) {
         Integer errorCode = Integer.valueOf(data.get("error"));
         if (errorCode.equals(0)) {
             logger.debug("Niko Home Control: execute action success");
+        } else {
+            logger.warn("Niko Home Control: error code {} returned on command execution", errorCode);
+        }
+    }
+
+    private void cmdExecuteThermostat(Map<String, String> data) {
+        Integer errorCode = Integer.valueOf(data.get("error"));
+        if (errorCode.equals(0)) {
+            logger.debug("Niko Home Control: execute thermostats success");
         } else {
             logger.warn("Niko Home Control: error code {} returned on command execution", errorCode);
         }
@@ -370,17 +453,52 @@ public final class NikoHomeControlCommunication {
         }
     }
 
+    private void eventListThermostat(List<Map<String, String>> data) {
+        for (Map<String, String> thermostat : data) {
+            int id = Integer.parseInt(thermostat.get("id"));
+            if (!this.thermostats.containsKey(id)) {
+                logger.warn("Niko Home Control: thermostat in controller not known {}", id);
+                return;
+            }
+
+            Integer measured = Integer.valueOf(thermostat.get("measured"));
+            Integer setpoint = Integer.valueOf(thermostat.get("setpoint"));
+            Integer mode = Integer.valueOf(thermostat.get("mode"));
+            Integer overrule = Integer.valueOf(thermostat.get("overrule"));
+            // overruletime received in "HH:MM" format
+            String[] overruletimeStrings = thermostat.get("overruletime").split(":");
+            Integer overruletime = 0;
+            if (overruletimeStrings.length == 2) {
+                overruletime = Integer.valueOf(overruletimeStrings[0]) * 60 + Integer.valueOf(overruletimeStrings[1]);
+            }
+            Integer ecosave = Integer.valueOf(thermostat.get("ecosave"));
+
+            logger.debug(
+                    "Niko Home Control: event execute thermostat {} with measured {}, setpoint {}, mode {}, overrule {}, overruletime {}, ecosave {}",
+                    id, measured, setpoint, mode, overrule, overruletime, ecosave);
+            this.thermostats.get(id).updateState(measured, setpoint, mode, overrule, overruletime, ecosave);
+        }
+    }
+
     private void eventGetAlarms(Map<String, String> data) {
+        NikoHomeControlBridgeHandler handler = this.bridgeCallBack;
+
         Integer type = Integer.valueOf(data.get("type"));
         String alarmText = data.get("text");
+
+        if (handler == null) {
+            logger.error("Niko Home Control: triggering alarm '{}' but no bridge handler", alarmText);
+            return;
+        }
+
         switch (type) {
             case 0:
                 logger.debug("Niko Home Control: alarm - {}", alarmText);
-                bridgeCallBack.triggerAlarm(alarmText);
+                handler.triggerAlarm(alarmText);
                 break;
             case 1:
                 logger.debug("Niko Home Control: notice - {}", alarmText);
-                bridgeCallBack.triggerNotice(alarmText);
+                handler.triggerNotice(alarmText);
                 break;
             default:
                 logger.debug("Niko Home Control: unexpected message type {}", type);
@@ -393,16 +511,22 @@ public final class NikoHomeControlCommunication {
      * @param nhcMessage
      */
     synchronized void sendMessage(Object nhcMessage) {
+        PrintWriter writer = this.nhcOut;
         String json = gsonOut.toJson(nhcMessage);
         logger.debug("Niko Home Control: send json {} from thread {}", json, Thread.currentThread().getId());
-        this.nhcOut.println(json);
-        if (this.nhcOut.checkError()) {
+        if (writer != null) {
+            writer.println(json);
+        }
+        if ((writer == null) || (writer.checkError())) {
             logger.warn("Niko Home Control: error sending message, trying to restart communication");
             restartCommunication();
             // retry sending after restart
             logger.debug("Niko Home Control: resend json {} from thread {}", json, Thread.currentThread().getId());
-            this.nhcOut.println(json);
-            if (this.nhcOut.checkError()) {
+            writer = this.nhcOut;
+            if (writer != null) {
+                writer.println(json);
+            }
+            if ((writer == null) || (writer.checkError())) {
                 logger.warn("Niko Home Control: error resending message");
 
             }
@@ -425,6 +549,15 @@ public final class NikoHomeControlCommunication {
      */
     public Map<Integer, NhcAction> getActions() {
         return this.actions;
+    }
+
+    /**
+     * Return all thermostats in the Niko Home Control Controller.
+     *
+     * @return <code>Map&ltInteger, {@link NhcThermostat}></code>
+     */
+    public Map<Integer, NhcThermostat> getThermostats() {
+        return this.thermostats;
     }
 
     /**

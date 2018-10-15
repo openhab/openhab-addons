@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.network.internal;
 
-import static org.openhab.binding.network.NetworkBindingConstants.*;
+import static org.openhab.binding.network.internal.NetworkBindingConstants.*;
 
 import java.util.Map;
 
@@ -19,7 +19,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.network.handler.NetworkHandler;
+import org.openhab.binding.network.internal.handler.NetworkHandler;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;

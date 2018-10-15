@@ -11,6 +11,7 @@ package org.openhab.binding.nest.internal.data;
 /**
  * Interface for uniquely identifiable Nest objects (device or a structure).
  *
+ * @author Wouter Born - Initial contribution
  * @author Wouter Born - Simplify working with deviceId and structureId
  */
 public interface NestIdentifiable {

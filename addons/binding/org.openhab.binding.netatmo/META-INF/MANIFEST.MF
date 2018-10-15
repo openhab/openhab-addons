@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.netatmo
 Bundle-ClassPath: .,
  lib/retrofit-1.9.0.jar,
  lib/okhttp-2.3.0.jar,
@@ -15,9 +16,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.netatmo;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
-Export-Package: 
- org.openhab.binding.netatmo,
- org.openhab.binding.netatmo.handler
 Import-Package: 
  javax.measure,
  javax.measure.quantity,
@@ -36,8 +34,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.io.net.http,
- org.openhab.binding.netatmo,
- org.openhab.binding.netatmo.handler,
  org.osgi.framework,
  org.osgi.service.http,
  org.slf4j

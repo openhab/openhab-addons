@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.airquality
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
@@ -12,7 +13,6 @@ Export-Package:
  org.openhab.binding.airquality.handler,
  org.openhab.binding.airquality.json
 Import-Package: 
- com.google.common.collect,
  com.google.gson,
  com.google.gson.annotations,
  javax.measure,

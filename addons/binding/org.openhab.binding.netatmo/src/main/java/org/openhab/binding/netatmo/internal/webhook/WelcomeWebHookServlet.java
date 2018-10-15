@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.openhab.binding.netatmo.handler.NetatmoBridgeHandler;
+import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
@@ -85,8 +85,12 @@ public class WelcomeWebHookServlet extends HttpServlet {
     }
 
     private String inputStreamToString(HttpServletRequest req) throws IOException {
-        Scanner scanner = new Scanner(req.getInputStream()).useDelimiter("\\A");
-        return scanner.hasNext() ? scanner.next() : "";
+        String value = "";
+        try (Scanner scanner = new Scanner(req.getInputStream())) {
+            scanner.useDelimiter("\\A");
+            value = scanner.hasNext() ? scanner.next() : "";
+        }
+        return value;
     }
 
     private void setHeaders(HttpServletResponse response) {

@@ -12,6 +12,6 @@
   <artifactId>org.openhab.binding.tplinksmarthome</artifactId>
   <packaging>eclipse-plugin</packaging>
 
-  <name>TPLinkSmartHome Binding</name>
+  <name>TP-Link Smart Home Binding</name>
 
 </project>

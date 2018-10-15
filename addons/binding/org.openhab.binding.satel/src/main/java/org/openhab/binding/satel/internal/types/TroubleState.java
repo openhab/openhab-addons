@@ -12,7 +12,6 @@ package org.openhab.binding.satel.internal.types;
  * Supported troubles.
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.10.0
  */
 public enum TroubleState implements StateType {
     // part 1

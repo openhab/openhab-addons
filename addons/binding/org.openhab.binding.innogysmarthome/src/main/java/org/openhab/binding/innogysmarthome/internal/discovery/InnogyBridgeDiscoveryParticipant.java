@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.innogysmarthome.internal.discovery;
 
-import static org.openhab.binding.innogysmarthome.InnogyBindingConstants.THING_TYPE_BRIDGE;
+import static org.openhab.binding.innogysmarthome.internal.InnogyBindingConstants.THING_TYPE_BRIDGE;
 
 import java.util.Collections;
 import java.util.Set;

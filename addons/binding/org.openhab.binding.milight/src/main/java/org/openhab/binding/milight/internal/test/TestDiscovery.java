@@ -10,7 +10,7 @@ package org.openhab.binding.milight.internal.test;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
-import org.openhab.binding.milight.MilightBindingConstants;
+import org.openhab.binding.milight.internal.MilightBindingConstants;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
  * Enable this in OSGI-INF/TestDiscovery.xml with enabled="true".
  *
  * @author David Graeff - Initial contribution
- * @since 2.1
  */
 @Component(service = DiscoveryService.class, immediate = true, enabled = false)
 public class TestDiscovery extends AbstractDiscoveryService {

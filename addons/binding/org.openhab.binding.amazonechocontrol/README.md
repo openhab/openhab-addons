@@ -109,7 +109,7 @@ All Amazon devices (echo, echospot, echoshow, wha) needs the following configura
 |--------------------------|----------------------------------------------------|
 | serialNumber             | Serial number of the amazon echo in the Alexa app  |
 
-You will find the serial number in the alexa app.
+You will find the serial number in the alexa app or on the webpage YOUR_OPENHAB/amazonechocontrol/YOUR_ACCOUNT (e.g. http://openhab:8080/amazonechocontrol/account1).
 
 ### Flash Briefing Profile
 
@@ -173,56 +173,56 @@ Take a look in the channel description above to know, which channels are support
 Group Alexa_Living_Room <player>
 
 // Player control
-Player Echo_Living_Room_Player               "Player"                            (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:player"}
-Dimmer Echo_Living_Room_Volume               "Volume [%.0f %%]" <soundvolume>    (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:volume"}
-Switch Echo_Living_Room_Shuffle              "Shuffle"                           (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:shuffle"}
+Player Echo_Living_Room_Player                "Player"                                (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:player"}
+Dimmer Echo_Living_Room_Volume                "Volume [%.0f %%]" <soundvolume>        (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:volume"}
+Switch Echo_Living_Room_Shuffle               "Shuffle"                               (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:shuffle"}
 
 // Player Information
-String Echo_Living_Room_ImageUrl             "Image URL"                         (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:imageUrl"}
-String Echo_Living_Room_Title                "Title"                             (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:title"}
-String Echo_Living_Room_Subtitle1            "Subtitle 1"                        (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:subtitle1"}
-String Echo_Living_Room_Subtitle2            "Subtitle 2"                        (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:subtitle2"}
-String Echo_Living_Room_ProviderDisplayName  "Provider"                          (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:providerDisplayName"}
+String Echo_Living_Room_ImageUrl              "Image URL"                             (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:imageUrl"}
+String Echo_Living_Room_Title                 "Title"                                 (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:title"}
+String Echo_Living_Room_Subtitle1             "Subtitle 1"                            (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:subtitle1"}
+String Echo_Living_Room_Subtitle2             "Subtitle 2"                            (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:subtitle2"}
+String Echo_Living_Room_ProviderDisplayName   "Provider"                              (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:providerDisplayName"}
 
 // Music provider and start command
-String Echo_Living_Room_MusicProviderId      "Music Provider Id"                 (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:musicProviderId"}
-String Echo_Living_Room_PlayMusicCommand     "Play music voice command (Write Only)" (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:playMusicVoiceCommand"}
-String Echo_Living_Room_StartCommand         "Start Information" (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:startCommand"}
+String Echo_Living_Room_MusicProviderId       "Music Provider Id"                     (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:musicProviderId"}
+String Echo_Living_Room_PlayMusicCommand      "Play music voice command (Write Only)" (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:playMusicVoiceCommand"}
+String Echo_Living_Room_StartCommand          "Start Information" (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:startCommand"}
 
 // TuneIn Radio
-String Echo_Living_Room_RadioStationId       "TuneIn Radio Station Id"           (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:radioStationId"}
-Switch Echo_Living_Room_Radio                "TuneIn Radio"                      (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:radio"}
+String Echo_Living_Room_RadioStationId        "TuneIn Radio Station Id"               (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:radioStationId"}
+Switch Echo_Living_Room_Radio                 "TuneIn Radio"                          (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:radio"}
 
 // Amazon Music
-String Echo_Living_Room_AmazonMusicTrackId    "Amazon Music Track Id"            (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:amazonMusicTrackId"}
-String Echo_Living_Room_AmazonMusicPlayListId "Amazon Music Playlist Id"  (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:amazonMusicPlayListId"}
-Switch Echo_Living_Room_AmazonMusic           "Amazon Music"                     (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:amazonMusic"}
+String Echo_Living_Room_AmazonMusicTrackId    "Amazon Music Track Id"                 (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:amazonMusicTrackId"}
+String Echo_Living_Room_AmazonMusicPlayListId "Amazon Music Playlist Id"              (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:amazonMusicPlayListId"}
+Switch Echo_Living_Room_AmazonMusic           "Amazon Music"                          (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:amazonMusic"}
 
 // Bluetooth
-String Echo_Living_Room_BluetoothMAC          "Bluetooth MAC Address" <bluetooth> (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:bluetoothMAC"}
-Switch Echo_Living_Room_Bluetooth            "Bluetooth"        <bluetooth>      (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:bluetooth"}
-String Echo_Living_Room_BluetoothDeviceName  "Bluetooth Device" <bluetooth>      (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:bluetoothDeviceName"}
+String Echo_Living_Room_BluetoothMAC          "Bluetooth MAC Address" <bluetooth>     (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:bluetoothMAC"}
+Switch Echo_Living_Room_Bluetooth             "Bluetooth"             <bluetooth>     (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:bluetooth"}
+String Echo_Living_Room_BluetoothDeviceName   "Bluetooth Device"      <bluetooth>     (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:bluetoothDeviceName"}
 
 // Commands
-String Echo_Living_Room_TTS                "Text to Speech"                           (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:textToSpeech"}
-String Echo_Living_Room_Remind                "Remind"                           (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:remind"}
-String Echo_Living_Room_PlayAlarmSound         "Play Alarm Sound"                           (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:playAlarmSound"}
-String Echo_Living_Room_StartRoutine         "Start Routine"                           (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:startRoutine"}
+String Echo_Living_Room_TTS                   "Text to Speech"                        (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:textToSpeech"}
+String Echo_Living_Room_Remind                "Remind"                                (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:remind"}
+String Echo_Living_Room_PlayAlarmSound        "Play Alarm Sound"                      (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:playAlarmSound"}
+String Echo_Living_Room_StartRoutine          "Start Routine"                         (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:startRoutine"}
 
 // Flashbriefings
-Switch FlashBriefing_Technical_Save  "Save (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:save"} 
+Switch FlashBriefing_Technical_Save   "Save (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:save"} 
 Switch FlashBriefing_Technical_Active "Active" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:active"}
-String FlashBriefing_Technical_Play "Play (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:playOnDevice"}
+String FlashBriefing_Technical_Play   "Play (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:playOnDevice"}
 
-Switch FlashBriefing_LifeStyle_Save  "Save (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:save"} 
+Switch FlashBriefing_LifeStyle_Save   "Save (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:save"} 
 Switch FlashBriefing_LifeStyle_Active "Active" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:active"}
-String FlashBriefing_LifeStyle_Play "Play (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:playOnDevice"}
+String FlashBriefing_LifeStyle_Play   "Play (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:playOnDevice"}
 ```
 
 ### amazonechocontrol.sitemap:
 
 ```
-sitemap amzonechocontrol label="Echo Devices"
+sitemap amazonechocontrol label="Echo Devices"
 {
         Frame label="Alexa" {
             Default   item=Echo_Living_Room_Player
@@ -230,46 +230,46 @@ sitemap amzonechocontrol label="Echo Devices"
             Switch    item=Echo_Living_Room_Shuffle
             Image     item=Echo_Living_Room_ImageUrl      label=""
             Text      item=Echo_Living_Room_Title
-            Text      item=Echo_Living_Room_Subtitle1     
+            Text      item=Echo_Living_Room_Subtitle1
             Text      item=Echo_Living_Room_Subtitle2
             Text      item=Echo_Living_Room_ProviderDisplayName
-            
+
             // The listed providers are only samples, you could have more
-            Selection item=Echo_Living_Room_MusicProviderId mappings=[ 'TUNEIN'='Radio', 'SPOTIFY'='Spotify', 'AMAZON_MUSIC'='Amazon Music', 'CLOUDPLAYER'='Amazon']  
+            Selection item=Echo_Living_Room_MusicProviderId mappings=[ 'TUNEIN'='Radio', 'SPOTIFY'='Spotify', 'AMAZON_MUSIC'='Amazon Music', 'CLOUDPLAYER'='Amazon']
             Text    item=Echo_Living_Room_MusicProviderId
-                       
-            // To start one of your flashbriefings use Flashbriefing.<YOUR FLASHBRIEFING THING ID>    
-            Selection item=Echo_Living_Room_StartCommand mappings=[ 'Weather'='Weather', 'Traffic'='Traffic', 'GoodMorning'='Good Morning', 'SingASong'='Song', 'TellStory'='Story', 'FlashBriefing'='Flash Briefing', 'FlashBriefing.flashbriefing1'='Technical', 'FlashBriefing.flashbriefing2'='Life Style' ]       
-                       
+
+            // To start one of your flashbriefings use Flashbriefing.<YOUR FLASHBRIEFING THING ID>
+            Selection item=Echo_Living_Room_StartCommand mappings=[ 'Weather'='Weather', 'Traffic'='Traffic', 'GoodMorning'='Good Morning', 'SingASong'='Song', 'TellStory'='Story', 'FlashBriefing'='Flash Briefing', 'FlashBriefing.flashbriefing1'='Technical', 'FlashBriefing.flashbriefing2'='Life Style' ]
+
             Selection item=Echo_Living_Room_RadioStationId mappings=[ ''='Off', 's1139'='Antenne Steiermark', 's8007'='Hitradio Ö3', 's16793'='Radio 10', 's8235'='FM4' ]
             Text    item=Echo_Living_Room_RadioStationId
-            Switch  item=Echo_Living_Room_Radio      
-            
+            Switch  item=Echo_Living_Room_Radio
+
             Text    item=Echo_Living_Room_AmazonMusicTrackId
             Text    item=Echo_Living_Room_AmazonMusicPlayListId
             Switch  item=Echo_Living_Room_AmazonMusic
-            
+
             Text    item=Echo_Living_Room_BluetoothMAC
             // Change the <YOUR_DEVICE_MAC> Place holder with the MAC address shown, if alexa is connected to the device
-            Selection item=Echo_Living_Room_BluetoothMAC mappings=[ ''='Disconnected', '<YOUR_DEVICE_MAC>'='Bluetooth Device 1', '<YOUR_DEVICE_MAC>'='Bluetooth Device 2']       
-                 
-            // These are only view of the possible options. Enable ShowIDsInGUI in the binding configuration and look in drop-down-box of this channel in the Paper UI Control section     
-            Selection item=Echo_Living_Room_PlayAlarmSound mappings=[ ''='None', 'ECHO:system_alerts_soothing_01'='Adrift', 'ECHO:system_alerts_atonal_02'='Clangy']       
+            Selection item=Echo_Living_Room_BluetoothMAC mappings=[ ''='Disconnected', '<YOUR_DEVICE_MAC>'='Bluetooth Device 1', '<YOUR_DEVICE_MAC>'='Bluetooth Device 2']
+
+            // These are only view of the possible options. Enable ShowIDsInGUI in the binding configuration and look in drop-down-box of this channel in the Paper UI Control section
+            Selection item=Echo_Living_Room_PlayAlarmSound mappings=[ ''='None', 'ECHO:system_alerts_soothing_01'='Adrift', 'ECHO:system_alerts_atonal_02'='Clangy']
 
             Switch  item=Echo_Living_Room_Bluetooth
-            Text    item=Echo_Living_Room_BluetoothDeviceName           
+            Text    item=Echo_Living_Room_BluetoothDeviceName
         }
-        
+
         Frame label="Flash Briefing Technical" {
             Switch  item=FlashBriefing_Technical_Save
             Switch  item=FlashBriefing_Technical_Active
-            Text  item=FlashBriefing_Technical_Play
+            Text    item=FlashBriefing_Technical_Play
         }
-        
+
         Frame label="Flash Briefing Life Style" {
             Switch  item=FlashBriefing_LifeStyle_Save
             Switch  item=FlashBriefing_LifeStyle_Active
-            Text  item=FlashBriefing_LifeStyle_Play
+            Text    item=FlashBriefing_LifeStyle_Play
         }
 }
 ```

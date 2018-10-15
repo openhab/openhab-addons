@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.synopanalyzer.internal.config;
 
-import org.openhab.binding.synopanalyzer.handler.SynopAnalyzerHandler;
+import org.openhab.binding.synopanalyzer.internal.handler.SynopAnalyzerHandler;
 
 /**
  * The {@link SynopAnalyzerConfiguration} is responsible for holding configuration
