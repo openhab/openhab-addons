@@ -8,12 +8,13 @@
  */
 package org.openhab.binding.xmltv;
 
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * The {@link XmlTVBindingConstants} class defines common constants, which are
@@ -31,8 +32,8 @@ public class XmlTVBindingConstants {
     public static final ThingTypeUID XMLTV_CHANNEL_THING_TYPE = new ThingTypeUID(BINDING_ID, "Channel");
 
     // Channel groups
-    public static final String GROUP_CURRENT_PROGRAMME = "currentprog";
-    public static final String GROUP_NEXT_PROGRAMME = "nextprog";
+    public static final String GROUP_CURRENT_PROGRAM = "currentprog";
+    public static final String GROUP_NEXT_PROGRAM = "nextprog";
     public static final String GROUP_CHANNEL_PROPERTIES = "channelprops";
 
     // List of all Channel ids
@@ -51,6 +52,6 @@ public class XmlTVBindingConstants {
     public static final String CHANNEL_PROGRAM_TIMELEFT = "timeLeft";
 
     // Supported Thing types
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(XMLTV_FILE_BRIDGE_TYPE,
-            XMLTV_CHANNEL_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(XMLTV_FILE_BRIDGE_TYPE, XMLTV_CHANNEL_THING_TYPE).collect(Collectors.toSet()));
 }

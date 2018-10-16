@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javax.xml.bind.JAXBException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -29,6 +31,8 @@ import org.openhab.binding.xmltv.handler.XmlTVHandler;
 import org.openhab.binding.xmltv.internal.discovery.XmlTVDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link XmlTVHandlerFactory} is responsible for creating things and thing
@@ -39,6 +43,7 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 @Component(configurationPid = "binding.xmltv", service = ThingHandlerFactory.class)
 public class XmlTVHandlerFactory extends BaseThingHandlerFactory {
+    private final Logger logger = LoggerFactory.getLogger(XmlTVHandlerFactory.class);
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     @Override
@@ -51,9 +56,14 @@ public class XmlTVHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (XMLTV_FILE_BRIDGE_TYPE.equals(thingTypeUID)) {
-            XmlTVHandler bridgeHandler = new XmlTVHandler((Bridge) thing);
-            registerDeviceDiscoveryService(bridgeHandler);
-            return bridgeHandler;
+            XmlTVHandler bridgeHandler;
+            try {
+                bridgeHandler = new XmlTVHandler((Bridge) thing);
+                registerDeviceDiscoveryService(bridgeHandler);
+                return bridgeHandler;
+            } catch (JAXBException e) {
+                logger.error("Unable to create XmlTVHandler : {}", e.getMessage());
+            }
         } else if (XMLTV_CHANNEL_THING_TYPE.equals(thingTypeUID)) {
             return new ChannelHandler(thing);
         }

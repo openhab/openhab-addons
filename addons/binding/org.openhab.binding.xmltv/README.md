@@ -3,7 +3,7 @@
 This binding takes an XMLTV file as input and creates a thing for each channel contained in it.
 XmlTV channels are called Media Channels in this binding in order to avoid messing with ESH Channels.
 
-For each thing, you'll be able to grab informations regarding the current program and the next to come.
+For each thing, you'll be able to grab information regarding the current program and the next to come.
 
 ## Supported Things
 
@@ -31,7 +31,7 @@ Once the XmlTV bridge to a file is created, you can add all known channels by se
 | Channel Type ID | Item Type            | Description                         |
 |-----------------|----------------------|-------------------------------------|
 | iconUrl         | String               | Channel Icon URL                    |
-| icon            | Number:Energy        | Energy forecast                     |
+| icon            | Image                | Icon of the channel                 |
 
 ### Current program (currentprog) channels group
 
@@ -42,17 +42,17 @@ Once the XmlTV bridge to a file is created, you can add all known channels by se
 | progTitle       | String               | Program Title.                                |
 | progCategory    | String               | Program Category.                             |
 | progIcon        | String               | URL to an image of the program.               |
-| icon            | Image                | Icon of the channel / program                 |
-| elapsedTime     | Number:Time          | Current time of currently playing programme   |
-| remainingTime   | Number:Time          | Time remaining until end of the programme     |
-| progress        | Number:Dimensionless | Relative progression of the current programme |
+| icon            | Image                | Icon of the program                           |
+| elapsedTime     | Number:Time          | Current time of currently playing program     |
+| remainingTime   | Number:Time          | Time remaining until end of the program       |
+| progress        | Number:Dimensionless | Relative progression of the current program   |
 
 ### Next program (nextprog) channels group
 
 | Channel Type ID | Item Type            | Description                                   |
 |-----------------|----------------------|-----------------------------------------------|
 | progStart       | DateTime             | Program Start Time                            |
-| timeLeft        | Number:Time          | Time left before programme start              |
+| timeLeft        | Number:Time          | Time left before program start                |
 | progEnd         | DateTime             | Program End Time                              |
 | progTitle       | String               | Program Title.                                |
 | progCategory    | String               | Program Category.                             |

@@ -19,9 +19,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.RawType;
@@ -40,25 +39,33 @@ import org.openhab.binding.xmltv.internal.jaxb.Icon;
 import org.openhab.binding.xmltv.internal.jaxb.MediaChannel;
 import org.openhab.binding.xmltv.internal.jaxb.Programme;
 import org.openhab.binding.xmltv.internal.jaxb.Tv;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ChannelHandler} is responsible for handling informations
- * made available in regard of the channel and current programme
+ * The {@link ChannelHandler} is responsible for handling information
+ * made available in regard of the channel and current program
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public class ChannelHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(XmlTVHandler.class);
+
+    @NonNullByDefault({})
     private XmlTVHandler bridgeHandler;
+    @NonNullByDefault({})
     private XmlChannelConfiguration config;
-    private ScheduledFuture<?> globalJob = null;
+    @NonNullByDefault({})
+    private ScheduledFuture<?> globalJob;
+    @NonNullByDefault({})
     private MediaChannel mediaChannel;
+    @NonNullByDefault({})
     private RawType mediaIcon = new RawType(new byte[0], RawType.DEFAULT_MIME_TYPE);
+
     private RawType programIcon = new RawType(new byte[0], RawType.DEFAULT_MIME_TYPE);
 
-    @NonNull
-    public List<Programme> programmes = new ArrayList<Programme>();
+    public List<Programme> programmes = new ArrayList<>();
 
     public ChannelHandler(Thing thing) {
         super(thing);
@@ -70,22 +77,28 @@ public class ChannelHandler extends BaseThingHandler {
 
         logger.debug("Initializing Broadcast Channel handler for uid '{}'", getThing().getUID());
 
+        Bridge bridge = getBridge();
+        if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
+            bridgeHandler = (XmlTVHandler) bridge.getHandler();
+        }
+
         if (globalJob == null || globalJob.isCancelled()) {
             globalJob = scheduler.scheduleWithFixedDelay(globalRunnable, 3, config.refresh, TimeUnit.SECONDS);
         }
     }
 
     private Runnable globalRunnable = () -> {
-        if (programmes.size() < 2 && getBridgeHandler() != null) {
+        if (programmes.size() < 2) {
             Tv tv = getBridgeHandler().getXmlFile();
             if (tv != null) {
                 programmes.clear();
 
                 if (mediaChannel == null) {
-                    Optional<@NonNull MediaChannel> channel = tv.getMediaChannels().stream()
+                    Optional<MediaChannel> channel = tv.getMediaChannels().stream()
                             .filter(mediaChannel -> mediaChannel.getId().equals(config.channelId)).findFirst();
                     if (channel.isPresent()) {
-                        setMediaChannel(channel.get());
+                        this.mediaChannel = channel.get();
+                        mediaIcon = downloadIcon(mediaChannel.getIcons());
                     }
                 }
 
@@ -116,7 +129,7 @@ public class ChannelHandler extends BaseThingHandler {
     }
 
     @Override
-    public void handleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
+    public void handleCommand(ChannelUID channelUID, Command command) {
         // TODO Auto-generated method stub
     }
 
@@ -136,10 +149,10 @@ public class ChannelHandler extends BaseThingHandler {
      * @param channelUID the id identifying the channel to be updated
      *
      */
-    private void updateChannel(@NonNull ChannelUID channelUID) {
+    private void updateChannel(ChannelUID channelUID) {
         String[] uidElements = channelUID.getId().split("#");
-        if (mediaChannel != null && uidElements.length == 2) {
-            int target = GROUP_NEXT_PROGRAMME.equals(uidElements[0]) ? 1 : 0;
+        if (uidElements.length == 2) {
+            int target = GROUP_NEXT_PROGRAM.equals(uidElements[0]) ? 1 : 0;
             Programme programme = programmes.get(target);
 
             switch (uidElements[1]) {
@@ -212,11 +225,6 @@ public class ChannelHandler extends BaseThingHandler {
             return HttpUtil.downloadImage(url);
         }
         return new RawType(new byte[0], RawType.DEFAULT_MIME_TYPE);
-    }
-
-    private void setMediaChannel(MediaChannel mediaChannel) {
-        this.mediaChannel = mediaChannel;
-        mediaIcon = downloadIcon(mediaChannel.getIcons());
     }
 
 }
