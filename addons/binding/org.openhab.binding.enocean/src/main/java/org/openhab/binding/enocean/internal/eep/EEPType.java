@@ -82,6 +82,7 @@ import org.openhab.binding.enocean.internal.eep.A5_10.A5_10_20;
 import org.openhab.binding.enocean.internal.eep.A5_10.A5_10_21;
 import org.openhab.binding.enocean.internal.eep.A5_10.A5_10_22;
 import org.openhab.binding.enocean.internal.eep.A5_10.A5_10_23;
+import org.openhab.binding.enocean.internal.eep.A5_11.A5_11_03;
 import org.openhab.binding.enocean.internal.eep.A5_12.A5_12_01;
 import org.openhab.binding.enocean.internal.eep.A5_38.A5_38_08_Blinds;
 import org.openhab.binding.enocean.internal.eep.A5_38.A5_38_08_Dimming;
@@ -337,6 +338,9 @@ public enum EEPType {
             CHANNEL_RECEIVINGSTATE),
     SwitchWithEnergyMeasurment_12(RORG.VLD, 0x01, 0x12, true, D2_01_12.class, THING_TYPE_MEASUREMENTSWITCH,
             CHANNEL_GENERAL_SWITCHINGA, CHANNEL_GENERAL_SWITCHINGB, CHANNEL_RECEIVINGSTATE),
+
+    Rollershutter_A5(RORG._4BS, 0x11, 0x03, false, A5_11_03.class, THING_TYPE_ROLLERSHUTTER, CHANNEL_ROLLERSHUTTER,
+            CHANNEL_ANGLE, CHANNEL_RECEIVINGSTATE),
 
     Rollershutter_D2(RORG.VLD, 0x05, 0x00, true, D2_05_00.class, THING_TYPE_ROLLERSHUTTER, CHANNEL_ROLLERSHUTTER,
             CHANNEL_RECEIVINGSTATE);
