@@ -10,10 +10,8 @@
 		<description>Paradox Partition status</description>
 
 		<channels>
-			<channel id="partition1" typeId="partitionId" />
-			<channel id="partition2" typeId="partitionId" />
-			<channel id="partition3" typeId="partitionId" />
-			<channel id="partition4" typeId="partitionId" />
+			<channel id="state" typeId="state" />
+			<channel id="channelId" typeId="channelId" />
 		</channels>
 
 		<config-description>
@@ -32,11 +30,17 @@
 	</thing-type>
 
 	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
-		<item-type>Text</item-type>
-		<label>Partition status</label>
-		<description>Status of particular partition</description>
-		<state readOnly="true" pattern="%s" />
+	<channel-type id="state">
+		<item-type>String</item-type>
+		<label>Partition state</label>
+		<description>State of particular partition</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+	<channel-type id="channelId">
+		<item-type>String</item-type>
+		<label>Channel Id</label>
+		<description>Channel ID if necessary to be integrated somewhere in UI</description>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 </thing:thing-descriptions>

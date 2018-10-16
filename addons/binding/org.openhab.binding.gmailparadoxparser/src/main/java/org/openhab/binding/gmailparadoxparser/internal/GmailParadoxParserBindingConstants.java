@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.gmailparadoxparser.internal;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
@@ -30,8 +33,7 @@ public class GmailParadoxParserBindingConstants {
     public static final ThingTypeUID PARTITION_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "ParadoxSystem");
 
     // List of all Channel ids
-    public static final String PARTITION_1_ID = "partition1";
-    public static final String PARTITION_2_ID = "partition2";
-    public static final String PARTITION_3_ID = "partition3";
-    public static final String PARTITION_4_ID = "partition4";
+    public static final String STATE = "state";
+
+    public static Map<String, String> partitionIdMap = new HashMap<>();
 }

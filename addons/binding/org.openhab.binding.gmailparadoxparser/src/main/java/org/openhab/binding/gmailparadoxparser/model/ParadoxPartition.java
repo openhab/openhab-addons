@@ -1,14 +1,25 @@
 package org.openhab.binding.gmailparadoxparser.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ParadoxPartition implements Comparable<ParadoxPartition> {
+
+    private static Map<String, String> statesMap = new HashMap<>();
+    static {
+        statesMap.put("Disarming", "Disarmed");
+        statesMap.put("Arming", "Armed");
+    }
+
     String state;
-    String partition;
+    String id;
     String activatedBy;
     String time;
 
     public ParadoxPartition(String state, String partition, String activatedBy, String time) {
-        this.state = state;
-        this.partition = partition;
+        String translatedState = statesMap.get(state);
+        this.state = translatedState != null ? translatedState : state;
+        this.id = partition;
         this.activatedBy = activatedBy;
         this.time = time;
     }
@@ -23,16 +34,16 @@ public class ParadoxPartition implements Comparable<ParadoxPartition> {
 
     @Override
     public String toString() {
-        return "ParadoxPartition [partition= \"" + partition + "\", state=" + state + ", activatedBy=" + activatedBy
+        return "ParadoxPartition [partition= \"" + id + "\", state=" + state + ", activatedBy=" + activatedBy
                 + ", time=" + time + "]";
     }
 
     public String getPartition() {
-        return partition;
+        return id;
     }
 
     public void setPartition(String partition) {
-        this.partition = partition;
+        this.id = partition;
     }
 
     public String getActivatedBy() {
@@ -55,7 +66,7 @@ public class ParadoxPartition implements Comparable<ParadoxPartition> {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((partition == null) ? 0 : partition.hashCode());
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
         return result;
     }
 
@@ -71,11 +82,11 @@ public class ParadoxPartition implements Comparable<ParadoxPartition> {
             return false;
         }
         ParadoxPartition other = (ParadoxPartition) obj;
-        if (partition == null) {
-            if (other.partition != null) {
+        if (id == null) {
+            if (other.id != null) {
                 return false;
             }
-        } else if (!partition.equals(other.partition)) {
+        } else if (!id.equals(other.id)) {
             return false;
         }
         return true;

@@ -14,8 +14,9 @@ package org.openhab.binding.gmailparadoxparser.internal;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -44,7 +45,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class GmailParadoxParserHandler extends BaseThingHandler {
 
-    private static final int INITIAL_DELAY = 10; // sec
+    private static final int INITIAL_DELAY = 1; // sec
     private static final int DEFAULT_REFRESH_INTERVAL = 60; // sec
 
     private final Logger logger = LoggerFactory.getLogger(GmailParadoxParserHandler.class);
@@ -52,7 +53,7 @@ public class GmailParadoxParserHandler extends BaseThingHandler {
 
     @Nullable
     private GmailParadoxParserConfiguration config;
-    private static Set<ParadoxPartition> partitionsStates = new HashSet<ParadoxPartition>();
+    private static Map<String, ParadoxPartition> partitionsStates = new HashMap<String, ParadoxPartition>();
 
     @SuppressWarnings("null")
     public GmailParadoxParserHandler(Thing thing) {
@@ -72,11 +73,10 @@ public class GmailParadoxParserHandler extends BaseThingHandler {
             Set<ParadoxPartition> partitionsUpdatedStates = MailParser.getInstance()
                     .parseToParadoxPartitionStates(retrievedMessages);
             updateCachePartitionsState(partitionsUpdatedStates);
-            for (ParadoxPartition partitionState : partitionsStates) {
-                if (config.partitionId.equals(partitionState.getPartition())) {
-                    updateState(GmailParadoxParserBindingConstants.PARTITION_1_ID,
-                            new StringType(partitionState.getState()));
-                }
+
+            ParadoxPartition paradoxPartition = partitionsStates.get(config.partitionId);
+            if (paradoxPartition != null) {
+                updateState(GmailParadoxParserBindingConstants.STATE, new StringType(paradoxPartition.getState()));
             }
         } catch (IOException e) {
             logger.debug(e.getMessage());
@@ -84,9 +84,9 @@ public class GmailParadoxParserHandler extends BaseThingHandler {
     }
 
     @Override
-    protected void updateState(String channelUID, State state) {
-        logger.debug("ChannelUID: " + channelUID + ", " + config.partitionId + "updated state to " + state);
+    protected void updateState(ChannelUID channelUID, State state) {
         super.updateState(channelUID, state);
+        logger.debug("ChannelUID: " + channelUID + " updated state to " + state);
     }
 
     private void updateCachePartitionsState(Set<ParadoxPartition> partitionsUpdatedStates) {
@@ -96,10 +96,7 @@ public class GmailParadoxParserHandler extends BaseThingHandler {
         }
 
         for (ParadoxPartition paradoxPartition : partitionsUpdatedStates) {
-            if (partitionsStates.contains(paradoxPartition)) {
-                partitionsStates.remove(paradoxPartition);
-            }
-            partitionsStates.add(paradoxPartition);
+            partitionsStates.put(paradoxPartition.getPartition(), paradoxPartition);
         }
     }
 
