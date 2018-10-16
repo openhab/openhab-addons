@@ -68,8 +68,8 @@ Bridge openuv:openuvapi:local "OpenUV Api" [ apikey="xxxxYYYxxxx" ] {
 demo.items:
 
 ```xtend
-Number UVIndex	"UV Index"	{ channel = "openuv:uvreport:local:city1:UVIndex" }
-Number UVMax	"UV Max"	{ channel = "openuv:uvreport:local:city1:UVMaxEvent" }
-Number Ozone	"Ozone"		{ channel = "openuv:uvreport:local:city1:Ozone" }
+Number 			UVIndex	"UV Index"	{ channel = "openuv:uvreport:local:city1:UVIndex" }
+Number 			UVMax	"UV Max"	{ channel = "openuv:uvreport:local:city1:UVMaxEvent" }
+Number:ArealDensity 	Ozone	"Ozone"		{ channel = "openuv:uvreport:local:city1:Ozone" }
 ```
 

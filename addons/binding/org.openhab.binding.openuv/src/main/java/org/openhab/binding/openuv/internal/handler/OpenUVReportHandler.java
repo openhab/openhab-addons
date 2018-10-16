@@ -112,13 +112,11 @@ public class OpenUVReportHandler extends BaseThingHandler {
      */
     private void startAutomaticRefresh() {
         if (refreshJob == null || refreshJob.isCancelled()) {
-            Runnable runnable = () -> {
-                updateChannels();
-            };
-
             OpenUVConfiguration config = getConfigAs(OpenUVConfiguration.class);
             int delay = (config.refresh != null) ? config.refresh.intValue() : DEFAULT_REFRESH_PERIOD;
-            refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, delay, TimeUnit.MINUTES);
+            refreshJob = scheduler.scheduleWithFixedDelay(() -> {
+                updateChannels();
+            }, 0, delay, TimeUnit.MINUTES);
         }
     }
 
@@ -130,7 +128,7 @@ public class OpenUVReportHandler extends BaseThingHandler {
                 updateChannel(channel.getUID(), openUVData);
             }
             updateStatus(ThingStatus.ONLINE);
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.error("Exception occurred during execution: {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
@@ -155,7 +153,9 @@ public class OpenUVReportHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            updateChannels();
+            scheduler.execute(() -> {
+                updateChannels();
+            });
         } else {
             logger.debug("The OpenUV binding is read-only and can not handle command {}", command);
         }
