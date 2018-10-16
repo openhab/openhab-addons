@@ -232,8 +232,8 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
         if (bridge != null) {
             BridgeHandler handler = bridge.getHandler();
-            if (handler != null && handler instanceof BoxHandler) {
-                return ((BoxHandler) handler).getWebInterface();
+            if (handler != null && handler instanceof AVMFritzBaseBridgeHandler) {
+                return ((AVMFritzBaseBridgeHandler) handler).getWebInterface();
             }
         }
         return null;

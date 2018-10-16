@@ -66,14 +66,19 @@ public class DeviceModel extends AVMFritzBaseModel {
 
     @XmlType(propOrder = { "etsideviceid", "unittype", "interfaces" })
     public static class Etsiunitinfo {
-        public static final String HAN_FUN_MAGNETIC_CONTACT_UNITTYPE = "513";
-        public static final String HAN_FUN_OPTICAL_CONTACT_UNITTYPE = "514";
-        public static final String HAN_FUN_MOTION_SENSOR_UNITTYPE = "515";
-        public static final String HAN_FUN_SMOKE_DETECTOR_UNITTYPE = "516";
-        public static final String HAN_FUN_SWITCH_UNITTYPE = "273";
+        public static final String HAN_FUN_UNITTYPE_SIMPLE_BUTTON = "273";
+        public static final String HAN_FUN_UNITTYPE_SIMPLE_DETECTOR = "512";
+        public static final String HAN_FUN_UNITTYPE_MAGNETIC_CONTACT = "513";
+        public static final String HAN_FUN_UNITTYPE_OPTICAL_CONTACT = "514";
+        public static final String HAN_FUN_UNITTYPE_MOTION_DETECTOR = "515";
+        public static final String HAN_FUN_UNITTYPE_SMOKE_DETECTOR = "516";
+        public static final String HAN_FUN_UNITTYPE_FLOOD_DETECTOR = "518";
+        public static final String HAN_FUN_UNITTYPE_GLAS_BREAK_DETECTOR = "519";
+        public static final String HAN_FUN_UNITTYPE_VIBRATION_DETECTOR = "520";
 
-        public static final String HAN_FUN_ALERT_INTERFACE = "256";
-        public static final String HAN_FUN_BUTTON_INTERFACE = "772";
+        public static final String HAN_FUN_INTERFACE_ALERT = "256";
+        public static final String HAN_FUN_INTERFACE_KEEP_ALIVE = "277";
+        public static final String HAN_FUN_INTERFACE_SIMPLE_BUTTON = "772";
 
         private String etsideviceid;
         private String unittype;

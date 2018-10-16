@@ -19,12 +19,16 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * In the functionbitmask element value the following bits are used:
  *
  * <ol>
- * <li>Bit 4: Alarm-Sensor</li>
- * <li>Bit 6: Comet DECT, Heizkostenregler</li>
- * <li>Bit 7: Energie Messgerät</li>
- * <li>Bit 8: Temperatursensor</li>
- * <li>Bit 9: Schaltsteckdose</li>
- * <li>Bit 10: AVM DECT Repeater</li>
+ *     <li>Bit 0: HAN-FUN Gerät</li>
+ *     <li>Bit 3: Button</li>
+ *     <li>Bit 4: Alarm-Sensor</li>
+ *     <li>Bit 6: Comet DECT, Heizkostenregler</li>
+ *     <li>Bit 7: Energie Messgerät</li>
+ *     <li>Bit 8: Temperatursensor</li>
+ *     <li>Bit 9: Schaltsteckdose</li>
+ *     <li>Bit 10: AVM DECT Repeater</li>
+ *     <li>Bit 11: Mikrofon</li>
+ *     <li>Bit 13: HAN-FUN Unit</li>
  * </ol>
  *
  * @author Robert Bausdorf - Initial contribution
@@ -32,13 +36,16 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * @author Christoph Weitkamp - Added support for groups
  */
 public abstract class AVMFritzBaseModel {
-    protected static final int BUTTON_BIT = 8;
-    protected static final int ALARM_SENSOR_BIT = 16;
+    protected static final int HAN_FUN_DEVICE_BIT = 1;
+    protected static final int HAN_FUN_BUTTON_BIT = 8;
+    protected static final int HAN_FUN_ALARM_SENSOR_BIT = 16;
     protected static final int HEATING_THERMOSTAT_BIT = 64;
     protected static final int POWERMETER_BIT = 128;
     protected static final int TEMPSENSOR_BIT = 256;
     protected static final int OUTLET_BIT = 512;
     protected static final int DECT_REPEATER_BIT = 1024;
+    protected static final int MICROPHONE_BIT = 2048;
+    protected static final int HAN_FUN_UNIT_BIT = 8192;
 
     @XmlAttribute(name = "identifier")
     private String ident;
@@ -109,12 +116,16 @@ public abstract class AVMFritzBaseModel {
         return deviceId;
     }
 
+    public boolean isHANFUNDevice() {
+        return (bitmask & HAN_FUN_DEVICE_BIT) > 0;
+    }
+
     public boolean isButton() {
-        return (bitmask & BUTTON_BIT) > 0;
+        return (bitmask & HAN_FUN_BUTTON_BIT) > 0;
     }
 
     public boolean isAlarmSensor() {
-        return (bitmask & ALARM_SENSOR_BIT) > 0;
+        return (bitmask & HAN_FUN_ALARM_SENSOR_BIT) > 0;
     }
 
     public boolean isSwitchableOutlet() {
@@ -135,6 +146,14 @@ public abstract class AVMFritzBaseModel {
 
     public boolean isHeatingThermostat() {
         return (bitmask & HEATING_THERMOSTAT_BIT) > 0;
+    }
+
+    public boolean isMicrophone() {
+        return (bitmask & MICROPHONE_BIT) > 0;
+    }
+
+    public boolean isHANFUNUnit() {
+        return (bitmask & HAN_FUN_UNIT_BIT) > 0;
     }
 
     public String getFirmwareVersion() {
@@ -160,12 +179,14 @@ public abstract class AVMFritzBaseModel {
     @Override
     public String toString() {
         return new ToStringBuilder(this).append("ain", getIdentifier()).append("bitmask", bitmask)
-                .append("isButton", isButton()).append("isAlarmSensor", isAlarmSensor())
-                .append("isSwitchableOutlet", isSwitchableOutlet()).append("isTempSensor", isTempSensor())
-                .append("isPowermeter", isPowermeter()).append("isDectRepeater", isDectRepeater())
-                .append("isHeatingThermostat", isHeatingThermostat()).append("id", getDeviceId())
-                .append("manufacturer", getManufacturer()).append("productname", getProductName())
-                .append("fwversion", getFirmwareVersion()).append("present", getPresent()).append("name", getName())
-                .append(getSwitch()).append(getPowermeter()).append(getHkr()).toString();
+                .append("isHANFUNDevice", isHANFUNDevice()).append("isButton", isButton())
+                .append("isAlarmSensor", isAlarmSensor()).append("isSwitchableOutlet", isSwitchableOutlet())
+                .append("isTempSensor", isTempSensor()).append("isPowermeter", isPowermeter())
+                .append("isDectRepeater", isDectRepeater()).append("isHeatingThermostat", isHeatingThermostat())
+                .append("isMicrophone", isMicrophone()).append("isHANFUNUnit", isHANFUNUnit())
+                .append("id", getDeviceId()).append("manufacturer", getManufacturer())
+                .append("productname", getProductName()).append("fwversion", getFirmwareVersion())
+                .append("present", getPresent()).append("name", getName()).append(getSwitch()).append(getPowermeter())
+                .append(getHkr()).toString();
     }
 }

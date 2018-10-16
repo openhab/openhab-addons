@@ -19,7 +19,9 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -64,8 +66,7 @@ import org.slf4j.LoggerFactory;
  * Abstract handler for a FRITZ! bridge. Handles polling of values from AHA devices.
  *
  * @author Robert Bausdorf - Initial contribution
- * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet
- *         DECT
+ * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet DECT
  * @author Christoph Weitkamp - Added support for groups
  */
 @NonNullByDefault
@@ -84,17 +85,15 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     /**
      * Interface object for querying the FRITZ!Box web interface
      */
-    @Nullable
-    private FritzAhaWebInterface connection;
+    private @Nullable FritzAhaWebInterface connection;
     /**
      * Schedule for polling
      */
-    @Nullable
-    private ScheduledFuture<?> pollingJob;
+    private @Nullable ScheduledFuture<?> pollingJob;
     /**
      * shared instance of HTTP client for asynchronous calls
      */
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
 
     /**
      * Constructor
@@ -413,18 +412,13 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
             } else if (device.isSwitchableOutlet()) {
                 return GROUP_SWITCH;
             }
-        }
-        if (device instanceof DeviceModel && ((DeviceModel) device).getEtsiunitinfo() != null) {
-            // TODO: change to HAN_FUN_INTERFACES ... (z.b. 256 or 772)
-            String unittype = ((DeviceModel) device).getEtsiunitinfo().getUnittype();
-            switch (unittype) {
-                case HAN_FUN_MAGNETIC_CONTACT_UNITTYPE:
-                case HAN_FUN_OPTICAL_CONTACT_UNITTYPE:
-                case HAN_FUN_MOTION_SENSOR_UNITTYPE:
-                case HAN_FUN_SMOKE_DETECTOR_UNITTYPE:
-                    return DEVICE_HAN_FUN_CONTACT;
-                case HAN_FUN_SWITCH_UNITTYPE:
-                    return DEVICE_HAN_FUN_SWITCH;
+        } else if (device instanceof DeviceModel && device.isHANFUNUnit()) {
+            List<String> interfaces = Arrays
+                    .asList(((DeviceModel) device).getEtsiunitinfo().getInterfaces().split(","));
+            if (interfaces.contains(HAN_FUN_INTERFACE_ALERT)) {
+                return DEVICE_HAN_FUN_CONTACT;
+            } else if (interfaces.contains(HAN_FUN_INTERFACE_SIMPLE_BUTTON)) {
+                return DEVICE_HAN_FUN_SWITCH;
             }
         }
         return device.getProductName().replaceAll(INVALID_PATTERN, "_");
