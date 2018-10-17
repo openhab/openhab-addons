@@ -1,4 +1,4 @@
-package org.openhab.binding.gmailparadoxparser.gmail.adapter;
+package org.openhab.binding.gmailparadoxparser.mail.adapter;
 
 import org.slf4j.Logger;
 import org.slf4j.Marker;

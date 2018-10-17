@@ -1,4 +1,4 @@
-package org.openhab.binding.gmailparadoxparser.gmail.adapter;
+package org.openhab.binding.gmailparadoxparser.mail.adapter;
 
 import java.io.IOException;
 import java.io.InputStream;

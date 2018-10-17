@@ -1,4 +1,4 @@
-package org.openhab.binding.gmailparadoxparser.gmail.adapter;
+package org.openhab.binding.gmailparadoxparser.mail.adapter;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -7,8 +7,9 @@ import java.util.List;
 import com.google.api.services.gmail.model.Message;
 
 public interface MailAdapter {
-    static final String QUERY_UNREAD = "label:unread ";
-    static final String QUERY_READ = "label:read ";
+    static final String QUERY_UNREAD = "label:unread";
+    static final String QUERY_READ = "label:read";
+    static final String INITIAL_QUERY = "newer_than:24h";
 
     public List<Message> retrieveMessages(String query) throws IOException, UnsupportedEncodingException;
 

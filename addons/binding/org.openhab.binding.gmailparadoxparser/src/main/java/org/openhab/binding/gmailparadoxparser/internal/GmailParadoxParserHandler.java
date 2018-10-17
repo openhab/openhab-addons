@@ -14,9 +14,7 @@ package org.openhab.binding.gmailparadoxparser.internal;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -29,9 +27,9 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.gmailparadoxparser.gmail.adapter.GmailAdapter;
-import org.openhab.binding.gmailparadoxparser.gmail.adapter.MailAdapter;
-import org.openhab.binding.gmailparadoxparser.gmail.adapter.MailParser;
+import org.openhab.binding.gmailparadoxparser.mail.adapter.GmailAdapter;
+import org.openhab.binding.gmailparadoxparser.mail.adapter.MailAdapter;
+import org.openhab.binding.gmailparadoxparser.mail.adapter.MailParser;
 import org.openhab.binding.gmailparadoxparser.model.ParadoxPartition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +51,6 @@ public class GmailParadoxParserHandler extends BaseThingHandler {
 
     @Nullable
     private GmailParadoxParserConfiguration config;
-    private static Map<String, ParadoxPartition> partitionsStates = new HashMap<String, ParadoxPartition>();
 
     @SuppressWarnings("null")
     public GmailParadoxParserHandler(Thing thing) {
@@ -74,7 +71,7 @@ public class GmailParadoxParserHandler extends BaseThingHandler {
                     .parseToParadoxPartitionStates(retrievedMessages);
             updateCachePartitionsState(partitionsUpdatedStates);
 
-            ParadoxPartition paradoxPartition = partitionsStates.get(config.partitionId);
+            ParadoxPartition paradoxPartition = StatesCache.getInstance().get(config.partitionId);
             if (paradoxPartition != null) {
                 updateState(GmailParadoxParserBindingConstants.STATE, new StringType(paradoxPartition.getState()));
             }
@@ -96,7 +93,7 @@ public class GmailParadoxParserHandler extends BaseThingHandler {
         }
 
         for (ParadoxPartition paradoxPartition : partitionsUpdatedStates) {
-            partitionsStates.put(paradoxPartition.getPartition(), paradoxPartition);
+            StatesCache.getInstance().put(paradoxPartition.getPartition(), paradoxPartition);
         }
     }
 
