@@ -12,10 +12,6 @@
  */
 package org.openhab.binding.gmailparadoxparser.internal;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -27,9 +23,6 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.gmailparadoxparser.mail.adapter.GmailAdapter;
-import org.openhab.binding.gmailparadoxparser.mail.adapter.MailAdapter;
-import org.openhab.binding.gmailparadoxparser.mail.adapter.MailParser;
 import org.openhab.binding.gmailparadoxparser.model.ParadoxPartition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +40,6 @@ public class GmailParadoxParserHandler extends BaseThingHandler {
     private static final int DEFAULT_REFRESH_INTERVAL = 60; // sec
 
     private final Logger logger = LoggerFactory.getLogger(GmailParadoxParserHandler.class);
-    private MailAdapter mailAdapter;
 
     @Nullable
     private GmailParadoxParserConfiguration config;
@@ -64,19 +56,9 @@ public class GmailParadoxParserHandler extends BaseThingHandler {
 
     @SuppressWarnings("null")
     private void refreshData() {
-        try {
-            List<String> retrievedMessages = mailAdapter
-                    .retrieveAllMessagesContentsAndMarkAllRead(MailAdapter.QUERY_UNREAD);
-            Set<ParadoxPartition> partitionsUpdatedStates = MailParser.getInstance()
-                    .parseToParadoxPartitionStates(retrievedMessages);
-            updateCachePartitionsState(partitionsUpdatedStates);
-
-            ParadoxPartition paradoxPartition = StatesCache.getInstance().get(config.partitionId);
-            if (paradoxPartition != null) {
-                updateState(GmailParadoxParserBindingConstants.STATE, new StringType(paradoxPartition.getState()));
-            }
-        } catch (IOException e) {
-            logger.debug(e.getMessage());
+        ParadoxPartition paradoxPartition = StatesCache.getInstance().get(config.partitionId);
+        if (paradoxPartition != null) {
+            updateState(GmailParadoxParserBindingConstants.STATE, new StringType(paradoxPartition.getState()));
         }
     }
 
@@ -86,29 +68,12 @@ public class GmailParadoxParserHandler extends BaseThingHandler {
         logger.debug("ChannelUID: " + channelUID + " updated state to " + state);
     }
 
-    private void updateCachePartitionsState(Set<ParadoxPartition> partitionsUpdatedStates) {
-        if (partitionsUpdatedStates.isEmpty()) {
-            logger.debug("Received empty set. Nothing to update.");
-            return;
-        }
-
-        for (ParadoxPartition paradoxPartition : partitionsUpdatedStates) {
-            StatesCache.getInstance().put(paradoxPartition.getPartition(), paradoxPartition);
-        }
-    }
-
     @Override
     public void initialize() {
         logger.debug("Start initializing!");
         config = getConfigAs(GmailParadoxParserConfiguration.class);
-        try {
-            mailAdapter = new GmailAdapter(logger);
-            updateStatus(ThingStatus.ONLINE);
-        } catch (IOException | GeneralSecurityException e) {
-            logger.trace(e.getMessage(), e);
-            updateStatus(ThingStatus.UNINITIALIZED);
-            return;
-        }
+        updateStatus(ThingStatus.ONLINE);
+        updateStatus(ThingStatus.UNINITIALIZED);
 
         scheduler.scheduleAtFixedRate(() -> {
             refreshData();

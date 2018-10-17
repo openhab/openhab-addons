@@ -1,15 +1,23 @@
 package org.openhab.binding.gmailparadoxparser.internal;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.openhab.binding.gmailparadoxparser.mail.adapter.MailAdapter;
+import org.openhab.binding.gmailparadoxparser.mail.adapter.MailParser;
 import org.openhab.binding.gmailparadoxparser.model.ParadoxPartition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class StatesCache implements Cache<String, ParadoxPartition> {
 
-    private static Map<String, ParadoxPartition> partitionsStates = new HashMap<String, ParadoxPartition>();
     private static StatesCache instance;
+    private Map<String, ParadoxPartition> partitionsStates = new HashMap<String, ParadoxPartition>();
+    private MailAdapter mailAdapter;
+    private final Logger logger = LoggerFactory.getLogger(StatesCache.class);
 
     public static StatesCache getInstance() {
         if (instance == null) {
@@ -34,13 +42,33 @@ public class StatesCache implements Cache<String, ParadoxPartition> {
     }
 
     @Override
+    public void initialize() {
+        refresh(MailAdapter.INITIAL_QUERY);
+    }
+
+    @Override
     public void refresh() {
         this.refresh(MailAdapter.QUERY_UNREAD);
     }
 
     @Override
     public void refresh(String query) {
+        try {
+            List<String> retrievedMessages = mailAdapter
+                    .retrieveAllMessagesContentsAndMarkAllRead(MailAdapter.QUERY_UNREAD);
+            Set<ParadoxPartition> partitionsUpdatedStates = MailParser.getInstance()
+                    .parseToParadoxPartitionStates(retrievedMessages);
 
+            if (partitionsUpdatedStates.isEmpty()) {
+                logger.debug("Received empty set. Nothing to update.");
+                return;
+            }
+
+            for (ParadoxPartition paradoxPartition : partitionsUpdatedStates) {
+                put(paradoxPartition.getPartition(), paradoxPartition);
+            }
+        } catch (IOException e) {
+            logger.trace(e.getMessage(), e);
+        }
     }
-
 }

@@ -9,4 +9,7 @@ public interface Cache<K, V> {
 
     void refresh(String query);
 
+    default void initialize() {
+        this.refresh();
+    }
 }
