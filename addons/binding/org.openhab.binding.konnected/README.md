@@ -17,12 +17,20 @@ The binding will then create things for each module discovered which can be adde
 ## Binding Configuration
 
 There is no configuration required for the binding.
+However, the ip address of the openHAB server can be configured via the OSGI NetworkAddressService property.  
+If this is configured the binding will use this as the local ip address of the openHAB server.
+If it is not configured the the binding will utilize the NetworkAddressServer to attempt to obtain the ipAddress of the openHAB server.
 
 ## Thing Configuration
 
+The binding will attempt to discover Konnected modules via the upnp service.
 The auto-discovery service of the binding will detect the ipAddress and port of the Konnected module.  
 But once it is added you will need to provide an Authority Token to secure communication between the module and openHAB.  
-The binding will attempt to discover the ip address of your openHAB server.  However, if it is unable to determine the ip address you can manually define the ip address and port in the thing configuration.
+As discussed above the binding will attempt to discover the ip address of your openHAB server.  However, if it is unable to determine the ip address you can manually define the ip address and port in the thing configuration.
+In addition you can also turn off discovery which when this setting is synced to the module will cause the device to no longer respond to upnp requests as documented. https://help.konnected.io/support/solutions/articles/32000023968-disabling-device-discovery
+Please use this setting with caution and do not enable until a static ip address has been provided for your Konnected module via DHCP, router or otherwise.
+The blink setting will disable the transmission LED on the Konnected module.
+
 
 ## Channels
 
@@ -44,8 +52,20 @@ For sensor type channels the channel type is the contact item.
 For the actuator type channel, the channel type is switch item. 
 For the actuator type channels you can also add configuration parameters times, pause and momentary which will be added to the payload that is sent to the Konnected Module.
 These parameters will tell the module to pulse the actuator for certain time period.
-A momentary switch actuates a switch for a specified time (in milliseconds) and then reverts it back to the off state. This is commonly used with a relay module to actuate a garage door opener, or with a doorbell to send a momentary trigger to sound the doorbell.
+A momentary switch actuates a switch for a specified time (in milliseconds) and then reverts it back to the off state. This is commonly used with a relay module to actuate a garage door opener, or with a door bell to send a momentary trigger to sound the door bell.
 A beep/blink switch is like a momentary switch that repeats either a specified number of times or indefinitely. This is commonly used with a a piezo buzzer to make a "beep beep" sound when a door is opened, or to make a repeating beep pattern for an alarm or audible warning. It can also be used to blink lights.
+
+DSB1820 temperature probes.
+These are one wire devices which can all be Konnected to the same "Zone" on the Konnected module.
+As part of its transmission  the module will include an unique "address" property of each sensor probe that will be logged to the debug log when received. 
+This needs to be added to the channel if there are multiple probes connected. 
+The default behavior in absence of this configuration will be to overwrite the channel on every transmission. 
+A channel should be added for each probe, as indicated above just make sure that the typeID of all of the DSB1820 sensors on the same zone end with the same number corresponding to the zone in which they are connected.  
+For example:
+Temp1Zone1
+Temp2Zone1
+Temp3Zone1
+Then separately configure each channel to have the unique address received from the module.
 
 ## Full Example
 
@@ -60,3 +80,6 @@ Switch Siren "Siren"   {channel="konnected:module:16631321:Zone_1"}
 Switch item=Front_Door_Sensor label="Front Door" icon="door" mappings=[OPEN="Open", CLOSED="Closed"]
 Switch item=Siren label="Alarm Siren" icon="Siren" mappings=[ON="Open", OFF="Closed"]
             
+*.things
+
+Thing konnected:module:1586517 "Konnected Module" [ipAddress="http://192.168.30.153:9586", macAddress="1586517"]

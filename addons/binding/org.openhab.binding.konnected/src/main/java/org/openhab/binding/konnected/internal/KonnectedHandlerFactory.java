@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.konnected.internal;
 
-import static org.openhab.binding.konnected.KonnectedBindingConstants.THING_TYPE_MODULE;
+import static org.openhab.binding.konnected.KonnectedBindingConstants.*;
 
 import java.util.Collections;
 import java.util.Dictionary;
@@ -67,7 +67,7 @@ public class KonnectedHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        KonnectedHTTPServlet servlet = registerWebHookServlet(thing.getUID());
+        KonnectedHTTPServlet servlet = registerWebHookServlet(thing);
         return new KonnectedHandler(thing, servlet, createCallbackUrl(), createCallbackPort());
     }
 
@@ -79,9 +79,14 @@ public class KonnectedHandlerFactory extends BaseThingHandlerFactory {
         unregisterWebHookServlet(thingHandler.getThing().getUID());
     }
 
-    private KonnectedHTTPServlet registerWebHookServlet(ThingUID thingUID) {
+    private KonnectedHTTPServlet registerWebHookServlet(Thing thing) {
         KonnectedHTTPServlet servlet = null;
-        servlet = new KonnectedHTTPServlet(httpService, thingUID.getId());
+        ThingUID thingUID = thing.getUID();
+        String configCallBack = (String) thing.getConfiguration().get(CALLBACK_PATH);
+        if (configCallBack == null) {
+            configCallBack = "/Konnected/" + thingUID.getId();
+        }
+        servlet = new KonnectedHTTPServlet(httpService, configCallBack);
         if (bundleContext != null) {
             webHookServiceRegs.put(thingUID, bundleContext.registerService(HttpServlet.class.getName(), servlet,
                     new Hashtable<String, Object>()));

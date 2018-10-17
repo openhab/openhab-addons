@@ -30,6 +30,7 @@ public class KonnectedModuleGson {
     private String times;
     @SerializedName("poll_interval")
     private Integer pollInterval;
+    private String addr;
 
     public Integer getPin() {
         return pin;
@@ -99,4 +100,11 @@ public class KonnectedModuleGson {
         this.times = setTimes;
     }
 
+    public String getAddr() {
+        return addr;
+    }
+
+    public void setAddr(String setAddr) {
+        this.addr = setAddr;
+    }
 }

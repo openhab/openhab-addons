@@ -20,6 +20,7 @@ import java.util.Map.Entry;
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Temperature;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.core.validation.ConfigValidationException;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -63,11 +64,13 @@ public class KonnectedHandler extends BaseThingHandler {
     private Gson gson = new GsonBuilder().create();
 
     /**
+     * This is the constructor of the Konnected Handler.
+     *
      * @param thing          the instance of the Konnected thing
-     * @param webHookServlet the instance of the callback servelet that is running for communication with the Konnected
+     * @param webHookServlet the instance of the callback servlet that is running for communication with the Konnected
      *                           Module
      * @param hostAddress    the webaddress of the OpenHAB server instance obtained by the runtime
-     * @param port           the port on which the OpenHAB instance is running that was obtained by the runtime
+     * @param port           the port on which the OpenHAB instance is running that was obtained by the runtime.
      */
     public KonnectedHandler(Thing thing, KonnectedHTTPServlet webHookServlet, String hostAddress, String port) {
         super(thing);
@@ -96,7 +99,7 @@ public class KonnectedHandler extends BaseThingHandler {
     }
 
     /**
-     * Process a {@link WebHookEvent that has been received by the Servlet from a Konnected module with respect to a
+     * Process a {@link WebHookEvent} that has been received by the Servlet from a Konnected module with respect to a
      * sensor event
      *
      * @param pin     the pin number which which was activated
@@ -133,14 +136,28 @@ public class KonnectedHandler extends BaseThingHandler {
                         } else if (itemType.equalsIgnoreCase("Switch")) {
                             OnOffType onOffType = event.getState().equalsIgnoreCase("1") ? OnOffType.ON : OnOffType.OFF;
                             updateState(channelId, onOffType);
-
                         } else if (itemType.equalsIgnoreCase("Number:Dimensionless")) {
                             // if the state is of type number then this means it is the humidity channel of the dht22
                             updateState(channelId, new QuantityType<Dimensionless>(Double.parseDouble(event.getHumi()),
                                     SmartHomeUnits.PERCENT));
                         } else if ((itemType.equalsIgnoreCase("Number:Temperature"))) {
-                            updateState(channelId, new QuantityType<Temperature>(Double.parseDouble(event.getTemp()),
-                                    SIUnits.CELSIUS));
+                            Configuration configuration = channel.getConfiguration();
+                            if (((Boolean) configuration.get("tempsensorType") == true)) {
+                                updateState(channelId, new QuantityType<Temperature>(
+                                        Double.parseDouble(event.getTemp()), SIUnits.CELSIUS));
+                            } else {
+                                // need to check to make sure right dsb1820 address
+                                logger.debug("The address of the DSB1820 sensor received from modeule {} is: {}",
+                                        this.thing.getBridgeUID(), event.getAddr());
+                                if (event.getAddr().toString()
+                                        .equalsIgnoreCase((String) (configuration.get("ds18b20_address")))) {
+                                    updateState(channelId, new QuantityType<Temperature>(
+                                            Double.parseDouble(event.getTemp()), SIUnits.CELSIUS));
+                                } else {
+                                    logger.debug("The address of {} does not match {} not updating this channel",
+                                            event.getAddr().toString(), (configuration.get("ds18b20_address")));
+                                }
+                            }
                         }
                     }
                 } else {
@@ -155,6 +172,19 @@ public class KonnectedHandler extends BaseThingHandler {
                         channelId, getThing().getThingTypeUID().toString());
             }
         });
+    }
+
+    private void checkConfigruation() throws ConfigValidationException {
+        KonnectedConfiguration testConfig = getConfigAs(KonnectedConfiguration.class);
+
+        if ((config.hostAddress == null) && (callbackIpAddress == null)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Unable to obtain hostaddress from OSGI service, please manually configure hostaddress");
+        }
+
+        else {
+            this.validateConfigurationParameters((Map<@NonNull String, @NonNull Object>) testConfig);
+        }
     }
 
     @Override
@@ -221,28 +251,35 @@ public class KonnectedHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(KonnectedConfiguration.class);
-        this.moduleIpAddress = this.getThing().getProperties().get(HOST).toString();
-        // add the isActuator elements to the boolean array
-        logger.debug("Setting up Konnected Module WebHook");
-        try {
-            webHookServlet.activate(this);
-        } catch (KonnectedWebHookFail e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-        }
-        try {
-            String response = updateKonnectedModule();
-            if (response == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Unable to communicate with Konnected Module confirm settings or readd thing.");
-            } else {
-                updateStatus(ThingStatus.ONLINE);
+        updateStatus(ThingStatus.UNKNOWN);
+        scheduler.execute(() -> {
+            try {
+                checkConfigruation();
+            } catch (ConfigValidationException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             }
-        }
+            this.moduleIpAddress = this.getThing().getProperties().get(HOST).toString();
+            // add the isActuator elements to the boolean array
+            logger.debug("Setting up Konnected Module WebHook");
+            try {
+                webHookServlet.activate(this);
+            } catch (KonnectedWebHookFail e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            }
+            try {
+                String response = updateKonnectedModule();
+                if (response == null) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Unable to communicate with Konnected Module confirm settings or readd thing.");
+                } else {
+                    updateStatus(ThingStatus.ONLINE);
+                }
+            }
 
-        catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        }
+            catch (IOException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
+        });
     }
 
     @Override
@@ -255,8 +292,8 @@ public class KonnectedHandler extends BaseThingHandler {
     /**
      * This method constructs the payload that will be sent
      * to the Konnected module via the put request
-     * it adds the appropriate sensors and actuators
-     * as well as the location of the callback servelet
+     * it adds the appropriate sensors and actuators to the {@link KonnectedModulePayload}
+     * as well as the location of the callback {@link KonnectedJTTPServlet}
      * and auth_token which can be used for validation
      *
      * @return a json settings payload which can be sent to the Konnected Module based on the Thing
@@ -343,6 +380,8 @@ public class KonnectedHandler extends BaseThingHandler {
     }
 
     /**
+     * Obtains the configured hostname of the openHAB server to send to the moduele.
+     *
      * @return either the ipaddress obtained by the runtime or defined by the user in the thing configuration
      * @throws UnknownHostException if no host defined
      */
@@ -359,6 +398,8 @@ public class KonnectedHandler extends BaseThingHandler {
     }
 
     /**
+     * Prepares and sends the {@link KonnectedModulePayload} via the {@link KonnectedHttpUtils}
+     *
      * @return response obtained from sending the settings payload to Konnected module defined by the thing
      * @throws IOException if unable to communicate with the Konnected module defined by the Thing
      */
@@ -370,6 +411,8 @@ public class KonnectedHandler extends BaseThingHandler {
     }
 
     /**
+     * Sends a command to the module via {@link KonnectedHTTPUtils}
+     *
      * @param scommand the string command, either 0 or 1 to send to the actutor pin on the Konnected module
      * @param pin      the pin to send the command to on the Konnected Module
      */

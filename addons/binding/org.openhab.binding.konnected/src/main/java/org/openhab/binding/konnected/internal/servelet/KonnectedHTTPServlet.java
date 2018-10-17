@@ -34,7 +34,6 @@ public class KonnectedHTTPServlet extends HttpServlet {
     private final Logger logger = LoggerFactory.getLogger(KonnectedHTTPServlet.class);
 
     private static final long serialVersionUID = 1288539782077957954L;
-    private static final String PATH = "/Konnected";
     private static final String APPLICATION_JSON = "application/json";
     private static final String CHARSET = "utf-8";
     private final Gson gson = new Gson();
@@ -45,7 +44,7 @@ public class KonnectedHTTPServlet extends HttpServlet {
 
     public KonnectedHTTPServlet(HttpService httpService, String id) {
         this.httpService = httpService;
-        this.path = PATH + "/" + id;
+        this.path = id;
     }
 
     /**

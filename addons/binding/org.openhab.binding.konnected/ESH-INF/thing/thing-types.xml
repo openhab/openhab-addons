@@ -16,20 +16,20 @@
 				<label>The Out Pin</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:konnected:module"/>
+		<config-description-ref uri="thing-type:konnected:module" />
 	</thing-type>
 	<!-- Zone Channel Type -->
 	<channel-type id="sensor">
 		<item-type>Contact</item-type>
 		<label>Sensor</label>
 		<description>This zone is a sensor</description>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>This zone measures Temperature</description>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 		<config-description>
 			<parameter name="tempsensorType" type="boolean">
 				<label>dht22</label>
@@ -39,13 +39,17 @@
 				<label>Poll Interval</label>
 				<description>The interval in minutes to poll the sensor.</description>
 			</parameter>
+			<parameter name="ds18b20_address" type="text">
+				<label>Address of DS18b20</label>
+				<description>This is the unique address of the sensor on the one wire bus.</description>
+			</parameter>
 		</config-description>
 	</channel-type>
 	<channel-type id="humidity">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>This zone measures Humidity</description>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="actuator">
 		<item-type>Switch</item-type>

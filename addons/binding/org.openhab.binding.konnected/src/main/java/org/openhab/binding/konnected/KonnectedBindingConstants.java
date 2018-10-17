@@ -28,6 +28,7 @@ public class KonnectedBindingConstants {
     // Bridge config properties
     public static final String HOST = "ipAddress";
     public static final String MAC_ADDR = "macAddress";
+    public static final String CALLBACK_PATH = "callBackPath";
 
     // PIN_TO_ZONE array, this array maps an index location as a zone to the corresponding
     // pin location

@@ -10,7 +10,7 @@ package org.openhab.binding.konnected.internal.servelet;
 
 /**
  * Custom exception class to be thrown by servlet when unable to start.
- * 
+ *
  * @author Zachary Christiansen - Initial contribution
  */
 @SuppressWarnings("serial")
