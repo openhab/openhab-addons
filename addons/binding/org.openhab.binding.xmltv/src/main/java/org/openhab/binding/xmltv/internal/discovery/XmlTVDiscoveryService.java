@@ -10,6 +10,7 @@ package org.openhab.binding.xmltv.internal.discovery;
 
 import static org.openhab.binding.xmltv.XmlTVBindingConstants.XMLTV_CHANNEL_THING_TYPE;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -28,6 +29,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public class XmlTVDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(XmlTVDiscoveryService.class);
 
@@ -48,21 +50,20 @@ public class XmlTVDiscoveryService extends AbstractDiscoveryService {
         logger.debug("Starting XmlTV discovery scan");
         if (bridgeHandler.getThing().getStatus() == ThingStatus.ONLINE) {
             Tv tv = bridgeHandler.getXmlFile();
-            if (tv == null) {
-                return;
+            if (tv != null) {
+                tv.getMediaChannels().stream().forEach(channel -> {
+                    String channelId = channel.getId();
+                    String uid = channelId.replaceAll("[^A-Za-z0-9_]", "_");
+                    ThingUID thingUID = new ThingUID(XMLTV_CHANNEL_THING_TYPE, bridgeHandler.getThing().getUID(), uid);
+
+                    DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
+                            .withBridge(bridgeHandler.getThing().getUID())
+                            .withLabel(channel.getDisplayNames().get(0).getValue()).withRepresentationProperty(uid)
+                            .withProperty(XmlChannelConfiguration.CHANNEL_ID, channelId).build();
+
+                    thingDiscovered(discoveryResult);
+                });
             }
-            tv.getMediaChannels().stream().forEach(channel -> {
-                String channelId = channel.getId();
-                String uid = channelId.replaceAll("[^A-Za-z0-9_]", "_");
-                ThingUID thingUID = new ThingUID(XMLTV_CHANNEL_THING_TYPE, bridgeHandler.getThing().getUID(), uid);
-
-                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
-                        .withBridge(bridgeHandler.getThing().getUID())
-                        .withLabel(channel.getDisplayNames().get(0).getValue()).withRepresentationProperty(uid)
-                        .withProperty(XmlChannelConfiguration.CHANNEL_ID, channelId).build();
-
-                thingDiscovered(discoveryResult);
-            });
         }
     }
 

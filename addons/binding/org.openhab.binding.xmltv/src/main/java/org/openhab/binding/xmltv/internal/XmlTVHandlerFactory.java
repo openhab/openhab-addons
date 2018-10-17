@@ -18,6 +18,7 @@ import javax.xml.bind.JAXBException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -52,13 +53,30 @@ public class XmlTVHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
+    public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
+            @Nullable ThingUID thingUID, @Nullable ThingUID bridgeUID) {
+        if (XMLTV_FILE_BRIDGE_TYPE.equals(thingTypeUID)) {
+            return super.createThing(thingTypeUID, configuration, thingUID, null);
+        } else if (XMLTV_CHANNEL_THING_TYPE.equals(thingTypeUID)) {
+            ThingUID newThingUID;
+            if (bridgeUID != null && thingUID != null) {
+                newThingUID = new ThingUID(thingTypeUID, bridgeUID, thingUID.getId());
+            } else {
+                newThingUID = thingUID;
+            }
+            return super.createThing(thingTypeUID, configuration, newThingUID, bridgeUID);
+        }
+        throw new IllegalArgumentException(
+                "The thing type " + thingTypeUID + " is not supported by the XmlTV binding.");
+    }
+
+    @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (XMLTV_FILE_BRIDGE_TYPE.equals(thingTypeUID)) {
-            XmlTVHandler bridgeHandler;
             try {
-                bridgeHandler = new XmlTVHandler((Bridge) thing);
+                XmlTVHandler bridgeHandler = new XmlTVHandler((Bridge) thing);
                 registerDeviceDiscoveryService(bridgeHandler);
                 return bridgeHandler;
             } catch (JAXBException e) {

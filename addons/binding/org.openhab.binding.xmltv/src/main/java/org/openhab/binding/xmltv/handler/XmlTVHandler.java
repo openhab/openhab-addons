@@ -51,7 +51,7 @@ public class XmlTVHandler extends BaseBridgeHandler {
     @Nullable
     private Tv currentXmlFile;
 
-    @Nullable
+    @NonNullByDefault({})
     private ScheduledFuture<?> reloadJob = null;
 
     public XmlTVHandler(Bridge bridge) throws JAXBException {
@@ -67,10 +67,8 @@ public class XmlTVHandler extends BaseBridgeHandler {
 
         reloadJob = scheduler.scheduleWithFixedDelay(() -> {
             StreamSource source = new StreamSource(config.filePath);
-
+            currentXmlFile = null;
             try {
-                currentXmlFile = null;
-
                 // This can take some seconds depending upon weight of the XmlTV source file
                 XMLStreamReader xsr = xif.createXMLStreamReader(source);
                 Unmarshaller unmarshaller = jc.createUnmarshaller();
@@ -87,18 +85,21 @@ public class XmlTVHandler extends BaseBridgeHandler {
                     }
                 });
 
-                // Ready to deliver data to ChannelHandlers
-                currentXmlFile = xmlFile;
-                updateStatus(ThingStatus.ONLINE);
+                if (xmlFile.getProgrammes().size() > 0) {
+                    // Ready to deliver data to ChannelHandlers
+                    currentXmlFile = xmlFile;
+                    updateStatus(ThingStatus.ONLINE);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DISABLED, "XMLTV file seems outdated");
+                }
             } catch (JAXBException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getMessage());
             } catch (XMLStreamException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             }
-        }, 1, config.refresh, TimeUnit.HOURS);
+        }, 0, config.refresh, TimeUnit.HOURS);
     }
 
-    @SuppressWarnings("null")
     @Override
     public void dispose() {
         logger.debug("Running dispose()");

@@ -21,6 +21,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.RawType;
@@ -30,6 +31,7 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -53,16 +55,13 @@ public class ChannelHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(XmlTVHandler.class);
 
     @NonNullByDefault({})
-    private XmlTVHandler bridgeHandler;
-    @NonNullByDefault({})
-    private XmlChannelConfiguration config;
-    @NonNullByDefault({})
     private ScheduledFuture<?> globalJob;
-    @NonNullByDefault({})
-    private MediaChannel mediaChannel;
-    @NonNullByDefault({})
-    private RawType mediaIcon = new RawType(new byte[0], RawType.DEFAULT_MIME_TYPE);
 
+    @Nullable
+    private MediaChannel mediaChannel;
+    @Nullable
+    private RawType mediaIcon = new RawType(new byte[0], RawType.DEFAULT_MIME_TYPE);
+    @Nullable
     private RawType programIcon = new RawType(new byte[0], RawType.DEFAULT_MIME_TYPE);
 
     public List<Programme> programmes = new ArrayList<>();
@@ -73,52 +72,58 @@ public class ChannelHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(XmlChannelConfiguration.class);
+        XmlChannelConfiguration config = getConfigAs(XmlChannelConfiguration.class);
 
         logger.debug("Initializing Broadcast Channel handler for uid '{}'", getThing().getUID());
 
-        Bridge bridge = getBridge();
-        if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
-            bridgeHandler = (XmlTVHandler) bridge.getHandler();
-        }
-
         if (globalJob == null || globalJob.isCancelled()) {
-            globalJob = scheduler.scheduleWithFixedDelay(globalRunnable, 3, config.refresh, TimeUnit.SECONDS);
+            globalJob = scheduler.scheduleWithFixedDelay(() -> {
+                if (programmes.size() < 2) {
+                    refreshProgramList();
+                }
+                if (programmes.size() == 0) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                            "No programs to come in the current XML file for this channel");
+                } else if (Instant.now().isAfter(programmes.get(0).getProgrammeStop())) {
+                    programmes.remove(0);
+                    programIcon = downloadIcon(programmes.get(0).getIcons());
+                }
+
+                getThing().getChannels().forEach(channel -> updateChannel(channel.getUID()));
+
+            }, 3, config.refresh, TimeUnit.SECONDS);
         }
     }
 
-    private Runnable globalRunnable = () -> {
-        if (programmes.size() < 2) {
-            Tv tv = getBridgeHandler().getXmlFile();
+    private void refreshProgramList() {
+        Bridge bridge = getBridge();
+        if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
+            Tv tv = ((XmlTVHandler) bridge.getHandler()).getXmlFile();
             if (tv != null) {
-                programmes.clear();
+                String channelId = (String) getConfig().get(XmlChannelConfiguration.CHANNEL_ID);
 
                 if (mediaChannel == null) {
                     Optional<MediaChannel> channel = tv.getMediaChannels().stream()
-                            .filter(mediaChannel -> mediaChannel.getId().equals(config.channelId)).findFirst();
+                            .filter(mediaChannel -> mediaChannel.getId().equals(channelId)).findFirst();
                     if (channel.isPresent()) {
-                        this.mediaChannel = channel.get();
+                        mediaChannel = channel.get();
                         mediaIcon = downloadIcon(mediaChannel.getIcons());
                     }
                 }
 
-                tv.getProgrammes().stream().filter(
-                        p -> p.getChannel().equals(config.channelId) && p.getProgrammeStop().isAfter(Instant.now()))
+                programmes.clear();
+                tv.getProgrammes().stream()
+                        .filter(p -> p.getChannel().equals(channelId) && p.getProgrammeStop().isAfter(Instant.now()))
                         .forEach(p -> programmes.add(p));
 
-                programIcon = downloadIcon(programmes.get(0).getIcons());
-
                 updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "No file available");
             }
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
-
-        if (programmes.size() > 0 && Instant.now().isAfter(programmes.get(0).getProgrammeStop())) {
-            programmes.remove(0);
-            programIcon = downloadIcon(programmes.get(0).getIcons());
-        }
-
-        getThing().getChannels().forEach(channel -> updateChannel(channel.getUID()));
-    };
+    }
 
     @Override
     public void dispose() {
@@ -131,16 +136,6 @@ public class ChannelHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // TODO Auto-generated method stub
-    }
-
-    protected XmlTVHandler getBridgeHandler() {
-        if (bridgeHandler == null) {
-            Bridge bridge = getBridge();
-            if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
-                bridgeHandler = (XmlTVHandler) bridge.getHandler();
-            }
-        }
-        return bridgeHandler;
     }
 
     /**
@@ -157,10 +152,15 @@ public class ChannelHandler extends BaseThingHandler {
 
             switch (uidElements[1]) {
                 case CHANNEL_ICON:
-                    updateState(channelUID, GROUP_CHANNEL_PROPERTIES.equals(uidElements[0]) ? mediaIcon : programIcon);
+                    updateState(channelUID,
+                            GROUP_CHANNEL_PROPERTIES.equals(uidElements[0])
+                                    ? mediaIcon != null ? mediaIcon : UnDefType.NULL
+                                    : programIcon != null ? programIcon : UnDefType.NULL);
                     break;
                 case CHANNEL_CHANNEL_URL:
-                    updateState(channelUID, new StringType(mediaChannel.getIcons().get(0).getSrc()));
+                    updateState(channelUID,
+                            mediaChannel != null ? new StringType(mediaChannel.getIcons().get(0).getSrc())
+                                    : UnDefType.NULL);
                     break;
                 case CHANNEL_PROGRAM_START:
                     Instant is = programme.getProgrammeStart();
@@ -179,26 +179,16 @@ public class ChannelHandler extends BaseThingHandler {
                     break;
                 case CHANNEL_PROGRAM_ICON:
                     List<Icon> icons = programme.getIcons();
-                    if (icons.size() > 0) {
-                        updateState(channelUID, new StringType(icons.get(0).getSrc()));
-                    } else {
-                        updateState(channelUID, UnDefType.NULL);
-                    }
+                    updateState(channelUID, icons.size() > 0 ? new StringType(icons.get(0).getSrc()) : UnDefType.NULL);
                     break;
                 case CHANNEL_PROGRAM_ELAPSED:
-                    Duration elapsed = Duration.between(programme.getProgrammeStart(), Instant.now());
-                    long secondsElapsed = elapsed.toMillis() / 1000;
-                    updateState(channelUID, new QuantityType<>(secondsElapsed, SmartHomeUnits.SECOND));
+                    updateState(channelUID, getDurationInSeconds(programme.getProgrammeStart(), Instant.now()));
                     break;
                 case CHANNEL_PROGRAM_REMAINING:
-                    Duration remaining = Duration.between(Instant.now(), programme.getProgrammeStop());
-                    long secondsRemaining = remaining.toMillis() / 1000;
-                    updateState(channelUID, new QuantityType<>(secondsRemaining, SmartHomeUnits.SECOND));
+                    updateState(channelUID, getDurationInSeconds(Instant.now(), programme.getProgrammeStop()));
                     break;
                 case CHANNEL_PROGRAM_TIMELEFT:
-                    Duration remaining1 = Duration.between(Instant.now(), programme.getProgrammeStart());
-                    long secondsRemaining1 = remaining1.toMillis() / 1000;
-                    updateState(channelUID, new QuantityType<>(secondsRemaining1, SmartHomeUnits.SECOND));
+                    updateState(channelUID, getDurationInSeconds(Instant.now(), programme.getProgrammeStart()));
                     break;
                 case CHANNEL_PROGRAM_PROGRESS:
                     Duration totalLength = Duration.between(programme.getProgrammeStart(),
@@ -217,6 +207,12 @@ public class ChannelHandler extends BaseThingHandler {
                     break;
             }
         }
+    }
+
+    private QuantityType<?> getDurationInSeconds(Instant from, Instant to) {
+        Duration elapsed = Duration.between(from, to);
+        long secondsElapsed = elapsed.toMillis() / 1000;
+        return new QuantityType<>(secondsElapsed, SmartHomeUnits.SECOND);
     }
 
     private RawType downloadIcon(List<Icon> icons) {

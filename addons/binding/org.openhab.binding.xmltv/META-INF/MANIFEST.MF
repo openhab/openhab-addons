@@ -11,6 +11,7 @@ Bundle-Version: 2.4.0.qualifier
 Import-Package: 
  javax.measure,
  org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.library.unit,
