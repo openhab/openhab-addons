@@ -14,14 +14,15 @@ import java.io.IOException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Properties;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.HSBType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -31,9 +32,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.openuv.internal.OpenUVConfiguration;
-import org.openhab.binding.openuv.internal.json.OpenUVJsonResponse;
 import org.openhab.binding.openuv.internal.json.OpenUVJsonResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,11 +48,13 @@ public class OpenUVReportHandler extends BaseThingHandler {
     private static final int DEFAULT_REFRESH_PERIOD = 30;
     private final Logger logger = LoggerFactory.getLogger(OpenUVReportHandler.class);
 
-    private @Nullable OpenUVBridgeHandler bridge;
-    private @Nullable OpenUVJsonResult openUVData;
+    @NonNullByDefault({})
+    private OpenUVBridgeHandler bridgeHandler;
 
-    private @Nullable ScheduledFuture<?> refreshJob;
-    private @Nullable ScheduledFuture<?> uvMaxJob;
+    @NonNullByDefault({})
+    private ScheduledFuture<?> refreshJob;
+    @NonNullByDefault({})
+    private ScheduledFuture<?> uvMaxJob;
 
     public OpenUVReportHandler(Thing thing) {
         super(thing);
@@ -71,10 +72,11 @@ public class OpenUVReportHandler extends BaseThingHandler {
             errorMsg = "Parameter 'refresh' must be higher than 3 minutes to stay in free API plan";
         }
 
-        if (getBridge() == null) {
-            errorMsg = "Invalid bridge";
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            bridgeHandler = (OpenUVBridgeHandler) bridge.getHandler();
         } else {
-            bridge = (OpenUVBridgeHandler) getBridge().getHandler();
+            errorMsg = "Invalid bridge";
         }
 
         if (errorMsg == null) {
@@ -87,9 +89,11 @@ public class OpenUVReportHandler extends BaseThingHandler {
 
     /**
      * Start the job screening UV Max reached
+     *
+     * @param openUVData
      */
-    private void scheduleUVMaxEvent() {
-        if ((uvMaxJob == null || uvMaxJob.isCancelled()) && openUVData != null) {
+    private void scheduleUVMaxEvent(OpenUVJsonResult openUVData) {
+        if ((uvMaxJob == null || uvMaxJob.isCancelled())) {
             long timeDiff = ChronoUnit.MINUTES.between(ZonedDateTime.now(ZoneId.systemDefault()),
                     openUVData.getUVMaxTimeAsZDT());
 
@@ -108,23 +112,25 @@ public class OpenUVReportHandler extends BaseThingHandler {
      */
     private void startAutomaticRefresh() {
         if (refreshJob == null || refreshJob.isCancelled()) {
-            Runnable runnable = () -> {
-                try {
-                    getOpenUVData();
-                    scheduleUVMaxEvent();
-                    for (Channel channel : getThing().getChannels()) {
-                        updateChannel(channel.getUID());
-                    }
-                    updateStatus(ThingStatus.ONLINE);
-                } catch (Exception e) {
-                    logger.error("Exception occurred during execution: {}", e.getMessage(), e);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                }
-            };
-
             OpenUVConfiguration config = getConfigAs(OpenUVConfiguration.class);
             int delay = (config.refresh != null) ? config.refresh.intValue() : DEFAULT_REFRESH_PERIOD;
-            refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, delay, TimeUnit.MINUTES);
+            refreshJob = scheduler.scheduleWithFixedDelay(() -> {
+                updateChannels();
+            }, 0, delay, TimeUnit.MINUTES);
+        }
+    }
+
+    private void updateChannels() {
+        try {
+            OpenUVJsonResult openUVData = getOpenUVData();
+            scheduleUVMaxEvent(openUVData);
+            for (Channel channel : getThing().getChannels()) {
+                updateChannel(channel.getUID(), openUVData);
+            }
+            updateStatus(ThingStatus.ONLINE);
+        } catch (IOException e) {
+            logger.error("Exception occurred during execution: {}", e.getMessage(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -147,7 +153,9 @@ public class OpenUVReportHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            updateChannel(channelUID);
+            scheduler.execute(() -> {
+                updateChannels();
+            });
         } else {
             logger.debug("The OpenUV binding is read-only and can not handle command {}", command);
         }
@@ -157,48 +165,47 @@ public class OpenUVReportHandler extends BaseThingHandler {
      * Update the channel from the last OpenUV data retrieved
      *
      * @param channelUID the id identifying the channel to be updated
+     * @param openUVData
      *
      */
-    private void updateChannel(ChannelUID channelUID) {
-        if (openUVData != null) {
-            switch (channelUID.getId()) {
-                case UVINDEX:
-                    updateState(channelUID, openUVData.getUv());
-                    break;
-                case UVCOLOR:
-                    updateState(channelUID, getAsHSB(openUVData.getUv().floatValue()));
-                    break;
-                case UVMAX:
-                    updateState(channelUID, openUVData.getUvMax());
-                    break;
-                case OZONE:
-                    updateState(channelUID, openUVData.getOzone());
-                    break;
-                case OZONETIME:
-                    updateState(channelUID, openUVData.getOzoneTime());
-                    break;
-                case UVMAXTIME:
-                    updateState(channelUID, openUVData.getUVMaxTime());
-                    break;
-                case UVTIME:
-                    updateState(channelUID, openUVData.getUVTime());
-                    break;
-                case SAFEEXPOSURE:
-                    Channel channel = getThing().getChannel(channelUID.getId());
-                    if (channel != null) {
-                        Configuration configuration = channel.getConfiguration();
-                        int index = 1;
-                        Object skinIndex = configuration.get(PROPERTY_INDEX);
-                        if (skinIndex != null) {
-                            try {
-                                index = Integer.parseInt(skinIndex.toString());
-                            } finally {
-                                updateState(channelUID, openUVData.getSafeExposureTime().getSafeExposure(index));
-                            }
+    private void updateChannel(ChannelUID channelUID, OpenUVJsonResult openUVData) {
+        switch (channelUID.getId()) {
+            case UVINDEX:
+                updateState(channelUID, openUVData.getUv());
+                break;
+            case UVCOLOR:
+                updateState(channelUID, getAsHSB(openUVData.getUv().floatValue()));
+                break;
+            case UVMAX:
+                updateState(channelUID, openUVData.getUvMax());
+                break;
+            case OZONE:
+                updateState(channelUID, new QuantityType<>(openUVData.getOzone(), SmartHomeUnits.DOBSON_UNIT));
+                break;
+            case OZONETIME:
+                updateState(channelUID, openUVData.getOzoneTime());
+                break;
+            case UVMAXTIME:
+                updateState(channelUID, openUVData.getUVMaxTime());
+                break;
+            case UVTIME:
+                updateState(channelUID, openUVData.getUVTime());
+                break;
+            case SAFEEXPOSURE:
+                Channel channel = getThing().getChannel(channelUID.getId());
+                if (channel != null) {
+                    Configuration configuration = channel.getConfiguration();
+                    int index = 1;
+                    Object skinIndex = configuration.get(PROPERTY_INDEX);
+                    if (skinIndex != null) {
+                        try {
+                            index = Integer.parseInt(skinIndex.toString());
+                        } finally {
+                            updateState(channelUID, openUVData.getSafeExposureTime().getSafeExposure(index));
                         }
                     }
-                    break;
-            }
+                }
+                break;
         }
     }
 
@@ -217,44 +224,18 @@ public class OpenUVReportHandler extends BaseThingHandler {
     }
 
     /**
-     * Build request URL from configuration data
-     *
-     * @return a valid URL for the OpenUV service
-     */
-    private String buildRequestURL() {
-        OpenUVConfiguration config = getConfigAs(OpenUVConfiguration.class);
-
-        StringBuilder urlBuilder = new StringBuilder(BASE_URL).append("?lat=").append(config.getLatitude())
-                .append("&lng=").append(config.getLongitude());
-
-        if (config.getAltitude() != null) {
-            urlBuilder.append("&alt=").append(config.getAltitude());
-        }
-
-        return urlBuilder.toString();
-    }
-
-    /**
      * Request new UV Index data to the service
      *
+     * @throws IOException
      */
-    private void getOpenUVData() {
-        Properties header = new Properties();
-        header.put("x-access-token", bridge.getApikey());
-
-        try {
-            String jsonData = HttpUtil.executeUrl("GET", buildRequestURL(), header, null, null, 2000);
-
-            logger.debug("URL = {}", jsonData);
-            OpenUVJsonResponse result = bridge.getGson().fromJson(jsonData, OpenUVJsonResponse.class);
-
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-            openUVData = result.getResult();
-
-        } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+    private OpenUVJsonResult getOpenUVData() throws IOException {
+        OpenUVConfiguration config = getConfigAs(OpenUVConfiguration.class);
+        if (config.getAltitude() == null) {
+            return bridgeHandler.getUVData(config.getLatitude(), config.getLongitude()).getResult();
+        } else {
+            return bridgeHandler.getUVData(config.getLatitude(), config.getLongitude(), config.getAltitude())
+                    .getResult();
         }
-
     }
 
 }
