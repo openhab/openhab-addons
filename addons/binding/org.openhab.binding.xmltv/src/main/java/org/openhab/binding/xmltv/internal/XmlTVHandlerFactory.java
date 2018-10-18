@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.xmltv.internal;
 
-import static org.openhab.binding.xmltv.XmlTVBindingConstants.*;
+import static org.openhab.binding.xmltv.internal.XmlTVBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -27,9 +27,9 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.xmltv.handler.ChannelHandler;
-import org.openhab.binding.xmltv.handler.XmlTVHandler;
 import org.openhab.binding.xmltv.internal.discovery.XmlTVDiscoveryService;
+import org.openhab.binding.xmltv.internal.handler.ChannelHandler;
+import org.openhab.binding.xmltv.internal.handler.XmlTVHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;

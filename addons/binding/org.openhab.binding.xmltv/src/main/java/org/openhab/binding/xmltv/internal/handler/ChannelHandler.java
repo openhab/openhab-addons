@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.xmltv.handler;
+package org.openhab.binding.xmltv.internal.handler;
 
-import static org.openhab.binding.xmltv.XmlTVBindingConstants.*;
+import static org.openhab.binding.xmltv.internal.XmlTVBindingConstants.*;
 
 import java.time.Duration;
 import java.time.Instant;

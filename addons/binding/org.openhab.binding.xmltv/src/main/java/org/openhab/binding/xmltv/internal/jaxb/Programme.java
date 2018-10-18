@@ -8,11 +8,10 @@
  */
 package org.openhab.binding.xmltv.internal.jaxb;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -34,7 +33,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @XmlType
 @NonNullByDefault
 public class Programme {
-    private static final DateFormat XMLTV_DATE_FORMAT = new SimpleDateFormat("yyyyMMddHHmmss Z");
+    private static final DateTimeFormatter XMLTV_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMddHHmmss Z");
 
     @XmlElement(name = "title", required = true)
     protected List<WithLangType> titles = new ArrayList<>();
@@ -74,12 +73,8 @@ public class Programme {
     }
 
     private long iso860DateToEpoch(String date) {
-        try {
-            Date formatted = XMLTV_DATE_FORMAT.parse(date);
-            return formatted.getTime();
-        } catch (Exception e) {
-            return 0;
-        }
+        long epoch = ZonedDateTime.parse(date, XMLTV_DATE_FORMAT).toInstant().toEpochMilli();
+        return epoch;
     }
 
     public List<Icon> getIcons() {
