@@ -23,5 +23,5 @@ public class GmailParadoxParserConfiguration {
      * Sample configuration parameter. Replace with your own.
      */
     public String partitionId;
-    public String refresh;
+    public int refresh;
 }

@@ -1,11 +1,13 @@
 package org.openhab.binding.gmailparadoxparser.internal;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.openhab.binding.gmailparadoxparser.mail.adapter.GmailAdapter;
 import org.openhab.binding.gmailparadoxparser.mail.adapter.MailAdapter;
 import org.openhab.binding.gmailparadoxparser.mail.adapter.MailParser;
 import org.openhab.binding.gmailparadoxparser.model.ParadoxPartition;
@@ -18,6 +20,14 @@ public class StatesCache implements Cache<String, ParadoxPartition> {
     private Map<String, ParadoxPartition> partitionsStates = new HashMap<String, ParadoxPartition>();
     private MailAdapter mailAdapter;
     private final Logger logger = LoggerFactory.getLogger(StatesCache.class);
+
+    private StatesCache() {
+        try {
+            mailAdapter = new GmailAdapter();
+        } catch (IOException | GeneralSecurityException e) {
+            logger.error(e.getMessage(), e);
+        }
+    }
 
     public static StatesCache getInstance() {
         if (instance == null) {
@@ -54,18 +64,19 @@ public class StatesCache implements Cache<String, ParadoxPartition> {
     @Override
     public void refresh(String query) {
         try {
-            List<String> retrievedMessages = mailAdapter
-                    .retrieveAllMessagesContentsAndMarkAllRead(MailAdapter.QUERY_UNREAD);
-            Set<ParadoxPartition> partitionsUpdatedStates = MailParser.getInstance()
-                    .parseToParadoxPartitionStates(retrievedMessages);
+            synchronized (getClass()) {
+                List<String> retrievedMessages = mailAdapter.retrieveAllMessagesContentsAndMarkAllRead(query);
+                Set<ParadoxPartition> partitionsUpdatedStates = MailParser.getInstance()
+                        .parseToParadoxPartitionStates(retrievedMessages);
 
-            if (partitionsUpdatedStates.isEmpty()) {
-                logger.debug("Received empty set. Nothing to update.");
-                return;
-            }
+                if (partitionsUpdatedStates.isEmpty()) {
+                    logger.debug("Received empty set. Nothing to update.");
+                    return;
+                }
 
-            for (ParadoxPartition paradoxPartition : partitionsUpdatedStates) {
-                put(paradoxPartition.getPartition(), paradoxPartition);
+                for (ParadoxPartition paradoxPartition : partitionsUpdatedStates) {
+                    put(paradoxPartition.getPartition(), paradoxPartition);
+                }
             }
         } catch (IOException e) {
             logger.trace(e.getMessage(), e);

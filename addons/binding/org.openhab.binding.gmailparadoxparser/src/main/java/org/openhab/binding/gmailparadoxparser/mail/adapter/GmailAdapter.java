@@ -10,7 +10,9 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
+import org.openhab.binding.gmailparadoxparser.internal.StatesCache;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -39,12 +41,12 @@ public class GmailAdapter implements MailAdapter {
     private static final String CREDENTIALS_FILE_PATH = "credentials.json";
 
     private static Gmail googleService;
-    private static Logger logger;
+    private static final Logger logger = LoggerFactory.getLogger(StatesCache.class);
 
     private String user;
 
     public static void main(String... args) throws IOException, GeneralSecurityException {
-        MailAdapter adapter = new GmailAdapter(new MyLogger());
+        MailAdapter adapter = new GmailAdapter();
         List<String> mailContents = adapter.retrieveAllMessagesContentsAndMarkAllRead(QUERY_UNREAD);
         for (String mail : mailContents) {
             logger.debug("Mail contents:");
@@ -52,13 +54,12 @@ public class GmailAdapter implements MailAdapter {
         }
     }
 
-    public GmailAdapter(Logger logger) throws GeneralSecurityException, IOException {
+    public GmailAdapter() throws GeneralSecurityException, IOException {
         this(USER, CREDENTIALS_FILE_PATH, logger);
     }
 
     public GmailAdapter(String user, String credentialsFile, Logger logger)
             throws GeneralSecurityException, IOException {
-        GmailAdapter.logger = logger;
         // Build a new authorized API client service.
         if (googleService == null) {
             logger.info("Initializing Google Gmail service...");
@@ -104,7 +105,7 @@ public class GmailAdapter implements MailAdapter {
                 }
 
                 String content = new String(Base64.decodeBase64(encodedContent.getBytes()), "UTF-8");
-                // logger.debug("Payload content: " + content);
+                logger.debug("Got content successfully");
 
                 result.add(content);
             }

@@ -72,10 +72,11 @@ public class GmailParadoxParserHandler extends BaseThingHandler {
     public void initialize() {
         logger.debug("Start initializing!");
         config = getConfigAs(GmailParadoxParserConfiguration.class);
+        StatesCache.getInstance().initialize();
         updateStatus(ThingStatus.ONLINE);
-        updateStatus(ThingStatus.UNINITIALIZED);
 
         scheduler.scheduleAtFixedRate(() -> {
+            StatesCache.getInstance().refresh();
             refreshData();
         }, INITIAL_DELAY, DEFAULT_REFRESH_INTERVAL, TimeUnit.SECONDS);
 
