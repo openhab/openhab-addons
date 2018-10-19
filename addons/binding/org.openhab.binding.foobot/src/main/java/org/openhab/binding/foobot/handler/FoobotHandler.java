@@ -17,14 +17,12 @@ import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.httpclient.params.HttpParams;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpParams;
-import org.apache.http.util.EntityUtils;
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -57,17 +55,17 @@ public class FoobotHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FoobotHandler.class);
 
-    private static final int DEFAULT_REFRESH_PERIOD = 30;
+    private static final int DEFAULT_REFRESH_PERIOD_MINUTES = 30;
 
-    private static final String URL1 = "https://api.foobot.io/v2/owner/%username%/device/";
+    private static final String UrlToFetchUUID = "https://api.foobot.io/v2/owner/%username%/device/";
 
-    private static final String URL2 = "https://api.foobot.io/v2/device/%uuid%/datapoint/0/last/0/?sensorList=%sensors%";
+    private static final String UrlToFetchSensorData = "https://api.foobot.io/v2/device/%uuid%/datapoint/0/last/0/?sensorList=%sensors%";
+
+    private static final Gson gson = new Gson();
 
     private FoobotJsonData foobotData;
 
     private HttpParams params;
-
-    private Gson gson;
 
     private String uuid;
 
@@ -75,9 +73,11 @@ public class FoobotHandler extends BaseThingHandler {
 
     private ScheduledFuture<?> refreshJob;
 
-    public FoobotHandler(Thing thing) {
+    private HttpClient httpClient;
+
+    public FoobotHandler(Thing thing, HttpClient httpClient) {
         super(thing);
-        gson = new Gson();
+        this.httpClient = httpClient;
     }
 
     @Override
@@ -85,7 +85,6 @@ public class FoobotHandler extends BaseThingHandler {
         logger.debug("Initializing Foobot handler.");
         config = getConfigAs(FoobotConfiguration.class);
 
-        logger.debug("config apikey = {}", config.apikey);
         logger.debug("config username = {}", config.username);
         logger.debug("config mac = {}", config.mac);
         logger.debug("config refresh = {}", config.refresh);
@@ -99,15 +98,15 @@ public class FoobotHandler extends BaseThingHandler {
             validConfig = false;
         }
         if (StringUtils.trimToNull(config.username) == null) {
-            errorMsg = "Parameter 'username' is mandatory and must be configured";
+            errorMsg += "Parameter 'username' is mandatory and must be configured";
             validConfig = false;
         }
         if (StringUtils.trimToNull(config.mac) == null) {
-            errorMsg = "Parameter 'Mac Address' is mandatory and must be configured";
+            errorMsg += "Parameter 'Mac Address' is mandatory and must be configured";
             validConfig = false;
         }
         if (config.refresh != null && config.refresh < 5) {
-            errorMsg = "Parameter 'refresh' must be at least 5 minutes";
+            errorMsg += "Parameter 'refresh' must be at least 5 minutes";
             validConfig = false;
         }
 
@@ -116,22 +115,23 @@ public class FoobotHandler extends BaseThingHandler {
 
             return;
         }
-        try {
-            String urlStr = URL1.replace("%username%", StringUtils.trimToEmpty(config.username));
-            logger.debug("URL = {}", urlStr);
+        String urlStr = UrlToFetchUUID.replace("%username%", StringUtils.trimToEmpty(config.username));
+        logger.debug("URL = {}", urlStr);
+        ContentResponse response;
 
-            // Run the HTTP request and get the list of all foobot devices belonging to the user from foobot.io
-            HttpClient httpClient = new DefaultHttpClient();
-            HttpGet getRequest = new HttpGet(urlStr);
-            getRequest.addHeader("accept", "application/json");
-            getRequest.addHeader("X-API-KEY-TOKEN", config.apikey);
-            HttpResponse response = httpClient.execute(getRequest);
+        // Run the HTTP request and get the list of all foobot devices belonging to the user from foobot.io
+        Request request = httpClient.newRequest(urlStr).timeout(3, TimeUnit.SECONDS);
+        request.header("accept", "application/json");
+        request.header("X-API-KEY-TOKEN", config.apikey);
+
+        try {
+            response = request.send();
             logger.debug("foobotResponse = {}", response);
 
-            if (response.getStatusLine().getStatusCode() == 404) {
+            if (response.getStatusLine().getStatusCode() != 200) {
                 errorMsg = "Configuration is incorrect";
                 logger.warn("Error running foobot.io request: {}", errorMsg);
-                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
+                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR, errorMsg);
 
                 return;
             }
@@ -142,7 +142,7 @@ public class FoobotHandler extends BaseThingHandler {
             List<FoobotJsonResponse> readFromJson = gson.fromJson(userDevices, listType);
             for (FoobotJsonResponse ob : readFromJson) {
                 // Compare the mac address to each record in order to fetch the UUID of the current device.
-                if (ob.getMac().equals(config.mac)) {
+                if (config.mac.equals(ob.getMac())) {
                     uuid = ob.getUuid();
                     deviceFound = true;
                     break;
@@ -165,6 +165,7 @@ public class FoobotHandler extends BaseThingHandler {
             logger.warn("Error running foobot.io request: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
+
         updateStatus(ThingStatus.ONLINE);
         startAutomaticRefresh();
     }
@@ -173,7 +174,7 @@ public class FoobotHandler extends BaseThingHandler {
      * Start the job refreshing the Sensor data from Foobot device
      */
     private void startAutomaticRefresh() {
-        int delay = (config.refresh != null) ? config.refresh.intValue() : DEFAULT_REFRESH_PERIOD;
+        int delay = (config.refresh != null) ? config.refresh.intValue() : DEFAULT_REFRESH_PERIOD_MINUTES;
         refreshJob = scheduler.scheduleWithFixedDelay(() -> {
             // Request new sensor data from foobot.io service
             foobotData = updateFoobotData();
@@ -208,7 +209,8 @@ public class FoobotHandler extends BaseThingHandler {
         try {
             value = getValue(channelId, foobotResponse);
         } catch (Exception e) {
-            logger.debug("Foobot device doesn't provide sensor data for channel id = {}", channelId.toUpperCase());
+            logger.debug(e.getMessage() + " - Foobot device doesn't provide sensor data for channel id = {}",
+                    channelId.toUpperCase());
         }
 
         if (value == null) {
@@ -226,18 +228,21 @@ public class FoobotHandler extends BaseThingHandler {
 
     private FoobotJsonData updateFoobotData() {
         FoobotJsonData result = null;
-        try {
-            // Run the HTTP request and get the list of all foobot devices belonging to the user from foobot.io
-            String urlStr = URL2.replace("%uuid%", StringUtils.trimToEmpty(uuid));
-            urlStr = urlStr.replace("%sensors%", StringUtils.trimToEmpty(""));
-            logger.debug("URL = {}", urlStr);
+        // Run the HTTP request and get the list of all foobot devices belonging to the user from foobot.io
+        String urlStr = UrlToFetchSensorData.replace("%uuid%", StringUtils.trimToEmpty(uuid));
+        urlStr = urlStr.replace("%sensors%", StringUtils.trimToEmpty(""));
+        logger.debug("URL = {}", urlStr);
 
+        ContentResponse response;
+
+        Request request = httpClient.newRequest(urlStr).timeout(3, TimeUnit.SECONDS);
+        request.header("accept", "application/json");
+        request.header("X-API-KEY-TOKEN", config.apikey);
+
+        try {
             // Run the HTTP request and get the JSON response from foobot.io
-            HttpClient httpClient = new DefaultHttpClient();
-            HttpGet getRequest = new HttpGet(urlStr);
-            getRequest.addHeader("accept", "application/json");
-            getRequest.addHeader("X-API-KEY-TOKEN", config.apikey);
-            HttpResponse response = httpClient.execute(getRequest);
+            response = request.send();
+            logger.debug("foobotResponse = {}", response);
 
             String responseData = EntityUtils.toString(response.getEntity());
             logger.debug(responseData);

@@ -20,10 +20,10 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class FoobotBindingConstants {
 
-    private static final String BINDING_ID = "foobotbinding";
+    private static final String BINDING_ID = "foobot";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_FOOBOT = new ThingTypeUID(BINDING_ID, "foobot");
+    public static final ThingTypeUID THING_TYPE_FOOBOT = new ThingTypeUID(BINDING_ID, "device");
 
     // List of all Channel ids
     public static final String TMP = "temperature";
