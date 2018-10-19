@@ -19,23 +19,9 @@
 					<option value="amazon.in">amazon.in</option>
 					<option value="amazon.fr">amazon.fr</option>
 					<option value="amazon.co.uk">amazon.co.uk</option>
+					<option value="amazon.com.au">amazon.com.au</option>
 				</options>
 				<description>Site where the amazon account is created.</description>
-			</parameter>
-			<parameter name="email" type="text" required="true">
-				<label>Email</label>
-				<description>Email address of the amazon account which is used for the amazon echo devices. Hint: 2 factor authentication is not supported!</description>
-			</parameter>
-			<parameter name="password" type="text" required="true">
-				<context>password</context>
-				<label>Password</label>
-				<description>Password of the amazon account which is used for the amazon echo devices. IMPORTANT: If the account thing does not go online and reports and login error, open the url YOUR_OPENHAP/amazonechocontrol/ID_OF_THIS_THING in your browser (e.g. http://openhab:8080/amazonechocontrol/account) and try to login.</description>
-			</parameter>
-			<parameter name="pollingIntervalInSeconds" type="integer" min="10" max="65535" unit="s">
-				<default>30</default>
-				<label>Refresh state interval</label>
-				<description>Refresh state interval in seconds. Lower time causes more network traffic.</description>
-				<unitLabel>Seconds</unitLabel>
 			</parameter>
 		</config-description>
 	</bridge-type>

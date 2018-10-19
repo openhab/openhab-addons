@@ -15,32 +15,34 @@ import java.io.OutputStream;
 import java.net.CookieManager;
 import java.net.CookieStore;
 import java.net.HttpCookie;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
+import org.jsoup.helper.StringUtil;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAscendingAlarm;
@@ -54,6 +56,8 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDeviceNotificati
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonEnabledFeeds;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonExchangeTokenResponse;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonExchangeTokenResponse.Cookie;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonFeed;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMediaState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMusicProvider;
@@ -65,7 +69,17 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlaySearchPhrase
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayValidationResult;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayerState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlaylists;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonRegisterAppRequest;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonRegisterAppResponse;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonRegisterAppResponse.Bearer;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonRegisterAppResponse.DeviceInfo;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonRegisterAppResponse.Extensions;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonRegisterAppResponse.Response;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonRegisterAppResponse.Success;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonRegisterAppResponse.Tokens;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonRenewTokenResponse;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonStartRoutineRequest;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonWebSiteCookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,50 +96,56 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class Connection {
+    private static final long defaultExpiresIn = 3600;
+    private static final long minExpiresIn = 600;
+
     private final Logger logger = LoggerFactory.getLogger(Connection.class);
 
     private final CookieManager cookieManager = new CookieManager();
-    private final String email;
-    private final String password;
     private final String amazonSite;
     private final String alexaServer;
-    private final String accountThingId;
     private final String userAgent;
+    private final String mapMdCookie;
+    private String frc;
+    private String serial;
+    private String deviceId;
 
+    private @Nullable String refreshToken;
     private @Nullable String sessionId;
     private @Nullable Date loginTime;
     private @Nullable Date verifyTime;
+    private long renewTime = 0;
+    private long expiresIn = defaultExpiresIn;
+    private @Nullable String deviceName;
 
     private final Gson gson = new Gson();
     private final Gson gsonWithNullSerialization;
 
-    private static @Nullable String operatingSystem = null;
+    public Connection(@Nullable String amazonSite) {
+        String mapMdJson = "{\"device_user_dictionary\":[],\"device_registration_data\":{\"software_version\":\"1\"},\"app_identifier\":{\"app_version\":\"2.2.223830\",\"bundle_id\":\"com.amazon.echo\"}}";
+        mapMdCookie = Base64.getEncoder().encodeToString(mapMdJson.getBytes());
 
-    private static String getOsName() {
-        if (operatingSystem == null) {
-            operatingSystem = System.getProperty("os.name");
-        }
-        String result = operatingSystem;
-        if (result == null) {
-            result = "Unkown";
-        }
-        return result;
-    }
+        // generate frc
+        byte[] frcBinary = new byte[313];
+        Random rand = new Random();
+        rand.nextBytes(frcBinary);
+        frc = Base64.getEncoder().encodeToString(frcBinary);
 
-    private static boolean isWindows() {
-        return getOsName().startsWith("Windows");
-    }
+        // generate serial
+        byte[] serialBinary = new byte[16];
+        rand.nextBytes(serialBinary);
+        serial = DatatypeConverter.printHexBinary(serialBinary);
 
-    public Connection(@Nullable String email, @Nullable String password, @Nullable String amazonSite,
-            @Nullable String accountThingId, @Nullable String oldCookies) {
-        this.accountThingId = accountThingId != null ? accountThingId : "";
-        this.email = email != null ? email : "";
-        this.password = password != null ? password : "";
-        if (isWindows()) {
-            this.userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:99.0) Gecko/20100101 Firefox/99.0";
-        } else {
-            this.userAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36";
+        // generate device id
+        StringBuilder deviceIdBuilder = new StringBuilder();
+        for (int i = 0; i < 64; i++) {
+            deviceIdBuilder.append(rand.nextInt(9));
         }
+        deviceIdBuilder.append("23413249564c5635564d32573831");
+        this.deviceId = deviceIdBuilder.toString();
+
+        // build user agent
+        this.userAgent = "AmazonWebView/Amazon Alexa/2.2.223830.0/iOS/11.4.1/iPhone";
 
         String correctedAmazonSite = amazonSite != null ? amazonSite : "";
         if (correctedAmazonSite.toLowerCase().startsWith("http://")) {
@@ -145,8 +165,6 @@ public class Connection {
 
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonWithNullSerialization = gsonBuilder.create();
-        tryRestoreCookies(oldCookies, true);
-
     }
 
     public @Nullable Date tryGetLoginTime() {
@@ -157,12 +175,16 @@ public class Connection {
         return verifyTime;
     }
 
-    public String getEmail() {
-        return email;
+    public String getFrc() {
+        return frc;
     }
 
-    public String getPassword() {
-        return password;
+    public String getSerial() {
+        return serial;
+    }
+
+    public String getDeviceId() {
+        return deviceId;
     }
 
     public String getAmazonSite() {
@@ -175,12 +197,18 @@ public class Connection {
             return "";
         }
         StringBuilder builder = new StringBuilder();
-        builder.append("4\n"); // version
-        builder.append(email);
+        builder.append("5\n"); // version
+        builder.append(frc);
         builder.append("\n");
-        builder.append(password.hashCode());
+        builder.append(serial);
+        builder.append("\n");
+        builder.append(deviceId);
+        builder.append("\n");
+        builder.append(refreshToken);
         builder.append("\n");
         builder.append(sessionId);
+        builder.append("\n");
+        builder.append(deviceName);
         builder.append("\n");
         builder.append(loginTime.getTime());
         builder.append("\n");
@@ -225,8 +253,7 @@ public class Connection {
     }
 
     public boolean tryRestoreLogin(@Nullable String data) {
-
-        Date loginTime = tryRestoreCookies(data, false);
+        Date loginTime = tryRestoreSessionData(data);
         if (loginTime != null) {
             try {
                 if (verifyLogin()) {
@@ -234,9 +261,9 @@ public class Connection {
                     return true;
                 }
             } catch (IOException e) {
-                logger.info("verify login fails with io exception: {}", e);
+                return false;
             } catch (URISyntaxException e) {
-                logger.warn("verify login fails with uri syntax exception: {}", e);
+
             }
         }
         // anything goes wrong, remove session data
@@ -244,36 +271,32 @@ public class Connection {
         return false;
     }
 
-    private @Nullable Date tryRestoreCookies(@Nullable String data, boolean doNotRestoreSessionToken) {
+    private @Nullable Date tryRestoreSessionData(@Nullable String data) {
         // verify store data
         if (StringUtils.isEmpty(data)) {
             return null;
         }
         Scanner scanner = new Scanner(data);
         String version = scanner.nextLine();
-        if (!version.equals("4")) {
+        // check if serialize version
+        if (!version.equals("5")) {
             scanner.close();
             return null;
         }
 
-        // check if email or password was changed in the mean time
-        String email = scanner.nextLine();
-        if (!email.equals(this.email)) {
-            scanner.close();
-            return null;
-        }
-        int passwordHash = Integer.parseInt(scanner.nextLine());
-        if (passwordHash != this.password.hashCode()) {
-            scanner.close();
-            return null;
-        }
+        frc = scanner.nextLine();
+        serial = scanner.nextLine();
+        deviceId = scanner.nextLine();
 
         // Recreate session and cookies
+        refreshToken = scanner.nextLine();
         sessionId = scanner.nextLine();
+        deviceName = scanner.nextLine();
         Date loginTime = new Date(Long.parseLong(scanner.nextLine()));
         CookieStore cookieStore = cookieManager.getCookieStore();
         cookieStore.removeAll();
 
+        String atMain = null;
         Integer numberOfCookies = Integer.parseInt(scanner.nextLine());
         for (Integer i = 0; i < numberOfCookies; i++) {
             String name = readValue(scanner);
@@ -290,13 +313,19 @@ public class Connection {
             clientCookie.setSecure(Boolean.parseBoolean(readValue(scanner)));
             clientCookie.setDiscard(Boolean.parseBoolean(readValue(scanner)));
 
-            if (doNotRestoreSessionToken && name.equalsIgnoreCase("session-token")) {
-                continue;
+            if (name.equalsIgnoreCase("at-acbde")) {
+                atMain = value;
             }
             cookieStore.add(null, clientCookie);
         }
 
         scanner.close();
+        try {
+            checkRenewSession();
+        } catch (URISyntaxException | IOException | ConnectionException e) {
+
+        }
+
         return loginTime;
     }
 
@@ -320,7 +349,7 @@ public class Connection {
         return makeRequestAndReturnString("GET", url, null, false, null);
     }
 
-    private String makeRequestAndReturnString(String verb, String url, @Nullable String postData, boolean json,
+    public String makeRequestAndReturnString(String verb, String url, @Nullable String postData, boolean json,
             @Nullable Map<String, String> customHeaders) throws IOException, URISyntaxException {
         HttpsURLConnection connection = makeRequest(verb, url, postData, json, true, customHeaders);
         return convertStream(connection.getInputStream());
@@ -339,13 +368,17 @@ public class Connection {
                 connection = (HttpsURLConnection) new URL(currentUrl).openConnection();
                 connection.setRequestMethod(verb);
                 connection.setRequestProperty("Accept-Language", "en-US");
-                connection.setRequestProperty("User-Agent", userAgent);
+                if (customHeaders == null || !customHeaders.containsKey("User-Agent")) {
+                    connection.setRequestProperty("User-Agent", userAgent);
+                }
                 connection.setRequestProperty("DNT", "1");
                 connection.setRequestProperty("Upgrade-Insecure-Requests", "1");
                 if (customHeaders != null) {
                     for (String key : customHeaders.keySet()) {
                         String value = customHeaders.get(key);
-                        connection.setRequestProperty(key, value);
+                        if (!StringUtil.isBlank(value)) {
+                            connection.setRequestProperty(key, value);
+                        }
                     }
                 }
                 connection.setInstanceFollowRedirects(false);
@@ -353,19 +386,23 @@ public class Connection {
                 // add cookies
                 URI uri = connection.getURL().toURI();
 
-                StringBuilder cookieHeaderBuilder = new StringBuilder();
-                for (HttpCookie cookie : cookieManager.getCookieStore().get(uri)) {
-                    if (cookieHeaderBuilder.length() > 0) {
-                        cookieHeaderBuilder.insert(0, "; ");
-                    }
-                    cookieHeaderBuilder.insert(0, cookie);
-                    if (cookie.getName().equals("csrf")) {
-                        connection.setRequestProperty("csrf", cookie.getValue());
-                    }
+                if (customHeaders == null || !customHeaders.containsKey("Cookie")) {
 
-                }
-                if (cookieHeaderBuilder.length() > 0) {
-                    connection.setRequestProperty("Cookie", cookieHeaderBuilder.toString());
+                    StringBuilder cookieHeaderBuilder = new StringBuilder();
+                    for (HttpCookie cookie : cookieManager.getCookieStore().get(uri)) {
+                        if (cookieHeaderBuilder.length() > 0) {
+                            cookieHeaderBuilder.insert(0, "; ");
+                        }
+                        cookieHeaderBuilder.insert(0, cookie);
+                        if (cookie.getName().equals("csrf")) {
+                            connection.setRequestProperty("csrf", cookie.getValue());
+                        }
+
+                    }
+                    if (cookieHeaderBuilder.length() > 0) {
+                        String cookies = cookieHeaderBuilder.toString();
+                        connection.setRequestProperty("Cookie", cookies);
+                    }
                 }
                 if (postData != null) {
 
@@ -449,6 +486,178 @@ public class Connection {
         throw new ConnectionException("Too many redirects");
     }
 
+    public String registerConnectionAsApp(String oAutRedirectUrl)
+            throws ConnectionException, IOException, URISyntaxException {
+        URI oAutRedirectUri = new URI(oAutRedirectUrl);
+
+        Map<String, String> queryParameters = new LinkedHashMap<String, String>();
+        String query = oAutRedirectUri.getQuery();
+        String[] pairs = query.split("&");
+        for (String pair : pairs) {
+            int idx = pair.indexOf("=");
+            queryParameters.put(URLDecoder.decode(pair.substring(0, idx), "UTF-8"),
+                    URLDecoder.decode(pair.substring(idx + 1), "UTF-8"));
+        }
+        String accessToken = queryParameters.get("openid.oa2.access_token");
+
+        String atMain = null;
+        Map<String, String> cookieMap = new HashMap<String, String>();
+
+        List<JsonWebSiteCookie> webSiteCookies = new ArrayList<JsonWebSiteCookie>();
+        for (HttpCookie cookie : getSessionCookies("https://www.amazon.com")) {
+            if (cookie.getName().equals("at-main")) {
+                atMain = cookie.getValue();
+
+            }
+            cookieMap.put(cookie.getName(), cookie.getValue());
+            webSiteCookies.add(new JsonWebSiteCookie(cookie.getName(), cookie.getValue()));
+        }
+        if (atMain == null) {
+            throw new ConnectionException("Error: Missing at-Main header");
+        }
+        JsonWebSiteCookie[] webSiteCookiesArray = new JsonWebSiteCookie[webSiteCookies.size()];
+        webSiteCookiesArray = webSiteCookies.toArray(webSiteCookiesArray);
+
+        JsonRegisterAppRequest registerAppRequest = new JsonRegisterAppRequest(serial, accessToken, frc,
+                webSiteCookiesArray);
+        String registerAppRequestJson = gson.toJson(registerAppRequest);
+
+        HashMap<String, String> registerHeaders = new HashMap<String, String>();
+        registerHeaders.put("x-amzn-identity-auth-domain", "api.amazon.com");
+
+        String registerAppResultJson = makeRequestAndReturnString("POST", "https://api.amazon.com/auth/register",
+                registerAppRequestJson, true, registerHeaders);
+        JsonRegisterAppResponse registerAppResponse = parseJson(registerAppResultJson, JsonRegisterAppResponse.class);
+
+        Response response = registerAppResponse.response;
+        if (response == null) {
+            throw new ConnectionException("Error: No response received from register application");
+        }
+        Success success = response.success;
+        if (success == null) {
+            throw new ConnectionException("Error: No success received from register application");
+        }
+        Tokens tokens = success.tokens;
+        if (tokens == null) {
+            throw new ConnectionException("Error: No tokens received from register application");
+        }
+        Bearer bearer = tokens.bearer;
+        if (bearer == null) {
+            throw new ConnectionException("Error: No bearer received from register application");
+        }
+        this.refreshToken = bearer.refresh_token;
+        this.expiresIn = defaultExpiresIn;
+        String expiresInStr = bearer.expires_in;
+        if (StringUtils.isNotEmpty(expiresInStr)) {
+            try {
+                this.expiresIn = Integer.parseInt(expiresInStr);
+            } catch (NumberFormatException e) {
+                // ignore wrong values
+            }
+        }
+        if (this.expiresIn < minExpiresIn) {
+            this.expiresIn = minExpiresIn;
+        }
+        if (StringUtils.isEmpty(this.refreshToken)) {
+            throw new ConnectionException("Error: No refresh token received");
+        }
+        try {
+            exhangeToken();
+        } catch (Exception e) {
+            logout();
+            throw e;
+        }
+        String deviceName = null;
+        Extensions extensions = success.extensions;
+        if (extensions != null) {
+            DeviceInfo deviceInfo = extensions.device_info;
+            if (deviceInfo != null) {
+                deviceName = deviceInfo.device_name;
+            }
+        }
+        if (deviceName == null) {
+            deviceName = "Unknown";
+        }
+        this.deviceName = deviceName;
+        return deviceName;
+    }
+
+    private void exhangeToken() throws IOException, URISyntaxException {
+
+        this.renewTime = 0;
+        String cookiesJson = "{\"cookies\":{\"." + getAmazonSite() + "\":[]}}";
+        String cookiesBase64 = Base64.getEncoder().encodeToString(cookiesJson.getBytes());
+
+        String exchangePostData = "di.os.name=iOS&app_version=2.2.223830.0&domain=." + getAmazonSite()
+                + "&source_token=" + URLEncoder.encode(this.refreshToken, "UTF8")
+                + "&requested_token_type=auth_cookies&source_token_type=refresh_token&di.hw.version=iPhone&di.sdk.version=6.10.0&cookies="
+                + cookiesBase64 + "&app_name=Amazon%20Alexa&di.os.version=11.4.1";
+
+        HashMap<String, String> exchangeTokenHeader = new HashMap<String, String>();
+        exchangeTokenHeader.put("Cookie", "");
+
+        String exchangeTokenJson = makeRequestAndReturnString("POST",
+                "https://www." + getAmazonSite() + ":443/ap/exchangetoken", exchangePostData, false,
+                exchangeTokenHeader);
+        JsonExchangeTokenResponse exchangeTokenResponse = gson.fromJson(exchangeTokenJson,
+                JsonExchangeTokenResponse.class);
+
+        org.openhab.binding.amazonechocontrol.internal.jsons.JsonExchangeTokenResponse.Response response = exchangeTokenResponse.response;
+        if (response != null) {
+            org.openhab.binding.amazonechocontrol.internal.jsons.JsonExchangeTokenResponse.Tokens tokens = response.tokens;
+            if (tokens != null) {
+                @Nullable
+                Map<String, Cookie[]> cookiesMap = tokens.cookies;
+                if (cookiesMap != null) {
+                    for (String domain : cookiesMap.keySet()) {
+                        Cookie[] cookies = cookiesMap.get(domain);
+                        for (Cookie cookie : cookies) {
+                            if (cookie != null) {
+                                HttpCookie httpCookie = new HttpCookie(cookie.Name, cookie.Value);
+                                httpCookie.setPath(cookie.Path);
+                                httpCookie.setDomain(domain);
+                                if (cookie.Secure != null) {
+                                    httpCookie.setSecure(cookie.Secure);
+                                }
+                                this.cookieManager.getCookieStore().add(null, httpCookie);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        handleSessionIdFromCookies();
+        if (!verifyLogin()) {
+            throw new ConnectionException("Verify login failed after token exchange");
+        }
+        this.renewTime = (long) (System.currentTimeMillis() + this.expiresIn * 1000d / 0.8d); // start renew at 80% of
+                                                                                              // expire time
+    }
+
+    public boolean checkRenewSession() throws UnknownHostException, URISyntaxException, IOException {
+        if (System.currentTimeMillis() >= this.renewTime) {
+            String renewTokenPostData = "app_name=Amazon%20Alexa&app_version=2.2.223830.0&di.sdk.version=6.10.0&source_token="
+                    + URLEncoder.encode(refreshToken, "UTF-8")
+                    + "&package_name=com.amazon.echo&di.hw.version=iPhone&platform=iOS&requested_token_type=access_token&source_token_type=refresh_token&di.os.name=iOS&di.os.version=11.4.1&current_version=6.10.0";
+            String renewTokenRepsonseJson = makeRequestAndReturnString("POST", "https://www.amazon.com",
+                    renewTokenPostData, false, null);
+            JsonRenewTokenResponse renewTokenResponse = parseJson(renewTokenRepsonseJson, JsonRenewTokenResponse.class);
+
+            this.expiresIn = defaultExpiresIn;
+            Long expiresIn = renewTokenResponse.expires_in;
+            if (expiresIn != null) {
+                this.expiresIn = expiresIn;
+            }
+            if (this.expiresIn < minExpiresIn) {
+                this.expiresIn = minExpiresIn;
+            }
+            exhangeToken();
+            return true;
+        }
+        return false;
+
+    }
+
     public boolean getIsLoggedIn() {
         return loginTime != null;
     }
@@ -458,17 +667,27 @@ public class Connection {
         logout();
 
         logger.debug("Start Login to {}", alexaServer);
-        // get login form
 
-        String loginFormHtml = makeRequestAndReturnString(alexaServer);
+        cookieManager.getCookieStore().add(new URI("https://www.amazon.com"),
+                new HttpCookie("map-md", this.mapMdCookie));
+        cookieManager.getCookieStore().add(new URI("https://www.amazon.com"), new HttpCookie("frc", frc));
+
+        String loginFormHtml = makeRequestAndReturnString("https://www.amazon.com"
+                + "/ap/signin?openid.return_to=https://www.amazon.com/ap/maplanding&openid.assoc_handle=amzn_dp_project_dee_ios&openid.identity=http://specs.openid.net/auth/2.0/identifier_select&pageId=amzn_dp_project_dee_ios&accountStatusPolicy=P1&openid.claimed_id=http://specs.openid.net/auth/2.0/identifier_select&openid.mode=checkid_setup&openid.ns.oa2=http://www.amazon.com/ap/ext/oauth/2&openid.oa2.client_id=device:"
+                + deviceId
+                + "&openid.ns.pape=http://specs.openid.net/extensions/pape/1.0&openid.oa2.response_type=token&openid.ns=http://specs.openid.net/auth/2.0&openid.pape.max_auth_age=0&openid.oa2.scope=device_auth_access");
 
         logger.debug("Received login form {}", loginFormHtml);
+        handleSessionIdFromCookies();
+        return loginFormHtml;
+    }
 
+    void handleSessionIdFromCookies() throws MalformedURLException, URISyntaxException {
         // get session id from cookies
         for (HttpCookie cookie : cookieManager.getCookieStore().getCookies()) {
             if (cookie.getName().equalsIgnoreCase("session-id")) {
                 sessionId = cookie.getValue();
-                break;
+                // break;
             }
         }
         if (sessionId == null) {
@@ -476,111 +695,16 @@ public class Connection {
         }
         cookieManager.getCookieStore().add(new URL("https://www." + amazonSite).toURI(),
                 HttpCookie.parse("session-id=" + sessionId).get(0));
-        return loginFormHtml;
-    }
-
-    public void makeLogin() throws IOException, URISyntaxException {
-        try {
-            String loginFormHtml = getLoginPage();
-            // read hidden form inputs, the will be used later in the url and for posting
-            Pattern inputPattern = Pattern
-                    .compile("<input\\s+type=\"hidden\"\\s+name=\"(?<name>[^\"]+)\"\\s+value=\"(?<value>[^\"]*)\"");
-            Matcher matcher = inputPattern.matcher(loginFormHtml);
-
-            StringBuilder postDataBuilder = new StringBuilder();
-            while (matcher.find()) {
-
-                postDataBuilder.append(URLEncoder.encode(matcher.group("name"), "UTF-8"));
-                postDataBuilder.append('=');
-                postDataBuilder.append(URLEncoder.encode(matcher.group("value"), "UTF-8"));
-                postDataBuilder.append('&');
-            }
-
-            String queryParameters = postDataBuilder.toString() + "session-id=" + URLEncoder.encode(sessionId, "UTF-8");
-            logger.debug("Login query String: {}", queryParameters);
-
-            postDataBuilder.append("email");
-            postDataBuilder.append('=');
-            postDataBuilder.append(URLEncoder.encode(email, "UTF-8"));
-            postDataBuilder.append('&');
-            postDataBuilder.append("password");
-            postDataBuilder.append('=');
-            postDataBuilder.append(URLEncoder.encode(password, "UTF-8"));
-
-            String postData = postDataBuilder.toString();
-
-            String response = postLoginData(queryParameters, postData);
-            if (response != null) {
-                Document htmlDocument = Jsoup.parse(response);
-                Element authWarningBoxElement = htmlDocument.getElementById("auth-warning-message-box");
-                String error = null;
-                if (authWarningBoxElement != null) {
-                    error = authWarningBoxElement.text();
-                }
-                if (StringUtils.isNotEmpty(error)) {
-                    throw new ConnectionException(
-                            "Login fails. Check your credentials and try to login with your webbrowser to http(s)://<youropenhab:yourport>/amazonechocontrol/"
-                                    + accountThingId + System.lineSeparator() + "" + error);
-                } else {
-                    throw new ConnectionException(
-                            "Login fails. Check your credentials and try to login with your webbrowser to http(s)://<youropenhab:yourport>/amazonechocontrol/"
-                                    + accountThingId);
-                }
-            }
-
-        } catch (Exception e) {
-            // clear session data
-            logout();
-            logger.info("Login failed: {}", e.getLocalizedMessage());
-            // rethrow
-            throw e;
-        }
-    }
-
-    public @Nullable String postLoginData(@Nullable String optionalQueryParameters, @Nullable String postData)
-            throws IOException, URISyntaxException {
-        // build query parameters
-        @Nullable
-        String queryParameters = optionalQueryParameters;
-        if (queryParameters == null) {
-            queryParameters = "session-id=" + URLEncoder.encode(sessionId, "UTF-8");
-        }
-
-        // build referer link
-        String referer = "https://www." + amazonSite + "/ap/signin?" + queryParameters;
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put("Referer", referer);
-
-        // make the request
-        URLConnection request = makeRequest("POST", "https://www." + amazonSite + "/ap/signin", postData, false, true,
-                headers);
-
-        String response = convertStream(request.getInputStream());
-        logger.debug("Received content after login {}", response);
-
-        String host = request.getURL().getHost();
-        if (!host.equalsIgnoreCase(new URI(alexaServer).getHost())) {
-            return response;
-        }
-        if (response.contains("<title>Amazon Alexa</title>")) {
-            logger.debug("Response seems to be alexa app");
-        } else {
-
-            logger.info("Response maybe not valid");
-        }
-
-        // verify login
-        if (!verifyLogin()) {
-            return response;
-        }
-        logger.debug("Login succeeded");
-        return null;
     }
 
     public boolean verifyLogin() throws IOException, URISyntaxException {
+        if (this.sessionId == null) {
+            return false;
+        }
         String response = makeRequestAndReturnString(alexaServer + "/api/bootstrap?version=0");
         Boolean result = response.contains("\"authenticated\":true");
-        if (result) {
+        // if (result)
+        {
             verifyTime = new Date();
             if (loginTime == null) {
                 loginTime = verifyTime;
@@ -597,15 +721,22 @@ public class Connection {
         }
     }
 
+    public List<HttpCookie> getSessionCookies(String server) {
+        try {
+            return cookieManager.getCookieStore().get(new URI(server));
+        } catch (URISyntaxException e) {
+            return new ArrayList<HttpCookie>();
+        }
+    }
+
     public void logout() {
-        // remove the session token cookie
-        String sessionData = serializeLoginData();
         cookieManager.getCookieStore().removeAll();
-        tryRestoreCookies(sessionData, true);
         // reset all members
+        refreshToken = null;
         sessionId = null;
         loginTime = null;
         verifyTime = null;
+        deviceName = null;
     }
 
     // parser

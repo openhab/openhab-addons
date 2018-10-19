@@ -45,6 +45,7 @@ import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -77,6 +78,7 @@ public class AccountServlet extends HttpServlet {
     String id;
     @Nullable
     Connection connectionToInitialize;
+    Gson gson = new Gson();
 
     public AccountServlet(HttpService httpService, String id, AccountHandler account,
             AccountConfiguration configuration) {
@@ -103,13 +105,7 @@ public class AccountServlet extends HttpServlet {
     }
 
     private Connection reCreateConnection() {
-        Connection oldConnection = this.connectionToInitialize;
-        String oldLoginData = null;
-        if (oldConnection != null) {
-            oldLoginData = oldConnection.serializeLoginData();
-        }
-        return new Connection(configuration.email, configuration.password, configuration.amazonSite, this.id,
-                oldLoginData);
+        return new Connection(configuration.amazonSite);
     }
 
     public void dispose() {
@@ -160,7 +156,7 @@ public class AccountServlet extends HttpServlet {
             String getUrl = "https://alexa." + connection.getAmazonSite() + "/"
                     + uri.substring(PROXY_URI_PART.length());
 
-            this.HandleProxyRequest(connection, resp, verb, getUrl, null, null);
+            this.HandleProxyRequest(connection, resp, verb, getUrl, null, null, connection.getAmazonSite());
             return;
         }
 
@@ -179,9 +175,13 @@ public class AccountServlet extends HttpServlet {
             if (postDataBuilder.length() > 0) {
                 postDataBuilder.append('&');
             }
+
             postDataBuilder.append(name);
             postDataBuilder.append('=');
             String value = map.get(name)[0];
+            if (name.equals("failedSignInCount")) {
+                value = "ape:AA==";
+            }
             postDataBuilder.append(URLEncoder.encode(value, "UTF-8"));
             if (name.equals("email") && !value.equalsIgnoreCase(configuration.email)) {
                 returnError(resp,
@@ -203,14 +203,18 @@ public class AccountServlet extends HttpServlet {
         }
         String relativeUrl = uri.substring(servletUrl.length()).replace(FORWARD_URI_PART, "/");
 
-        String postUrl = "https://www." + connection.getAmazonSite() + relativeUrl;
+        String site = connection.getAmazonSite();
+        if (relativeUrl.startsWith("/ap/signin")) {
+            site = "amazon.com";
+        }
+        String postUrl = "https://www." + site + relativeUrl;
         queryString = req.getQueryString();
         if (queryString != null && queryString.length() > 0) {
             postUrl += "?" + queryString;
         }
-        String referer = "https://www." + connection.getAmazonSite();
+        String referer = "https://www." + site;
         String postData = postDataBuilder.toString();
-        HandleProxyRequest(connection, resp, "POST", postUrl, referer, postData);
+        HandleProxyRequest(connection, resp, "POST", postUrl, referer, postData, site);
     }
 
     @Override
@@ -236,7 +240,7 @@ public class AccountServlet extends HttpServlet {
                 String getUrl = "https://www." + connection.getAmazonSite() + "/"
                         + uri.substring(FORWARD_URI_PART.length());
 
-                this.HandleProxyRequest(connection, resp, "GET", getUrl, null, null);
+                this.HandleProxyRequest(connection, resp, "GET", getUrl, null, null, connection.getAmazonSite());
                 return;
             }
 
@@ -251,7 +255,7 @@ public class AccountServlet extends HttpServlet {
                 String getUrl = "https://alexa." + connection.getAmazonSite() + "/"
                         + uri.substring(PROXY_URI_PART.length());
 
-                this.HandleProxyRequest(connection, resp, "GET", getUrl, null, null);
+                this.HandleProxyRequest(connection, resp, "GET", getUrl, null, null, connection.getAmazonSite());
                 return;
             }
 
@@ -290,7 +294,7 @@ public class AccountServlet extends HttpServlet {
             }
 
             String html = connection.getLoginPage();
-            returnHtml(connection, resp, html);
+            returnHtml(connection, resp, html, "amazon.com");
         } catch (URISyntaxException e) {
             logger.warn("get failed with uri syntax error {}", e);
         }
@@ -515,7 +519,7 @@ public class AccountServlet extends HttpServlet {
     }
 
     void HandleProxyRequest(Connection connection, HttpServletResponse resp, String verb, String url,
-            @Nullable String referer, @Nullable String postData) throws IOException {
+            @Nullable String referer, @Nullable String postData, String site) throws IOException {
         HttpsURLConnection urlConnection;
         try {
             Map<String, String> headers = null;
@@ -536,6 +540,16 @@ public class AccountServlet extends HttpServlet {
                             return;
                         }
                     }
+                    if (location.contains("/ap/maplanding")) {
+
+                        connection.registerConnectionAsApp(location);
+                        account.setConnection(connection);
+                        handleDefaultPageResult(resp, "Login succeeded");
+                        this.connectionToInitialize = null;
+                        return;
+
+                    }
+
                     String startString = "https://www." + connection.getAmazonSite() + "/";
                     String newLocation = null;
                     if (location.startsWith(startString)) {
@@ -558,16 +572,20 @@ public class AccountServlet extends HttpServlet {
                     return;
                 }
             }
-        } catch (URISyntaxException e) {
+        } catch (URISyntaxException | ConnectionException e) {
             returnError(resp, e.getLocalizedMessage());
             return;
         }
         String response = connection.convertStream(urlConnection.getInputStream());
-        returnHtml(connection, resp, response);
+        returnHtml(connection, resp, response, site);
     }
 
     private void returnHtml(Connection connection, HttpServletResponse resp, String html) {
-        String resultHtml = html.replace("https://www." + connection.getAmazonSite() + "/", servletUrl + "/");
+        returnHtml(connection, resp, html, connection.getAmazonSite());
+    }
+
+    private void returnHtml(Connection connection, HttpServletResponse resp, String html, String amazonSite) {
+        String resultHtml = html.replace("https://www." + amazonSite + "/", servletUrl + "/");
         resp.addHeader("content-type", "text/html;charset=UTF-8");
         try {
             resp.getWriter().write(resultHtml);

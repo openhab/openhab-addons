@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -105,16 +104,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Amazon site not configured");
             return;
         }
-        String email = config.email;
-        if (StringUtils.isEmpty(email)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Account email not configured");
-            return;
-        }
-        String password = config.password;
-        if (StringUtils.isEmpty(password)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Account password not configured");
-            return;
-        }
+
         Integer pollingIntervalInSeconds = config.pollingIntervalInSeconds;
         if (pollingIntervalInSeconds == null) {
             pollingIntervalInSeconds = 30;
@@ -126,9 +116,8 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         }
         synchronized (synchronizeConnection) {
             Connection connection = this.connection;
-            if (connection == null || !connection.getEmail().equals(email) || !connection.getPassword().equals(password)
-                    || !connection.getAmazonSite().equals(amazonSite)) {
-                this.connection = new Connection(email, password, amazonSite, this.getThing().getUID().getId(), null);
+            if (connection == null || !connection.getAmazonSite().equals(amazonSite)) {
+                this.connection = new Connection(amazonSite);
             }
         }
         if (this.accountServlet == null) {
@@ -287,107 +276,40 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                 if (currentConnection == null) {
                     return;
                 }
-                Date verifyTime = currentConnection.tryGetVerifyTime();
-                Date currentDate = new Date();
-                long currentTime = currentDate.getTime();
-                boolean recreateSession = false;
-                if (verifyTime != null && currentTime - verifyTime.getTime() > 3600000) // Every one hour
-                {
-                    try {
-                        if (!currentConnection.verifyLogin()) {
-                            currentConnection.logout();
-                            recreateSession = true;
+
+                try {
+                    if (currentConnection.getIsLoggedIn()) {
+                        if (currentConnection.checkRenewSession()) {
+                            setConnection(currentConnection);
                         }
-                    } catch (IOException | URISyntaxException e) {
-                        logger.info("verify login failed: {}", e.getMessage());
-
-                    }
-                }
-                Date loginTime = currentConnection.tryGetLoginTime();
-                if (loginTime != null && currentTime - loginTime.getTime() > 86400000 * 5) // 5 days
-                {
-                    // Recreate session
-                    recreateSession = true;
-                    String loginData = currentConnection.serializeLoginData();
-                    currentConnection = new Connection(currentConnection.getEmail(), currentConnection.getPassword(),
-                            currentConnection.getAmazonSite(), this.getThing().getUID().getId(), loginData);
-
-                }
-                boolean loginIsValid = true;
-                if (!currentConnection.getIsLoggedIn()) {
-                    try {
+                    } else {
 
                         // read session data from property
-                        String sessionStore = null;
-                        if (!recreateSession) {
-                            sessionStore = this.stateStorage.get("sessionStorage");
-                        }
+                        String sessionStore = this.stateStorage.get("sessionStorage");
 
                         // try use the session data
-                        if (!currentConnection.tryRestoreLogin(sessionStore)) {
-                            // session data not valid -> login
-                            int retry = 0;
-                            while (true) {
-                                try {
-                                    currentConnection.makeLogin();
-                                    break;
-                                } catch (ConnectionException e) {
-                                    // Up to 2 retries for login
-                                    retry++;
-                                    if (retry >= 2) {
-                                        currentConnection.logout();
-                                        throw e;
-                                    }
-                                    // give amazon some time
-                                    try {
-                                        Thread.sleep(2000);
-                                    } catch (InterruptedException exception) {
-                                        // throw the original exception
-                                        throw e;
-                                    }
-                                }
-                            }
-                            // store session data in property
-                            String serializedStorage = currentConnection.serializeLoginData();
-                            this.stateStorage.put("sessionStorage", serializedStorage);
+                        if (currentConnection.tryRestoreLogin(sessionStore)) {
+                            setConnection(currentConnection);
                         }
-                        this.connection = currentConnection;
-                    } catch (ConnectionException e) {
-                        loginIsValid = false;
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-                    } catch (UnknownHostException e) {
-                        loginIsValid = false;
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unknown host name '"
-                                + e.getMessage() + "'. Maybe your internet connection is offline");
-                    } catch (IOException e) {
-                        loginIsValid = false;
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                e.getLocalizedMessage());
-                    } catch (URISyntaxException e) {
-                        loginIsValid = false;
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                e.getLocalizedMessage());
                     }
-                    if (loginIsValid) {
-                        handleValidLogin();
-                    }
+                    updateStatus(ThingStatus.ONLINE);
+                } catch (ConnectionException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                } catch (HttpException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                } catch (UnknownHostException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Unknown host name '" + e.getMessage() + "'. Maybe your internet connection is offline");
+                } catch (IOException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+                } catch (URISyntaxException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
                 }
             }
 
-        } catch (HttpException | JsonSyntaxException | ConnectionException e) {
-            logger.debug("check login fails {}", e);
         } catch (Exception e) { // this handler can be removed later, if we know that nothing else can fail.
             logger.error("check login fails with unexpected error {}", e);
         }
-    }
-
-    private void handleValidLogin() {
-        closeWebSocketConnection();
-        updateDeviceList();
-        updateFlashBriefingHandlers();
-        updateStatus(ThingStatus.ONLINE);
-        checkDataCounter = 0;
-        checkData();
     }
 
     // used to set a valid connection from the web proxy login
@@ -395,7 +317,12 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         this.connection = connection;
         String serializedStorage = connection.serializeLoginData();
         this.stateStorage.put("sessionStorage", serializedStorage);
-        handleValidLogin();
+        closeWebSocketConnection();
+        updateDeviceList();
+        updateFlashBriefingHandlers();
+        updateStatus(ThingStatus.ONLINE);
+        checkDataCounter = 0;
+        checkData();
     }
 
     void closeWebSocketConnection() {
@@ -752,6 +679,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                     if (echoHandler != null) {
                         echoHandler.handlePushActivity(currentActivity);
                     }
+
                 }
             }
         }
