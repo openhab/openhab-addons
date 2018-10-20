@@ -14,12 +14,8 @@ package org.openhab.binding.gmailparadoxparser.internal;
 
 import static org.openhab.binding.gmailparadoxparser.internal.GmailParadoxParserBindingConstants.*;
 
-import java.util.Collections;
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.gmailparadoxparser.internal.GmailParadoxParserHandler;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -37,11 +33,17 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.gmailparadoxparser", service = ThingHandlerFactory.class)
 public class GmailParadoxParserHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(PARTITION_THING_TYPE_UID);
+    // private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS;
+    // static {
+    // Set<ThingTypeUID> temporarySet = Collections.emptySet();
+    // temporarySet.add(PANEL_COMMUNICATION_THING_TYPE_UID);
+    // temporarySet.add(PARTITION_THING_TYPE_UID);
+    // SUPPORTED_THING_TYPES_UIDS = new HashSet<>(temporarySet);
+    // }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return PANEL_COMMUNICATION_THING_TYPE_UID.equals(thingTypeUID) || PARTITION_THING_TYPE_UID.equals(thingTypeUID);
     }
 
     @Override
@@ -49,7 +51,9 @@ public class GmailParadoxParserHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (PARTITION_THING_TYPE_UID.equals(thingTypeUID)) {
-            return new GmailParadoxParserHandler(thing);
+            return new ParadoxPartitionHandler(thing);
+        } else if (PANEL_COMMUNICATION_THING_TYPE_UID.equals(thingTypeUID)) {
+            return new ParadoxCommunicationHandler(thing);
         }
 
         return null;

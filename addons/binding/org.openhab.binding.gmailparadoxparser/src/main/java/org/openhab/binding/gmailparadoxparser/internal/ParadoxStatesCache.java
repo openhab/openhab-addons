@@ -14,14 +14,14 @@ import org.openhab.binding.gmailparadoxparser.model.ParadoxPartition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StatesCache implements Cache<String, ParadoxPartition> {
+public class ParadoxStatesCache implements Cache<String, ParadoxPartition> {
 
-    private static StatesCache instance;
+    private static ParadoxStatesCache instance;
     private Map<String, ParadoxPartition> partitionsStates = new HashMap<String, ParadoxPartition>();
     private MailAdapter mailAdapter;
-    private final Logger logger = LoggerFactory.getLogger(StatesCache.class);
+    private final Logger logger = LoggerFactory.getLogger(ParadoxStatesCache.class);
 
-    private StatesCache() {
+    private ParadoxStatesCache() {
         try {
             mailAdapter = new GmailAdapter();
         } catch (IOException | GeneralSecurityException e) {
@@ -29,10 +29,10 @@ public class StatesCache implements Cache<String, ParadoxPartition> {
         }
     }
 
-    public static StatesCache getInstance() {
+    public static ParadoxStatesCache getInstance() {
         if (instance == null) {
-            synchronized (StatesCache.class) {
-                instance = new StatesCache();
+            synchronized (ParadoxStatesCache.class) {
+                instance = new ParadoxStatesCache();
             }
         }
         return instance;
@@ -40,7 +40,7 @@ public class StatesCache implements Cache<String, ParadoxPartition> {
 
     @Override
     public void put(String key, ParadoxPartition value) {
-        synchronized (StatesCache.class) {
+        synchronized (ParadoxStatesCache.class) {
             partitionsStates.put(key, value);
         }
 

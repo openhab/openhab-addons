@@ -13,15 +13,14 @@
 package org.openhab.binding.gmailparadoxparser.internal;
 
 /**
- * The {@link GmailParadoxParserConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link ParadoxPartitionConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Konstantin_Polihronov - Initial contribution
  */
-public class GmailParadoxParserConfiguration {
+public class ParadoxPartitionConfiguration {
 
     /**
      * Sample configuration parameter. Replace with your own.
      */
     public String partitionId;
-    public int refresh;
 }

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="gmailparadoxparser"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="paradoxPartition">
+		<label>Paradox partition status</label>
+		<description>Paradox Partition status</description>
+
+		<channels>
+			<channel id="state" typeId="state" />
+		</channels>
+
+		<config-description>
+			<parameter name="partitionId" type="text" required="true">
+				<label>Partition Id</label>
+				<description>This is the partition ID of the Paradox partition</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Sample Channel Type -->
+	<channel-type id="state">
+		<item-type>String</item-type>
+		<label>Partition state</label>
+		<description>State of particular partition</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+</thing:thing-descriptions>

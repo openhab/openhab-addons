@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
-import org.openhab.binding.gmailparadoxparser.internal.StatesCache;
+import org.openhab.binding.gmailparadoxparser.internal.ParadoxStatesCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +41,7 @@ public class GmailAdapter implements MailAdapter {
     private static final String CREDENTIALS_FILE_PATH = "credentials.json";
 
     private static Gmail googleService;
-    private static final Logger logger = LoggerFactory.getLogger(StatesCache.class);
+    private static final Logger logger = LoggerFactory.getLogger(ParadoxStatesCache.class);
 
     private String user;
 
@@ -84,6 +84,7 @@ public class GmailAdapter implements MailAdapter {
         if (messages == null || messages.isEmpty()) {
             logger.debug("No new emails found.");
         } else {
+            logger.debug("Retrieved " + (messages.size() + 1) + " messages.");
             for (Message message : messages) {
                 String msgId = message.getId();
                 Message mail = googleService.users().messages().get(user, msgId).setFormat("full").execute();
@@ -105,7 +106,6 @@ public class GmailAdapter implements MailAdapter {
                 }
 
                 String content = new String(Base64.decodeBase64(encodedContent.getBytes()), "UTF-8");
-                logger.debug("Got content successfully");
 
                 result.add(content);
             }

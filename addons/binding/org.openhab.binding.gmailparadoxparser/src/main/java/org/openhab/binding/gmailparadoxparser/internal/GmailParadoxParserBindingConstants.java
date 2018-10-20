@@ -30,7 +30,9 @@ public class GmailParadoxParserBindingConstants {
     private static final String BINDING_ID = "gmailparadoxparser";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID PARTITION_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "ParadoxSystem");
+    public static final ThingTypeUID PANEL_COMMUNICATION_THING_TYPE_UID = new ThingTypeUID(BINDING_ID,
+            "paradoxCommunication");
+    public static final ThingTypeUID PARTITION_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "paradoxPartition");
 
     // List of all Channel ids
     public static final String STATE = "state";

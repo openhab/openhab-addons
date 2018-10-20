@@ -28,35 +28,34 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link GmailParadoxParserHandler} is responsible for handling commands, which are
+ * The {@link ParadoxPartitionHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Konstantin_Polihronov - Initial contribution
  */
 @NonNullByDefault
-public class GmailParadoxParserHandler extends BaseThingHandler {
+public class ParadoxPartitionHandler extends BaseThingHandler {
 
-    private static final int INITIAL_DELAY = 1; // sec
+    private static final int INITIAL_DELAY = 15; // sec
     private static final int DEFAULT_REFRESH_INTERVAL = 60; // sec
 
-    private final Logger logger = LoggerFactory.getLogger(GmailParadoxParserHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ParadoxPartitionHandler.class);
 
     @Nullable
-    private GmailParadoxParserConfiguration config;
+    private ParadoxPartitionConfiguration config;
 
-    @SuppressWarnings("null")
-    public GmailParadoxParserHandler(Thing thing) {
+    public ParadoxPartitionHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        refreshData();
+        retrieveDataFromCache();
     }
 
     @SuppressWarnings("null")
-    private void refreshData() {
-        ParadoxPartition paradoxPartition = StatesCache.getInstance().get(config.partitionId);
+    private void retrieveDataFromCache() {
+        ParadoxPartition paradoxPartition = ParadoxStatesCache.getInstance().get(config.partitionId);
         if (paradoxPartition != null) {
             updateState(GmailParadoxParserBindingConstants.STATE, new StringType(paradoxPartition.getState()));
         }
@@ -71,22 +70,14 @@ public class GmailParadoxParserHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Start initializing!");
-        config = getConfigAs(GmailParadoxParserConfiguration.class);
-        StatesCache.getInstance().initialize();
+        config = getConfigAs(ParadoxPartitionConfiguration.class);
         updateStatus(ThingStatus.ONLINE);
 
         scheduler.scheduleAtFixedRate(() -> {
-            StatesCache.getInstance().refresh();
-            refreshData();
+            retrieveDataFromCache();
         }, INITIAL_DELAY, DEFAULT_REFRESH_INTERVAL, TimeUnit.SECONDS);
 
         logger.debug("Finished initializing!");
-
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
     }
 
 }
