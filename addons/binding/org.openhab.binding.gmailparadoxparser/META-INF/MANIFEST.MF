@@ -25,7 +25,7 @@ Bundle-SymbolicName: org.openhab.binding.gmailparadoxparser;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
 Import-Package: 
- org.apache.commons.codec.binary;version="1.6.0",
+ org.apache.commons.codec.binary,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.library.types,

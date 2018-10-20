@@ -1,4 +1,12 @@
-package org.openhab.binding.gmailparadoxparser.mail.adapter;
+/**
+ * Copyright (c) 2010-2018 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
+package org.openhab.binding.gmailparadoxparser.internal.mail.adapter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
+import org.openhab.binding.gmailparadoxparser.internal.GmailParadoxParserHandlerFactory;
 import org.openhab.binding.gmailparadoxparser.internal.ParadoxStatesCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +41,12 @@ import com.google.api.services.gmail.model.Message;
 import com.google.api.services.gmail.model.MessagePart;
 import com.google.api.services.gmail.model.MessagePartBody;
 
+/**
+ * The {@link GmailParadoxParserHandlerFactory} is responsible for creating things and thing
+ * handlers.
+ *
+ * @author Konstantin_Polihronov - Initial contribution
+ */
 public class GmailAdapter implements MailAdapter {
     private static final String USER = "polyopenhabtest@gmail.com";
     private static final String APPLICATION_NAME = "Gmail Paradox mail parser";
