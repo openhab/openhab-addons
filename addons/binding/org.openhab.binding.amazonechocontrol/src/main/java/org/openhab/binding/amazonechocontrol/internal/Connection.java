@@ -111,7 +111,7 @@ public class Connection {
     private String deviceId;
 
     private @Nullable String refreshToken;
-    private @Nullable String sessionId;
+    // private @Nullable String sessionId;
     private @Nullable Date loginTime;
     private @Nullable Date verifyTime;
     private long renewTime = 0;
@@ -193,7 +193,7 @@ public class Connection {
 
     public String serializeLoginData() {
         Date loginTime = this.loginTime;
-        if (sessionId == null || loginTime == null) {
+        if (refreshToken == null || loginTime == null) {
             return "";
         }
         StringBuilder builder = new StringBuilder();
@@ -205,8 +205,6 @@ public class Connection {
         builder.append(deviceId);
         builder.append("\n");
         builder.append(refreshToken);
-        builder.append("\n");
-        builder.append(sessionId);
         builder.append("\n");
         builder.append(deviceName);
         builder.append("\n");
@@ -290,13 +288,11 @@ public class Connection {
 
         // Recreate session and cookies
         refreshToken = scanner.nextLine();
-        sessionId = scanner.nextLine();
         deviceName = scanner.nextLine();
         Date loginTime = new Date(Long.parseLong(scanner.nextLine()));
         CookieStore cookieStore = cookieManager.getCookieStore();
         cookieStore.removeAll();
 
-        String atMain = null;
         Integer numberOfCookies = Integer.parseInt(scanner.nextLine());
         for (Integer i = 0; i < numberOfCookies; i++) {
             String name = readValue(scanner);
@@ -313,19 +309,14 @@ public class Connection {
             clientCookie.setSecure(Boolean.parseBoolean(readValue(scanner)));
             clientCookie.setDiscard(Boolean.parseBoolean(readValue(scanner)));
 
-            if (name.equalsIgnoreCase("at-acbde")) {
-                atMain = value;
-            }
             cookieStore.add(null, clientCookie);
         }
-
         scanner.close();
         try {
             checkRenewSession();
         } catch (URISyntaxException | IOException | ConnectionException e) {
 
         }
-
         return loginTime;
     }
 
@@ -391,9 +382,11 @@ public class Connection {
                     StringBuilder cookieHeaderBuilder = new StringBuilder();
                     for (HttpCookie cookie : cookieManager.getCookieStore().get(uri)) {
                         if (cookieHeaderBuilder.length() > 0) {
-                            cookieHeaderBuilder.insert(0, "; ");
+                            cookieHeaderBuilder.append(";");
                         }
-                        cookieHeaderBuilder.insert(0, cookie);
+                        cookieHeaderBuilder.append(cookie.getName());
+                        cookieHeaderBuilder.append("=");
+                        cookieHeaderBuilder.append(cookie.getValue());
                         if (cookie.getName().equals("csrf")) {
                             connection.setRequestProperty("csrf", cookie.getValue());
                         }
@@ -597,8 +590,7 @@ public class Connection {
         exchangeTokenHeader.put("Cookie", "");
 
         String exchangeTokenJson = makeRequestAndReturnString("POST",
-                "https://www." + getAmazonSite() + ":443/ap/exchangetoken", exchangePostData, false,
-                exchangeTokenHeader);
+                "https://www." + getAmazonSite() + "/ap/exchangetoken", exchangePostData, false, exchangeTokenHeader);
         JsonExchangeTokenResponse exchangeTokenResponse = gson.fromJson(exchangeTokenJson,
                 JsonExchangeTokenResponse.class);
 
@@ -639,7 +631,7 @@ public class Connection {
             String renewTokenPostData = "app_name=Amazon%20Alexa&app_version=2.2.223830.0&di.sdk.version=6.10.0&source_token="
                     + URLEncoder.encode(refreshToken, "UTF-8")
                     + "&package_name=com.amazon.echo&di.hw.version=iPhone&platform=iOS&requested_token_type=access_token&source_token_type=refresh_token&di.os.name=iOS&di.os.version=11.4.1&current_version=6.10.0";
-            String renewTokenRepsonseJson = makeRequestAndReturnString("POST", "https://www.amazon.com",
+            String renewTokenRepsonseJson = makeRequestAndReturnString("POST", "https://www.amazon.com/auth/token",
                     renewTokenPostData, false, null);
             JsonRenewTokenResponse renewTokenResponse = parseJson(renewTokenRepsonseJson, JsonRenewTokenResponse.class);
 
@@ -678,7 +670,7 @@ public class Connection {
                 + "&openid.ns.pape=http://specs.openid.net/extensions/pape/1.0&openid.oa2.response_type=token&openid.ns=http://specs.openid.net/auth/2.0&openid.pape.max_auth_age=0&openid.oa2.scope=device_auth_access");
 
         logger.debug("Received login form {}", loginFormHtml);
-        handleSessionIdFromCookies();
+        // handleSessionIdFromCookies();
         return loginFormHtml;
     }
 
@@ -686,25 +678,25 @@ public class Connection {
         // get session id from cookies
         for (HttpCookie cookie : cookieManager.getCookieStore().getCookies()) {
             if (cookie.getName().equalsIgnoreCase("session-id")) {
-                sessionId = cookie.getValue();
-                // break;
+                // sessionId = cookie.getValue();
+                break;
             }
         }
-        if (sessionId == null) {
-            throw new ConnectionException("No session id received");
-        }
-        cookieManager.getCookieStore().add(new URL("https://www." + amazonSite).toURI(),
-                HttpCookie.parse("session-id=" + sessionId).get(0));
+        // if (sessionId == null) {
+        // throw new ConnectionException("No session id received");
+        // }
+
+        // cookieManager.getCookieStore().add(new URL("https://www." + amazonSite).toURI(),
+        // HttpCookie.parse("session-id=" + sessionId).get(0));
     }
 
     public boolean verifyLogin() throws IOException, URISyntaxException {
-        if (this.sessionId == null) {
+        if (this.refreshToken == null) {
             return false;
         }
         String response = makeRequestAndReturnString(alexaServer + "/api/bootstrap?version=0");
         Boolean result = response.contains("\"authenticated\":true");
-        // if (result)
-        {
+        if (result) {
             verifyTime = new Date();
             if (loginTime == null) {
                 loginTime = verifyTime;
@@ -733,7 +725,7 @@ public class Connection {
         cookieManager.getCookieStore().removeAll();
         // reset all members
         refreshToken = null;
-        sessionId = null;
+        // sessionId = null;
         loginTime = null;
         verifyTime = null;
         deviceName = null;
