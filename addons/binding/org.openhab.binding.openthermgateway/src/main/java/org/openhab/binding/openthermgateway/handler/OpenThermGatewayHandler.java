@@ -21,9 +21,10 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.openthermgateway.OpenThermGatewayBindingConstants;
-import org.openhab.binding.openthermgateway.internal.CommandType;
 import org.openhab.binding.openthermgateway.internal.DataItem;
 import org.openhab.binding.openthermgateway.internal.DataItemGroup;
+import org.openhab.binding.openthermgateway.internal.GatewayCommand;
+import org.openhab.binding.openthermgateway.internal.GatewayCommandCode;
 import org.openhab.binding.openthermgateway.internal.LogLevel;
 import org.openhab.binding.openthermgateway.internal.Message;
 import org.openhab.binding.openthermgateway.internal.OpenThermGatewayCallback;
@@ -70,24 +71,14 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
         logger.debug("Received channel: {}, command: {}", channelUID, command);
 
         try {
-            if (command.toFullString() != "REFRESH" && checkConnection()) {
+            if (command.toFullString() != "REFRESH") {
                 String channel = channelUID.getId();
+                String code = getGatewayCodeFromChannel(channel);
 
-                switch (channel) {
-                    case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_SETPOINT_TEMPORARY:
-                        connector.sendCommand(CommandType.TemperatureTemporary, command.toFullString());
-                        break;
-                    case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_SETPOINT_CONSTANT:
-                        connector.sendCommand(CommandType.TemperatureConstant, command.toFullString());
-                        break;
-                    case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_DHW_SETPOINT:
-                        connector.sendCommand(CommandType.SetpointWater, command.toFullString());
-                        break;
-                    case OpenThermGatewayBindingConstants.CHANNEL_OUTSIDE_TEMPERATURE:
-                        connector.sendCommand(CommandType.TemperatureOutside, command.toFullString());
-                        break;
-                    default:
-                        break;
+                GatewayCommand gatewayCommand = GatewayCommand.parse(code, command.toFullString());
+
+                if (gatewayCommand != null && checkConnection()) {
+                    connector.sendCommand(gatewayCommand);
                 }
             }
         } catch (Exception ex) {
@@ -255,6 +246,23 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
             }
 
             connector = null;
+        }
+    }
+
+    private String getGatewayCodeFromChannel(String channel) throws Exception {
+        switch (channel) {
+            case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_SETPOINT_TEMPORARY:
+                return GatewayCommandCode.TemperatureTemporary;
+            case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_SETPOINT_CONSTANT:
+                return GatewayCommandCode.TemperatureConstant;
+            case OpenThermGatewayBindingConstants.CHANNEL_OUTSIDE_TEMPERATURE:
+                return GatewayCommandCode.TemperatureOutside;
+            case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_DHW_SETPOINT:
+                return GatewayCommandCode.SetpointWater;
+            case OpenThermGatewayBindingConstants.CHANNEL_EXEC_COMMAND:
+                return "";
+            default:
+                throw new Exception(String.format("Unknown channel %s", channel));
         }
     }
 }

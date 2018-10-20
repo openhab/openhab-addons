@@ -146,5 +146,12 @@
         <description>Maximum relative modulation level</description>
         <state readOnly="true" pattern="%.1f %%"></state>
     </channel-type>
+    
+    <channel-type id="execcommand">
+        <item-type>String</item-type>
+        <label>Execute command</label>
+        <description>Channel to send commands to the OpenTherm Gateway device</description>
+        <state readOnly="false"></state>
+    </channel-type>
 
 </thing:thing-descriptions>

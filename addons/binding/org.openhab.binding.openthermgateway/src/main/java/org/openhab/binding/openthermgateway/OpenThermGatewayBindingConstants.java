@@ -34,6 +34,7 @@ public class OpenThermGatewayBindingConstants {
     public static final ThingTypeUID MAIN_THING_TYPE = new ThingTypeUID(BINDING_ID, "otgw");
 
     // List of all Channel id's
+    public static final String CHANNEL_EXEC_COMMAND = "execcommand";
     public static final String CHANNEL_OVERRIDE_SETPOINT_TEMPORARY = "temperaturetemporary";
     public static final String CHANNEL_OVERRIDE_SETPOINT_CONSTANT = "temperatureconstant";
     public static final String CHANNEL_OVERRIDE_DHW_SETPOINT = "overridedhwsetpoint";

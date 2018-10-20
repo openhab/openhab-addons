@@ -52,10 +52,9 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
 
             callback.log(LogLevel.Debug, "OpenThermGatewaySocketConnector connected");
 
-            sendCommand(CommandType.PrintReport, "A");
-
+            sendCommand(GatewayCommand.parse(GatewayCommandCode.PrintReport, "A"));
             // Set the OTGW to report every message it receives and transmits
-            sendCommand(CommandType.PrintSummary, "0");
+            sendCommand(GatewayCommand.parse(GatewayCommandCode.PrintSummary, "0"));
 
             while (!stopping && !Thread.currentThread().isInterrupted()) {
                 String message = reader.readLine();
@@ -98,21 +97,15 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
     }
 
     @Override
-    public void sendCommand(CommandType commandType, String message) {
-        if (Command.commands.containsKey(commandType)) {
-            Command command = Command.commands.get(commandType);
+    public void sendCommand(GatewayCommand command) {
+        String msg = command.toFullString();
 
-            String msg = command.getMessage(message);
-
-            if (connected) {
-                callback.log(LogLevel.Debug, "Sending message: %s", msg);
-                writer.printf("%s\r\n", msg);
-            } else {
-                callback.log(LogLevel.Debug,
-                        "Unable to send message: %s. OpenThermGatewaySocketConnector is not connected.", msg);
-            }
+        if (connected) {
+            callback.log(LogLevel.Debug, "Sending message: %s", msg);
+            writer.printf("%s\r\n", msg);
         } else {
-            callback.log(LogLevel.Warning, "No command found for commandType %s", commandType.toString());
+            callback.log(LogLevel.Debug,
+                    "Unable to send message: %s. OpenThermGatewaySocketConnector is not connected.", msg);
         }
     }
 

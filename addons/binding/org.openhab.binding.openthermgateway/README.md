@@ -30,6 +30,7 @@ Future types of connections may require other settings, such as a COM port.
 
 
 
+
 ## Channels
 The OpenTherm Gateway supports the following channels:
 - Room temperature
@@ -51,6 +52,7 @@ The OpenTherm Gateway supports the following channels:
 - Burner active
 - Relative modulation level
 - Maximum relative modulation level
+- Generic command channel
 
 
 ## Full Example
@@ -81,7 +83,7 @@ Switch DomesticHotWaterActive "Domestic hot water active" <switch> {channel="ope
 Switch BurnerActive "Burner active" <switch> {channel="openthermgateway:otgw:1:flame"}
 Number RelativeModulationLevel "Relative modulation level [%.1f %%]" {channel="openthermgateway:otgw:1:modulevel"}
 Number MaximumRelativeModulationLevel "Maximum relative modulation level [%.1f %%]" {channel="openthermgateway:otgw:1:maxrelmdulevel"}
-
+Text GenericCommandChannel "Generic command channel" {channel="openthermgateway:otgw:1:genericcommand"}
 ```
 
 ### demo.sitemap
@@ -107,6 +109,7 @@ sitemap demo label="Main Menu" {
         Switch item="BurnerActive" icon="switch" label="Burner active"
         Text item="RelativeModulationLevel" icon="" label="Relative modulation level [%.1f %%]"
         Text item="MaximumRelativeModulationLevel" icon="" label="Maximum relative modulation level [%.1f %%]"
+        Text item="GenericCommandChannel" icon="" label="Generic command channel"
     }
 }
 

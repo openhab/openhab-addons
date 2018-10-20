@@ -6,7 +6,7 @@ Bundle-Name: OpenThermGateway Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.openthermgateway;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 0.4.0
+Bundle-Version: 0.6.0
 Export-Package: 
  org.openhab.binding.openthermgateway,
  org.openhab.binding.openthermgateway.handler
