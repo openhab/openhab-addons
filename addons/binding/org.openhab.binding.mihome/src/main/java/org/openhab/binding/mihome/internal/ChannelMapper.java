@@ -24,8 +24,11 @@ public class ChannelMapper {
     static {
         // Alphabetical order
         SYSTEM_BUTTON_MAP.put("CLICK", CommonTriggerEvents.SHORT_PRESSED);
+        SYSTEM_BUTTON_MAP.put("BOTH_CLICK", CommonTriggerEvents.SHORT_PRESSED);
         SYSTEM_BUTTON_MAP.put("DOUBLE_CLICK", CommonTriggerEvents.DOUBLE_PRESSED);
         SYSTEM_BUTTON_MAP.put("LONG_CLICK_PRESS", CommonTriggerEvents.LONG_PRESSED);
+        SYSTEM_BUTTON_MAP.put("LONG_CLICK", CommonTriggerEvents.LONG_PRESSED);
+        SYSTEM_BUTTON_MAP.put("LONG_BOTH_CLICK", CommonTriggerEvents.LONG_PRESSED);
         SYSTEM_BUTTON_MAP.put("LONG_CLICK_RELEASE", "LONG_RELEASED");
     }
 

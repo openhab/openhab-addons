@@ -10,7 +10,6 @@ package org.openhab.binding.mihome.internal.handler;
 
 import static org.openhab.binding.mihome.internal.XiaomiGatewayBindingConstants.*;
 
-import org.eclipse.smarthome.core.thing.CommonTriggerEvents;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.mihome.internal.ChannelMapper;
 
@@ -42,7 +41,8 @@ public class XiaomiAqaraSensorSwitch2Handler extends XiaomiSensorBaseHandler {
                     ChannelMapper.getChannelEvent(data.get(CHANNEL_1).getAsString().toUpperCase()));
         }
         if (data.has(DUAL_CHANNEL)) {
-            triggerChannel(CHANNEL_SWITCH_DUAL_CH, CommonTriggerEvents.SHORT_PRESSED);
+            triggerChannel(CHANNEL_SWITCH_DUAL_CH,
+                    ChannelMapper.getChannelEvent(data.get(DUAL_CHANNEL).getAsString().toUpperCase()));
         }
     }
 }
