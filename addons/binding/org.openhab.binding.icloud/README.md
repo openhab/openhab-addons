@@ -73,7 +73,7 @@ The information *@ "World"* is optional.
 ### icloud.items
 
 ```php
-Group    "iPhone" iCloud_Group
+Group    iCloud_Group "iPhone"
 
 String   iPhone_BatteryStatus             "Battery Status [%s]" <battery> (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:batteryStatus"}
 Number   iPhone_BatteryLevel              "Battery Level [%d %%]"   <battery> (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:batteryLevel"}
