@@ -8,9 +8,8 @@
  */
 package org.openhab.binding.satel.internal.command;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import org.apache.commons.lang.ArrayUtils;
 
@@ -23,27 +22,22 @@ public class SetClockCommand extends ControlCommand {
 
     public static final byte COMMAND_CODE = (byte) 0x8e;
 
-    private static final ThreadLocal<DateFormat> DATETIME_FORMAT = new ThreadLocal<DateFormat>() {
-        @Override
-        protected DateFormat initialValue() {
-            return new SimpleDateFormat("yyyyMMddHHmmss");
-        }
-    };
+    private static final DateTimeFormatter DATETIME_FORMAT = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
     /**
      * Creates new command class instance.
      *
      * @param dateTime
-     *            date and time to set
+     *                     date and time to set
      * @param userCode
-     *            code of the user on behalf the control is made
+     *                     code of the user on behalf the control is made
      */
-    public SetClockCommand(Calendar dateTime, String userCode) {
+    public SetClockCommand(LocalDateTime dateTime, String userCode) {
         super(COMMAND_CODE, ArrayUtils.addAll(userCodeToBytes(userCode), getDateTimeBytes(dateTime)));
     }
 
-    private static byte[] getDateTimeBytes(Calendar dateTime) {
-        return DATETIME_FORMAT.get().format(dateTime.getTime()).getBytes();
+    private static byte[] getDateTimeBytes(LocalDateTime dateTime) {
+        return DATETIME_FORMAT.format(dateTime).getBytes();
     }
 
 }

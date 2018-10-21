@@ -30,7 +30,7 @@ import org.openhab.binding.satel.internal.types.StateType;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
-public class SatelPartitionHandler extends SatelThingHandler {
+public class SatelPartitionHandler extends SatelStateThingHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_PARTITION);
 
