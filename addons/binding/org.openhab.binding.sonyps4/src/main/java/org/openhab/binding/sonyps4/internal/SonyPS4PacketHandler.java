@@ -70,7 +70,14 @@ public class SonyPS4PacketHandler {
     private static final int REMOTE_CONTROL_REQ = 0x1c;
     private static final int LOGIN_REQ = 0x1e;
     private static final int HANDSHAKE_REQ = 0x20;
+    private static final int LOGOUT_REQ = 0x22;
+    private static final int LOGOUT_RSP = 0x23;
     private static final int APP_START2_REQ = 0x24;
+    private static final int APP_START2_RSP = 0x25;
+    private static final int COMMENT_VIEWER_START_RESULT = 0x2b;
+    private static final int COMMENT_VIEWER_NEW_COMMENT = 0x2c;
+    private static final int COMMENT_VIEWER_NEW_COMMENT2 = 0x2e;
+    private static final int COMMENT_VIEWER_EVENT = 0x30;
 
     private final Logger logger = LoggerFactory.getLogger(SonyPS4PacketHandler.class);
     private final byte[] remoteSeed = new byte[16];
@@ -169,19 +176,19 @@ public class SonyPS4PacketHandler {
         return packet.array();
     }
 
-    byte[] makeLoginPacket(String userCredential, String pinCode) {
+    byte[] makeLoginPacket(String userCredential, String passCode) {
         ByteBuffer packet = newPacketForEncryption(16 + 64 + 256 + 16 + 16 + 16);
         packet.putInt(LOGIN_REQ);
-        packet.put(pinCode.getBytes(), 0, 4); // PIN Code
+        packet.put(passCode.getBytes(), 0, 4); // pass Code
         packet.putInt(0x0201); // Magic number
         packet.put(userCredential.getBytes(StandardCharsets.US_ASCII), 0, 64);
         packet.put("OpenHAB PlayStation 4 Binding".getBytes(StandardCharsets.UTF_8)); // app_label
         packet.position(16 + 64 + 256);
         packet.put(OS_VERSION.getBytes()); // os_version
         packet.position(16 + 64 + 256 + 16);
-        packet.put("OpenHAB PS4".getBytes()); // model
+        packet.put("Mac mini 2012".getBytes()); // Model, name of paired unit, shown on the PS4 in the settings view.
         packet.position(16 + 64 + 256 + 16 + 16);
-        packet.put(new byte[16]); // pass_code
+        packet.put(new byte[16]); // pin code, only for pairing?
 
         SecretKeySpec keySpec = new SecretKeySpec(randomSeed, "AES");
         try {
@@ -234,9 +241,9 @@ public class SonyPS4PacketHandler {
     @Nullable
     private Cipher getRsaCipher(String key) {
         try {
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             String keyString = key.replace("-----BEGIN PUBLIC KEY-----", "").replace("-----END PUBLIC KEY-----", "");
             byte[] keyData = Base64.getDecoder().decode(keyString);
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyData);
             PublicKey publicKey = keyFactory.generatePublic(keySpec);
             logger.debug("PS4 public key: {}", publicKey);
