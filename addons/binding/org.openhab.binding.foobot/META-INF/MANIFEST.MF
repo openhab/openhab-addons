@@ -30,6 +30,7 @@ Import-Package:
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.jetty.client;version="9.3.22",
  org.eclipse.jetty.client.api;version="9.3.22",
+ org.eclipse.jetty.util.component,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.cache,
  org.eclipse.smarthome.core.library.types,
