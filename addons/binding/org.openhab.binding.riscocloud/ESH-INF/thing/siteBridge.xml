@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="riscocloud"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <bridge-type id="riscoCloudSite">
+        <label>RiscoCloud site bridge</label>
+        <description>Your secured site such as your home, office, storage...</description>
+        <config-description>
+            <parameter name="siteId" type="integer" required="true" readOnly="true">
+                <label>Site id</label>
+                <description>Site ID assigned by Risco Cloud. Viewable in source page of https://www.riscocloud.com/ELAS/WebUI/SiteLogin</description>
+            </parameter>
+            <parameter name="siteName" type="text" required="false" readOnly="true">
+                <label>Site name</label>
+                <description>Site name as displayed on Risco Cloud website</description>
+            </parameter>
+            <parameter name="pincode" type="text" required="true">
+                <label>PIN code</label>
+                <description>System PIN code</description>
+            </parameter>
+            <parameter name="pollingInterval" type="integer" required="false" min="5" max="60" unit="s">
+                <label>Polling Interval</label>
+                <description>Interval polling.</description>
+                <default>15</default>
+            </parameter>
+            <parameter name="syncTimeout" type="integer" required="false" min="500" max="15000" unit="ms">
+                <label>Timeout</label>
+                <description>Timeout for synchronous connections (in milliseconds).</description>
+                <default>2000</default>
+            </parameter>
+            <parameter name="restUrl" type="text" required="true">
+                <label>url to Risco Cloud REST API</label>
+                <description>Change this only if you know what you are doing.</description>
+                <default>https://www.riscocloud.com/ELAS/WebUI/Security/GetCPState</default>
+            </parameter>
+            <parameter name="siteUrl" type="text" required="true">
+                <label>url to Risco Cloud site login</label>
+                <description>Change this only if you know what you are doing.</description>
+                <default>https://www.riscocloud.com/ELAS/WebUI/SiteLogin</default>
+            </parameter>
+             <parameter name="overviewUrl" type="text" required="true">
+                <label>url to Risco Cloud overview REST API</label>
+                <description>Change this only if you know what you are doing.</description>
+                <default>https://www.riscocloud.com/ELAS/WebUI/Overview/Get</default>
+            </parameter>
+             <parameter name="historyUrl" type="text" required="true">
+                <label>url to Risco Cloud historic REST API</label>
+                <description>Change this only if you know what you are doing.</description>
+                <default>https://www.riscocloud.com/ELAS/WebUI/EventHistory/Get</default>
+            </parameter>
+             <parameter name="detectorsUrl" type="text" required="true">
+                <label>url to Risco Cloud detectors REST API</label>
+                <description>Change this only if you know what you are doing.</description>
+                <default>https://www.riscocloud.com/ELAS/WebUI/Detectors/Get</default>
+            </parameter>
+             <parameter name="armDisarmUrl" type="text" required="true">
+                <label>url to Risco Cloud arm and disarm REST API</label>
+                <description>Change this only if you know what you are doing.</description>
+                <default>https://www.riscocloud.com/ELAS/WebUI/Security/ArmDisarm</default>
+            </parameter>
+            
+            
+        </config-description>
+
+    </bridge-type>
+
+</thing:thing-descriptions>

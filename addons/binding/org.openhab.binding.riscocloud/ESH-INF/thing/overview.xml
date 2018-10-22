@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="riscocloud"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="riscoCloudOverview">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="riscoCloudSite" />
+        </supported-bridge-type-refs>
+		<label>RiscoCloud site overview</label>
+		<description></description>
+	    
+        <channels>
+            <channel id="onlineStatus" typeId="onlineStatus" />
+            <channel id="ongoingAlarm" typeId="ongoingAlarm" />
+            <channel id="armedPartitionsNb" typeId="armedPartitionsNb" />
+            <channel id="disarmedPartitionsNb" typeId="disarmedPartitionsNb" />
+            <channel id="partiallyArmedPartitionsNb" typeId="partiallyArmedPartitionsNb" />
+        </channels>
+
+	</thing-type>
+	
+    <channel-type id="onlineStatus">
+        <item-type>Switch</item-type>
+        <label>Alarm online</label>
+        <description>Is your alarm connected to Risco Cloud</description>
+        <category>AlarmStatus</category>
+        <state readOnly="true" pattern="%s" />
+    </channel-type>
+
+    <channel-type id="ongoingAlarm">
+        <item-type>Switch</item-type>
+        <label>Ongoing alarm</label>
+        <description></description>
+        <category>AlarmStatus</category>
+        <state readOnly="true" pattern="%s" />
+    </channel-type>
+
+    <channel-type id="armedPartitionsNb">
+        <item-type>Number</item-type>
+        <label>Partitions armed</label>
+        <description>Number of armed partitions</description>
+        <category>AlarmStatus</category>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="disarmedPartitionsNb">
+        <item-type>Number</item-type>
+        <label>Partitions disarmed</label>
+        <description>Number of disarmed partitions</description>
+        <category>AlarmStatus</category>
+        <state readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="partiallyArmedPartitionsNb">
+        <item-type>Number</item-type>
+        <label>Partitions partially armed</label>
+        <description>Number of partially armed partitions</description>
+        <category>AlarmStatus</category>
+        <state readOnly="true" />
+    </channel-type>
+
+
+
+</thing:thing-descriptions>

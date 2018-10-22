@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="riscocloud"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <bridge-type id="riscoCloudServer">
+        <label>RiscoCloud main bridge</label>
+        <description>Tip : create and activate a new user on www.riscocloud.com</description>
+        
+        <config-description>
+            <parameter name="username" type="text" required="true">
+                <label>Username</label>
+                <description>Email address</description>
+            </parameter>
+            <parameter name="webpass" type="text" required="true">
+                <label>Password</label>
+                <description>WEB password</description>
+            </parameter>
+            <parameter name="webUIUrl" type="text" required="true">
+                <label>url to Risco Cloud WEB UI</label>
+                <description>Change this only if you know what you are doing.</description>
+                <default>https://www.riscocloud.com/ELAS/WebUI</default>
+            </parameter>
+        </config-description>
+
+    </bridge-type>
+
+</thing:thing-descriptions>

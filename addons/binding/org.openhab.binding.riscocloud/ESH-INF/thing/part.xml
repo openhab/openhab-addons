@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="riscocloud"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="riscoCloudPart">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="riscoCloudSite" />
+        </supported-bridge-type-refs>
+		<label>RiscoCloud site part</label>
+		<description></description>
+        <channels>
+            <channel id="partArm" typeId="partArm" />
+            <channel id="partPartiallyArm" typeId="partPartiallyArm" />
+            <channel id="partDisarm" typeId="partDisarm" />
+        </channels>
+        <config-description>
+            <parameter name="partId" type="integer" required="true" readOnly="true">
+                <label>part id</label>
+                <description>Part ID assigned by Risco Cloud. Viewable in json</description>
+            </parameter>
+        </config-description>	    
+
+	</thing-type>
+	
+    <channel-type id="partArm">
+        <item-type>Switch</item-type>
+        <label>Armed partition</label>
+        <description></description>
+        <category>ArmDisarm</category>
+    </channel-type>
+
+    <channel-type id="partPartiallyArm">
+        <item-type>Switch</item-type>
+        <label>Partially armed partition</label>
+        <description></description>
+        <category>ArmDisarm</category>
+    </channel-type>
+
+    <channel-type id="partDisarm">
+        <item-type>Switch</item-type>
+        <label>Disarmed partition</label>
+        <description></description>
+        <category>ArmDisarm</category>
+    </channel-type>
+
+</thing:thing-descriptions>
