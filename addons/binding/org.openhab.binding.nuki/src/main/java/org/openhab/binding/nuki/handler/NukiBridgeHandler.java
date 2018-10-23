@@ -8,9 +8,12 @@
  */
 package org.openhab.binding.nuki.handler;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -18,8 +21,14 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.nuki.NukiBindingConstants;
+import org.openhab.binding.nuki.internal.dataexchange.BridgeCallbackAddResponse;
+import org.openhab.binding.nuki.internal.dataexchange.BridgeCallbackListResponse;
+import org.openhab.binding.nuki.internal.dataexchange.BridgeCallbackRemoveResponse;
 import org.openhab.binding.nuki.internal.dataexchange.BridgeInfoResponse;
+import org.openhab.binding.nuki.internal.dataexchange.NukiApiServlet;
 import org.openhab.binding.nuki.internal.dataexchange.NukiHttpClient;
+import org.openhab.binding.nuki.internal.dto.BridgeApiCallbackListCallbackDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,15 +40,26 @@ import org.slf4j.LoggerFactory;
  */
 public class NukiBridgeHandler extends BaseBridgeHandler {
 
-    private final static Logger logger = LoggerFactory.getLogger(NukiBridgeHandler.class);
-    private final static int RETRYJOB_INTERVAL = 60;
+    private final Logger logger = LoggerFactory.getLogger(NukiBridgeHandler.class);
+    private static final int RETRYJOB_INTERVAL = 60;
 
+    private HttpClient httpClient;
     private NukiHttpClient nukiHttpClient;
+    private NukiApiServlet nukiApiServlet;
+    private String openHabIpPort;
     private ScheduledFuture<?> retryJob;
+    String bridgeId;
+    String bridgeIp;
 
-    public NukiBridgeHandler(Bridge bridge) {
+    public NukiBridgeHandler(Bridge bridge, HttpClient httpClient, NukiApiServlet nukiApiServlet,
+            String openHabIpPort) {
         super(bridge);
-        logger.trace("Instantiating NukiBridgeHandler({})", bridge);
+        logger.debug("Instantiating NukiBridgeHandler({}, {}, {}, {})", bridge, httpClient, nukiApiServlet,
+                openHabIpPort);
+        this.httpClient = httpClient;
+        this.nukiApiServlet = nukiApiServlet;
+        this.openHabIpPort = openHabIpPort;
+        this.bridgeIp = (String) getConfig().get(NukiBindingConstants.CONFIG_IP);
     }
 
     public NukiHttpClient getNukiHttpClient() {
@@ -49,6 +69,7 @@ public class NukiBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("NukiBridgeHandler:initialize()");
+        updateStatus(ThingStatus.UNKNOWN);
         scheduler.execute(() -> initializeHandler());
     }
 
@@ -60,18 +81,24 @@ public class NukiBridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         logger.debug("NukiBridgeHandler:dispose()");
-        nukiHttpClient.stopClient();
         nukiHttpClient = null;
+        nukiApiServlet.deactivate();
         cancelRetryJob();
     }
 
-    private void initializeHandler() {
+    private synchronized void initializeHandler() {
         logger.debug("NukiBridgeHandler:initializeHandler()");
         if (nukiHttpClient == null) {
-            nukiHttpClient = new NukiHttpClient(getConfig());
+            nukiHttpClient = new NukiHttpClient(httpClient, getConfig());
         }
         BridgeInfoResponse bridgeInfoResponse = nukiHttpClient.getBridgeInfo();
         if (bridgeInfoResponse.getStatus() == HttpStatus.OK_200) {
+            bridgeId = bridgeIdToHex(bridgeInfoResponse.getBridgeInfo().getIds().getHardwareId());
+            boolean manageCallbacks = (Boolean) getConfig().get(NukiBindingConstants.CONFIG_MANAGECB);
+            if (manageCallbacks) {
+                manageNukiBridgeCallbacks(bridgeId);
+            }
+            nukiApiServlet.activate(this, bridgeId);
             updateStatus(ThingStatus.ONLINE);
             cancelRetryJob();
         } else {
@@ -81,10 +108,11 @@ public class NukiBridgeHandler extends BaseBridgeHandler {
     }
 
     private void scheduleRetryJob() {
-        logger.trace("NukiBridgeHandler:scheduleRetryJob():Scheduling retryJob in {}secs for Bridge.",
-                RETRYJOB_INTERVAL);
+        logger.trace("NukiBridgeHandler:scheduleRetryJob():Scheduling retryJob in {}secs for Bridge[{}].",
+                RETRYJOB_INTERVAL, (bridgeId == null) ? bridgeIp : bridgeId);
         if (retryJob != null && !retryJob.isDone()) {
-            logger.trace("NukiBridgeHandler:scheduleRetryJob():Already scheduled for Bridge.");
+            logger.trace("NukiBridgeHandler:scheduleRetryJob():Already scheduled for Bridge[{}].",
+                    (bridgeId == null) ? bridgeIp : bridgeId);
             return;
         }
         retryJob = null;
@@ -94,10 +122,67 @@ public class NukiBridgeHandler extends BaseBridgeHandler {
     }
 
     private void cancelRetryJob() {
-        logger.trace("NukiBridgeHandler:cancelRetryJob():Canceling retryJob for Bridge.");
+        logger.trace("NukiBridgeHandler:cancelRetryJob():Canceling retryJob for Bridge[{}].", bridgeId);
         if (retryJob != null) {
             retryJob.cancel(true);
             retryJob = null;
+        }
+    }
+
+    private String bridgeIdToHex(int bridgeId) {
+        String bridgeIdHex = String.format("%08X", bridgeId);
+        logger.trace("bridgeIdToHex({}):bridgeIdHex[{}]", bridgeId, bridgeIdHex);
+        return bridgeIdHex;
+    }
+
+    private String createCallbackUrl(String nukiId) {
+        ArrayList<String> parameters = new ArrayList<>();
+        parameters.add(openHabIpPort);
+        parameters.add(nukiId);
+        String callbackUrl = String.format(NukiBindingConstants.CALLBACK_URL, parameters.toArray());
+        logger.trace("createCallbackUrl({}):callbackUrl[{}]", nukiId, callbackUrl);
+        return callbackUrl;
+    }
+
+    private void manageNukiBridgeCallbacks(String bridgeId) {
+        logger.debug("manageNukiBridgeCallbacks({})", bridgeId);
+        BridgeCallbackListResponse bridgeCallbackListResponse = nukiHttpClient.getBridgeCallbackList();
+        List<BridgeApiCallbackListCallbackDto> callbacks = bridgeCallbackListResponse.getCallbacks();
+        String callbackUrl = createCallbackUrl(bridgeId);
+        boolean callbackExists = false;
+        int callbackCount = callbacks.size();
+        for (BridgeApiCallbackListCallbackDto callback : callbacks) {
+            if (callback.getUrl().equals(callbackUrl)) {
+                logger.debug("callbackUrl[{}] already existing on Nuki Bridge[{}].", callbackUrl, bridgeId);
+                callbackExists = true;
+                continue;
+            }
+            if (callback.getUrl().contains(NukiBindingConstants.CALLBACK_ENDPOINT + bridgeId)) {
+                logger.debug("Partial callbackUrl[{}] found on Nuki Bridge[{}] - Removing it!", callback.getUrl(),
+                        bridgeId);
+                BridgeCallbackRemoveResponse bridgeCallbackRemoveResponse = nukiHttpClient
+                        .getBridgeCallbackRemove(callback.getId());
+                if (bridgeCallbackRemoveResponse.getStatus() == HttpStatus.OK_200) {
+                    logger.debug("Successfully removed!");
+                    callbackCount--;
+                }
+            }
+        }
+        if (!callbackExists) {
+            if (callbackCount == 3) {
+                logger.debug("Already 3 callback URLs existing on Nuki Bridge[{}] - Removing ID 0!", bridgeId);
+                BridgeCallbackRemoveResponse bridgeCallbackRemoveResponse = nukiHttpClient.getBridgeCallbackRemove(0);
+                if (bridgeCallbackRemoveResponse.getStatus() == HttpStatus.OK_200) {
+                    logger.debug("Successfully removed!");
+                    callbackCount--;
+                }
+            }
+            logger.debug("Adding callbackUrl[{}] to Nuki Bridge[{}]!", callbackUrl, bridgeId);
+            BridgeCallbackAddResponse bridgeCallbackAddResponse = nukiHttpClient.getBridgeCallbackAdd(callbackUrl);
+            if (bridgeCallbackAddResponse.getStatus() == HttpStatus.OK_200) {
+                logger.debug("Successfully added!", callbackUrl, bridgeId);
+                callbackExists = true;
+            }
         }
     }
 

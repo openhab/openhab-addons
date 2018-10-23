@@ -8,24 +8,25 @@
  */
 package org.openhab.binding.nuki.internal.dataexchange;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Dictionary;
 import java.util.Hashtable;
-import java.util.Map;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingRegistry;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.nuki.NukiBindingConstants;
+import org.openhab.binding.nuki.handler.NukiBridgeHandler;
 import org.openhab.binding.nuki.handler.NukiSmartLockHandler;
 import org.openhab.binding.nuki.internal.dto.BridgeApiLockStateRequestDto;
 import org.openhab.binding.nuki.internal.dto.NukiHttpServerStatusResponseDto;
@@ -43,56 +44,38 @@ import com.google.gson.Gson;
  */
 public class NukiApiServlet extends HttpServlet {
 
-    private static final long serialVersionUID = -3601163473320027239L;
     private final Logger logger = LoggerFactory.getLogger(NukiApiServlet.class);
-
-    private static final String PATH = "/nuki/bcb";
+    private static final long serialVersionUID = -3601163473320027239L;
     private static final String CHARSET = "utf-8";
     private static final String APPLICATION_JSON = "application/json";
 
     private HttpService httpService;
-    private ThingRegistry thingRegistry;
+    private NukiBridgeHandler nukiBridgeHandler;
+    private String path;
     private Gson gson;
 
-    public NukiApiServlet() {
-        logger.trace("Instantiating NukiApiServlet()");
+    public NukiApiServlet(HttpService httpService) {
+        logger.debug("Instantiating NukiApiServlet({})", httpService);
+        this.httpService = httpService;
         gson = new Gson();
     }
 
-    public HttpService getHttpService() {
-        return httpService;
-    }
-
-    public void setHttpService(HttpService httpService) {
-        this.httpService = httpService;
-    }
-
-    public ThingRegistry getThingRegistry() {
-        return thingRegistry;
-    }
-
-    public void setThingRegistry(ThingRegistry thingRegistry) {
-        this.thingRegistry = thingRegistry;
-    }
-
-    protected void activate(Map<String, Object> config) {
-        logger.trace("NukiApiServlet:activate({})", config);
+    public void activate(NukiBridgeHandler nukiBridgeHandler, String endPoint) {
+        logger.debug("NukiApiServlet:activate({}, {})", nukiBridgeHandler, endPoint);
+        this.nukiBridgeHandler = nukiBridgeHandler;
+        path = NukiBindingConstants.CALLBACK_ENDPOINT + endPoint;
         Dictionary<String, String> servletParams = new Hashtable<String, String>();
         try {
-            httpService.registerServlet(PATH, this, servletParams, httpService.createDefaultHttpContext());
-            logger.debug("Started NukiApiServlet at path[{}]", PATH);
+            httpService.registerServlet(path, this, servletParams, httpService.createDefaultHttpContext());
+            logger.debug("Started NukiApiServlet at path[{}]", path);
         } catch (ServletException | NamespaceException e) {
             logger.error("ERROR: {}", e.getMessage(), e);
         }
     }
 
-    protected void modified(Map<String, Object> config) {
-        logger.trace("NukiApiServlet:modified({})", config);
-    }
-
-    protected void deactivate() {
+    public void deactivate() {
         logger.trace("NukiApiServlet:deactivate()");
-        httpService.unregister(PATH);
+        httpService.unregister(path);
     }
 
     @Override
@@ -101,14 +84,17 @@ public class NukiApiServlet extends HttpServlet {
         logger.debug("NukiApiServlet:service URI[{}] request[{}]", request.getRequestURI(), request);
         BridgeApiLockStateRequestDto bridgeApiLockStateRequestDto = getBridgeApiLockStateRequestDto(request);
         if (bridgeApiLockStateRequestDto == null) {
-            logger.warn("Could not handle request - Discarding the Bridge Callback Request!");
+            logger.error("Could not handle Bridge CallBack Request - Discarding!");
+            logger.error("Please report a bug, if this request was done by the Nuki Bridge!");
             setHeaders(response);
-            response.getWriter().println(gson.toJson(new NukiHttpServerStatusResponseDto("OK")));
+            response.setStatus(400);
+            response.getWriter().println(gson.toJson(new NukiHttpServerStatusResponseDto("Invalid BCB-Request!")));
             return;
         }
-        String nukiId = Integer.toString(bridgeApiLockStateRequestDto.getNukiId());
+        String nukiId = String.format("%08X", (bridgeApiLockStateRequestDto.getNukiId()));
         String nukiIdThing;
-        for (Thing thing : thingRegistry.getAll()) {
+        List<@NonNull Thing> allSmartLocks = nukiBridgeHandler.getThing().getThings();
+        for (Thing thing : allSmartLocks) {
             nukiIdThing = thing.getConfiguration().containsKey(NukiBindingConstants.CONFIG_NUKI_ID)
                     ? (String) thing.getConfiguration().get(NukiBindingConstants.CONFIG_NUKI_ID)
                     : null;
@@ -116,25 +102,24 @@ public class NukiApiServlet extends HttpServlet {
                 logger.debug("Processing ThingUID[{}]", thing.getUID());
                 NukiSmartLockHandler nsh = getSmartLockHandler(thing);
                 if (nsh == null) {
-                    logger.warn("Could not update channels for ThingUID[{}] because Handler is null!", thing.getUID());
+                    logger.debug("Could not update channels for ThingUID[{}] because Handler is null!", thing.getUID());
                     break;
                 }
-                Channel channel = thing.getChannel(NukiBindingConstants.CHANNEL_SMARTLOCK_UNLOCK);
+                Channel channel = thing.getChannel(NukiBindingConstants.CHANNEL_SMARTLOCK_LOCK);
                 if (channel != null) {
                     State state = bridgeApiLockStateRequestDto.getState() == NukiBindingConstants.LOCK_STATES_LOCKED
                             ? OnOffType.ON
                             : OnOffType.OFF;
                     nsh.handleApiServletUpdate(channel.getUID(), state);
                 }
-                channel = thing.getChannel(NukiBindingConstants.CHANNEL_SMARTLOCK_LOCK_ACTION);
+                channel = thing.getChannel(NukiBindingConstants.CHANNEL_SMARTLOCK_STATE);
                 if (channel != null) {
                     State state = new DecimalType(bridgeApiLockStateRequestDto.getState());
                     nsh.handleApiServletUpdate(channel.getUID(), state);
                 }
                 channel = thing.getChannel(NukiBindingConstants.CHANNEL_SMARTLOCK_LOW_BATTERY);
                 if (channel != null) {
-                    State state = bridgeApiLockStateRequestDto.isBatteryCritical() == true ? OnOffType.ON
-                            : OnOffType.OFF;
+                    State state = bridgeApiLockStateRequestDto.isBatteryCritical() ? OnOffType.ON : OnOffType.OFF;
                     nsh.handleApiServletUpdate(channel.getUID(), state);
                 }
             }
@@ -145,27 +130,32 @@ public class NukiApiServlet extends HttpServlet {
 
     private BridgeApiLockStateRequestDto getBridgeApiLockStateRequestDto(HttpServletRequest request) {
         logger.trace("NukiApiServlet:getBridgeApiLockStateRequestDto(...)");
-        StringBuffer requestContent = new StringBuffer();
-        String line = null;
+        String requestContent = null;
         try {
-            BufferedReader bufferedReader = request.getReader();
-            while ((line = bufferedReader.readLine()) != null) {
-                requestContent.append(line);
+            requestContent = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+            BridgeApiLockStateRequestDto bridgeApiLockStateRequestDto = gson.fromJson(requestContent,
+                    BridgeApiLockStateRequestDto.class);
+            if (bridgeApiLockStateRequestDto.getNukiId() != 0) {
+                logger.trace("requestContent[{}]", requestContent);
+                return bridgeApiLockStateRequestDto;
+            } else {
+                logger.error("Invalid BCB-Request payload data!");
+                logger.error("requestContent[{}]", requestContent);
             }
-            logger.trace("requestContent[{}]", requestContent);
-            return gson.fromJson(requestContent.toString(), BridgeApiLockStateRequestDto.class);
+        } catch (IOException e) {
+            logger.error("Could not read payload from BCB-Request! Message[{}]", e.getMessage());
         } catch (Exception e) {
-            logger.warn("Could not build BridgeApiLockStateRequestDto from ServletRequest! Message[{}]", e.getMessage(),
-                    e);
-            return null;
+            logger.error("Could not create BridgeApiLockStateRequestDto from BCB-Request! Message[{}]", e.getMessage());
+            logger.error("requestContent[{}]", requestContent);
         }
+        return null;
     }
 
     private NukiSmartLockHandler getSmartLockHandler(Thing thing) {
         logger.trace("NukiApiServlet:getSmartLockHandler(...)");
         NukiSmartLockHandler nsh = (NukiSmartLockHandler) thing.getHandler();
         if (nsh == null) {
-            logger.warn("Could not get NukiSmartLockHandler for ThingUID[{}]!", thing.getUID());
+            logger.debug("Could not get NukiSmartLockHandler for ThingUID[{}]!", thing.getUID());
             return null;
         }
         return nsh;
