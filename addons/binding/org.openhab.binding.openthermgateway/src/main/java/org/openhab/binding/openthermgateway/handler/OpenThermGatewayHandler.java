@@ -259,7 +259,7 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
                 return GatewayCommandCode.TemperatureOutside;
             case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_DHW_SETPOINT:
                 return GatewayCommandCode.SetpointWater;
-            case OpenThermGatewayBindingConstants.CHANNEL_EXEC_COMMAND:
+            case OpenThermGatewayBindingConstants.CHANNEL_SEND_COMMAND:
                 return "";
             default:
                 throw new Exception(String.format("Unknown channel %s", channel));
