@@ -29,13 +29,13 @@ public interface MailAdapter {
 
     public List<Message> retrieveMessages(String query) throws IOException, UnsupportedEncodingException;
 
-    public List<String> retrieveAllMessagesContents(List<Message> messages) throws IOException;
+    public List<String> retrieveMessagesContents(List<Message> messages) throws IOException;
 
     public void markMessagesRead(List<Message> messages) throws IOException;
 
     default public List<String> retrieveAllMessagesContentsAndMarkAllRead(String query) throws IOException {
         List<Message> retrievedMessages = retrieveMessages(query);
         markMessagesRead(retrievedMessages);
-        return retrieveAllMessagesContents(retrievedMessages);
+        return retrieveMessagesContents(retrievedMessages);
     }
 }

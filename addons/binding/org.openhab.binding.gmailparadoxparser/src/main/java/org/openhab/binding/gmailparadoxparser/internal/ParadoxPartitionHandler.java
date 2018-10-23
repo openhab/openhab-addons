@@ -8,10 +8,12 @@
  */
 package org.openhab.binding.gmailparadoxparser.internal;
 
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -32,10 +34,11 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ParadoxPartitionHandler extends BaseThingHandler {
 
-    private static final int INITIAL_DELAY = 15; // sec
+    private static final int INITIAL_DELAY = 60; // sec
     private static final int DEFAULT_REFRESH_INTERVAL = 60; // sec
 
     private final Logger logger = LoggerFactory.getLogger(ParadoxPartitionHandler.class);
+    private ScheduledFuture<?> schedule;
 
     @Nullable
     private ParadoxPartitionConfiguration config;
@@ -46,13 +49,16 @@ public class ParadoxPartitionHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug("Command " + command + " received on ChannelID: " + channelUID);
         retrieveDataFromCache();
     }
 
     @SuppressWarnings("null")
     private void retrieveDataFromCache() {
+        logger.debug("Getting from cache partitition with ID: " + config.partitionId);
         ParadoxPartition paradoxPartition = ParadoxStatesCache.getInstance().get(config.partitionId);
         if (paradoxPartition != null) {
+            logger.debug(paradoxPartition.toString() + " updating state to " + paradoxPartition.getState());
             updateState(GmailParadoxParserBindingConstants.STATE, new StringType(paradoxPartition.getState()));
         }
     }
@@ -65,15 +71,26 @@ public class ParadoxPartitionHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Start initializing!");
         config = getConfigAs(ParadoxPartitionConfiguration.class);
-        updateStatus(ThingStatus.ONLINE);
+        logger.debug("Start initializing - " + thing.getLabel() + ":" + config.partitionId);
 
-        scheduler.scheduleAtFixedRate(() -> {
+        schedule = scheduler.scheduleWithFixedDelay(() -> {
             retrieveDataFromCache();
         }, INITIAL_DELAY, DEFAULT_REFRESH_INTERVAL, TimeUnit.SECONDS);
 
-        logger.debug("Finished initializing!");
+        updateStatus(ThingStatus.ONLINE);
+        logger.debug("Finished initializing - " + thing.getLabel() + ":" + config.partitionId);
+    }
+
+    @Override
+    public void dispose() {
+        if (schedule != null) {
+            boolean cancelingResult = schedule.cancel(true);
+            String cancelingSuccessful = cancelingResult ? "successful" : "failed";
+            logger.debug("Canceling schedule of " + schedule.toString() + " in class " + getClass().getName()
+                    + cancelingSuccessful);
+        }
+        super.dispose();
     }
 
 }

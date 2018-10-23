@@ -6,8 +6,8 @@
 
 	<!-- Sample Thing Type -->
 	<thing-type id="paradoxPartition">
-		<label>Paradox partition status</label>
-		<description>Paradox Partition status</description>
+		<label>Paradox partition</label>
+		<description>Paradox Partition</description>
 
 		<channels>
 			<channel id="state" typeId="state" />

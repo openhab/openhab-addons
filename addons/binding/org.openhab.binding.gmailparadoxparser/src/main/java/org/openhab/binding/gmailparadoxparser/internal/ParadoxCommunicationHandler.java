@@ -8,10 +8,12 @@
  */
 package org.openhab.binding.gmailparadoxparser.internal;
 
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -33,6 +35,7 @@ public class ParadoxCommunicationHandler extends BaseThingHandler {
     private static final int DEFAULT_REFRESH_INTERVAL = 60; // sec
 
     private final Logger logger = LoggerFactory.getLogger(ParadoxCommunicationHandler.class);
+    ScheduledFuture<?> schedule;
 
     @Nullable
     private ParadoxCommunicationConfiguration config;
@@ -43,6 +46,7 @@ public class ParadoxCommunicationHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug("Command " + command + " received on ChannelID: " + channelUID);
     }
 
     private void refreshData() {
@@ -52,18 +56,30 @@ public class ParadoxCommunicationHandler extends BaseThingHandler {
     @SuppressWarnings("null")
     @Override
     public void initialize() {
-        logger.debug("Start initializing!");
+        logger.debug("Start initializing - " + thing.getLabel());
+
         config = getConfigAs(ParadoxCommunicationConfiguration.class);
-        ParadoxStatesCache.getInstance().initialize();
         updateStatus(ThingStatus.ONLINE);
+
+        ParadoxStatesCache.getInstance().initialize();
 
         logger.debug("Scheduling cache update. Initial delay: " + INITIAL_DELAY + ". Refresh interval: "
                 + config.refresh + ".");
-        scheduler.scheduleAtFixedRate(() -> {
+        schedule = scheduler.scheduleWithFixedDelay(() -> {
             refreshData();
         }, INITIAL_DELAY, config.refresh, TimeUnit.SECONDS);
 
-        logger.debug("Finished initializing!");
+        logger.debug("Finished initializing - " + thing.getLabel());
     }
 
+    @Override
+    public void dispose() {
+        if (schedule != null) {
+            boolean cancelingResult = schedule.cancel(true);
+            String cancelingSuccessful = cancelingResult ? "successful" : "failed";
+            logger.debug("Canceling schedule of " + schedule.toString() + " in class " + getClass().getName()
+                    + cancelingSuccessful);
+        }
+        super.dispose();
+    }
 }

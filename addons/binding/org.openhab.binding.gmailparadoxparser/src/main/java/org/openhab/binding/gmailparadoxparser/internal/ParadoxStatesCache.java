@@ -55,6 +55,8 @@ public class ParadoxStatesCache implements Cache<String, ParadoxPartition> {
     @Override
     public void put(String key, ParadoxPartition value) {
         synchronized (ParadoxStatesCache.class) {
+            logger.debug("Putting key: " + key);
+            logger.debug("Value: " + value.toString());
             partitionsStates.put(key, value);
         }
 
@@ -72,24 +74,24 @@ public class ParadoxStatesCache implements Cache<String, ParadoxPartition> {
 
     @Override
     public void refresh() {
-        this.refresh(MailAdapter.QUERY_UNREAD);
+        refresh(MailAdapter.QUERY_UNREAD);
     }
 
     @Override
     public void refresh(String query) {
         try {
-            synchronized (getClass()) {
-                List<String> retrievedMessages = mailAdapter.retrieveAllMessagesContentsAndMarkAllRead(query);
-                Set<ParadoxPartition> partitionsUpdatedStates = MailParser.getInstance()
-                        .parseToParadoxPartitionStates(retrievedMessages);
+            List<String> retrievedMessages = mailAdapter.retrieveAllMessagesContentsAndMarkAllRead(query);
+            Set<ParadoxPartition> partitionsUpdatedStates = MailParser.getInstance()
+                    .parseToParadoxPartitionStates(retrievedMessages);
 
-                if (partitionsUpdatedStates.isEmpty()) {
-                    logger.debug("Received empty set. Nothing to update.");
-                    return;
-                }
+            if (partitionsUpdatedStates.isEmpty()) {
+                logger.debug("Received empty set. Nothing to update.");
+                return;
+            }
 
+            synchronized (ParadoxStatesCache.class) {
                 for (ParadoxPartition paradoxPartition : partitionsUpdatedStates) {
-                    put(paradoxPartition.getPartition(), paradoxPartition);
+                    put(paradoxPartition.getPartitionId(), paradoxPartition);
                 }
             }
         } catch (IOException e) {

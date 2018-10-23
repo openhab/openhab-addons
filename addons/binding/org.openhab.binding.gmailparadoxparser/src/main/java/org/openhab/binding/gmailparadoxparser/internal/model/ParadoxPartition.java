@@ -12,6 +12,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.openhab.binding.gmailparadoxparser.internal.GmailParadoxParserHandlerFactory;
+import org.openhab.binding.gmailparadoxparser.internal.ParadoxStatesCache;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link GmailParadoxParserHandlerFactory} is responsible for creating things and thing
@@ -20,6 +23,7 @@ import org.openhab.binding.gmailparadoxparser.internal.GmailParadoxParserHandler
  * @author Konstantin_Polihronov - Initial contribution
  */
 public class ParadoxPartition {
+    private static final Logger logger = LoggerFactory.getLogger(ParadoxStatesCache.class);
 
     private static Map<String, String> statesMap = new HashMap<>();
     static {
@@ -27,17 +31,18 @@ public class ParadoxPartition {
         statesMap.put("Arming", "Armed");
     }
 
-    String state;
-    String id;
-    String activatedBy;
-    String time;
+    private String state;
+    private String id;
+    private String activatedBy;
+    private String time;
 
-    public ParadoxPartition(String state, String partition, String activatedBy, String time) {
+    public ParadoxPartition(String state, String partitionId, String activatedBy, String time) {
         String translatedState = statesMap.get(state);
         this.state = translatedState != null ? translatedState : state;
-        this.id = partition;
+        this.id = partitionId;
         this.activatedBy = activatedBy;
         this.time = time;
+        logger.debug("Created partition:" + this.toString());
     }
 
     public String getState() {
@@ -50,16 +55,15 @@ public class ParadoxPartition {
 
     @Override
     public String toString() {
-        return "ParadoxPartition [partition= \"" + id + "\", state=" + state + ", activatedBy=" + activatedBy
-                + ", time=" + time + "]";
+        return ("partition=" + id + ", state=" + state + ", activatedBy=" + activatedBy + ", time=" + time);
     }
 
-    public String getPartition() {
+    public String getPartitionId() {
         return id;
     }
 
-    public void setPartition(String partition) {
-        this.id = partition;
+    public void setPartitionId(String partitionId) {
+        this.id = partitionId;
     }
 
     public String getActivatedBy() {

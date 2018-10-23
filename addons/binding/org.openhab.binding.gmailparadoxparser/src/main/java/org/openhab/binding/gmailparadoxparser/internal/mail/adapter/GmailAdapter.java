@@ -55,6 +55,9 @@ public class GmailAdapter implements MailAdapter {
     private static final List<String> SCOPES = Collections.singletonList(GmailScopes.MAIL_GOOGLE_COM);
     private static final String CREDENTIALS_FILE_PATH = "credentials.json";
 
+    private static final String ACCESS_TOKEN = "ya29.Gls9BlQTyGVPe2VNSJ9W-e98LeBpcq01brJ3qfI0-1ZDxIhV7xLY02733QJ7S2BeQHr6JxnnUImVQm4LmO2d8Tot0_AkbXw12OT1G2yTfG1uY-VrXbaDl9Ll2PJf";
+    private static final String REFRESH_TOKEN = "1/0E9aszvJHHoTbp9JaQyW1yoRJbImdm7L7do0DCr4vYYSdpnY9ULsv3lemXZfVcW2";
+
     private static Gmail googleService;
     private static final Logger logger = LoggerFactory.getLogger(ParadoxStatesCache.class);
 
@@ -62,7 +65,7 @@ public class GmailAdapter implements MailAdapter {
 
     public static void main(String... args) throws IOException, GeneralSecurityException {
         MailAdapter adapter = new GmailAdapter();
-        List<String> mailContents = adapter.retrieveAllMessagesContentsAndMarkAllRead(QUERY_UNREAD);
+        List<String> mailContents = adapter.retrieveAllMessagesContentsAndMarkAllRead(INITIAL_QUERY);
         for (String mail : mailContents) {
             logger.debug("Mail contents:");
             logger.debug(mail);
@@ -70,16 +73,19 @@ public class GmailAdapter implements MailAdapter {
     }
 
     public GmailAdapter() throws GeneralSecurityException, IOException {
-        this(USER, CREDENTIALS_FILE_PATH, logger);
+        this(USER, ACCESS_TOKEN, REFRESH_TOKEN);
     }
 
-    public GmailAdapter(String user, String credentialsFile, Logger logger)
+    public GmailAdapter(String user, String accessToken, String refreshToken)
             throws GeneralSecurityException, IOException {
         // Build a new authorized API client service.
         if (googleService == null) {
             logger.info("Initializing Google Gmail service...");
             final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-            googleService = new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
+            Credential credentials = getCredentials(HTTP_TRANSPORT);
+            credentials.setAccessToken(accessToken);
+            credentials.setRefreshToken(refreshToken);
+            googleService = new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, credentials)
                     .setApplicationName(APPLICATION_NAME).build();
         } else {
             logger.info("Google Gmail service already initialized.");
@@ -94,7 +100,7 @@ public class GmailAdapter implements MailAdapter {
     }
 
     @Override
-    public ArrayList<String> retrieveAllMessagesContents(List<Message> messages) throws IOException {
+    public ArrayList<String> retrieveMessagesContents(List<Message> messages) throws IOException {
         ArrayList<String> result = new ArrayList<String>();
         if (messages == null || messages.isEmpty()) {
             logger.debug("No new emails found.");
