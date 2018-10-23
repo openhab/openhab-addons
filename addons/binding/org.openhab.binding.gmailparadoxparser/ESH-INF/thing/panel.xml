@@ -19,6 +19,27 @@
 				<description>Specifies the refresh interval in seconds.</description>
 				<default>30</default>
 			</parameter>
+			<parameter name="username" type="text">
+                <label>Username</label>
+                <description>Usually google mail address</description>
+            </parameter>
+            <parameter name="clientId" type="text">
+                <label>ClientID</label>
+                <description>The client ID for accessing Google API</description>
+            </parameter>
+            <parameter name="clientSecrets" type="text">
+                <label>Client Secrets</label>
+                <description>The client secrets key generated in Google API dashboard</description>
+            </parameter>
+            <parameter name="accessToken" type="text">
+                <label>Access Token</label>
+                <description>Access Token generated through OAuth2 process</description>
+            </parameter>
+            <parameter name="refreshToken" type="text">
+                <label>Refresh Token</label>
+                <description>Refresh Token generated through OAuth2 process</description>
+            </parameter>
+
 
 		</config-description>
 

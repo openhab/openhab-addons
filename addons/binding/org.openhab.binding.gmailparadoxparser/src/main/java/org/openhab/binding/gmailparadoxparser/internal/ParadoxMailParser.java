@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.gmailparadoxparser.internal.mail.adapter;
+package org.openhab.binding.gmailparadoxparser.internal;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.openhab.binding.gmailparadoxparser.internal.GmailParadoxParserHandlerFactory;
 import org.openhab.binding.gmailparadoxparser.internal.model.ParadoxPartition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,23 +24,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Konstantin_Polihronov - Initial contribution
  */
-public class MailParser {
+public class ParadoxMailParser {
 
-    private static MailParser instance;
-    private Logger logger = LoggerFactory.getLogger(MailParser.class);
+    private static Logger logger = LoggerFactory.getLogger(ParadoxMailParser.class);
 
-    public static MailParser getInstance() {
-        if (instance == null) {
-            instance = new MailParser();
-        }
-        return instance;
-    }
-
-    public Set<ParadoxPartition> parseToParadoxPartitionStates(List<String> mailContents) {
+    public static Set<ParadoxPartition> parseToParadoxPartitions(List<String> mailContents) {
         Set<ParadoxPartition> partitionsStates = new HashSet<>();
         for (String mail : mailContents) {
             String[] split = mail.split(System.getProperty("line.separator"));
-            Map<String, String> mailResultMap = MailParser.getInstance().parseToMap(split);
+            Map<String, String> mailResultMap = parseToMap(split);
             logger.debug(mailResultMap.toString());
             partitionsStates.add(new ParadoxPartition(cleanCarriageReturn(mailResultMap.get("Message")),
                     cleanCarriageReturn(mailResultMap.get("Partition")), cleanCarriageReturn(mailResultMap.get("By")),
@@ -51,7 +42,7 @@ public class MailParser {
         return partitionsStates;
     }
 
-    private String cleanCarriageReturn(String input) {
+    private static String cleanCarriageReturn(String input) {
         if (input == null || input.length() == 0) {
             return input;
         }
@@ -59,7 +50,7 @@ public class MailParser {
         return input.substring(0, input.length());
     }
 
-    private Map<String, String> parseToMap(String[] lines) {
+    private static Map<String, String> parseToMap(String[] lines) {
         Map<String, String> result = new HashMap<>();
 
         for (int i = 0; i < lines.length; i++) {
@@ -68,7 +59,7 @@ public class MailParser {
                 result.put(split[0].replaceAll("(\\r|\\n)", ""), split[1].replaceAll("(\\r|\\n)", ""));
                 // logger.debug("Key: " + split[0] + "\tValue: " + split[1]);
             } else {
-                // logger.debug("Message cannot be split: " + lines[i]);
+                logger.debug("Message cannot be split: " + lines[i]);
             }
 
         }

@@ -4,7 +4,7 @@
 	<classpathentry exported="true" kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry exported="true" kind="lib" path="lib/google-api-services-gmail-v1-rev83-1.23.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/google-api-client-1.24.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/google-api-client-1.24.1.jar" sourcepath="lib/google-api-client-1.24.1-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/google-oauth-client-jetty-1.25.0.jar" sourcepath="lib/google-oauth-client-jetty-1.25.0-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-logging-1.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/google-http-client-1.25.0.jar"/>

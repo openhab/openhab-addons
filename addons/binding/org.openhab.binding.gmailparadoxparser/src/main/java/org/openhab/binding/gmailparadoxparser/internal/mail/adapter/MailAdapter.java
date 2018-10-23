@@ -33,7 +33,7 @@ public interface MailAdapter {
 
     public void markMessagesRead(List<Message> messages) throws IOException;
 
-    default public List<String> retrieveAllMessagesContentsAndMarkAllRead(String query) throws IOException {
+    default public List<String> retrieveAndMarkRead(String query) throws IOException {
         List<Message> retrievedMessages = retrieveMessages(query);
         markMessagesRead(retrievedMessages);
         return retrieveMessagesContents(retrievedMessages);

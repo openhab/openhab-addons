@@ -8,6 +8,10 @@
  */
 package org.openhab.binding.gmailparadoxparser.internal;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -19,6 +23,8 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.gmailparadoxparser.internal.mail.adapter.GmailAdapter;
+import org.openhab.binding.gmailparadoxparser.internal.mail.adapter.MailAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,17 +37,21 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ParadoxCommunicationHandler extends BaseThingHandler {
 
-    private static final int INITIAL_DELAY = 1; // sec
+    private static final int INITIAL_DELAY = 5; // sec
     private static final int DEFAULT_REFRESH_INTERVAL = 60; // sec
 
     private final Logger logger = LoggerFactory.getLogger(ParadoxCommunicationHandler.class);
     ScheduledFuture<?> schedule;
 
+    private MailAdapter mailAdapter;
+
     @Nullable
     private ParadoxCommunicationConfiguration config;
 
+    @SuppressWarnings("null")
     public ParadoxCommunicationHandler(Thing thing) {
         super(thing);
+
     }
 
     @Override
@@ -50,7 +60,12 @@ public class ParadoxCommunicationHandler extends BaseThingHandler {
     }
 
     private void refreshData() {
-        ParadoxStatesCache.getInstance().refresh();
+        try {
+            List<String> retrievedMessages = mailAdapter.retrieveAndMarkRead(MailAdapter.QUERY_UNREAD);
+            ParadoxStatesCache.getInstance().refresh(retrievedMessages);
+        } catch (IOException e) {
+            logger.info("Unable to retrieve data from GMAIL", e);
+        }
     }
 
     @SuppressWarnings("null")
@@ -59,17 +74,36 @@ public class ParadoxCommunicationHandler extends BaseThingHandler {
         logger.debug("Start initializing - " + thing.getLabel());
 
         config = getConfigAs(ParadoxCommunicationConfiguration.class);
+
+        List<String> retrievedMessages = initializeMailAdapter(config);
+        ParadoxStatesCache.getInstance().refresh(retrievedMessages);
+
+        setupSchedule();
+
         updateStatus(ThingStatus.ONLINE);
 
-        ParadoxStatesCache.getInstance().initialize();
+        logger.debug("Finished initializing - " + thing.getLabel());
+    }
 
-        logger.debug("Scheduling cache update. Initial delay: " + INITIAL_DELAY + ". Refresh interval: "
-                + config.refresh + ".");
+    private void setupSchedule() {
+        logger.debug("Scheduling cache update. Refresh interval: " + config.refresh + "s.");
         schedule = scheduler.scheduleWithFixedDelay(() -> {
             refreshData();
         }, INITIAL_DELAY, config.refresh, TimeUnit.SECONDS);
+    }
 
-        logger.debug("Finished initializing - " + thing.getLabel());
+    private List<String> initializeMailAdapter(ParadoxCommunicationConfiguration config) {
+        try {
+
+            mailAdapter = new GmailAdapter(config.username, config.clientId, config.clientSecrets, config.accessToken,
+                    config.refreshToken);
+            List<String> retrievedMessages = mailAdapter.retrieveAndMarkRead(MailAdapter.INITIAL_QUERY);
+            return retrievedMessages;
+
+        } catch (GeneralSecurityException | IOException e) {
+            logger.info("Exception during connecting to GMAIL", e);
+            return Collections.emptyList();
+        }
     }
 
     @Override

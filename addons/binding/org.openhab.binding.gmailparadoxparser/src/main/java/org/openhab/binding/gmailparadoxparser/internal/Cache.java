@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.gmailparadoxparser.internal;
 
+import java.util.List;
+
 /**
  * @author Konstantin Polihronov - Initial contribution
  *
@@ -19,11 +21,5 @@ public interface Cache<K, V> {
 
     V get(K key);
 
-    void refresh();
-
-    void refresh(String query);
-
-    default void initialize() {
-        this.refresh();
-    }
+    void refresh(List<String> retrievedMessages);
 }

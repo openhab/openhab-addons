@@ -15,5 +15,10 @@ package org.openhab.binding.gmailparadoxparser.internal;
  * @author Konstantin_Polihronov - Initial contribution
  */
 public class ParadoxCommunicationConfiguration {
-    public Integer refresh = 30;
+    public String user;
+    public String clientId;
+    public String clientSecrets;
+    public String accessToken;
+    public String refreshToken;
+    public Integer refresh;
 }

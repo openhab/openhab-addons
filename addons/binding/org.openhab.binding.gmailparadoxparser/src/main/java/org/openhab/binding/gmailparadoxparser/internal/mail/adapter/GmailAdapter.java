@@ -9,8 +9,6 @@
 package org.openhab.binding.gmailparadoxparser.internal.mail.adapter;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
@@ -24,17 +22,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
-import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
-import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.gmail.Gmail;
-import com.google.api.services.gmail.GmailScopes;
 import com.google.api.services.gmail.model.BatchModifyMessagesRequest;
 import com.google.api.services.gmail.model.ListMessagesResponse;
 import com.google.api.services.gmail.model.Message;
@@ -48,45 +41,28 @@ import com.google.api.services.gmail.model.MessagePartBody;
  * @author Konstantin_Polihronov - Initial contribution
  */
 public class GmailAdapter implements MailAdapter {
-    private static final String USER = "polyopenhabtest@gmail.com";
     private static final String APPLICATION_NAME = "Gmail Paradox mail parser";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-    private static final String TOKENS_DIRECTORY_PATH = "tokens";
-    private static final List<String> SCOPES = Collections.singletonList(GmailScopes.MAIL_GOOGLE_COM);
-    private static final String CREDENTIALS_FILE_PATH = "credentials.json";
-
-    private static final String ACCESS_TOKEN = "ya29.Gls9BlQTyGVPe2VNSJ9W-e98LeBpcq01brJ3qfI0-1ZDxIhV7xLY02733QJ7S2BeQHr6JxnnUImVQm4LmO2d8Tot0_AkbXw12OT1G2yTfG1uY-VrXbaDl9Ll2PJf";
-    private static final String REFRESH_TOKEN = "1/0E9aszvJHHoTbp9JaQyW1yoRJbImdm7L7do0DCr4vYYSdpnY9ULsv3lemXZfVcW2";
-
     private static Gmail googleService;
     private static final Logger logger = LoggerFactory.getLogger(ParadoxStatesCache.class);
 
     private String user;
 
-    public static void main(String... args) throws IOException, GeneralSecurityException {
-        MailAdapter adapter = new GmailAdapter();
-        List<String> mailContents = adapter.retrieveAllMessagesContentsAndMarkAllRead(INITIAL_QUERY);
-        for (String mail : mailContents) {
-            logger.debug("Mail contents:");
-            logger.debug(mail);
-        }
-    }
-
-    public GmailAdapter() throws GeneralSecurityException, IOException {
-        this(USER, ACCESS_TOKEN, REFRESH_TOKEN);
-    }
-
-    public GmailAdapter(String user, String accessToken, String refreshToken)
+    public GmailAdapter(String user, String clientId, String clientSecrets, String accessToken, String refreshToken)
             throws GeneralSecurityException, IOException {
         // Build a new authorized API client service.
         if (googleService == null) {
             logger.info("Initializing Google Gmail service...");
             final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-            Credential credentials = getCredentials(HTTP_TRANSPORT);
-            credentials.setAccessToken(accessToken);
-            credentials.setRefreshToken(refreshToken);
-            googleService = new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, credentials)
+
+            Credential credential = new GoogleCredential.Builder().setClientSecrets(clientId, clientSecrets)
+                    .setJsonFactory(JSON_FACTORY).setTransport(HTTP_TRANSPORT).build();
+            credential.setAccessToken(accessToken);
+            credential.setRefreshToken(refreshToken);
+
+            googleService = new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
                     .setApplicationName(APPLICATION_NAME).build();
+            logger.info("Google Gmail service initialization SUCCESS.");
         } else {
             logger.info("Google Gmail service already initialized.");
         }
@@ -111,18 +87,18 @@ public class GmailAdapter implements MailAdapter {
                 Message mail = googleService.users().messages().get(user, msgId).setFormat("full").execute();
                 MessagePart payload = mail.getPayload();
                 if (payload == null) {
-                    logger.info("Payload is null");
+                    logger.debug("Payload is null");
                     continue;
                 }
 
                 MessagePartBody body = payload.getBody();
                 if (body == null) {
-                    logger.info("body is null");
+                    logger.debug("Body is null");
                     continue;
                 }
                 String encodedContent = body.getData();
                 if (encodedContent == null) {
-                    logger.debug("body data is null. Will try to get message part [0] body");
+                    logger.debug("Body data is null. Will try to get message part [0] body");
                     encodedContent = payload.getParts().get(0).getBody().getData();
                 }
 
@@ -152,25 +128,5 @@ public class GmailAdapter implements MailAdapter {
             msgIds.add(message.getId());
         }
         return msgIds;
-    }
-
-    /**
-     * Creates an authorized Credential object.
-     *
-     * @param HTTP_TRANSPORT The network HTTP Transport.
-     * @return An authorized Credential object.
-     * @throws IOException If the credentials.json file cannot be found.
-     */
-    private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
-        // Load client secrets.
-        InputStream in = GmailAdapter.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
-        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
-
-        // Build flow and trigger user authorization request.
-        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY,
-                clientSecrets, SCOPES)
-                        .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
-                        .setAccessType("offline").build();
-        return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
     }
 }

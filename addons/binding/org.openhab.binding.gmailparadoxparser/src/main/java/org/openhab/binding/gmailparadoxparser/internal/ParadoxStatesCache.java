@@ -8,16 +8,11 @@
  */
 package org.openhab.binding.gmailparadoxparser.internal;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.openhab.binding.gmailparadoxparser.internal.mail.adapter.GmailAdapter;
-import org.openhab.binding.gmailparadoxparser.internal.mail.adapter.MailAdapter;
-import org.openhab.binding.gmailparadoxparser.internal.mail.adapter.MailParser;
 import org.openhab.binding.gmailparadoxparser.internal.model.ParadoxPartition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,20 +27,11 @@ public class ParadoxStatesCache implements Cache<String, ParadoxPartition> {
 
     private static ParadoxStatesCache instance;
     private Map<String, ParadoxPartition> partitionsStates = new HashMap<String, ParadoxPartition>();
-    private MailAdapter mailAdapter;
     private final Logger logger = LoggerFactory.getLogger(ParadoxStatesCache.class);
 
-    private ParadoxStatesCache() {
-        try {
-            mailAdapter = new GmailAdapter();
-        } catch (IOException | GeneralSecurityException e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
-
     public static ParadoxStatesCache getInstance() {
-        if (instance == null) {
-            synchronized (ParadoxStatesCache.class) {
+        synchronized (ParadoxStatesCache.class) {
+            if (instance == null) {
                 instance = new ParadoxStatesCache();
             }
         }
@@ -68,34 +54,18 @@ public class ParadoxStatesCache implements Cache<String, ParadoxPartition> {
     }
 
     @Override
-    public void initialize() {
-        refresh(MailAdapter.INITIAL_QUERY);
-    }
+    public void refresh(List<String> retrievedMessages) {
+        Set<ParadoxPartition> partitionsUpdatedStates = ParadoxMailParser.parseToParadoxPartitions(retrievedMessages);
 
-    @Override
-    public void refresh() {
-        refresh(MailAdapter.QUERY_UNREAD);
-    }
+        if (partitionsUpdatedStates.isEmpty()) {
+            logger.debug("Received empty set. Nothing to update.");
+            return;
+        }
 
-    @Override
-    public void refresh(String query) {
-        try {
-            List<String> retrievedMessages = mailAdapter.retrieveAllMessagesContentsAndMarkAllRead(query);
-            Set<ParadoxPartition> partitionsUpdatedStates = MailParser.getInstance()
-                    .parseToParadoxPartitionStates(retrievedMessages);
-
-            if (partitionsUpdatedStates.isEmpty()) {
-                logger.debug("Received empty set. Nothing to update.");
-                return;
+        synchronized (ParadoxStatesCache.class) {
+            for (ParadoxPartition paradoxPartition : partitionsUpdatedStates) {
+                put(paradoxPartition.getPartitionId(), paradoxPartition);
             }
-
-            synchronized (ParadoxStatesCache.class) {
-                for (ParadoxPartition paradoxPartition : partitionsUpdatedStates) {
-                    put(paradoxPartition.getPartitionId(), paradoxPartition);
-                }
-            }
-        } catch (IOException e) {
-            logger.trace(e.getMessage(), e);
         }
     }
 }
