@@ -15,7 +15,7 @@ package org.openhab.binding.gmailparadoxparser.internal;
  * @author Konstantin_Polihronov - Initial contribution
  */
 public class ParadoxCommunicationConfiguration {
-    public String user;
+    public String username;
     public String clientId;
     public String clientSecrets;
     public String accessToken;
