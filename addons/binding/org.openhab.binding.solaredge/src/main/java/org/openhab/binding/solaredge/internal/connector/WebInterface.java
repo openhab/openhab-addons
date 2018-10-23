@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.solaredge.internal.connector;
 
+import static org.openhab.binding.solaredge.internal.SolarEdgeBindingConstants.*;
+
 import java.io.UnsupportedEncodingException;
 import java.util.Queue;
 import java.util.concurrent.Future;
@@ -39,21 +41,15 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class WebInterface implements AtomicReferenceUtils {
 
-    private static final long PUBLIC_API_DAY_LIMIT = 300;
-    private static final long MINUTES_PER_DAY = 1440;
-    private static final long REQUEST_INITIAL_DELAY = 30000;
-    private static final long REQUEST_INTERVAL = 5000;
-
     private final Logger logger = LoggerFactory.getLogger(WebInterface.class);
 
     /**
-     * Configuration of the bridge from
-     * {@link org.openhab.BoxHandler.fritzaha.handler.FritzAhaBridgeHandler}
+     * Configuration
      */
     private final SolarEdgeConfiguration config;
 
     /**
-     * Bridge thing handler for updating thing status
+     * handler for updating thing status
      */
     private final SolarEdgeHandler handler;
 
@@ -100,7 +96,7 @@ public class WebInterface implements AtomicReferenceUtils {
          * constructor
          */
         WebRequestExecutor() {
-            this.commandQueue = new BlockingArrayQueue<>(20);
+            this.commandQueue = new BlockingArrayQueue<>(WEB_REQUEST_QUEUE_MAX_SIZE);
         }
 
         /**
@@ -109,7 +105,16 @@ public class WebInterface implements AtomicReferenceUtils {
          * @param command
          */
         void enqueue(SolarEdgeCommand command) {
-            commandQueue.add(command);
+            try {
+                commandQueue.add(command);
+            } catch (IllegalStateException ex) {
+                if (commandQueue.size() >= WEB_REQUEST_QUEUE_MAX_SIZE) {
+                    logger.info(
+                            "Could not add command to command queue because queue is already full. Maybe SolarEdge is down?");
+                } else {
+                    logger.warn("Could not add command to queue - IllegalStateException");
+                }
+            }
         }
 
         /**
@@ -163,7 +168,7 @@ public class WebInterface implements AtomicReferenceUtils {
 
     public void start() {
         updateJobReference(requestExecutorJobReference, scheduler.scheduleWithFixedDelay(requestExecutor,
-                REQUEST_INITIAL_DELAY, REQUEST_INTERVAL, TimeUnit.MILLISECONDS));
+                WEB_REQUEST_INITIAL_DELAY, WEB_REQUEST_INTERVAL, TimeUnit.MILLISECONDS));
     }
 
     /**
@@ -236,8 +241,8 @@ public class WebInterface implements AtomicReferenceUtils {
             preCheckStatusMessage = "please configure token/api_key first";
         } else if (this.config.getSolarId() == null || this.config.getSolarId().isEmpty()) {
             preCheckStatusMessage = "please configure solarId first";
-        } else if (this.config.isUsePrivateApi() == false && calcRequestsPerDay() > PUBLIC_API_DAY_LIMIT) {
-            preCheckStatusMessage = "daily request limit (" + PUBLIC_API_DAY_LIMIT + ") exceeded: "
+        } else if (this.config.isUsePrivateApi() == false && calcRequestsPerDay() > WEB_REQUEST_PUBLIC_API_DAY_LIMIT) {
+            preCheckStatusMessage = "daily request limit (" + WEB_REQUEST_PUBLIC_API_DAY_LIMIT + ") exceeded: "
                     + calcRequestsPerDay();
         } else if (this.config.isUsePrivateApi() && !this.config.isMeterInstalled()) {
             preCheckStatusMessage = "a meter must be present in order to use the private API";
