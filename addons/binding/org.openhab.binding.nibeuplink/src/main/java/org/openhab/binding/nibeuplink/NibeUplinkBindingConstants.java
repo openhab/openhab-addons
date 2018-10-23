@@ -62,6 +62,11 @@ public final class NibeUplinkBindingConstants {
     public static final String DATA_API_FIELD_DATA = "variables";
     public static final String DATA_API_FIELD_DATA_DEFAULT_VALUE = "0";
 
+    // web request constants
+    public static final long WEB_REQUEST_INITIAL_DELAY = 30000;
+    public static final long WEB_REQUEST_INTERVAL = 5000;
+    public static final int WEB_REQUEST_QUEUE_MAX_SIZE = 20;
+
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_VVM320, THING_TYPE_VVM310, THING_TYPE_F730, THING_TYPE_F750,
                     THING_TYPE_F1145, THING_TYPE_F1155).collect(Collectors.toSet()));
