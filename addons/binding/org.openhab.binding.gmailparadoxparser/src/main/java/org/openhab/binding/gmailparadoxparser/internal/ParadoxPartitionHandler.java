@@ -60,6 +60,9 @@ public class ParadoxPartitionHandler extends BaseThingHandler {
         if (paradoxPartition != null) {
             logger.debug(paradoxPartition.toString() + " updating state to " + paradoxPartition.getState());
             updateState(GmailParadoxParserBindingConstants.STATE, new StringType(paradoxPartition.getState()));
+            updateState(GmailParadoxParserBindingConstants.ACTIVATED_BY,
+                    new StringType(paradoxPartition.getActivatedBy()));
+            updateState(GmailParadoxParserBindingConstants.TIME, new StringType(paradoxPartition.getTime()));
         }
     }
 

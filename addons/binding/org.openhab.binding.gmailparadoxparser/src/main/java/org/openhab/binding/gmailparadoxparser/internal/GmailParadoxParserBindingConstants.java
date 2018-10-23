@@ -32,6 +32,8 @@ public class GmailParadoxParserBindingConstants {
 
     // List of all Channel ids
     public static final String STATE = "state";
+    public static final String ACTIVATED_BY = "activatedBy";
+    public static final String TIME = "time";
 
     public static Map<String, String> partitionIdMap = new HashMap<>();
 }

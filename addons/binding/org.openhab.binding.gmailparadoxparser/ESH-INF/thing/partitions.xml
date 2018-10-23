@@ -11,6 +11,8 @@
 
 		<channels>
 			<channel id="state" typeId="state" />
+			<channel id="activatedBy" typeId="activatedBy" />
+			<channel id="time" typeId="time" />
 		</channels>
 
 		<config-description>
@@ -28,4 +30,17 @@
 		<description>State of particular partition</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
+	<channel-type id="activatedBy">
+        <item-type>String</item-type>
+        <label>Security User</label>
+        <description>User who activated the event</description>
+        <state readOnly="true" pattern="%s"/>
+    </channel-type>
+    <channel-type id="time">
+        <item-type>DateTime</item-type>
+        <label>Date time</label>
+        <description>Time and date when event got triggered</description>
+        <state readOnly="true" pattern="%s"/>
+    </channel-type>
+
 </thing:thing-descriptions>
