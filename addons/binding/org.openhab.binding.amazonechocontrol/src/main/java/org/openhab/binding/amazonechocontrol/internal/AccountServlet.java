@@ -74,18 +74,15 @@ public class AccountServlet extends HttpServlet {
     String servletUrlWithoutRoot;
     String servletUrl;
     AccountHandler account;
-    AccountConfiguration configuration;
     String id;
     @Nullable
     Connection connectionToInitialize;
     Gson gson = new Gson();
 
-    public AccountServlet(HttpService httpService, String id, AccountHandler account,
-            AccountConfiguration configuration) {
+    public AccountServlet(HttpService httpService, String id, AccountHandler account) {
         this.httpService = httpService;
         this.account = account;
         this.id = id;
-        this.configuration = configuration;
         try {
             servletUrlWithoutRoot = "amazonechocontrol/" + URLEncoder.encode(id, "UTF8");
         } catch (UnsupportedEncodingException e) {
@@ -105,7 +102,7 @@ public class AccountServlet extends HttpServlet {
     }
 
     private Connection reCreateConnection() {
-        return new Connection(configuration.amazonSite);
+        return new Connection();
     }
 
     public void dispose() {
@@ -183,17 +180,6 @@ public class AccountServlet extends HttpServlet {
                 value = "ape:AA==";
             }
             postDataBuilder.append(URLEncoder.encode(value, "UTF-8"));
-            if (name.equals("email") && !value.equalsIgnoreCase(configuration.email)) {
-                returnError(resp,
-                        "Email must match the configured email of your thing. Change your configuration or retype your email.");
-                return;
-            }
-
-            if (name.equals("password") && !value.equals(configuration.password)) {
-                returnError(resp,
-                        "Password must match the configured password of your thing. Change your configuration or retype your password.");
-                return;
-            }
         }
 
         uri = req.getRequestURI();
@@ -532,21 +518,20 @@ public class AccountServlet extends HttpServlet {
             if (urlConnection.getResponseCode() == 302) {
                 {
                     String location = urlConnection.getHeaderField("location");
-                    if (location.contains("//alexa.")) {
-                        if (connection.verifyLogin()) {
+                    if (location.contains("/ap/maplanding")) {
+
+                        try {
+                            connection.registerConnectionAsApp(location);
                             account.setConnection(connection);
                             handleDefaultPageResult(resp, "Login succeeded");
                             this.connectionToInitialize = null;
                             return;
+                        } catch (URISyntaxException | ConnectionException e) {
+                            returnError(resp,
+                                    "Login to '" + connection.getAmazonSite() + "' failed: " + e.getLocalizedMessage());
+                            this.connectionToInitialize = null;
+                            return;
                         }
-                    }
-                    if (location.contains("/ap/maplanding")) {
-
-                        connection.registerConnectionAsApp(location);
-                        account.setConnection(connection);
-                        handleDefaultPageResult(resp, "Login succeeded");
-                        this.connectionToInitialize = null;
-                        return;
 
                     }
 

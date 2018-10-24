@@ -33,7 +33,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.amazonechocontrol.internal.AccountConfiguration;
 import org.openhab.binding.amazonechocontrol.internal.AccountServlet;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.ConnectionException;
@@ -97,31 +96,14 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     public void initialize() {
         logger.debug("amazon account bridge starting...");
 
-        AccountConfiguration config = getConfigAs(AccountConfiguration.class);
-
-        String amazonSite = config.amazonSite;
-        if (StringUtils.isEmpty(amazonSite)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Amazon site not configured");
-            return;
-        }
-
-        Integer pollingIntervalInSeconds = config.pollingIntervalInSeconds;
-        if (pollingIntervalInSeconds == null) {
-            pollingIntervalInSeconds = 30;
-        }
-        if (pollingIntervalInSeconds < 10) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Polling interval less than 10 seconds not allowed");
-            return;
-        }
         synchronized (synchronizeConnection) {
             Connection connection = this.connection;
-            if (connection == null || !connection.getAmazonSite().equals(amazonSite)) {
-                this.connection = new Connection(amazonSite);
+            if (connection == null) {
+                this.connection = new Connection();
             }
         }
         if (this.accountServlet == null) {
-            this.accountServlet = new AccountServlet(httpService, this.getThing().getUID().getId(), this, config);
+            this.accountServlet = new AccountServlet(httpService, this.getThing().getUID().getId(), this);
         }
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Wait for login");
@@ -594,8 +576,14 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     @Override
     public void webSocketCommandReceived(JsonPushCommand pushCommand) {
         scheduler.execute(() -> {
-            handleWebsocketCommand(pushCommand);
+            try {
+                handleWebsocketCommand(pushCommand);
+            } catch (Exception e) {
+                // should never happen, but if the exception is going out of this function, the binding stop working.
+                logger.error("handling of websockets fails: {}", e);
+            }
         });
+
     }
 
     void handleWebsocketCommand(JsonPushCommand pushCommand) {

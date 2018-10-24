@@ -191,7 +191,7 @@ public class WebSocketConnection {
 
         void sendMessage(byte[] buffer) {
             try {
-                logger.info("Send message with length {}", buffer.length);
+                logger.debug("Send message with length {}", buffer.length);
                 Session session = WebSocketConnection.this.session;
                 if (session != null) {
                     session.getRemote().sendBytes(ByteBuffer.wrap(buffer));
@@ -345,7 +345,6 @@ public class WebSocketConnection {
                     message.content.payloadData = Arrays.copyOfRange(data, idx, data.length - 4);
                 }
             }
-            // console.log(JSON.stringify(message, null, 4));
             return message;
         }
 
@@ -384,12 +383,12 @@ public class WebSocketConnection {
                     if (message.service.equals("FABE") && message.content.messageType.equals("PON")
                             && message.content.payloadData.length > 0) {
 
-                        logger.info("Pong received");
+                        logger.debug("Pong received");
                         WebSocketConnection.this.clearPongTimeoutTimer();
                         return;
                     } else {
                         JsonPushCommand pushCommand = message.content.pushCommand;
-                        logger.info("Message received: {}", message.content.payload);
+                        logger.debug("Message received: {}", message.content.payload);
                         if (pushCommand != null) {
                             webSocketCommandHandler.webSocketCommandReceived(pushCommand);
                         }

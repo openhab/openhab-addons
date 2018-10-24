@@ -716,11 +716,17 @@ public class EchoHandler extends BaseThingHandler {
             isPaused = (playerInfo != null && StringUtils.equals(playerInfo.state, "PAUSED"));
             // || (mediaState != null && StringUtils.equals(mediaState.currentState, "PAUSED"));
             synchronized (progressLock) {
-
-                if (progress != null && progress.showTiming && progress.mediaProgress != null
-                        && progress.mediaLength != null) {
-                    mediaProgressMs = progress.mediaProgress * 1000;
-                    mediaLengthMs = progress.mediaLength * 1000;
+                Boolean showTime = null;
+                Long mediaLength = null;
+                Long mediaProgress = null;
+                if (progress != null) {
+                    showTime = progress.showTiming;
+                    mediaLength = progress.mediaLength;
+                    mediaProgress = progress.mediaProgress;
+                }
+                if (showTime != null && showTime && mediaProgress != null && mediaLength != null) {
+                    mediaProgressMs = mediaProgress * 1000;
+                    mediaLengthMs = mediaLength * 1000;
                     mediaStartMs = System.currentTimeMillis() - mediaProgressMs;
                     if (isPlaying) {
                         if (updateProgressJob == null) {

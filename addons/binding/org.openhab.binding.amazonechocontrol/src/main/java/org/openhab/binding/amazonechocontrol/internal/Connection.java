@@ -15,7 +15,6 @@ import java.io.OutputStream;
 import java.net.CookieManager;
 import java.net.CookieStore;
 import java.net.HttpCookie;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -79,6 +78,7 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonRegisterAppRespo
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonRegisterAppResponse.Tokens;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonRenewTokenResponse;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonStartRoutineRequest;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonUsersMeResponse;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonWebSiteCookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,16 +102,14 @@ public class Connection {
     private final Logger logger = LoggerFactory.getLogger(Connection.class);
 
     private final CookieManager cookieManager = new CookieManager();
-    private final String amazonSite;
-    private final String alexaServer;
+    private String amazonSite = "amazon.com";
+    private String alexaServer = "https://alexa.amazon.com";
     private final String userAgent;
-    private final String mapMdCookie;
     private String frc;
     private String serial;
     private String deviceId;
 
     private @Nullable String refreshToken;
-    // private @Nullable String sessionId;
     private @Nullable Date loginTime;
     private @Nullable Date verifyTime;
     private long renewTime = 0;
@@ -121,10 +119,7 @@ public class Connection {
     private final Gson gson = new Gson();
     private final Gson gsonWithNullSerialization;
 
-    public Connection(@Nullable String amazonSite) {
-        String mapMdJson = "{\"device_user_dictionary\":[],\"device_registration_data\":{\"software_version\":\"1\"},\"app_identifier\":{\"app_version\":\"2.2.223830\",\"bundle_id\":\"com.amazon.echo\"}}";
-        mapMdCookie = Base64.getEncoder().encodeToString(mapMdJson.getBytes());
-
+    public Connection() {
         // generate frc
         byte[] frcBinary = new byte[313];
         Random rand = new Random();
@@ -147,7 +142,14 @@ public class Connection {
         // build user agent
         this.userAgent = "AmazonWebView/Amazon Alexa/2.2.223830.0/iOS/11.4.1/iPhone";
 
-        String correctedAmazonSite = amazonSite != null ? amazonSite : "";
+        // setAmazonSite(amazonSite);
+
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonWithNullSerialization = gsonBuilder.create();
+    }
+
+    private void setAmazonSite(@Nullable String amazonSite) {
+        String correctedAmazonSite = amazonSite != null ? amazonSite : "amazon.com";
         if (correctedAmazonSite.toLowerCase().startsWith("http://")) {
             correctedAmazonSite = correctedAmazonSite.substring(7);
         }
@@ -162,9 +164,6 @@ public class Connection {
         }
         this.amazonSite = correctedAmazonSite;
         alexaServer = "https://alexa." + this.amazonSite;
-
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonWithNullSerialization = gsonBuilder.create();
     }
 
     public @Nullable Date tryGetLoginTime() {
@@ -205,6 +204,8 @@ public class Connection {
         builder.append(deviceId);
         builder.append("\n");
         builder.append(refreshToken);
+        builder.append("\n");
+        builder.append(amazonSite);
         builder.append("\n");
         builder.append(deviceName);
         builder.append("\n");
@@ -264,8 +265,6 @@ public class Connection {
 
             }
         }
-        // anything goes wrong, remove session data
-        logout();
         return false;
     }
 
@@ -288,6 +287,7 @@ public class Connection {
 
         // Recreate session and cookies
         refreshToken = scanner.nextLine();
+        setAmazonSite(scanner.nextLine());
         deviceName = scanner.nextLine();
         Date loginTime = new Date(Long.parseLong(scanner.nextLine()));
         CookieStore cookieStore = cookieManager.getCookieStore();
@@ -493,21 +493,14 @@ public class Connection {
         }
         String accessToken = queryParameters.get("openid.oa2.access_token");
 
-        String atMain = null;
         Map<String, String> cookieMap = new HashMap<String, String>();
 
         List<JsonWebSiteCookie> webSiteCookies = new ArrayList<JsonWebSiteCookie>();
         for (HttpCookie cookie : getSessionCookies("https://www.amazon.com")) {
-            if (cookie.getName().equals("at-main")) {
-                atMain = cookie.getValue();
-
-            }
             cookieMap.put(cookie.getName(), cookie.getValue());
             webSiteCookies.add(new JsonWebSiteCookie(cookie.getName(), cookie.getValue()));
         }
-        if (atMain == null) {
-            throw new ConnectionException("Error: Missing at-Main header");
-        }
+
         JsonWebSiteCookie[] webSiteCookiesArray = new JsonWebSiteCookie[webSiteCookies.size()];
         webSiteCookiesArray = webSiteCookies.toArray(webSiteCookiesArray);
 
@@ -554,6 +547,13 @@ public class Connection {
         if (StringUtils.isEmpty(this.refreshToken)) {
             throw new ConnectionException("Error: No refresh token received");
         }
+        String usersMeResponseJson = makeRequestAndReturnString("GET",
+                "https://alexa.amazon.com/api/users/me?platform=ios&version=2.2.223830.0", null, false, null);
+        JsonUsersMeResponse usersMeResponse = parseJson(usersMeResponseJson, JsonUsersMeResponse.class);
+
+        URI uri = new URI(usersMeResponse.marketPlaceDomainName);
+        String host = uri.getHost();
+        setAmazonSite(host);
         try {
             exhangeToken();
         } catch (Exception e) {
@@ -618,7 +618,6 @@ public class Connection {
                 }
             }
         }
-        handleSessionIdFromCookies();
         if (!verifyLogin()) {
             throw new ConnectionException("Verify login failed after token exchange");
         }
@@ -660,8 +659,10 @@ public class Connection {
 
         logger.debug("Start Login to {}", alexaServer);
 
-        cookieManager.getCookieStore().add(new URI("https://www.amazon.com"),
-                new HttpCookie("map-md", this.mapMdCookie));
+        String mapMdJson = "{\"device_user_dictionary\":[],\"device_registration_data\":{\"software_version\":\"1\"},\"app_identifier\":{\"app_version\":\"2.2.223830\",\"bundle_id\":\"com.amazon.echo\"}}";
+        String mapMdCookie = Base64.getEncoder().encodeToString(mapMdJson.getBytes());
+
+        cookieManager.getCookieStore().add(new URI("https://www.amazon.com"), new HttpCookie("map-md", mapMdCookie));
         cookieManager.getCookieStore().add(new URI("https://www.amazon.com"), new HttpCookie("frc", frc));
 
         String loginFormHtml = makeRequestAndReturnString("https://www.amazon.com"
@@ -670,24 +671,7 @@ public class Connection {
                 + "&openid.ns.pape=http://specs.openid.net/extensions/pape/1.0&openid.oa2.response_type=token&openid.ns=http://specs.openid.net/auth/2.0&openid.pape.max_auth_age=0&openid.oa2.scope=device_auth_access");
 
         logger.debug("Received login form {}", loginFormHtml);
-        // handleSessionIdFromCookies();
         return loginFormHtml;
-    }
-
-    void handleSessionIdFromCookies() throws MalformedURLException, URISyntaxException {
-        // get session id from cookies
-        for (HttpCookie cookie : cookieManager.getCookieStore().getCookies()) {
-            if (cookie.getName().equalsIgnoreCase("session-id")) {
-                // sessionId = cookie.getValue();
-                break;
-            }
-        }
-        // if (sessionId == null) {
-        // throw new ConnectionException("No session id received");
-        // }
-
-        // cookieManager.getCookieStore().add(new URL("https://www." + amazonSite).toURI(),
-        // HttpCookie.parse("session-id=" + sessionId).get(0));
     }
 
     public boolean verifyLogin() throws IOException, URISyntaxException {
@@ -725,7 +709,6 @@ public class Connection {
         cookieManager.getCookieStore().removeAll();
         // reset all members
         refreshToken = null;
-        // sessionId = null;
         loginTime = null;
         verifyTime = null;
         deviceName = null;

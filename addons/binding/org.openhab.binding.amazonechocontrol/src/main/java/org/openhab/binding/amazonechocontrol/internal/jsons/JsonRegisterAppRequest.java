@@ -19,9 +19,9 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class JsonRegisterAppRequest {
 
-    public JsonRegisterAppRequest(String serial, String atMainCookie, String frc, JsonWebSiteCookie[] webSiteCookies) {
+    public JsonRegisterAppRequest(String serial, String access_token, String frc, JsonWebSiteCookie[] webSiteCookies) {
         registration_data.device_serial = serial;
-        auth_data.access_token = atMainCookie;
+        auth_data.access_token = access_token;
         user_context_map.frc = frc;
         cookies.website_cookies = webSiteCookies;
     }
