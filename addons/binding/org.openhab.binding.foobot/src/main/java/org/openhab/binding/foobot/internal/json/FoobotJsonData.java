@@ -22,11 +22,11 @@ public class FoobotJsonData {
     private String uuid;
     private long start;
     private long end;
-    private ArrayList<String> sensors;
-    private ArrayList<String> units;
-    private ArrayList<ArrayList<String>> datapoints;
+    private List<String> sensors;
+    private List<String> units;
+    private List<List<String>> datapoints;
 
-    private ArrayList<String> datapointsList;
+    private List<String> datapointsList;
 
     public String getUuid() {
         return uuid;
@@ -68,11 +68,11 @@ public class FoobotJsonData {
         this.units = units;
     }
 
-    public ArrayList<ArrayList<String>> getDatapoints() {
+    public List<List<String>> getDatapoints() {
         return datapoints;
     }
 
-    public void setDatapoints(ArrayList<ArrayList<String>> datapoints) {
+    public void setDatapoints(List<List<String>> datapoints) {
         this.datapoints = datapoints;
     }
 

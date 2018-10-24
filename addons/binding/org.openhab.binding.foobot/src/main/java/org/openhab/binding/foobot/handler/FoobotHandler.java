@@ -8,18 +8,17 @@
  */
 package org.openhab.binding.foobot.handler;
 
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.httpclient.params.HttpParams;
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -42,7 +41,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 /**
@@ -64,8 +62,6 @@ public class FoobotHandler extends BaseThingHandler {
     private static final Gson gson = new Gson();
 
     private FoobotJsonData foobotData;
-
-    private HttpParams params;
 
     private String uuid;
 
@@ -128,7 +124,7 @@ public class FoobotHandler extends BaseThingHandler {
             response = request.send();
             logger.debug("foobotResponse = {}", response);
 
-            if (response.getStatusLine().getStatusCode() != 200) {
+            if (response.getStatus() != 200) {
                 errorMsg = "Configuration is incorrect";
                 logger.warn("Error running foobot.io request: {}", errorMsg);
                 updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR, errorMsg);
@@ -138,7 +134,7 @@ public class FoobotHandler extends BaseThingHandler {
             // Map the JSON response to list of objects
             Type listType = new TypeToken<ArrayList<FoobotJsonResponse>>() {
             }.getType();
-            String userDevices = EntityUtils.toString(response.getEntity());
+            String userDevices = response.getContentAsString();
             List<FoobotJsonResponse> readFromJson = gson.fromJson(userDevices, listType);
             for (FoobotJsonResponse ob : readFromJson) {
                 // Compare the mac address to each record in order to fetch the UUID of the current device.
@@ -155,15 +151,15 @@ public class FoobotHandler extends BaseThingHandler {
 
                 return;
             }
-        } catch (MalformedURLException e) {
-            logger.warn("Constructed url is not valid: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-        } catch (JsonSyntaxException e) {
-            logger.warn("Error running foobot.io request: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-        } catch (IOException | IllegalStateException e) {
-            logger.warn("Error running foobot.io request: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        } catch (ExecutionException ee) {
+            logger.warn("Error running foobot.io request: {}", ee.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ee.getMessage());
+        } catch (TimeoutException te) {
+            logger.warn("Timeout error while running foobot.io request: {}", te.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, te.getMessage());
+        } catch (InterruptedException ie) {
+            logger.warn("Interruption error while running foobot.io request: {}", ie.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ie.getMessage());
         }
 
         updateStatus(ThingStatus.ONLINE);
@@ -196,7 +192,7 @@ public class FoobotHandler extends BaseThingHandler {
     }
 
     @Override
-    public void handleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
+    public void handleCommand(@NonNullByDefault ChannelUID channelUID, @NonNullByDefault Command command) {
         if (command instanceof RefreshType) {
             return;
         } else {
@@ -208,6 +204,12 @@ public class FoobotHandler extends BaseThingHandler {
         Object value = null;
         try {
             value = getValue(channelId, foobotResponse);
+        } catch (NullPointerException npe) {
+            logger.debug(npe.getMessage() + " - Foobot device doesn't provide sensor data for channel id = {}",
+                    channelId.toUpperCase());
+        } catch (RuntimeException rte) {
+            logger.debug(rte.getMessage() + " - RuntimeException while getting Foobot sensor data for channel id = {}",
+                    channelId.toUpperCase());
         } catch (Exception e) {
             logger.debug(e.getMessage() + " - Foobot device doesn't provide sensor data for channel id = {}",
                     channelId.toUpperCase());
@@ -244,7 +246,7 @@ public class FoobotHandler extends BaseThingHandler {
             response = request.send();
             logger.debug("foobotResponse = {}", response);
 
-            String responseData = EntityUtils.toString(response.getEntity());
+            String responseData = response.getContentAsString();
             logger.debug(responseData);
 
             if (StringUtils.trimToNull(responseData) == null) {
@@ -254,12 +256,15 @@ public class FoobotHandler extends BaseThingHandler {
                 result = gson.fromJson(responseData, FoobotJsonData.class);
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
             }
-        } catch (MalformedURLException e) {
-            logger.debug("Constructed url is not valid: {}", e.getMessage());
-        } catch (JsonSyntaxException e) {
-            logger.debug("Error running foobot.io request: {}", e.getMessage());
-        } catch (IOException | IllegalStateException e) {
-            logger.debug(e.getMessage());
+        } catch (ExecutionException ee) {
+            logger.warn("Error running foobot.io request: {}", ee.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ee.getMessage());
+        } catch (TimeoutException te) {
+            logger.warn("Timeout error while running foobot.io request: {}", te.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, te.getMessage());
+        } catch (InterruptedException ie) {
+            logger.warn("Interruption error while running foobot.io request: {}", ie.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ie.getMessage());
         }
 
         return result;
@@ -269,21 +274,16 @@ public class FoobotHandler extends BaseThingHandler {
         if (data == null) {
             return null;
         }
-        switch (channelId) {
-            case FoobotBindingConstants.TMP:
-                return new BigDecimal(data.getDatapointsList().get(data.getSensors().indexOf("tmp")));
-            case FoobotBindingConstants.CO2:
-                return new BigDecimal(data.getDatapointsList().get(data.getSensors().indexOf("co2")));
-            case FoobotBindingConstants.GPI:
-                return new BigDecimal(data.getDatapointsList().get(data.getSensors().indexOf("allpollu")));
-            case FoobotBindingConstants.PM:
-                return new BigDecimal(data.getDatapointsList().get(data.getSensors().indexOf("pm")));
-            case FoobotBindingConstants.HUM:
-                return new BigDecimal(data.getDatapointsList().get(data.getSensors().indexOf("hum")));
-            case FoobotBindingConstants.VOC:
-                return new BigDecimal(data.getDatapointsList().get(data.getSensors().indexOf("voc")));
-        }
+        return getBigDecimalForLabelAndData(channelId, data);
+    }
 
-        return null;
+    private static BigDecimal getBigDecimalForLabelAndData(String channelId, FoobotJsonData data) {
+
+        if (FoobotBindingConstants.SENSOR_MAP.containsKey(channelId)) {
+            return new BigDecimal(data.getDatapointsList()
+                    .get(data.getSensors().indexOf(FoobotBindingConstants.SENSOR_MAP.get(channelId))));
+        } else {
+            return null;
+        }
     }
 }

@@ -8,6 +8,9 @@
  */
 package org.openhab.binding.foobot;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
@@ -32,4 +35,14 @@ public class FoobotBindingConstants {
     public static final String VOC = "voc";
     public static final String CO2 = "co2";
     public static final String GPI = "gpi";
+
+    public static final Map<String, String> SENSOR_MAP = new HashMap<>();
+    static {
+        SENSOR_MAP.put(TMP, "tmp");
+        SENSOR_MAP.put(HUM, "hum");
+        SENSOR_MAP.put(PM, "pm");
+        SENSOR_MAP.put(VOC, "voc");
+        SENSOR_MAP.put(CO2, "co2");
+        SENSOR_MAP.put(GPI, "allpollu");
+    }
 }
