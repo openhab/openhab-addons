@@ -301,13 +301,6 @@ public class ModbusDataHandlerTest extends JavaTest {
         }
     }
 
-    private void hookLinkRegistry(ThingHandler thingHandler) {
-        Mockito.doAnswer(invocation -> {
-            ChannelUID channelUID = (ChannelUID) invocation.getArgument(0);
-            return !linkRegistry.getLinks(channelUID).isEmpty();
-        }).when(thingCallback).isChannelLinked(any());
-    }
-
     @SuppressWarnings("null")
     private void hookStatusUpdates(Thing thing) {
         Mockito.doAnswer(invocation -> {
@@ -408,13 +401,20 @@ public class ModbusDataHandlerTest extends JavaTest {
 
         ModbusDataThingHandler dataThingHandler = new ModbusDataThingHandler(dataThing);
         hookThingRegistry(dataThingHandler);
-        hookLinkRegistry(dataThingHandler);
         dataThing.setHandler(dataThingHandler);
         dataThingHandler.setCallback(thingCallback);
         if (context != null) {
             dataThingHandler.setBundleContext(context);
         }
         dataThingHandler.initialize();
+        if (autoCreateItemsAndLinkToChannels) {
+            for (ItemChannelLink link : linkRegistry.getAll()) {
+                if (link.getLinkedUID().getThingUID().equals(dataThing.getUID())) {
+                    dataThingHandler.channelLinked(link.getLinkedUID());
+                }
+            }
+
+        }
         return dataThingHandler;
     }
 
@@ -750,7 +750,7 @@ public class ModbusDataHandlerTest extends JavaTest {
         assertSingleStateUpdate(dataHandler, CHANNEL_LAST_READ_SUCCESS, is(notNullValue(State.class)));
         assertSingleStateUpdate(dataHandler, CHANNEL_LAST_READ_ERROR, is(nullValue(State.class)));
 
-        // -3 converts to "true"
+        // -3 is invalid input for most channels when using transformation
         assertSingleStateUpdate(dataHandler, CHANNEL_CONTACT, is(nullValue(State.class)));
         assertSingleStateUpdate(dataHandler, CHANNEL_SWITCH, is(nullValue(State.class)));
         assertSingleStateUpdate(dataHandler, CHANNEL_DIMMER, is(nullValue(State.class)));
@@ -1023,14 +1023,23 @@ public class ModbusDataHandlerTest extends JavaTest {
 
         ModbusDataThingHandler dataHandler = createDataHandler(thingId, poller,
                 builder -> builder.withConfiguration(dataConfig), bundleContext);
+        // All channels get REFRESH command automatically when they are linked, assert this
+        int initialRefreshCount = CHANNEL_TO_ACCEPTED_TYPE.size();
+        waitForAssert(
+                () -> verify((ModbusPollerThingHandler) poller.getHandler(), times(CHANNEL_TO_ACCEPTED_TYPE.size()))
+                        .refresh(),
+                2500, 50);
+        // Should be online and good
         assertThat(dataHandler.getThing().getStatus(), is(equalTo(ThingStatus.ONLINE)));
 
         verify(manager, never()).submitOneTimePoll(task);
         dataHandler.handleCommand(Mockito.mock(ChannelUID.class), RefreshType.REFRESH);
 
         // data handler asynchronously calls the poller.refresh() -- it might take some time
-        // We check that refresh is finally called
-        waitForAssert(() -> verify((ModbusPollerThingHandler) poller.getHandler()).refresh(), 2500, 50);
+        // We check that (one additional) refresh is finally called
+        waitForAssert(
+                () -> verify((ModbusPollerThingHandler) poller.getHandler(), times(initialRefreshCount + 1)).refresh(),
+                2500, 50);
     }
 
     /**
