@@ -82,7 +82,8 @@ public class WebSocketConnection {
                 }
                 // Clone the cookie without the security attribute, because the web socket implementation ignore secure
                 // cookies
-                HttpCookie cookieForWs = new HttpCookie(cookie.getName(), cookie.getValue());
+                String value = cookie.getValue().replaceAll("^\"|\"$", "");
+                HttpCookie cookieForWs = new HttpCookie(cookie.getName(), value);
                 cookiesForWs.add(cookieForWs);
             }
             deviceSerial += "-" + new Date().getTime();
