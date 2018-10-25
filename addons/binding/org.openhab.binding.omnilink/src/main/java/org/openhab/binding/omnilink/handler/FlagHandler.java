@@ -15,7 +15,6 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.omnilink.OmnilinkBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,11 +37,6 @@ public class FlagHandler extends AbstractOmnilinkStatusHandler<UnitStatus> imple
     }
 
     private Logger logger = LoggerFactory.getLogger(FlagHandler.class);
-
-    @Override
-    public void handleUpdate(ChannelUID channelUID, State newState) {
-        super.handleUpdate(channelUID, newState);
-    }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
