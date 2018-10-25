@@ -123,7 +123,7 @@ public class ChannelsTypeProviderAvailableInputs implements ChannelTypeProvider 
     }
 
     public void changeAvailableInputs(Map<String, String> availableInputs) {
-        List<StateOption> options = new ArrayList<StateOption>();
+        List<StateOption> options = new ArrayList<>();
         for (Entry<String, String> inputEntry : availableInputs.entrySet()) {
             options.add(new StateOption(inputEntry.getKey(), inputEntry.getValue()));
         }

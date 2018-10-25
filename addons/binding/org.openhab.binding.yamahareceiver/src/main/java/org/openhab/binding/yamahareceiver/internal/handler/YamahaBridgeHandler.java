@@ -104,6 +104,8 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void dispose() {
+        cancelRefreshTimer();
+
         super.dispose();
         disposed = true;
     }
@@ -186,10 +188,18 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
      *                        initiate a refresh.
      */
     private void setupRefreshTimer(int initialWaitTime) {
+        cancelRefreshTimer();
+        logger.trace("Setting up refresh timer with fixed delay {} seconds, starting in {} seconds", bridgeConfig.getRefreshInterval(), initialWaitTime);
+        refreshTimer = scheduler.scheduleWithFixedDelay(() -> updateAllZoneInformation(), initialWaitTime, bridgeConfig.getRefreshInterval(), TimeUnit.SECONDS);
+    }
+
+    /**
+     * Cancels the refresh timer (if one was setup).
+     */
+    private void cancelRefreshTimer() {
         if (refreshTimer != null) {
             refreshTimer.cancel(false);
         }
-        refreshTimer = scheduler.scheduleWithFixedDelay(() -> updateAllZoneInformation(), initialWaitTime, bridgeConfig.getRefreshInterval(), TimeUnit.SECONDS);
     }
 
     /**
@@ -197,6 +207,7 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
      */
     void updateAllZoneInformation() {
         if (disposed) {
+            logger.trace("updateAllZoneInformation will be skipped because the bridge is disposed");
             return;
         }
 
@@ -213,11 +224,14 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
             for (Thing thing : bridge.getThings()) {
                 YamahaZoneThingHandler handler = (YamahaZoneThingHandler) thing.getHandler();
 
-                // If thing still thinks that the bridge is offline, update its status.
-                if (thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE) {
-                    handler.bridgeStatusChanged(ThingStatusInfoBuilder.create(bridge.getStatus()).build());
-                } else if (handler.isCorrectlyInitialized()) {
-                    handler.updateZoneInformation();
+                // Ensure the handler has been already assigned
+                if (handler != null) {
+                    // If thing still thinks that the bridge is offline, update its status.
+                    if (thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE) {
+                        handler.bridgeStatusChanged(ThingStatusInfoBuilder.create(bridge.getStatus()).build());
+                    } else if (handler.isCorrectlyInitialized()) {
+                        handler.updateZoneInformation();
+                    }
                 }
             }
         } catch (IOException e) {
