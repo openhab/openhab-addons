@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="omnilink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+    <thing-type id="thermostat">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="controller" />
+        </supported-bridge-type-refs>
+        <label>Thermostat</label>
+        <description>Thermostat</description>
+        <channels>
+            <channel id="freeze_alarm" typeId="thermostat_freeze_alarm" />
+            <channel id="comm_failure" typeId="thermostat_comm_failure" />
+            <channel id="status" typeId="thermostat_status" />
+            <channel id="temperature" typeId="thermostat_temperature" />
+            <channel id="outdoor_temperature" typeId="thermostat_outdoor_temperature" />
+            <channel id="heat_setpoint" typeId="thermostat_heat_setpoint" />
+            <channel id="cool_setpoint" typeId="thermostat_cool_setpoint" />
+            <channel id="humidity" typeId="thermostat_humidity" />
+            <channel id="humidify_setpoint" typeId="thermostat_humidify_setpoint" />
+            <channel id="dehumidify_setpoint" typeId="thermostat_dehumidify_setpoint" />
+            <channel id="system_mode" typeId="thermostat_system_mode" />
+            <channel id="fan_mode" typeId="thermostat_fan_mode" />
+            <channel id="hold_mode" typeId="thermostat_hold_mode" />
+        </channels>
+        <properties>
+            <property name="name" />
+            <property name="area" />
+        </properties>
+        <config-description>
+            <parameter name="number" type="integer" required="true">
+                <label>Thermostat Number</label>
+                <description>Thermostat Number</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+    
+    <!-- Thermostat Channels -->
+    <channel-type id="thermostat_freeze_alarm">
+        <item-type>Contact</item-type>
+        <label>Thermostat Freeze Alarm</label>
+        <description>Closed when freeze alarm is triggered</description>
+        <category>Contact</category>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="thermostat_comm_failure">
+        <item-type>Contact</item-type>
+        <label>Thermostat Communications Failure Alarm</label>
+        <description>Closed during a communications failure with thermostat</description>
+        <category>Contact</category>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="thermostat_status">
+        <item-type>Number</item-type>
+        <label>Thermostat Status</label>
+        <description>Current Thermostat activity</description>
+        <category>Temperature</category>
+        <state readOnly="true">
+        <options>
+                <option value="0">Off</option>
+                <option value="1">Heating</option>
+                <option value="2">Cooling</option>
+                <option value="3">Humidifying</option>
+                <option value="4">Dehumidifying</option>
+        </options>
+        </state>
+    </channel-type>
+
+    <channel-type id="thermostat_temperature">
+        <item-type>Number</item-type>
+        <label>Temperature</label>
+        <description>Current Temperature of a Thermostat</description>
+        <category>Temperature</category>
+        <state pattern="%d°" readOnly="true" />
+    </channel-type>
+
+    <channel-type id="thermostat_outdoor_temperature">
+        <item-type>Number</item-type>
+        <label>Outdoor Temperature</label>
+        <description>Current Outdoor Temperature Used by Thermostat</description>
+        <category>Temperature</category>
+        <state pattern="%d°" readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="thermostat_heat_setpoint">
+        <item-type>Number</item-type>
+        <label>Heat Set Point</label>
+        <description> Heat Set Point for a Thermostat</description>
+        <category>Temperature</category>
+        <state pattern="%d°" />
+    </channel-type>
+
+    <channel-type id="thermostat_cool_setpoint">
+        <item-type>Number</item-type>
+        <label>Cool Set Point</label>
+        <description> Cool Set Point for a Thermostat</description>
+        <category>Temperature</category>
+        <state pattern="%d°" />
+    </channel-type>
+    
+    <channel-type id="thermostat_humidity">
+        <item-type>Number</item-type>
+        <label>Humidity</label>
+        <description>Relative Humidity</description>
+        <category>Temperature</category>
+        <state pattern="%d%%" readOnly="true" />
+    </channel-type>
+    
+     <channel-type id="thermostat_humidify_setpoint">
+        <item-type>Number</item-type>
+        <label>Humidify Set Point</label>
+        <description> Humidify Set Point for a Thermostat</description>
+        <category>Temperature</category>
+        <state pattern="%d%%" />
+    </channel-type>
+    
+    <channel-type id="thermostat_dehumidify_setpoint">
+        <item-type>Number</item-type>
+        <label>Dehumidify Set Point</label>
+        <description> Dehumidify Set Point for a Thermostat</description>
+        <category>Temperature</category>
+        <state pattern="%d%%" />
+    </channel-type>
+
+    <channel-type id="thermostat_system_mode">
+        <item-type>Number</item-type>
+        <label>System Mode</label>
+        <description>System Mode</description>
+        <category>Temperature</category>
+        <state>
+            <options>
+                <option value="0">Off</option>
+                <option value="1">Heat</option>
+                <option value="2">Cool</option>
+                <option value="3">Auto</option>
+                <option value="4">Emergency Heat</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <channel-type id="thermostat_fan_mode">
+        <item-type>Number</item-type>
+        <label>Fan Mode</label>
+        <description>Fan Mode</description>
+        <category>Temperature</category>
+        <state>
+            <options>
+                <option value="0">Auto</option>
+                <option value="1">On</option>
+                <option value="2">Cycle</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <channel-type id="thermostat_hold_mode">
+        <item-type>Number</item-type>
+        <label>Hold Mode</label>
+        <description>Hold Mode</description>
+        <category>Temperature</category>
+        <state>
+          <options>
+             <option value="0">Off</option>
+             <option value="1">Hold</option>
+             <option value="2">Vacation Hold</option>
+          </options>
+        </state>
+    </channel-type>
+    
+</thing:thing-descriptions>

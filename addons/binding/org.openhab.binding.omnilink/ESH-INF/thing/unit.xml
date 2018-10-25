@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="omnilink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- These are all objects that are types of Units -->
+	
+	<thing-type id="unit">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="controller" />
+        </supported-bridge-type-refs>
+        <label>Unit</label>
+        <description>A basic unit object</description>
+        <channels>
+            <channel id="status" typeId="status" />
+        </channels>
+        <properties>
+            <property name="name" />
+            <property name="area" />
+            <property name="room" />
+        </properties>
+        <config-description>
+            <parameter name="number" type="integer" required="true">
+                <label>Unit Number</label>
+                <description>The number for a unit thing.</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+    
+	<thing-type id="upb">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller" />
+		</supported-bridge-type-refs>
+		<label>UPB Unit</label>
+		<description>A UPB based unit</description>
+		<channels>
+			<channel id="level" typeId="unit_level" />
+		</channels>
+        <properties>
+            <property name="name" />
+            <property name="area" />
+            <property name="room" />
+        </properties>
+		<config-description>
+			<parameter name="number" type="integer" required="true">
+				<label>Unit Number</label>
+				<description>Unit number of the dimmer.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	
+	<thing-type id="alc">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="controller" />
+        </supported-bridge-type-refs>
+        <label>ALC Unit</label>
+        <description>A ALC base device</description>
+        <channels>
+            <channel id="lightlevel" typeId="lightlevel" />
+        </channels>
+        <properties>
+            <property name="name" />
+            <property name="area" />
+        </properties>
+        <config-description>
+            <parameter name="number" type="integer" required="true">
+                <label>Unit Number</label>
+                <description>Unit number of the ALC device.</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+    
+    <thing-type id="plc">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="controller" />
+        </supported-bridge-type-refs>
+        <label>PLC Unit</label>
+        <description>A ALC base device</description>
+        <channels>
+            <channel id="status" typeId="unit_status" />
+            <channel id="scene_a" typeId="scene_toggle">
+                <label>Scene A</label>
+            </channel>
+            <channel id="scene_b" typeId="scene_toggle">
+                <label>Scene B</label>
+            </channel>
+            <channel id="scene_c" typeId="scene_toggle">
+                <label>Scene C</label>
+            </channel>
+            <channel id="scene_d" typeId="scene_toggle">
+                <label>Scene D</label>
+            </channel>
+            <channel id="scene_e" typeId="scene_toggle">
+                <label>Scene E</label>
+            </channel>
+            <channel id="scene_f" typeId="scene_toggle">
+                <label>Scene F</label>
+            </channel>
+            <channel id="scene_g" typeId="scene_toggle">
+                <label>Scene G</label>
+            </channel>
+            <channel id="scene_h" typeId="scene_toggle">
+                <label>Scene H</label>
+            </channel>
+            <channel id="scene_i" typeId="scene_toggle">
+                <label>Scene I</label>
+            </channel>
+            <channel id="scene_j" typeId="scene_toggle">
+                <label>Scene J</label>
+            </channel>
+            <channel id="scene_k" typeId="scene_toggle">
+                <label>Scene K</label>
+            </channel>
+            <channel id="scene_l" typeId="scene_toggle">
+                <label>Scene L</label>
+            </channel>
+        </channels>
+        <properties>
+            <property name="name" />
+            <property name="area" />
+        </properties>
+        <config-description>
+            <parameter name="number" type="integer" required="true">
+                <label>Unit Number</label>
+                <description>Unit number of the ALC device.</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+    
+    <thing-type id="x10">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="controller" />
+        </supported-bridge-type-refs>
+        <label>ALC Unit</label>
+        <description>A ALC base device</description>
+        <channels>
+            <channel id="lightlevel" typeId="lightlevel" />
+        </channels>
+        <properties>
+            <property name="name" />
+            <property name="area" />
+        </properties>
+        <config-description>
+            <parameter name="number" type="integer" required="true">
+                <label>Unit Number</label>
+                <description>Unit number of the X10 device.</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+    
+	<thing-type id="flag">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller" />
+		</supported-bridge-type-refs>
+		<label>Flag</label>
+		<description>Flag within Omnilink</description>
+		<channels>
+			<channel id="value" typeId="flagvalue" />
+			<channel id="switch" typeId="flagswitch" />
+		</channels>
+		<properties>
+            <property name="name" />
+        </properties>
+		<config-description>
+			<parameter name="number" type="integer" required="true">
+				<label>Flag Number</label>
+				<description>Unit number of the flag.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	
+	<thing-type id="room">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller" />
+		</supported-bridge-type-refs>
+		<label>Room</label>
+		<description>Grouping of Units</description>
+		<channels>
+			<channel id="switch" typeId="scene_switch" />
+			<channel id="on" typeId="scene_on" />
+			<channel id="off" typeId="scene_off" />
+			<channel id="scene_a" typeId="scene_toggle">
+				<label>Scene A</label>
+			</channel>
+			<channel id="scene_b" typeId="scene_toggle">
+				<label>Scene B</label>
+			</channel>
+			<channel id="scene_c" typeId="scene_toggle">
+				<label>Scene C</label>
+			</channel>
+			<channel id="scene_d" typeId="scene_toggle">
+				<label>Scene D</label>
+			</channel>
+			<channel id="state" typeId="room_state" />
+		</channels>
+		<properties>
+			<property name="name" />
+		</properties>
+		<config-description>
+			<parameter name="number" type="integer" required="true">
+				<label>Unit Number</label>
+				<description>Unit number of the dimmer.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	
+    <!-- Unit channels -->
+    
+    <channel-type id="unit_status">
+        <item-type>Number</item-type>
+        <label>Status</label>
+        <description>Represents the numeric status of an unit object</description>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="unit_level">
+        <item-type>Dimmer</item-type>
+        <label>Light Level</label>
+        <description>Increase/decrease the light level</description>
+        <category>DimmableLight</category>
+        <state min="0" max="100" pattern="%d %%" />
+    </channel-type>
+    <channel-type id="unit_switch">
+        <item-type>Switch</item-type>
+        <label>Load Switch</label>
+        <description>Toggle Load</description>
+        <category>Switch</category>
+    </channel-type>
+    <channel-type id="scene_switch">
+        <item-type>Switch</item-type>
+        <label>On/Off</label>
+        <description>Send On/Off to a Scene</description>
+        <category>Switch</category>
+    </channel-type>
+    <channel-type id="scene_on">
+        <item-type>Switch</item-type>
+        <label>On Scene</label>
+        <description>Turn on On Scene</description>
+        <category>Switch</category>
+    </channel-type>
+    <channel-type id="scene_off">
+        <item-type>Switch</item-type>
+        <label>Off Scene</label>
+        <description>Turn on Off Scene</description>
+        <category>Switch</category>
+    </channel-type>
+    <channel-type id="scene_toggle">
+        <item-type>Switch</item-type>
+        <label>Scene Toggle</label>
+        <description>Scene Toggle</description>
+        <category>Toggle</category>
+    </channel-type>
+    <channel-type id="room_state">
+        <item-type>Number</item-type>
+        <label>State</label>
+        <description>Status of room (0 off, 1 on, 2 scene a, 3 scene b, etc)</description>
+        <state>
+            <options>
+                <option value="0">Off</option>
+                <option value="1">On</option>
+                <option value="2">Scene A</option>
+                <option value="3">Scene B</option>
+                <option value="4">Scene C</option>
+                <option value="5">Scene D</option>
+            </options>
+        </state>
+    </channel-type>
+    <channel-type id="flagvalue">
+        <item-type>Number</item-type>
+        <label>Flag Value</label>
+        <description>Represents value for a flag.</description>
+        <category>Flag Control</category>
+    </channel-type>
+    <channel-type id="flagswitch">
+        <item-type>Switch</item-type>
+        <label>On/Off</label>
+        <description>Flag Switch information</description>
+        <category>Switch</category>
+    </channel-type>
+    
+</thing:thing-descriptions>
