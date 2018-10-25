@@ -1,0 +1,23 @@
+language: java
+  
+jdk:
+  - oraclejdk8
+branches:
+  only:
+    - omnilink-binding
+env:
+  global:
+    #secure variable contains values for AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
+    - secure: g2KIyEhXX4oTURqvrNCF0l/l76mv2Lpv4OXElY/heq6hMZ8f9niV2sAJngw3iWQKepvZYaq7Ew3boKw4Z+eKaiuRiIJuQkiFKPH3SfmYBXDXbO9fmEIwUu7zWvjiMnxQQtJREesOLLo7p4zKcXcXYXSvjpXUBPBqdbnOs73k/YyESzbaR1rJg+wVdI1n5dXGrCuVHmeYP0vS1w8wvJqpsOu+8RrpeotEMuxWxebkBTbNLw48VXuWZK+fEzEWHEvSj7hIuAth3X0WJVx4xBhna2td/93AU6P7wpAzCIymacIt7V/3+CgJo0CW887wpfFfq3S9M5CpzwXeG3QjEL5avQ==
+    - secure: h46tqpa4gPkObNZ3dudhM/92b0bCKt4NkEkIfV1abLhmNp8ds/STHGIgT0Eawg+J9gag8AwSP+GrXelObEsO6/90tEwcPBL3QUXslUyDH10uY3MaNdJeD+3LzvTmg3w5AgId5/y8wNeBy5cHR3jEoXXsAoZ1AEAwfpH/uhY6zVHjmp44RyHMVRvLOzkFj3oyMF3cAAHHISqHzrECM3EgSXqhx8N8StWjPfuGlhgSKRQMe+fgqw3mrjFD2l5lyMpu+rfphJOro+2QoibyMggHkgAt9DjTqmZD/CD8kvmQ6PUMU/LeWVoH9KYag96aUnpCIOgIWddmFkiTy4NBirEmyA==
+    
+    
+build:
+  ci:
+    #Run test and code coverage and output results to the right folder
+    - mvn -f addons/binding/org.openhab.binding.omnilink/pom.xml  -Dreport.fail.on.error=false -B install
+    - ls -al $SHIPPABLE_BUILD_DIR
+  on_success:
+    - if [ "$IS_PULL_REQUEST" == false ]; then aws s3 cp --debug $SHIPPABLE_BUILD_DIR/addons/binding/org.openhab.binding.omnilink/target/org.openhab.binding.omnilink-2.4.0-SNAPSHOT.jar s3://craigham-pub/org.openhab.binding.omnilink-2.4.0-SNAPSHOT.jar --region "us-west-1"; fi
+    
+   
