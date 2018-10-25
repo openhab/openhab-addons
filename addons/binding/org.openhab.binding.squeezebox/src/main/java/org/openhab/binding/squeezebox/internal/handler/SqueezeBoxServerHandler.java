@@ -578,6 +578,9 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         }
 
         private void handleMixerMessage(String mac, String[] messageParts) {
+            if (messageParts.length < 4) {
+                return;
+            }
             String action = messageParts[2];
 
             switch (action) {
@@ -810,6 +813,9 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         }
 
         private void handlePlaylistMessage(final String mac, String[] messageParts) {
+            if (messageParts.length < 3) {
+                return;
+            }
             String action = messageParts[2];
             String mode;
             if (action.equals("newsong")) {
@@ -822,6 +828,9 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     }
                 });
             } else if (action.equals("pause")) {
+                if (messageParts.length < 4) {
+                    return;
+                }
                 mode = messageParts[3].equals("0") ? "play" : "pause";
             } else if (action.equals("stop")) {
                 mode = "stop";
