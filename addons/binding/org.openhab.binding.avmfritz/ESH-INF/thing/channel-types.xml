@@ -34,6 +34,13 @@
 		<state pattern="%s" readOnly="true" />
 	</channel-type>
 
+	<channel-type id="template">
+		<item-type>String</item-type>
+		<label>Template</label>
+		<description>Apply template for device(s).</description>
+		<state pattern="%s" />
+	</channel-type>
+
 	<!-- Channel definitions of specific FRITZ! devices -->
 	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>

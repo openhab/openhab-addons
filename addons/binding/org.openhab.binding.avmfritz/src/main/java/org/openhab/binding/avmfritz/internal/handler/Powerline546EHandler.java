@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.avmfritz.internal.AVMFritzDynamicStateDescriptionProvider;
 import org.openhab.binding.avmfritz.internal.BindingConstants;
 import org.openhab.binding.avmfritz.internal.ahamodel.AVMFritzBaseModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.SwitchModel;
@@ -59,8 +60,9 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler {
      *
      * @param bridge Bridge object representing a FRITZ!Powerline 546E
      */
-    public Powerline546EHandler(Bridge bridge, HttpClient httpClient) {
-        super(bridge, httpClient);
+    public Powerline546EHandler(Bridge bridge, HttpClient httpClient,
+            AVMFritzDynamicStateDescriptionProvider stateDescriptionProvider) {
+        super(bridge, httpClient, stateDescriptionProvider);
     }
 
     @Override

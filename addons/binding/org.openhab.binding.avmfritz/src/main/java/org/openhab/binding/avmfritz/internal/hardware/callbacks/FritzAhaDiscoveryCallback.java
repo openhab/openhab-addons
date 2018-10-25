@@ -57,7 +57,7 @@ public class FritzAhaDiscoveryCallback extends FritzAhaReauthCallback {
         logger.trace("Received discovery callback response: {}", response);
         if (isValidRequest()) {
             try {
-                Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
+                Unmarshaller u = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
                 DevicelistModel model = (DevicelistModel) u.unmarshal(new StringReader(response));
                 if (model != null) {
                     for (AVMFritzBaseModel device : model.getDevicelist()) {

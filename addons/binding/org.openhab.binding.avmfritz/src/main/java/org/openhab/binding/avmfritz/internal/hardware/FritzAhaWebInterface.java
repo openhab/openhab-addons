@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.openhab.binding.avmfritz.internal.config.AVMFritzConfiguration;
 import org.openhab.binding.avmfritz.internal.handler.AVMFritzBaseBridgeHandler;
+import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaApplyTemplateCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetHeatingTemperatureCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetSwitchCallback;
@@ -262,8 +263,8 @@ public class FritzAhaWebInterface {
     /**
      * Sends a HTTP GET request using the asynchronous client
      *
-     * @param path     Path of the requested resource
-     * @param args     Arguments for the request
+     * @param path Path of the requested resource
+     * @param args Arguments for the request
      * @param callback Callback to handle the response with
      */
     public FritzAhaContentExchange asyncGet(String path, String args, FritzAhaCallback callback) {
@@ -284,8 +285,8 @@ public class FritzAhaWebInterface {
     /**
      * Sends a HTTP POST request using the asynchronous client
      *
-     * @param path     Path of the requested resource
-     * @param args     Arguments for the request
+     * @param path Path of the requested resource
+     * @param args Arguments for the request
      * @param callback Callback to handle the response with
      */
     public FritzAhaContentExchange asyncPost(String path, String args, FritzAhaCallback callback) {
@@ -297,6 +298,11 @@ public class FritzAhaWebInterface {
                 .onResponseSuccess(postExchange).onResponseFailure(postExchange) // .onComplete(postExchange)
                 .content(new StringContentProvider(addSID(args), "UTF-8")).send(postExchange);
         return postExchange;
+    }
+
+    public FritzAhaContentExchange applyTempalte(String ain) {
+        FritzAhaApplyTemplateCallback callback = new FritzAhaApplyTemplateCallback(this, ain);
+        return asyncGet(callback);
     }
 
     public FritzAhaContentExchange setSwitch(String ain, boolean switchOn) {

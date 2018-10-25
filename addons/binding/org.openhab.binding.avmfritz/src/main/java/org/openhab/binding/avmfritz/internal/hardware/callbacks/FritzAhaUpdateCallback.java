@@ -31,9 +31,9 @@ import org.slf4j.LoggerFactory;
  * @author Robert Bausdorf - Initial contribution
  * @author Christoph Weitkamp - Added support for groups
  */
-public class FritzAhaUpdateXmlCallback extends FritzAhaReauthCallback {
+public class FritzAhaUpdateCallback extends FritzAhaReauthCallback {
 
-    private final Logger logger = LoggerFactory.getLogger(FritzAhaUpdateXmlCallback.class);
+    private final Logger logger = LoggerFactory.getLogger(FritzAhaUpdateCallback.class);
 
     /**
      * Handler to update
@@ -46,7 +46,7 @@ public class FritzAhaUpdateXmlCallback extends FritzAhaReauthCallback {
      * @param webIface Webinterface to FRITZ!Box
      * @param handler Bridge handler that will update things.
      */
-    public FritzAhaUpdateXmlCallback(FritzAhaWebInterface webIface, AVMFritzBaseBridgeHandler handler) {
+    public FritzAhaUpdateCallback(FritzAhaWebInterface webIface, AVMFritzBaseBridgeHandler handler) {
         super(WEBSERVICE_PATH, "switchcmd=getdevicelistinfos", webIface, GET, 1);
         this.handler = handler;
     }
@@ -57,7 +57,7 @@ public class FritzAhaUpdateXmlCallback extends FritzAhaReauthCallback {
         logger.trace("Received State response {}", response);
         if (isValidRequest()) {
             try {
-                Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
+                Unmarshaller u = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
                 DevicelistModel model = (DevicelistModel) u.unmarshal(new StringReader(response));
                 if (model != null) {
                     handler.addDeviceList(model.getDevicelist());

@@ -22,7 +22,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -49,16 +51,21 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.avmfritz.internal.AVMFritzDynamicStateDescriptionProvider;
 import org.openhab.binding.avmfritz.internal.BindingConstants;
 import org.openhab.binding.avmfritz.internal.ahamodel.AVMFritzBaseModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.AlertModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.GroupModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.SwitchModel;
+import org.openhab.binding.avmfritz.internal.ahamodel.templates.TemplateModel;
 import org.openhab.binding.avmfritz.internal.config.AVMFritzConfiguration;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaWebInterface;
-import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaUpdateXmlCallback;
+import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaApplyTemplateCallback;
+import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaUpdateCallback;
+import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaUpdateTemplatesCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,14 +102,23 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
      */
     private final HttpClient httpClient;
 
+    private final AVMFritzDynamicStateDescriptionProvider stateDescriptionProvider;
+
+    /**
+     * keeps track of all linked template channels (contains a pair of AIN / {@link ChannelUID})
+     */
+    private final Map<String, ChannelUID> linkedTemplateChannels = new ConcurrentHashMap<>();
+
     /**
      * Constructor
      *
      * @param bridge Bridge object representing a FRITZ!Box
      */
-    public AVMFritzBaseBridgeHandler(Bridge bridge, HttpClient httpClient) {
+    public AVMFritzBaseBridgeHandler(Bridge bridge, HttpClient httpClient,
+            AVMFritzDynamicStateDescriptionProvider stateDescriptionProvider) {
         super(bridge);
         this.httpClient = httpClient;
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     /**
@@ -118,7 +134,8 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
         this.refreshInterval = config.getPollingInterval();
         this.connection = new FritzAhaWebInterface(config, this, httpClient);
         if (config.getPassword() != null) {
-            onUpdate();
+            stopPolling();
+            startPolling();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "no password set");
         }
@@ -130,22 +147,27 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         logger.debug("Handler disposed.");
-        if (pollingJob != null && !pollingJob.isCancelled()) {
-            logger.debug("stop polling job");
-            pollingJob.cancel(true);
-            pollingJob = null;
-        }
+        stopPolling();
     }
 
     /**
      * Start the polling.
      */
-    private synchronized void onUpdate() {
+    private void startPolling() {
         if (pollingJob == null || pollingJob.isCancelled()) {
             logger.debug("start polling job at interval {}s", refreshInterval);
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, INITIAL_DELAY, refreshInterval, TimeUnit.SECONDS);
-        } else {
-            logger.debug("pollingJob active");
+        }
+    }
+
+    /**
+     * Stops the polling.
+     */
+    private void stopPolling() {
+        if (pollingJob != null && !pollingJob.isCancelled()) {
+            logger.debug("stop polling job");
+            pollingJob.cancel(true);
+            pollingJob = null;
         }
     }
 
@@ -155,9 +177,15 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     private void poll() {
         FritzAhaWebInterface webInterface = getWebInterface();
         if (webInterface != null) {
-            logger.debug("polling FRITZ!Box {}", getThing().getUID());
-            FritzAhaUpdateXmlCallback callback = new FritzAhaUpdateXmlCallback(webInterface, this);
-            webInterface.asyncGet(callback);
+            logger.debug("Poll FRITZ!Box for updates {}", getThing().getUID());
+            FritzAhaUpdateCallback updateCallback = new FritzAhaUpdateCallback(webInterface, this);
+            webInterface.asyncGet(updateCallback);
+            if (!linkedTemplateChannels.isEmpty()) {
+                logger.debug("Poll FRITZ!Box for templates {}", getThing().getUID());
+                FritzAhaUpdateTemplatesCallback templateCallback = new FritzAhaUpdateTemplatesCallback(webInterface,
+                        this);
+                webInterface.asyncGet(templateCallback);
+            }
         }
     }
 
@@ -174,16 +202,64 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Called from {@link FritzAhaUpdateXmlCallback} to provide new values for
-     * things.
+     * Called from {@link AVMFritzBaseThingHandler} to add a linked template channel (pair of AIN / {@link ChannelUID}).
      *
-     * @param model Device model with updated data.
+     * @param ain AIN of the device
+     * @param channelUID {@link ChannelUID} of the linked channel
      */
-    public void addDeviceList(ArrayList<AVMFritzBaseModel> devicelist) {
+    public void addLinkedTemplateChannel(String ain, ChannelUID channelUID) {
+        linkedTemplateChannels.put(ain, channelUID);
+    }
+
+    /**
+     * Called from {@link AVMFritzBaseThingHandler} to remove a linked template channel.
+     *
+     * @param ain AIN of the device
+     */
+    public void removeLinkedTemplateChannel(String ain) {
+        linkedTemplateChannels.remove(ain);
+    }
+
+    /**
+     * Called from {@link FritzAhaApplyTemplateCallback} to provide new templates for things.
+     *
+     * @param templateList list of template models
+     */
+    public void addTemplateList(ArrayList<TemplateModel> templateList) {
+        Map<ChannelUID, List<StateOption>> channelStateOptionsMap = new HashMap<>();
+        for (TemplateModel template : templateList) {
+            logger.debug("Process template model: {}", template);
+            for (org.openhab.binding.avmfritz.internal.ahamodel.templates.DeviceModel device : template.getDeviceList()
+                    .getDevices()) {
+                String ain = device.getIdentifier();
+                if (linkedTemplateChannels.containsKey(ain)) {
+                    StateOption stateOption = new StateOption(template.getIdentifier(), template.getName());
+                    ChannelUID channelUID = linkedTemplateChannels.get(ain);
+                    logger.debug("Add template '{}' ({}) to state options for channel {}", template.getName(),
+                            template.getIdentifier(), channelUID);
+                    if (channelStateOptionsMap.containsKey(channelUID)) {
+                        channelStateOptionsMap.get(channelUID).add(stateOption);
+                    } else {
+                        List<StateOption> stateOptions = new ArrayList<>();
+                        stateOptions.add(stateOption);
+                        channelStateOptionsMap.put(channelUID, stateOptions);
+                    }
+                }
+            }
+        }
+        stateDescriptionProvider.setStateOptions(channelStateOptionsMap);
+    }
+
+    /**
+     * Called from {@link FritzAhaUpdateCallback} to provide new values for things.
+     *
+     * @param deviceList list of device models
+     */
+    public void addDeviceList(ArrayList<AVMFritzBaseModel> deviceList) {
         for (Thing thing : getThing().getThings()) {
             AVMFritzBaseThingHandler handler = (AVMFritzBaseThingHandler) thing.getHandler();
             if (handler != null) {
-                Optional<AVMFritzBaseModel> optionalDevice = devicelist.stream()
+                Optional<AVMFritzBaseModel> optionalDevice = deviceList.stream()
                         .filter(it -> it.getIdentifier().equals(handler.getIdentifier())).findFirst();
                 if (optionalDevice.isPresent()) {
                     AVMFritzBaseModel device = optionalDevice.get();
