@@ -104,7 +104,6 @@ public class RS232Handler extends BaseBridgeHandler implements RadioRAFeedbackLi
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
     }
 
     @Override

@@ -42,7 +42,7 @@ import gnu.io.UnsupportedCommOperationException;
  *
  * This is the main handler for HomeWorks RS232 Processors.
  *
- * @author Andrew Shilliday
+ * @author Andrew Shilliday - Initial contribution
  *
  */
 public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPortEventListener {

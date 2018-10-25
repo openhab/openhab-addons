@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * The {@link PrgBridgeHandler} is responsible for handling all bridge interactions. This includes management of the
  * connection and processing of any commands (thru the {@link PrgProtocolHandler}).
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  */
 public class PrgBridgeHandler extends BaseBridgeHandler {
 
@@ -138,7 +138,6 @@ public class PrgBridgeHandler extends BaseBridgeHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         if (command instanceof RefreshType) {
             handleRefresh(channelUID.getId());
             return;
@@ -221,9 +220,6 @@ public class PrgBridgeHandler extends BaseBridgeHandler {
             _protocolHandler.reportSuperSequenceStatus();
         } else if (id.equals(PrgConstants.CHANNEL_SUPERSEQUENCENEXTSEC)) {
             _protocolHandler.reportSuperSequenceStatus();
-
-        } else {
-            // Can't refresh any others...
         }
     }
 
@@ -263,7 +259,6 @@ public class PrgBridgeHandler extends BaseBridgeHandler {
      * be retried later (via {@link #retryConnect()})
      */
     private void connect() {
-
         final PrgBridgeConfig config = getPrgBridgeConfig();
 
         String response = "Server is offline - will try to reconnect later";
@@ -312,7 +307,6 @@ public class PrgBridgeHandler extends BaseBridgeHandler {
         if (_retryConnection == null) {
             final PrgBridgeConfig config = getPrgBridgeConfig();
             if (config != null) {
-
                 logger.info("Will try to reconnect in {} seconds", config.getRetryPolling());
                 _retryConnection = this.scheduler.schedule(new Runnable() {
                     @Override
