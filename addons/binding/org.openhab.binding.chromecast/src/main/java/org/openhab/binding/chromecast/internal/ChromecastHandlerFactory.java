@@ -22,8 +22,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.chromecast.ChromecastBindingConstants;
-import org.openhab.binding.chromecast.handler.ChromecastHandler;
+import org.openhab.binding.chromecast.internal.handler.ChromecastHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
@@ -37,7 +36,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Kai Kreuzer - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.chromecast")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.chromecast")
 public class ChromecastHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(ChromecastHandlerFactory.class);
 

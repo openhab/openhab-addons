@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.plugwise.internal;
 
-import static org.openhab.binding.plugwise.PlugwiseBindingConstants.*;
+import static org.openhab.binding.plugwise.internal.PlugwiseBindingConstants.*;
 import static org.openhab.binding.plugwise.internal.protocol.field.DeviceType.*;
 
 import java.time.LocalDateTime;
@@ -17,10 +17,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.GregorianCalendar;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.openhab.binding.plugwise.PlugwiseBindingConstants;
 import org.openhab.binding.plugwise.internal.protocol.InformationResponseMessage;
 import org.openhab.binding.plugwise.internal.protocol.field.DeviceType;
 
@@ -29,6 +30,7 @@ import org.openhab.binding.plugwise.internal.protocol.field.DeviceType;
  *
  * @author Wouter Born - Initial contribution
  */
+@NonNullByDefault
 public final class PlugwiseUtils {
 
     private PlugwiseUtils() {
@@ -53,7 +55,7 @@ public final class PlugwiseUtils {
         }
     }
 
-    public static ThingTypeUID getThingTypeUID(DeviceType deviceType) {
+    public static @Nullable ThingTypeUID getThingTypeUID(DeviceType deviceType) {
         if (deviceType == CIRCLE) {
             return THING_TYPE_CIRCLE;
         } else if (deviceType == CIRCLE_PLUS) {
@@ -79,7 +81,7 @@ public final class PlugwiseUtils {
         return new DateTimeType(GregorianCalendar.from(localDateTime.atZone(ZoneId.systemDefault())));
     }
 
-    public static void stopBackgroundThread(Thread thread) {
+    public static void stopBackgroundThread(@Nullable Thread thread) {
         if (thread != null) {
             thread.interrupt();
             try {
@@ -90,6 +92,7 @@ public final class PlugwiseUtils {
         }
     }
 
+    @SuppressWarnings("null")
     public static boolean updateProperties(Map<String, String> properties, InformationResponseMessage message) {
         boolean update = false;
 
@@ -129,5 +132,4 @@ public final class PlugwiseUtils {
 
         return update;
     }
-
 }

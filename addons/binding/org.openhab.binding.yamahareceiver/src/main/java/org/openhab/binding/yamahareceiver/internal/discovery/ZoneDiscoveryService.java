@@ -8,6 +8,9 @@
  */
 package org.openhab.binding.yamahareceiver.internal.discovery;
 
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.ZONE_THING_TYPE;
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Configs.CONFIG_ZONE;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -19,13 +22,11 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
-import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Zone;
+import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants;
+import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone;
 import org.openhab.binding.yamahareceiver.internal.state.DeviceInformationState;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
-
-import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Configs.CONFIG_ZONE;
 
 /**
  * After the AVR bridge thing has been added and a connection could be established,
@@ -67,7 +68,7 @@ public class ZoneDiscoveryService extends AbstractDiscoveryService {
     }
 
     public static ThingUID zoneThing(ThingUID bridgeUid, String zoneName) {
-        return new ThingUID(YamahaReceiverBindingConstants.ZONE_THING_TYPE, bridgeUid, zoneName);
+        return new ThingUID(ZONE_THING_TYPE, bridgeUid, zoneName);
     }
 
     /**
@@ -81,6 +82,7 @@ public class ZoneDiscoveryService extends AbstractDiscoveryService {
         // Create a copy of the list to avoid concurrent modification exceptions, because
         // the state update takes place in another thread
         List<Zone> zoneCopy = new ArrayList<>(state.zones);
+
         for (Zone zone : zoneCopy) {
             String zoneName = zone.name();
             ThingUID uid = zoneThing(bridgeUid, zoneName);
@@ -93,6 +95,7 @@ public class ZoneDiscoveryService extends AbstractDiscoveryService {
                     .withLabel(state.name + " " + zoneName)
                     .withBridge(bridgeUid)
                     .build();
+            
             thingDiscovered(discoveryResult);
         }
     }

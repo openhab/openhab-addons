@@ -1,10 +1,11 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>features</artifactId>
     <groupId>org.openhab</groupId>
+    <artifactId>features</artifactId>
     <version>2.4.0-SNAPSHOT</version>
   </parent>
 
@@ -23,10 +24,10 @@
         <executions>
           <execution>
             <id>attach-artifact</id>
-            <phase>package</phase>
             <goals>
               <goal>attach-artifact</goal>
             </goals>
+            <phase>package</phase>
             <configuration>
               <artifacts>
                 <artifact>
@@ -43,6 +44,16 @@
                   <file>src/main/resources/conf/openhabcloud.cfg</file>
                   <type>cfg</type>
                   <classifier>openhabcloud</classifier>
+                </artifact>
+                <artifact>
+                  <file>src/main/resources/lib/libLeap.dylib</file>
+                  <type>lib</type>
+                  <classifier>libLeap</classifier>
+                </artifact>
+                <artifact>
+                  <file>src/main/resources/lib/libLeapJava.dylib</file>
+                  <type>lib</type>
+                  <classifier>libLeapJava</classifier>
                 </artifact>
               </artifacts>
             </configuration>

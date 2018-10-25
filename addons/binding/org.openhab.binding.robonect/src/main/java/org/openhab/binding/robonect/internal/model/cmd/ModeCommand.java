@@ -31,16 +31,18 @@ public class ModeCommand implements Command {
      * The available modes. See class documentation for the meanings.
      */
     public enum Mode {
-        HOME(1),
-        EOD(2),
-        MANUAL(3),
-        AUTO(4),
-        JOB(5);
+        HOME(1, "home"),
+        EOD(2, "eod"),
+        MANUAL(3, "man"),
+        AUTO(4, "auto"),
+        JOB(5, "job");
 
         int code;
+        String cmd;
 
-        Mode(int code) {
+        Mode(int code, String cmd) {
             this.code = code;
+            this.cmd = cmd;
         }
     }
 
@@ -148,8 +150,8 @@ public class ModeCommand implements Command {
     @Override
     public String toCommandURL(String baseURL) {
         StringBuilder sb = new StringBuilder(baseURL);
-        sb.append("?cmd=mode&&mode=");
-        sb.append(mode.name().toLowerCase());
+        sb.append("?cmd=mode&mode=");
+        sb.append(mode.cmd);
         switch (mode){
             case EOD:
             case MANUAL:

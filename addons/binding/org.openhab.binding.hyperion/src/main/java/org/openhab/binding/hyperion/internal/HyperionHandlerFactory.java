@@ -13,11 +13,9 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.hyperion.HyperionBindingConstants;
-import org.openhab.binding.hyperion.handler.HyperionHandler;
-import org.openhab.binding.hyperion.handler.HyperionNgHandler;
+import org.openhab.binding.hyperion.internal.handler.HyperionHandler;
+import org.openhab.binding.hyperion.internal.handler.HyperionNgHandler;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Reference;
 
 /**
@@ -26,8 +24,7 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Daniel Walters - Initial contribution
  */
-
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.hyperion", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.hyperion")
 public class HyperionHandlerFactory extends BaseThingHandlerFactory {
 
     private HyperionStateDescriptionProvider stateDescriptionProvider;

@@ -20,29 +20,21 @@ import org.openhab.binding.max.internal.Utils;
 /**
  * Tests cases for {@link Utils}.
  *
- * @author Andreas Heil (info@aheil.de)
+ * @author Andreas Heil (info@aheil.de) - Initial contribution
  * @author Marcel Verpaalen - OH2 Version and updates
- * @since 1.4.0
  */
 public class UtilsTest {
 
     @Test
     public void fromHexTest() {
-
-        int ar0 = Utils.fromHex("00");
-        int ar1 = Utils.fromHex("01");
-        int ar31 = Utils.fromHex("1F");
-        int ar255 = Utils.fromHex("FF");
-
-        assertEquals(0, ar0);
-        assertEquals(1, ar1);
-        assertEquals(31, ar31);
-        assertEquals(255, ar255);
+        assertEquals(0x00, Utils.fromHex("00"));
+        assertEquals(0x01, Utils.fromHex("01"));
+        assertEquals(0x1F, Utils.fromHex("1F"));
+        assertEquals(0xFF, Utils.fromHex("FF"));
     }
 
     @Test
     public void fromByteTest() {
-
         byte b0 = 0;
         byte b127 = 127;
         byte b128 = (byte) 128; // overflow due to
@@ -64,32 +56,25 @@ public class UtilsTest {
 
     @Test
     public void toHexNoArgTest() {
-
         String actualResult = Utils.toHex();
-
         assertEquals("", actualResult);
     }
 
     @Test
     public void toHexOneArgTest() {
-
         String actualResult = Utils.toHex(15);
-
         assertEquals("0F", actualResult);
     }
 
     @Test
     public void toHexMultipleArgTest() {
-
         String actualResult = Utils.toHex(4863);
-
         assertEquals("12FF", actualResult);
     }
 
     @SuppressWarnings("deprecation")
     @Test
     public void resolveDateTimeTest() {
-
         int date = Utils.fromHex("858B"); // 05-09-2011
         int time = Utils.fromHex("2E"); // 23:00
 

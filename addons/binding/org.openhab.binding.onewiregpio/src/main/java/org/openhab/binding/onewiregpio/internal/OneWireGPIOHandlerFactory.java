@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.onewiregpio.internal;
 
-import static org.openhab.binding.onewiregpio.OneWireGPIOBindingConstants.THING_TYPE;
+import static org.openhab.binding.onewiregpio.internal.OneWireGPIOBindingConstants.THING_TYPE;
 
 import java.util.Collections;
 import java.util.Set;
@@ -18,7 +18,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.onewiregpio.handler.OneWireGPIOHandler;
+import org.openhab.binding.onewiregpio.internal.handler.OneWireGPIOHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -27,7 +27,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Anatol Ogorek - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.onewiregpio")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.onewiregpio")
 public class OneWireGPIOHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE);

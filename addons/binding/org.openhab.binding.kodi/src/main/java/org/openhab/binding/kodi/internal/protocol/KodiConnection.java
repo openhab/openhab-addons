@@ -443,7 +443,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     private void requestPlayerItemUpdate(int activePlayer) {
         final String[] properties = { "title", "album", "artist", "director", "thumbnail", "file", "fanart",
-                "showtitle", "streamdetails", "channel", "channeltype", "duration", "runtime" };
+                "showtitle", "streamdetails", "channel", "channeltype", "genre" };
 
         JsonObject params = new JsonObject();
         params.addProperty("playerid", activePlayer);
@@ -481,12 +481,20 @@ public class KodiConnection implements KodiClientSocketEventListener {
                     }
                 }
 
-                String artist = "";
-                if ("movie".equals(mediaType)) {
-                    artist = convertFromArray(item.get("director").getAsJsonArray());
+                List<String> artistList = null;
+                if ("movie".equals(mediaType) && item.has("director")) {
+                    artistList = convertFromArrayToList(item.get("director").getAsJsonArray());
                 } else {
                     if (item.has("artist")) {
-                        artist = convertFromArray(item.get("artist").getAsJsonArray());
+                        artistList = convertFromArrayToList(item.get("artist").getAsJsonArray());
+                    }
+                }
+
+                List<String> genreList = null;
+                if (item.has("genre")) {
+                    JsonElement genre = item.get("genre");
+                    if (genre instanceof JsonArray) {
+                        genreList = convertFromArrayToList(genre.getAsJsonArray());
                     }
                 }
 
@@ -505,29 +513,21 @@ public class KodiConnection implements KodiClientSocketEventListener {
                     fanart = downloadImage(convertToImageUrl(item.get("fanart")));
                 }
 
-                // "duration" for audio files/streams and "runtime" for video files/streams
-                long duration = -1;
-                if (item.has("duration")) {
-                    duration = item.get("duration").getAsLong();
-                } else if (item.has("runtime")) {
-                    duration = item.get("runtime").getAsLong();
-                }
-
                 listener.updateAlbum(album);
                 listener.updateTitle(title);
                 listener.updateShowTitle(showTitle);
-                listener.updateArtist(artist);
+                listener.updateArtistList(artistList);
                 listener.updateMediaType(mediaType);
+                listener.updateGenreList(genreList);
                 listener.updatePVRChannel(channel);
                 listener.updateThumbnail(thumbnail);
                 listener.updateFanart(fanart);
-                listener.updateDuration(duration);
             }
         }
     }
 
     private void requestPlayerPropertiesUpdate(int activePlayer) {
-        final String[] properties = { "percentage", "time" };
+        final String[] properties = { "percentage", "time", "totaltime" };
 
         JsonObject params = new JsonObject();
         params.addProperty("playerid", activePlayer);
@@ -544,17 +544,29 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
             long currentTime = -1;
             if (result.has("time")) {
-                JsonObject time = result.get("time").getAsJsonObject();
-                KodiDuration duration = new KodiDuration();
-                duration.setHours(time.get("hours").getAsLong());
-                duration.setMinutes(time.get("minutes").getAsLong());
-                duration.setSeconds(time.get("seconds").getAsLong());
-                duration.setMilliseconds(time.get("milliseconds").getAsLong());
-                currentTime = duration.toSeconds();
+                JsonObject timeObject = result.get("time").getAsJsonObject();
+                KodiDuration time = new KodiDuration();
+                time.setHours(timeObject.get("hours").getAsLong());
+                time.setMinutes(timeObject.get("minutes").getAsLong());
+                time.setSeconds(timeObject.get("seconds").getAsLong());
+                time.setMilliseconds(timeObject.get("milliseconds").getAsLong());
+                currentTime = time.toSeconds();
+            }
+
+            long duration = -1;
+            if (result.has("totaltime")) {
+                JsonObject totalTimeObject = result.get("totaltime").getAsJsonObject();
+                KodiDuration totalTime = new KodiDuration();
+                totalTime.setHours(totalTimeObject.get("hours").getAsLong());
+                totalTime.setMinutes(totalTimeObject.get("minutes").getAsLong());
+                totalTime.setSeconds(totalTimeObject.get("seconds").getAsLong());
+                totalTime.setMilliseconds(totalTimeObject.get("milliseconds").getAsLong());
+                duration = totalTime.toSeconds();
             }
 
             listener.updateCurrentTimePercentage(percentage);
             listener.updateCurrentTime(currentTime);
+            listener.updateDuration(duration);
         }
     }
 
@@ -566,15 +578,12 @@ public class KodiConnection implements KodiClientSocketEventListener {
         return result;
     }
 
-    private String convertFromArray(JsonArray data) {
-        StringBuilder result = new StringBuilder();
+    private List<String> convertFromArrayToList(JsonArray data) {
+        List<String> list = new ArrayList<>();
         for (JsonElement element : data) {
-            if (result.length() > 0) {
-                result.append(", ");
-            }
-            result.append(element.getAsString());
+            list.add(element.getAsString());
         }
-        return result.toString();
+        return list;
     }
 
     private String convertToImageUrl(JsonElement element) {
@@ -629,14 +638,15 @@ public class KodiConnection implements KodiClientSocketEventListener {
             listener.updateAlbum("");
             listener.updateTitle("");
             listener.updateShowTitle("");
-            listener.updateArtist("");
+            listener.updateArtistList(null);
             listener.updateMediaType("");
+            listener.updateGenreList(null);
             listener.updatePVRChannel("");
             listener.updateThumbnail(null);
             listener.updateFanart(null);
-            listener.updateDuration(-1);
             listener.updateCurrentTimePercentage(-1);
             listener.updateCurrentTime(-1);
+            listener.updateDuration(-1);
         }
         // keep track of our current state
         currentState = state;

@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.solarlog
 Bundle-ManifestVersion: 2
 Bundle-Name: Solar-Log Binding
 Bundle-SymbolicName: org.openhab.binding.solarlog;singleton:=true
@@ -17,9 +18,5 @@ Import-Package:
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.io.net.http,
- org.openhab.binding.solarlog,
- org.openhab.binding.solarlog.handler,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.solarlog,
- org.openhab.binding.solarlog.handler

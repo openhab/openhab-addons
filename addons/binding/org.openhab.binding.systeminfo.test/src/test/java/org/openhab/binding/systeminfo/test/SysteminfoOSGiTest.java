@@ -57,10 +57,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.openhab.binding.systeminfo.SysteminfoBindingConstants;
-import org.openhab.binding.systeminfo.handler.SysteminfoHandler;
+import org.openhab.binding.systeminfo.internal.SysteminfoBindingConstants;
 import org.openhab.binding.systeminfo.internal.SysteminfoHandlerFactory;
 import org.openhab.binding.systeminfo.internal.discovery.SysteminfoDiscoveryService;
+import org.openhab.binding.systeminfo.internal.handler.SysteminfoHandler;
 import org.openhab.binding.systeminfo.internal.model.DeviceNotFoundException;
 import org.openhab.binding.systeminfo.internal.model.SysteminfoInterface;
 
@@ -919,7 +919,9 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
             assertThat(discoveryService, is(notNullValue()));
         });
         SysteminfoDiscoveryServiceMock discoveryServiceMock = new SysteminfoDiscoveryServiceMock(hostname);
-        unregisterService(discoveryService);
+        if (discoveryService != null) {
+            unregisterService(DiscoveryService.class);
+        }
         registerService(discoveryServiceMock, DiscoveryService.class.getName(), new Hashtable<>());
 
         ThingTypeUID computerType = SysteminfoBindingConstants.THING_TYPE_COMPUTER;

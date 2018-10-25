@@ -21,10 +21,10 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.zway.handler.ZWayBridgeHandler;
-import org.openhab.binding.zway.handler.ZWayZAutomationDeviceHandler;
-import org.openhab.binding.zway.handler.ZWayZWaveDeviceHandler;
 import org.openhab.binding.zway.internal.discovery.ZWayDeviceDiscoveryService;
+import org.openhab.binding.zway.internal.handler.ZWayBridgeHandler;
+import org.openhab.binding.zway.internal.handler.ZWayZAutomationDeviceHandler;
+import org.openhab.binding.zway.internal.handler.ZWayZWaveDeviceHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 
@@ -36,7 +36,7 @@ import com.google.common.collect.ImmutableSet;
  *
  * @author Patrick Hecker - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.zway")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.zway")
 public class ZWayHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(
@@ -69,15 +69,14 @@ public class ZWayHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof ZWayBridgeHandler) {
-            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
+            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.remove(thingHandler.getThing().getUID());
             if (serviceReg != null) {
                 serviceReg.unregister();
-                discoveryServiceRegs.remove(thingHandler.getThing().getUID());
             }
         }
     }
 
-    private void registerDeviceDiscoveryService(ZWayBridgeHandler handler) {
+    private synchronized void registerDeviceDiscoveryService(ZWayBridgeHandler handler) {
         ZWayDeviceDiscoveryService discoveryService = new ZWayDeviceDiscoveryService(handler);
         this.discoveryServiceRegs.put(handler.getThing().getUID(),
                 bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));

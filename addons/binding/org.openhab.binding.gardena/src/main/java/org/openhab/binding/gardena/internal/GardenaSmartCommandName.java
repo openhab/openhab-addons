@@ -32,5 +32,16 @@ public enum GardenaSmartCommandName {
     OUTLET_VALVE,
 
     // power
-    POWER_TIMER;
+    POWER_TIMER,
+
+    // irrigation control
+    WATERING_TIMER_VALVE_1,
+    WATERING_TIMER_VALVE_2,
+    WATERING_TIMER_VALVE_3,
+    WATERING_TIMER_VALVE_4,
+    WATERING_TIMER_VALVE_5,
+    WATERING_TIMER_VALVE_6,
+
+    // pump
+    PUMP_MANUAL_WATERING_TIMER;
 }

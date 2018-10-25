@@ -8,9 +8,10 @@
  */
 package org.openhab.binding.network.internal.discovery;
 
-import static org.openhab.binding.network.NetworkBindingConstants.*;
+import static org.openhab.binding.network.internal.NetworkBindingConstants.*;
 
 import java.net.UnknownHostException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,8 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
@@ -35,8 +38,6 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Sets;
 
 /**
  * The {@link NetworkDiscoveryService} is responsible for discovering devices on
@@ -56,7 +57,8 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     // TCP port 548 (Apple Filing Protocol (AFP))
     // TCP port 554 (Windows share / Linux samba)
     // TCP port 1025 (Xbox / MS-RPC)
-    private Set<Integer> tcp_service_ports = Sets.newHashSet(80, 548, 554, 1025);
+    private Set<Integer> tcp_service_ports = Collections
+            .unmodifiableSet(Stream.of(80, 548, 554, 1025).collect(Collectors.toSet()));
     private Integer scannedIPcount;
     private ExecutorService executorService = null;
     private final NetworkBindingConfiguration configuration = new NetworkBindingConfiguration();

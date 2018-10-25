@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.network.test
 Bundle-ManifestVersion: 2
 Bundle-Name:  network.test Binding Tests
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
@@ -22,8 +23,6 @@ Import-Package:
  org.mockito.invocation,
  org.mockito.runners,
  org.mockito.stubbing,
- org.openhab.binding.network,
- org.openhab.binding.network.handler,
  org.osgi.framework,
  org.osgi.service.device,
  org.slf4j

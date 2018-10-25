@@ -1,17 +1,18 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>pom</artifactId>
     <groupId>org.openhab.voice</groupId>
+    <artifactId>pom</artifactId>
     <version>2.4.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.voice.marytts</artifactId>
   <packaging>eclipse-plugin</packaging>
 
-  <name>Mary TTS Integration</name>
+  <name>Mary Text-to-Speech</name>
 
   <build>
 
@@ -28,15 +29,6 @@
       <plugin>
         <groupId>com.savage7.maven.plugins</groupId>
         <artifactId>maven-external-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>resolve-install-external-dependencies</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>resolve-external</goal>
-            </goals>
-          </execution>
-        </executions>
         <configuration>
           <stagingDirectory>${basedir}/lib</stagingDirectory>
           <artifactItems>
@@ -169,6 +161,15 @@
 
           </artifactItems>
         </configuration>
+        <executions>
+          <execution>
+            <id>resolve-install-external-dependencies</id>
+            <goals>
+              <goal>resolve-external</goal>
+            </goals>
+            <phase>process-resources</phase>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
 

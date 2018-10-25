@@ -8,9 +8,12 @@
  */
 package org.openhab.binding.tankerkoenig.internal;
 
-import static org.openhab.binding.tankerkoenig.TankerkoenigBindingConstants.*;
+import static org.openhab.binding.tankerkoenig.internal.TankerkoenigBindingConstants.*;
 
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -18,12 +21,9 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.tankerkoenig.TankerkoenigBindingConstants;
-import org.openhab.binding.tankerkoenig.handler.StationHandler;
-import org.openhab.binding.tankerkoenig.handler.WebserviceHandler;
+import org.openhab.binding.tankerkoenig.internal.handler.StationHandler;
+import org.openhab.binding.tankerkoenig.internal.handler.WebserviceHandler;
 import org.osgi.service.component.annotations.Component;
-
-import com.google.common.collect.Sets;
 
 /**
  * The {@link TankerkoenigHandlerFactory} is responsible for creating things and thing
@@ -31,10 +31,11 @@ import com.google.common.collect.Sets;
  *
  * @author Dennis Dollinger - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.tankerkoenig")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.tankerkoenig")
 public class TankerkoenigHandlerFactory extends BaseThingHandlerFactory {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.union(BRIDGE_THING_TYPES_UIDS,
-            TankerkoenigBindingConstants.SUPPORTED_THING_TYPES_UIDS);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
+            .concat(BRIDGE_THING_TYPES_UIDS.stream(), TankerkoenigBindingConstants.SUPPORTED_THING_TYPES_UIDS.stream())
+            .collect(Collectors.toSet()));
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

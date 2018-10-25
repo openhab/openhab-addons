@@ -14,7 +14,6 @@ import org.openhab.binding.milight.internal.MilightThingState;
  * Implements the RGB cold white / warm white bulb. It is the most feature rich bulb.
  *
  * @author David Graeff - Initial contribution
- * @since 2.1
  */
 public class MilightV6RGBCWWW extends MilightV6 {
     private static final int ADDR = 0x08;

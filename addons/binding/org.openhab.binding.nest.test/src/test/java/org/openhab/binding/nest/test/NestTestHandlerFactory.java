@@ -20,8 +20,8 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.nest.handler.NestBridgeHandler;
 import org.openhab.binding.nest.internal.discovery.NestDiscoveryService;
+import org.openhab.binding.nest.internal.handler.NestBridgeHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 
@@ -30,7 +30,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Wouter Born - Increase test coverage
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.nest.test")
+@Component(service = ThingHandlerFactory.class)
 public class NestTestHandlerFactory extends BaseThingHandlerFactory {
 
     private String redirectUrl = "http://localhost";

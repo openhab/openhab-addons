@@ -20,6 +20,7 @@ import org.eclipse.smarthome.core.voice.STTException;
 import org.eclipse.smarthome.core.voice.STTListener;
 import org.eclipse.smarthome.core.voice.STTService;
 import org.eclipse.smarthome.core.voice.STTServiceHandle;
+import org.osgi.service.component.annotations.Component;
 
 import ee.ioc.phon.netspeechapi.duplex.WsDuplexRecognitionSession;
 
@@ -29,6 +30,7 @@ import ee.ioc.phon.netspeechapi.duplex.WsDuplexRecognitionSession;
  * @author Kelly Davis - Initial contribution and API
  *
  */
+@Component
 public class KaldiSTTService implements STTService {
 
     /**

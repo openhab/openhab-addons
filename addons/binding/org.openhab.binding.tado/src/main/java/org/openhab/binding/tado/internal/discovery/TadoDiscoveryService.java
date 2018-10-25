@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.tado.internal.discovery;
 
-import static org.openhab.binding.tado.TadoBindingConstants.*;
+import static org.openhab.binding.tado.internal.TadoBindingConstants.*;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -23,11 +23,11 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.tado.TadoBindingConstants;
-import org.openhab.binding.tado.handler.TadoHomeHandler;
-import org.openhab.binding.tado.internal.api.TadoClientException;
+import org.openhab.binding.tado.internal.TadoBindingConstants;
+import org.openhab.binding.tado.internal.api.ApiException;
 import org.openhab.binding.tado.internal.api.model.MobileDevice;
 import org.openhab.binding.tado.internal.api.model.Zone;
+import org.openhab.binding.tado.internal.handler.TadoHomeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,7 +103,7 @@ public class TadoDiscoveryService extends AbstractDiscoveryService {
                     notifyZoneDiscovery(homeId, zone);
                 }
             }
-        } catch (IOException | TadoClientException e) {
+        } catch (IOException | ApiException e) {
             logger.debug("Could not discover tado zones: {}", e.getMessage(), e);
         }
     }
@@ -137,7 +137,7 @@ public class TadoDiscoveryService extends AbstractDiscoveryService {
                     }
                 }
             }
-        } catch (IOException | TadoClientException e) {
+        } catch (IOException | ApiException e) {
             logger.debug("Could not discover tado zones: {}", e.getMessage(), e);
         }
     }

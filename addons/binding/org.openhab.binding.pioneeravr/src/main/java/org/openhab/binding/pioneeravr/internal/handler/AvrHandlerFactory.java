@@ -27,7 +27,7 @@ import com.google.common.collect.Sets;
  *
  * @author Antoine Besnard - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.pioneeravr")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.pioneeravr")
 public class AvrHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(

@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.nibeheatpump.test
 Bundle-ManifestVersion: 2
 Bundle-Name: NibeHeatPump Binding Tests
 Bundle-SymbolicName: 
@@ -17,6 +18,5 @@ Import-Package:  org.eclipse.jdt.annotation;resolution:=optional,
  org.junit,
  org.junit.runner,
  org.junit.runners,
- org.openhab.binding.nibeheatpump,
  org.osgi.framework,
  org.osgi.service.device

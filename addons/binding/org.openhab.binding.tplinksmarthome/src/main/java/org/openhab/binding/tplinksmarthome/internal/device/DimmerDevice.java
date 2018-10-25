@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.tplinksmarthome.internal.device;
 
-import static org.openhab.binding.tplinksmarthome.TPLinkSmartHomeBindingConstants.CHANNEL_BRIGHTNESS;
+import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.CHANNEL_BRIGHTNESS;
 
 import java.io.IOException;
 
@@ -54,7 +54,8 @@ public class DimmerDevice extends SwitchDevice {
             response = commands.setDimmerBrightnessResponse(
                     connection.sendCommand(commands.setDimmerBrightness((decimalCommand).intValue())));
             checkErrors(response);
-            response = setOnOffState(connection, (OnOffType) decimalCommand.as(OnOffType.class));
+            response = setOnOffState(connection,
+                    DecimalType.ZERO.equals(decimalCommand) ? OnOffType.OFF : OnOffType.ON);
         }
         checkErrors(response);
         return response != null;

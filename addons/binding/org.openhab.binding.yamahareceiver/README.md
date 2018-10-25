@@ -4,73 +4,96 @@ This binding connects openHAB with Yamaha Receivers of product line CX-A5000, RX
 
 If your hardware is on the list but still does not work, please fill a bug report!
 
-## Configuration
+## Supported Things
 
-Just use the auto discovery feature or add a thing for the binding manually by providing host and port.
-Initially a thing for the main zone will be created. This will trigger a zone detection internally and all available additional zones will appear as new things.
+Thing | Type | Description
+--------|------|------
+yamahaAV | Bridge | Yamaha Receiver hardware
+zone | Thing | Zones of your receiver
 
-When using zones feature, to manually add a receiver, use
+
+## Discovery
+
+Just use the auto discovery feature to detect your hardware. Initially a thing for the main zone will be created. This will trigger a zone detection internally and all available additional zones will appear as new things.
+
+
+## Thing Configuration
+
+To manually add a receiver and its zones a `things/yamahareceiver.things` file could look like this:
 
 ```
-Bridge yamahareceiver:yamahaAV:ReceiverID "Yamaha Receiver Bridge Name" [host="a.b.c.d"] {
-	Thing zone ZoneID1 "Main Zone Thing Name" @ "location" [zone="Main_Zone", volumeDbMin=-81, volumeDbMax=12]
-	Thing zone ZoneID2 "Zone 2 Thing Name" @ "location" [zone="Zone_2"]
-	Thing zone ZoneID3 "Zone 3 Thing Name" @ "location" [zone="Zone_3"]
-	Thing zone ZoneID4 "Zone 4 Thing Name" @ "location" [zone="Zone_4"]
+Bridge yamahareceiver:yamahaAV:ReceiverID "Yamaha Receiver Bridge Name" [host="a.b.c.d", refreshInterval=20] {
+    Thing zone ZoneID1 "Main Zone Thing Name" @ "location" [zone="Main_Zone", volumeDbMin=-81, volumeDbMax=12]
+    Thing zone ZoneID2 "Zone 2 Thing Name" @ "location" [zone="Zone_2"]
+    Thing zone ZoneID3 "Zone 3 Thing Name" @ "location" [zone="Zone_3"]
+    Thing zone ZoneID4 "Zone 4 Thing Name" @ "location" [zone="Zone_4"]
 }
 ```
 
-If your receiver is using menu-based net radio navigation, you can use this binding to
-select radio stations from a configured menu.
+Configuration parameters for Bridge `yamahaAV`:
 
-## Features
+Parameter | Required | Default | Description
+--------|------|------|------
+`host` | yes | N/A | The IP address of the AVR to control
+`port` | no | 80 | The API port of the AVR to control
+`refreshInterval` | no | 60 | Refresh interval in seconds
+`albumUrl` | no | embedded image URL | When the album image is not provided by the Yamaha input source, you can specify the default image URL to apply
+`inputMapping` | no | "" (empty string) | Some Yamaha models return different input values on status update than required in the change input commands. See [below](#input-values) for details
 
-The implemented channels for the AVR thing are:
+Configruation parameters for Thing `zone`:
 
-Channel | openHAB Type | Comment
---------|------|------
-`power` | `Switch` | Switches the AVR ON or OFF. Your receiver has to be in network standby for this to work.
+Parameter | Required | Default | Description
+--------|------|------|------
+`zone` | yes | / | The zone can be Main_Zone, Zone_2, Zone_3, Zone_4 depending on your device
+`volumeRelativeChangeFactor` | no | 2 | Relative volume change in percent
+`volumeDbMin` | no | -80 | Lowest volume in dB
+`volumeDbMax` | no | 12 | Highest volume in dB
 
-The implemented channels for a zone thing are grouped in three groups.
+
+## Channels
+
+The implemented channels for the `yamahaAV` bridge are:
+
+| Channel             | openHAB Type | Comment                                                                                                                                                                                                     |
+|---------------------|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `power`             | `Switch`     | Switches the AVR ON or OFF. Your receiver has to be in network standby for this to work.                                                                                                                    |
+| `party_mode`        | `Switch`     | Switches the party mode. May not be supported on all models.                                                                                                                                                |
+| `party_mode_mute`   | `Switch`     | Switches the mute ON or OFF when in party mode. Write only (state updates are not available). Applicable only when party mode is on. May not be supported on all models.                                    |
+| `party_mode_volume` | `Dimmer`     | Increase or decrease volume when in party mode. Write only (state updates are not available). INCREASE / DECREASE commands only. Applicable only when party mode is on. May not be supported on all models. |
+
+
+
+The implemented channels for a `zone` thing are grouped in three groups. These are the zones supported: `Main_Zone`, `Zone_2`, `Zone_3`, `Zone_4`.
 
 Zone control channels are:
 
-Channel | openHAB Type | Comment
---------|------|------
-`power#zone_channels` | `Switch` | Switches the zone ON or OFF. Your receiver has to be in network standby for this to work.
-`mute#zone_channels` | `Switch` | Mute or Unmute the receiver.
-`volume#zone_channels` | `Dimmer` | Set's the receivers volume as percentage.
-`volumeDB#zone_channels` | `Number` | Set's the receivers volume in dB.
-`input#zone_channels` | `String` | Set's the input selection, depends on your receiver's real inputs. Examples: HDMI1, HDMI2, AV4, TUNER, NET RADIO, etc.
-`surroundProgram#zone_channels` | `String` | Set's the surround mode. Examples: 2ch Stereo, 7ch Stereo, Hall in Munic, Straight, Surround Decoder.
-`dialogueLevel#zone_channels` | `Number` | Set's the receivers dialogue level.
-
-Playback control channels are:
-
-Channel | openHAB Type | Comment
---------|------|------
-`preset#playback_channels` | `Number` | Set a preset. Not supported by Spotify.
-`playback#playback_channels` | | Set a play mode or get the current play mode.
-`playback_station#playback_channels` | `String` | Get the current played station (radio).
-`playback_artist#playback_channels` | `String` | Get the current played artist.
-`playback_album#playback_channels` | `String` | Get the current played album.
-`playback_song#playback_channels` | `String` | Get the current played song.
-`playback_song_image_url#playback_channels` | `String` | Get the current played song image URL (currently Spotify input only).
-`tuner_band#playback_channels` | `String` | Set the band (FM or DAB) for tuner input when device supports DAB (e.g. RX-S601D).
-
-Navigation control channels are:
-
-Channel | openHAB Type | Comment
---------|------|------
-`navigation_menu#navigation_channels` | `String` | Select or display the full or relative path to an item.
-`navigation_current_item#navigation_channels` | `Number` | Get the current item of the current menu.
-`navigation_total_items#navigation_channels` | `Number` | Get the total count items in the current menu.
-`navigation_level#navigation_channels` | `Number` | Get the current menu level.
-`navigation_updown#navigation_channels` | | Move the cursor up or down.
-`navigation_leftright#navigation_channels` | | Move the cursor to the left or right.
-`navigation_select#navigation_channels` | | Select the current item.
-`navigation_back#navigation_channels` | | Navigate to the parent menu.
-`navigation_backtoroot#navigation_channels` | | Navigate back to the root menu.
+| Channel                                       | openHAB Type | Comment                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+|-----------------------------------------------|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `zone_channels#power`                         | `Switch`     | Switches the zone ON or OFF. Your receiver has to be in network standby for this to work.                                                                                                                                                                                                                                                                                                                                               |
+| `zone_channels#mute`                          | `Switch`     | Mute or Unmute the receiver.                                                                                                                                                                                                                                                                                                                                                                                                            |
+| `zone_channels#volume`                        | `Dimmer`     | Set's the receivers volume as percentage.                                                                                                                                                                                                                                                                                                                                                                                               |
+| `zone_channels#volumeDB`                      | `Number`     | Set's the receivers volume in dB.                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `zone_channels#input`                         | `String`     | Set's the input selection, depends on your receiver's real inputs. Examples: HDMI1, HDMI2, AV4, TUNER, NET RADIO, etc.                                                                                                                                                                                                                                                                                                                  |
+| `zone_channels#surroundProgram`               | `String`     | Set's the surround mode. Examples: `2ch Stereo`, `7ch Stereo`, `Hall in Munic`, `Straight`, `Surround Decoder`.                                                                                                                                                                                                                                                                                                                         |
+| `zone_channels#scene`                         | `String`     | Sets the scene. Examples: `Scene 1`, `Scene 2`, `Scene 3`, `Scene 4`. Write only (state updates are not available). May not be supported on all models (e.g. RX-V3900).                                                                                                                                                                                                                                                                 |
+| `zone_channels#dialogueLevel`                 | `Number`     | Set's the receivers dialogue level. May not be supported on all models.                                                                                                                                                                                                                                                                                                                                                                 |
+| `playback_channels#preset`                    | `Number`     | Set a preset. Not supported by `Spotify` input. For `NET RADIO` input there is no way to get current preset (tested on RX-S601D, RX-V3900), so the preset is write only. For RX-V3900 the presets are alphanumeric `A1`,`A2`,`B1`,`B2` thus you need to use numbers grater than 100 that represent these presets as follows: 101, 102, 201, 202.                                                                                        |
+| `playback_channels#playback`                  | `String`     | Set a play mode or get the current play mode. Values supported: `Previous`, `Play`, `Pause`, `Stop`, `Next`. Applies for inputs which support playback (`Spotify`, `SERVER`, `NET RADIO`, `Bluetooth`). Note that some values may not be supported on certain input type and AVR model combination. For `Spotify` and `Bluetooth` all values work, but for `NET RADIO` input only `Play` and `Stop` are supported (tested on RX-S601D). |
+| `playback_channels#playback_station`          | `String`     | Get the current played station (radio). Applies to `TUNER` and `NET RADIO` inputs only.                                                                                                                                                                                                                                                                                                                                                 |
+| `playback_channels#playback_artist`           | `String`     | Get the current played artist.                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `playback_channels#playback_album`            | `String`     | Get the current played album.                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `playback_channels#playback_song`             | `String`     | Get the current played song.                                                                                                                                                                                                                                                                                                                                                                                                            |
+| `playback_channels#playback_song_image_url`   | `String`     | Get the current played song image URL. Applies to `Spotify` and `NET RADIO` inputs only.                                                                                                                                                                                                                                                                                                                                                |
+| `playback_channels#tuner_band`                | `String`     | Set the band (FM or DAB) for tuner input when device supports DAB+ (e.g. RX-S601D). Values supported: `FM`, `DAB`. Applies to `TUNER` input only.                                                                                                                                                                                                                                                                                       |
+| `navigation_channels#navigation_menu`         | `String`     | Select or display the full or relative path to an item.                                                                                                                                                                                                                                                                                                                                                                                 |
+| `navigation_channels#navigation_current_item` | `Number`     | Get the current item of the current menu.                                                                                                                                                                                                                                                                                                                                                                                               |
+| `navigation_channels#navigation_total_items`  | `Number`     | Get the total count items in the current menu.                                                                                                                                                                                                                                                                                                                                                                                          |
+| `navigation_channels#navigation_level`        | `Number`     | Get the current menu level.                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `navigation_channels#navigation_updown`       |              | Move the cursor up or down.                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `navigation_channels#navigation_leftright`    |              | Move the cursor to the left or right.                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `navigation_channels#navigation_select`       |              | Select the current item.                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `navigation_channels#navigation_back`         |              | Navigate to the parent menu.                                                                                                                                                                                                                                                                                                                                                                                                            |
+| `navigation_channels#navigation_backtoroot`   |              | Navigate back to the root menu.                                                                                                                                                                                                                                                                                                                                                                                                         |
 
 Navigation is not supported by Spotify input.
 
@@ -85,39 +108,50 @@ Link the items to the channels of your preferred zone (here `Main_Zone`) in Pape
 Items:
 
 ```
-Switch      Yamaha_Power                "Power [%s]"                <switch>
-Dimmer      Yamaha_Volume               "Volume [%.1f %%]"          <soundvolume>
-Switch      Yamaha_Mute                 "Mute [%s]"                 <soundvolume_mute>
-Number      Yamaha_Dialogue_Level       "Dialogue Level [%d]"       <soundvolume>
-String      Yamaha_Input                "Input [%s]"                <video>
-String      Yamaha_Surround             "Surround [%s]"             <video>
+Switch      Yamaha_Power           "Power [%s]"                <switch>
+Dimmer      Yamaha_Volume          "Volume [%.1f %%]"          <soundvolume>
+Switch      Yamaha_Mute            "Mute [%s]"                 <soundvolume_mute>
+String      Yamaha_Input           "Input [%s]"                <video>
+String      Yamaha_Surround        "Surround [%s]"             <video>
+String      Yamaha_Scene           "Scene []"                  <video>
+Number      Yamaha_Dialogue_Level  "Dialogue Level [%d]"       <soundvolume>
 ```
 
 ##### For manually linking
 
-Replace the UPNP UDN (here: `9ab0c000_f668_11de_9976_00a0ded41bb7`) with the real UDN provided by your UPNP discovery.
+Replace the UPNP UDN (here: `96a40ba9`) with the real UDN provided by your UPNP discovery.
 Also replace the zone name with your preferred zone (here `Main_Zone`).
 
 Items:
 
 ```
-Switch      Yamaha_Power                "Power [%s]"                <switch>             { channel="yamahareceiver:zone:9ab0c000_f668_11de_9976_00a0ded41bb7:Main_Zone:zone_channels#power" }
-Dimmer      Yamaha_Volume               "Volume [%.1f %%]"          <soundvolume>        { channel="yamahareceiver:zone:9ab0c000_f668_11de_9976_00a0ded41bb7:Main_Zone:zone_channels#volume" }
-Switch      Yamaha_Mute                 "Mute [%s]"                 <soundvolume_mute>   { channel="yamahareceiver:zone:9ab0c000_f668_11de_9976_00a0ded41bb7:Main_Zone:zone_channels#mute" }
-String      Yamaha_Input                "Input [%s]"                <video>              { channel="yamahareceiver:zone:9ab0c000_f668_11de_9976_00a0ded41bb7:Main_Zone:zone_channels#input" }
-String      Yamaha_Surround             "Surround [%s]"             <video>              { channel="yamahareceiver:zone:9ab0c000_f668_11de_9976_00a0ded41bb7:Main_Zone:zone_channels#surroundProgram" }
-Switch      Yamaha_Dialogue_Level       "Dialogue Level [%d]"       <soundvolume>        { channel="yamahareceiver:zone:9ab0c000_f668_11de_9976_00a0ded41bb7:Main_Zone:zone_channels#dialogueLevel" }
+Switch      Yamaha_Power           "Power [%s]"                <switch>             { channel="yamahareceiver:zone:96a40ba9:Main_Zone:zone_channels#power" }
+Dimmer      Yamaha_Volume          "Volume [%.1f %%]"          <soundvolume>        { channel="yamahareceiver:zone:96a40ba9:Main_Zone:zone_channels#volume" }
+Switch      Yamaha_Mute            "Mute [%s]"                 <soundvolume_mute>   { channel="yamahareceiver:zone:96a40ba9:Main_Zone:zone_channels#mute" }
+String      Yamaha_Input           "Input [%s]"                <video>              { channel="yamahareceiver:zone:96a40ba9:Main_Zone:zone_channels#input" }
+String      Yamaha_Surround        "Surround [%s]"             <video>              { channel="yamahareceiver:zone:96a40ba9:Main_Zone:zone_channels#surroundProgram" }
+String      Yamaha_Scene           "Scene []"                  <video>              { channel="yamahareceiver:zone:96a40ba9:Main_Zone:zone_channels#scene" }
+Switch      Yamaha_Dialogue_Level  "Dialogue Level [%d]"       <soundvolume>        { channel="yamahareceiver:zone:96a40ba9:Main_Zone:zone_channels#dialogueLevel" }
+
+Switch      Yamaha_PartyMode       "Party mode [%s]"           <switch>             { channel="yamahareceiver:yamahaAV:96a40ba9:party_mode" }
+Switch      Yamaha_PartyModeMute   "Party mode mute [%s]"      <soundvolume_mute>   { channel="yamahareceiver:yamahaAV:96a40ba9:party_mode_mute" }
+Dimmer      Yamaha_PartyModeVolume "Party mode volume []"      <soundvolume>        { channel="yamahareceiver:yamahaAV:96a40ba9:party_mode_volume" }
 ```
 
 Sitemap:
 
 ```
-Switch     item=Yamaha_Power
-Switch     item=Yamaha_Mute
-Slider     item=Yamaha_Volume
-Selection  item=Yamaha_Input       mappings=[HDMI1="Kodi",HDMI2="PC",AUDIO1="TV",TUNER="Tuner",Spotify="Spotify",Bluetooth="Bluetooth","NET RADIO"="NetRadio",SERVER="Server",Straight="Straight"]
-Selection  item=Yamaha_Surround    mappings=["2ch Stereo"="2ch Stereo","5ch Stereo"="5ch Stereo","Chamber"="Chamber","Sci-Fi"="Sci-Fi","Adventure"="Adventure"]
-Setpoint   item=Yamaha_Dialogue_Level minValue=0 maxValue=2 step=1
+Switch      item=Yamaha_Power
+Switch      item=Yamaha_Mute
+Slider      item=Yamaha_Volume
+Selection   item=Yamaha_Input            mappings=[HDMI1="Kodi",HDMI2="PC",AUDIO1="TV",TUNER="Tuner",Spotify="Spotify",Bluetooth="Bluetooth","NET RADIO"="NetRadio",SERVER="Server",Straight="Straight"]
+Selection   item=Yamaha_Surround         mappings=["2ch Stereo"="2ch Stereo","5ch Stereo"="5ch Stereo","Chamber"="Chamber","Sci-Fi"="Sci-Fi","Adventure"="Adventure"]
+Switch      item=Yamaha_Scene            mappings=["Scene 1"="Kodi","Scene 2"="TV","Scene 3"="NET","Scene 4"="Radio"]
+Setpoint    item=Yamaha_Dialogue_Level   minValue=0 maxValue=2 step=1
+
+Switch      item=Yamaha_PartyMode
+Switch      item=Yamaha_PartyModeMute
+Switch      item=Yamaha_PartyModeVolume  mappings=[DECREASE="-", INCREASE="+"]
 ```
 
 Note: Some input values for `Yamaha_Input` might not be supported on your model. Make sure to adjust these values. 
@@ -127,23 +161,23 @@ Note: Some input values for `Yamaha_Input` might not be supported on your model.
 Items:
 
 ```
-String      Yamaha_Playback                 "[]"                    <video>              { channel="yamahareceiver:zone:9ab0c000_f668_11de_9976_00a0ded41bb7:Main_Zone:playback_channels#playback" }
-String      Yamaha_Playback_Station         "Station [%s]"          <video>              { channel="yamahareceiver:zone:9ab0c000_f668_11de_9976_00a0ded41bb7:Main_Zone:playback_channels#playback_station" }
-String      Yamaha_Playback_Artist          "Artist [%s]"           <video>              { channel="yamahareceiver:zone:9ab0c000_f668_11de_9976_00a0ded41bb7:Main_Zone:playback_channels#playback_artist" }
-String      Yamaha_Playback_Album           "Album [%s]"            <video>              { channel="yamahareceiver:zone:9ab0c000_f668_11de_9976_00a0ded41bb7:Main_Zone:playback_channels#playback_album" }
-String      Yamaha_Playback_Song            "Song [%s]"             <video>              { channel="yamahareceiver:zone:9ab0c000_f668_11de_9976_00a0ded41bb7:Main_Zone:playback_channels#playback_song" }
-String      Yamaha_Playback_Song_Image      "[]"                    <videp>              { channel="yamahareceiver:zone:9ab0c000_f668_11de_9976_00a0ded41bb7:Main_Zone:playback_channels#playback_song_image_url" }
+String      Yamaha_Playback                 "[]"                    <video>              { channel="yamahareceiver:zone:96a40ba9:Main_Zone:playback_channels#playback" }
+String      Yamaha_Playback_Station         "Station [%s]"          <video>              { channel="yamahareceiver:zone:96a40ba9:Main_Zone:playback_channels#playback_station" }
+String      Yamaha_Playback_Artist          "Artist [%s]"           <video>              { channel="yamahareceiver:zone:96a40ba9:Main_Zone:playback_channels#playback_artist" }
+String      Yamaha_Playback_Album           "Album [%s]"            <video>              { channel="yamahareceiver:zone:96a40ba9:Main_Zone:playback_channels#playback_album" }
+String      Yamaha_Playback_Song            "Song [%s]"             <video>              { channel="yamahareceiver:zone:96a40ba9:Main_Zone:playback_channels#playback_song" }
+String      Yamaha_Playback_Song_Image      "[]"                    <video>              { channel="yamahareceiver:zone:96a40ba9:Main_Zone:playback_channels#playback_song_image_url" }
 ```
 
 Sitemap:
 
 ```
-Switch      item=Yamaha_Playback            mappings=["Previous"="⏮", "Play"="►", "Pause"="⏸", "Stop"="⏹", "Next"="⏭"]    visibility=[Yamaha_Input=="Spotify", Yamaha_Input=="Bluetooth"]
-Text        item=Yamaha_Playback_Station                                                                                    visibility=[Yamaha_Input=="TUNER"]
+Switch      item=Yamaha_Playback            mappings=["Previous"="⏮", "Play"="►", "Pause"="⏸", "Stop"="⏹", "Next"="⏭"]    visibility=[Yamaha_Input=="Spotify", Yamaha_Input=="NET RADIO", Yamaha_Input=="Bluetooth"]
+Text        item=Yamaha_Playback_Station    visibility=[Yamaha_Input=="TUNER", Yamaha_Input=="NET RADIO"]
 Text        item=Yamaha_Playback_Artist
 Text        item=Yamaha_Playback_Album
 Text        item=Yamaha_Playback_Song
-Image       item=Yamaha_Playback_Song_Image                                                                                 visibility=[Yamaha_Input=="Spotify"]
+Image       item=Yamaha_Playback_Song_Image visibility=[Yamaha_Input=="Spotify", Yamaha_Input=="NET RADIO", Yamaha_Input=="Bluetooth"]
 ```
 
 Note the `visiblility` rules - you may need to adjust to your particular AVR model supported inputs and features.
@@ -153,8 +187,8 @@ Note the `visiblility` rules - you may need to adjust to your particular AVR mod
 Items:
 
 ```
-Number      Yamaha_Preset               "Preset [%d]"               <video>              { channel="yamahareceiver:zone:9ab0c000_f668_11de_9976_00a0ded41bb7:Main_Zone:playback_channels#preset"}
-String      Yamaha_Tuner_Band           "Band [%s]"                 <video>              { channel="yamahareceiver:zone:9ab0c000_f668_11de_9976_00a0ded41bb7:Main_Zone:playback_channels#tuner_band" }
+Number      Yamaha_Preset               "Preset [%d]"               <video>              { channel="yamahareceiver:zone:96a40ba9:Main_Zone:playback_channels#preset"}
+String      Yamaha_Tuner_Band           "Band [%s]"                 <video>              { channel="yamahareceiver:zone:96a40ba9:Main_Zone:playback_channels#tuner_band" }
 String      Yamaha_Input_Ex
 ```
 
@@ -167,27 +201,23 @@ when
 	Item Yamaha_Input changed or
 	Item Yamaha_Tuner_Band changed	
 then
-	var input = Yamaha_Input.state
-	if (input !== NULL) {
-		if (Yamaha_Input.state == "TUNER" && Yamaha_Tuner_Band.state !== NULL) {
-			input = "TUNER_" + Yamaha_Tuner_Band.state
-		}
-	} else {
-		input = ""
+	var String input = "" + Yamaha_Input.state
+	if (Yamaha_Input.state == "TUNER" && Yamaha_Tuner_Band.state !== NULL) {
+		input = input + "_" + Yamaha_Tuner_Band.state
 	}
-	Yamaha_Input_Ex.postUpdate(new StringType(input))
+	Yamaha_Input_Ex.postUpdate(input)
 end
 ```
 
 When the input is `TUNER` the `Yamaha_Input_Ex` item will have a value of either `TUNER_FM` or `TUNER_DAB` depending on the chosen tuner band,
-otherwise it will be same as input (`Yamaha_Input`).
+otherwise it will be the same as input (`Yamaha_Input`).
 
 Sitemap:
 
 ```
-Selection   item=Yamaha_Tuner_Band          mappings=[FM="FM",DAB="DAB+"]                                                   visibility=[Yamaha_Input=="TUNER"]
-Selection   item=Yamaha_Preset              mappings=[2="Radio Krakow",3="PR Trojka",5="RadioZet",8="Radio Chillizet",12="RMF Classic",13="RMF MAXXX"]     visibility=[Yamaha_Input_Ex=="TUNER_FM"]
-Selection   item=Yamaha_Preset              mappings=[1="FM-1",2="FM-2",3="FM-3"]                                           visibility=[Yamaha_Input_Ex=="TUNER_DAB"]
+Selection   item=Yamaha_Tuner_Band    mappings=[FM="FM",DAB="DAB+"]          visibility=[Yamaha_Input=="TUNER"]
+Selection   item=Yamaha_Preset        mappings=[2="Radio Krakow",3="PR Trojka",5="RadioZet",8="Radio Chillizet",12="RMF Classic",13="RMF MAXXX"]     visibility=[Yamaha_Input_Ex=="TUNER_FM"]
+Selection   item=Yamaha_Preset        mappings=[1="FM-1",2="FM-2",3="FM-3"]  visibility=[Yamaha_Input_Ex=="TUNER_DAB"]
 ```
 
 Notice how we have two preset mappings that each is meant for FM and DAB+ bands respectively. This enables to have different channel names per band.

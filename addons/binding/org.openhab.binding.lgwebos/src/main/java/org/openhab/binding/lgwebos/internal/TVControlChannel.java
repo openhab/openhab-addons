@@ -11,9 +11,11 @@ package org.openhab.binding.lgwebos.internal;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.lgwebos.handler.LGWebOSHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +33,7 @@ import com.connectsdk.service.command.ServiceSubscription;
  *
  * @author Sebastian Prehn - initial contribution
  */
-public class TVControlChannel extends BaseChannelHandler<ChannelListener> {
+public class TVControlChannel extends BaseChannelHandler<ChannelListener, Object> {
     private final Logger logger = LoggerFactory.getLogger(TVControlChannel.class);
 
     private TVControl getControl(ConnectableDevice device) {
@@ -39,25 +41,25 @@ public class TVControlChannel extends BaseChannelHandler<ChannelListener> {
     }
 
     @Override
-    public void onReceiveCommand(ConnectableDevice device, String channelId, LGWebOSHandler handler, Command command) {
+    public void onReceiveCommand(@Nullable ConnectableDevice device, String channelId, LGWebOSHandler handler,
+            Command command) {
         if (device == null) {
             return;
         }
-
         if (IncreaseDecreaseType.INCREASE == command) {
             if (device.hasCapabilities(TVControl.Channel_Up)) {
-                getControl(device).channelUp(createDefaultResponseListener());
+                getControl(device).channelUp(getDefaultResponseListener());
             }
         } else if (IncreaseDecreaseType.DECREASE == command) {
             if (device.hasCapabilities(TVControl.Channel_Down)) {
-                getControl(device).channelDown(createDefaultResponseListener());
+                getControl(device).channelDown(getDefaultResponseListener());
             }
         } else if (device.hasCapabilities(TVControl.Channel_List, TVControl.Channel_Set)) {
             final String value = command.toString();
             final TVControl control = getControl(device);
             control.getChannelList(new TVControl.ChannelListListener() {
                 @Override
-                public void onError(ServiceCommandError error) {
+                public void onError(@Nullable ServiceCommandError error) {
                     logger.warn("error requesting channel list: {}.", error.getMessage());
                 }
 
@@ -69,7 +71,7 @@ public class TVControlChannel extends BaseChannelHandler<ChannelListener> {
                     Optional<ChannelInfo> channelInfo = channels.stream().filter(c -> c.getNumber().equals(value))
                             .findFirst();
                     if (channelInfo.isPresent()) {
-                        control.setChannel(channelInfo.get(), createDefaultResponseListener());
+                        control.setChannel(channelInfo.get(), getDefaultResponseListener());
                     } else {
                         logger.warn("TV does not have a channel: {}.", value);
                     }
@@ -85,17 +87,18 @@ public class TVControlChannel extends BaseChannelHandler<ChannelListener> {
             return Optional.of(getControl(device).subscribeCurrentChannel(new ChannelListener() {
 
                 @Override
-                public void onError(ServiceCommandError error) {
+                public void onError(@Nullable ServiceCommandError error) {
                     logger.debug("error: {} {} {}", error.getCode(), error.getPayload(), error.getMessage());
+                    handler.postUpdate(channelId, UnDefType.UNDEF);
                 }
 
                 @Override
-                public void onSuccess(ChannelInfo channelInfo) {
+                public void onSuccess(@Nullable ChannelInfo channelInfo) {
                     handler.postUpdate(channelId, new DecimalType(channelInfo.getNumber()));
                 }
             }));
         } else {
-            return null;
+            return Optional.empty();
         }
     }
 }

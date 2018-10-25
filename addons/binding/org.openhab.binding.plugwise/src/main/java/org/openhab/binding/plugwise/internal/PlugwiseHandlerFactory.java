@@ -8,12 +8,14 @@
  */
 package org.openhab.binding.plugwise.internal;
 
-import static org.openhab.binding.plugwise.PlugwiseBindingConstants.*;
+import static org.openhab.binding.plugwise.internal.PlugwiseBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -22,11 +24,11 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.plugwise.handler.PlugwiseRelayDeviceHandler;
-import org.openhab.binding.plugwise.handler.PlugwiseScanHandler;
-import org.openhab.binding.plugwise.handler.PlugwiseSenseHandler;
-import org.openhab.binding.plugwise.handler.PlugwiseStickHandler;
-import org.openhab.binding.plugwise.handler.PlugwiseSwitchHandler;
+import org.openhab.binding.plugwise.internal.handler.PlugwiseRelayDeviceHandler;
+import org.openhab.binding.plugwise.internal.handler.PlugwiseScanHandler;
+import org.openhab.binding.plugwise.internal.handler.PlugwiseSenseHandler;
+import org.openhab.binding.plugwise.internal.handler.PlugwiseStickHandler;
+import org.openhab.binding.plugwise.internal.handler.PlugwiseSwitchHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 
@@ -35,18 +37,19 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Wouter Born - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.plugwise")
+@NonNullByDefault
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.plugwise")
 public class PlugwiseHandlerFactory extends BaseThingHandlerFactory {
+
+    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<>();
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
-    private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<>();
-
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_STICK)) {
@@ -76,16 +79,13 @@ public class PlugwiseHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected void removeHandler(ThingHandler thingHandler) {
-        if (discoveryServiceRegistrations != null) {
-            ServiceRegistration<?> registration = this.discoveryServiceRegistrations
-                    .get(thingHandler.getThing().getUID());
-            if (registration != null) {
-                PlugwiseThingDiscoveryService discoveryService = (PlugwiseThingDiscoveryService) bundleContext
-                        .getService(registration.getReference());
-                discoveryService.deactivate();
-                registration.unregister();
-                discoveryServiceRegistrations.remove(thingHandler.getThing().getUID());
-            }
+        ServiceRegistration<?> registration = this.discoveryServiceRegistrations.get(thingHandler.getThing().getUID());
+        if (registration != null) {
+            PlugwiseThingDiscoveryService discoveryService = (PlugwiseThingDiscoveryService) bundleContext
+                    .getService(registration.getReference());
+            discoveryService.deactivate();
+            registration.unregister();
+            discoveryServiceRegistrations.remove(thingHandler.getThing().getUID());
         }
     }
 

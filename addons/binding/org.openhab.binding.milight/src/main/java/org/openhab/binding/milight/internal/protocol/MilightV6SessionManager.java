@@ -45,7 +45,6 @@ import org.slf4j.LoggerFactory;
  * our session is still valid and can redo the session handshake if necessary.
  *
  * @author David Graeff - Initial contribution
- * @since 2.1
  */
 public class MilightV6SessionManager implements Runnable {
     protected final Logger logger = LoggerFactory.getLogger(MilightV6SessionManager.class);

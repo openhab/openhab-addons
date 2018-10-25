@@ -8,15 +8,15 @@
  */
 package org.openhab.binding.netatmo.internal.station;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.netatmo.handler.NetatmoDeviceHandler;
 import org.openhab.binding.netatmo.internal.WeatherUtils;
+import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
 
 import io.swagger.client.model.NADashboardData;
 import io.swagger.client.model.NAMain;

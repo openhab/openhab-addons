@@ -12,6 +12,6 @@
   <artifactId>org.openhab.voice.kaldi</artifactId>
   <packaging>eclipse-plugin</packaging>
 
-  <name>Kaldi Voice Integration</name>
+  <name>Kaldi Speech-to-Text</name>
 
 </project>

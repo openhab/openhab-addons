@@ -8,14 +8,14 @@
  */
 package org.openhab.binding.smaenergymeter.internal;
 
-import static org.openhab.binding.smaenergymeter.SMAEnergyMeterBindingConstants.*;
+import static org.openhab.binding.smaenergymeter.internal.SMAEnergyMeterBindingConstants.*;
 
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.smaenergymeter.handler.SMAEnergyMeterHandler;
+import org.openhab.binding.smaenergymeter.internal.handler.SMAEnergyMeterHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -24,7 +24,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Osman Basha - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.smaenergymeter")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.smaenergymeter")
 public class SMAEnergyMeterHandlerFactory extends BaseThingHandlerFactory {
 
     @Override

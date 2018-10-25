@@ -27,8 +27,7 @@ import org.openhab.binding.max.internal.exceptions.UnsupportedMessageTypeExcepti
  * possible to add additional lines when there is a message ready to be
  * processed.
  *
- * @author Christian Rockrohr <christian@rockrohr.de>
- * @since 1.7.0
+ * @author Christian Rockrohr <christian@rockrohr.de> - Initial contribution
  */
 public class MessageProcessor {
 
@@ -38,7 +37,7 @@ public class MessageProcessor {
      * The message that was created from last line received. (Null if no message
      * available yet)
      */
-    private Message currentMessage = null;
+    private Message currentMessage;
 
     /**
      * <pre>
@@ -48,9 +47,9 @@ public class MessageProcessor {
      *    currentMessageType indicates which message type is currently on stack
      * </pre>
      */
-    private Integer numberOfRequiredLines = null;
-    private List<String> receivedLines = new ArrayList<String>();
-    private MessageType currentMessageType = null;
+    private Integer numberOfRequiredLines;
+    private List<String> receivedLines = new ArrayList<>();
+    private MessageType currentMessageType;
 
     /**
      * Resets the current status and processed lines. Should be used after
@@ -89,7 +88,6 @@ public class MessageProcessor {
      */
     public Boolean addReceivedLine(String line) throws IncompleteMessageException, MessageIsWaitingException,
             UnsupportedMessageTypeException, UnprocessableMessageException, IncorrectMultilineIndexException {
-
         if (this.currentMessage != null) {
             throw new MessageIsWaitingException();
         }
@@ -108,28 +106,28 @@ public class MessageProcessor {
 
         switch (messageType) {
             case H:
-                this.currentMessage = new H_Message(line);
+                this.currentMessage = new HMessage(line);
                 break;
             case C:
-                this.currentMessage = new C_Message(line);
+                this.currentMessage = new CMessage(line);
                 break;
             case L:
-                this.currentMessage = new L_Message(line);
+                this.currentMessage = new LMessage(line);
                 break;
             case S:
-                this.currentMessage = new S_Message(line);
+                this.currentMessage = new SMessage(line);
                 break;
             case M:
-                result = handle_M_MessageLine(line);
+                result = handleMMessageLine(line);
                 break;
             case N:
-                this.currentMessage = new N_Message(line);
+                this.currentMessage = new NMessage(line);
                 break;
             case F:
-                this.currentMessage = new F_Message(line);
+                this.currentMessage = new FMessage(line);
                 break;
             case A:
-                this.currentMessage = new A_Message(line);
+                this.currentMessage = new AMessage(line);
                 break;
             default:
         }
@@ -137,7 +135,7 @@ public class MessageProcessor {
         return result;
     }
 
-    private Boolean handle_M_MessageLine(String line)
+    private Boolean handleMMessageLine(String line)
             throws UnprocessableMessageException, IncompleteMessageException, IncorrectMultilineIndexException {
         Boolean result = false;
 
@@ -152,7 +150,7 @@ public class MessageProcessor {
                     case 0:
                         throw new UnprocessableMessageException();
                     case 1:
-                        this.currentMessage = new M_Message(line);
+                        this.currentMessage = new MMessage(line);
                         result = true;
                         break;
                     default:
@@ -176,7 +174,7 @@ public class MessageProcessor {
                     for (String curLine : receivedLines) {
                         newLine += curLine;
                     }
-                    this.currentMessage = new M_Message(newLine);
+                    this.currentMessage = new MMessage(newLine);
                     result = true;
                 }
             }
@@ -207,15 +205,11 @@ public class MessageProcessor {
      *             when there was no message on the stack
      */
     public Message pull() throws NoMessageAvailableException {
-        Message result = null;
-
+        final Message result = this.currentMessage;
         if (this.currentMessage == null) {
             throw new NoMessageAvailableException();
-        } else {
-            result = this.currentMessage;
-            reset();
         }
-
+        reset();
         return result;
     }
 
@@ -228,7 +222,6 @@ public class MessageProcessor {
      * @return MessageType of the line added
      */
     private static MessageType getMessageType(String line) {
-
         for (MessageType msgType : MessageType.values()) {
             if (line.startsWith(msgType.name() + SEPARATOR)) {
                 return msgType;

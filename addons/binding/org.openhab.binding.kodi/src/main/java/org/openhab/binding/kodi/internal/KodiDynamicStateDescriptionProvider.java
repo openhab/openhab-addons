@@ -29,8 +29,7 @@ import org.osgi.service.component.annotations.Deactivate;
  * @author Gregory Moyer - Initial contribution
  * @author Christoph Weitkamp - Adapted to Kodi binding
  */
-@Component(service = { DynamicStateDescriptionProvider.class,
-        KodiDynamicStateDescriptionProvider.class }, immediate = true)
+@Component(service = { DynamicStateDescriptionProvider.class, KodiDynamicStateDescriptionProvider.class })
 @NonNullByDefault
 public class KodiDynamicStateDescriptionProvider implements DynamicStateDescriptionProvider {
     private final Map<ChannelUID, @Nullable List<StateOption>> channelOptionsMap = new ConcurrentHashMap<>();

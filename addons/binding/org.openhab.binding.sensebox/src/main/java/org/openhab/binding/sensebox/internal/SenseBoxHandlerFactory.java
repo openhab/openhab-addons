@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.sensebox.internal;
 
-import static org.openhab.binding.sensebox.SenseBoxBindingConstants.THING_TYPE_BOX;
+import static org.openhab.binding.sensebox.internal.SenseBoxBindingConstants.THING_TYPE_BOX;
 
 import java.util.Collections;
 import java.util.Set;
@@ -18,7 +18,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.sensebox.handler.SenseBoxHandler;
+import org.openhab.binding.sensebox.internal.handler.SenseBoxHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -27,7 +27,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Hakan Tandogan - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.sensebox")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.sensebox")
 public class SenseBoxHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_BOX);

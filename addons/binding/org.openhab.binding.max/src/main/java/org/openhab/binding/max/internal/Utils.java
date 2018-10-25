@@ -8,19 +8,15 @@
  */
 package org.openhab.binding.max.internal;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Date;
 
 /**
  * Utility class for common tasks within the MAX! binding package.
  *
- * @author Andreas Heil (info@aheil.de)
- * @author Marcel Verpaalen
+ * @author Andreas Heil (info@aheil.de) - Initial contribution
+ * @author Marcel Verpaalen - OH2 update
  *
- * @since 1.4.0
  */
-
 public final class Utils {
 
     /**
@@ -107,7 +103,6 @@ public final class Utils {
      */
     @SuppressWarnings("deprecation")
     public static Date resolveDateTime(int date, int time) {
-
         int month = ((date & 0xE000) >> 12) + ((date & 0x80) >> 7);
         int day = (date & 0x1F00) >> 8;
         int year = (date & 0x0F) + 2000;
@@ -129,7 +124,6 @@ public final class Utils {
      * @return the bit array of the input value in a reversed manner.
      */
     public static boolean[] getBits(int value) {
-
         boolean[] bits = new boolean[8];
 
         for (int i = 0; i < 8; i++) {
@@ -147,9 +141,8 @@ public final class Utils {
      *
      * @param s
      * @return byte array equivalent to hex string
-     **/
+     */
     public static byte[] hexStringToByteArray(String s) {
-
         int len = s.length();
         byte[] data = new byte[len / 2];
 
@@ -168,7 +161,7 @@ public final class Utils {
      *
      * @param byte array
      * @return String equivalent to hex string
-     **/
+     */
     static final String HEXES = "0123456789ABCDEF";
 
     public static String getHex(byte[] raw) {

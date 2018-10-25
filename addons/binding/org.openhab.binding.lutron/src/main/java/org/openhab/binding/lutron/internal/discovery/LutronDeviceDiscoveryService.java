@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.lutron.internal.discovery;
 
-import static org.openhab.binding.lutron.LutronBindingConstants.*;
+import static org.openhab.binding.lutron.internal.LutronBindingConstants.*;
 
 import java.io.IOException;
 import java.net.URL;
@@ -23,7 +23,6 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.lutron.handler.IPBridgeHandler;
 import org.openhab.binding.lutron.internal.LutronHandlerFactory;
 import org.openhab.binding.lutron.internal.discovery.project.Area;
 import org.openhab.binding.lutron.internal.discovery.project.Device;
@@ -33,6 +32,7 @@ import org.openhab.binding.lutron.internal.discovery.project.DeviceType;
 import org.openhab.binding.lutron.internal.discovery.project.Output;
 import org.openhab.binding.lutron.internal.discovery.project.OutputType;
 import org.openhab.binding.lutron.internal.discovery.project.Project;
+import org.openhab.binding.lutron.internal.handler.IPBridgeHandler;
 import org.openhab.binding.lutron.internal.xml.DbXmlInfoReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +41,8 @@ import org.slf4j.LoggerFactory;
  * The {@link LutronDeviceDiscoveryService} finds all devices paired with a Lutron bridge.
  *
  * @author Allan Tong - Initial contribution
+ * @author Bob Adair - Added support for phase-selectable dimmers, Pico, tabletop keypads, switch modules, VCRX,
+ *         and repeater virtual buttons
  */
 public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
 
@@ -142,8 +144,20 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
                     notifyDiscovery(THING_TYPE_KEYPAD, device.getIntegrationId(), label);
                     break;
 
+                case VISOR_CONTROL_RECEIVER:
+                    notifyDiscovery(THING_TYPE_VCRX, device.getIntegrationId(), label);
+                    break;
+
+                case SEETOUCH_TABLETOP_KEYPAD:
+                    notifyDiscovery(THING_TYPE_TTKEYPAD, device.getIntegrationId(), label);
+                    break;
+
+                case PICO_KEYPAD:
+                    notifyDiscovery(THING_TYPE_PICO, device.getIntegrationId(), label);
+                    break;
+
                 case MAIN_REPEATER:
-                    // Ignore bridges
+                    notifyDiscovery(THING_TYPE_VIRTUALKEYPAD, device.getIntegrationId(), label);
                     break;
             }
         } else {
@@ -160,11 +174,26 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
             switch (type) {
                 case INC:
                 case MLV:
+                case AUTO_DETECT:
                     notifyDiscovery(THING_TYPE_DIMMER, output.getIntegrationId(), label);
                     break;
 
                 case NON_DIM:
+                case NON_DIM_INC:
+                case NON_DIM_ELV:
                     notifyDiscovery(THING_TYPE_SWITCH, output.getIntegrationId(), label);
+                    break;
+
+                case CCO_PULSED:
+                    notifyDiscovery(THING_TYPE_CCO_PULSED, output.getIntegrationId(), label);
+                    break;
+
+                case CCO_MAINTAINED:
+                    notifyDiscovery(THING_TYPE_CCO_MAINTAINED, output.getIntegrationId(), label);
+                    break;
+
+                case SYSTEM_SHADE:
+                    notifyDiscovery(THING_TYPE_SHADE, output.getIntegrationId(), label);
                     break;
             }
         } else {

@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.toon.internal.discovery;
 
-import static org.openhab.binding.toon.ToonBindingConstants.*;
+import static org.openhab.binding.toon.internal.ToonBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,13 +19,13 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.toon.handler.ToonBridgeHandler;
 import org.openhab.binding.toon.internal.ToonApiClient;
 import org.openhab.binding.toon.internal.api.Agreement;
 import org.openhab.binding.toon.internal.api.DeviceConfig;
 import org.openhab.binding.toon.internal.api.DeviceConfigInfo;
 import org.openhab.binding.toon.internal.api.ToonConnectionException;
 import org.openhab.binding.toon.internal.api.ToonState;
+import org.openhab.binding.toon.internal.handler.ToonBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

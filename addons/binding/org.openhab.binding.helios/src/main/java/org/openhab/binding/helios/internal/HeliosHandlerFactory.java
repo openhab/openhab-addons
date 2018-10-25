@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.helios.internal;
 
-import static org.openhab.binding.helios.HeliosBindingConstants.*;
+import static org.openhab.binding.helios.internal.HeliosBindingConstants.*;
 
 import java.util.Collection;
 
@@ -17,8 +17,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.helios.handler.HeliosHandler221;
-import org.openhab.binding.helios.handler.HeliosHandler27;
+import org.openhab.binding.helios.internal.handler.HeliosHandler221;
+import org.openhab.binding.helios.internal.handler.HeliosHandler27;
 import org.osgi.service.component.annotations.Component;
 
 import com.google.common.collect.Lists;
@@ -29,7 +29,7 @@ import com.google.common.collect.Lists;
  *
  * @author Karel Goderis - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.helios")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.helios")
 public class HeliosHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists

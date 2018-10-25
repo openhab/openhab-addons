@@ -13,7 +13,7 @@ import static org.eclipse.smarthome.core.library.unit.ImperialUnits.FAHRENHEIT;
 import static org.eclipse.smarthome.core.library.unit.SIUnits.CELSIUS;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.openhab.binding.nest.NestBindingConstants.*;
+import static org.openhab.binding.nest.internal.NestBindingConstants.*;
 import static org.openhab.binding.nest.internal.data.NestDataUtil.*;
 
 import java.io.IOException;
@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
@@ -33,6 +32,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.junit.Test;
 import org.openhab.binding.nest.internal.config.NestDeviceConfiguration;
+import org.openhab.binding.nest.internal.handler.NestThermostatHandler;
 
 /**
  * Tests for {@link NestThermostatHandler}.
@@ -187,28 +187,10 @@ public class NestThermostatHandlerTest extends NestThingHandlerOSGiTest {
     }
 
     @Test
-    public void handleFanTimerDurationDecimalTypeCommands() throws IOException {
-        int[] durations = { 15, 30, 45, 60, 120, 240, 480, 960, 15 };
-        for (int duration : durations) {
-            handleCommand(CHANNEL_FAN_TIMER_DURATION, new DecimalType(duration));
-            assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "fan_timer_duration", String.valueOf(duration));
-        }
-    }
-
-    @Test
-    public void handleFanTimerDurationQuantityTypeCommands() throws IOException {
+    public void handleFanTimerDurationCommands() throws IOException {
         int[] durations = { 15, 30, 45, 60, 120, 240, 480, 960, 15 };
         for (int duration : durations) {
             handleCommand(CHANNEL_FAN_TIMER_DURATION, new QuantityType<>(duration, SmartHomeUnits.MINUTE));
-            assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "fan_timer_duration", String.valueOf(duration));
-        }
-    }
-
-    @Test
-    public void handleFanTimerDurationStringTypeCommands() throws IOException {
-        int[] durations = { 15, 30, 45, 60, 120, 240, 480, 960, 15 };
-        for (int duration : durations) {
-            handleCommand(CHANNEL_FAN_TIMER_DURATION, new StringType(String.valueOf(duration)));
             assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, "fan_timer_duration", String.valueOf(duration));
         }
     }
@@ -286,12 +268,6 @@ public class NestThermostatHandlerTest extends NestThingHandlerOSGiTest {
 
         handleCommand(channelId, new QuantityType<>(70, FAHRENHEIT));
         assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, apiPropertyName, "21.0");
-
-        handleCommand(channelId, new StringType("21.5"));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, apiPropertyName, "21.5");
-
-        handleCommand(channelId, new DecimalType(22.0));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, apiPropertyName, "22.0");
     }
 
     private void fahrenheitCommandsTest(String channelId, String apiPropertyName) throws IOException {
@@ -316,12 +292,6 @@ public class NestThermostatHandlerTest extends NestThingHandlerOSGiTest {
 
         handleCommand(channelId, new QuantityType<>(21, CELSIUS));
         assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, apiPropertyName, "70");
-
-        handleCommand(channelId, new StringType("71"));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, apiPropertyName, "71");
-
-        handleCommand(channelId, new DecimalType(72.0));
-        assertNestApiPropertyState(THERMOSTAT1_DEVICE_ID, apiPropertyName, "72");
     }
 
 }

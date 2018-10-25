@@ -19,7 +19,6 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
  *
  * @author Martin van Wingerden
  * @author Mike Jagdis
- * @since 1.9.0
  */
 public class RFXComUVMessageTest {
     @Test

@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.logreader.internal;
 
-import static org.openhab.binding.logreader.LogReaderBindingConstants.THING_READER;
+import static org.openhab.binding.logreader.internal.LogReaderBindingConstants.THING_READER;
 
 import java.util.Collections;
 import java.util.Set;
@@ -22,8 +22,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.logreader.handler.LogHandler;
 import org.openhab.binding.logreader.internal.filereader.FileTailer;
+import org.openhab.binding.logreader.internal.handler.LogHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -32,7 +32,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Miika Jukka - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.logreader")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.logreader")
 @NonNullByDefault
 public class LogReaderHandlerFactory extends BaseThingHandlerFactory {
 

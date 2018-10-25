@@ -8,8 +8,8 @@
  */
 package org.openhab.binding.netatmo.internal.welcome;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.netatmo.handler.NetatmoModuleHandler;
+import org.openhab.binding.netatmo.internal.handler.NetatmoModuleHandler;
 
 import io.swagger.client.api.WelcomeApi;
 import io.swagger.client.model.NAWelcomeEvent;
@@ -111,12 +111,10 @@ public class NAWelcomePersonHandler extends NetatmoModuleHandler<NAWelcomePerson
         if ((command instanceof OnOffType) && (CHANNEL_WELCOME_PERSON_ATHOME.equalsIgnoreCase(channelUID.getId()))) {
             if ((OnOffType) command == OnOffType.OFF) {
                 getBridgeHandler().getWelcomeApi().setpersonsaway(getParentId(), getId());
-                requestParentRefresh();
-                // } else {
-                // Experimental, this method is not documented in the API but **seems** to work
-                // Playing to much with it seems to lead to connection refused
-                // getBridgeHandler().getWelcomeApi().setpersonshome(getParentId(), "[\"" + getId() + "\"]");
+            } else {
+                getBridgeHandler().getWelcomeApi().setpersonshome(getParentId(), "[\"" + getId() + "\"]");
             }
+            invalidateParentCacheAndRefresh();
         }
     }
 

@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.squeezebox.internal;
 
-import static org.openhab.binding.squeezebox.SqueezeBoxBindingConstants.*;
+import static org.openhab.binding.squeezebox.internal.SqueezeBoxBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -30,10 +30,10 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.squeezebox.handler.SqueezeBoxPlayerEventListener;
-import org.openhab.binding.squeezebox.handler.SqueezeBoxPlayerHandler;
-import org.openhab.binding.squeezebox.handler.SqueezeBoxServerHandler;
 import org.openhab.binding.squeezebox.internal.discovery.SqueezeBoxPlayerDiscoveryParticipant;
+import org.openhab.binding.squeezebox.internal.handler.SqueezeBoxPlayerEventListener;
+import org.openhab.binding.squeezebox.internal.handler.SqueezeBoxPlayerHandler;
+import org.openhab.binding.squeezebox.internal.handler.SqueezeBoxServerHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  * @author Dan Cunningham - Initial contribution
  * @author Mark Hilbush - Cancel request player job when handler removed
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.squeezebox")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.squeezebox")
 public class SqueezeBoxHandlerFactory extends BaseThingHandlerFactory {
 
     private Logger logger = LoggerFactory.getLogger(SqueezeBoxHandlerFactory.class);

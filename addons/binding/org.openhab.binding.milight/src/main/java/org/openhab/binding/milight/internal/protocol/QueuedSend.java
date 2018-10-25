@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
  * want to just queue up those commands but apply the newest command only.
  *
  * @author David Graeff - Initial contribution
- * @since 2.1
  */
 public class QueuedSend implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(QueuedSend.class);

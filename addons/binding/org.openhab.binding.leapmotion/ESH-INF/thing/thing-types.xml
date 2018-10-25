@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="leapmotion" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="controller">
+		<label>Leap Motion Controller</label>
+		<description>A Leap Motion Gesture Sensor</description>
+
+		<channels>
+			<channel id="gesture" typeId="gesture" />
+		</channels>
+	</thing-type>
+
+	<channel-type id="gesture">
+		<kind>trigger</kind>
+		<label>Gestures</label>
+		<description>Provides recognized gestures from the controller</description>
+	</channel-type>
+
+</thing:thing-descriptions>

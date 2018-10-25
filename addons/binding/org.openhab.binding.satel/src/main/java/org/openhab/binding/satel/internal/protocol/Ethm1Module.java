@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
  * integration protocol enable in DLOADX configuration options.
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.7.0
  */
 public class Ethm1Module extends SatelModule {
 

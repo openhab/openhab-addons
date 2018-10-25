@@ -8,13 +8,17 @@
  */
 package org.openhab.binding.harmonyhub.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link HarmonyHubConfig} class represents the configuration of a Harmony Hub
  *
  * @author Dan Cunningham - Initial contribution
- *
+ * @author Wouter Born - Add null annotations
  */
+@NonNullByDefault
 public class HarmonyHubConfig {
-    public String host;
+    public @Nullable String host;
     public int heartBeatInterval;
 }

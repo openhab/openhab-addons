@@ -9,7 +9,7 @@
 package org.openhab.binding.nest.internal;
 
 import static java.util.stream.Collectors.toSet;
-import static org.openhab.binding.nest.NestBindingConstants.*;
+import static org.openhab.binding.nest.internal.NestBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -20,7 +20,6 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
-import org.eclipse.smarthome.core.i18n.UnitProvider;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -28,15 +27,14 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.nest.handler.NestBridgeHandler;
-import org.openhab.binding.nest.handler.NestCameraHandler;
-import org.openhab.binding.nest.handler.NestSmokeDetectorHandler;
-import org.openhab.binding.nest.handler.NestStructureHandler;
-import org.openhab.binding.nest.handler.NestThermostatHandler;
 import org.openhab.binding.nest.internal.discovery.NestDiscoveryService;
+import org.openhab.binding.nest.internal.handler.NestBridgeHandler;
+import org.openhab.binding.nest.internal.handler.NestCameraHandler;
+import org.openhab.binding.nest.internal.handler.NestSmokeDetectorHandler;
+import org.openhab.binding.nest.internal.handler.NestStructureHandler;
+import org.openhab.binding.nest.internal.handler.NestThermostatHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link NestHandlerFactory} is responsible for creating things and thing
@@ -46,24 +44,12 @@ import org.osgi.service.component.annotations.Reference;
  * @author David Bennett - Initial contribution
  */
 @NonNullByDefault
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.nest")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.nest")
 public class NestHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream.of(THING_TYPE_THERMOSTAT,
             THING_TYPE_CAMERA, THING_TYPE_BRIDGE, THING_TYPE_STRUCTURE, THING_TYPE_SMOKE_DETECTOR).collect(toSet());
 
     private Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryService = new HashMap<>();
-
-    @NonNullByDefault({})
-    private UnitProvider unitProvider;
-
-    @Reference
-    protected void setUnitProvider(UnitProvider unitProvider) {
-        this.unitProvider = unitProvider;
-    }
-
-    protected void unsetUnitProvider(UnitProvider unitProvider) {
-        this.unitProvider = null;
-    }
 
     /**
      * The things this factory supports creating.
@@ -82,7 +68,7 @@ public class NestHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_THERMOSTAT.equals(thingTypeUID)) {
-            return new NestThermostatHandler(thing, unitProvider);
+            return new NestThermostatHandler(thing);
         }
 
         if (THING_TYPE_CAMERA.equals(thingTypeUID)) {
