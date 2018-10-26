@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.smarthome.core.cache.ExpiringCacheMap;
 import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
@@ -69,9 +70,11 @@ public class KodiConnection implements KodiClientSocketEventListener {
     private KodiPlaylistState currentPlaylistState = KodiPlaylistState.CLEAR;
 
     private final KodiEventListener listener;
+    private final WebSocketClient webSocketClient;
 
-    public KodiConnection(KodiEventListener listener) {
+    public KodiConnection(KodiEventListener listener, WebSocketClient webSocketClient) {
         this.listener = listener;
+        this.webSocketClient = webSocketClient;
     }
 
     @Override
@@ -90,7 +93,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
         try {
             close();
             wsUri = new URI("ws", null, hostname, port, "/jsonrpc", null, null);
-            socket = new KodiClientSocket(this, wsUri, scheduler);
+            socket = new KodiClientSocket(this, wsUri, scheduler, webSocketClient);
             checkConnection();
         } catch (URISyntaxException e) {
             logger.error("exception during constructing URI host={}, port={}", hostname, port, e);

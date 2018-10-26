@@ -33,8 +33,7 @@ import com.google.gson.JsonParser;
  * KodiClientSocket implements the low level communication to Kodi through
  * websocket. Usually this communication is done through port 9090
  *
- * @author Paul Frank
- *
+ * @author Paul Frank - Initial contribution
  */
 public class KodiClientSocket {
 
@@ -51,17 +50,18 @@ public class KodiClientSocket {
 
     private final JsonParser parser = new JsonParser();
     private final Gson mapper = new Gson();
-    private URI uri;
+    private final URI uri;
+    private final WebSocketClient client;
     private Session session;
-    private WebSocketClient client;
 
     private final KodiClientSocketEventListener eventHandler;
 
-    public KodiClientSocket(KodiClientSocketEventListener eventHandler, URI uri, ScheduledExecutorService scheduler) {
+    public KodiClientSocket(KodiClientSocketEventListener eventHandler, URI uri, ScheduledExecutorService scheduler,
+            WebSocketClient webSocketClient) {
         this.eventHandler = eventHandler;
         this.uri = uri;
-        client = new WebSocketClient();
         this.scheduler = scheduler;
+        this.client = webSocketClient;
     }
 
     /**
@@ -74,9 +74,13 @@ public class KodiClientSocket {
         if (isConnected()) {
             logger.warn("connect: connection is already open");
         }
-        if (!client.isStarted()) {
-            client.start();
-        }
+        // if (!client.isStarted()) {
+        // try {
+        // client.start();
+        // } catch (Exception e) {
+        // logger.debug("Exception during start of the websocket: {}", e.getMessage(), e);
+        // }
+        // }
         KodiWebSocketListener socket = new KodiWebSocketListener();
         ClientUpgradeRequest request = new ClientUpgradeRequest();
 
@@ -96,18 +100,17 @@ public class KodiClientSocket {
             }
             session = null;
         }
-        try {
-            client.stop();
-        } catch (Exception e) {
-            logger.debug("Exception during closing the websocket: {}", e.getMessage(), e);
-        }
+        // try {
+        // client.stop();
+        // } catch (Exception e) {
+        // logger.debug("Exception during closing the websocket: {}", e.getMessage(), e);
+        // }
     }
 
     public boolean isConnected() {
         if (session == null || !session.isOpen()) {
             return false;
         }
-
         return connected;
     }
 
