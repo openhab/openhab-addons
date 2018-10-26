@@ -46,7 +46,7 @@ Powermeter devices
 | GenerationMeter | The Generation Meter from the innogy PowerControlSolar product | energy_generation_month_kwh, total_energy_generation, energy_generation_month_euro, energy_generation_day_euro, energy_generation_day_kwh, power_generation_watt |
 | SmartMeter | The Smart Meter from the innogy PowerControl product. | energy_consumption_month_kwh, absolute_energy_consumption, energy_consumption_month_euro, energy_consumption_day_euro, energy_consumption_day_kwh, power_consumption_watt |
 | Two-Way-Meter | The Two-Way-Meter from the innogy PowerControlSolar product | energy_month_kwh, total_energy, energy_month_euro, energy_day_euro, energy_day_kwh, energy_feed_month_kwh, total_energy_fed, energy_feed_month_euro, energy_feed_day_euro, energy_feed_day_kwh, power_watt |
-  
+
 
 ## Discovery
 
@@ -62,7 +62,7 @@ However, only devices will appear that are added in the innogy SmartHome app bef
 
 | Channel Type ID | Item Type    | Description  | Available on thing |
 | --------------- | ------------ | ------------ | ------------------ |
-| alarm | Switch | Switches the alarm (ON/OFF) | WSD, WSD2 | 
+| alarm | Switch | Switches the alarm (ON/OFF) | WSD, WSD2 |
 | battery_low | Switch | Indicates, if the battery is low (ON/OFF) | BRC8, RST, WDS, WMD, WMD0, WRT, WSC2, WSD, WSD2 |
 | contact | Contact | Indicates the contact state (OPEN/CLOSED) | WDS |
 | dimmer | Dimmer | Allows to dimm a light device | ISD2, PSD |
@@ -85,9 +85,9 @@ However, only devices will appear that are added in the innogy SmartHome app bef
 | button7_count | Number | number of button pushes for button 7, increased with each push | BRC8 |
 | button8_count | Number | number of button pushes for button 8, increased with each push | BRC8 |
 | luminance | Number | Indicates the measured luminance in percent | WMD, WMD0 |
-| mold_warning | Switch | active, if the measured humidity is too low (ON/OFF) | RST | 
+| mold_warning | Switch | active, if the measured humidity is too low (ON/OFF) | RST |
 | motion_count | Number | Number of detected motions, increases with each detected motion | WMD, WMDO |
-| operation_mode | String | the mode of a thermostat (auto/manual) | RST | 
+| operation_mode | String | the mode of a thermostat (auto/manual) | RST |
 | rollershutter | Rollershutter | Controls a roller shutter | ISR2 |
 | set_temperature | Number | Sets the target temperature in °C | RST, WRT |
 | smoke | Switch | Indicates, if smoke was detected (ON/OFF) | WSD, WSD2 |
@@ -101,9 +101,9 @@ However, only devices will appear that are added in the innogy SmartHome app bef
 
 The SmartHome Controller (SHC) can be configured in the Paper UI as follows:
 
-After the "innogy SmartHome Controller" is added via the Inbox, edit the controller and add the "Authorization code" by following the hints in the description. 
-Save your changes. 
-The SHC should now login and go online. 
+After the "innogy SmartHome Controller" is added via the Inbox, edit the controller and add the "Authorization code" by following the hints in the description.
+Save your changes.
+The SHC should now login and go online.
 Be sure it is connected to the Internet.
 
 ### Obtaining the authorization code and tokens
@@ -197,7 +197,7 @@ Number myHeatingHumidity       "Bath [%.1f %%]"         <humidity>    {channel="
 
 ## Sitemap configuration
 
-The site configuration works a usual. One special example 
+The site configuration works a usual. One special example
 
 ```
 sitemap default label="Home" {
@@ -210,6 +210,36 @@ sitemap default label="Home" {
 }
 ```
 
+## Rules example for pushbuttons
 
+Pushbuttons provide trigger channels, that can only be used in rules.
+Here is an example rule:
 
+```
+rule "Button triggered rule"
+when
+	Channel 'innogysmarthome:WSC2:mybridge:myPushButton:button1' triggered PRESSED
+then
+    // do something...
+	logInfo("testlogger", "Button 1 pressed")
+end
+```
 
+## Resolving certificate issues
+
+If the bridge stays offline with the following status shown in the PaperUI, the reason could be an expired certificate:
+
+`OFFLINE - COMMUNICATION_ERROR sun.security.validator.ValidatorException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target`
+
+To solve this on a linux system, follow this steps:
+
+1. Download the certificates (.cer-files) of https://home.innogy-smarthome.de and https://innogy.com including the "DigiCert Global Root G2" to your computer.
+As this depends on the usen browser and operating system, please google on how to achieve this for your situation.
+2. On your linux system, goto your Java Machine's certificate store, e.g. `/usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/jre/lib/security`.
+The path should include a file called `cacerts` (this is the certificate store) and may differ depending on the system used.
+3. Copy the .cer-files from step 1 into this directory.
+4. Import each certificate with the command: `sudo keytool –importcert –alias “innogysmarthome” –keystore cacerts –file innogy.cer`
+(alias can be freely chosen but must be unique; replace innogy.cer with the filename of the downloaded certificate)
+5. Restart the JVM and openHAB.
+
+The default password of the certificate store is "changeit".
