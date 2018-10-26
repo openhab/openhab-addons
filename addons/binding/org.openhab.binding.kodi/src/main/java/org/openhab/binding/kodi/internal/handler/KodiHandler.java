@@ -252,6 +252,8 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
             case CHANNEL_PVR_CHANNEL:
             case CHANNEL_THUMBNAIL:
             case CHANNEL_FANART:
+            case CHANNEL_AUDIO_CODEC:
+            case CHANNEL_VIDEO_CODEC:
             case CHANNEL_CURRENTTIME:
             case CHANNEL_CURRENTTIMEPERCENTAGE:
             case CHANNEL_DURATION:
@@ -672,6 +674,16 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     @Override
     public void updateFanart(RawType fanart) {
         updateState(CHANNEL_FANART, createImageState(fanart));
+    }
+
+    @Override
+    public void updateAudioCodec(String codec) {
+        updateState(CHANNEL_AUDIO_CODEC, createStringState(codec));
+    }
+
+    @Override
+    public void updateVideoCodec(String codec) {
+        updateState(CHANNEL_VIDEO_CODEC, createStringState(codec));
     }
 
     @Override

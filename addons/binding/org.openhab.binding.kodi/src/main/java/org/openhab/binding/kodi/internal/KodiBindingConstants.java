@@ -67,6 +67,8 @@ public class KodiBindingConstants {
     public static final String CHANNEL_PVR_CHANNEL = "pvr-channel";
     public static final String CHANNEL_THUMBNAIL = "thumbnail";
     public static final String CHANNEL_FANART = "fanart";
+    public static final String CHANNEL_AUDIO_CODEC = "audio-codec";
+    public static final String CHANNEL_VIDEO_CODEC = "video-codec";
     public static final String CHANNEL_CURRENTTIME = "currenttime";
     public static final String CHANNEL_CURRENTTIMEPERCENTAGE = "currenttimepercentage";
     public static final String CHANNEL_DURATION = "duration";
