@@ -35,7 +35,7 @@ public class ServiceFactory {
 
     /**
      * Create Samsung TV service.
-     * 
+     *
      * @param type
      * @param upnpIOService
      * @param udn
@@ -56,9 +56,11 @@ public class ServiceFactory {
             case MediaRendererService.SERVICE_NAME:
                 service = new MediaRendererService(upnpIOService, udn, pollingInterval);
                 break;
+            // will not be created automatically
             case RemoteControllerService.SERVICE_NAME:
                 service = RemoteControllerService.createUpnpService(host, port);
                 break;
+
         }
 
         return service;
@@ -66,7 +68,7 @@ public class ServiceFactory {
 
     /**
      * Procedure to query amount of supported services.
-     * 
+     *
      * @return Amount of supported services
      */
     public static int getServiceCount() {
@@ -75,7 +77,7 @@ public class ServiceFactory {
 
     /**
      * Procedure to get service class by service name.
-     * 
+     *
      * @param serviceName Name of the service
      * @return Class of the service
      */

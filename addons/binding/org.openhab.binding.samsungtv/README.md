@@ -4,7 +4,7 @@ This binding integrates the [Samsung TV's](http://www.samsung.com).
 
 ## Supported Things
 
-Samsung TV C (2010), D (2011), E (2012) and F (2013) models should be supported.
+Samsung TV C (2010), D (2011), E (2012) and F (2013) models should be supported. Also support added for TVs using websocket remote interface (2016+ models) 
 Because Samsung does not publish any documentation about the TV's UPnP interface, there could be differences between different TV models, which could lead to mismatch problems.
 
 Tested TV models:
@@ -15,6 +15,7 @@ Tested TV models:
 | UE46D5700 | PARTIAL | Supports at my home only commands via the fake remote, no discovery                                              |
 | UE40F6500 | OK      | All channels except `colorTemperature`, `programTitle` and `channelName` are working                             |
 | LE40D579  | PARTIAL | Supported channels: `volume`, `mute`, `sourceName`, `channel`, `programTitle`, `channelName`, `keyCode`, `power` |
+| UE55LS003 | PARTIAL | Supported channels: `volume`, `mute`, `sourceApp`, `url`, `keyCode`, `power`, `artMode` |
 
 
 ## Discovery
@@ -57,6 +58,8 @@ TVs support the following channels:
 | url              | String    | Start TV web browser and go the given web page.                                                         |
 | stopBrowser      | Switch    | Stop TV's web browser and go back to TV mode.                                                           |
 | power            | Switch    | TV power. Some of the Samsung TV models doesn't allow to set Power ON remotely.                         |
+| artMode          | Switch    | TV art mode for e.g. Samsung The Frame TV's. Only relevant if power=off. If set to on when power=on, the power will be switched off |
+| sourceApp        | String    | Currently active App.                                                                                   |
 | keyCode          | String    | The key code channel emulates the infrared remote controller and allows to send virtual button presses. |
 
 E.g.
