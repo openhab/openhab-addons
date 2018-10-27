@@ -18,6 +18,13 @@ This binding allows you to integrate, view, control and configure the Nuki Bridg
 It is absolutely recommended to configure static IP addresses for both, the openHAB server and the Nuki Bridge!  
 You can configure the Nuki Binding either by using Paper UI or manually through text files.
 
+### Nuki Bridge Callback
+
+The Nuki Binding will manage the required callback from the Nuki Bridge to the openHAB server if *manageCallbacks* is set to `true`.  
+
+If you want to manage the callbacks from the Nuki Bridge to the openHAB server by yourself, you need to set *manageCallbacks* to `false`. Then add the callback on the Nuki Bridge via Bridge API Endpoint */callback/add* in the format `http://<openHAB_IP>:<openHAB_PORT>/nuki/<Nuki-ID>`. Look the Nuki-ID up on the sticker on the back of the Nuki Bridge (unplug from power connector).  
+The Sheet [NukiBridgeAPI](https://docs.google.com/spreadsheets/d/1SGKWhqwqRyOGbv4NEq-8PAPjBORRixvEjRuzO-nVabQ) is a helpfull tool for listing, adding and removing callbacks.
+
 
 
 ## Supported Bridges
@@ -43,7 +50,7 @@ The following configuration options are available:
 
 | Parameter | Description                                                                                                                                                                                               | Comment       |
 | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- |
-| nukiId    | The `Nuki-ID` of the Nuki Smart Lock. It is a 8-digit hexadecimal string, for example `12AB89EF`. Look it up on the sticker on the back of the Nuki Smart Lock (remove mounting plate).                   | Required      |
+| nukiId    | The `Nuki-ID` of the Nuki Smart Lock. It is a 8-digit hexadecimal string. Look it up on the sticker on the back of the Nuki Smart Lock (remove mounting plate).                                           | Required      |
 | unlatch   | If set to `true` the Nuki Smart Lock will unlock the door but then also automatically pull the latch of the door lock. Usually, if the door hinges are correctly adjusted, the door will then swing open. | Default false |
 
 
@@ -71,8 +78,8 @@ A manual setup through files could look like this:
 ### things/nuki.things
 
 ```
-Bridge nuki:bridge:NB1 [ ip="192.168.0.50", port=8080, apiToken="1a2b3c4d5e" ] {
-    Thing smartlock SL1 [ nukiId="123456789", unlatch=false ]
+Bridge nuki:bridge:NB1 [ ip="192.168.0.50", port=8080, apiToken="myS3cr3t!", manageCallbacks=true ] {
+    Thing smartlock SL1 [ nukiId="12AB89EF", unlatch=false ]
 }
 ```
 
@@ -81,9 +88,9 @@ Bridge nuki:bridge:NB1 [ ip="192.168.0.50", port=8080, apiToken="1a2b3c4d5e" ] {
 ### items/nuki.items
 
 ```
-Switch Frontdoor_Lock "Frontdoor (Unlock / Lock)"	 <nukiwhite> { channel="nuki:smartlock:NB1:SL1:lock" }
-Number Frontdoor_State "Frontdoor (State)" <nukisl> { channel="nuki:smartlock:NB1:SL1:lockState" }
-Switch Frontdoor_LowBattery "Frontdoor Low Battery" <nukibattery> { channel="nuki:smartlock:NB1:SL1:lowBattery" }
+Switch Frontdoor_Lock		"Frontdoor (Unlock / Lock)"		<nukiwhite>		{ channel="nuki:smartlock:NB1:SL1:lock" }
+Number Frontdoor_State		"Frontdoor (State)"				<nukisl>		{ channel="nuki:smartlock:NB1:SL1:lockState" }
+Switch Frontdoor_LowBattery	"Frontdoor Low Battery"			<nukibattery>	{ channel="nuki:smartlock:NB1:SL1:lowBattery" }
 ```
 
 
@@ -110,13 +117,18 @@ sitemap nuki label="Nuki Smart Lock" {
 ### transforms/nukilockstates.map
 
 ```
+0=Uncalibrated
 1=Locked
 2=Unlocking
 3=Unlocked
 4=Locking
+5=Unlatched
+6=Unlocked (Lock 'n' Go)
 7=Unlatching
 1002=Unlocking (Lock 'n' Go)
 1007=Unlatching (Lock 'n' Go)
+254=Motor blocked
+255=UNDEFINED
 ```
 
 
