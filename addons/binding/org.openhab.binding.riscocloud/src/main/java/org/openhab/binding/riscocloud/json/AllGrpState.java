@@ -20,8 +20,8 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * This class is generated with http://www.jsonschema2pojo.org/
- * Use json provided by MyElas server and choose these options :
- * Package : org.openhab.binding.myelas.server.handler
+ * Use json provided by RiscoCloud server and choose these options :
+ * Package : org.openhab.binding.riscocloud.json
  * Class Name : ServerDatasObject
  * Target language : Java
  * Source type : JSON

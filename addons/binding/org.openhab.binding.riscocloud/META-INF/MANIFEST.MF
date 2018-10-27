@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Automatic-Module-Name: org.openhab.binding.myelas
+Automatic-Module-Name: org.openhab.binding.riscocloud
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  lib/jsoup-1.11.3.jar
