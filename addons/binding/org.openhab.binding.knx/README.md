@@ -169,12 +169,13 @@ In contrast to the standard channels above, the control channel types are used f
 #### Group Address Notation
 
 ```
-<config>="[<dpt>:][<]<mainGA>[[+[<]<listeningGA>]+[<]<listeningGA>..]]"
+<config>="[<dpt>:][<][(pollIntervall)]<mainGA>[[+[<]<listeningGA>]+[<]<listeningGA>..]]"
 ```
 
 where parts in brackets `[]` denote optional information.
 
 The optional `<` sign tells whether the group address of the datapoint accepts read requests on the KNX bus (it does, if the sign is there).
+The optional `(pollIntervall)` polls the GA by the given interval in seconds. The alternative is switching the sensor to cyclic transmission in the device with ETS.
 With `*-control` channels, the state is not owned by any device on the KNX bus, therefore no read requests will be sent by the binding, i.e. `<` signs will be ignored for them.
 
 Each configuration parameter has a `mainGA` where commands are written to and optionally several `listeningGA`s.
@@ -206,6 +207,7 @@ Bridge knx:ip:bridge [
         readInterval=3600
     ] {
         Type switch        : demoSwitch        "Light"       [ ga="3/0/4+<3/0/5" ]
+        Type switch-control: demoSwitchControl "Water"       [ ga="1.005:<(50)3/0/10" ] //interpret GA data type as alarm signal 1.005
         Type rollershutter : demoRollershutter "Shade"       [ upDown="4/3/50+4/3/51", stopMove="4/3/52+4/3/53", position="4/3/54+<4/3/55" ]
         Type contact       : demoContact       "Door"        [ ga="1.019:<5/1/2" ]
         Type number        : demoTemperature   "Temperature" [ ga="9.001:<5/0/0" ]
@@ -220,6 +222,7 @@ knx.items:
 
 ```xtend
 Switch        demoSwitch         "Light [%s]"               <light>          { channel="knx:device:bridge:generic:demoSwitch" }
+Switch        demoSwitchControl  "Water level [%s]"         <water>          { channel="knx:device:bridge:generic:demoSwitchControl" }
 Dimmer        demoDimmer         "Dimmer [%d %%]"           <light>          { channel="knx:device:bridge:generic:demoDimmer" }
 Rollershutter demoRollershutter  "Shade [%d %%]"            <rollershutter>  { channel="knx:device:bridge:generic:demoRollershutter" }
 Contact       demoContact        "Front Door [%s]"          <frontdoor>      { channel="knx:device:bridge:generic:demoContact" }
@@ -234,6 +237,7 @@ knx.sitemap:
 sitemap knx label="KNX Demo Sitemap" {
   Frame label="Demo Elements" {
     Switch item=demoSwitch
+    Switch item=demoSwitchControl
     Switch item=demoRollershutter
     Text   item=demoContact
     Text   item=demoTemperature
