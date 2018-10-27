@@ -54,6 +54,11 @@
 				<description>Comma separated list of registers, which are allowed to write to heat pump. E.g. 40940, 45171</description>
 				<default></default>
 			</parameter>
+            <parameter name="throttleTime" type="integer">
+                <label>Throttle incoming data</label>
+                <description>Throttle incoming data read out messages from heat pump. 0 = throttle is disabled, otherwise throttle time in milliseconds.</description>
+                <default>0</default>
+            </parameter>
 		</config-description>
 
 	</thing-type>
@@ -109,6 +114,11 @@
 				<description>Binding emulates SMS40 device and send protocol acknowledges to heat pump.</description>
 				<default>false</default>
 			</parameter>
+            <parameter name="throttleTime" type="integer">
+                <label>Throttle incoming data</label>
+                <description>Throttle incoming data read out messages from heat pump. 0 = throttle is disabled, otherwise throttle time in milliseconds.</description>
+                <default>0</default>
+            </parameter>
 		</config-description>
 	</thing-type>
 
@@ -144,6 +154,11 @@
 				<description>Comma separated list of registers, which are allowed to write to heat pump. E.g. 40940, 45171</description>
 				<default></default>
 			</parameter>
+            <parameter name="throttleTime" type="integer">
+                <label>Throttle incoming data</label>
+                <description>Throttle incoming data read out messages from heat pump. 0 = throttle is disabled, otherwise throttle time in milliseconds.</description>
+                <default>0</default>
+            </parameter>
 		</config-description>
 	</thing-type>
 </thing:thing-descriptions>
