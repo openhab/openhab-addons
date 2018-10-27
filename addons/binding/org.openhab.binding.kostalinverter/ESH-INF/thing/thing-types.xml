@@ -12,6 +12,16 @@
 			<channel typeId="totalEnergy" id="totalEnergy"></channel>
 			<channel typeId="dayEnergy" id="dayEnergy"></channel>
 			<channel typeId="status" id="status"></channel>
+			<channel typeId="str1Voltage" id="str1Voltage" ></channel>
+            <channel typeId="str1Current" id="str1Current" ></channel>
+            <channel typeId="str2Voltage" id="str2Voltage" ></channel>
+            <channel typeId="str2Current" id="str2Current" ></channel>
+            <channel typeId="l1Voltage" id="l1Voltage" ></channel>
+            <channel typeId="l1Energy" id="l1Energy" ></channel>
+            <channel typeId="l2Voltage" id="l2Voltage" ></channel>
+            <channel typeId="l2Energy" id="l2Energy" ></channel>
+            <channel typeId="l3Voltage" id="l3Voltage" ></channel>
+            <channel typeId="l3Energy" id="l3Energy" ></channel>
 		</channels>
 
 		<config-description>
@@ -38,7 +48,77 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-
+	
+	<channel-type id="str1Voltage">
+	   <item-type>Number</item-type>
+	   <label>Str1 Voltage</label>
+	   <category>Energy</category>
+	   <state readOnly="true" pattern="%.2f V" />
+    </channel-type>
+    
+	<channel-type id="str1Current">
+		<item-type>Number</item-type>
+		<label>Str1 Current</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f A" />
+	</channel-type>
+	
+	<channel-type id="str2Voltage">
+		<item-type>Number</item-type>
+		<label>Str2 Voltage</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f V" />
+	</channel-type>
+	
+	<channel-type id="str2Current">
+		<item-type>Number</item-type>
+		<label>Str2 Current</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f A" />
+	</channel-type>
+	
+	<channel-type id="l1Voltage">
+		<item-type>Number</item-type>
+		<label>L1 Voltage</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f V" />
+	</channel-type>
+	
+	<channel-type id="l1Energy">
+		<item-type>Number</item-type>
+		<label>L1 Power</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f kwh" />
+	</channel-type>
+	
+	<channel-type id="l2Voltage">
+		<item-type>Number</item-type>
+		<label>L2 Voltage</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f V" />
+	</channel-type>
+	
+	<channel-type id="l2Energy">
+		<item-type>Number</item-type>
+		<label>L2 Power</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f kwh" />
+	</channel-type>
+	
+	<channel-type id="l3Voltage">
+		<item-type>Number</item-type>
+		<label>L3 Voltage</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f V" />
+	</channel-type>
+	
+	<channel-type id="l3Energy">
+		<item-type>Number</item-type>
+		<label>L3 Power</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f kwh" />
+	</channel-type>
+	
 	<channel-type id="acPower">
 		<item-type>Number:Power</item-type>
 		<label>AC Power</label>
