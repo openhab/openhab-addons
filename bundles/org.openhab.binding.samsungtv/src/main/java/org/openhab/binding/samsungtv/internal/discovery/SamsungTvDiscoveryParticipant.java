@@ -26,6 +26,8 @@ import org.eclipse.smarthome.config.discovery.upnp.UpnpDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.jupnp.model.meta.RemoteDevice;
+import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,10 +37,20 @@ import org.slf4j.LoggerFactory;
  * results of searched UPnP devices
  *
  * @author Pauli Anttila - Initial contribution
+ * @author Arjan Mels - Changed to upnp.UpnpDiscoveryParticipant
  */
 @Component(immediate = true)
 public class SamsungTvDiscoveryParticipant implements UpnpDiscoveryParticipant {
     private final Logger logger = LoggerFactory.getLogger(SamsungTvDiscoveryParticipant.class);
+
+    /**
+     * Called at the service activation.
+     *
+     * @param componentContext
+     */
+    @Activate
+    protected void activate(ComponentContext componentContext) {
+    }
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -52,10 +64,8 @@ public class SamsungTvDiscoveryParticipant implements UpnpDiscoveryParticipant {
             Map<String, Object> properties = new HashMap<>();
             properties.put(HOST_NAME, device.getIdentity().getDescriptorURL().getHost());
 
-            DiscoveryResult result = DiscoveryResultBuilder.create(uid)
-                    .withProperties(properties)
-                    .withLabel(getLabel(device))
-                    .build();
+            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                    .withLabel(getLabel(device)).build();
 
             logger.debug("Created a DiscoveryResult for device '{}' with UDN '{}'",
                     device.getDetails().getModelDetails().getModelName(),
@@ -78,29 +88,26 @@ public class SamsungTvDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     @Override
     public ThingUID getThingUID(RemoteDevice device) {
-        if (device != null) {
+        String manufacturer = device.getDetails().getManufacturerDetails().getManufacturer();
+        String modelName = device.getDetails().getModelDetails().getModelName();
+        String friendlyName = device.getDetails().getFriendlyName();
 
-            String manufacturer = device.getDetails().getManufacturerDetails().getManufacturer();
-            String modelName = device.getDetails().getModelDetails().getModelName();
-            String friendlyName = device.getDetails().getFriendlyName();
+        if (manufacturer != null && modelName != null) {
 
-            if (manufacturer != null && modelName != null) {
+            if (manufacturer.toUpperCase().contains("SAMSUNG ELECTRONICS")) {
 
-                if (manufacturer.toUpperCase().contains("SAMSUNG ELECTRONICS")) {
+                // One Samsung TV contains several UPnP devices.
+                // Create unique Samsung TV thing for every MediaRenderer
+                // device and ignore rest of the UPnP devices.
 
+                if (device.getType().getType().equals("MediaRenderer")) {
                     // UDN shouldn't contain '-' characters.
                     String udn = device.getIdentity().getUdn().getIdentifierString().replace("-", "_");
 
-                    // One Samsung TV contains several UPnP devices.
-                    // Create unique Samsung TV thing for every MediaRenderer
-                    // device and ignore rest of the UPnP devices.
+                    logger.debug("Discovered a Samsung TV '{}' model '{}' thing with UDN '{}'", friendlyName, modelName,
+                            udn);
 
-                    if (device.getType().getType().equals("MediaRenderer")) {
-                        logger.debug("Discovered a Samsung TV '{}' model '{}' thing with UDN '{}'", friendlyName,
-                                modelName, udn);
-
-                        return new ThingUID(SAMSUNG_TV_THING_TYPE, udn);
-                    }
+                    return new ThingUID(SAMSUNG_TV_THING_TYPE, udn);
                 }
             }
         }

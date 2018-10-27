@@ -96,6 +96,18 @@
 		</description>
 	</channel-type>
 
+	<channel-type id="artmode">
+		<item-type>Switch</item-type>
+		<label>Art Mode</label>
+		<description>TV Art Mode.</description>
+	</channel-type>
+
+	<channel-type id="sourceapp" advanced="true">
+		<item-type>String</item-type>
+		<label>Application</label>
+		<description>Application currently running</description>
+	</channel-type>
+
 	<channel-type id="keycode">
 		<item-type>String</item-type>
 		<label>Key Code</label>

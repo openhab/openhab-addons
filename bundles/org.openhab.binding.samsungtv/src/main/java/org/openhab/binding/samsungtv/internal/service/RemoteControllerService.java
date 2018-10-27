@@ -28,6 +28,9 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.samsungtv.internal.protocol.KeyCode;
 import org.openhab.binding.samsungtv.internal.protocol.RemoteController;
 import org.openhab.binding.samsungtv.internal.protocol.RemoteControllerException;
+import org.openhab.binding.samsungtv.internal.protocol.RemoteControllerLegacy;
+import org.openhab.binding.samsungtv.internal.protocol.RemoteControllerWebSocket;
+import org.openhab.binding.samsungtv.internal.protocol.RemoteControllerWebsocketCallback;
 import org.openhab.binding.samsungtv.internal.service.api.EventListener;
 import org.openhab.binding.samsungtv.internal.service.api.SamsungTvService;
 import org.slf4j.Logger;
@@ -39,15 +42,17 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pauli Anttila - Initial contribution
  * @author Martin van Wingerden - Some changes for manually configured devices
+ * @author Arjan Mels - Implemented websocket interface for recent TVs
  */
-public class RemoteControllerService implements SamsungTvService {
+public class RemoteControllerService implements SamsungTvService, RemoteControllerWebsocketCallback {
 
     private Logger logger = LoggerFactory.getLogger(RemoteControllerService.class);
 
-    static final String SERVICE_NAME = "RemoteControlReceiver";
+    public static final String SERVICE_NAME = "RemoteControlReceiver";
 
     private final List<String> supportedCommandsUpnp = Arrays.asList(KEY_CODE, POWER, CHANNEL);
     private final List<String> supportedCommandsNonUpnp = Arrays.asList(KEY_CODE, VOLUME, MUTE, POWER, CHANNEL);
+    private final List<String> extraSupportedCommandsWebSocket = Arrays.asList(BROWSER_URL, SOURCE_APP, ART_MODE);
 
     private String host;
     private int port;
@@ -56,7 +61,7 @@ public class RemoteControllerService implements SamsungTvService {
     private List<EventListener> listeners = new CopyOnWriteArrayList<>();
 
     private RemoteControllerService(String host, int port, boolean upnp) {
-        logger.debug("Create a Samsung TV RemoteController service");
+        logger.debug("Create a Samsung TV RemoteController service: " + upnp);
         this.upnp = upnp;
         this.host = host;
         this.port = port;
@@ -72,7 +77,13 @@ public class RemoteControllerService implements SamsungTvService {
 
     @Override
     public List<String> getSupportedChannelNames() {
-        return upnp ? supportedCommandsUpnp : supportedCommandsNonUpnp;
+        List<String> supported = upnp ? supportedCommandsUpnp : supportedCommandsNonUpnp;
+        if (remoteController instanceof RemoteControllerWebSocket) {
+            supported = new ArrayList<>(supported);
+            supported.addAll(extraSupportedCommandsWebSocket);
+        }
+        logger.debug("getSupportedChannelNames: {}", supported);
+        return supported;
     }
 
     @Override
@@ -85,13 +96,55 @@ public class RemoteControllerService implements SamsungTvService {
         listeners.remove(listener);
     }
 
+    public boolean checkConnection() {
+        return remoteController != null;
+    }
+
+    RemoteController remoteController = null;
+
     @Override
     public void start() {
-        // nothing to start
+        if (remoteController != null) {
+            try {
+                remoteController.openConnection();
+            } catch (RemoteControllerException ignore) {
+            }
+            return;
+        }
+
+        // first try legacy interface
+        try {
+            RemoteController remoteLegacy = new RemoteControllerLegacy(host, port, "openHAB", "openHAB");
+            remoteLegacy.openConnection();
+            // will not reach this if exception thrown in openConnection
+            remoteController = remoteLegacy;
+            logger.info("Using legacy remote interface");
+        } catch (RemoteControllerException ignore) {
+        }
+
+        // then try websocket: may give timeout
+        try {
+            RemoteController remoteWebSocket = new RemoteControllerWebSocket(host, 8001, "openHAB", "openHAB", this);
+            remoteWebSocket.openConnection();
+            // will not reach this if exception thrown in openConnection
+            remoteController = remoteWebSocket;
+            logger.info("Using websocket remote interface");
+            return;
+        } catch (RemoteControllerException ignore) {
+        }
+
+        logger.info("No remote interface detected");
+        remoteController = null;
     }
 
     @Override
     public void stop() {
+        if (remoteController != null) {
+            try {
+                remoteController.close();
+            } catch (Exception ignore) {
+            }
+        }
     }
 
     @Override
@@ -107,7 +160,65 @@ public class RemoteControllerService implements SamsungTvService {
     public void handleCommand(String channel, Command command) {
         logger.debug("Received channel: {}, command: {}", channel, command);
 
+        if (remoteController == null) {
+            return;
+        }
+
         KeyCode key = null;
+
+        if (remoteController instanceof RemoteControllerWebSocket) {
+            RemoteControllerWebSocket remoteControllerWebSocket = (RemoteControllerWebSocket) remoteController;
+            switch (channel) {
+                case BROWSER_URL:
+                    if (command instanceof StringType) {
+                        remoteControllerWebSocket.sendUrl(command.toString());
+                    } else {
+                        logger.warn("Remote control: unsupported command type {} for channel", command, channel);
+                    }
+                    return;
+                case SOURCE_APP:
+                    if (command instanceof StringType) {
+                        remoteControllerWebSocket.sendSourceApp(command.toString());
+                    } else {
+                        logger.warn("Remote control: unsupported command type {} for channel", command, channel);
+                    }
+                    return;
+                case POWER:
+                    if (command instanceof OnOffType) {
+                        // websocket uses KEY_POWER
+                        // send key only to toggle state
+                        if (OnOffType.ON.equals(command) != power) {
+                            sendKeyCode(KeyCode.KEY_POWER);
+                        }
+                    } else {
+                        logger.warn("Remote control: unsupported command type {} for channel", command, channel);
+                    }
+                    return;
+                case ART_MODE:
+                    if (command instanceof OnOffType) {
+                        // websocket uses KEY_POWER
+                        // send key only to toggle state when power = off
+                        if (!power) {
+                            if (OnOffType.ON.equals(command)) {
+                                if (!artmode) {
+                                    sendKeyCode(KeyCode.KEY_POWER);
+                                }
+                            } else {
+                                sendKeyCodePress(KeyCode.KEY_POWER);
+                                // really switch off
+                            }
+                        } else {
+                            // switch TV off
+                            sendKeyCode(KeyCode.KEY_POWER);
+                            // switch TV to art mode
+                            sendKeyCode(KeyCode.KEY_POWER);
+                        }
+                    } else {
+                        logger.warn("Remote control: unsupported command type {} for channel", command, channel);
+                    }
+                    return;
+            }
+        }
 
         switch (channel) {
             case KEY_CODE:
@@ -126,24 +237,29 @@ public class RemoteControllerService implements SamsungTvService {
                     if (key != null) {
                         sendKeyCode(key);
                     } else {
-                        logger.warn("Command '{}' not supported for channel '{}'", command, channel);
+                        logger.warn("Remote control: Command '{}' not supported for channel '{}'", command, channel);
                     }
+                } else {
+                    logger.warn("Remote control: unsupported command type {} for channel", command, channel);
                 }
-                break;
+                return;
 
             case POWER:
                 if (command instanceof OnOffType) {
+                    // legacy controller uses KEY_POWERON/OFF
                     if (command.equals(OnOffType.ON)) {
                         sendKeyCode(KeyCode.KEY_POWERON);
                     } else {
                         sendKeyCode(KeyCode.KEY_POWEROFF);
                     }
+                } else {
+                    logger.warn("Remote control: unsupported command type {} for channel", command, channel);
                 }
-                break;
+                return;
 
             case MUTE:
                 sendKeyCode(KeyCode.KEY_MUTE);
-                break;
+                return;
 
             case VOLUME:
                 if (command instanceof UpDownType) {
@@ -152,8 +268,10 @@ public class RemoteControllerService implements SamsungTvService {
                     } else {
                         sendKeyCode(KeyCode.KEY_VOLDOWN);
                     }
+                } else {
+                    logger.warn("Remote control: unsupported command type {} for channel", command, channel);
                 }
-                break;
+                return;
 
             case CHANNEL:
                 if (command instanceof DecimalType) {
@@ -177,8 +295,12 @@ public class RemoteControllerService implements SamsungTvService {
                     commands.add(KeyCode.valueOf("KEY_" + num1));
                     commands.add(KeyCode.KEY_ENTER);
                     sendKeyCodes(commands);
+                } else {
+                    logger.warn("Remote control: unsupported command type {} for channel", command, channel);
                 }
-                break;
+                return;
+            default:
+                logger.warn("Remote control: unsupported channel: {}", channel);
         }
     }
 
@@ -187,16 +309,26 @@ public class RemoteControllerService implements SamsungTvService {
      *
      * @param key Button code to send
      */
-    private void sendKeyCode(final KeyCode key) {
-        if (host != null) {
-            try {
-                getRemoteController().sendKey(key);
-            } catch (RemoteControllerException e) {
-                reportError(String.format("Could not send command to device on %s:%d", host, port), e);
+    private void sendKeyCode(KeyCode key) {
+        try {
+            if (remoteController != null) {
+                remoteController.sendKey(key);
             }
-        } else {
-            reportError(ThingStatusDetail.CONFIGURATION_ERROR, "TV network address not defined");
+        } catch (RemoteControllerException e) {
+            reportError(String.format("Could not send command to device on %s:%d", host, port), e);
         }
+
+    }
+
+    private void sendKeyCodePress(KeyCode key) {
+        try {
+            if (remoteController != null && remoteController instanceof RemoteControllerWebSocket) {
+                ((RemoteControllerWebSocket) remoteController).sendKeyPress(key);
+            }
+        } catch (RemoteControllerException e) {
+            reportError(String.format("Could not send command to device on %s:%d", host, port), e);
+        }
+
     }
 
     /**
@@ -205,19 +337,13 @@ public class RemoteControllerService implements SamsungTvService {
      * @param keys List of button codes to send
      */
     private void sendKeyCodes(final List<KeyCode> keys) {
-        if (host != null) {
-            try {
-                getRemoteController().sendKeys(keys);
-            } catch (RemoteControllerException e) {
-                reportError(String.format("Could not send command to device on %s:%d", host, port), e);
+        try {
+            if (remoteController != null) {
+                remoteController.sendKeys(keys);
             }
-        } else {
-            reportError(ThingStatusDetail.CONFIGURATION_ERROR, "TV network address not defined");
+        } catch (RemoteControllerException e) {
+            reportError(String.format("Could not send command to device on %s:%d", host, port), e);
         }
-    }
-
-    private void reportError(ThingStatusDetail statusDetail, String message) {
-        reportError(statusDetail, message, null);
     }
 
     private void reportError(String message, RemoteControllerException e) {
@@ -230,17 +356,41 @@ public class RemoteControllerService implements SamsungTvService {
         }
     }
 
-    public boolean checkConnection() {
-        try {
-            getRemoteController().openConnection();
-            return true;
-        } catch (RemoteControllerException e) {
-            logger.trace("Failed opening connection, check failed", e);
-            return false;
+    @Override
+    public void appsUpdated(List<String> apps) {
+        // do nothing
+    }
+
+    @Override
+    public void currentAppUpdated(String app) {
+        for (EventListener listener : listeners) {
+            listener.valueReceived(SOURCE_APP, new StringType(app));
         }
     }
 
-    private RemoteController getRemoteController() {
-        return new RemoteController(host, port, "openHAB", "openHAB");
+    boolean power = true;
+    boolean artmode = false;
+
+    @Override
+    public void powerUpdated(boolean on, boolean artmode) {
+        power = on;
+        this.artmode = artmode;
+        for (EventListener listener : listeners) {
+            listener.valueReceived(POWER, on ? OnOffType.ON : OnOffType.OFF);
+            listener.valueReceived(ART_MODE, artmode ? OnOffType.ON : OnOffType.OFF);
+        }
     }
+
+    @Override
+    public void connectionError(Throwable error) {
+        try {
+            if (remoteController != null) {
+                remoteController.close();
+            }
+        } catch (Exception e) {
+            logger.warn("Error in connection close: {}", e.getMessage());
+        }
+        remoteController = null;
+    }
+
 }

@@ -36,6 +36,7 @@ import org.osgi.service.component.annotations.Reference;
  * thing handlers.
  *
  * @author Pauli Anttila - Initial contribution
+ * @author Arjan Mels - Added Component annotation
  */
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.samsungtv")

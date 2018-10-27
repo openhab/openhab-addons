@@ -23,6 +23,8 @@
 			<channel id="stopBrowser" typeId="stopbrowser" />
 			<channel id="keyCode" typeId="keycode" />
 			<channel id="power" typeId="power" />
+			<channel id="artMode" typeId="artmode" />
+			<channel id="sourceApp" typeId="sourceapp" />
 		</channels>
 
 		<config-description-ref uri="thing-type:samsungtv:tv" />

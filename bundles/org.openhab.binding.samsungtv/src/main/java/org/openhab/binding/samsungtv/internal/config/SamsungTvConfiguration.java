@@ -18,13 +18,16 @@ import org.openhab.binding.samsungtv.internal.handler.SamsungTvHandler;
  * Configuration class for {@link SamsungTvHandler}.
  *
  * @author Pauli Anttila - Initial contribution
+ * @author Arjan Mels - Added MAC Address
  */
 public class SamsungTvConfiguration {
     public static final String HOST_NAME = "hostName";
     public static final String PORT = "port";
+    public static final String MAC_ADDRESS = "macAddress";
     public static final String REFRESH_INTERVAL = "refreshInterval";
 
     public String hostName;
+    public String macAddress;
     public int port;
     public int refreshInterval;
 
