@@ -19,6 +19,7 @@ public class NukiBaseResponse {
 
     private int status;
     private String message;
+    private boolean success;
     private Instant created;
 
     public NukiBaseResponse(int status, String message) {
@@ -41,6 +42,14 @@ public class NukiBaseResponse {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
     }
 
     public Instant getCreated() {

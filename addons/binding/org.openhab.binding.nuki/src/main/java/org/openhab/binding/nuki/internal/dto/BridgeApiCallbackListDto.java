@@ -20,11 +20,11 @@ public class BridgeApiCallbackListDto {
 
     private List<BridgeApiCallbackListCallbackDto> callbacks;
 
-    public List<BridgeApiCallbackListCallbackDto> getCallacks() {
+    public List<BridgeApiCallbackListCallbackDto> getCallbacks() {
         return callbacks;
     }
 
-    public void setCallbackDtos(List<BridgeApiCallbackListCallbackDto> callbacks) {
+    public void setCallbacks(List<BridgeApiCallbackListCallbackDto> callbacks) {
         this.callbacks = callbacks;
     }
 

@@ -17,22 +17,18 @@ import org.openhab.binding.nuki.internal.dto.BridgeApiCallbackAddDto;
  */
 public class BridgeCallbackAddResponse extends NukiBaseResponse {
 
-    private BridgeApiCallbackAddDto bridgeCallbackAdd;
-
-    public BridgeCallbackAddResponse(int status, String message) {
+    public BridgeCallbackAddResponse(int status, String message, BridgeApiCallbackAddDto bridgeApiCallbackAddDto) {
         super(status, message);
+        if (bridgeApiCallbackAddDto != null) {
+            this.setSuccess(bridgeApiCallbackAddDto.isSuccess());
+            if (bridgeApiCallbackAddDto.getMessage() != null) {
+                this.setMessage(bridgeApiCallbackAddDto.getMessage());
+            }
+        }
     }
 
     public BridgeCallbackAddResponse(NukiBaseResponse nukiBaseResponse) {
         super(nukiBaseResponse.getStatus(), nukiBaseResponse.getMessage());
-    }
-
-    public BridgeApiCallbackAddDto getBridgeCallbackAdd() {
-        return bridgeCallbackAdd;
-    }
-
-    public void setBridgeCallbackAdd(BridgeApiCallbackAddDto bridgeCallbackAdd) {
-        this.bridgeCallbackAdd = bridgeCallbackAdd;
     }
 
 }

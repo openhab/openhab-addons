@@ -51,7 +51,7 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
     private HttpClient httpClient;
     private NetworkAddressService networkAddressService;
     private Map<ThingUID, ServiceRegistration<NukiApiServlet>> nukiApiServletRegs = new ConcurrentHashMap<>();
-    private String openHabIpPort;
+    private String openHabIpAndPort;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -69,8 +69,8 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
             ServiceRegistration<NukiApiServlet> reg = (ServiceRegistration<NukiApiServlet>) bundleContext
                     .registerService(HttpServlet.class.getName(), nukiApiServlet, new Hashtable<String, Object>());
             nukiApiServletRegs.put(thing.getUID(), reg);
-            openHabIpPort = getOpenHabIpPort();
-            return new NukiBridgeHandler((Bridge) thing, httpClient, nukiApiServlet, openHabIpPort);
+            openHabIpAndPort = getOpenHabIpAndPort();
+            return new NukiBridgeHandler((Bridge) thing, httpClient, nukiApiServlet, openHabIpAndPort);
         } else if (NukiBindingConstants.THING_TYPE_SMARTLOCK_UIDS.contains(thingTypeUID)) {
             return new NukiSmartLockHandler(thing);
         }
@@ -116,10 +116,10 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
         this.networkAddressService = null;
     }
 
-    private String getOpenHabIpPort() {
-        logger.trace("NukiHandlerFactory:getOpenHabIpPort()");
-        if (openHabIpPort != null) {
-            return openHabIpPort;
+    private String getOpenHabIpAndPort() {
+        logger.trace("NukiHandlerFactory:getOpenHabIpAndPort()");
+        if (openHabIpAndPort != null) {
+            return openHabIpAndPort;
         }
         final String ipAddress = networkAddressService.getPrimaryIpv4HostAddress();
         if (ipAddress == null) {
@@ -132,9 +132,9 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
             logger.warn("Cannot find port of the http service.");
             return null;
         }
-        String ipAndPort = ipAddress + ":" + port;
-        logger.trace("ipAndPort[{}]", ipAndPort);
-        return ipAndPort;
+        openHabIpAndPort = ipAddress + ":" + port;
+        logger.trace("openHabIpAndPort[{}]", openHabIpAndPort);
+        return openHabIpAndPort;
     }
 
 }

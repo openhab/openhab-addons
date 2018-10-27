@@ -11,7 +11,6 @@ package org.openhab.binding.nuki.handler;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -28,6 +27,7 @@ import org.openhab.binding.nuki.NukiBindingConstants;
 import org.openhab.binding.nuki.internal.converter.LockActionConverter;
 import org.openhab.binding.nuki.internal.dataexchange.BridgeLockActionResponse;
 import org.openhab.binding.nuki.internal.dataexchange.BridgeLockStateResponse;
+import org.openhab.binding.nuki.internal.dataexchange.NukiBaseResponse;
 import org.openhab.binding.nuki.internal.dataexchange.NukiHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,7 +81,7 @@ public class NukiSmartLockHandler extends BaseThingHandler {
 
     private void initializeHandler() {
         logger.debug("NukiSmartLockHandler:initializeHandler()");
-        nukiId = nukiIdHexToIntString((String) getConfig().get(NukiBindingConstants.CONFIG_NUKI_ID));
+        nukiId = (String) getConfig().get(NukiBindingConstants.CONFIG_NUKI_ID);
         if (nukiId == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             return;
@@ -92,8 +92,7 @@ public class NukiSmartLockHandler extends BaseThingHandler {
             return;
         }
         BridgeLockStateResponse bridgeLockStateResponse = nukiHttpClient.getBridgeLockState(nukiId);
-        if (bridgeLockStateResponse.getStatus() == HttpStatus.OK_200
-                && bridgeLockStateResponse.getBridgeLockState().isSuccess()) {
+        if (handleResponse(bridgeLockStateResponse, null, null)) {
             updateStatus(ThingStatus.ONLINE);
             if (retryJob != null) {
                 for (Channel channel : thing.getChannels()) {
@@ -104,7 +103,6 @@ public class NukiSmartLockHandler extends BaseThingHandler {
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     bridgeLockStateResponse.getMessage());
-            scheduleRetryJob();
         }
     }
 
@@ -137,13 +135,8 @@ public class NukiSmartLockHandler extends BaseThingHandler {
             return;
         }
         BridgeLockStateResponse bridgeLockStateResponse = nukiHttpClient.getBridgeLockState(nukiId);
-        if (bridgeLockStateResponse.getStatus() != 200 || !bridgeLockStateResponse.getBridgeLockState().isSuccess()) {
-            logger.debug("Could not handle command[{}] for channelUID[{}] and nukiId[{}]! Message[{}]", command,
-                    channelUID, nukiId, bridgeLockStateResponse.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    bridgeLockStateResponse.getMessage());
-        } else {
-            int lockState = bridgeLockStateResponse.getBridgeLockState().getState();
+        if (handleResponse(bridgeLockStateResponse, channelUID.getAsString(), command.toString())) {
+            int lockState = bridgeLockStateResponse.getState();
             State state;
             switch (channelUID.getId()) {
                 case NukiBindingConstants.CHANNEL_SMARTLOCK_LOCK:
@@ -162,14 +155,16 @@ public class NukiSmartLockHandler extends BaseThingHandler {
                     state = new DecimalType(lockState);
                     break;
                 case NukiBindingConstants.CHANNEL_SMARTLOCK_LOW_BATTERY:
-                    state = bridgeLockStateResponse.getBridgeLockState().isBatteryCritical() ? OnOffType.ON
-                            : OnOffType.OFF;
+                    state = bridgeLockStateResponse.isBatteryCritical() ? OnOffType.ON : OnOffType.OFF;
                     break;
                 default:
                     logger.debug("Command[{}] for channelUID[{}] not implemented!", command, channelUID);
                     return;
             }
             updateState(channelUID, state);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    bridgeLockStateResponse.getMessage());
         }
     }
 
@@ -193,19 +188,7 @@ public class NukiSmartLockHandler extends BaseThingHandler {
             updateState(channelLockState.getUID(), new DecimalType(LockActionConverter.getLockStateFor(lockAction)));
         }
         BridgeLockActionResponse bridgeLockActionResponse = nukiHttpClient.getBridgeLockAction(nukiId, lockAction);
-        if (bridgeLockActionResponse.getStatus() != 200
-                || !bridgeLockActionResponse.getBridgeLockAction().isSuccess()) {
-            logger.debug("Could not handle command[{}] for channelUID[{}] and nukiId[{}]! Message[{}]", command,
-                    channelUID, nukiId, bridgeLockActionResponse.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    bridgeLockActionResponse.getMessage());
-            if (channelLockState != null) {
-                updateState(channelLockState.getUID(), new DecimalType(NukiBindingConstants.LOCK_STATES_UNDEFINED));
-            }
-            scheduleRetryJob();
-        } else {
-            logger.debug("Command[{}] succeeded for channelUID[{}]", command, channelUID);
-        }
+        handleResponse(bridgeLockActionResponse, channelUID.getAsString(), command.toString());
     }
 
     private void handleCommandDecimalType(ChannelUID channelUID, Command command, String nukiId) {
@@ -219,25 +202,38 @@ public class NukiSmartLockHandler extends BaseThingHandler {
         lockAction = LockActionConverter.getLockActionFor(lockAction);
         updateState(channelUID, new DecimalType(LockActionConverter.getLockStateFor(lockAction)));
         BridgeLockActionResponse bridgeLockActionResponse = nukiHttpClient.getBridgeLockAction(nukiId, lockAction);
-        if (bridgeLockActionResponse.getStatus() != 200
-                || !bridgeLockActionResponse.getBridgeLockAction().isSuccess()) {
-            logger.debug("Could not handle command[{}] for channelUID[{}] and nukiId[{}]! Message[{}]", command,
-                    channelUID, nukiId, bridgeLockActionResponse.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    bridgeLockActionResponse.getMessage());
-            updateState(channelUID, new DecimalType(NukiBindingConstants.LOCK_STATES_UNDEFINED));
-            scheduleRetryJob();
-        } else {
-            logger.debug("Command[{}] succeeded for channelUID[{}]", command, channelUID);
+        handleResponse(bridgeLockActionResponse, channelUID.getAsString(), command.toString());
+    }
+
+    private boolean handleResponse(NukiBaseResponse nukiBaseResponse, String channelUID, String command) {
+        if (nukiBaseResponse.getStatus() == 200 && nukiBaseResponse.isSuccess()) {
+            logger.debug("Command[{}] succeeded for channelUID[{}] on nukiId[{}]!", command, channelUID, nukiId);
+            return true;
+        } else if (nukiBaseResponse.getStatus() != 200) {
+            logger.debug("Request to Bridge failed! status[{}] - message[{}]", nukiBaseResponse.getStatus(),
+                    nukiBaseResponse.getMessage());
+        } else if (!nukiBaseResponse.isSuccess()) {
+            logger.debug(
+                    "Request from Bridge to Smart Lock failed! status[{}] - message[{}] - isSuccess[{}]. Check if Nuki Smart Lock is powered on!",
+                    nukiBaseResponse.getStatus(), nukiBaseResponse.getMessage(), nukiBaseResponse.isSuccess());
         }
+        logger.debug("Could not handle command[{}] for channelUID[{}] on nukiId[{}]!", command, channelUID, nukiId);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, nukiBaseResponse.getMessage());
+        Channel channelLock = thing.getChannel(NukiBindingConstants.CHANNEL_SMARTLOCK_LOCK);
+        if (channelLock != null) {
+            updateState(channelLock.getUID(), OnOffType.OFF);
+        }
+        Channel channelLockState = thing.getChannel(NukiBindingConstants.CHANNEL_SMARTLOCK_STATE);
+        if (channelLockState != null) {
+            updateState(channelLockState.getUID(), new DecimalType(NukiBindingConstants.LOCK_STATES_UNDEFINED));
+        }
+        scheduleRetryJob();
+        return false;
     }
 
     private void scheduleRetryJob() {
         logger.trace("NukiSmartLockHandler:scheduleRetryJob():Scheduling retryJob in {}secs for Smart Lock[{}].",
                 RETRYJOB_INTERVAL, nukiId);
-        if (retryJob != null) {
-            logger.debug("retryjob done[{}]", retryJob.isDone());
-        }
         if (retryJob != null && !retryJob.isDone()) {
             logger.trace("NukiSmartLockHandler:scheduleRetryJob():Already scheduled for Smart Lock[{}].", nukiId);
             return;
@@ -254,18 +250,6 @@ public class NukiSmartLockHandler extends BaseThingHandler {
             retryJob.cancel(true);
             retryJob = null;
         }
-    }
-
-    private String nukiIdHexToIntString(String nukiIdHex) {
-        try {
-            int nukiIdInt = Integer.parseInt(nukiIdHex, 16);
-            nukiId = Integer.toString(nukiIdInt);
-            logger.trace("nukiIdHexToIntString({}):nukiIdInt[{}]", nukiIdHex, nukiIdInt);
-            return nukiId;
-        } catch (Exception e) {
-            logger.error("Bridge configuration error - Invalid nukiId[{}]!", nukiIdHex);
-        }
-        return null;
     }
 
     public void handleApiServletUpdate(ChannelUID channelUID, State newState) {

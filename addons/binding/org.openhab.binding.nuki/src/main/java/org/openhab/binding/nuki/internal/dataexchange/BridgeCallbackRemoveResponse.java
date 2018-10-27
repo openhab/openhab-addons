@@ -17,22 +17,19 @@ import org.openhab.binding.nuki.internal.dto.BridgeApiCallbackRemoveDto;
  */
 public class BridgeCallbackRemoveResponse extends NukiBaseResponse {
 
-    private BridgeApiCallbackRemoveDto bridgeCallbackRemove;
-
-    public BridgeCallbackRemoveResponse(int status, String message) {
+    public BridgeCallbackRemoveResponse(int status, String message,
+            BridgeApiCallbackRemoveDto bridgeApiCallbackRemoveDto) {
         super(status, message);
+        if (bridgeApiCallbackRemoveDto != null) {
+            this.setSuccess(bridgeApiCallbackRemoveDto.isSuccess());
+            if (bridgeApiCallbackRemoveDto.getMessage() != null) {
+                this.setMessage(bridgeApiCallbackRemoveDto.getMessage());
+            }
+        }
     }
 
     public BridgeCallbackRemoveResponse(NukiBaseResponse nukiBaseResponse) {
         super(nukiBaseResponse.getStatus(), nukiBaseResponse.getMessage());
-    }
-
-    public BridgeApiCallbackRemoveDto getBridgeCallbackRemove() {
-        return bridgeCallbackRemove;
-    }
-
-    public void setBridgeCallbackRemove(BridgeApiCallbackRemoveDto bridgeCallbackRemove) {
-        this.bridgeCallbackRemove = bridgeCallbackRemove;
     }
 
 }

@@ -8,9 +8,9 @@
  */
 package org.openhab.binding.nuki.internal.dataexchange;
 
+import java.io.InterruptedIOException;
 import java.math.BigDecimal;
-import java.net.ConnectException;
-import java.net.SocketTimeoutException;
+import java.net.SocketException;
 import java.net.URLEncoder;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -87,20 +87,23 @@ public class NukiHttpClient {
                 HttpResponseException cause = (HttpResponseException) e.getCause();
                 int status = cause.getResponse().getStatus();
                 String reason = cause.getResponse().getReason();
-                logger.debug("HTTP Response Exception! Status[{}] - Message[{}]! Check your API Token!", status,
-                        reason);
+                logger.debug("HTTP Response Exception! Status[{}] - Reason[{}]! Check your API Token!", status, reason);
                 return new NukiBaseResponse(status, reason);
-            } else if (e.getCause() instanceof SocketTimeoutException) {
-                logger.debug("Timeout Exception! Message[{}]! Check your IP and Port configuration!", e.getMessage());
+            } else if (e.getCause() instanceof InterruptedIOException) {
+                logger.debug(
+                        "InterruptedIOException! Exception[{}]! Check IP/Port configuration and if Nuki Bridge is powered on!",
+                        e.getMessage());
                 return new NukiBaseResponse(HttpStatus.REQUEST_TIMEOUT_408,
-                        "Timeout Exception! Check your IP and Port configuration!");
-            } else if (e.getCause() instanceof ConnectException) {
-                logger.debug("Connect Exception! Message[{}]! Check your IP and Port configuration!", e.getMessage());
+                        "InterruptedIOException! Check IP/Port configuration and if Nuki Bridge is powered on!");
+            } else if (e.getCause() instanceof SocketException) {
+                logger.debug(
+                        "SocketException! Exception[{}]! Check IP/Port configuration and if Nuki Bridge is powered on!",
+                        e.getMessage());
                 return new NukiBaseResponse(HttpStatus.NOT_FOUND_404,
-                        "Connect Exception! Check your IP and Port configuration!");
+                        "SocketException! Check IP/Port configuration and if Nuki Bridge is powered on!");
             }
         }
-        logger.error("Could not handle Exception! Message[{}]", e.getMessage(), e);
+        logger.error("Could not handle Exception! Exception[{}]", e.getMessage(), e);
         return new NukiBaseResponse(HttpStatus.INTERNAL_SERVER_ERROR_500, e.getMessage());
     }
 
@@ -113,15 +116,13 @@ public class NukiHttpClient {
             String response = contentResponse.getContentAsString();
             if (status == HttpStatus.OK_200) {
                 BridgeApiInfoDto bridgeApiInfoDto = gson.fromJson(response, BridgeApiInfoDto.class);
-                BridgeInfoResponse bridgeInfoResponse = new BridgeInfoResponse(status, contentResponse.getReason());
-                bridgeInfoResponse.setBridgeInfo(bridgeApiInfoDto);
-                return bridgeInfoResponse;
+                return new BridgeInfoResponse(status, contentResponse.getReason(), bridgeApiInfoDto);
             } else {
                 logger.debug("Could not get Bridge Info! Status[{}] - Response[{}]", status, response);
-                return new BridgeInfoResponse(status, response);
+                return new BridgeInfoResponse(status, contentResponse.getReason(), null);
             }
         } catch (Exception e) {
-            logger.debug("Could not get Bridge Info! Message[{}]", e.getMessage());
+            logger.debug("Could not get Bridge Info! Exception[{}]", e.getMessage());
             return new BridgeInfoResponse(handleException(e));
         }
     }
@@ -144,17 +145,14 @@ public class NukiHttpClient {
             String response = contentResponse.getContentAsString();
             if (status == HttpStatus.OK_200) {
                 BridgeApiLockStateDto bridgeApiLockStateDto = gson.fromJson(response, BridgeApiLockStateDto.class);
-                BridgeLockStateResponse bridgeLockStateResponse = new BridgeLockStateResponse(status,
-                        contentResponse.getReason());
-                bridgeLockStateResponse.setBridgeLockState(bridgeApiLockStateDto);
-                bridgeLockStateResponseCache = bridgeLockStateResponse;
-                return bridgeLockStateResponse;
+                return bridgeLockStateResponseCache = new BridgeLockStateResponse(status, contentResponse.getReason(),
+                        bridgeApiLockStateDto);
             } else {
                 logger.debug("Could not get Lock State! Status[{}] - Response[{}]", status, response);
-                return new BridgeLockStateResponse(status, response);
+                return new BridgeLockStateResponse(status, contentResponse.getReason(), null);
             }
         } catch (Exception e) {
-            logger.debug("Could not get Bridge Lock State! Message[{}]", e.getMessage());
+            logger.debug("Could not get Bridge Lock State! Exception[{}]", e.getMessage());
             return new BridgeLockStateResponse(handleException(e));
         }
     }
@@ -168,16 +166,13 @@ public class NukiHttpClient {
             String response = contentResponse.getContentAsString();
             if (status == HttpStatus.OK_200) {
                 BridgeApiLockActionDto bridgeApiLockActionDto = gson.fromJson(response, BridgeApiLockActionDto.class);
-                BridgeLockActionResponse bridgeLockActionResponse = new BridgeLockActionResponse(status,
-                        contentResponse.getReason());
-                bridgeLockActionResponse.setBridgeLockAction(bridgeApiLockActionDto);
-                return bridgeLockActionResponse;
+                return new BridgeLockActionResponse(status, contentResponse.getReason(), bridgeApiLockActionDto);
             } else {
                 logger.debug("Could not execute Lock Action! Status[{}] - Response[{}]", status, response);
-                return new BridgeLockActionResponse(status, response);
+                return new BridgeLockActionResponse(status, contentResponse.getReason(), null);
             }
         } catch (Exception e) {
-            logger.debug("Could not execute Lock Action! Message[{}]", e.getMessage());
+            logger.debug("Could not execute Lock Action! Exception[{}]", e.getMessage());
             return new BridgeLockActionResponse(handleException(e));
         }
     }
@@ -192,16 +187,13 @@ public class NukiHttpClient {
             if (status == HttpStatus.OK_200) {
                 BridgeApiCallbackAddDto bridgeApiCallbackAddDto = gson.fromJson(response,
                         BridgeApiCallbackAddDto.class);
-                BridgeCallbackAddResponse bridgeCallbackAddResponse = new BridgeCallbackAddResponse(status,
-                        contentResponse.getReason());
-                bridgeCallbackAddResponse.setBridgeCallbackAdd(bridgeApiCallbackAddDto);
-                return bridgeCallbackAddResponse;
+                return new BridgeCallbackAddResponse(status, contentResponse.getReason(), bridgeApiCallbackAddDto);
             } else {
                 logger.debug("Could not execute Callback Add! Status[{}] - Response[{}]", status, response);
-                return new BridgeCallbackAddResponse(status, response);
+                return new BridgeCallbackAddResponse(status, contentResponse.getReason(), null);
             }
         } catch (Exception e) {
-            logger.debug("Could not execute Callback Add! Message[{}]", e.getMessage());
+            logger.debug("Could not execute Callback Add! Exception[{}]", e.getMessage());
             return new BridgeCallbackAddResponse(handleException(e));
         }
     }
@@ -216,16 +208,13 @@ public class NukiHttpClient {
             if (status == HttpStatus.OK_200) {
                 BridgeApiCallbackListDto bridgeApiCallbackListDto = gson.fromJson(response,
                         BridgeApiCallbackListDto.class);
-                BridgeCallbackListResponse bridgeCallbackListResponse = new BridgeCallbackListResponse(status,
-                        contentResponse.getReason());
-                bridgeCallbackListResponse.setCallbacks(bridgeApiCallbackListDto.getCallacks());
-                return bridgeCallbackListResponse;
+                return new BridgeCallbackListResponse(status, contentResponse.getReason(), bridgeApiCallbackListDto);
             } else {
                 logger.debug("Could not execute Callback List! Status[{}] - Response[{}]", status, response);
-                return new BridgeCallbackListResponse(status, response);
+                return new BridgeCallbackListResponse(status, contentResponse.getReason(), null);
             }
         } catch (Exception e) {
-            logger.debug("Could not execute Callback List! Message[{}]", e.getMessage());
+            logger.debug("Could not execute Callback List! Exception[{}]", e.getMessage());
             return new BridgeCallbackListResponse(handleException(e));
         }
     }
@@ -240,16 +229,14 @@ public class NukiHttpClient {
             if (status == HttpStatus.OK_200) {
                 BridgeApiCallbackRemoveDto bridgeApiCallbackRemoveDto = gson.fromJson(response,
                         BridgeApiCallbackRemoveDto.class);
-                BridgeCallbackRemoveResponse bridgeCallbackRemoveResponse = new BridgeCallbackRemoveResponse(status,
-                        contentResponse.getReason());
-                bridgeCallbackRemoveResponse.setBridgeCallbackRemove(bridgeApiCallbackRemoveDto);
-                return bridgeCallbackRemoveResponse;
+                return new BridgeCallbackRemoveResponse(status, contentResponse.getReason(),
+                        bridgeApiCallbackRemoveDto);
             } else {
                 logger.debug("Could not execute Callback Remove! Status[{}] - Response[{}]", status, response);
-                return new BridgeCallbackRemoveResponse(status, response);
+                return new BridgeCallbackRemoveResponse(status, contentResponse.getReason(), null);
             }
         } catch (Exception e) {
-            logger.debug("Could not execute Callback Remove! Message[{}]", e.getMessage());
+            logger.debug("Could not execute Callback Remove! Exception[{}]", e.getMessage());
             return new BridgeCallbackRemoveResponse(handleException(e));
         }
     }

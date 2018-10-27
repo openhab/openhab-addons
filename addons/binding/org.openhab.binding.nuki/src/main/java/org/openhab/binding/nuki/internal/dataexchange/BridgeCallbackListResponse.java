@@ -22,8 +22,12 @@ public class BridgeCallbackListResponse extends NukiBaseResponse {
 
     private List<BridgeApiCallbackListCallbackDto> callbacks;
 
-    public BridgeCallbackListResponse(int status, String message) {
+    public BridgeCallbackListResponse(int status, String message, BridgeApiCallbackListDto bridgeApiCallbackListDto) {
         super(status, message);
+        if (bridgeApiCallbackListDto != null) {
+            this.setSuccess(true);
+            this.callbacks = bridgeApiCallbackListDto.getCallbacks();
+        }
     }
 
     public BridgeCallbackListResponse(NukiBaseResponse nukiBaseResponse) {

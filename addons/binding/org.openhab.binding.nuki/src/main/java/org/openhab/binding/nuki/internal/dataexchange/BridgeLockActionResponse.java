@@ -17,22 +17,26 @@ import org.openhab.binding.nuki.internal.dto.BridgeApiLockActionDto;
  */
 public class BridgeLockActionResponse extends NukiBaseResponse {
 
-    private BridgeApiLockActionDto bridgeLockAction;
+    private boolean batteryCritical;
 
-    public BridgeLockActionResponse(int status, String message) {
+    public BridgeLockActionResponse(int status, String message, BridgeApiLockActionDto bridgeApiLockActionDto) {
         super(status, message);
+        if (bridgeApiLockActionDto != null) {
+            this.setSuccess(bridgeApiLockActionDto.isSuccess());
+            this.setBatteryCritical(bridgeApiLockActionDto.isBatteryCritical());
+        }
     }
 
     public BridgeLockActionResponse(NukiBaseResponse nukiBaseResponse) {
         super(nukiBaseResponse.getStatus(), nukiBaseResponse.getMessage());
     }
 
-    public BridgeApiLockActionDto getBridgeLockAction() {
-        return bridgeLockAction;
+    public boolean isBatteryCritical() {
+        return batteryCritical;
     }
 
-    public void setBridgeLockAction(BridgeApiLockActionDto bridgeLockAction) {
-        this.bridgeLockAction = bridgeLockAction;
+    public void setBatteryCritical(boolean batteryCritical) {
+        this.batteryCritical = batteryCritical;
     }
 
 }

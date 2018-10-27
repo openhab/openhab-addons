@@ -17,22 +17,46 @@ import org.openhab.binding.nuki.internal.dto.BridgeApiLockStateDto;
  */
 public class BridgeLockStateResponse extends NukiBaseResponse {
 
-    private BridgeApiLockStateDto bridgeLockState;
+    private int state;
+    private String stateName;
+    private boolean batteryCritical;
 
-    public BridgeLockStateResponse(int status, String message) {
+    public BridgeLockStateResponse(int status, String message, BridgeApiLockStateDto bridgeApiLockStateDto) {
         super(status, message);
+        if (bridgeApiLockStateDto != null) {
+            this.setSuccess(bridgeApiLockStateDto.isSuccess());
+            this.setState(bridgeApiLockStateDto.getState());
+            this.setStateName(bridgeApiLockStateDto.getStateName());
+            this.setBatteryCritical(bridgeApiLockStateDto.isBatteryCritical());
+        }
     }
 
     public BridgeLockStateResponse(NukiBaseResponse nukiBaseResponse) {
         super(nukiBaseResponse.getStatus(), nukiBaseResponse.getMessage());
     }
 
-    public BridgeApiLockStateDto getBridgeLockState() {
-        return bridgeLockState;
+    public int getState() {
+        return state;
     }
 
-    public void setBridgeLockState(BridgeApiLockStateDto bridgeLockState) {
-        this.bridgeLockState = bridgeLockState;
+    public void setState(int state) {
+        this.state = state;
+    }
+
+    public String getStateName() {
+        return stateName;
+    }
+
+    public void setStateName(String stateName) {
+        this.stateName = stateName;
+    }
+
+    public boolean isBatteryCritical() {
+        return batteryCritical;
+    }
+
+    public void setBatteryCritical(boolean batteryCritical) {
+        this.batteryCritical = batteryCritical;
     }
 
 }

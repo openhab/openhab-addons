@@ -99,7 +99,7 @@ public class NukiApiServlet extends HttpServlet {
                     ? (String) thing.getConfiguration().get(NukiBindingConstants.CONFIG_NUKI_ID)
                     : null;
             if (nukiIdThing != null && nukiIdThing.equals(nukiId)) {
-                logger.debug("Processing ThingUID[{}]", thing.getUID());
+                logger.debug("Processing ThingUID[{}] - nukiId[{}]", thing.getUID(), nukiId);
                 NukiSmartLockHandler nsh = getSmartLockHandler(thing);
                 if (nsh == null) {
                     logger.debug("Could not update channels for ThingUID[{}] because Handler is null!", thing.getUID());

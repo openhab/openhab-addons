@@ -93,7 +93,7 @@ public class NukiBridgeHandler extends BaseBridgeHandler {
         }
         BridgeInfoResponse bridgeInfoResponse = nukiHttpClient.getBridgeInfo();
         if (bridgeInfoResponse.getStatus() == HttpStatus.OK_200) {
-            bridgeId = bridgeIdToHex(bridgeInfoResponse.getBridgeInfo().getIds().getHardwareId());
+            bridgeId = bridgeIdToHex(bridgeInfoResponse.getHardwareId());
             boolean manageCallbacks = (Boolean) getConfig().get(NukiBindingConstants.CONFIG_MANAGECB);
             if (manageCallbacks) {
                 manageNukiBridgeCallbacks(bridgeId);
