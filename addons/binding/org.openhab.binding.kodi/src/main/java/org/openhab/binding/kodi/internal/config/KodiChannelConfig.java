@@ -9,12 +9,10 @@
 package org.openhab.binding.kodi.internal.config;
 
 /**
- * Channel configuration from openHab.
+ * Channel configuration from openHAB.
  *
- * @author Christoph Weitkamp - Added channels for opening PVR TV or Radio streams
- * 
+ * @author Christoph Weitkamp - Initial contribution
  */
-
 public class KodiChannelConfig {
     private String group;
 

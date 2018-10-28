@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.modbus
 Bundle-ManifestVersion: 2
 Bundle-Name: Modbus Binding
 Bundle-SymbolicName: org.openhab.binding.modbus;singleton:=true
@@ -16,6 +17,8 @@ Import-Package: org.apache.commons.lang,
  org.eclipse.smarthome.core.transform,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.config.core,
+ org.openhab.binding.modbus,
+ org.openhab.binding.modbus.handler,
  org.openhab.io.transport.modbus,
  org.openhab.io.transport.modbus.endpoint,
  org.openhab.io.transport.modbus.json,

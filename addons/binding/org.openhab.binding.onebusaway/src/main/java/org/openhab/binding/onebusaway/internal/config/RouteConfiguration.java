@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.onebusaway.internal.config;
 
-import static org.openhab.binding.onebusaway.OneBusAwayBindingConstants.ROUTE_CONFIG_ROUTE_ID;
+import static org.openhab.binding.onebusaway.internal.OneBusAwayBindingConstants.ROUTE_CONFIG_ROUTE_ID;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 

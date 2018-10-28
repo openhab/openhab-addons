@@ -29,13 +29,7 @@ Import-Package: com.google.gson,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.io.net.http,
- org.openhab.binding.solaredge,
- org.openhab.binding.solaredge.config,
- org.openhab.binding.solaredge.handler,
  org.osgi.service.component.annotations;resolution:=optional,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.solaredge,
- org.openhab.binding.solaredge.config,
- org.openhab.binding.solaredge.handler
 Bundle-ActivationPolicy: lazy

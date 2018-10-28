@@ -21,7 +21,6 @@ import org.openhab.binding.rfxcom.internal.messages.RFXComRfyMessage.SubType;
  * Test for RFXCom-binding
  *
  * @author Martin van Wingerden
- * @since 1.9.0
  */
 public class RFXComRfyMessageTest {
 

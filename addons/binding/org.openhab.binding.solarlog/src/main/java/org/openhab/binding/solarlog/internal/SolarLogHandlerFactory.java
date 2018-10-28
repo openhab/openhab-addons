@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.solarlog.internal;
 
-import static org.openhab.binding.solarlog.SolarLogBindingConstants.THING_SOLARLOG;
+import static org.openhab.binding.solarlog.internal.SolarLogBindingConstants.THING_SOLARLOG;
 
 import java.util.Collections;
 import java.util.Set;
@@ -18,7 +18,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.solarlog.handler.SolarLogHandler;
+import org.openhab.binding.solarlog.internal.handler.SolarLogHandler;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

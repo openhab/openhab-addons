@@ -8,6 +8,15 @@
  */
 package org.openhab.binding.yamahareceiver.internal.discovery;
 
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.*;
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Configs.CONFIG_HOST_NAME;
+
+import java.net.URL;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.upnp.UpnpDiscoveryParticipant;
@@ -18,15 +27,6 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URL;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
-import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.*;
-import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Configs.CONFIG_HOST_NAME;
-
 /**
  * The {@link YamahaDiscoveryParticipant} is responsible for processing the
  * results of searched UPnP devices
@@ -34,7 +34,7 @@ import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.
  * @author David Graeff - Initial contribution
  * @author Tomasz Maruszak - Introduced config object, migrated to newer UPnP api
  */
-@Component(service = UpnpDiscoveryParticipant.class, immediate = true)
+@Component(immediate = true)
 public class YamahaDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(YamahaDiscoveryParticipant.class);
@@ -70,13 +70,8 @@ public class YamahaDiscoveryParticipant implements UpnpDiscoveryParticipant {
         // We provide the port config therefore, if the user ever needs to adjust the port.
         // Note the port is set in the thing-types.xml to 80 by default.
 
-        DiscoveryResult result = DiscoveryResultBuilder
-                .create(uid)
-                .withTTL(MIN_MAX_AGE_SECS)
-                .withProperties(properties)
-                .withLabel(label)
-                .withRepresentationProperty(CONFIG_HOST_NAME)
-                .build();
+        DiscoveryResult result = DiscoveryResultBuilder.create(uid).withTTL(MIN_MAX_AGE_SECS).withProperties(properties)
+                .withLabel(label).withRepresentationProperty(CONFIG_HOST_NAME).build();
 
         logger.debug("Discovered a Yamaha Receiver '{}' model '{}' thing with UDN '{}'",
                 device.getDetails().getFriendlyName(), device.getDetails().getModelDetails().getModelName(),
@@ -101,8 +96,9 @@ public class YamahaDiscoveryParticipant implements UpnpDiscoveryParticipant {
     public ThingUID getThingUID(RemoteDevice device) {
         String manufacturer = device.getDetails().getManufacturerDetails().getManufacturer();
         String deviceType = device.getType().getType();
-        
+
         // UDN shouldn't contain '-' characters.
-        return getThingUID(manufacturer, deviceType, device.getIdentity().getUdn().getIdentifierString().replace("-", "_"));
+        return getThingUID(manufacturer, deviceType,
+                device.getIdentity().getUdn().getIdentifierString().replace("-", "_"));
     }
 }

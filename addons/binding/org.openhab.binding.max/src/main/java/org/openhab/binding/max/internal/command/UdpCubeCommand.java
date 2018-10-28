@@ -29,8 +29,6 @@ import org.slf4j.LoggerFactory;
  * Cube LAN gateway.
  *
  * @author Marcel Verpaalen - Initial contribution
- * @since 2.0
- *
  */
 public class UdpCubeCommand {
 
@@ -86,11 +84,11 @@ public class UdpCubeCommand {
         } else if (commandType.equals(UdpCommandType.DEFAULTNET)) {
             commandString = MAXCUBE_COMMAND_STRING + serialNumber + "c";
         } else {
-            logger.info("Unknown Command {}", commandType.toString());
+            logger.debug("Unknown Command {}", commandType);
             return false;
         }
         commandResponse.clear();
-        logger.debug("Send {} command to MAX! Cube {}", commandType.toString(), serialNumber);
+        logger.debug("Send {} command to MAX! Cube {}", commandType, serialNumber);
         sendUdpCommand(commandString, ipAddress);
         logger.trace("Done sending command.");
         receiveUdpCommandResponse();
@@ -99,7 +97,6 @@ public class UdpCubeCommand {
     }
 
     private void receiveUdpCommandResponse() {
-
         commandRunning = true;
 
         try (DatagramSocket bcReceipt = new DatagramSocket(23272)) {
@@ -120,7 +117,6 @@ public class UdpCubeCommand {
 
                 // Check if the message is correct
                 if (message.startsWith("eQ3Max") && !message.equals(MAXCUBE_COMMAND_STRING)) {
-
                     commandResponse.put("maxCubeIP", receivePacket.getAddress().getHostAddress().toString());
                     commandResponse.put("maxCubeState", message.substring(0, 8));
                     commandResponse.put("serialNumber", message.substring(8, 18));
@@ -200,7 +196,7 @@ public class UdpCubeCommand {
                             } catch (IOException e) {
                                 logger.debug("IO error during MAX! Cube UDP command sending: {}", e.getMessage());
                             } catch (Exception e) {
-                                logger.info("{}", e.getMessage(), e);
+                                logger.debug("{}", e.getMessage(), e);
                             }
                             logger.trace("Request packet sent to: {} Interface: {}", bc.getHostAddress(),
                                     networkInterface.getDisplayName());

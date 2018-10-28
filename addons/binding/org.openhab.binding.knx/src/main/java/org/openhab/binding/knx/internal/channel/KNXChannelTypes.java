@@ -29,6 +29,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 public final class KNXChannelTypes {
 
     private static final Set<KNXChannelType> TYPES = Collections.unmodifiableSet(Stream.of(//
+            new TypeColor(), //
             new TypeContact(), //
             new TypeDateTime(), //
             new TypeDimmer(), //

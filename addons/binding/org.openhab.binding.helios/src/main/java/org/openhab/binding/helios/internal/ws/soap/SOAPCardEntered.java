@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.openhab.binding.helios.handler.HeliosHandler27;
+import org.openhab.binding.helios.internal.handler.HeliosHandler27;
 
 /**
  * Helios SOAP Protocol Message

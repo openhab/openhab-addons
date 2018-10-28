@@ -18,7 +18,6 @@ import javax.crypto.spec.SecretKeySpec;
  * Helper class for encrypting ETHM-1 messages.
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.7.0
  */
 public class EncryptionHelper {
     private Key key;

@@ -4,7 +4,7 @@ Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: 
  .,
  lib/protobuf-java-2.6.0.jar,
- lib/api-v2-0.10.3.jar,
+ lib/api-v2-0.10.4.jar,
  lib/jackson-core-asl-1.9.2.jar,
  lib/jackson-mapper-asl-1.9.2.jar
 Bundle-ManifestVersion: 2
@@ -13,9 +13,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.chromecast;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
-Export-Package: 
- org.openhab.binding.chromecast,
- org.openhab.binding.chromecast.handler
 Import-Package: 
  javax.jmdns,
  org.apache.commons.lang,
@@ -32,8 +29,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.io.net.http,
- org.openhab.binding.chromecast,
- org.openhab.binding.chromecast.handler,
  org.osgi.framework,
  org.osgi.service.component,
  org.slf4j

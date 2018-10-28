@@ -14,7 +14,6 @@ import java.util.Calendar;
  * Event class describing basic status bits and current time.
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.7.0
  */
 public class IntegraStatusEvent implements SatelEvent {
 

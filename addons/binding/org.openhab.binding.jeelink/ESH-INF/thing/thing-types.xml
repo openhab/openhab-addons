@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="jeelink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="jeelink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
@@ -196,8 +197,8 @@
 		<description>@text/thing-type.ec3k.description</description>
 
 		<channels>
-			<channel id="currentWatt" typeId="current-watt" />
-			<channel id="maxWatt" typeId="max-watt" />
+			<channel id="currentPower" typeId="current-power" />
+			<channel id="maxPower" typeId="max-power" />
 			<channel id="consumptionTotal" typeId="consumption-total" />
 			<channel id="applianceTime" typeId="appliance-time" />
 			<channel id="sensorTime" typeId="sensor-time" />
@@ -242,7 +243,7 @@
 
 		<channels>
 			<channel id="switchingState" typeId="switching-state" />
-			<channel id="currentWatt" typeId="current-watt" />
+			<channel id="currentPower" typeId="current-power" />
 			<channel id="consumptionTotal" typeId="consumption-total" />
 		</channels>
 
@@ -264,45 +265,116 @@
 		</config-description>
 	</thing-type>
 
-	<!-- Current Watt Channel Type -->
-	<channel-type id="current-watt">
-		<item-type>Number</item-type>
-		<label>@text/channel-type.current-watt.label</label>
-		<description>@text/channel-type.current-watt.description</description>
-		<state readOnly="true" pattern="%.1f W" />
+	<!-- TX22 Temperature/Humidity SensorThing Type -->
+	<thing-type id="tx22">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="jeelinkTcp" />
+			<bridge-type-ref id="jeelinkUsb" />
+			<bridge-type-ref id="lgwTcp" />
+			<bridge-type-ref id="lgwUsb" />
+		</supported-bridge-type-refs>
+
+		<label>@text/thing-type.tx22.label</label>
+		<description>@text/thing-type.tx22.description</description>
+
+		<channels>
+			<channel id="temperature" typeId="temperature" />
+			<channel id="humidity" typeId="humidity" />
+			<channel id="batteryNew" typeId="battery-new" />
+			<channel id="batteryLow" typeId="system.low-battery" />
+			<channel id="pressure" typeId="pressure" />
+			<channel id="rain" typeId="rain" />
+			<channel id="windStrength" typeId="wind-strength" />
+			<channel id="windAngle" typeId="wind-angle" />
+			<channel id="gustStrength" typeId="wind-strength">
+				<label>@text/gust-strength.label</label>
+				<description>@text/gust-strength.description</description>
+			</channel>
+		</channels>
+
+		<config-description>
+			<parameter name="sensorId" type="text" required="true">
+				<label>@text/parameter.sensorid.label</label>
+				<description>@text/parameter.sensorid.description</description>
+			</parameter>
+			<parameter name="sensorTimeout" type="integer" required="false" min="5" max="3600" unit="s" step="5">
+				<label>@text/parameter.sensortimeout.label</label>
+				<description>@text/parameter.sensortimeout.description</description>
+				<default>600</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="wind-angle">
+		<item-type>Number:Angle</item-type>
+		<label>@text/channel-type.wind-angle.label</label>
+		<description>@text/channel-type.wind-angle.description</description>
+		<category>Wind</category>
+		<state min="0" max="360" step="1" readOnly="true" pattern="%d %unit%" />
 	</channel-type>
 
-	<!-- Max Watt Channel Type -->
-	<channel-type id="max-watt">
-		<item-type>Number</item-type>
-		<label>@text/channel-type.max-watt.label</label>
-		<description>@text/channel-type.max-watt.description</description>
-		<state readOnly="true" pattern="%.1f W" />
+	<channel-type id="wind-strength">
+		<item-type>Number:Speed</item-type>
+		<label>@text/channel-type.wind-strength.label</label>
+		<description>@text/channel-type.wind-strength.description</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
-	<!-- Total Consumption Channel Type -->
+	<channel-type id="rain">
+		<item-type>Number:Length</item-type>
+		<label>@text/channel-type.rain.label</label>
+		<description>@text/channel-type.rain.description</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.2f %unit%" />
+	</channel-type>
+
+	<channel-type id="pressure">
+		<item-type>Number:Pressure</item-type>
+		<label>@text/channel-type.pressure.label</label>
+		<description>@text/channel-type.pressure.description</description>
+		<category>Pressure</category>
+		<state readOnly="true" pattern="%.3f %unit%" />
+	</channel-type>
+
+	<!-- Current Power Channel Type -->
+	<channel-type id="current-power">
+		<item-type>Number:Power</item-type>
+		<label>@text/channel-type.current-power.label</label>
+		<description>@text/channel-type.current-power.description</description>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<!-- Max Power Channel Type -->
+	<channel-type id="max-power">
+		<item-type>Number:Power</item-type>
+		<label>@text/channel-type.max-power.label</label>
+		<description>@text/channel-type.max-power.description</description>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<!-- Total Energy Consumption Channel Type -->
 	<channel-type id="consumption-total">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>@text/channel-type.consumption-total.label</label>
 		<description>@text/channel-type.consumption-total.description</description>
-		<state readOnly="true" pattern="%d Wh" />
+		<state readOnly="true" pattern="%d %unit%" />
 	</channel-type>
 
 	<!-- Appliance On Time Channel Type -->
 	<channel-type id="appliance-time" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>@text/channel-type.appliance-time.label</label>
 		<description>@text/channel-type.appliance-time.description</description>
-		<state readOnly="true" pattern="%d h" />
-
+		<state readOnly="true" pattern="%d %unit%" />
 	</channel-type>
 
 	<!-- Sensor On Time Channel Type -->
 	<channel-type id="sensor-time" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>@text/channel-type.sensor-time.label</label>
 		<description>@text/channel-type.sensor-time.description</description>
-		<state readOnly="true" pattern="%d h" />
+		<state readOnly="true" pattern="%d %unit%" />
 	</channel-type>
 
 	<!-- Resets Channel Type -->
@@ -315,20 +387,20 @@
 
 	<!-- Temperature Channel Type -->
 	<channel-type id="temperature">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>@text/channel-type.temperature.label</label>
 		<description>@text/channel-type.temperature.description</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f °C" />
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 	<!-- Humidity Channel Type -->
 	<channel-type id="humidity">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>@text/channel-type.humidity.label</label>
 		<description>@text/channel-type.humidity.description</description>
 		<category>Humidity</category>
-		<state readOnly="true" pattern="%.1f" />
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 	<!-- Battery New Channel Type -->

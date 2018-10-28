@@ -11,6 +11,7 @@ package org.openhab.binding.chromecast.internal;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import su.litvak.chromecast.api.v2.ChromeCastConnectionEvent;
 import su.litvak.chromecast.api.v2.ChromeCastConnectionEventListener;
 import su.litvak.chromecast.api.v2.ChromeCastSpontaneousEvent;
@@ -21,7 +22,7 @@ import su.litvak.chromecast.api.v2.Status;
 /**
  * Responsible for listening to events from the Chromecast.
  *
- * @author Jason Holmes - Initial Author.
+ * @author Jason Holmes - Initial contribution
  */
 public class ChromecastEventReceiver implements ChromeCastSpontaneousEventListener, ChromeCastConnectionEventListener {
     private final Logger logger = LoggerFactory.getLogger(getClass());

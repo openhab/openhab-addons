@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.dlinksmarthome.internal;
 
-import static org.openhab.binding.dlinksmarthome.DLinkSmartHomeBindingConstants.*;
+import static org.openhab.binding.dlinksmarthome.internal.DLinkSmartHomeBindingConstants.*;
 import static org.openhab.binding.dlinksmarthome.internal.motionsensor.DLinkMotionSensorConfig.IP_ADDRESS;
 
 import java.util.HashMap;
@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * @author Mike Major - Initial contribution
  *
  */
-@Component(service = MDNSDiscoveryParticipant.class, immediate = true)
+@Component(immediate = true)
 public class DLinkSmartHomeDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private static final String SERVICE_TYPE = "_dhnap._tcp.local.";

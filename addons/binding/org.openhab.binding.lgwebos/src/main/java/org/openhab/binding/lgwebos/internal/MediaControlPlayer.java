@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.lgwebos.internal;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
 import org.eclipse.smarthome.core.library.types.RewindFastforwardType;
@@ -27,7 +28,7 @@ import com.connectsdk.service.capability.PlaylistControl;
  *
  * @author Sebastian Prehn - initial contribution
  */
-public class MediaControlPlayer extends BaseChannelHandler<PlayStateListener> {
+public class MediaControlPlayer extends BaseChannelHandler<PlayStateListener, Object> {
     private final Logger logger = LoggerFactory.getLogger(MediaControlPlayer.class);
 
     private MediaControl getMediaControl(ConnectableDevice device) {
@@ -39,33 +40,34 @@ public class MediaControlPlayer extends BaseChannelHandler<PlayStateListener> {
     }
 
     @Override
-    public void onReceiveCommand(ConnectableDevice device, String channelId, LGWebOSHandler handler, Command command) {
+    public void onReceiveCommand(@Nullable ConnectableDevice device, String channelId, LGWebOSHandler handler,
+            Command command) {
         if (device == null) {
             return;
         }
         if (NextPreviousType.NEXT == command) {
             if (device.hasCapabilities(PlaylistControl.Next)) {
-                getPlayListControl(device).next(createDefaultResponseListener());
+                getPlayListControl(device).next(getDefaultResponseListener());
             }
         } else if (NextPreviousType.PREVIOUS == command) {
             if (device.hasCapabilities(PlaylistControl.Previous)) {
-                getPlayListControl(device).previous(createDefaultResponseListener());
+                getPlayListControl(device).previous(getDefaultResponseListener());
             }
         } else if (PlayPauseType.PLAY == command) {
             if (device.hasCapabilities(MediaControl.Play)) {
-                getMediaControl(device).play(createDefaultResponseListener());
+                getMediaControl(device).play(getDefaultResponseListener());
             }
         } else if (PlayPauseType.PAUSE == command) {
             if (device.hasCapabilities(MediaControl.Pause)) {
-                getMediaControl(device).pause(createDefaultResponseListener());
+                getMediaControl(device).pause(getDefaultResponseListener());
             }
         } else if (RewindFastforwardType.FASTFORWARD == command) {
             if (device.hasCapabilities(MediaControl.FastForward)) {
-                getMediaControl(device).fastForward(createDefaultResponseListener());
+                getMediaControl(device).fastForward(getDefaultResponseListener());
             }
         } else if (RewindFastforwardType.REWIND == command) {
             if (device.hasCapabilities(MediaControl.Rewind)) {
-                getMediaControl(device).rewind(createDefaultResponseListener());
+                getMediaControl(device).rewind(getDefaultResponseListener());
             }
         } else {
             logger.warn("Only accept NextPreviousType, PlayPauseType, RewindFastforwardType. Type was {}.",

@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.rme.internal;
 
-import static org.openhab.binding.rme.RMEBindingConstants.THING_TYPE_MANAGER;
+import static org.openhab.binding.rme.internal.RMEBindingConstants.THING_TYPE_MANAGER;
 
 import java.util.Collections;
 import java.util.Set;
@@ -18,7 +18,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.rme.handler.RMEThingHandler;
+import org.openhab.binding.rme.internal.handler.RMEThingHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**

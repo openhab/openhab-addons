@@ -58,7 +58,6 @@ import org.slf4j.LoggerFactory;
  * used by the diagram plugin
  *
  * @author Tobias Bräutigam
- * @since 2.0.0
  *
  */
 @Path(Config.COMETVISU_BACKEND_ALIAS + "/" + Config.COMETVISU_BACKEND_CHART_ALIAS)

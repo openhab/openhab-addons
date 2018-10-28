@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.tplinksmarthome.internal.device;
 
-import static org.openhab.binding.tplinksmarthome.TPLinkSmartHomeBindingConstants.*;
+import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;

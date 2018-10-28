@@ -21,7 +21,6 @@ import org.openhab.ui.cometvisu.internal.backend.beans.StateBean;
  * listens to state changes on items and send them to an EventBroadcaster
  * 
  * @author Tobias Bräutigam
- * @since 2.0.0
  */
 public class StateEventListener implements StateChangeListener {
 

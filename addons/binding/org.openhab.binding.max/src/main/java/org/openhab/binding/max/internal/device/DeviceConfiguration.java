@@ -11,14 +11,13 @@ package org.openhab.binding.max.internal.device;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openhab.binding.max.internal.message.C_Message;
+import org.openhab.binding.max.internal.message.CMessage;
 import org.openhab.binding.max.internal.message.Message;
 
 /**
- * Base class for configuration provided by the MAX! Cube C_Message.
+ * Base class for configuration provided by the MAX! Cube C Message.
  *
- * @author Andreas Heil (info@aheil.de)
- * @since 1.4.0
+ * @author Andreas Heil (info@aheil.de) - Initial contribution
  */
 public final class DeviceConfiguration {
 
@@ -37,7 +36,7 @@ public final class DeviceConfiguration {
 
     public static DeviceConfiguration create(Message message) {
         final DeviceConfiguration configuration = new DeviceConfiguration();
-        configuration.setValues((C_Message) message);
+        configuration.setValues((CMessage) message);
 
         return configuration;
     }
@@ -49,7 +48,7 @@ public final class DeviceConfiguration {
         return configuration;
     }
 
-    public void setValues(C_Message message) {
+    public void setValues(CMessage message) {
         setValues(message.getRFAddress(), message.getDeviceType(), message.getSerialNumber(), message.getRoomID());
         properties = new HashMap<>(message.getProperties());
     }

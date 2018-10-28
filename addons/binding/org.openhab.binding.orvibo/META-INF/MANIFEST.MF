@@ -11,11 +11,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.orvibo;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
-Export-Package: 
- org.openhab.binding.orvibo,
- org.openhab.binding.orvibo.handler
 Import-Package: 
- com.google.common.collect,
  javax.xml.bind,
  org.apache.commons.lang,
  org.eclipse.jdt.annotation;resolution:=optional,
@@ -27,8 +23,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.types,
- org.openhab.binding.orvibo,
- org.openhab.binding.orvibo.handler,
  org.osgi.framework,
  org.osgi.service.component,
  org.slf4j

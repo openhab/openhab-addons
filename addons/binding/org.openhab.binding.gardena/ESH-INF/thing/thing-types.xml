@@ -141,6 +141,7 @@
 		<description>The mower status</description>
 		<state readOnly="true">
 			<options>
+				<option value="uninitialised">Uninitialised</option>
 				<option value="paused">Paused</option>
 				<option value="ok_cutting">Mowing</option>
 				<option value="ok_searching">Searching charging station</option>
@@ -176,11 +177,15 @@
 				<option value="wrong_loop_signal">Wrong loop signal</option>
 				<option value="loop_sensor_problem_front">Loop sensor problem, front</option>
 				<option value="loop_sensor_problem_rear">Loop sensor problem, rear</option>
+				<option value="loop_sensor_problem_left">Loop sensor problem, left</option>
+				<option value="loop_sensor_problem_right">Loop sensor problem, right</option>
+				<option value="wrong_pin_code">Wrong pin code</option>
 				<option value="trapped">Trapped</option>
 				<option value="upside_down">Upside down</option>
 				<option value="low_battery">Low battery</option>
 				<option value="empty_battery">Empty battery</option>
 				<option value="no_drive">Disabled. Hatch open</option>
+				<option value="temporarily_lifted">Temporary lifted</option>
 				<option value="lifted">Lifted</option>
 				<option value="stuck_in_charging_station">Stuck in charging station</option>
 				<option value="charging_station_blocked">Charging station blocked</option>
@@ -190,32 +195,55 @@
 				<option value="wheel_motor_blocked_left">Wheel motor blocked, left</option>
 				<option value="wheel_drive_problem_right">Wheel drive problem, right</option>
 				<option value="wheel_drive_problem_left">Wheel drive problem, left</option>
+				<option value="cutting_motor_drive_defect">Cutting motor drive defect</option>
 				<option value="cutting_system_blocked">Cutting system blocked</option>
 				<option value="invalid_sub_device_combination">Invalid sub-device combination</option>
 				<option value="settings_restored">Settings restored</option>
-				<option value="electronic_problem">Electronic problem</option>
+				<option value="memory_circuit_problem">Memory circuit problem</option>
+				<option value="slope_too_steep">Slope too steep</option>
 				<option value="charging_system_problem">Charging system problem</option>
+				<option value="stop_button_problem">Stop button problem</option>
 				<option value="tilt_sensor_problem">Tilt sensor problem</option>
+				<option value="mower_tilted">Mower tilted</option>
 				<option value="wheel_motor_overloaded_right">Wheel motor overloaded, right</option>
 				<option value="wheel_motor_overloaded_left">Wheel motor overloaded, left</option>
 				<option value="charging_current_too_high">Charging current too high</option>
+				<option value="electronic_problem">Electronic problem</option>
+				<option value="cutting_motor_problem">Cutting motor problem</option>
+				<option value="limited_cutting_height_range">Limited cutting height range</option>
+				<option value="unexpected_cutting_height_adj">Unexpected cutting height adj</option>
+				<option value="cutting_height_problem_drive">Cutting height problem drive</option>
+				<option value="cutting_height_problem_curr">Cutting height problem curr</option>
+				<option value="cutting_height_problem_dir">Cutting height problem dir</option>
+				<option value="cutting_height_blocked">Cutting height blocked</option>
+				<option value="cutting_height_problem">Cutting height problem</option>
+				<option value="no_response_from_charger">No response from charger</option>
+				<option value="ultrasonic_problem">Ultrasonic problem</option>
 				<option value="temporary_problem">Temporary problem</option>
 				<option value="guide_1_not_found">Guide 1 not found</option>
 				<option value="guide_2_not_found">Guide 2 not found</option>
 				<option value="guide_3_not_found">Guide 3 not found</option>
+				<option value="gps_tracker_module_error">GPS tracker module error</option>
+				<option value="weak_gps_signal">Weak gps signal</option>
 				<option value="difficult_finding_home">Difficult finding home</option>
 				<option value="guide_calibration_accomplished">Guide calibration accomplished</option>
 				<option value="guide_calibration_failed">Guide calibration failed</option>
 				<option value="temporary_battery_problem">Temporary battery problem</option>
 				<option value="battery_problem">Battery problem</option>
+				<option value="too_many_batteries">Too many batteries</option>
 				<option value="alarm_mower_switched_off">Alarm! Mower switched off</option>
 				<option value="alarm_mower_stopped">Alarm! Mower stopped</option>
 				<option value="alarm_mower_lifted">Alarm! Mower lifted</option>
 				<option value="alarm_mower_tilted">Alarm! Mower tilted</option>
+				<option value="alarm_mower_in_motion">Alarm! Mower in motion</option>
+				<option value="alarm_outside_geofence">Alarm outside geofence</option>
 				<option value="connection_changed">Connection changed</option>
 				<option value="connection_not_changed">Connection not changed</option>
 				<option value="com_board_not_available">COM board not available</option>
 				<option value="slipped">Slipped</option>
+				<option value="invalid_battery_combination">Invalid battery combination</option>
+				<option value="imbalanced_cutting_disc">Imbalanced cutting disc</option>
+				<option value="safety_function_faulty">Safety function faulty</option>
 			</options>
 		</state>
 	</channel-type>
@@ -670,6 +698,7 @@
 		<item-type>Switch</item-type>
 		<label>Pump</label>
 		<description>Pump</description>
+		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="turnOnPressure">
@@ -776,11 +805,29 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-type id="manualWateringTimer" advanced="true">
+	<channel-type id="manualWateringTimer">
 		<item-type>Number</item-type>
 		<label>Manual Watering Timer</label>
 		<description>The manual watering timer</description>
-		<state readOnly="true" pattern="%d sec" />
+		<state pattern="%d min" min="0" max="59" step="1">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">1 min</option>
+				<option value="3">3 min</option>
+				<option value="5">5 min</option>
+				<option value="10">10 min</option>
+				<option value="15">15 min</option>
+				<option value="20">20 min</option>
+				<option value="25">25 min</option>
+				<option value="30">30 min</option>
+				<option value="35">35 min</option>
+				<option value="40">40 min</option>
+				<option value="45">45 min</option>
+				<option value="50">50 min</option>
+				<option value="55">55 min</option>
+				<option value="59">59 min</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="lastManualOverrideTime" advanced="true">
@@ -968,7 +1015,7 @@
 		<state pattern="%d min">
 			<options>
 				<option value="0">Off</option>
-				<option value="1">1</option>
+				<option value="1">1 min</option>
 				<option value="3">3 min</option>
 				<option value="5">5 min</option>
 				<option value="10">10 min</option>

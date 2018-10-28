@@ -8,14 +8,11 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.hyperion;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
-Export-Package: 
- org.openhab.binding.hyperion,
- org.openhab.binding.hyperion.handler
 Import-Package: 
  com.google.gson,
  com.google.gson.annotations,
- org.eclipse.jdt.annotation;resolution:=optional,
  javax.jmdns,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.jetty.websocket.api,
  org.eclipse.jetty.websocket.api.annotations,
  org.eclipse.jetty.websocket.client,
@@ -29,7 +26,5 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.openhab.binding.hyperion,
- org.openhab.binding.hyperion.handler,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

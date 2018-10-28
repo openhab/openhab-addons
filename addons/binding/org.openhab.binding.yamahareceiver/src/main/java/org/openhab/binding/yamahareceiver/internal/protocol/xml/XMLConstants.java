@@ -8,10 +8,10 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
-import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Feature;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Feature;
 
 /**
  * XML protocol constants.

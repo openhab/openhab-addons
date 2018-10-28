@@ -14,7 +14,6 @@ import java.util.BitSet;
  * Interface for all types of control.
  *
  * @author Krzysztof Goworek - Initial contribution
- * @since 1.7.0
  */
 public interface ControlType {
 

@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.netatmo.internal.channelhelper;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

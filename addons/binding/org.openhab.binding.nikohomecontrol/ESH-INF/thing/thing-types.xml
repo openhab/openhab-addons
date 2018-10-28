@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="nikohomecontrol" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="nikohomecontrol"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd"><!--Niko Home Control Gateway Bridge Type -->
 
@@ -44,7 +45,7 @@
 		<config-description>
 			<parameter name="actionId" type="integer" required="true">
 				<label>Action ID</label>
-				<description>Niko Home Control IP Interface Object ID</description>
+				<description>Niko Home Control IP Interface Action Object ID</description>
 				<advanced>false</advanced>
 			</parameter>
 		</config-description>
@@ -61,7 +62,7 @@
 		<config-description>
 			<parameter name="actionId" type="integer" required="true">
 				<label>Action ID</label>
-				<description>Niko Home Control IP Interface Object ID</description>
+				<description>Niko Home Control IP Interface Action Object ID</description>
 				<advanced>false</advanced>
 			</parameter>
 			<parameter name="step" type="integer" required="true">
@@ -84,8 +85,34 @@
 		<config-description>
 			<parameter name="actionId" type="integer" required="true">
 				<label>Action ID</label>
-				<description>Niko Home Control IP Interface Object ID</description>
+				<description>Niko Home Control IP Interface Action Object ID</description>
 				<advanced>false</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="thermostat">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>Thermostat</label>
+		<description>Thermostat in the Niko Home Control system</description>
+		<channels>
+			<channel id="measured" typeId="measured" />
+			<channel id="mode" typeId="mode" />
+			<channel id="setpoint" typeId="setpoint" />
+			<channel id="overruletime" typeId="overruletime" />
+		</channels>
+		<config-description>
+			<parameter name="thermostatId" type="integer" required="true">
+				<label>Thermostat ID</label>
+				<description>Niko Home Control IP Interface Thermostat Object ID</description>
+				<advanced>false</advanced>
+			</parameter>
+			<parameter name="overruleTime" type="integer" required="false">
+				<label>Overrule time</label>
+				<description>Default overrule duration in minutes when an overrule temperature is set without providing overrule time, 60 minutes by default</description>
+				<default>60</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -109,19 +136,61 @@
 		<category>Blinds</category>
 	</channel-type>
 
+	<channel-type id="measured">
+		<item-type>Number:Temperature</item-type>
+		<label>Measured</label>
+		<description>Temperature measured by thermostat</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>CurrentTemperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+	<channel-type id="setpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Setpoint</label>
+		<description>Setpoint temperature of thermostat</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>TargetTemperature</tag>
+		</tags>
+		<state min="0" max="100" step="0.5" pattern="%.1f %unit%" />
+	</channel-type>
+	<channel-type id="overruletime">
+		<item-type>Number</item-type>
+		<label>Overrule Time</label>
+		<description>Time duration for overruling thermostat target temperature in min.</description>
+		<category>Number</category>
+		<state min="0" max="1440" step="5" />
+	</channel-type>
+	<channel-type id="mode">
+		<item-type>Number</item-type>
+		<label>Mode</label>
+		<description>Thermostat mode</description>
+		<category>Number</category>
+		<state>
+			<options>
+				<option value="0">day</option>
+				<option value="1">night</option>
+				<option value="2">eco</option>
+				<option value="3">off</option>
+				<option value="4">cool</option>
+				<option value="5">prog 1</option>
+				<option value="6">prog 2</option>
+				<option value="7">prog 3</option>
+			</options>
+		</state>
+	</channel-type>
+
 	<channel-type id="alarm">
 		<kind>trigger</kind>
 		<label>Alarm</label>
 		<description>Alarm from Niko Home Control</description>
-		<event>
-		</event>
 	</channel-type>
 	<channel-type id="notice">
 		<kind>trigger</kind>
 		<label>Notice</label>
 		<description>Notice from Niko Home Control</description>
-		<event>
-		</event>
 	</channel-type>
 
 </thing:thing-descriptions>

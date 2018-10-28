@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
 import javax.xml.namespace.QName;
 
-import org.openhab.binding.helios.handler.HeliosHandler27;
+import org.openhab.binding.helios.internal.handler.HeliosHandler27;
 
 /**
  * The {@link SOAPObjectFactory} is a helper class that is used to generate JAXB

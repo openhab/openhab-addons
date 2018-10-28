@@ -20,11 +20,11 @@ import org.eclipse.jetty.http.HttpStatus.Code;
 import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.openhab.binding.solaredge.config.SolarEdgeConfiguration;
-import org.openhab.binding.solaredge.handler.SolarEdgeHandler;
 import org.openhab.binding.solaredge.internal.command.PrivateApiTokenCheck;
 import org.openhab.binding.solaredge.internal.command.PublicApiKeyCheck;
 import org.openhab.binding.solaredge.internal.command.SolarEdgeCommand;
+import org.openhab.binding.solaredge.internal.config.SolarEdgeConfiguration;
+import org.openhab.binding.solaredge.internal.handler.SolarEdgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

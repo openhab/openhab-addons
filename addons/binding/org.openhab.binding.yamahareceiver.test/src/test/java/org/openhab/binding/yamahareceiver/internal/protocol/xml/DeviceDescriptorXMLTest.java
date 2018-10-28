@@ -9,7 +9,7 @@
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
 import org.junit.Test;
-import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
+import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -17,8 +17,8 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Feature.*;
-import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Zone.*;
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Feature.*;
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone.*;
 
 /**
  * Unit test for {@link DeviceDescriptorXML}.

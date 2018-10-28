@@ -26,7 +26,7 @@ public class AvailableServices {
         return generalInfo;
     }
 
-    public void setGenenralInfo(String generalInfo) {
+    public void setGeneralInfo(String generalInfo) {
         this.generalInfo = generalInfo;
     }
 

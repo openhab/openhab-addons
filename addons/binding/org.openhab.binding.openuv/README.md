@@ -43,16 +43,16 @@ For the location parameter, the following syntax is allowed (comma separated lat
 
 The OpenUV Report thing that is retrieved has these channels:
 
-| Channel ID   | Item Type   | Description                                    |
-|--------------|-------------|------------------------------------------------|
-| UVIndex      | Number      | UV Index                                       |
-| UVColor      | Color       | Color associated to given UV Index.            |
-| UVMax        | Number      | Max UV Index for the day (at solar noon)       |
-| UVMaxTime    | DateTime    | Max UV Index datetime (solar noon)             |
-| Ozone        | Number      | Ozone level in du (Dobson Units) from OMI data |
-| OzoneTime    | DateTime    | Latest OMI ozone update datetime               |
-| UVTime       | DateTime    | UV Index datetime                              |
-| SafeExposure | Number:Time | Safe exposure time for Fitzpatrick Skin Types  |
+| Channel ID   | Item Type           | Description                                    |
+|--------------|---------------------|------------------------------------------------|
+| UVIndex      | Number              | UV Index                                       |
+| UVColor      | Color               | Color associated to given UV Index.            |
+| UVMax        | Number              | Max UV Index for the day (at solar noon)       |
+| UVMaxTime    | DateTime            | Max UV Index datetime (solar noon)             |
+| Ozone        | Number:ArealDensity | Ozone level in du (Dobson Units) from OMI data |
+| OzoneTime    | DateTime            | Latest OMI ozone update datetime               |
+| UVTime       | DateTime            | UV Index datetime                              |
+| SafeExposure | Number:Time         | Safe exposure time for Fitzpatrick Skin Types  |
 
 ## Examples
 
@@ -68,8 +68,8 @@ Bridge openuv:openuvapi:local "OpenUV Api" [ apikey="xxxxYYYxxxx" ] {
 demo.items:
 
 ```xtend
-Number UVIndex                  "UV Index"   { channel = "openuv:uvreport:local:city1:UVIndex" }   
-Number UVMax                    "UV Max"  { channel = "openuv:uvreport:local:city1:UVMaxEvent" }   
-Number Ozone                    "Ozone"  { channel = "openuv:uvreport:local:city1:Ozone" }   
+Number 			UVIndex	"UV Index"	{ channel = "openuv:uvreport:local:city1:UVIndex" }
+Number 			UVMax	"UV Max"	{ channel = "openuv:uvreport:local:city1:UVMaxEvent" }
+Number:ArealDensity 	Ozone	"Ozone"		{ channel = "openuv:uvreport:local:city1:Ozone" }
 ```
 

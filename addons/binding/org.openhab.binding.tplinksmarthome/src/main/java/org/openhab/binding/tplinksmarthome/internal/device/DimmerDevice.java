@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.tplinksmarthome.internal.device;
 
-import static org.openhab.binding.tplinksmarthome.TPLinkSmartHomeBindingConstants.CHANNEL_BRIGHTNESS;
+import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.CHANNEL_BRIGHTNESS;
 
 import java.io.IOException;
 

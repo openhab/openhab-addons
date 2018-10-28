@@ -71,6 +71,10 @@ public interface KodiEventListener extends EventListener {
 
     void updateFanart(RawType fanart);
 
+    void updateAudioCodec(String codec);
+
+    void updateVideoCodec(String codec);
+
     void updateCurrentTime(long currentTime);
 
     void updateCurrentTimePercentage(double currentTimePercentage);

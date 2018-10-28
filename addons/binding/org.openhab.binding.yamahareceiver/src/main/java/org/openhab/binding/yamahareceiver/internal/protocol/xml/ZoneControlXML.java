@@ -9,7 +9,7 @@
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
 import org.apache.commons.lang.StringUtils;
-import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Zone;
+import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone;
 import org.openhab.binding.yamahareceiver.internal.config.YamahaZoneConfig;
 import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
 import org.openhab.binding.yamahareceiver.internal.protocol.InputConverter;
@@ -26,10 +26,10 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.function.Supplier;
 
-import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.CHANNEL_DIALOGUE_LEVEL;
-import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.CHANNEL_SCENE;
 import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLConstants.Commands.ZONE_BASIC_STATUS_CMD;
 import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLConstants.Commands.ZONE_BASIC_STATUS_PATH;
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.CHANNEL_DIALOGUE_LEVEL;
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.CHANNEL_SCENE;
 import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLConstants.*;
 import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLProtocolService.getZoneResponse;
 import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.getNodeContentOrDefault;

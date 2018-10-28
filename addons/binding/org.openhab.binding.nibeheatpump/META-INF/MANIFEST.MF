@@ -8,9 +8,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.nibeheatpump;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
-Export-Package: 
- org.openhab.binding.nibeheatpump,
- org.openhab.binding.nibeheatpump.handler
 Import-Package: 
  gnu.io,
  org.apache.commons.io,

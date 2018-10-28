@@ -23,7 +23,8 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.miele.MieleBindingConstants;
+import org.openhab.binding.miele.internal.MieleBindingConstants;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,9 +35,10 @@ import org.slf4j.LoggerFactory;
  * @author Karel Goderis - Initial contribution
  *
  */
+@Component(immediate = true)
 public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
-    private Logger logger = LoggerFactory.getLogger(MieleMDNSDiscoveryParticipant.class);
+    private final Logger logger = LoggerFactory.getLogger(MieleMDNSDiscoveryParticipant.class);
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -50,7 +52,6 @@ public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     @Override
     public DiscoveryResult createResult(ServiceInfo service) {
-
         if (service.getApplication().contains("mieleathome")) {
             ThingUID uid = getThingUID(service);
 
@@ -81,13 +82,10 @@ public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     @Override
     public ThingUID getThingUID(ServiceInfo service) {
-
-        if (service != null) {
-            if (service.getType() != null) {
-                if (service.getType().equals(getServiceType())) {
-                    logger.trace("Discovered a Miele@Home gateway thing with name '{}'", service.getName());
-                    return new ThingUID(MieleBindingConstants.THING_TYPE_XGW3000, service.getName().replace(" ", "_"));
-                }
+        if (service.getType() != null) {
+            if (service.getType().equals(getServiceType())) {
+                logger.trace("Discovered a Miele@Home gateway thing with name '{}'", service.getName());
+                return new ThingUID(MieleBindingConstants.THING_TYPE_XGW3000, service.getName().replace(" ", "_"));
             }
         }
 

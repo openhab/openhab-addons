@@ -8,10 +8,10 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
-import org.openhab.binding.yamahareceiver.ResponseLoader;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
+import org.openhab.binding.yamahareceiver.internal.ResponseLoader;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;

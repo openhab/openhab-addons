@@ -11,28 +11,31 @@ package org.openhab.binding.kodi.internal.model;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
- * Class representing a Kodi duration
+ * Class representing a Kodi duration (https://kodi.wiki/view/JSON-RPC_API/v9#Global.Time)
  *
  * @author Christoph Weitkamp - Initial contribution
  */
+@NonNullByDefault
 public class KodiDuration {
     /**
      * The hours of the duration
      */
-    private long hours = 0;
+    private long hours;
     /**
      * The minutes of the duration
      */
-    private long minutes = 0;
+    private long minutes;
     /**
      * The seconds of the duration
      */
-    private long seconds = 0;
+    private long seconds;
     /**
      * The milliseconds of the duration
      */
-    private long milliseconds = 0;
+    private long milliseconds;
 
     public long getHours() {
         return hours;

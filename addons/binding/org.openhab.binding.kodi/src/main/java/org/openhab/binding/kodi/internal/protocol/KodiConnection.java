@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.kodi.internal.protocol;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -20,23 +21,28 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.smarthome.core.cache.ExpiringCacheMap;
 import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.kodi.internal.KodiEventListener;
 import org.openhab.binding.kodi.internal.KodiEventListener.KodiPlaylistState;
 import org.openhab.binding.kodi.internal.KodiEventListener.KodiState;
+import org.openhab.binding.kodi.internal.model.KodiAudioStream;
 import org.openhab.binding.kodi.internal.model.KodiDuration;
 import org.openhab.binding.kodi.internal.model.KodiFavorite;
 import org.openhab.binding.kodi.internal.model.KodiPVRChannel;
 import org.openhab.binding.kodi.internal.model.KodiPVRChannelGroup;
+import org.openhab.binding.kodi.internal.model.KodiVideoStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * KodiConnection provides an API for accessing a Kodi device.
@@ -47,6 +53,12 @@ import com.google.gson.JsonPrimitive;
  * @author Christoph Weitkamp - Improvements for playing audio notifications
  */
 public class KodiConnection implements KodiClientSocketEventListener {
+
+    private static final String PROPERTY_TOTALTIME = "totaltime";
+    private static final String PROPERTY_TIME = "time";
+    private static final String PROPERTY_PERCENTAGE = "percentage";
+    private static final String PROPERTY_CURRENTVIDEOSTREAM = "currentvideostream";
+    private static final String PROPERTY_CURRENTAUDIOSTREAM = "currentaudiostream";
 
     private final Logger logger = LoggerFactory.getLogger(KodiConnection.class);
 
@@ -59,6 +71,8 @@ public class KodiConnection implements KodiClientSocketEventListener {
     private static final ExpiringCacheMap<String, JsonElement> REQUEST_CACHE = new ExpiringCacheMap<>(
             TimeUnit.MINUTES.toMillis(5));
 
+    private final Gson gson = new Gson();
+
     private String hostname;
     private URI wsUri;
     private URI imageUri;
@@ -69,9 +83,11 @@ public class KodiConnection implements KodiClientSocketEventListener {
     private KodiPlaylistState currentPlaylistState = KodiPlaylistState.CLEAR;
 
     private final KodiEventListener listener;
+    private final WebSocketClient webSocketClient;
 
-    public KodiConnection(KodiEventListener listener) {
+    public KodiConnection(KodiEventListener listener, WebSocketClient webSocketClient) {
         this.listener = listener;
+        this.webSocketClient = webSocketClient;
     }
 
     @Override
@@ -90,7 +106,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
         try {
             close();
             wsUri = new URI("ws", null, hostname, port, "/jsonrpc", null, null);
-            socket = new KodiClientSocket(this, wsUri, scheduler);
+            socket = new KodiClientSocket(this, wsUri, scheduler, webSocketClient);
             checkConnection();
         } catch (URISyntaxException e) {
             logger.error("exception during constructing URI host={}, port={}", hostname, port, e);
@@ -527,7 +543,8 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     private void requestPlayerPropertiesUpdate(int activePlayer) {
-        final String[] properties = { "percentage", "time", "totaltime" };
+        final String[] properties = { PROPERTY_CURRENTAUDIOSTREAM, PROPERTY_CURRENTVIDEOSTREAM, PROPERTY_PERCENTAGE,
+                PROPERTY_TIME, PROPERTY_TOTALTIME };
 
         JsonObject params = new JsonObject();
         params.addProperty("playerid", activePlayer);
@@ -537,33 +554,55 @@ public class KodiConnection implements KodiClientSocketEventListener {
         if (response instanceof JsonObject) {
             JsonObject result = response.getAsJsonObject();
 
+            String audioCodec = null;
+            if (result.has(PROPERTY_CURRENTAUDIOSTREAM)) {
+                try {
+                    KodiAudioStream audioStream = gson.fromJson(result.get(PROPERTY_CURRENTAUDIOSTREAM),
+                            KodiAudioStream.class);
+                    audioCodec = audioStream.getCodec();
+                } catch (JsonSyntaxException e) {
+                    // do nothing
+                }
+            }
+
+            String videoCodec = null;
+            if (result.has(PROPERTY_CURRENTVIDEOSTREAM)) {
+                try {
+                    KodiVideoStream videoStream = gson.fromJson(result.get(PROPERTY_CURRENTVIDEOSTREAM),
+                            KodiVideoStream.class);
+                    videoCodec = videoStream.getCodec();
+                } catch (JsonSyntaxException e) {
+                    // do nothing
+                }
+            }
+
             double percentage = -1;
-            if (result.has("percentage")) {
-                percentage = result.get("percentage").getAsDouble();
+            if (result.has(PROPERTY_PERCENTAGE)) {
+                percentage = result.get(PROPERTY_PERCENTAGE).getAsDouble();
             }
 
             long currentTime = -1;
-            if (result.has("time")) {
-                JsonObject timeObject = result.get("time").getAsJsonObject();
-                KodiDuration time = new KodiDuration();
-                time.setHours(timeObject.get("hours").getAsLong());
-                time.setMinutes(timeObject.get("minutes").getAsLong());
-                time.setSeconds(timeObject.get("seconds").getAsLong());
-                time.setMilliseconds(timeObject.get("milliseconds").getAsLong());
-                currentTime = time.toSeconds();
+            if (result.has(PROPERTY_TIME)) {
+                try {
+                    KodiDuration time = gson.fromJson(result.get(PROPERTY_TIME), KodiDuration.class);
+                    currentTime = time.toSeconds();
+                } catch (JsonSyntaxException e) {
+                    // do nothing
+                }
             }
 
             long duration = -1;
-            if (result.has("totaltime")) {
-                JsonObject totalTimeObject = result.get("totaltime").getAsJsonObject();
-                KodiDuration totalTime = new KodiDuration();
-                totalTime.setHours(totalTimeObject.get("hours").getAsLong());
-                totalTime.setMinutes(totalTimeObject.get("minutes").getAsLong());
-                totalTime.setSeconds(totalTimeObject.get("seconds").getAsLong());
-                totalTime.setMilliseconds(totalTimeObject.get("milliseconds").getAsLong());
-                duration = totalTime.toSeconds();
+            if (result.has(PROPERTY_TOTALTIME)) {
+                try {
+                    KodiDuration totalTime = gson.fromJson(result.get(PROPERTY_TOTALTIME), KodiDuration.class);
+                    duration = totalTime.toSeconds();
+                } catch (JsonSyntaxException e) {
+                    // do nothing
+                }
             }
 
+            listener.updateAudioCodec(audioCodec);
+            listener.updateVideoCodec(videoCodec);
             listener.updateCurrentTimePercentage(percentage);
             listener.updateCurrentTime(currentTime);
             listener.updateDuration(duration);
@@ -644,6 +683,8 @@ public class KodiConnection implements KodiClientSocketEventListener {
             listener.updatePVRChannel("");
             listener.updateThumbnail(null);
             listener.updateFanart(null);
+            listener.updateAudioCodec(null);
+            listener.updateVideoCodec(null);
             listener.updateCurrentTimePercentage(-1);
             listener.updateCurrentTime(-1);
             listener.updateDuration(-1);
@@ -915,14 +956,13 @@ public class KodiConnection implements KodiClientSocketEventListener {
             try {
                 socket.open();
                 return socket.isConnected();
-            } catch (Exception e) {
+            } catch (IOException e) {
                 logger.error("exception during connect to {}", wsUri, e);
                 socket.close();
                 return false;
             }
         } else {
-            // Ping Kodi with the get version command. This prevents the idle
-            // timeout on the websocket.
+            // Ping Kodi with the get version command. This prevents the idle timeout on the web socket.
             return !getVersion().isEmpty();
         }
     }

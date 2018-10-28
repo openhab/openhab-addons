@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.modbus.internal;
 
-import static org.openhab.binding.modbus.ModbusBindingConstants.*;
+import static org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -21,13 +21,12 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.modbus.handler.ModbusDataThingHandler;
-import org.openhab.binding.modbus.handler.ModbusPollerThingHandlerImpl;
-import org.openhab.binding.modbus.handler.ModbusSerialThingHandler;
-import org.openhab.binding.modbus.handler.ModbusTcpThingHandler;
+import org.openhab.binding.modbus.internal.handler.ModbusDataThingHandler;
+import org.openhab.binding.modbus.internal.handler.ModbusPollerThingHandlerImpl;
+import org.openhab.binding.modbus.internal.handler.ModbusSerialThingHandler;
+import org.openhab.binding.modbus.internal.handler.ModbusTcpThingHandler;
 import org.openhab.io.transport.modbus.ModbusManager;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +37,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Sami Salonen - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.modbus", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.modbus")
 @NonNullByDefault
 public class ModbusHandlerFactory extends BaseThingHandlerFactory {
 

@@ -9,7 +9,7 @@
 package org.openhab.binding.tplinksmarthome.internal.device;
 
 import static org.junit.Assert.*;
-import static org.openhab.binding.tplinksmarthome.TPLinkSmartHomeBindingConstants.*;
+import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.*;
 
 import java.io.IOException;
 
@@ -131,6 +131,12 @@ public class BulbDeviceTest extends DeviceTestBase {
     public void testUpdateChannelSwitchOff() throws IOException {
         deviceState = new DeviceState(ModelTestUtil.readJson(DEVICE_OFF));
         assertSame("Switch should be off", OnOffType.OFF, device.updateChannel(CHANNEL_SWITCH, deviceState));
+    }
+
+    @Test
+    public void testUpdateChannelColorTemperature() {
+        assertEquals("Color temperature should be set", new PercentType(3),
+                device.updateChannel(CHANNEL_COLOR_TEMPERATURE, deviceState));
     }
 
     @Test

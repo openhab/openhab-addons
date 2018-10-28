@@ -19,7 +19,6 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
  * Test for RFXCom-binding
  *
  * @author Martin van Wingerden
- * @since 1.9.0
  */
 public class RFXComTemperatureMessageTest {
     private void testMessage(String hexMsg, RFXComTemperatureMessage.SubType subType, int seqNbr, String deviceId,

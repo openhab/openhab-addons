@@ -10,7 +10,7 @@ package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
 import java.io.IOException;
 
-import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
+import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants;
 import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
 import org.openhab.binding.yamahareceiver.internal.protocol.InputWithNavigationControl;
 import org.openhab.binding.yamahareceiver.internal.protocol.ReceivedMessageParseException;
