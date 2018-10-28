@@ -78,6 +78,8 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
     private DeviceType getDeviceModel(ThingTypeUID typeUID) {
         if (typeUID.equals(YeelightBindingConstants.THING_TYPE_CEILING)) {
             return DeviceType.ceiling;
+        } else if (typeUID.equals(YeelightBindingConstants.THING_TYPE_CEILING3)) {
+            return DeviceType.ceiling3;
         } else if (typeUID.equals(YeelightBindingConstants.THING_TYPE_WONDER)) {
             return DeviceType.color;
         } else if (typeUID.equals(YeelightBindingConstants.THING_TYPE_DOLPHIN)) {

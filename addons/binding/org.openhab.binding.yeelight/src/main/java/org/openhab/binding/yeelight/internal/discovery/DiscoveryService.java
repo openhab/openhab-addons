@@ -81,6 +81,8 @@ public class DiscoveryService extends AbstractDiscoveryService implements Device
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_CEILING, device.getDeviceId());
             case ceiling1:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_CEILING, device.getDeviceId());
+            case ceiling3:
+                return new ThingUID(YeelightBindingConstants.THING_TYPE_CEILING, device.getDeviceId());
             case color:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_WONDER, device.getDeviceId());
             case mono:
@@ -99,7 +101,9 @@ public class DiscoveryService extends AbstractDiscoveryService implements Device
             case ceiling:
                 return YeelightBindingConstants.THING_TYPE_CEILING;
             case ceiling1:
-                return YeelightBindingConstants.THING_TYPE_CEILING;
+                return YeelightBindingConstants.THING_TYPE_CEILING1;
+            case ceiling3:
+                return YeelightBindingConstants.THING_TYPE_CEILING3;
             case color:
                 return YeelightBindingConstants.THING_TYPE_WONDER;
             case mono:
