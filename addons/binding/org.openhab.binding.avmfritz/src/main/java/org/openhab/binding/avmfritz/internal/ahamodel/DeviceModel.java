@@ -22,17 +22,96 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class DeviceModel extends AVMFritzBaseModel {
 
     private TemperatureModel temperature;
+    private AlertModel alert;
+    private ButtonModel button;
+    private ETSUnitInfo etsiunitinfo;
 
     public TemperatureModel getTemperature() {
         return temperature;
     }
 
-    public void setTemperature(TemperatureModel temperature) {
-        this.temperature = temperature;
+    public void setTemperature(TemperatureModel temperatureModel) {
+        this.temperature = temperatureModel;
+    }
+
+    public AlertModel getAlert() {
+        return alert;
+    }
+
+    public void setAlert(AlertModel alertModel) {
+        this.alert = alertModel;
+    }
+
+    public ButtonModel getButton() {
+        return button;
+    }
+
+    public void setButton(ButtonModel buttonModel) {
+        this.button = buttonModel;
+    }
+
+    public ETSUnitInfo getEtsiunitinfo() {
+        return etsiunitinfo;
+    }
+
+    public void setEtsiunitinfo(ETSUnitInfo etsiunitinfo) {
+        this.etsiunitinfo = etsiunitinfo;
     }
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append(super.toString()).append(getTemperature()).toString();
+        return new ToStringBuilder(this).append(super.toString()).append(getTemperature()).append(getAlert())
+                .append(getButton()).append(getEtsiunitinfo()).toString();
+    }
+
+    @XmlType(propOrder = { "etsideviceid", "unittype", "interfaces" })
+    public static class ETSUnitInfo {
+        public static final String HAN_FUN_UNITTYPE_SIMPLE_BUTTON = "273";
+        public static final String HAN_FUN_UNITTYPE_SIMPLE_DETECTOR = "512";
+        public static final String HAN_FUN_UNITTYPE_MAGNETIC_CONTACT = "513";
+        public static final String HAN_FUN_UNITTYPE_OPTICAL_CONTACT = "514";
+        public static final String HAN_FUN_UNITTYPE_MOTION_DETECTOR = "515";
+        public static final String HAN_FUN_UNITTYPE_SMOKE_DETECTOR = "516";
+        public static final String HAN_FUN_UNITTYPE_FLOOD_DETECTOR = "518";
+        public static final String HAN_FUN_UNITTYPE_GLAS_BREAK_DETECTOR = "519";
+        public static final String HAN_FUN_UNITTYPE_VIBRATION_DETECTOR = "520";
+
+        public static final String HAN_FUN_INTERFACE_ALERT = "256";
+        public static final String HAN_FUN_INTERFACE_KEEP_ALIVE = "277";
+        public static final String HAN_FUN_INTERFACE_SIMPLE_BUTTON = "772";
+
+        private String etsideviceid;
+        private String unittype;
+        private String interfaces;
+
+        public String getEtsideviceid() {
+            return etsideviceid;
+        }
+
+        public void setEtsideviceid(String etsideviceid) {
+            this.etsideviceid = etsideviceid;
+        }
+
+        public String getUnittype() {
+            return unittype;
+        }
+
+        public void setUnittype(String unittype) {
+            this.unittype = unittype;
+        }
+
+        public String getInterfaces() {
+            return interfaces;
+        }
+
+        public void setInterfaces(String interfaces) {
+            this.interfaces = interfaces;
+        }
+
+        @Override
+        public String toString() {
+            return new ToStringBuilder(this).append("etsideviceid", getEtsideviceid()).append("unittype", getUnittype())
+                    .append("interfaces", getInterfaces()).toString();
+        }
     }
 }

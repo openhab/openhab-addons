@@ -182,6 +182,46 @@
 		<config-description-ref uri="thing-type:avmfritz:fritzdevice" />
 	</thing-type>
 
+	<thing-type id="HAN_FUN_CONTACT">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="fritzbox" />
+			<bridge-type-ref id="FRITZ_Powerline_546E_Solo" />
+		</supported-bridge-type-refs>
+
+		<label>HAN-FUN contact</label>
+		<description>HAN-FUN contact (e.g. SmartHome Tür-/Fensterkontakt or SmartHome Bewegungsmelder).</description>
+
+		<channels>
+			<channel typeId="contact_state" id="contact_state" />
+		</channels>
+
+		<representation-property>ain</representation-property>
+
+		<config-description-ref uri="thing-type:avmfritz:fritzdevice" />
+	</thing-type>
+
+	<thing-type id="HAN_FUN_SWITCH">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="fritzbox" />
+			<bridge-type-ref id="FRITZ_Powerline_546E_Solo" />
+		</supported-bridge-type-refs>
+
+		<label>HAN-FUN switch</label>
+		<description>HAN-FUN switch (e.g. SmartHome Wandtaster).</description>
+
+		<channels>
+			<channel id="press" typeId="system.trigger">
+				<label>Button press</label>
+				<description>Triggered when a button was pressed.</description>
+			</channel>
+			<channel typeId="last_change" id="last_change" />
+		</channels>
+
+		<representation-property>ain</representation-property>
+
+		<config-description-ref uri="thing-type:avmfritz:fritzdevice" />
+	</thing-type>
+
 	<!-- Supported FRITZ! groups and features -->
 	<thing-type id="FRITZ_GROUP_HEATING">
 		<supported-bridge-type-refs>

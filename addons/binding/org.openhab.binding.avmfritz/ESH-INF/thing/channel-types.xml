@@ -128,6 +128,7 @@
 		<item-type>DateTime</item-type>
 		<label>Next Setpoint Change</label>
 		<description>Next change of Setpoint Temperature.</description>
+		<category>Time</category>
 		<state readOnly="true" />
 	</channel-type>
 
@@ -137,5 +138,21 @@
 		<description>Next Setpoint Temperature.</description>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="contact_state">
+		<item-type>Contact</item-type>
+		<label>Contact State</label>
+		<description>Contact state information (OPEN/CLOSED).</description>
+		<category>Contact</category>
+		<state pattern="%s" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="last_change">
+		<item-type>DateTime</item-type>
+		<label>Last Change</label>
+		<description>States the last time the button was pressed.</description>
+		<category>Time</category>
+		<state readOnly="true" />
 	</channel-type>
 </thing:thing-descriptions>
