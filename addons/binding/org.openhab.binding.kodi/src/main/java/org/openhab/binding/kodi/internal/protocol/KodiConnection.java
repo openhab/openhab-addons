@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.kodi.internal.protocol;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -918,14 +919,13 @@ public class KodiConnection implements KodiClientSocketEventListener {
             try {
                 socket.open();
                 return socket.isConnected();
-            } catch (Exception e) {
+            } catch (IOException e) {
                 logger.error("exception during connect to {}", wsUri, e);
                 socket.close();
                 return false;
             }
         } else {
-            // Ping Kodi with the get version command. This prevents the idle
-            // timeout on the websocket.
+            // Ping Kodi with the get version command. This prevents the idle timeout on the web socket.
             return !getVersion().isEmpty();
         }
     }
