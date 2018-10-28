@@ -81,8 +81,10 @@ public class EchoHandler extends BaseThingHandler {
     private @Nullable Device device;
     private @Nullable AccountHandler account;
     private @Nullable ScheduledFuture<?> updateStateJob;
+    private @Nullable ScheduledFuture<?> ignoreVolumeChange;
     private @Nullable ScheduledFuture<?> updateProgressJob;
     private Object progressLock = new Object();
+    private @Nullable String wakeWord;
     private @Nullable String lastKnownRadioStationId;
     private @Nullable String lastKnownBluetoothMAC;
     private @Nullable String lastKnownAmazonMusicId;
@@ -90,6 +92,7 @@ public class EchoHandler extends BaseThingHandler {
     private boolean isPlaying = false;
     private boolean isPaused = false;
     private int lastKnownVolume = 25;
+    private int textToSpeechVolume = 0;
     private @Nullable BluetoothState bluetoothState;
     private boolean disableUpdate = false;
     private boolean updateRemind = true;
@@ -119,14 +122,18 @@ public class EchoHandler extends BaseThingHandler {
         if (bridge != null) {
             AccountHandler account = (AccountHandler) bridge.getHandler();
             if (account != null) {
-                setDeviceAndUpdateThingState(account, this.device);
+                setDeviceAndUpdateThingState(account, this.device, null);
                 account.addEchoHandler(this);
             }
         }
     }
 
-    public boolean setDeviceAndUpdateThingState(AccountHandler accountHandler, @Nullable Device device) {
+    public boolean setDeviceAndUpdateThingState(AccountHandler accountHandler, @Nullable Device device,
+            @Nullable String wakeWord) {
         this.account = accountHandler;
+        if (wakeWord != null) {
+            this.wakeWord = wakeWord;
+        }
         if (device == null) {
             updateStatus(ThingStatus.UNKNOWN);
             return false;
@@ -517,16 +524,35 @@ public class EchoHandler extends BaseThingHandler {
                     if (StringUtils.isNotEmpty(text)) {
                         waitForUpdate = 1000;
                         updateTextToSpeech = true;
-                        connection.textToSpeech(device, text);
+                        startTextToSpeech(connection, device, text);
                     }
                 }
+            }
+            if (channelId.equals(CHANNEL_TEXT_TO_SPEECH_VOLUME)) {
+                if (command instanceof PercentType) {
+                    PercentType value = (PercentType) command;
+                    textToSpeechVolume = value.intValue();
+                } else if (command == OnOffType.OFF) {
+                    textToSpeechVolume = 0;
+                } else if (command == OnOffType.ON) {
+                    textToSpeechVolume = lastKnownVolume;
+                } else if (command == IncreaseDecreaseType.INCREASE) {
+                    if (textToSpeechVolume < 100) {
+                        textToSpeechVolume++;
+                    }
+                } else if (command == IncreaseDecreaseType.DECREASE) {
+                    if (textToSpeechVolume > 0) {
+                        textToSpeechVolume--;
+                    }
+                }
+                this.updateState(channelId, new PercentType(textToSpeechVolume));
             }
             if (channelId.equals(CHANNEL_LAST_VOICE_COMMAND)) {
                 if (command instanceof StringType) {
                     String text = ((StringType) command).toFullString();
                     if (StringUtils.isNotEmpty(text)) {
                         waitForUpdate = -1;
-                        connection.textToSpeech(device, text);
+                        startTextToSpeech(connection, device, text);
                     }
                 }
             }
@@ -601,6 +627,19 @@ public class EchoHandler extends BaseThingHandler {
         }
     }
 
+    private void startTextToSpeech(Connection connection, Device device, String text)
+            throws IOException, URISyntaxException {
+        if (textToSpeechVolume != 0) {
+            @Nullable
+            ScheduledFuture<?> oldIgnoreVolumeChange = this.ignoreVolumeChange;
+            if (oldIgnoreVolumeChange != null) {
+                oldIgnoreVolumeChange.cancel(false);
+            }
+            this.ignoreVolumeChange = scheduler.schedule(this::stopIgnoreVolumeChange, 2000, TimeUnit.MILLISECONDS);
+        }
+        connection.textToSpeech(device, text, textToSpeechVolume, lastKnownVolume);
+    }
+
     private void stopCurrentNotification() {
         ScheduledFuture<?> currentNotifcationUpdateTimer = this.currentNotifcationUpdateTimer;
         if (currentNotifcationUpdateTimer != null) {
@@ -665,7 +704,7 @@ public class EchoHandler extends BaseThingHandler {
             if (ascendingAlarmModel != null) {
                 ascendingAlarm = ascendingAlarmModel.ascendingAlarmEnabled;
             }
-            if (!setDeviceAndUpdateThingState(accountHandler, device)) {
+            if (!setDeviceAndUpdateThingState(accountHandler, device, null)) {
                 return;
             }
             if (device == null) {
@@ -898,23 +937,24 @@ public class EchoHandler extends BaseThingHandler {
 
             // handle volume
             Integer volume = null;
-            if (mediaState != null) {
-                volume = mediaState.volume;
-            }
-            if (playerInfo != null && volume == null) {
+            if (this.ignoreVolumeChange == null) {
+                if (mediaState != null) {
+                    volume = mediaState.volume;
+                }
+                if (playerInfo != null && volume == null) {
 
-                Volume volumnInfo = playerInfo.volume;
-                if (volumnInfo != null) {
-                    volume = volumnInfo.volume;
+                    Volume volumnInfo = playerInfo.volume;
+                    if (volumnInfo != null) {
+                        volume = volumnInfo.volume;
+                    }
+                }
+                if (volume != null && volume > 0) {
+                    lastKnownVolume = volume;
+                }
+                if (volume == null) {
+                    volume = lastKnownVolume;
                 }
             }
-            if (volume != null && volume > 0) {
-                lastKnownVolume = volume;
-            }
-            if (volume == null) {
-                volume = lastKnownVolume;
-            }
-
             // Update states
             if (updateRemind && currentNotifcationUpdateTimer == null) {
                 updateRemind = false;
@@ -947,11 +987,13 @@ public class EchoHandler extends BaseThingHandler {
             updateState(CHANNEL_AMAZON_MUSIC_PLAY_LIST_ID, new StringType(amazonMusicPlayListId));
             updateState(CHANNEL_RADIO_STATION_ID, new StringType(radioStationId));
             updateState(CHANNEL_RADIO, isPlaying && isRadio ? OnOffType.ON : OnOffType.OFF);
-            updateState(CHANNEL_VOLUME, new PercentType(volume));
             updateState(CHANNEL_PROVIDER_DISPLAY_NAME, new StringType(providerDisplayName));
             updateState(CHANNEL_PLAYER, isPlaying ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
             updateState(CHANNEL_IMAGE_URL, new StringType(imageUrl));
             updateState(CHANNEL_TITLE, new StringType(title));
+            if (volume != null) {
+                updateState(CHANNEL_VOLUME, new PercentType(volume));
+            }
             updateState(CHANNEL_SUBTITLE1, new StringType(subTitle1));
             updateState(CHANNEL_SUBTITLE2, new StringType(subTitle2));
             if (bluetoothState != null) {
@@ -1003,22 +1045,32 @@ public class EchoHandler extends BaseThingHandler {
     }
 
     public void handlePushActivity(Activity pushActivity) {
-
         Description description = pushActivity.ParseDescription();
-
         if (StringUtils.isEmpty(description.firstUtteranceId)
                 || StringUtils.startsWithIgnoreCase(description.firstUtteranceId, "TextClient:")) {
             return;
         }
         String spokenText = description.summary;
         if (spokenText != null && StringUtils.isNotEmpty(spokenText)) {
+            // remove wake word
+            String wakeWordPrefix = this.wakeWord;
+            if (wakeWordPrefix != null) {
+                wakeWordPrefix += " ";
+                if (StringUtils.startsWithIgnoreCase(spokenText, wakeWordPrefix)) {
+                    spokenText = spokenText.substring(wakeWordPrefix.length());
+                }
+            }
+
             if (lastSpokenText.equals(spokenText)) {
                 updateState(CHANNEL_LAST_VOICE_COMMAND, new StringType(""));
             }
             lastSpokenText = spokenText;
             updateState(CHANNEL_LAST_VOICE_COMMAND, new StringType(spokenText));
         }
+    }
 
+    private void stopIgnoreVolumeChange() {
+        this.ignoreVolumeChange = null;
     }
 
     public void handlePushCommand(String command, String payload) {
@@ -1033,6 +1085,9 @@ public class EchoHandler extends BaseThingHandler {
                 if (muted != null && muted) {
                     updateState(CHANNEL_VOLUME, new PercentType(0));
                 } else if (volumeSetting != null) {
+                    if (ignoreVolumeChange != null) {
+                        return;
+                    }
                     lastKnownVolume = volumeSetting;
                     updateState(CHANNEL_VOLUME, new PercentType(lastKnownVolume));
                 }
@@ -1048,5 +1103,4 @@ public class EchoHandler extends BaseThingHandler {
                 }
         }
     }
-
 }

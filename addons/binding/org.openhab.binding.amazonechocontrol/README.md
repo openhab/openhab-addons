@@ -44,19 +44,7 @@ This binding uses the same API as the Web-Browser-Based Alexa site (alexa.amazon
 In other words, it simulates a user which is using the web page.
 Unfortunately, the binding can get broken if Amazon change the web site.
 
-The binding is tested with amazon.de, amazon.com and amazon.co.uk accounts, but should also work with all others. 
-
-## Warning
-
-For the connection to the Amazon server, your password of the Amazon account is required, this will be stored in your openHAB thing device configuration.
-So you should be sure, that nobody other has access to your configuration! 
-
-## What Else You Should Know
-
-All the display options are updated by polling the amazon server.
-The polling time can be configured, but a minimum of 10 seconds is required.
-The default is 60 seconds, which means the it can take up to 60 seconds to see the correct state.
-It's not know, if there is a limit implemented in the amazon server if the polling is too fast and maybe amazon will lock your account. 30 seconds seems to be safe.
+The binding is tested with amazon.de, amazon.fr, amazon.com and amazon.co.uk accounts, but should also work with all others. 
 
 ## Supported Things
 
@@ -72,12 +60,8 @@ It's not know, if there is a limit implemented in the amazon server if the polli
 ## First Steps
 
 1) Create an 'Amazon Account' thing
-2) Configure your credentials in the account thing (2 factor authentication is not supported!)
-3) After confirmation:
-a) the 'Account Thing' goes Online -> continue with 4)
-b) the 'Account Thing' stays offline:  
-open the url YOUR_OPENHAB/amazonechocontrol in your browser (e.g. http://openhab:8080/amazonechocontrol/), click the link for your account thing and try to login.
-4) The echo device things get automatically discovered and can be accepted
+2) open the url YOUR_OPENHAB/amazonechocontrol in your browser (e.g. http://openhab:8080/amazonechocontrol/), click the link for your account thing and login.
+3) You should see now a message the the login was successful
 
 ## Discovery
 
@@ -93,16 +77,7 @@ The configuration of your amazon account must be done in the 'Amazon Account' de
 
 ## Thing Configuration
 
-The Amazon Account thing needs the following configurations:
-
-| Configuration name       | Description                                                               |
-|--------------------------|---------------------------------------------------------------------------|
-| amazonSite               | The amazon site where the echos are registered. e.g. amazon.de            |
-| email                    | Email of your amazon account                                              |
-| password                 | Password of your amazon account                                           |
-| pollingIntervalInSeconds | Polling interval for the device state in seconds. Default 30, minimum 10  |
-
-IMPORTANT: If the Account thing does not go online and reports a login error, read the instructions in "First Steps" above.
+The Amazon Account does not need any configuration.
 
 ### Amazon Devices
 
@@ -145,6 +120,7 @@ It will be configured at runtime by using the save channel to store the current 
 | playMusicVoiceCommand | String      | W         | echo, echoshow, echospot      | Write Only! Voice command as text. E.g. 'Yesterday from the Beatles' 
 | startCommand          | String      | W         | echo, echoshow, echospot      | Write Only! Used to start anything. Available options: Weather, Traffic, GoodMorning, SingASong, TellStory, FlashBriefing and FlashBriefing.<FlahshbriefingDeviceID> (Note: The options are case sensitive)
 | textToSpeech          | String      | W         | echo, echoshow, echospot      | Write Only! Write some text to this channel and alexa will speak it 
+| textToSpeechVolume    | Dimmer      | R/W       | echo, echoshow, echospot      | ONLY IN BETA 2.4 (4) AND NEWER! Volume of the textToSpeech channel, if 0 the current volume will be used
 | lastVoiceCommand      | String      | R/W         | echo, echoshow, echospot      | ONLY IN BETA 2.4 (2) AND NEWER! Last voice command spoken to the device. Writing to the channel starts voice output.
 | mediaProgress         | Dimmer      | R/W         | echo, echoshow, echospot      | ONLY IN BETA 2.4 (3) AND NEWER! Media progress in percent 
 | mediaProgressTime     | Number:Time | R/W         | echo, echoshow, echospot      | ONLY IN BETA 2.4 (3) AND NEWER! Media play time 
@@ -154,6 +130,15 @@ It will be configured at runtime by using the save channel to store the current 
 | save                  | Switch      | W         | flashbriefingprofile     | Write Only! Stores the current configuration of flash briefings within the thing
 | active                | Switch      | R/W       | flashbriefingprofile     | Active the profile
 | playOnDevice          | String      | W         | flashbriefingprofile     | Specify the echo serial number or name to start the flash briefing. 
+
+## Advanced Feature Technically Experienced Users
+
+The url <YOUR_OPENHAB>/amazonechocontrol/<YOUR_ACCOUNT>/PROXY/<API_URL> provides a proxy server with an authenticated connection to the amazon alexa server. This can be used to call alexa api from rules.
+
+E.g. to read out the history call from an installation on openhab:8080 with a account named account1:
+
+http://openhab:8080/amazonechocontrol/account1/PROXY/api/activities?startTime=&size=50&offset=1
+
 
 ## Full Example
 
@@ -228,9 +213,12 @@ Number:Time Echo_Living_Room_MediaProgressTime    "Media progress time [%d %unit
 
 Number:Time Echo_Living_Room_MediaLength    "Media length [%d %unit%]"                (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:mediaLength"}
 
-Dimmer Echo_Living_Room_NotificationVolume    "Notification volume"                    (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:notificationVolume"}
+Dimmer Echo_Living_Room_NotificationVolume    "Notification volume"                   (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:notificationVolume"}
 
-Switch Echo_Living_Room_AscendingAlarm    "Ascending alarm"                             (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:ascendingAlarm"}
+Switch Echo_Living_Room_AscendingAlarm    "Ascending alarm"                           (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:ascendingAlarm"}
+
+// BETA 2.4 (4) channels:
+Dimmer Echo_Living_Room_TTS_Volume            "Text to Speech Volume"                 (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:textToSpeechVolume"}
 
 
 // Flashbriefings
@@ -407,6 +395,8 @@ end
 
 The idea for writing this binding came from this blog: http://blog.loetzimmer.de/2017/10/amazon-alexa-hort-auf-die-shell-echo.html (German).
 Thank you Alex!
+The technical information for the web socket connection to get live alexa state updates cames from Ingo. He has done the alexa iobrokern implementation https://github.com/Apollon77
+Thank you Ingo!
 
 ## Trademark Disclaimer
 

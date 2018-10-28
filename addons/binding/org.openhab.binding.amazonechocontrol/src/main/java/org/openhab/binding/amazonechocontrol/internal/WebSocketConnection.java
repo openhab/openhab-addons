@@ -91,8 +91,6 @@ public class WebSocketConnection {
 
             uri = new URI("wss://" + host + "/?x-amz-device-type=ALEGCNGL9K0HM&x-amz-device-serial=" + deviceSerial);
 
-            // webSocketClient.getExtensionFactory().register("permessage-deflate", PerMessageDeflateExtension.class);
-
             try {
                 webSocketClient.start();
             } catch (Exception e) {
@@ -106,15 +104,13 @@ public class WebSocketConnection {
             request.setHeader("Pragma", "no-cache");
             request.setHeader("Origin", "alexa." + amazonSite);
 
-            // request.addExtensions(new ExtensionConfig("permessage-deflate"));
-
             request.setCookies(cookiesForWs);
 
             initPongTimeoutTimer();
             webSocketClient.connect(listener, uri, request);
 
         } catch (URISyntaxException e) {
-            logger.warn("Initialize web socket failed: {}", e);
+            logger.info("Initialize web socket failed: {}", e);
         }
     }
 
@@ -170,11 +166,9 @@ public class WebSocketConnection {
                 close();
             }
         }, 60000);
-
     }
 
     class Listener implements WebSocketListener {
-
         int msgCounter = -1;
         int messageId;
 
@@ -396,7 +390,7 @@ public class WebSocketConnection {
                         return;
                     }
                 } catch (Exception e) {
-                    logger.debug("Handling of push notification failed {}", e);
+                    logger.info("Handling of push notification failed {}", e);
                 }
             }
 
@@ -421,7 +415,7 @@ public class WebSocketConnection {
         }
 
         public void sendPing() {
-            logger.info("Send Ping");
+            logger.debug("Send Ping");
             WebSocketConnection.this.initPongTimeoutTimer();
             sendMessage(encodePing());
         }
@@ -593,5 +587,4 @@ public class WebSocketConnection {
             return completeBuffer;
         }
     }
-
 }

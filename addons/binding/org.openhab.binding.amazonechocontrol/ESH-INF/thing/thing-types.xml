@@ -6,24 +6,6 @@
 	<bridge-type id="account">
 		<label>Amazon Account</label>
 		<description>Amazon Account where the amazon echo devices are registered.</description>
-		<config-description>
-			<parameter name="amazonSite" type="text" required="true">
-				<default />
-				<label>Amazon site</label>
-				<limitToOptions>false</limitToOptions>
-				<options>
-					<option value="amazon.de">amazon.de</option>
-					<option value="amazon.com">amazon.com</option>
-					<option value="amazon.ca">amazon.ca</option>
-					<option value="amazon.it">amazon.it</option>
-					<option value="amazon.in">amazon.in</option>
-					<option value="amazon.fr">amazon.fr</option>
-					<option value="amazon.co.uk">amazon.co.uk</option>
-					<option value="amazon.com.au">amazon.com.au</option>
-				</options>
-				<description>Site where the amazon account is created.</description>
-			</parameter>
-		</config-description>
 	</bridge-type>
 	<thing-type id="echo">
 		<supported-bridge-type-refs>
@@ -52,6 +34,7 @@
 			<channel id="amazonMusicPlayListId" typeId="amazonMusicPlayListId" />
 			<channel id="amazonMusic" typeId="amazonMusic" />
 			<channel id="textToSpeech" typeId="textToSpeech" />
+            <channel id="textToSpeechVolume" typeId="textToSpeechVolume" />
 			<channel id="remind" typeId="remind" />
 			<channel id="playAlarmSound" typeId="playAlarmSound" />
 			<channel id="startRoutine" typeId="startRoutine" />
@@ -97,6 +80,7 @@
 			<channel id="amazonMusicPlayListId" typeId="amazonMusicPlayListId" />
 			<channel id="amazonMusic" typeId="amazonMusic" />
 			<channel id="textToSpeech" typeId="textToSpeech" />
+		    <channel id="textToSpeechVolume" typeId="textToSpeechVolume" />
 			<channel id="remind" typeId="remind" />
 			<channel id="playAlarmSound" typeId="playAlarmSound" />
 			<channel id="startRoutine" typeId="startRoutine" />
@@ -142,6 +126,7 @@
 			<channel id="amazonMusicPlayListId" typeId="amazonMusicPlayListId" />
 			<channel id="amazonMusic" typeId="amazonMusic" />
 			<channel id="textToSpeech" typeId="textToSpeech" />
+            <channel id="textToSpeechVolume" typeId="textToSpeechVolume" />
 			<channel id="remind" typeId="remind" />
 			<channel id="playAlarmSound" typeId="playAlarmSound" />
 			<channel id="startRoutine" typeId="startRoutine" />
@@ -345,6 +330,11 @@
 		<label>Speak</label>
 		<description>Speak the text (Write only)</description>
 	</channel-type>
+    <channel-type id="textToSpeechVolume" advanced="true">
+        <item-type>Dimmer</item-type>
+        <label>Speak volume</label>
+        <description>Volume of the Speak channel. If 0, the current volume will be used.</description>
+    </channel-type>
 	<channel-type id="lastVoiceCommand" advanced="true">
 		<item-type>String</item-type>
 		<label>Last voice command</label>

@@ -52,6 +52,7 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDeviceNotificati
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonFeed;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPushCommand;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonWakeWords.WakeWord;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,7 +84,6 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     private final HttpService httpService;
     private @Nullable AccountServlet accountServlet;
     private final Gson gson = new Gson();
-    private final Object refreshDataLock = new Object();
     int checkDataCounter;
 
     public AccountHandler(Bridge bridge, HttpService httpService, Storage<String> stateStorage) {
@@ -333,34 +333,39 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     }
 
     private void checkData() {
-        synchronized (refreshDataLock) {
-            Connection connection = this.connection;
-            if (connection != null && connection.getIsLoggedIn()) {
-                checkDataCounter++;
-                if (checkDataCounter > 60 || foceCheckDataJob != null) {
-                    checkDataCounter = 0;
-                    foceCheckDataJob = null;
+        synchronized (synchronizeConnection) {
+            try {
+                Connection connection = this.connection;
+                if (connection != null && connection.getIsLoggedIn()) {
+                    checkDataCounter++;
+                    if (checkDataCounter > 60 || foceCheckDataJob != null) {
+                        checkDataCounter = 0;
+                        foceCheckDataJob = null;
+                    }
+                    if (!checkWebSocketConnection() || checkDataCounter == 0) {
+                        refreshData();
+                    }
                 }
-                if (!checkWebSocketConnection() || checkDataCounter == 0) {
-                    refreshData();
-                }
+                logger.debug("checkData {} finished", getThing().getUID().getAsString());
+            } catch (HttpException | JsonSyntaxException | ConnectionException e) {
+                logger.debug("checkData fails {}", e);
+            } catch (Exception e) { // this handler can be removed later, if we know that nothing else can fail.
+                logger.error("checkData fails with unexpected error {}", e);
             }
         }
     }
 
     private void refreshData() {
-        synchronized (refreshDataLock) {
+        synchronized (synchronizeConnection) {
             try {
                 logger.debug("refreshing data {}", getThing().getUID().getAsString());
 
                 // check if logged in
                 Connection currentConnection = null;
-                synchronized (synchronizeConnection) {
-                    currentConnection = connection;
-                    if (currentConnection != null) {
-                        if (!currentConnection.getIsLoggedIn()) {
-                            return;
-                        }
+                currentConnection = connection;
+                if (currentConnection != null) {
+                    if (!currentConnection.getIsLoggedIn()) {
+                        return;
                     }
                 }
                 if (currentConnection == null) {
@@ -488,9 +493,21 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             }
             jsonSerialNumberDeviceMapping = newJsonSerialDeviceMapping;
         }
+        WakeWord[] wakeWords = currentConnection.getWakeWords();
+
         synchronized (echoHandlers) {
             for (EchoHandler child : echoHandlers) {
-                child.setDeviceAndUpdateThingState(this, findDeviceJson(child));
+                String serialNumber = child.findSerialNumber();
+                String deviceWakeWord = null;
+                for (WakeWord wakeWord : wakeWords) {
+                    if (wakeWord != null) {
+                        if (StringUtils.equals(wakeWord.deviceSerialNumber, serialNumber)) {
+                            deviceWakeWord = wakeWord.wakeWord;
+                            break;
+                        }
+                    }
+                }
+                child.setDeviceAndUpdateThingState(this, findDeviceJson(child), deviceWakeWord);
             }
         }
         if (devices != null) {
@@ -575,19 +592,18 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
 
     @Override
     public void webSocketCommandReceived(JsonPushCommand pushCommand) {
-        scheduler.execute(() -> {
-            try {
-                handleWebsocketCommand(pushCommand);
-            } catch (Exception e) {
-                // should never happen, but if the exception is going out of this function, the binding stop working.
-                logger.error("handling of websockets fails: {}", e);
-            }
-        });
+        // scheduler.execute(() -> {
+        try {
+            handleWebsocketCommand(pushCommand);
+        } catch (Exception e) {
+            // should never happen, but if the exception is going out of this function, the binding stop working.
+            logger.error("handling of websockets fails: {}", e);
+        }
+        // });
 
     }
 
     void handleWebsocketCommand(JsonPushCommand pushCommand) {
-
         String command = pushCommand.command;
         if (command != null) {
             switch (command) {
@@ -671,11 +687,9 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                 }
             }
         }
-
     }
 
     void refreshAfterCommand() {
         refreshData();
     }
-
 }

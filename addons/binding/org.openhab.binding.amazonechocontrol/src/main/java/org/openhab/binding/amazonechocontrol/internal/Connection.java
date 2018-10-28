@@ -79,12 +79,15 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonRegisterAppRespo
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonRenewTokenResponse;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonStartRoutineRequest;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonUsersMeResponse;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonWakeWords;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonWakeWords.WakeWord;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonWebSiteCookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
@@ -96,8 +99,7 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class Connection {
-    private static final long defaultExpiresIn = 3600;
-    private static final long minExpiresIn = 600;
+    private static final long expiresIn = 432000; // five days
 
     private final Logger logger = LoggerFactory.getLogger(Connection.class);
 
@@ -113,7 +115,6 @@ public class Connection {
     private @Nullable Date loginTime;
     private @Nullable Date verifyTime;
     private long renewTime = 0;
-    private long expiresIn = defaultExpiresIn;
     private @Nullable String deviceName;
 
     private final Gson gson = new Gson();
@@ -532,18 +533,6 @@ public class Connection {
             throw new ConnectionException("Error: No bearer received from register application");
         }
         this.refreshToken = bearer.refresh_token;
-        this.expiresIn = defaultExpiresIn;
-        String expiresInStr = bearer.expires_in;
-        if (StringUtils.isNotEmpty(expiresInStr)) {
-            try {
-                this.expiresIn = Integer.parseInt(expiresInStr);
-            } catch (NumberFormatException e) {
-                // ignore wrong values
-            }
-        }
-        if (this.expiresIn < minExpiresIn) {
-            this.expiresIn = minExpiresIn;
-        }
         if (StringUtils.isEmpty(this.refreshToken)) {
             throw new ConnectionException("Error: No refresh token received");
         }
@@ -621,8 +610,7 @@ public class Connection {
         if (!verifyLogin()) {
             throw new ConnectionException("Verify login failed after token exchange");
         }
-        this.renewTime = (long) (System.currentTimeMillis() + this.expiresIn * 1000d / 0.8d); // start renew at 80% of
-                                                                                              // expire time
+        this.renewTime = (long) (System.currentTimeMillis() + Connection.expiresIn * 1000d / 0.8d); // start renew at
     }
 
     public boolean checkRenewSession() throws UnknownHostException, URISyntaxException, IOException {
@@ -632,21 +620,11 @@ public class Connection {
                     + "&package_name=com.amazon.echo&di.hw.version=iPhone&platform=iOS&requested_token_type=access_token&source_token_type=refresh_token&di.os.name=iOS&di.os.version=11.4.1&current_version=6.10.0";
             String renewTokenRepsonseJson = makeRequestAndReturnString("POST", "https://www.amazon.com/auth/token",
                     renewTokenPostData, false, null);
-            JsonRenewTokenResponse renewTokenResponse = parseJson(renewTokenRepsonseJson, JsonRenewTokenResponse.class);
-
-            this.expiresIn = defaultExpiresIn;
-            Long expiresIn = renewTokenResponse.expires_in;
-            if (expiresIn != null) {
-                this.expiresIn = expiresIn;
-            }
-            if (this.expiresIn < minExpiresIn) {
-                this.expiresIn = minExpiresIn;
-            }
+            parseJson(renewTokenRepsonseJson, JsonRenewTokenResponse.class);
             exhangeToken();
             return true;
         }
         return false;
-
     }
 
     public boolean getIsLoggedIn() {
@@ -726,6 +704,21 @@ public class Connection {
     }
 
     // commands and states
+
+    public WakeWord[] getWakeWords() {
+        String json;
+        try {
+            json = makeRequestAndReturnString(alexaServer + "/api/wake-word?cached=true");
+            JsonWakeWords wakeWords = parseJson(json, JsonWakeWords.class);
+            WakeWord[] result = wakeWords.wakeWords;
+            if (result != null) {
+                return result;
+            }
+        } catch (IOException | URISyntaxException e) {
+            logger.info("getting wakewords failed {}", e);
+        }
+        return new WakeWord[0];
+    }
 
     public List<Device> getDeviceList() throws IOException, URISyntaxException {
         String json = getDeviceListJson();
@@ -896,16 +889,69 @@ public class Connection {
         }
     }
 
-    public void textToSpeech(Device device, String text) throws IOException, URISyntaxException {
-        Map<String, Object> parameters = new Hashtable<String, Object>();
-        parameters.put("textToSpeak", text);
-        executeSequenceCommand(device, "Alexa.Speak", parameters);
+    public void textToSpeech(Device device, String text, int ttsVolume, int standardVolume)
+            throws IOException, URISyntaxException {
+
+        if (ttsVolume != 0) {
+
+            JsonArray nodesToExecute = new JsonArray();
+
+            Map<String, Object> parameters = new Hashtable<String, Object>();
+
+            // add tts volume
+            parameters.clear();
+            parameters.put("value", ttsVolume);
+            nodesToExecute.add(createExecutionNode(device, "Alexa.DeviceControls.Volume", parameters));
+
+            // add tts
+            parameters.clear();
+            parameters.put("textToSpeak", text);
+            nodesToExecute.add(createExecutionNode(device, "Alexa.Speak", parameters));
+
+            // add volume
+            parameters.clear();
+            parameters.put("value", standardVolume);
+            nodesToExecute.add(createExecutionNode(device, "Alexa.DeviceControls.Volume", parameters));
+
+            executeSequenceNodes(nodesToExecute);
+
+        } else {
+            Map<String, Object> parameters = new Hashtable<String, Object>();
+            parameters.put("textToSpeak", text);
+            executeSequenceCommand(device, "Alexa.Speak", parameters);
+        }
     }
 
     // commands: Alexa.Weather.Play, Alexa.Traffic.Play, Alexa.FlashBriefing.Play, Alexa.GoodMorning.Play,
     // Alexa.SingASong.Play, Alexa.TellStory.Play, Alexa.Speak (textToSpeach)
     public void executeSequenceCommand(Device device, String command, @Nullable Map<String, Object> parameters)
             throws IOException, URISyntaxException {
+        JsonObject nodeToExecute = createExecutionNode(device, command, parameters);
+        executeSequenceNode(nodeToExecute);
+    }
+
+    private void executeSequenceNode(JsonObject nodeToExecute) throws IOException, URISyntaxException {
+        JsonObject sequenceJson = new JsonObject();
+        sequenceJson.addProperty("@type", "com.amazon.alexa.behaviors.model.Sequence");
+        sequenceJson.add("startNode", nodeToExecute);
+
+        JsonStartRoutineRequest request = new JsonStartRoutineRequest();
+        request.sequenceJson = gson.toJson(sequenceJson);
+        String json = gson.toJson(request);
+
+        makeRequest("POST", alexaServer + "/api/behaviors/preview", json, true, true, null);
+    }
+
+    private void executeSequenceNodes(JsonArray nodesToExecute) throws IOException, URISyntaxException {
+        JsonObject serialNode = new JsonObject();
+        serialNode.addProperty("@type", "com.amazon.alexa.behaviors.model.SerialNode");
+
+        serialNode.add("nodesToExecute", nodesToExecute);
+
+        executeSequenceNode(serialNode);
+    }
+
+    private JsonObject createExecutionNode(Device device, String command, @Nullable Map<String, Object> parameters) {
         JsonObject operationPayload = new JsonObject();
         operationPayload.addProperty("deviceType", device.deviceType);
         operationPayload.addProperty("deviceSerialNumber", device.serialNumber);
@@ -928,20 +974,11 @@ public class Connection {
             }
         }
 
-        JsonObject startNode = new JsonObject();
-        startNode.addProperty("@type", "com.amazon.alexa.behaviors.model.OpaquePayloadOperationNode");
-        startNode.addProperty("type", command);
-        startNode.add("operationPayload", operationPayload);
-
-        JsonObject sequenceJson = new JsonObject();
-        sequenceJson.addProperty("@type", "com.amazon.alexa.behaviors.model.Sequence");
-        sequenceJson.add("startNode", startNode);
-
-        JsonStartRoutineRequest request = new JsonStartRoutineRequest();
-        request.sequenceJson = gson.toJson(sequenceJson);
-        String json = gson.toJson(request);
-
-        makeRequest("POST", alexaServer + "/api/behaviors/preview", json, true, true, null);
+        JsonObject nodeToExecute = new JsonObject();
+        nodeToExecute.addProperty("@type", "com.amazon.alexa.behaviors.model.OpaquePayloadOperationNode");
+        nodeToExecute.addProperty("type", command);
+        nodeToExecute.add("operationPayload", operationPayload);
+        return nodeToExecute;
     }
 
     public void startRoutine(Device device, String utterance) throws IOException, URISyntaxException {
