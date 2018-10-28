@@ -13,7 +13,7 @@ import org.openhab.binding.kodi.internal.KodiEventListener.KodiState;
 /**
  * The {@link KodiPlayerState} is responsible for saving the state of a player.
  *
- * @author Christoph Weitkamp - Improvements for playing audio notifications
+ * @author Christoph Weitkamp - Initial contribution
  */
 public class KodiPlayerState {
     private int savedPlaylistID;

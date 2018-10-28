@@ -15,6 +15,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.smarthome.core.audio.AudioHTTPServer;
 import org.eclipse.smarthome.core.audio.AudioSink;
 import org.eclipse.smarthome.core.net.HttpServiceUtil;
@@ -24,6 +25,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.net.http.WebSocketFactory;
 import org.openhab.binding.kodi.internal.handler.KodiHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
@@ -46,6 +48,7 @@ public class KodiHandlerFactory extends BaseThingHandlerFactory {
 
     private AudioHTTPServer audioHTTPServer;
     private NetworkAddressService networkAddressService;
+    private WebSocketClient webSocketClient;
 
     // url (scheme+server+port) to use for playing notification sounds
     private String callbackUrl = null;
@@ -71,7 +74,7 @@ public class KodiHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_KODI)) {
-            KodiHandler handler = new KodiHandler(thing, stateDescriptionProvider);
+            KodiHandler handler = new KodiHandler(thing, stateDescriptionProvider, webSocketClient);
 
             // register the Kodi as an audio sink
             KodiAudioSink audioSink = new KodiAudioSink(handler, audioHTTPServer, createCallbackUrl());
@@ -114,6 +117,15 @@ public class KodiHandlerFactory extends BaseThingHandlerFactory {
         if (reg != null) {
             reg.unregister();
         }
+    }
+
+    @Reference
+    protected void setHttpClientFactory(WebSocketFactory webSocketFactory) {
+        this.webSocketClient = webSocketFactory.getCommonWebSocketClient();
+    }
+
+    protected void unsetHttpClientFactory(WebSocketFactory webSocketFactory) {
+        this.webSocketClient = null;
     }
 
     @Reference

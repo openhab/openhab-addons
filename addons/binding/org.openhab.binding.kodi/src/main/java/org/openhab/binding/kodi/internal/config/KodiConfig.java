@@ -9,9 +9,9 @@
 package org.openhab.binding.kodi.internal.config;
 
 /**
- * Thing configuration from openHab.
+ * Thing configuration from openHAB.
  *
- * @author Christoph Weitkamp - Added channels for thumbnail and fanart
+ * @author Christoph Weitkamp - Initial contribution
  * @author Christoph Weitkamp - Improvements for playing audio notifications
  */
 public class KodiConfig {
