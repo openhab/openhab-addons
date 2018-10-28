@@ -31,6 +31,8 @@ public class DeviceFactory {
                 return new CeilingDevice(id);
             case ceiling1:
                 return new CeilingDevice(id);
+            case ceiling3:
+                return new CeilingDevice(id);
             case color:
                 return new WonderDevice(id);
             case mono:
@@ -52,6 +54,9 @@ public class DeviceFactory {
                 device = new CeilingDevice(bulbInfo.get("id"));
                 break;
             case ceiling1:
+                device = new CeilingDevice(bulbInfo.get("id"));
+                break;
+            case ceiling3:
                 device = new CeilingDevice(bulbInfo.get("id"));
                 break;
             case color:

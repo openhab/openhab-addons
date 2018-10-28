@@ -19,5 +19,6 @@ public enum DeviceType {
     color,
     ceiling,
     ceiling1,
-    stripe;
+    ceiling3,
+    stripe
 }

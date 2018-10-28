@@ -32,6 +32,7 @@ public class YeelightHandlerFactory extends BaseThingHandlerFactory {
     static {
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_CEILING);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_CEILING1);
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_CEILING3);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_DOLPHIN);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_CTBULB);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_WONDER);
@@ -54,7 +55,7 @@ public class YeelightHandlerFactory extends BaseThingHandlerFactory {
             return new YeelightColorHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_STRIPE)) {
             return new YeelightStripeHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_CEILING) || thingTypeUID.equals(THING_TYPE_CEILING1)) {
+        } else if (thingTypeUID.equals(THING_TYPE_CEILING) || thingTypeUID.equals(THING_TYPE_CEILING1) || thingTypeUID.equals(THING_TYPE_CEILING3)) {
             return new YeelightCeilingHandler(thing);
         } else {
             return null;
