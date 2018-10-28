@@ -9,6 +9,7 @@
 package org.openhab.binding.samsungtv.internal.protocol;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +17,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.eclipse.jetty.util.component.LifeCycle;
+import org.eclipse.jetty.util.component.LifeCycle.Listener;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
@@ -33,9 +36,7 @@ import net.minidev.json.parser.JSONParser;
  *
  * @author Arjan Mels - Initial contribution
  */
-public class RemoteControllerWebSocket extends RemoteController {
-
-    // TODO: add built in WOL???
+public class RemoteControllerWebSocket extends RemoteController implements Listener {
 
     private final Logger logger = LoggerFactory.getLogger(RemoteControllerWebSocket.class);
 
@@ -66,6 +67,8 @@ public class RemoteControllerWebSocket extends RemoteController {
             RemoteControllerWebsocketCallback remoteControllerWebsocketCallback) {
         super(host, port, appName, uniqueId);
         this.client = new WebSocketClient();
+        this.client.addLifeCycleListener(this);
+
         this.callback = remoteControllerWebsocketCallback;
     }
 
@@ -75,21 +78,38 @@ public class RemoteControllerWebSocket extends RemoteController {
 
     @Override
     public void openConnection() throws RemoteControllerException {
-        try {
-            if (!(client.isStarted() || client.isStarting())) {
-                logger.debug("RemoteControllerWebSocket start Client");
+        if (!(client.isStarted() || client.isStarting())) {
+            logger.debug("RemoteControllerWebSocket start Client");
+            try {
                 client.start();
                 client.setMaxBinaryMessageBufferSize(1000000);
+                // websocket connect will be done in lifetime handler
+                return;
+
+            } catch (Exception e) {
+                logger.warn("Cannot connect to websocket remote control interface: " + e.getMessage());
+                throw new RemoteControllerException(e);
             }
-
-            webSocketRemote.connect(new URI("ws", null, host, port, WS_ENDPOINT_REMOTE_CONTROL, "name=openhab", null));
-            webSocketArt.connect(new URI("ws", null, host, port, WS_ENDPOINT_ART, "name=openhab", null));
-            webSocketV2.connect(new URI("ws", null, host, port, WS_ENDPOINT_V2, "name=openhab", null));
-        } catch (Exception e) {
-            logger.warn("Cannot connect to websocket remote control interface: " + e.getMessage());
-            throw new RemoteControllerException(e);
         }
+        connectWebSockets();
+    }
 
+    private void connectWebSockets() {
+        try {
+            webSocketRemote.connect(new URI("ws", null, host, port, WS_ENDPOINT_REMOTE_CONTROL, "name=openhab", null));
+        } catch (RemoteControllerException | URISyntaxException e) {
+            logger.warn("Problem connecting to remote websocket", e);
+        }
+        try {
+            webSocketArt.connect(new URI("ws", null, host, port, WS_ENDPOINT_ART, "name=openhab", null));
+        } catch (RemoteControllerException | URISyntaxException e) {
+            logger.warn("Problem connecting to artmode websocket", e);
+        }
+        try {
+            webSocketV2.connect(new URI("ws", null, host, port, WS_ENDPOINT_V2, "name=openhab", null));
+        } catch (RemoteControllerException | URISyntaxException e) {
+            logger.warn("Problem connecting to V2 websocket", e);
+        }
     }
 
     private void closeConnection() throws RemoteControllerException {
@@ -122,7 +142,6 @@ public class RemoteControllerWebSocket extends RemoteController {
 
         @Override
         public void onWebSocketClose(int statusCode, String reason) {
-            // TODO: if unexpected close reopen?
             logger.debug("{} connection closed: {} - {}", this.getClass().getSimpleName(), statusCode, reason);
             super.onWebSocketClose(statusCode, reason);
             isConnecting = false;
@@ -519,6 +538,7 @@ public class RemoteControllerWebSocket extends RemoteController {
                 try {
                     Thread.sleep(sleepInMs);
                 } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                     return;
                 }
             }
@@ -607,6 +627,28 @@ public class RemoteControllerWebSocket extends RemoteController {
             appList.add(app.name);
         }
         return appList;
+    }
+
+    @Override
+    public void lifeCycleStarted(LifeCycle arg0) {
+        connectWebSockets();
+    }
+
+    @Override
+    public void lifeCycleFailure(LifeCycle arg0, Throwable throwable) {
+        logger.warn("Problem creating websocket client", throwable);
+    }
+
+    @Override
+    public void lifeCycleStarting(LifeCycle arg0) {
+    }
+
+    @Override
+    public void lifeCycleStopped(LifeCycle arg0) {
+    }
+
+    @Override
+    public void lifeCycleStopping(LifeCycle arg0) {
     }
 
 }

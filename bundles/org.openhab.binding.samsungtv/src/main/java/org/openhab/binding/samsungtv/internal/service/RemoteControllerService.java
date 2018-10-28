@@ -107,7 +107,8 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
         if (remoteController != null) {
             try {
                 remoteController.openConnection();
-            } catch (RemoteControllerException ignore) {
+            } catch (RemoteControllerException e) {
+                logger.warn("Cannot open remote interface ({})" + e.getMessage());
             }
             return;
         }

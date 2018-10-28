@@ -14,15 +14,7 @@ package org.openhab.binding.samsungtv.internal.handler;
 
 import static org.openhab.binding.samsungtv.internal.SamsungTvBindingConstants.*;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.InterfaceAddress;
-import java.net.NetworkInterface;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
@@ -47,6 +39,7 @@ import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
 import org.jupnp.UpnpService;
 import org.jupnp.model.meta.Device;
 import org.jupnp.model.meta.RemoteDevice;
+import org.openhab.binding.samsungtv.internal.WakeOnLanUtility;
 import org.openhab.binding.samsungtv.internal.config.SamsungTvConfiguration;
 import org.openhab.binding.samsungtv.internal.service.RemoteControllerService;
 import org.openhab.binding.samsungtv.internal.service.ServiceFactory;
@@ -169,16 +162,9 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
         checkAndCreateServices();
 
         if (configuration.macAddress == null || configuration.macAddress.isEmpty()) {
-            try {
-                Process proc = Runtime.getRuntime().exec("arping -r -c 1 -C 1 " + configuration.hostName);
-                proc.waitFor();
-                BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-                configuration.macAddress = stdInput.readLine();
-                getConfig().put(SamsungTvConfiguration.MAC_ADDRESS, configuration.macAddress);
-                logger.info("MAC address of host {} is {}", configuration.hostName, configuration.macAddress);
-
-            } catch (Exception e) {
-                logger.info("Problem getting MAC address: {}", e.getMessage());
+            String macAddress = WakeOnLanUtility.getMACAddress(configuration.hostName);
+            if (macAddress != null) {
+                getConfig().put(SamsungTvConfiguration.MAC_ADDRESS, macAddress);
             }
         }
     }
@@ -365,54 +351,21 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
     }
 
     /**
-     * Send single WOL (Wake On Lan) package on all interfaces
-     */
-    void sendWOLAllInterfaces() {
-        byte[] bytes = getWOLPackage(configuration.macAddress);
-
-        try {
-            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-            while (interfaces.hasMoreElements()) {
-                NetworkInterface networkInterface = interfaces.nextElement();
-                if (networkInterface.isLoopback()) {
-                    continue; // Do not want to use the loopback interface.
-                }
-                for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses()) {
-                    InetAddress broadcast = interfaceAddress.getBroadcast();
-                    if (broadcast == null) {
-                        continue;
-                    }
-
-                    try {
-                        InetAddress address = InetAddress.getByName(configuration.hostName);
-                        DatagramPacket packet = new DatagramPacket(bytes, bytes.length, address, 9);
-                        DatagramSocket socket = new DatagramSocket();
-                        socket.send(packet);
-                        socket.close();
-                    } catch (Exception e) {
-                        logger.warn("Problem sending WOL packet to {} ({})", configuration.hostName,
-                                configuration.macAddress);
-                    }
-                }
-            }
-
-        } catch (Exception e) {
-            logger.warn("Problem with interface while sending WOL packet to {} ({})", configuration.hostName,
-                    configuration.macAddress);
-        }
-    }
-
-    /**
      * Send multiple WOL packets spaced with 100ms intervals and resend command
      *
      * @param channel Channel to resend command on
      * @param command Command to resend
      */
     private void sendWOLandResendCommand(String channel, Command command) {
+
+        if (configuration.macAddress == null || configuration.macAddress.isEmpty()) {
+            logger.warn("Cannot send WOL packet to {} MAC address unknown", configuration.hostName);
+            return;
+        }
+
         logger.info("Send WOL packet to {} ({})", configuration.hostName, configuration.macAddress);
 
         // send max 10 WOL packets with 100ms intervals
-
         scheduler.schedule(new Runnable() {
             int count = 0;
 
@@ -420,7 +373,7 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
             public void run() {
                 count++;
                 if (count < 10) {
-                    sendWOLAllInterfaces();
+                    WakeOnLanUtility.sendWOLPacket(configuration.macAddress);
                     scheduler.schedule(this, 100, TimeUnit.MILLISECONDS);
                 }
             }
@@ -449,38 +402,6 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
             }
 
         }, 1000, TimeUnit.MILLISECONDS);
-    }
-
-    /**
-     * Create WOL UDP package: 6 bytes 0xff and then 6 times the 6 byte mac address repeated
-     *
-     * @param macStr String representation of teh MAC address (either with : or -)
-     * @return byte array with the WOL package
-     * @throws IllegalArgumentException
-     */
-    private static byte[] getWOLPackage(String macStr) throws IllegalArgumentException {
-        byte[] macBytes = new byte[6];
-        String[] hex = macStr.split("(\\:|\\-)");
-        if (hex.length != 6) {
-            throw new IllegalArgumentException("Invalid MAC address.");
-        }
-        try {
-            for (int i = 0; i < 6; i++) {
-                macBytes[i] = (byte) Integer.parseInt(hex[i], 16);
-            }
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Invalid hex digit in MAC address.");
-        }
-
-        byte[] bytes = new byte[6 + 16 * macBytes.length];
-        for (int i = 0; i < 6; i++) {
-            bytes[i] = (byte) 0xff;
-        }
-        for (int i = 6; i < bytes.length; i += macBytes.length) {
-            System.arraycopy(macBytes, 0, bytes, i, macBytes.length);
-        }
-
-        return bytes;
     }
 
 }
