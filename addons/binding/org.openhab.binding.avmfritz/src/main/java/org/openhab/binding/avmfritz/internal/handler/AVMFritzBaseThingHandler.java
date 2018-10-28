@@ -10,6 +10,7 @@ package org.openhab.binding.avmfritz.internal.handler;
 
 import static org.eclipse.smarthome.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.binding.avmfritz.internal.BindingConstants.*;
+import static org.openhab.binding.avmfritz.internal.ahamodel.HeatingModel.*;
 
 import java.math.BigDecimal;
 
@@ -35,7 +36,6 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.avmfritz.internal.ahamodel.AVMFritzBaseModel;
-import org.openhab.binding.avmfritz.internal.ahamodel.HeatingModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.SwitchModel;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaWebInterface;
 import org.slf4j.Logger;
@@ -45,8 +45,7 @@ import org.slf4j.LoggerFactory;
  * Abstract handler for a FRITZ! thing. Handles commands, which are sent to one of the channels.
  *
  * @author Robert Bausdorf - Initial contribution
- * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet
- *         DECT
+ * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet DECT
  * @author Christoph Weitkamp - Added support for groups
  */
 @NonNullByDefault
@@ -120,10 +119,12 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler {
             case CHANNEL_ACTUALTEMP:
             case CHANNEL_ECOTEMP:
             case CHANNEL_COMFORTTEMP:
-            case CHANNEL_NEXTCHANGE:
+            case CHANNEL_NEXT_CHANGE:
             case CHANNEL_NEXTTEMP:
             case CHANNEL_BATTERY:
             case CHANNEL_BATTERY_LOW:
+            case CHANNEL_CONTACT_STATE:
+            case CHANNEL_LAST_CHANGE:
                 logger.debug("Channel {} is a read-only channel and cannot handle command '{}'", channelId, command);
                 break;
             case CHANNEL_OUTLET:
@@ -134,15 +135,15 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler {
                 break;
             case CHANNEL_SETTEMP:
                 if (command instanceof DecimalType) {
-                    BigDecimal temperature = HeatingModel.normalizeCelsius(((DecimalType) command).toBigDecimal());
+                    BigDecimal temperature = normalizeCelsius(((DecimalType) command).toBigDecimal());
                     state.getHkr().setTsoll(temperature);
-                    fritzBox.setSetTemp(ain, HeatingModel.fromCelsius(temperature));
+                    fritzBox.setSetTemp(ain, fromCelsius(temperature));
                     updateState(CHANNEL_RADIATOR_MODE, new StringType(state.getHkr().getRadiatorMode()));
                 } else if (command instanceof QuantityType) {
-                    BigDecimal temperature = HeatingModel
-                            .normalizeCelsius(((QuantityType<Temperature>) command).toUnit(CELSIUS).toBigDecimal());
+                    BigDecimal temperature = normalizeCelsius(
+                            ((QuantityType<Temperature>) command).toUnit(CELSIUS).toBigDecimal());
                     state.getHkr().setTsoll(temperature);
-                    fritzBox.setSetTemp(ain, HeatingModel.fromCelsius(temperature));
+                    fritzBox.setSetTemp(ain, fromCelsius(temperature));
                     updateState(CHANNEL_RADIATOR_MODE, new StringType(state.getHkr().getRadiatorMode()));
                 } else if (command instanceof IncreaseDecreaseType) {
                     BigDecimal temperature = state.getHkr().getTsoll();
@@ -155,8 +156,7 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler {
                     fritzBox.setSetTemp(ain, temperature);
                     updateState(CHANNEL_RADIATOR_MODE, new StringType(state.getHkr().getRadiatorMode()));
                 } else if (command instanceof OnOffType) {
-                    BigDecimal temperature = OnOffType.ON.equals(command) ? HeatingModel.TEMP_FRITZ_ON
-                            : HeatingModel.TEMP_FRITZ_OFF;
+                    BigDecimal temperature = OnOffType.ON.equals(command) ? TEMP_FRITZ_ON : TEMP_FRITZ_OFF;
                     state.getHkr().setTsoll(temperature);
                     fritzBox.setSetTemp(ain, temperature);
                     updateState(CHANNEL_RADIATOR_MODE, new StringType(state.getHkr().getRadiatorMode()));
@@ -166,36 +166,31 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler {
                 if (command instanceof StringType) {
                     switch (command.toString()) {
                         case MODE_ON:
-                            state.getHkr().setTsoll(HeatingModel.TEMP_FRITZ_ON);
-                            fritzBox.setSetTemp(ain, HeatingModel.TEMP_FRITZ_ON);
-                            updateState(CHANNEL_SETTEMP,
-                                    new QuantityType<>(HeatingModel.toCelsius(HeatingModel.TEMP_FRITZ_ON), CELSIUS));
+                            state.getHkr().setTsoll(TEMP_FRITZ_ON);
+                            fritzBox.setSetTemp(ain, TEMP_FRITZ_ON);
+                            updateState(CHANNEL_SETTEMP, new QuantityType<>(toCelsius(TEMP_FRITZ_ON), CELSIUS));
                             break;
                         case MODE_OFF:
-                            state.getHkr().setTsoll(HeatingModel.TEMP_FRITZ_OFF);
-                            fritzBox.setSetTemp(ain, HeatingModel.TEMP_FRITZ_OFF);
-                            updateState(CHANNEL_SETTEMP,
-                                    new QuantityType<>(HeatingModel.toCelsius(HeatingModel.TEMP_FRITZ_OFF), CELSIUS));
+                            state.getHkr().setTsoll(TEMP_FRITZ_OFF);
+                            fritzBox.setSetTemp(ain, TEMP_FRITZ_OFF);
+                            updateState(CHANNEL_SETTEMP, new QuantityType<>(toCelsius(TEMP_FRITZ_OFF), CELSIUS));
                             break;
                         case MODE_COMFORT:
                             BigDecimal comfortTemperature = state.getHkr().getKomfort();
                             state.getHkr().setTsoll(comfortTemperature);
                             fritzBox.setSetTemp(ain, comfortTemperature);
-                            updateState(CHANNEL_SETTEMP,
-                                    new QuantityType<>(HeatingModel.toCelsius(comfortTemperature), CELSIUS));
+                            updateState(CHANNEL_SETTEMP, new QuantityType<>(toCelsius(comfortTemperature), CELSIUS));
                             break;
                         case MODE_ECO:
                             BigDecimal ecoTemperature = state.getHkr().getAbsenk();
                             state.getHkr().setTsoll(ecoTemperature);
                             fritzBox.setSetTemp(ain, ecoTemperature);
-                            updateState(CHANNEL_SETTEMP,
-                                    new QuantityType<>(HeatingModel.toCelsius(ecoTemperature), CELSIUS));
+                            updateState(CHANNEL_SETTEMP, new QuantityType<>(toCelsius(ecoTemperature), CELSIUS));
                             break;
                         case MODE_BOOST:
-                            state.getHkr().setTsoll(HeatingModel.TEMP_FRITZ_MAX);
-                            fritzBox.setSetTemp(ain, HeatingModel.TEMP_FRITZ_MAX);
-                            updateState(CHANNEL_SETTEMP,
-                                    new QuantityType<>(HeatingModel.toCelsius(HeatingModel.TEMP_FRITZ_MAX), CELSIUS));
+                            state.getHkr().setTsoll(TEMP_FRITZ_MAX);
+                            fritzBox.setSetTemp(ain, TEMP_FRITZ_MAX);
+                            updateState(CHANNEL_SETTEMP, new QuantityType<>(toCelsius(TEMP_FRITZ_MAX), CELSIUS));
                             break;
                         case MODE_UNKNOWN:
                         case MODE_WINDOW_OPEN:

@@ -70,7 +70,7 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler {
         if (optionalDevice.isPresent()) {
             AVMFritzBaseModel device = optionalDevice.get();
             devicelist.remove(device);
-            logger.debug("update self {} with device model: {}", getThing().getUID(), device);
+            logger.debug("update self '{}' with device model: {}", getThing().getUID(), device);
             setState(device);
             if (device.getPresent() == 1) {
                 setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
