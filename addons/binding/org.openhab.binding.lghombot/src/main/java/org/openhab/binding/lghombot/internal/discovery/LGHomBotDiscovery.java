@@ -20,6 +20,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -42,6 +44,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Fredrik Ahlström - Initial contribution
  */
+@NonNullByDefault
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.lghombot")
 public class LGHomBotDiscovery extends AbstractDiscoveryService {
 
@@ -75,11 +78,13 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
     private int octet;
     private int ipMask;
     private int addressCount;
+    @Nullable
     private CidrAddress baseIp;
 
     /**
      * The {@link ExecutorService} to run the listening threads on.
      */
+    @Nullable
     private ExecutorService executorService;
 
     /**
@@ -112,7 +117,7 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
         byte[] octets = baseIp.getAddress().getAddress();
         octets[2] += (octet >> 8);
         octets[3] += octet;
-        String address = null;
+        String address = "";
         try {
             InetAddress iAdr = null;
             iAdr = InetAddress.getByAddress(octets);
@@ -177,6 +182,7 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
      *
      * @return An IP4 address or null if none is found.
      */
+    @Nullable
     private CidrAddress getLocalIP4Address() {
         List<CidrAddress> l = NetUtil.getAllInterfaceAddresses().stream()
                 .filter(a -> a.getAddress() instanceof Inet4Address).map(a -> a).collect(Collectors.toList());
@@ -245,7 +251,7 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
 
         }
 
-        if (ipAddress != null) {
+        if (!ipAddress.isEmpty()) {
             if (nickName.isEmpty()) {
                 nickName = "HOMBOT1";
             }
