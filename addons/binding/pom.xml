@@ -75,7 +75,6 @@
     <module>org.openhab.binding.max.test</module>
     <module>org.openhab.binding.mcp23017</module>
     <module>org.openhab.binding.meteostick</module>
-    <module>org.openhab.binding.meterreader</module>
     <module>org.openhab.binding.miele</module>
     <module>org.openhab.binding.mihome</module>
     <module>org.openhab.binding.milight</module>
@@ -122,6 +121,7 @@
     <module>org.openhab.binding.silvercrestwifisocket</module>
     <module>org.openhab.binding.sleepiq</module>
     <module>org.openhab.binding.smaenergymeter</module>
+    <module>org.openhab.binding.smartmeter</module>
     <module>org.openhab.binding.solaredge</module>
     <module>org.openhab.binding.solarlog</module>
     <module>org.openhab.binding.somfytahoma</module>
