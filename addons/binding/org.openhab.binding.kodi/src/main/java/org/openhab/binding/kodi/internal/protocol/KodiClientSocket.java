@@ -33,8 +33,7 @@ import com.google.gson.JsonParser;
  * KodiClientSocket implements the low level communication to Kodi through
  * websocket. Usually this communication is done through port 9090
  *
- * @author Paul Frank
- *
+ * @author Paul Frank - Initial contribution
  */
 public class KodiClientSocket {
 
@@ -51,31 +50,28 @@ public class KodiClientSocket {
 
     private final JsonParser parser = new JsonParser();
     private final Gson mapper = new Gson();
-    private URI uri;
+    private final URI uri;
+    private final WebSocketClient client;
     private Session session;
-    private WebSocketClient client;
 
     private final KodiClientSocketEventListener eventHandler;
 
-    public KodiClientSocket(KodiClientSocketEventListener eventHandler, URI uri, ScheduledExecutorService scheduler) {
+    public KodiClientSocket(KodiClientSocketEventListener eventHandler, URI uri, ScheduledExecutorService scheduler,
+            WebSocketClient webSocketClient) {
         this.eventHandler = eventHandler;
         this.uri = uri;
-        client = new WebSocketClient();
         this.scheduler = scheduler;
+        this.client = webSocketClient;
     }
 
     /**
-     * Attempts to create a connection to the Kodi host and begin listening for
-     * updates over the async http web socket
+     * Attempts to create a connection to the Kodi host and begin listening for updates over the async http web socket
      *
-     * @throws Exception
+     * @throws IOException
      */
-    public synchronized void open() throws Exception {
+    public synchronized void open() throws IOException {
         if (isConnected()) {
             logger.warn("connect: connection is already open");
-        }
-        if (!client.isStarted()) {
-            client.start();
         }
         KodiWebSocketListener socket = new KodiWebSocketListener();
         ClientUpgradeRequest request = new ClientUpgradeRequest();
@@ -89,17 +85,8 @@ public class KodiClientSocket {
     public void close() {
         // if there is an old web socket then clean up and destroy
         if (session != null) {
-            try {
-                session.close();
-            } catch (Exception e) {
-                logger.debug("Exception during closing the websocket: {}", e.getMessage(), e);
-            }
+            session.close();
             session = null;
-        }
-        try {
-            client.stop();
-        } catch (Exception e) {
-            logger.debug("Exception during closing the websocket: {}", e.getMessage(), e);
         }
     }
 
@@ -107,7 +94,6 @@ public class KodiClientSocket {
         if (session == null || !session.isOpen()) {
             return false;
         }
-
         return connected;
     }
 

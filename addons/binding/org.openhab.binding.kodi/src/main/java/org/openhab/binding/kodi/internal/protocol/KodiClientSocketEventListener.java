@@ -13,8 +13,7 @@ import com.google.gson.JsonObject;
 /**
  * This interface has to be implemented for classes which need to be able to receive events from KodiClientSocket
  *
- * @author Paul Frank
- *
+ * @author Paul Frank - Initial contribution
  */
 public interface KodiClientSocketEventListener {
 

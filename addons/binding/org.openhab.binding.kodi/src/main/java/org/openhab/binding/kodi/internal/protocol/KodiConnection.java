@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.kodi.internal.protocol;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -20,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.smarthome.core.cache.ExpiringCacheMap;
 import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
@@ -81,9 +83,11 @@ public class KodiConnection implements KodiClientSocketEventListener {
     private KodiPlaylistState currentPlaylistState = KodiPlaylistState.CLEAR;
 
     private final KodiEventListener listener;
+    private final WebSocketClient webSocketClient;
 
-    public KodiConnection(KodiEventListener listener) {
+    public KodiConnection(KodiEventListener listener, WebSocketClient webSocketClient) {
         this.listener = listener;
+        this.webSocketClient = webSocketClient;
     }
 
     @Override
@@ -102,7 +106,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
         try {
             close();
             wsUri = new URI("ws", null, hostname, port, "/jsonrpc", null, null);
-            socket = new KodiClientSocket(this, wsUri, scheduler);
+            socket = new KodiClientSocket(this, wsUri, scheduler, webSocketClient);
             checkConnection();
         } catch (URISyntaxException e) {
             logger.error("exception during constructing URI host={}, port={}", hostname, port, e);
@@ -952,14 +956,13 @@ public class KodiConnection implements KodiClientSocketEventListener {
             try {
                 socket.open();
                 return socket.isConnected();
-            } catch (Exception e) {
+            } catch (IOException e) {
                 logger.error("exception during connect to {}", wsUri, e);
                 socket.close();
                 return false;
             }
         } else {
-            // Ping Kodi with the get version command. This prevents the idle
-            // timeout on the websocket.
+            // Ping Kodi with the get version command. This prevents the idle timeout on the web socket.
             return !getVersion().isEmpty();
         }
     }
