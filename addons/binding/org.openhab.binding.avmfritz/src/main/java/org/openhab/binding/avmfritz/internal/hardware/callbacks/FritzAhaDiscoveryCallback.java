@@ -16,7 +16,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.openhab.binding.avmfritz.internal.ahamodel.AVMFritzBaseModel;
-import org.openhab.binding.avmfritz.internal.ahamodel.DevicelistModel;
+import org.openhab.binding.avmfritz.internal.ahamodel.DeviceListModel;
 import org.openhab.binding.avmfritz.internal.discovery.AVMFritzDiscoveryService;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaWebInterface;
 import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
@@ -58,7 +58,7 @@ public class FritzAhaDiscoveryCallback extends FritzAhaReauthCallback {
         if (isValidRequest()) {
             try {
                 Unmarshaller u = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
-                DevicelistModel model = (DevicelistModel) u.unmarshal(new StringReader(response));
+                DeviceListModel model = (DeviceListModel) u.unmarshal(new StringReader(response));
                 if (model != null) {
                     for (AVMFritzBaseModel device : model.getDevicelist()) {
                         service.onDeviceAddedInternal(device);

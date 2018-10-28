@@ -13,7 +13,7 @@ import javax.xml.bind.JAXBException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.avmfritz.internal.ahamodel.DevicelistModel;
+import org.openhab.binding.avmfritz.internal.ahamodel.DeviceListModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.templates.TemplateListModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,16 +26,16 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class JAXBUtils {
 
-    private static final Logger logger = LoggerFactory.getLogger(JAXBUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JAXBUtils.class);
 
     public static final @Nullable JAXBContext JAXBCONTEXT_DEVICES = initJAXBContextDevices();
     public static final @Nullable JAXBContext JAXBCONTEXT_TEMPLATES = initJAXBContextTemplates();
 
     private static @Nullable JAXBContext initJAXBContextDevices() {
         try {
-            return JAXBContext.newInstance(DevicelistModel.class);
+            return JAXBContext.newInstance(DeviceListModel.class);
         } catch (JAXBException e) {
-            logger.error("Exception creating JAXBContext for devices: {}", e.getLocalizedMessage(), e);
+            LOGGER.error("Exception creating JAXBContext for devices: {}", e.getLocalizedMessage(), e);
             return null;
         }
     }
@@ -44,7 +44,7 @@ public class JAXBUtils {
         try {
             return JAXBContext.newInstance(TemplateListModel.class);
         } catch (JAXBException e) {
-            logger.error("Exception creating JAXBContext for templates: {}", e.getLocalizedMessage(), e);
+            LOGGER.error("Exception creating JAXBContext for templates: {}", e.getLocalizedMessage(), e);
             return null;
         }
     }

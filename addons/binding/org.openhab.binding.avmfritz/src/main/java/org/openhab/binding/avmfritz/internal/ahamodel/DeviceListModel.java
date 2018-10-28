@@ -72,7 +72,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Christoph Weitkamp - Added support for groups
  */
 @XmlRootElement(name = "devicelist")
-public class DevicelistModel {
+public class DeviceListModel {
 
     @XmlAttribute(name = "version")
     private String apiVersion;
