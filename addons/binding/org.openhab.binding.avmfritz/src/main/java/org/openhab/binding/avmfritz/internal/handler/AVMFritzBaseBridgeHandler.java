@@ -11,7 +11,7 @@ package org.openhab.binding.avmfritz.internal.handler;
 import static org.eclipse.smarthome.core.library.unit.SIUnits.CELSIUS;
 import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
 import static org.openhab.binding.avmfritz.internal.BindingConstants.*;
-import static org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel.Etsiunitinfo.*;
+import static org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel.ETSUnitInfo.*;
 import static org.openhab.binding.avmfritz.internal.ahamodel.HeatingModel.*;
 
 import java.math.BigDecimal;

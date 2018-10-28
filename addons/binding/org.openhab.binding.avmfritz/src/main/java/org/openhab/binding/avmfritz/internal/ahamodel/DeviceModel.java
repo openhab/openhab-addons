@@ -24,7 +24,7 @@ public class DeviceModel extends AVMFritzBaseModel {
     private TemperatureModel temperature;
     private AlertModel alert;
     private ButtonModel button;
-    private Etsiunitinfo etsiunitinfo;
+    private ETSUnitInfo etsiunitinfo;
 
     public TemperatureModel getTemperature() {
         return temperature;
@@ -50,11 +50,11 @@ public class DeviceModel extends AVMFritzBaseModel {
         this.button = buttonModel;
     }
 
-    public Etsiunitinfo getEtsiunitinfo() {
+    public ETSUnitInfo getEtsiunitinfo() {
         return etsiunitinfo;
     }
 
-    public void setEtsiunitinfo(Etsiunitinfo etsiunitinfo) {
+    public void setEtsiunitinfo(ETSUnitInfo etsiunitinfo) {
         this.etsiunitinfo = etsiunitinfo;
     }
 
@@ -65,7 +65,7 @@ public class DeviceModel extends AVMFritzBaseModel {
     }
 
     @XmlType(propOrder = { "etsideviceid", "unittype", "interfaces" })
-    public static class Etsiunitinfo {
+    public static class ETSUnitInfo {
         public static final String HAN_FUN_UNITTYPE_SIMPLE_BUTTON = "273";
         public static final String HAN_FUN_UNITTYPE_SIMPLE_DETECTOR = "512";
         public static final String HAN_FUN_UNITTYPE_MAGNETIC_CONTACT = "513";
