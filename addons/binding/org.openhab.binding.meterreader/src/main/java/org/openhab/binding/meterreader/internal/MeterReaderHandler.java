@@ -39,7 +39,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
-import org.eclipse.smarthome.core.thing.type.ChannelTypeProvider;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -115,9 +114,9 @@ public class MeterReaderHandler extends BaseThingHandler {
 
             BundleContext bundleContext = FrameworkUtil.getBundle(getClass()).getBundleContext();
 
-            ServiceReference<@NonNull ChannelTypeProvider> channelTypeProviderService = bundleContext
-                    .getServiceReference(ChannelTypeProvider.class);
-            channelTypeProvider = (SmartMeterChannelTypeProvider) bundleContext.getService(channelTypeProviderService);
+            ServiceReference<@NonNull SmartMeterChannelTypeProvider> channelTypeProviderService = bundleContext
+                    .getServiceReference(SmartMeterChannelTypeProvider.class);
+            channelTypeProvider = bundleContext.getService(channelTypeProviderService);
 
             smlDevice.addValueChangeListener(channelTypeProvider);
 

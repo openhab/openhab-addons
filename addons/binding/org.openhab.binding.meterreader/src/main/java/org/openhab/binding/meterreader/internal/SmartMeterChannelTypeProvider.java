@@ -40,7 +40,7 @@ import org.osgi.service.component.annotations.Component;
  * @author MatthiasS
  *
  */
-@Component(service = ChannelTypeProvider.class)
+@Component(service = { ChannelTypeProvider.class, SmartMeterChannelTypeProvider.class })
 public class SmartMeterChannelTypeProvider implements ChannelTypeProvider, MeterValueListener {
 
     private Map<String, ChannelType> obisChannelMap = new ConcurrentHashMap<>();
