@@ -14,6 +14,7 @@
 			<channel id="battery" typeId="batteryType" />
 			<channel id="cpuLoad" typeId="cpuLoadType" />
 			<channel id="srvMem" typeId="srvMemType" />
+			<channel id="clean" typeId="cleanType" />
 			<channel id="start" typeId="startType" />
 			<channel id="home" typeId="homeType" />
 			<channel id="pause" typeId="pauseType" />
@@ -103,21 +104,23 @@
 		<description>Memory used by webserver on HomBot.</description>
 		<state pattern="%s" readOnly="true" />
 	</channel-type>
-	<channel-type id="startType">
+	<channel-type id="cleanType">
 		<item-type>Switch</item-type>
 		<label>Clean</label>
-		<description>Start cleaning.</description>
+		<description>Start cleaning / return home.</description>
 		<tags>
 			<tag>Switchable</tag>
 		</tags>
+	</channel-type>
+	<channel-type id="startType">
+		<item-type>Switch</item-type>
+		<label>Start</label>
+		<description>Start cleaning.</description>
 	</channel-type>
 	<channel-type id="homeType">
 		<item-type>Switch</item-type>
 		<label>Home</label>
 		<description>Return home.</description>
-		<tags>
-			<tag>Switchable</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="pauseType" advanced="true">
 		<item-type>Switch</item-type>

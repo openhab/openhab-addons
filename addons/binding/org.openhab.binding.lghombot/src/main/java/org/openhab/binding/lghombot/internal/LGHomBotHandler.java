@@ -98,12 +98,21 @@ public class LGHomBotHandler extends BaseThingHandler {
             refreshFromState(channelUID);
         } else {
             switch (channelUID.getId()) {
-                case CHANNEL_START:
+                case CHANNEL_CLEAN:
                     if (command instanceof OnOffType) {
                         if (((OnOffType) command) == OnOffType.ON) {
                             if (currentState.equals(HBSTATE_HOMING)) {
                                 sendHomBotCommand("PAUSE");
                             }
+                            sendHomBotCommand("CLEAN_START");
+                        } else if (((OnOffType) command) == OnOffType.OFF) {
+                            sendHomBotCommand("HOMING");
+                        }
+                    }
+                    break;
+                case CHANNEL_START:
+                    if (command instanceof OnOffType) {
+                        if (((OnOffType) command) == OnOffType.ON) {
                             sendHomBotCommand("CLEAN_START");
                         } else if (((OnOffType) command) == OnOffType.OFF) {
                             sendHomBotCommand("PAUSE");
@@ -559,7 +568,7 @@ public class LGHomBotHandler extends BaseThingHandler {
         try {
             ImageIO.write(image, "jpg", baos);
         } catch (IOException e) {
-            logger.error("IOException creating JPEG image. {}", e);
+            logger.info("IOException creating JPEG image. {}", e);
         }
         byte[] byteArray = baos.toByteArray();
         if (byteArray != null && byteArray.length > 0) {
@@ -586,10 +595,10 @@ public class LGHomBotHandler extends BaseThingHandler {
         if (!isLinked(CHANNEL_MAP)) {
             return;
         }
-        final int TILE_SIZE = 10;
-        final int TILE_AREA = TILE_SIZE * TILE_SIZE;
-        final int ROW_LENGTH = 100;
-        final int SCALE = 1;
+        final int tileSize = 10;
+        final int tileArea = tileSize * tileSize;
+        final int rowLength = 100;
+        final int scale = 1;
 
         String blackBox = findBlackBoxFile();
         String url = buildHttpAddress(blackBox);
@@ -604,8 +613,8 @@ public class LGHomBotHandler extends BaseThingHandler {
 
         for (int i = 0; i < tileCount; i++) {
             pixPos = (mapData[52 + i * 16] & 0xFF) + (mapData[52 + 1 + i * 16] << 8);
-            int xPos = (pixPos % ROW_LENGTH) * TILE_SIZE;
-            int yPos = (pixPos / ROW_LENGTH) * TILE_SIZE;
+            int xPos = (pixPos % rowLength) * tileSize;
+            int yPos = (pixPos / rowLength) * tileSize;
             if (xPos < minX) {
                 minX = xPos;
             }
@@ -620,8 +629,8 @@ public class LGHomBotHandler extends BaseThingHandler {
             }
         }
 
-        final int width = (TILE_SIZE + maxX - minX) * SCALE;
-        final int height = (TILE_SIZE + maxY - minY) * SCALE;
+        final int width = (tileSize + maxX - minX) * scale;
+        final int height = (tileSize + maxY - minY) * scale;
 
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         for (int i = 0; i < height; i++) {
@@ -631,18 +640,18 @@ public class LGHomBotHandler extends BaseThingHandler {
         }
         for (int i = 0; i < tileCount; i++) {
             pixPos = (mapData[52 + i * 16] & 0xFF) + (mapData[52 + 1 + i * 16] << 8);
-            int xPos = ((pixPos % ROW_LENGTH) * TILE_SIZE - minX) * SCALE;
-            int yPos = (maxY - (pixPos / ROW_LENGTH) * TILE_SIZE) * SCALE;
-            int indexTab = 16044 + i * TILE_AREA;
-            for (int j = 0; j < TILE_SIZE; j++) {
-                for (int k = 0; k < TILE_SIZE; k++) {
+            int xPos = ((pixPos % rowLength) * tileSize - minX) * scale;
+            int yPos = (maxY - (pixPos / rowLength) * tileSize) * scale;
+            int indexTab = 16044 + i * tileArea;
+            for (int j = 0; j < tileSize; j++) {
+                for (int k = 0; k < tileSize; k++) {
                     int p = 0xFFFFFF;
                     if ((mapData[indexTab] & 0xF0) != 0) {
                         p = 0xFF0000;
                     } else if (mapData[indexTab] != 0) {
                         p = 0xBFBFBF;
                     }
-                    image.setRGB(xPos + k * SCALE, yPos + (9 - j) * SCALE, p);
+                    image.setRGB(xPos + k * scale, yPos + (9 - j) * scale, p);
                     indexTab++;
                 }
             }

@@ -66,7 +66,7 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
     private static final int FULL_SCAN_TIMEOUT = 30;
 
     /**
-     * Timeout in seconds of the complete scan
+     * Total number of concurrent threads during scanning.
      */
     private static final int SCAN_THREADS = 10;
 
@@ -111,10 +111,10 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
         octet = 0;
     }
 
-    private synchronized String getNextIPAddress() {
+    private synchronized String getNextIPAddress(CidrAddress adr) {
         octet++;
         octet &= ~ipMask;
-        byte[] octets = baseIp.getAddress().getAddress();
+        byte[] octets = adr.getAddress().getAddress();
         octets[2] += (octet >> 8);
         octets[3] += octet;
         String address = "";
@@ -152,15 +152,16 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
         }
         scanning = true;
         setupBaseIp(localAdr);
-        executorService = Executors.newFixedThreadPool(SCAN_THREADS);
+        ExecutorService localExecutorService = Executors.newFixedThreadPool(SCAN_THREADS);
+        executorService = localExecutorService;
         for (int i = 0; i < addressCount; i++) {
 
-            executorService.execute(() -> {
-                String ipAdd = getNextIPAddress();
-                String url = "http://" + ipAdd + ":" + HOMBOT_PORT + "/status.txt";
-                String message = null;
+            localExecutorService.execute(() -> {
+                if (scanning && baseIp != null) {
+                    String ipAdd = getNextIPAddress(baseIp);
+                    String url = "http://" + ipAdd + ":" + HOMBOT_PORT + "/status.txt";
+                    String message = null;
 
-                if (scanning) {
                     try {
                         message = HttpUtil.executeUrl("GET", url, TIMEOUT);
                         if (message != null && message.length() > 0) {
@@ -173,8 +174,6 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
 
             });
         }
-        // executorService.awaitTermination(FULL_SCAN_TIMEOUT, TimeUnit.SECONDS);
-
     }
 
     /**
@@ -225,7 +224,6 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
      * @param ipAddress current probed ip address
      */
     private void messageReceive(String message, String ipAddress) {
-
         if (!message.startsWith("JSON_ROBOT_STATE=")) {
             return;
         }
@@ -277,18 +275,18 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
     @Override
     protected synchronized void stopScan() {
         super.stopScan();
-        if (executorService == null) {
-            return;
-        }
+        if (executorService != null) {
+            ExecutorService localExecutorService = executorService;
 
-        scanning = false;
+            scanning = false;
 
-        try {
-            executorService.awaitTermination(TIMEOUT * SCAN_THREADS, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            logger.debug("HomBot scan interrupted, exception: {}", e);
+            try {
+                localExecutorService.awaitTermination(TIMEOUT * SCAN_THREADS, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+                logger.debug("HomBot scan interrupted, exception: {}", e);
+            }
+            localExecutorService.shutdown();
+            executorService = null;
         }
-        executorService.shutdown();
-        executorService = null;
     }
 }
