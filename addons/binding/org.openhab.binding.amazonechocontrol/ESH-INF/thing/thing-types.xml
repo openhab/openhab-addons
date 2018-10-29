@@ -15,7 +15,7 @@
 		<description>Amazon Echo device (Amazon Echo, Amazon Echo Dot, Amazon Echo Plus...)</description>
 		<channels>
 			<channel id="player" typeId="player" />
-            <channel id="mediaProgress" typeId="mediaProgress" />
+			<channel id="mediaProgress" typeId="mediaProgress" />
 			<channel id="mediaProgressTime" typeId="mediaProgressTime" />
 			<channel id="mediaLength" typeId="mediaLength" />
 			<channel id="volume" typeId="volume" />
@@ -34,7 +34,7 @@
 			<channel id="amazonMusicPlayListId" typeId="amazonMusicPlayListId" />
 			<channel id="amazonMusic" typeId="amazonMusic" />
 			<channel id="textToSpeech" typeId="textToSpeech" />
-            <channel id="textToSpeechVolume" typeId="textToSpeechVolume" />
+			<channel id="textToSpeechVolume" typeId="textToSpeechVolume" />
 			<channel id="remind" typeId="remind" />
 			<channel id="playAlarmSound" typeId="playAlarmSound" />
 			<channel id="startRoutine" typeId="startRoutine" />
@@ -61,9 +61,9 @@
 		<description>Amazon Echo Spot device</description>
 		<channels>
 			<channel id="player" typeId="player" />
-            <channel id="mediaProgress" typeId="mediaProgress" />
-            <channel id="mediaProgressTime" typeId="mediaProgressTime" />
-            <channel id="mediaLength" typeId="mediaLength" />
+			<channel id="mediaProgress" typeId="mediaProgress" />
+			<channel id="mediaProgressTime" typeId="mediaProgressTime" />
+			<channel id="mediaLength" typeId="mediaLength" />
 			<channel id="volume" typeId="volume" />
 			<channel id="shuffle" typeId="shuffle" />
 			<channel id="imageUrl" typeId="imageUrl" />
@@ -80,7 +80,7 @@
 			<channel id="amazonMusicPlayListId" typeId="amazonMusicPlayListId" />
 			<channel id="amazonMusic" typeId="amazonMusic" />
 			<channel id="textToSpeech" typeId="textToSpeech" />
-		    <channel id="textToSpeechVolume" typeId="textToSpeechVolume" />
+			<channel id="textToSpeechVolume" typeId="textToSpeechVolume" />
 			<channel id="remind" typeId="remind" />
 			<channel id="playAlarmSound" typeId="playAlarmSound" />
 			<channel id="startRoutine" typeId="startRoutine" />
@@ -107,9 +107,9 @@
 		<description>Amazon Echo Show device</description>
 		<channels>
 			<channel id="player" typeId="player" />
-            <channel id="mediaProgress" typeId="mediaProgress" />
-            <channel id="mediaProgressTime" typeId="mediaProgressTime" />
-            <channel id="mediaLength" typeId="mediaLength" />
+			<channel id="mediaProgress" typeId="mediaProgress" />
+			<channel id="mediaProgressTime" typeId="mediaProgressTime" />
+			<channel id="mediaLength" typeId="mediaLength" />
 			<channel id="volume" typeId="volume" />
 			<channel id="shuffle" typeId="shuffle" />
 			<channel id="imageUrl" typeId="imageUrl" />
@@ -126,7 +126,7 @@
 			<channel id="amazonMusicPlayListId" typeId="amazonMusicPlayListId" />
 			<channel id="amazonMusic" typeId="amazonMusic" />
 			<channel id="textToSpeech" typeId="textToSpeech" />
-            <channel id="textToSpeechVolume" typeId="textToSpeechVolume" />
+			<channel id="textToSpeechVolume" typeId="textToSpeechVolume" />
 			<channel id="remind" typeId="remind" />
 			<channel id="playAlarmSound" typeId="playAlarmSound" />
 			<channel id="startRoutine" typeId="startRoutine" />
@@ -330,11 +330,11 @@
 		<label>Speak</label>
 		<description>Speak the text (Write only)</description>
 	</channel-type>
-    <channel-type id="textToSpeechVolume" advanced="true">
-        <item-type>Dimmer</item-type>
-        <label>Speak volume</label>
-        <description>Volume of the Speak channel. If 0, the current volume will be used.</description>
-    </channel-type>
+	<channel-type id="textToSpeechVolume" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Speak volume</label>
+		<description>Volume of the Speak channel. If 0, the current volume will be used.</description>
+	</channel-type>
 	<channel-type id="lastVoiceCommand" advanced="true">
 		<item-type>String</item-type>
 		<label>Last voice command</label>
