@@ -19,6 +19,8 @@
 			<channel id="voltage" typeId="voltage" />
 		</channels>
 
+		<representation-property>deviceId</representation-property>
+
 		<config-description-ref uri="thing-type:device:plug" />
 	</thing-type>
 </thing:thing-descriptions>
