@@ -20,6 +20,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -31,7 +32,6 @@ import org.apache.commons.pool2.impl.GenericKeyedObjectPool;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.common.QueueingThreadPoolExecutor;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.openhab.io.transport.modbus.ModbusCallback;
 import org.openhab.io.transport.modbus.ModbusConnectionException;
@@ -160,10 +160,8 @@ public class ModbusManagerImpl implements ModbusManager {
             logger.trace("Response for read request (FC={}, transaction ID={}): {} [operation ID {}]",
                     response.getFunctionCode(), response.getTransactionID(), response.getHexMessage(), operationId);
             checkTransactionId(response, libRequest, task, operationId);
-            if (callback != null && callbackThreadPool != null) {
-                callbackThreadPool.execute(() -> {
-                    ModbusLibraryWrapper.invokeCallbackWithResponse(request, callback, response);
-                });
+            if (callback != null) {
+                ModbusLibraryWrapper.invokeCallbackWithResponse(request, callback, response);
             }
         }
     }
@@ -199,10 +197,8 @@ public class ModbusManagerImpl implements ModbusManager {
                     response.getFunctionCode(), response.getTransactionID(), response.getHexMessage(), operationId);
 
             checkTransactionId(response, libRequest, task, operationId);
-            if (callback != null && callbackThreadPool != null) {
-                callbackThreadPool.execute(() -> {
-                    invokeCallbackWithResponse(request, callback, new ModbusResponseImpl(response));
-                });
+            if (callback != null) {
+                invokeCallbackWithResponse(request, callback, new ModbusResponseImpl(response));
             }
         }
     }
@@ -274,11 +270,6 @@ public class ModbusManagerImpl implements ModbusManager {
      */
     @Nullable
     private volatile ScheduledExecutorService scheduledThreadPoolExecutor;
-    /**
-     * Executor for callbacks. Kept separate to allow polling to continue
-     */
-    @Nullable
-    private volatile ExecutorService callbackThreadPool;
     private volatile Collection<ModbusManagerListener> listeners = new CopyOnWriteArraySet<>();
     @Nullable
     private volatile ScheduledFuture<?> monitorFuture;
@@ -420,7 +411,7 @@ public class ModbusManagerImpl implements ModbusManager {
         Optional<ModbusSlaveConnection> connection = borrowConnection(endpoint);
         logger.trace("Executing task {} (oneOff={})! Connection received in {} ms [operation ID {}]", task, oneOffTask,
                 System.currentTimeMillis() - connectionBorrowStart, operationId);
-        ExecutorService callbackPool = callbackThreadPool;
+        ExecutorService callbackPool = scheduledThreadPoolExecutor;
         if (callbackPool == null) {
             // manager deactivated
             invalidate(endpoint, connection);
@@ -527,7 +518,7 @@ public class ModbusManagerImpl implements ModbusManager {
                 return;
             }
 
-            ExecutorService callbackThreadPool = this.callbackThreadPool;
+            ExecutorService callbackThreadPool = this.scheduledThreadPoolExecutor;
             if (callbackThreadPool == null) {
                 logger.debug("Manager has been shut down, aborting proecssing request {} [operation ID {}]", request,
                         operationId);
@@ -829,13 +820,8 @@ public class ModbusManagerImpl implements ModbusManager {
                 this.scheduledThreadPoolExecutor = scheduledThreadPoolExecutor = ThreadPoolManager
                         .getScheduledPool(MODBUS_POLLER_THREAD_POOL_NAME);
             }
-            ExecutorService callbackThreadPool = this.callbackThreadPool;
-            if (callbackThreadPool == null) {
-                this.callbackThreadPool = callbackThreadPool = ThreadPoolManager
-                        .getPool(MODBUS_POLLER_CALLBACK_THREAD_POOL_NAME);
-            }
-            if (scheduledThreadPoolExecutor.isShutdown() || callbackThreadPool.isShutdown()) {
-                logger.error("Thread pool(s) shut down! Aborting activation of ModbusMangerImpl");
+            if (scheduledThreadPoolExecutor.isShutdown()) {
+                logger.error("Thread pool is shut down! Aborting activation of ModbusMangerImpl");
                 throw new IllegalStateException("Thread pool(s) shut down! Aborting activation of ModbusMangerImpl");
             }
             monitorFuture = scheduledThreadPoolExecutor.scheduleWithFixedDelay(this::logTaskQueueInfo, 0,
@@ -864,7 +850,6 @@ public class ModbusManagerImpl implements ModbusManager {
             // Note that it is not allowed to shutdown the executor, since they will be reused when
             // when pool is received from ThreadPoolManager is called
             scheduledThreadPoolExecutor = null;
-            callbackThreadPool = null;
             connectionFactory = null;
             logger.debug("Modbus manager deactivated");
         }
@@ -873,8 +858,7 @@ public class ModbusManagerImpl implements ModbusManager {
     private void logTaskQueueInfo() {
         synchronized (pollMonitorLogger) {
             ScheduledExecutorService scheduledThreadPoolExecutor = this.scheduledThreadPoolExecutor;
-            ExecutorService callbackThreadPool = this.callbackThreadPool;
-            if (scheduledThreadPoolExecutor == null || callbackThreadPool == null) {
+            if (scheduledThreadPoolExecutor == null) {
                 return;
             }
             // Avoid excessive spamming with queue monitor when many tasks are executed
@@ -890,16 +874,15 @@ public class ModbusManagerImpl implements ModbusManager {
                         task.getRequest().getDataLength(), future.isDone(), future.isCancelled(),
                         future.getDelay(TimeUnit.MILLISECONDS), task);
             });
-            if (callbackThreadPool instanceof QueueingThreadPoolExecutor) {
-                QueueingThreadPoolExecutor callbackPool = ((QueueingThreadPoolExecutor) callbackThreadPool);
+            if (scheduledThreadPoolExecutor instanceof ThreadPoolExecutor) {
+                ThreadPoolExecutor executor = ((ThreadPoolExecutor) scheduledThreadPoolExecutor);
                 pollMonitorLogger.trace(
-                        "POLL MONITOR: callbackThreadPool queue size: {}, remaining space {}. Active threads {}",
-                        callbackPool.getQueue().size(), callbackPool.getQueue().remainingCapacity(),
-                        callbackPool.getActiveCount());
-                if (callbackPool.getQueue().size() >= WARN_QUEUE_SIZE) {
+                        "POLL MONITOR: scheduledThreadPoolExecutor queue size: {}, remaining space {}. Active threads {}",
+                        executor.getQueue().size(), executor.getQueue().remainingCapacity(), executor.getActiveCount());
+                if (executor.getQueue().size() >= WARN_QUEUE_SIZE) {
                     pollMonitorLogger.warn(
-                            "Many ({}) tasks queued in callbackThreadPool! This might be sign of bad design or bug in the binding code.",
-                            callbackPool.getQueue().size());
+                            "Many ({}) tasks queued in scheduledThreadPoolExecutor! This might be sign of bad design or bug in the binding code.",
+                            executor.getQueue().size());
                 }
             }
 
