@@ -148,6 +148,7 @@ public class SomfyTahomaBindingConstants {
     final public static String TAHOMA_URL = API_URL + "externalAPI/json/";
     final public static String TAHOMA_EVENT_URL = API_URL + "enduserAPI/events/";
     final public static String SETUP_URL = API_URL + "enduserAPI/setup/gateways/";
+    final public static String REFRESH_URL = API_URL + "enduserAPI/setup/devices/states/refresh";
     final public static String EXEC_URL = API_URL + "enduserAPI/exec/";
     final public static String DELETE_URL = EXEC_URL + "current/setup/";
     final public static String TAHOMA_AGENT = "TaHoma/3640 CFNetwork/711.1.16 Darwin/14.0.0";
