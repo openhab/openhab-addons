@@ -101,10 +101,10 @@
 		<label>Back button</label>
 		<description>Push Back button.</description>
 	</channel-type>
-    <channel-type id="keyPS-channel">
-        <item-type>Switch</item-type>
-        <label>PS button</label>
-        <description>Push PS button.</description>
-    </channel-type>
+	<channel-type id="keyPS-channel">
+		<item-type>Switch</item-type>
+		<label>PS button</label>
+		<description>Push PS button.</description>
+	</channel-type>
 
 </thing:thing-descriptions>

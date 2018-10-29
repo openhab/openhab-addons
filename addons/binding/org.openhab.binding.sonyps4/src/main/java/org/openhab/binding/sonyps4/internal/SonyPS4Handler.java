@@ -85,8 +85,6 @@ public class SonyPS4Handler extends BaseThingHandler {
                     turnOffPS4();
                 }
             }
-            if (CHANNEL_APPLICATION_NAME.equals(channelUID.getId())) {
-            }
             if (CHANNEL_APPLICATION_TITLEID.equals(channelUID.getId()) && command instanceof StringType) {
                 if (!currentApplicationId.equals(((StringType) command).toString())) {
                     updateApplicationTitleid(((StringType) command).toString());
