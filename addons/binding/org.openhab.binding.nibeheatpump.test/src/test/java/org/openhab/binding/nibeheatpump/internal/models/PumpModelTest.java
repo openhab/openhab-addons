@@ -33,6 +33,13 @@ public class PumpModelTest {
         assertEquals(PumpModel.F750, pumpModel);
     }
 
+    @Test
+    public void TestF470() {
+        final String pumpModelString = "F470";
+        final PumpModel pumpModel = PumpModel.getPumpModel(pumpModelString);
+        assertEquals(PumpModel.F470, pumpModel);
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void badPumpModelTest() {
         PumpModel.getPumpModel("XXXX");
