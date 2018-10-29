@@ -70,20 +70,26 @@ The channels on the bridge are the ones used to both control the active device a
 
 __Common Channels:__
 
-| Channel Type ID | Item Type | Read/Write | Description                                                                                           |
-|-----------------|-----------|------------|-------------------------------------------------------------------------------------------------------|
-| deviceName      | String    | Read-only  | Name of the currently active Connect Device.                                                          |
-| deviceVolume    | Dimmer    | Read-write | Get or set the active Connect Device volume.                                                          |
-| deviceShuffle   | Switch    | Read-write | Turn on/off shuffle play on the active device.                                                        |
-| trackPlay       | String    | Read-write | Set which music  to play on the active device. This channel accepts Spotify URIs and Hrefs.           |
-| trackPlayer     | Player    | Read-write | The Player Control of the active device. Play/Pause/Next/Previous commands.                           |
-| trackRepeat     | String    | Read-only  | The current device track repeat mode setting.                                                         |
-| trackName       | String    | Read-only  | The name of the currently played track.                                                               |
-| trackDuration   | String    | Read-only  | The duration (m:ss) of the currently played track.                                                    |
-| trackProgress   | String    | Read-only  | The Progress (m:ss) of the currently played track. This is updated as the refreshPeriod of the Bridge.|
-| albumName       | String    | Read-only  | Album Name of the currently played track.                                                             |
-| albumImage      | RawType   | Read-only  | Album Image of the currently played track.                                                            |
-| artistName      | String    | Read-only  | Artist Name of the currently played track.                                                            |
+| Channel Type ID | Item Type | Read/Write | Description                                                                                 |
+|-----------------|-----------|------------|---------------------------------------------------------------------------------------------|
+| deviceName      | Selection | Read-only  | Name of the currently active Connect Device, set the device id to transfer play to that it  |
+| deviceVolume    | Dimmer    | Read-write | Get or set the active Connect Device volume.                                                |
+| deviceShuffle   | Switch    | Read-write | Turn on/off shuffle play on the active device.                                              |
+| trackPlay       | String    | Read-write | Set which music  to play on the active device. This channel accepts Spotify URIs and Hrefs. |
+| trackPlayer     | Player    | Read-write | The Player Control of the active device. Play/Pause/Next/Previous commands.                 |
+| trackRepeat     | String    | Read-only  | The current device track repeat mode setting.                                               |
+| trackName       | String    | Read-only  | The name of the currently played track.                                                     |
+| trackDuration   | String    | Read-only  | The duration (m:ss) of the currently played track.                                          |
+| trackDurationMs | Number    | Read-only  | The duration of the currently played track in milliseconds. This is updated every second.   |
+| trackProgress   | String    | Read-only  | The Progress (m:ss) of the currently played track. This is updated every second.            |
+| trackProgressMs | Number    | Read-only  | The Progress of the currently played track in milliseconds.                                 |
+| playlist        | Selection | Read-only  | This channel will be populated with the users playlists. Set the playlist id to start.      |  
+| albumName       | String    | Read-only  | Album Name of the currently played track.                                                   |
+| albumImage      | RawType   | Read-only  | Album Image of the currently played track.                                                  |
+| artistName      | String    | Read-only  | Artist Name of the currently played track.                                                  |
+
+Note: The `deviceName` and `playlist` channels are Selection channels.
+They will dynamically be populated with the user specific devices and playlists.
 
 __Advanced Channels:__
 
@@ -96,7 +102,7 @@ __Advanced Channels:__
 | trackType       | String    | Read-only  | Type of the currently played track.           |
 | trackNumber     | String    | Read-only  | Number of the track on the album/record.      |
 | trackDiscNumber | String    | Read-only  | Disc Number of the track on the album/record. |
-| trackPopularity | Dimmer    | Read-only  | Currently played track popularity.            |
+| trackPopularity | Number    | Read-only  | Currently played track popularity.            |
 | albumId         | String    | Read-only  | Album Id of the currently played track.       |
 | albumUri        | String    | Read-only  | Album Uri of the currently played track.      |
 | albumHref       | String    | Read-only  | Album Href of the currently played track.     |
@@ -143,12 +149,16 @@ In this example there is a bridge configured with Thing ID __user1__ and illustr
 spotify.things:
 
 ```
-Bridge spotify:player:user1 "Me" [clientId="<your client id>", clientSecret="<your client secret>"] {
+Bridge spotify:player:user1 "Me" [clientId="<your client id>", clientSecret="<your client secret>", refreshToken="<your refresh token>"] {
   Things:
     device device1 "Device 1" [id="<spotify device id>"]
     device device2 "Device 2" [id="<spotify device id>"]
 }
 ```
+
+Note: The `refreshToken` will be automatically set when the authorized.
+Copy this value from the Paper UI configuration in your manual things file to persist the refreshToken.
+Otherwise it will be gone after a restart.
 
 spotify.items:
 
@@ -163,6 +173,7 @@ spotify.sitemap
 sitemap spotify label="Spotify Sitemap" {
 
   Frame label="Spotify Player Info" {
+    Selection item=spotify_player_user1_deviceName label="Active device [%]"
     Player item="spotify_player_user1_trackPlayer
     Text item=spotify_player_user1_deviceShuffle label="Currently Player shuffle mode: [%s]"
     Text item=spotify_player_user1_trackRepeat label="Currently Player repeat mode: [%s]"
@@ -171,10 +182,7 @@ sitemap spotify label="Spotify Sitemap" {
     Text item=spotify_player_user1_trackName label="Currently Played Track Name: [%s]"
     Text item=spotify_player_user1_albumName label="Currently Played Album Name: [%s]"
     Text item=spotify_player_user1_artistName label="Currently Played Artist Name: [%s]"
-    Selection item=spotify_player_user1_trackPlay label="Playlist" icon="music" mappings=[
-      "spotify:user:spotify:playlist:37i9dQZF1DXdd3gw5QVjt9"="Morning Acoustic",
-      "spotify:user:spotify:playlist:37i9dQZEVXcMncpo9bdBsj"="Discover Weekly",
-    ]
+    Selection item=spotify_player_user1_trackPlay label="Playlist" icon="music"
   }
 
   Frame label="My Spotify Device 1" {

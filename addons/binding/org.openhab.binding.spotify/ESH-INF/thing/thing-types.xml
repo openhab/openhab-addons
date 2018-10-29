@@ -255,7 +255,7 @@ bridge you have configured.</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="currentlyPlayedTrackPopularity" advanced="true">
-		<item-type>Dimmer</item-type>
+		<item-type>Number</item-type>
 		<label>Track Popularity</label>
 		<description>Channel reports currently played track popularity</description>
 		<state readOnly="true" />
