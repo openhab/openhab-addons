@@ -39,10 +39,12 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link WebSocketConnection} encapsulate the Web Socket connection to the amazon server
+ * The {@link WebSocketConnection} encapsulate the Web Socket connection to the amazon server.
+ * The code is based on
+ * https://github.com/Apollon77/alexa-remote/blob/master/alexa-wsmqtt.js
  *
+ * @author Michael Geramb - Initial contribution
  * @author Ingo Fischer - (https://github.com/Apollon77/alexa-remote/blob/master/alexa-wsmqtt.js)
- * @author Michael Geramb - Converted to JAVA
  */
 @NonNullByDefault
 public class WebSocketConnection {

@@ -11,6 +11,11 @@ package org.openhab.binding.amazonechocontrol.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPushCommand;
 
+/**
+ * The {@link IWebSocketCommandHandler} is used for the web socket handler implementation
+ *
+ * @author Michael Geramb - Initial contribution
+ */
 @NonNullByDefault
 public interface IWebSocketCommandHandler {
 
