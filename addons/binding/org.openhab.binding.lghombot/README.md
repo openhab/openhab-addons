@@ -22,10 +22,11 @@ The thing only requires an IP-address to function, this should hopefully be foun
 ## Channels
 
 
-| Channel Type ID | Item Type | Description                                                                                                                                                                                                             | Read/Write |
+| Channel Type ID | Item Type | Description                                                                                   | Read/Write |
 |-----------------|-----------|-----------------------------------------------------------------------------------------------|------------|
-| clean           | Switch    | Start cleaning / pause.                                                                       | RW         |
-| home            | Switch    | Send HomBot home / pause.                                                                     | RW         |
+| clean           | Switch    | Start cleaning / return home.                                                                 | RW         |
+| start           | Switch    | Start cleaning.                                                                               | RW         |
+| home            | Switch    | Send HomBot home.                                                                             | RW         |
 | pause           | Switch    | Pause current activity.                                                                       | RW         |
 | state           | String    | Current state of the HomBot.                                                                  | R          |
 | battery         | Number    | Current battery charge.                                                                       | R          |
@@ -35,6 +36,7 @@ The thing only requires an IP-address to function, this should hopefully be foun
 | repeat          | Switch    | Turn repeat cleaning on/off.                                                                  | RW         |
 | nickname        | String    | Nickname of the HomBot.                                                                       | R          |
 | camera          | Image     | Image from the top camera.                                                                    | R          |
+| map             | Image     | Image of clean area.                                                                          | R          |
 
 ## Full Example
 
@@ -46,7 +48,8 @@ demo.items:
 ```
 String HomBot_State "State [%s]" <CleaningRobot> { channel="lghombot:LGHomBot:a4_24_56_8f_2c_5b:state" }
 Number HomBot_Battery "Battery [%d%%]"           { channel="lghombot:LGHomBot:a4_24_56_8f_2c_5b:battery" }
-Switch HomBot_Clean "Clean"                      { channel="lghombot:LGHomBot:a4_24_56_8f_2c_5b:start" }
+Switch HomBot_Clean "Clean"                      { channel="lghombot:LGHomBot:a4_24_56_8f_2c_5b:clean" }
+Switch HomBot_Start "Start"                      { channel="lghombot:LGHomBot:a4_24_56_8f_2c_5b:start" }
 Switch HomBot_Home  "Home"                       { channel="lghombot:LGHomBot:a4_24_56_8f_2c_5b:home" }
 Switch HomBot_Pause "Pause"                      { channel="lghombot:LGHomBot:a4_24_56_8f_2c_5b:pause" }
 Switch HomBot_Turbo "Turbo"                      { channel="lghombot:LGHomBot:a4_24_56_8f_2c_5b:turbo" }
@@ -62,7 +65,7 @@ demo.sitemap:
 sitemap demo label="Main Menu"
 {
     Frame label="HomBot" {
-        Switch item=HomBot_Clean
+        Switch item=HomBot_Start
         Switch item=HomBot_Home
         Switch item=HomBot_Pause
         Text item=HomBot_State

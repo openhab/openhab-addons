@@ -114,8 +114,6 @@ public class LGHomBotHandler extends BaseThingHandler {
                     if (command instanceof OnOffType) {
                         if (((OnOffType) command) == OnOffType.ON) {
                             sendHomBotCommand("CLEAN_START");
-                        } else if (((OnOffType) command) == OnOffType.OFF) {
-                            sendHomBotCommand("PAUSE");
                         }
                     }
                     break;
@@ -123,8 +121,6 @@ public class LGHomBotHandler extends BaseThingHandler {
                     if (command instanceof OnOffType) {
                         if (((OnOffType) command) == OnOffType.ON) {
                             sendHomBotCommand("HOMING");
-                        } else if (((OnOffType) command) == OnOffType.OFF) {
-                            sendHomBotCommand("PAUSE");
                         }
                     }
                     break;
