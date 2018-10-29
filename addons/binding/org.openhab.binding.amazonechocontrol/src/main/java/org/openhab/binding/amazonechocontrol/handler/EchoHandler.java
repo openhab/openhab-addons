@@ -1004,8 +1004,13 @@ public class EchoHandler extends BaseThingHandler {
 
             updateState(CHANNEL_ASCENDING_ALARM,
                     ascendingAlarm != null ? (ascendingAlarm ? OnOffType.ON : OnOffType.OFF) : UnDefType.UNDEF);
-            updateState(CHANNEL_NOTIFICATION_VOLUME,
-                    noticationVolumeLevel != null ? new PercentType(noticationVolumeLevel) : UnDefType.UNDEF);
+
+            if (noticationVolumeLevel != null) {
+                updateState(CHANNEL_NOTIFICATION_VOLUME, new PercentType(noticationVolumeLevel));
+            } else {
+                updateState(CHANNEL_NOTIFICATION_VOLUME, UnDefType.UNDEF);
+            }
+
         } catch (Exception e) {
             disableUpdate = false;
             throw e; // Rethrow same exception

@@ -597,8 +597,9 @@ public class Connection {
                                 HttpCookie httpCookie = new HttpCookie(cookie.Name, cookie.Value);
                                 httpCookie.setPath(cookie.Path);
                                 httpCookie.setDomain(domain);
-                                if (cookie.Secure != null) {
-                                    httpCookie.setSecure(cookie.Secure);
+                                Boolean secure = cookie.Secure;
+                                if (secure != null) {
+                                    httpCookie.setSecure(secure);
                                 }
                                 this.cookieManager.getCookieStore().add(null, httpCookie);
                             }
