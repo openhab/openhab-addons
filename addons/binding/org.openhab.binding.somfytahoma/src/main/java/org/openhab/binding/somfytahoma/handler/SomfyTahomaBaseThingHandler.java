@@ -144,14 +144,16 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler imple
             return null;
         }
 
+        State st = null;
         String stateName = getStateNames().get(channelUID.getId());
         for (SomfyTahomaState state : channelStates) {
             if (state.getName().equals(stateName)) {
                 logger.trace("Parsing state for channel: {} with state name: {}", channel.getUID().getId(), state.getName());
-                return parseTahomaState(channel.getAcceptedItemType(), state);
+                //sometimes more states are sent in one event, so take the last one
+                st = parseTahomaState(channel.getAcceptedItemType(), state);
             }
         }
-        return null;
+        return st;
     }
 
     private void cacheStateType(SomfyTahomaState state) {
