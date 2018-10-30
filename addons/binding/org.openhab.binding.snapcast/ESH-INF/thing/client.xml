@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="snapcast"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Snapcast Client -->
+	<thing-type id="client" listed="false">
+	
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="server" />
+		</supported-bridge-type-refs>
+	
+		<label>Snapcast Client</label>
+
+		<channels>
+			<channel id="name" typeId="clientName" />
+			<channel id="volume" typeId="system.volume" />
+			<channel id="mute" typeId="system.mute" />
+			<channel id="latency" typeId="clientLatency" />
+			<channel id="stream" typeId="streamId" />
+			<channel id="streamStatus" typeId="streamStatus" />
+		</channels>
+
+		<config-description>
+			<parameter name="id" type="text" required="true">
+				<label>Client-ID</label>
+			</parameter>
+		</config-description>
+		
+	</thing-type>
+
+</thing:thing-descriptions>

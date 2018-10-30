@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="snapcast"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="serverStreams">
+		<item-type>String</item-type>
+		<label>Streams</label>
+		<description>List of all available streams</description>
+		<state readOnly="true" />
+	</channel-type>
+	
+	<channel-type id="serverStreamsPlaying">
+		<item-type>String</item-type>
+		<label>Streams Playing</label>
+		<description>List of all playing streams</description>
+		<state readOnly="true" />
+	</channel-type>
+	
+	<channel-type id="serverStreamsIdle">
+		<item-type>String</item-type>
+		<label>Streams Idle</label>
+		<description>List of all idle streams</description>
+		<state readOnly="true" />
+	</channel-type>
+	
+	<channel-type id="clientName">
+		<item-type>String</item-type>
+		<label>Name</label>
+		<state readOnly="false" />
+	</channel-type>
+	
+	<channel-type id="clientLatency">
+		<item-type>Number</item-type>
+		<label>Latency</label>
+		<state min="0" max="1000" step="1" pattern="%d ms" readOnly="false" />
+	</channel-type>
+
+	<channel-type id="streamId">
+		<item-type>String</item-type>
+		<label>Stream</label>
+		<state readOnly="false" />
+	</channel-type>
+	
+	<channel-type id="streamStatus">
+		<item-type>String</item-type>
+		<label>Status</label>
+		<state readOnly="true" />
+	</channel-type>
+
+</thing:thing-descriptions>

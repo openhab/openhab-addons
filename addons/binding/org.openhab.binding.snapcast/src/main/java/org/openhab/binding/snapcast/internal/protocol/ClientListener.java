@@ -1,0 +1,30 @@
+/**
+ * Copyright (c) 2010-2018 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
+package org.openhab.binding.snapcast.internal.protocol;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+/**
+ * @author Steffen Brandemann - Initial contribution
+ */
+@NonNullByDefault
+public interface ClientListener {
+
+    public void updateConnection(String clientId);
+
+    public void updateName(String clientId);
+
+    public void updateVolumn(String clientId);
+
+    public void updateMute(String clientId);
+
+    public void updateLatency(String clientId);
+
+    public void updateGroup(String clientId);
+}
