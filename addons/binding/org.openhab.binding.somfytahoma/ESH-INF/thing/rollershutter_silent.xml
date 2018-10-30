@@ -12,7 +12,7 @@
 			<channel id="control_silent" typeId="control_silent"></channel>
 			<channel id="control" typeId="control"></channel>
 		</channels>
-	<config-description-ref uri="thing-type:somfytahoma:device"/>
+		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>
 
 </thing:thing-descriptions>

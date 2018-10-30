@@ -12,7 +12,7 @@
 			<channel id="control" typeId="control"></channel>
 			<channel id="orientation" typeId="orientation"></channel>
 		</channels>
-	<config-description-ref uri="thing-type:somfytahoma:device"/>
+		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>
 
 </thing:thing-descriptions>
