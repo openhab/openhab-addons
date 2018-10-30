@@ -145,7 +145,7 @@ public abstract class MeterDevice<T> {
                         getDeviceId(), ex);
                 connector.closeConnection();
                 notifyReadingError(ex);
-            }).doOnCancel(connector::closeConnection).doOnComplete(connector::closeConnection).retry()
+            }).doOnCancel(connector::closeConnection).doOnComplete(connector::closeConnection).share().retry()
                     .subscribe((value) -> {
                         Map<String, MeterValue<?>> obisCodes = new HashMap<>(valueCache);
                         clearValueCache();
