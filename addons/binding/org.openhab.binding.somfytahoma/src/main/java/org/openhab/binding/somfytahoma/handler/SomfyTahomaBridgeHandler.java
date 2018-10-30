@@ -355,7 +355,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
     private void getTahomaUpdates() {
         logger.debug("Getting Tahoma Updates...");
-        if (thing.getStatus().equals(ThingStatus.OFFLINE)) {
+        if (ThingStatus.OFFLINE.equals(thing.getStatus())) {
             logger.debug("Doing relogin");
             login();
         }
@@ -405,7 +405,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
     private void updateTahomaStates() {
         logger.debug("Updating Tahoma States...");
-        if (thing.getStatus().equals(ThingStatus.OFFLINE)) {
+        if (ThingStatus.OFFLINE.equals(thing.getStatus())) {
             logger.debug("Doing relogin");
             login();
         }
@@ -677,7 +677,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
     public void executeActionGroup(String id) {
         String execId = executeActionGroupInternal(id);
-        if (execId.equals(UNAUTHORIZED)) {
+        if (UNAUTHORIZED.equals(execId)) {
             executeActionGroupInternal(id);
         }
     }

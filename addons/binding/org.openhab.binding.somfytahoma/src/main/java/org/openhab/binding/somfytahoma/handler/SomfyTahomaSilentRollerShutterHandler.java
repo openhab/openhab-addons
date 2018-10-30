@@ -15,7 +15,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
 
@@ -31,11 +31,7 @@ public class SomfyTahomaSilentRollerShutterHandler extends SomfyTahomaBaseThingH
 
     public SomfyTahomaSilentRollerShutterHandler(Thing thing) {
         super(thing);
-    }
-
-    @Override
-    public Hashtable<String, String> getStateNames() {
-        return new Hashtable<String, String>() {{
+        stateNames = new HashMap<String, String>() {{
             put(CONTROL_SILENT, "core:ClosureState");
             put(CONTROL, "core:ClosureState");
         }};
@@ -44,15 +40,15 @@ public class SomfyTahomaSilentRollerShutterHandler extends SomfyTahomaBaseThingH
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command {} for channel {}", command, channelUID);
-        if (!channelUID.getId().equals(CONTROL) && !channelUID.getId().equals(CONTROL_SILENT)) {
+        if (!CONTROL.equals(channelUID.getId()) && !channelUID.getId().equals(CONTROL_SILENT)) {
             return;
         }
 
-        if (command.equals(RefreshType.REFRESH)) {
+        if (RefreshType.REFRESH.equals(command)) {
             updateChannelState(channelUID);
         } else {
             String cmd = getTahomaCommand(command.toString());
-            if (cmd.equals(COMMAND_MY)) {
+            if (COMMAND_MY.equals(cmd)) {
                 String executionId = getCurrentExecutions();
                 if (executionId != null) {
                     //Check if the roller shutter is moving and MY is sent => STOP it
@@ -61,12 +57,12 @@ public class SomfyTahomaSilentRollerShutterHandler extends SomfyTahomaBaseThingH
                     sendCommand(COMMAND_MY, "[]");
                 }
             } else {
-                if (channelUID.getId().equals(CONTROL_SILENT) && cmd.equals(COMMAND_SET_CLOSURE)) {
+                if (CONTROL_SILENT.equals(channelUID.getId()) && COMMAND_SET_CLOSURE.equals(cmd)) {
                     // move the roller shutter to the specific position at low speed
                     String param = "[" + command.toString() + ", \"lowspeed\"]";
                     sendCommand(COMMAND_SET_CLOSURESPEED, param);
                 } else {
-                    String param = cmd.equals(COMMAND_SET_CLOSURE) ? "[" + command.toString() + "]" : "[]";
+                    String param = COMMAND_SET_CLOSURE.equals(cmd) ? "[" + command.toString() + "]" : "[]";
                     sendCommand(cmd, param);
                 }
             }

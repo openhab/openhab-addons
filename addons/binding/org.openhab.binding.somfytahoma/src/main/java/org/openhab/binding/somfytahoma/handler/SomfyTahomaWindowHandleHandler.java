@@ -15,7 +15,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.HANDLE_STATE;
 
@@ -31,23 +31,19 @@ public class SomfyTahomaWindowHandleHandler extends SomfyTahomaBaseThingHandler 
 
     public SomfyTahomaWindowHandleHandler(Thing thing) {
         super(thing);
-    }
-
-    @Override
-    public Hashtable<String, String> getStateNames() {
-        return new Hashtable<String, String>() {{
-            put(HANDLE_STATE, "core:ThreeWayHandleDirectionState");
-        }};
+        stateNames = new HashMap<String, String>() {{
+                put(HANDLE_STATE, "core:ThreeWayHandleDirectionState");
+            }};
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command {} for channel {}", command, channelUID);
-        if (!channelUID.getId().equals(HANDLE_STATE)) {
+        if (!HANDLE_STATE.equals(channelUID.getId())) {
             return;
         }
 
-        if (command.equals(RefreshType.REFRESH)) {
+        if (RefreshType.REFRESH.equals(command)) {
             updateChannelState(channelUID);
         }
     }
