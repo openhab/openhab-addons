@@ -128,9 +128,9 @@ public class GreenModeHandler extends LutronHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (channelUID.getId().equals(CHANNEL_STEP)) {
-            if (command.equals(OnOffType.ON)) {
+            if (command == OnOffType.ON) {
                 greenMode(ACTION_STEP, 2);
-            } else if (command.equals(OnOffType.OFF)) {
+            } else if (command == OnOffType.OFF) {
                 greenMode(ACTION_STEP, 1);
             } else if (command instanceof Number) {
                 Integer step = new Integer(((Number) command).intValue());
@@ -140,7 +140,7 @@ public class GreenModeHandler extends LutronHandler {
             } else if (command instanceof RefreshType) {
                 queryGreenMode(ACTION_STEP);
             } else {
-                logger.debug("Ignoring invalid command {} for id {}", command.toString(), integrationId);
+                logger.debug("Ignoring invalid command {} for id {}", command, integrationId);
             }
         } else {
             logger.debug("Ignoring command to invalid channel {} for id {}", channelUID.getId(), integrationId);
