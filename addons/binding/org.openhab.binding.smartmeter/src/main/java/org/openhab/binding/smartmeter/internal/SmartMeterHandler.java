@@ -201,8 +201,6 @@ public class SmartMeterHandler extends BaseThingHandler {
                                 updateThing(thingBuilder.build());
                             }
 
-                        } else {
-                            logger.warn("No ChannelType found for OBIS {}", obis);
                         }
 
                         if (!channel.getProperties().containsKey(SmartMeterBindingConstants.CHANNEL_PROPERTY_OBIS)) {
@@ -211,6 +209,8 @@ public class SmartMeterHandler extends BaseThingHandler {
                         updateState(channel.getUID(), state);
 
                         updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                    } else {
+                        logger.warn("No ChannelType found for OBIS {}", obis);
                     }
 
                 }

@@ -92,7 +92,7 @@ public class SmartMeterChannelTypeProvider implements ChannelTypeProvider, Meter
     @Override
     public <Q extends @NonNull Quantity<Q>> void valueChanged(MeterValue<Q> value) {
         if (!obisChannelMap.containsKey(value.getObisCode())) {
-            logger.debug("Creating ChanneType for OBIS {}", value.getObisCode());
+            logger.debug("Creating ChannelType for OBIS {}", value.getObisCode());
             obisChannelMap.put(value.getObisCode(), getChannelType(value.getUnit(), value.getObisCode()));
         }
     }
