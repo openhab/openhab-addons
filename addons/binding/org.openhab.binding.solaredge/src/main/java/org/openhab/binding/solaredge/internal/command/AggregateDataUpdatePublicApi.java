@@ -97,9 +97,7 @@ public class AggregateDataUpdatePublicApi extends AbstractCommandCallback implem
             if (json != null) {
                 logger.debug("JSON String: {}", json);
                 DataResponse jsonObject = gson.fromJson(json, AggregateDataResponsePublicApi.class);
-                if (jsonObject != null) {
-                    handler.updateChannelStatus(jsonObject.getValues());
-                }
+                handler.updateChannelStatus(jsonObject.getValues());
             }
         }
     }

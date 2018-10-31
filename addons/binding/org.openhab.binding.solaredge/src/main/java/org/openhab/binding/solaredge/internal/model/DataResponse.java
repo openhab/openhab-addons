@@ -44,7 +44,7 @@ public interface DataResponse {
             if (unit.equals(UNIT_WH)) {
                 return SmartHomeUnits.WATT_HOUR;
             } else if (unit.toLowerCase().equals(UNIT_KWH.toLowerCase())) {
-                return SmartHomeUnits.KILOWATT_HOUR;
+                return MetricPrefix.KILO(SmartHomeUnits.WATT_HOUR);
             } else if (unit.equals(UNIT_MWH)) {
                 return MetricPrefix.MEGA(SmartHomeUnits.WATT_HOUR);
             }
