@@ -15,7 +15,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 
 /**
  * The {@link SomfyTahomaPodHandler} is responsible for handling commands,
@@ -29,11 +29,7 @@ public class SomfyTahomaPodHandler extends SomfyTahomaBaseThingHandler {
 
     public SomfyTahomaPodHandler(Thing thing) {
         super(thing);
-    }
-
-    @Override
-    public Hashtable<String, String> getStateNames() {
-        return new Hashtable<String, String>() {
+        stateNames = new HashMap<String, String>() {
             {
                 put("cyclic_button_state", "core:CyclicButtonState");
                 put("battery_status_state", "internal:BatteryStatusState");
@@ -45,7 +41,7 @@ public class SomfyTahomaPodHandler extends SomfyTahomaBaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command {} for channel {}", command, channelUID);
-        if (command.equals(RefreshType.REFRESH)) {
+        if (RefreshType.REFRESH.equals(command)) {
             updateChannelState(channelUID);
         }
     }

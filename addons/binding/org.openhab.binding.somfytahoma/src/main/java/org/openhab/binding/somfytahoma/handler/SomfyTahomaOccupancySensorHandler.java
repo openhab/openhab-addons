@@ -8,14 +8,9 @@
  */
 package org.openhab.binding.somfytahoma.handler;
 
-import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.CONTACT;
 
@@ -29,12 +24,9 @@ public class SomfyTahomaOccupancySensorHandler extends SomfyTahomaContactSensorH
 
     public SomfyTahomaOccupancySensorHandler(Thing thing) {
         super(thing);
-    }
-
-    @Override
-    public Hashtable<String, String> getStateNames() {
-        return new Hashtable<String, String>() {{
+        stateNames = new HashMap<String, String>() {{
             put(CONTACT, "core:OccupancyState");
         }};
     }
+
 }

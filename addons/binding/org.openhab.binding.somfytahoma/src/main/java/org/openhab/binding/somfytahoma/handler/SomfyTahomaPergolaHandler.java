@@ -9,7 +9,8 @@
 package org.openhab.binding.somfytahoma.handler;
 
 import org.eclipse.smarthome.core.thing.Thing;
-import java.util.Hashtable;
+
+import java.util.HashMap;
 
 import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
 
@@ -23,11 +24,7 @@ public class SomfyTahomaPergolaHandler extends SomfyTahomaAwningHandler {
 
     public SomfyTahomaPergolaHandler(Thing thing) {
         super(thing);
-    }
-
-    @Override
-    public Hashtable<String, String> getStateNames() {
-        return new Hashtable<String, String>() {{
+        stateNames = new HashMap<String, String>() {{
             put(CONTROL, "core:TargetClosureState");
         }};
     }

@@ -15,7 +15,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
 
@@ -31,11 +31,7 @@ public class SomfyTahomaVenetianBlindHandler extends SomfyTahomaBaseThingHandler
 
     public SomfyTahomaVenetianBlindHandler(Thing thing) {
         super(thing);
-    }
-
-    @Override
-    public Hashtable<String, String> getStateNames() {
-        return new Hashtable<String, String>() {{
+        stateNames = new HashMap<String, String>() {{
             put(CONTROL, "core:ClosureState");
             put(ORIENTATION, "core:SlateOrientationState");
         }};
@@ -44,24 +40,24 @@ public class SomfyTahomaVenetianBlindHandler extends SomfyTahomaBaseThingHandler
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command {} for channel {}", command, channelUID);
-        if (!channelUID.getId().equals(CONTROL) && !channelUID.getId().equals(ORIENTATION)) {
+        if (!CONTROL.equals(channelUID.getId()) && !ORIENTATION.equals(channelUID.getId())) {
             return;
         }
 
-        if (command.equals(RefreshType.REFRESH)) {
+        if (RefreshType.REFRESH.equals(command)) {
             updateChannelState(channelUID);
         } else {
             String cmd = getTahomaCommand(command.toString(), channelUID.getId());
-            //Check if the rollershutter is not moving
-            String executionId = getCurrentExecutions();
-            if (executionId != null) {
-                //STOP command should be interpreted if rollershutter moving
-                //otherwise do nothing
-                if (cmd.equals(COMMAND_MY)) {
+            if (COMMAND_MY.equals(cmd)) {
+                String executionId = getCurrentExecutions();
+                if (executionId != null) {
+                    //Check if the venetian blind is moving and MY is sent => STOP it
                     cancelExecution(executionId);
+                } else {
+                    sendCommand(COMMAND_MY, "[]");
                 }
             } else {
-                String param = (cmd.equals(COMMAND_SET_CLOSURE) || cmd.equals(COMMAND_SET_ORIENTATION)) ? "[" + command.toString() + "]" : "[]";
+                String param = (COMMAND_SET_CLOSURE.equals(cmd) || COMMAND_SET_ORIENTATION.equals(cmd)) ? "[" + command.toString() + "]" : "[]";
                 sendCommand(cmd, param);
             }
         }
@@ -79,7 +75,7 @@ public class SomfyTahomaVenetianBlindHandler extends SomfyTahomaBaseThingHandler
             case "STOP":
                 return COMMAND_MY;
             default:
-                if (channelId.equals(CONTROL)) {
+                if (CONTROL.equals(channelId)) {
                     return COMMAND_SET_CLOSURE;
                 } else {
                     return COMMAND_SET_ORIENTATION;

@@ -14,7 +14,7 @@
 			<channel id="target_temperature" typeId="target_temperature"></channel>
 			<channel id="battery_level" typeId="system.battery-level"></channel>
 		</channels>
-	<config-description-ref uri="thing-type:somfytahoma:device"/>
+		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>
 
 </thing:thing-descriptions>

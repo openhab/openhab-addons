@@ -17,7 +17,7 @@ import org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.SWITCH;
 
@@ -33,11 +33,7 @@ public class SomfyTahomaOnOffHandler extends SomfyTahomaBaseThingHandler {
 
     public SomfyTahomaOnOffHandler(Thing thing) {
         super(thing);
-    }
-
-    @Override
-    public Hashtable<String, String> getStateNames() {
-        return new Hashtable<String, String>() {{
+        stateNames = new HashMap<String, String>() {{
             put(SWITCH, "core:OnOffState");
         }};
     }
@@ -45,10 +41,10 @@ public class SomfyTahomaOnOffHandler extends SomfyTahomaBaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command {} for channel {}", command, channelUID);
-        if (channelUID.getId().equals(SomfyTahomaBindingConstants.SWITCH) && command instanceof OnOffType) {
+        if (SomfyTahomaBindingConstants.SWITCH.equals(channelUID.getId()) && command instanceof OnOffType) {
             sendCommand(command.toString().toLowerCase(), "[]");
         }
-        if (command.equals(RefreshType.REFRESH)) {
+        if (RefreshType.REFRESH.equals(command)) {
             updateChannelState(channelUID);
         }
     }

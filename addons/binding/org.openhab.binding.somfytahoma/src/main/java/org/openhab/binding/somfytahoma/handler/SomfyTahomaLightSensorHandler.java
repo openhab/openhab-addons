@@ -15,7 +15,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.LUMINANCE;
 
@@ -31,11 +31,7 @@ public class SomfyTahomaLightSensorHandler extends SomfyTahomaBaseThingHandler {
 
     public SomfyTahomaLightSensorHandler(Thing thing) {
         super(thing);
-    }
-
-    @Override
-    public Hashtable<String, String> getStateNames() {
-        return new Hashtable<String, String>() {{
+        stateNames = new HashMap<String, String>() {{
             put(LUMINANCE, "core:LuminanceState");
         }};
     }
@@ -43,11 +39,11 @@ public class SomfyTahomaLightSensorHandler extends SomfyTahomaBaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command {} for channel {}", command, channelUID);
-        if (!channelUID.getId().equals(LUMINANCE)) {
+        if (!LUMINANCE.equals(channelUID.getId())) {
             return;
         }
 
-        if (command.equals(RefreshType.REFRESH)) {
+        if (RefreshType.REFRESH.equals(command)) {
             updateChannelState(channelUID);
         }
     }

@@ -3,14 +3,13 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="rollershutter_silent">
+	<thing-type id="windowhandle">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
-		<label>Somfy Silent Roller Shutter</label>
+		<label>Somfy Window Handle</label>
 		<channels>
-			<channel id="control_silent" typeId="control_silent"></channel>
-			<channel id="control" typeId="control"></channel>
+			<channel id="handle_state" typeId="handle_state"></channel>
 		</channels>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>

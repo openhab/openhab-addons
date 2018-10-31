@@ -159,4 +159,10 @@
 		<description>A lock having ON/OFF state (unlocked/locked)</description>
 	</channel-type>
 
+	<channel-type id="handle_state">
+		<item-type>String</item-type>
+		<label>Handle State</label>
+		<description>A state of the Somfy Window Handle</description>
+		<state readOnly="true"/>
+	</channel-type>
 </thing:thing-descriptions>
