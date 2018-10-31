@@ -64,6 +64,13 @@ public class SolarEdgeBindingConstants {
     // constants
     public static final String BEGIN_OF_DAY_TIME = "00:00:00";
     public static final String END_OF_DAY_TIME = "23:59:59";
+    public static final long MINUTES_PER_DAY = 1440;
+
+    // web request constants
+    public static final long WEB_REQUEST_PUBLIC_API_DAY_LIMIT = 300;
+    public static final long WEB_REQUEST_INITIAL_DELAY = 30000;
+    public static final long WEB_REQUEST_INTERVAL = 5000;
+    public static final int WEB_REQUEST_QUEUE_MAX_SIZE = 20;
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_GENERIC);
 

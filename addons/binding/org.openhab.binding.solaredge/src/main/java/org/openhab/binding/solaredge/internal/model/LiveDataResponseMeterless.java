@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
  */
 public class LiveDataResponseMeterless implements DataResponse {
     private static final Logger logger = LoggerFactory.getLogger(LiveDataResponseMeterless.class);
-    private static final Double ZERO_POWER = 0.0;
 
     public static class Power {
         public Double power;

@@ -45,22 +45,20 @@ public class SolarEdgeLiveDataPolling implements Runnable {
      */
     @Override
     public void run() {
-        if (handler.getWebInterface() != null) {
-            logger.debug("polling SolarEdge live data {}", handler.getConfiguration());
+        logger.debug("polling SolarEdge live data {}", handler.getConfiguration());
 
-            SolarEdgeCommand ldu;
+        SolarEdgeCommand ldu;
 
-            if (handler.getConfiguration().isUsePrivateApi()) {
-                ldu = new LiveDataUpdatePrivateApi(handler);
+        if (handler.getConfiguration().isUsePrivateApi()) {
+            ldu = new LiveDataUpdatePrivateApi(handler);
+        } else {
+            if (handler.getConfiguration().isMeterInstalled()) {
+                ldu = new LiveDataUpdatePublicApi(handler);
             } else {
-                if (handler.getConfiguration().isMeterInstalled()) {
-                    ldu = new LiveDataUpdatePublicApi(handler);
-                } else {
-                    ldu = new LiveDataUpdateMeterless(handler);
-                }
+                ldu = new LiveDataUpdateMeterless(handler);
             }
-
-            handler.getWebInterface().enqueueCommand(ldu);
         }
+
+        handler.getWebInterface().enqueueCommand(ldu);
     }
 }
