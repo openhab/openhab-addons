@@ -67,9 +67,7 @@ public class LiveDataUpdateMeterless extends AbstractCommandCallback implements 
             if (json != null) {
                 logger.debug("JSON String: {}", json);
                 DataResponse jsonObject = gson.fromJson(json, LiveDataResponseMeterless.class);
-                if (jsonObject != null) {
-                    handler.updateChannelStatus(jsonObject.getValues());
-                }
+                handler.updateChannelStatus(jsonObject.getValues());
             }
         }
     }

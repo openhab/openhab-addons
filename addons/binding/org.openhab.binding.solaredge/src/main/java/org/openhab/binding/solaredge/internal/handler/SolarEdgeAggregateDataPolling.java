@@ -48,28 +48,26 @@ public class SolarEdgeAggregateDataPolling implements Runnable {
      */
     @Override
     public void run() {
-        if (handler.getWebInterface() != null) {
-            // if no meter is present all data will be fetched by the 'LiveDataUpdateMeterless'
-            if (handler.getConfiguration().isMeterInstalled()) {
-                logger.debug("polling SolarEdge aggregate data {}", handler.getConfiguration());
+        // if no meter is present all data will be fetched by the 'LiveDataUpdateMeterless'
+        if (handler.getConfiguration().isMeterInstalled()) {
+            logger.debug("polling SolarEdge aggregate data {}", handler.getConfiguration());
 
-                List<SolarEdgeCommand> commands = new ArrayList<>();
+            List<SolarEdgeCommand> commands = new ArrayList<>();
 
-                if (handler.getConfiguration().isUsePrivateApi()) {
-                    commands.add(new AggregateDataUpdatePrivateApi(handler, AggregatePeriod.DAY));
-                    commands.add(new AggregateDataUpdatePrivateApi(handler, AggregatePeriod.WEEK));
-                    commands.add(new AggregateDataUpdatePrivateApi(handler, AggregatePeriod.MONTH));
-                    commands.add(new AggregateDataUpdatePrivateApi(handler, AggregatePeriod.YEAR));
-                } else {
-                    commands.add(new AggregateDataUpdatePublicApi(handler, AggregatePeriod.DAY));
-                    commands.add(new AggregateDataUpdatePublicApi(handler, AggregatePeriod.WEEK));
-                    commands.add(new AggregateDataUpdatePublicApi(handler, AggregatePeriod.MONTH));
-                    commands.add(new AggregateDataUpdatePublicApi(handler, AggregatePeriod.YEAR));
-                }
+            if (handler.getConfiguration().isUsePrivateApi()) {
+                commands.add(new AggregateDataUpdatePrivateApi(handler, AggregatePeriod.DAY));
+                commands.add(new AggregateDataUpdatePrivateApi(handler, AggregatePeriod.WEEK));
+                commands.add(new AggregateDataUpdatePrivateApi(handler, AggregatePeriod.MONTH));
+                commands.add(new AggregateDataUpdatePrivateApi(handler, AggregatePeriod.YEAR));
+            } else {
+                commands.add(new AggregateDataUpdatePublicApi(handler, AggregatePeriod.DAY));
+                commands.add(new AggregateDataUpdatePublicApi(handler, AggregatePeriod.WEEK));
+                commands.add(new AggregateDataUpdatePublicApi(handler, AggregatePeriod.MONTH));
+                commands.add(new AggregateDataUpdatePublicApi(handler, AggregatePeriod.YEAR));
+            }
 
-                for (SolarEdgeCommand command : commands) {
-                    handler.getWebInterface().enqueueCommand(command);
-                }
+            for (SolarEdgeCommand command : commands) {
+                handler.getWebInterface().enqueueCommand(command);
             }
         }
     }
