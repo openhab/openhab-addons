@@ -38,12 +38,21 @@ public class LutronBindingConstants {
     public static final ThingTypeUID THING_TYPE_CCO = new ThingTypeUID(BINDING_ID, "cco");
     public static final ThingTypeUID THING_TYPE_CCO_PULSED = new ThingTypeUID(BINDING_ID, "ccopulsed");
     public static final ThingTypeUID THING_TYPE_CCO_MAINTAINED = new ThingTypeUID(BINDING_ID, "ccomaintained");
+    public static final ThingTypeUID THING_TYPE_TIMECLOCK = new ThingTypeUID(BINDING_ID, "timeclock");
+    public static final ThingTypeUID THING_TYPE_GREENMODE = new ThingTypeUID(BINDING_ID, "greenmode");
 
     // List of all Channel ids
     public static final String CHANNEL_LIGHTLEVEL = "lightlevel";
     public static final String CHANNEL_SHADELEVEL = "shadelevel";
     public static final String CHANNEL_SWITCH = "switchstatus";
     public static final String CHANNEL_OCCUPANCYSTATUS = "occupancystatus";
+    public static final String CHANNEL_CLOCKMODE = "clockmode";
+    public static final String CHANNEL_SUNRISE = "sunrise";
+    public static final String CHANNEL_SUNSET = "sunset";
+    public static final String CHANNEL_EXECEVENT = "execevent";
+    public static final String CHANNEL_ENABLEEVENT = "enableevent";
+    public static final String CHANNEL_DISABLEEVENT = "disableevent";
+    public static final String CHANNEL_STEP = "step";
 
     // Bridge config properties (used by discovery service)
     public static final String HOST = "ipAddress";
@@ -59,4 +68,7 @@ public class LutronBindingConstants {
     public static final String OUTPUT_TYPE_PULSED = "Pulsed";
     public static final String OUTPUT_TYPE_MAINTAINED = "Maintained";
     public static final String DEFAULT_PULSE = "pulseLength";
+
+    // GreenMode config properties
+    public static final String POLL_INTERVAL = "pollInterval";
 }

@@ -22,5 +22,5 @@ public enum LutronCommandType {
     MONITORING,
     OUTPUT,
     SYSTEM,
-    TIMECLOCK
+    TIMECLOCK,
 }

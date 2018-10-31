@@ -16,11 +16,14 @@ import java.util.List;
  * that system.
  *
  * @author Allan Tong - Initial contribution
+ * @author Bob Adair - Added Timeclock and Green Mode support
  */
 public class Project {
     private String appVersion;
     private String xmlVersion;
     private List<Area> areas;
+    private List<Timeclock> timeclocks;
+    private List<GreenMode> greenmodes;
 
     public String getAppVersion() {
         return appVersion;
@@ -33,4 +36,13 @@ public class Project {
     public List<Area> getAreas() {
         return areas != null ? areas : Collections.<Area> emptyList();
     }
+
+    public List<Timeclock> getTimeclocks() {
+        return timeclocks != null ? timeclocks : Collections.<Timeclock> emptyList();
+    }
+
+    public List<GreenMode> getGreenModes() {
+        return greenmodes != null ? greenmodes : Collections.<GreenMode> emptyList();
+    }
+
 }

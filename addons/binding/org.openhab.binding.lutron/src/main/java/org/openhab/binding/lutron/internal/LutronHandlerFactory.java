@@ -22,6 +22,7 @@ import org.openhab.binding.lutron.internal.grxprg.PrgBridgeHandler;
 import org.openhab.binding.lutron.internal.grxprg.PrgConstants;
 import org.openhab.binding.lutron.internal.handler.CcoHandler;
 import org.openhab.binding.lutron.internal.handler.DimmerHandler;
+import org.openhab.binding.lutron.internal.handler.GreenModeHandler;
 import org.openhab.binding.lutron.internal.handler.IPBridgeHandler;
 import org.openhab.binding.lutron.internal.handler.KeypadHandler;
 import org.openhab.binding.lutron.internal.handler.MaintainedCcoHandler;
@@ -31,6 +32,7 @@ import org.openhab.binding.lutron.internal.handler.PulsedCcoHandler;
 import org.openhab.binding.lutron.internal.handler.ShadeHandler;
 import org.openhab.binding.lutron.internal.handler.SwitchHandler;
 import org.openhab.binding.lutron.internal.handler.TabletopKeypadHandler;
+import org.openhab.binding.lutron.internal.handler.TimeclockHandler;
 import org.openhab.binding.lutron.internal.handler.VcrxHandler;
 import org.openhab.binding.lutron.internal.handler.VirtualKeypadHandler;
 import org.openhab.binding.lutron.internal.hw.HwConstants;
@@ -54,7 +56,7 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
     public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPES_UIDS = ImmutableSet.of(THING_TYPE_DIMMER,
             THING_TYPE_SWITCH, THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_KEYPAD, THING_TYPE_TTKEYPAD, THING_TYPE_PICO,
             THING_TYPE_VIRTUALKEYPAD, THING_TYPE_VCRX, THING_TYPE_CCO_PULSED, THING_TYPE_CCO_MAINTAINED,
-            THING_TYPE_SHADE);
+            THING_TYPE_SHADE, THING_TYPE_TIMECLOCK, THING_TYPE_GREENMODE);
 
     // Used by the HwDiscoveryService
     public static final Set<ThingTypeUID> HW_DISCOVERABLE_DEVICE_TYPES_UIDS = ImmutableSet
@@ -103,6 +105,10 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
             return new VirtualKeypadHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_VCRX)) {
             return new VcrxHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_TIMECLOCK)) {
+            return new TimeclockHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_GREENMODE)) {
+            return new GreenModeHandler(thing);
         } else if (thingTypeUID.equals(PrgConstants.THING_TYPE_PRGBRIDGE)) {
             return new PrgBridgeHandler((Bridge) thing);
         } else if (thingTypeUID.equals(PrgConstants.THING_TYPE_GRAFIKEYE)) {
