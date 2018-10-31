@@ -26,7 +26,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.openhab.binding.nibeuplink.config.NibeUplinkConfiguration;
 import org.openhab.binding.nibeuplink.handler.NibeUplinkHandler;
-import org.openhab.binding.nibeuplink.internal.AtomicReferenceUtils;
+import org.openhab.binding.nibeuplink.internal.AtomicReferenceTrait;
 import org.openhab.binding.nibeuplink.internal.command.Login;
 import org.openhab.binding.nibeuplink.internal.command.NibeUplinkCommand;
 import org.slf4j.Logger;
@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class UplinkWebInterface implements AtomicReferenceUtils {
+public class UplinkWebInterface implements AtomicReferenceTrait {
 
     private final Logger logger = LoggerFactory.getLogger(UplinkWebInterface.class);
 
