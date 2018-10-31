@@ -44,6 +44,12 @@ public abstract class LutronHandler extends BaseThingHandler {
      */
     protected abstract void initDeviceState();
 
+    /**
+     * Called when changing thing status to offline. Subclasses may override to take any needed actions.
+     */
+    protected void thingOfflineNotify() {
+    }
+
     protected IPBridgeHandler getBridgeHandler() {
         Bridge bridge = getBridge();
 
@@ -61,6 +67,7 @@ public abstract class LutronHandler extends BaseThingHandler {
 
         } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            thingOfflineNotify();
         }
     }
 
@@ -69,6 +76,7 @@ public abstract class LutronHandler extends BaseThingHandler {
 
         if (bridgeHandler == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR, "No bridge associated");
+            thingOfflineNotify();
         } else {
             bridgeHandler.sendCommand(command);
         }
@@ -84,6 +92,15 @@ public abstract class LutronHandler extends BaseThingHandler {
                 new LutronCommand(LutronOperation.EXECUTE, LutronCommandType.DEVICE, getIntegrationId(), parameters));
     }
 
+    protected void timeclock(Object... parameters) {
+        sendCommand(new LutronCommand(LutronOperation.EXECUTE, LutronCommandType.TIMECLOCK, getIntegrationId(),
+                parameters));
+    }
+
+    protected void greenMode(Object... parameters) {
+        sendCommand(new LutronCommand(LutronOperation.EXECUTE, LutronCommandType.MODE, getIntegrationId(), parameters));
+    }
+
     protected void queryOutput(Object... parameters) {
         sendCommand(new LutronCommand(LutronOperation.QUERY, LutronCommandType.OUTPUT, getIntegrationId(), parameters));
     }
@@ -91,4 +108,14 @@ public abstract class LutronHandler extends BaseThingHandler {
     protected void queryDevice(Object... parameters) {
         sendCommand(new LutronCommand(LutronOperation.QUERY, LutronCommandType.DEVICE, getIntegrationId(), parameters));
     }
+
+    protected void queryTimeclock(Object... parameters) {
+        sendCommand(
+                new LutronCommand(LutronOperation.QUERY, LutronCommandType.TIMECLOCK, getIntegrationId(), parameters));
+    }
+
+    protected void queryGreenMode(Object... parameters) {
+        sendCommand(new LutronCommand(LutronOperation.QUERY, LutronCommandType.MODE, getIntegrationId(), parameters));
+    }
+
 }
