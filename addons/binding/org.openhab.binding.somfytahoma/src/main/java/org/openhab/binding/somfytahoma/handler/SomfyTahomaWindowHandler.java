@@ -34,11 +34,11 @@ public class SomfyTahomaWindowHandler extends SomfyTahomaRollerShutterHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command {} for channel {}", command, channelUID);
-        if (!channelUID.getId().equals(CONTROL)) {
+        if (!CONTROL.equals(channelUID.getId())) {
             return;
         }
 
-        if (command.equals(RefreshType.REFRESH)) {
+        if (RefreshType.REFRESH.equals(command)) {
             updateChannelState(channelUID);
         } else {
             String cmd = getTahomaCommand(command.toString());
@@ -47,12 +47,12 @@ public class SomfyTahomaWindowHandler extends SomfyTahomaRollerShutterHandler {
             if (executionId != null) {
                 //STOP command should be interpreted if rollershutter is moving
                 //otherwise do nothing
-                if (cmd.equals(COMMAND_STOP)) {
+                if (COMMAND_STOP.equals(cmd)) {
                     cancelExecution(executionId);
                 }
             } else {
                 if (!cmd.equals(COMMAND_STOP)) {
-                    String param = cmd.equals(COMMAND_SET_CLOSURE) ? "[" + command.toString() + "]" : "[]";
+                    String param = COMMAND_SET_CLOSURE.equals(cmd) ? "[" + command.toString() + "]" : "[]";
                     sendCommand(cmd, param);
                 }
             }

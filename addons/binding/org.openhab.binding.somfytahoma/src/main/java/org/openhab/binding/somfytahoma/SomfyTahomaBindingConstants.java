@@ -94,6 +94,9 @@ public class SomfyTahomaBindingConstants {
     // Pergola
     public static final ThingTypeUID THING_TYPE_PERGOLA = new ThingTypeUID(BINDING_ID, "pergola");
 
+    // Window handle
+    public static final ThingTypeUID THING_TYPE_WINDOW_HANDLE = new ThingTypeUID(BINDING_ID, "windowhandle");
+
     // List of all Channel ids
     // Gateway
     public static final String STATUS = "status";
@@ -137,61 +140,64 @@ public class SomfyTahomaBindingConstants {
     public static final String BATTERY_LEVEL = "battery_level";
     public static final String TARGET_HEATING_LEVEL = "target_heating_level";
 
-
+    // Window handle
+    public static final String HANDLE_STATE = "handle_state";
 
     //Constants
-    final private static String API_URL = "https://www.tahomalink.com/enduser-mobile-web/";
-    final public static String TAHOMA_URL = API_URL + "externalAPI/json/";
-    final public static String TAHOMA_EVENT_URL = API_URL + "enduserAPI/events/";
-    final public static String SETUP_URL = API_URL + "enduserAPI/setup/gateways/";
-    final public static String EXEC_URL = API_URL + "enduserAPI/exec/";
-    final public static String DELETE_URL = EXEC_URL + "current/setup/";
-    final public static String TAHOMA_AGENT = "TaHoma/3640 CFNetwork/711.1.16 Darwin/14.0.0";
-    final public static String UNAUTHORIZED = "Not logged in";
-    final public static int TYPE_PERCENT = 1;
-    final public static int TYPE_DECIMAL = 2;
-    final public static int TYPE_STRING = 3;
-    final public static String COMMAND_MY = "my";
-    final public static String COMMAND_SET_CLOSURE = "setClosure";
-    final public static String COMMAND_SET_DEPLOYMENT = "setDeployment";
-    final public static String COMMAND_SET_ORIENTATION = "setOrientation";
-    final public static String COMMAND_SET_CLOSURESPEED = "setClosureAndLinearSpeed";
-    final public static String COMMAND_SET_HEATINGLEVEL = "setHeatingLevel";
-    final public static String COMMAND_REFRESH_HEATINGLEVEL = "refreshHeatingLevel";
-    final public static String COMMAND_UP = "up";
-    final public static String COMMAND_DOWN = "down";
-    final public static String COMMAND_OPEN = "open";
-    final public static String COMMAND_CLOSE = "close";
-    final public static String COMMAND_STOP = "stop";
-    final public static String COMMAND_OFF = "off";
-    final public static String STATUS_STATE = "core:StatusState";
-    final public static String UNAVAILABLE = "unavailable";
-    final public static String AUTHENTICATION_CHALLENGE = "HTTP protocol violation: Authentication challenge without WWW-Authenticate header";
+    private static final String API_URL = "https://www.tahomalink.com/enduser-mobile-web/";
+    public static final String TAHOMA_URL = API_URL + "externalAPI/json/";
+    public static final String TAHOMA_EVENT_URL = API_URL + "enduserAPI/events/";
+    public static final String SETUP_URL = API_URL + "enduserAPI/setup/gateways/";
+    public static final String REFRESH_URL = API_URL + "enduserAPI/setup/devices/states/refresh";
+    public static final String EXEC_URL = API_URL + "enduserAPI/exec/";
+    public static final String DELETE_URL = EXEC_URL + "current/setup/";
+    public static final String TAHOMA_AGENT = "TaHoma/3640 CFNetwork/711.1.16 Darwin/14.0.0";
+    public static final String UNAUTHORIZED = "Not logged in";
+    public static final int TYPE_PERCENT = 1;
+    public static final int TYPE_DECIMAL = 2;
+    public static final int TYPE_STRING = 3;
+    public static final String COMMAND_MY = "my";
+    public static final String COMMAND_SET_CLOSURE = "setClosure";
+    public static final String COMMAND_SET_DEPLOYMENT = "setDeployment";
+    public static final String COMMAND_SET_ORIENTATION = "setOrientation";
+    public static final String COMMAND_SET_CLOSURESPEED = "setClosureAndLinearSpeed";
+    public static final String COMMAND_SET_HEATINGLEVEL = "setHeatingLevel";
+    public static final String COMMAND_REFRESH_HEATINGLEVEL = "refreshHeatingLevel";
+    public static final String COMMAND_UP = "up";
+    public static final String COMMAND_DOWN = "down";
+    public static final String COMMAND_OPEN = "open";
+    public static final String COMMAND_CLOSE = "close";
+    public static final String COMMAND_STOP = "stop";
+    public static final String COMMAND_OFF = "off";
+    public static final String STATUS_STATE = "core:StatusState";
+    public static final String UNAVAILABLE = "unavailable";
+    public static final String AUTHENTICATION_CHALLENGE = "HTTP protocol violation: Authentication challenge without WWW-Authenticate header";
 
     // supported uiClasses
-    final public static String ROLLERSHUTTER = "RollerShutter";
-    final public static String SCREEN = "Screen";
-    final public static String VENETIANBLIND = "VenetianBlind";
-    final public static String EXTERIORSCREEN = "ExteriorScreen";
-    final public static String EXTERIORVENETIANBLIND = "ExteriorVenetianBlind";
-    final public static String GARAGEDOOR = "GarageDoor";
-    final public static String AWNING = "Awning";
-    final public static String ONOFF = "OnOff";
-    final public static String LIGHT = "Light";
-    final public static String LIGHTSENSOR = "LightSensor";
-    final public static String SMOKESENSOR = "SmokeSensor";
-    final public static String CONTACTSENSOR = "ContactSensor";
-    final public static String OCCUPANCYSENSOR = "OccupancySensor";
-    final public static String WINDOW = "Window";
-    final public static String ALARM = "Alarm";
-    final public static String POD = "Pod";
-    final public static String HEATINGSYSTEM = "HeatingSystem";
-    final public static String DOORLOCK = "DoorLock";
-    final public static String PERGOLA = "Pergola";
+    public static final String ROLLERSHUTTER = "RollerShutter";
+    public static final String SCREEN = "Screen";
+    public static final String VENETIANBLIND = "VenetianBlind";
+    public static final String EXTERIORSCREEN = "ExteriorScreen";
+    public static final String EXTERIORVENETIANBLIND = "ExteriorVenetianBlind";
+    public static final String GARAGEDOOR = "GarageDoor";
+    public static final String AWNING = "Awning";
+    public static final String ONOFF = "OnOff";
+    public static final String LIGHT = "Light";
+    public static final String LIGHTSENSOR = "LightSensor";
+    public static final String SMOKESENSOR = "SmokeSensor";
+    public static final String CONTACTSENSOR = "ContactSensor";
+    public static final String OCCUPANCYSENSOR = "OccupancySensor";
+    public static final String WINDOW = "Window";
+    public static final String ALARM = "Alarm";
+    public static final String POD = "Pod";
+    public static final String HEATINGSYSTEM = "HeatingSystem";
+    public static final String DOORLOCK = "DoorLock";
+    public static final String PERGOLA = "Pergola";
+    public static final String WINDOWHANDLE = "WindowHandle";
 
     // unsupported uiClasses
-    final public static String PROTOCOLGATEWAY = "ProtocolGateway";
+    public static final String PROTOCOLGATEWAY = "ProtocolGateway";
 
     // cache timeout
-    final public static int CACHE_EXPIRY = 10000;
+    public static final int CACHE_EXPIRY = 10000;
 }

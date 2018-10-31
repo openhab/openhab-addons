@@ -15,7 +15,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
 
@@ -31,11 +31,7 @@ public class SomfyTahomaHeatingSystemHandler extends SomfyTahomaBaseThingHandler
 
     public SomfyTahomaHeatingSystemHandler(Thing thing) {
         super(thing);
-    }
-
-    @Override
-    public Hashtable<String, String> getStateNames() {
-        return new Hashtable<String, String>() {
+        stateNames = new HashMap<String, String>() {
             {
                 put(TARGET_TEMPERATURE, "core:TargetTemperatureState");
                 put(CURRENT_TEMPERATURE, "zwave:SetPointHeatingValueState");
@@ -48,10 +44,10 @@ public class SomfyTahomaHeatingSystemHandler extends SomfyTahomaBaseThingHandler
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command {} for channel {}", command, channelUID);
-        if (command.equals(RefreshType.REFRESH)) {
+        if (RefreshType.REFRESH.equals(command)) {
             updateChannelState(channelUID);
         } else {
-            if (channelUID.getId().equals(TARGET_TEMPERATURE)) {
+            if (TARGET_TEMPERATURE.equals(channelUID.getId())) {
                 String param = "[" + command.toString() + "]";
                 sendCommand("setTargetTemperature", param);
             }

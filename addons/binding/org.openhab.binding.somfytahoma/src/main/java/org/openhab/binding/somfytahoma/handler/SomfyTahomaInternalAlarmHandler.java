@@ -16,7 +16,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
 
@@ -32,11 +32,7 @@ public class SomfyTahomaInternalAlarmHandler extends SomfyTahomaBaseThingHandler
 
     public SomfyTahomaInternalAlarmHandler(Thing thing) {
         super(thing);
-    }
-
-    @Override
-    public Hashtable<String, String> getStateNames() {
-        return new Hashtable<String, String>() {
+        stateNames = new HashMap<String, String>() {
             {
                 put(ALARM_STATE, "internal:CurrentAlarmModeState");
                 put(TARGET_ALARM_STATE, "internal:TargetAlarmModeState");
@@ -48,13 +44,13 @@ public class SomfyTahomaInternalAlarmHandler extends SomfyTahomaBaseThingHandler
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command {} for channel {}", command, channelUID);
-        if (channelUID.getId().equals(ALARM_COMMAND) && command instanceof StringType) {
+        if (ALARM_COMMAND.equals(channelUID.getId()) && command instanceof StringType) {
             sendCommand(command.toString(), "[]");
         }
-        if (channelUID.getId().equals(INTRUSION_CONTROL) && command instanceof StringType) {
+        if (INTRUSION_CONTROL.equals(channelUID.getId()) && command instanceof StringType) {
             sendCommand("setIntrusionDetected", "[\"" + command.toString() + "\"]");
         }
-        if (command.equals(RefreshType.REFRESH)) {
+        if (RefreshType.REFRESH.equals(command)) {
             updateChannelState(channelUID);
         }
     }

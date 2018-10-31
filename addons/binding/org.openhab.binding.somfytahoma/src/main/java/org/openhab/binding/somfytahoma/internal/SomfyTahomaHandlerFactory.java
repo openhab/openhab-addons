@@ -25,26 +25,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.somfytahoma.handler.SomfyTahomaActionGroupHandler;
-import org.openhab.binding.somfytahoma.handler.SomfyTahomaAwningHandler;
-import org.openhab.binding.somfytahoma.handler.SomfyTahomaBridgeHandler;
-import org.openhab.binding.somfytahoma.handler.SomfyTahomaContactSensorHandler;
-import org.openhab.binding.somfytahoma.handler.SomfyTahomaDoorLockHandler;
-import org.openhab.binding.somfytahoma.handler.SomfyTahomaExternalAlarmHandler;
-import org.openhab.binding.somfytahoma.handler.SomfyTahomaGatewayHandler;
-import org.openhab.binding.somfytahoma.handler.SomfyTahomaHeatingSystemHandler;
-import org.openhab.binding.somfytahoma.handler.SomfyTahomaInternalAlarmHandler;
-import org.openhab.binding.somfytahoma.handler.SomfyTahomaLightSensorHandler;
-import org.openhab.binding.somfytahoma.handler.SomfyTahomaOccupancySensorHandler;
-import org.openhab.binding.somfytahoma.handler.SomfyTahomaOnOffHandler;
-import org.openhab.binding.somfytahoma.handler.SomfyTahomaOnOffHeatingSystemHandler;
-import org.openhab.binding.somfytahoma.handler.SomfyTahomaPergolaHandler;
-import org.openhab.binding.somfytahoma.handler.SomfyTahomaPodHandler;
-import org.openhab.binding.somfytahoma.handler.SomfyTahomaRollerShutterHandler;
-import org.openhab.binding.somfytahoma.handler.SomfyTahomaSilentRollerShutterHandler;
-import org.openhab.binding.somfytahoma.handler.SomfyTahomaSmokeSensorHandler;
-import org.openhab.binding.somfytahoma.handler.SomfyTahomaVenetianBlindHandler;
-import org.openhab.binding.somfytahoma.handler.SomfyTahomaWindowHandler;
+import org.openhab.binding.somfytahoma.handler.*;
 import org.openhab.binding.somfytahoma.internal.discovery.SomfyTahomaItemDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
@@ -67,7 +48,7 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             THING_TYPE_GARAGEDOOR, THING_TYPE_AWNING, THING_TYPE_ACTIONGROUP, THING_TYPE_ONOFF, THING_TYPE_LIGHT,
             THING_TYPE_LIGHTSENSOR, THING_TYPE_SMOKESENSOR, THING_TYPE_CONTACTSENSOR, THING_TYPE_OCCUPANCYSENSOR,
             THING_TYPE_WINDOW, THING_TYPE_INTERNAL_ALARM, THING_TYPE_EXTERNAL_ALARM, THING_TYPE_POD,
-            THING_TYPE_HEATING_SYSTEM, THING_TYPE_ONOFF_HEATING_SYSTEM, THING_TYPE_DOOR_LOCK, THING_TYPE_PERGOLA));
+            THING_TYPE_HEATING_SYSTEM, THING_TYPE_ONOFF_HEATING_SYSTEM, THING_TYPE_DOOR_LOCK, THING_TYPE_PERGOLA, THING_TYPE_WINDOW_HANDLE));
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
@@ -152,6 +133,9 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
         }
         if (thingTypeUID.equals(THING_TYPE_PERGOLA)) {
             return new SomfyTahomaPergolaHandler(thing);
+        }
+        if (thingTypeUID.equals(THING_TYPE_WINDOW_HANDLE)) {
+            return new SomfyTahomaWindowHandleHandler(thing);
         }
         return null;
     }

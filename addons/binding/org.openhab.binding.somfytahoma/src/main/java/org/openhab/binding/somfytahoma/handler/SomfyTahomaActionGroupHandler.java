@@ -16,8 +16,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Hashtable;
-
 import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.EXECUTE_ACTION;
 
 /**
@@ -35,11 +33,6 @@ public class SomfyTahomaActionGroupHandler extends SomfyTahomaBaseThingHandler {
     }
 
     @Override
-    public Hashtable<String, String> getStateNames() {
-        return null;
-    }
-
-    @Override
     public void initialize() {
         updateStatus(ThingStatus.ONLINE);
     }
@@ -52,8 +45,8 @@ public class SomfyTahomaActionGroupHandler extends SomfyTahomaBaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Action group: {} received command: {}", channelUID.getId(),command.toString());
-        if (channelUID.getId().equals(EXECUTE_ACTION) && command instanceof OnOffType) {
-            if (command.equals(OnOffType.ON)) {
+        if (EXECUTE_ACTION.equals(channelUID.getId()) && command instanceof OnOffType) {
+            if (OnOffType.ON.equals(command)) {
                 executeActionGroup();
             }
         }
