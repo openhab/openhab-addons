@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link SmartMeterHandlerFactory} is responsible for creating things and thing
@@ -35,9 +36,20 @@ public class SmartMeterHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SMLREADER);
 
+    private @NonNullByDefault({}) SmartMeterChannelTypeProvider channelProvider;
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+    }
+
+    @Reference
+    protected void setSmartMeterChannelProvider(SmartMeterChannelTypeProvider provider) {
+        this.channelProvider = provider;
+    }
+
+    protected void unsetSmartMeterChannelProvider(SmartMeterChannelTypeProvider provider) {
+        this.channelProvider = null;
     }
 
     @Override
@@ -46,7 +58,7 @@ public class SmartMeterHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_SMLREADER)) {
-            return new SmartMeterHandler(thing);
+            return new SmartMeterHandler(thing, channelProvider);
         }
 
         return null;

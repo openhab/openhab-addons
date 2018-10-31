@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
@@ -48,9 +49,6 @@ import org.openhab.binding.smartmeter.SmartMeterBindingConstants;
 import org.openhab.binding.smartmeter.SmartMeterConfiguration;
 import org.openhab.binding.smartmeter.internal.conformity.Conformity;
 import org.openhab.binding.smartmeter.internal.helper.Baudrate;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,8 +72,10 @@ public class SmartMeterHandler extends BaseThingHandler {
     private MeterValueListener valueChangeListener;
     private SmartMeterChannelTypeProvider channelTypeProvider;
 
-    public SmartMeterHandler(Thing thing) {
+    public SmartMeterHandler(Thing thing, SmartMeterChannelTypeProvider channelProvider) {
         super(thing);
+        Objects.requireNonNull(channelProvider, "SmartMeterChannelTypeProvider must not be null");
+        this.channelTypeProvider = channelProvider;
     }
 
     @Override
@@ -111,12 +111,6 @@ public class SmartMeterHandler extends BaseThingHandler {
                     pullSequence, baudrate, config.baudrateChangeDelay);
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.HANDLER_CONFIGURATION_PENDING,
                     "Waiting for messages from device");
-
-            BundleContext bundleContext = FrameworkUtil.getBundle(getClass()).getBundleContext();
-
-            ServiceReference<@NonNull SmartMeterChannelTypeProvider> channelTypeProviderService = bundleContext
-                    .getServiceReference(SmartMeterChannelTypeProvider.class);
-            channelTypeProvider = bundleContext.getService(channelTypeProviderService);
 
             smlDevice.addValueChangeListener(channelTypeProvider);
 
