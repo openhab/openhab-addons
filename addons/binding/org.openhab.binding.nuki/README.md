@@ -20,7 +20,7 @@ You can configure the Nuki Binding either by using Paper UI or manually through 
 
 ### Nuki Bridge Callback
 
-The Nuki Binding will manage the required callback from the Nuki Bridge to the openHAB server if *manageCallbacks* is set to `true`.  
+The Nuki Binding will manage the required callback from the Nuki Bridge to the openHAB server if *manageCallbacks* is set to `true`. If *manageCallbacks* is not set it will default to `true`.  
 
 If you want to manage the callbacks from the Nuki Bridge to the openHAB server by yourself, you need to set *manageCallbacks* to `false`. Then add the callback on the Nuki Bridge via Bridge API Endpoint */callback/add* in the format `http://<openHAB_IP>:<openHAB_PORT>/nuki/<Nuki-ID>`. Look the Nuki-ID up on the sticker on the back of the Nuki Bridge (unplug from power connector).  
 The Sheet [NukiBridgeAPI](https://docs.google.com/spreadsheets/d/1SGKWhqwqRyOGbv4NEq-8PAPjBORRixvEjRuzO-nVabQ) is a helpfull tool for listing, adding and removing callbacks.
@@ -38,7 +38,7 @@ The following configuration options are available:
 | ip              | The IP address of the Nuki Bridge. Look it up on your router. It is recommended to set a static IP address lease for the Nuki Bridge (and for your openHAB server too) on your router.             | Required     |
 | port            | The Port which you configured during [Initial Bridge setup](https://nuki.io/en/support/bridge/bridge-setup/initial-bridge-setup/).                                                                 | Default 8080 |
 | apiToken        | The API Token which you configured during [Initial Bridge setup](https://nuki.io/en/support/bridge/bridge-setup/initial-bridge-setup/).                                                            | Required     |
-| manageCallbacks | Let the Nuki Binding manage the callbacks on the Nuki Bridge. It will add the required callback on the Nuki Bridge. If there are already 3 callbacks, it **will delete** the callback with ID `0`. | Required     |
+| manageCallbacks | Let the Nuki Binding manage the callbacks on the Nuki Bridge. It will add the required callback on the Nuki Bridge. If there are already 3 callbacks, it **will delete** the callback with ID `0`. | Default true |
 
 
 
