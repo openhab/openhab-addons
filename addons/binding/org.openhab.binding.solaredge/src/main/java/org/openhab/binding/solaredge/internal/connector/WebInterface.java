@@ -24,7 +24,7 @@ import org.eclipse.jetty.http.HttpStatus.Code;
 import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.openhab.binding.solaredge.internal.AtomicReferenceUtils;
+import org.openhab.binding.solaredge.internal.AtomicReferenceTrait;
 import org.openhab.binding.solaredge.internal.command.PrivateApiTokenCheck;
 import org.openhab.binding.solaredge.internal.command.PublicApiKeyCheck;
 import org.openhab.binding.solaredge.internal.command.SolarEdgeCommand;
@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class WebInterface implements AtomicReferenceUtils {
+public class WebInterface implements AtomicReferenceTrait {
 
     private final Logger logger = LoggerFactory.getLogger(WebInterface.class);
 

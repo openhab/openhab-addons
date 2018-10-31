@@ -25,7 +25,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.solaredge.internal.config.SolarEdgeConfiguration;
-import org.openhab.binding.solaredge.internal.AtomicReferenceUtils;
+import org.openhab.binding.solaredge.internal.AtomicReferenceTrait;
 import org.openhab.binding.solaredge.internal.connector.WebInterface;
 import org.openhab.binding.solaredge.internal.model.Channel;
 import org.slf4j.Logger;
@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements SolarEdgeHandler, AtomicReferenceUtils {
+public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements SolarEdgeHandler, AtomicReferenceTrait {
     private final Logger logger = LoggerFactory.getLogger(SolarEdgeBaseHandler.class);
 
     private final long LIVE_POLLING_INITIAL_DELAY = 1;
