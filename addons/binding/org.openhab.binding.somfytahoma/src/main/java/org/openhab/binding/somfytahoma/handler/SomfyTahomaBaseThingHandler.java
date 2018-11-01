@@ -19,7 +19,6 @@ import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +34,6 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SomfyTahomaBaseThingHandler.class);
     private HashMap<String, Integer> typeTable = new HashMap<>();
-    protected LocalTime lastUpdated = LocalTime.MIN;
     protected HashMap<String, String> stateNames = null;
 
     //cache
@@ -259,10 +257,14 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     }
 
     public void updateChannelState(ChannelUID channelUID) {
-        if (getStateNames() != null && isStatusExpired()) {
+        if (getStateNames() != null) {
             String stateName = getStateNames().get(channelUID.getId());
             Channel channel = getChannelByChannelUID(channelUID);
             if (channel == null) {
+                return;
+            }
+            if (stateName == null) {
+                logger.debug("Cannot find corresponding state name for channel: {}!", channelUID.getId());
                 return;
             }
             SomfyTahomaState tahomaState = getCachedThingState(stateName);
@@ -276,12 +278,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
             }
 
             updateState(channelUID, state);
-            lastUpdated = LocalTime.now();
         }
-    }
-
-    protected boolean isStatusExpired() {
-        return LocalTime.now().minusSeconds(getBridgeHandler().thingConfig.getStatusTimeout()).isAfter(lastUpdated);
     }
 
     private Channel getChannelByChannelUID(ChannelUID channelUID) {
@@ -300,7 +297,6 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
                 if (channelState != null) {
                     logger.trace("Updating channel: {} with state: {}", channel.getUID(), channelState.toString());
                     updateState(channel.getUID(), channelState);
-                    lastUpdated = LocalTime.now();
                 } else {
                     logger.debug("Cannot find state for channel {}", channel.getUID());
                 }
