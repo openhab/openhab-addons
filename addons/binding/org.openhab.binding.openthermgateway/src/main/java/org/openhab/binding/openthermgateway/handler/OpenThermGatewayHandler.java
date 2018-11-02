@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -77,7 +78,13 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
                 String channel = channelUID.getId();
                 String code = getGatewayCodeFromChannel(channel);
 
-                GatewayCommand gatewayCommand = GatewayCommand.parse(code, command.toFullString());
+                GatewayCommand gatewayCommand;
+                if (command instanceof QuantityType) {
+                    gatewayCommand = GatewayCommand.parse(code,
+                            Double.toString(((QuantityType) command).doubleValue()));
+                } else {
+                    gatewayCommand = GatewayCommand.parse(code, command.toFullString());
+                }
 
                 if (gatewayCommand != null && checkConnection()) {
                     connector.sendCommand(gatewayCommand);
