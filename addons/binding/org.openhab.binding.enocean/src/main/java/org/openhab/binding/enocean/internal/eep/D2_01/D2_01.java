@@ -12,7 +12,9 @@ import static org.openhab.binding.enocean.EnOceanBindingConstants.*;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.types.Command;
@@ -43,6 +45,10 @@ public abstract class D2_01 extends _VLDMessage {
     protected final byte ChannelA_Mask = 0x00;
     protected final byte ChannelB_Mask = 0x01;
 
+    protected final byte STATUS_SWITCHING_ON = 0x01;
+    protected final byte STATUS_SWITCHING_OFF = 0x00;
+    protected final byte STATUS_DIMMING_100 = 0x64;
+
     public D2_01() {
         super();
     }
@@ -57,9 +63,9 @@ public abstract class D2_01 extends _VLDMessage {
 
     protected void setSwitchingData(OnOffType command, byte outputChannel) {
         if (command == OnOffType.ON) {
-            setData(CMD_ACTUATOR_SET_STATUS, outputChannel, (byte) 0x01);
+            setData(CMD_ACTUATOR_SET_STATUS, outputChannel, STATUS_SWITCHING_ON);
         } else {
-            setData(CMD_ACTUATOR_SET_STATUS, outputChannel, (byte) 0x00);
+            setData(CMD_ACTUATOR_SET_STATUS, outputChannel, STATUS_SWITCHING_OFF);
         }
     }
 
@@ -69,7 +75,7 @@ public abstract class D2_01 extends _VLDMessage {
 
     protected State getSwitchingData() {
         if (getCMD() == CMD_ACTUATOR_STATUS_RESPONE) {
-            return (bytes[bytes.length - 1] & outputValueMask) > 0 ? OnOffType.ON : OnOffType.OFF;
+            return (bytes[bytes.length - 1] & outputValueMask) == STATUS_SWITCHING_ON ? OnOffType.OFF : OnOffType.ON;
         }
 
         return UnDefType.UNDEF;
@@ -81,7 +87,31 @@ public abstract class D2_01 extends _VLDMessage {
 
     protected State getSwitchingData(byte channel) {
         if (getCMD() == CMD_ACTUATOR_STATUS_RESPONE && (getChannel() == channel || getChannel() == AllChannels_Mask)) {
-            return (bytes[bytes.length - 1] & outputValueMask) > 0 ? OnOffType.ON : OnOffType.OFF;
+            return (bytes[bytes.length - 1] & outputValueMask) == STATUS_SWITCHING_OFF ? OnOffType.OFF : OnOffType.ON;
+        }
+
+        return UnDefType.UNDEF;
+    }
+
+    protected void setDimmingData(Command command, byte outputChannel) {
+        if (command instanceof DecimalType) {
+            if (((DecimalType) command).equals(DecimalType.ZERO)) {
+                setData(CMD_ACTUATOR_SET_STATUS, outputChannel, STATUS_SWITCHING_OFF);
+            } else {
+                setData(CMD_ACTUATOR_SET_STATUS, outputChannel, ((DecimalType) command).byteValue());
+            }
+        } else if ((OnOffType) command == OnOffType.ON) {
+            setData(CMD_ACTUATOR_SET_STATUS, outputChannel, STATUS_DIMMING_100);
+        } else {
+            setData(CMD_ACTUATOR_SET_STATUS, outputChannel, STATUS_SWITCHING_OFF);
+        }
+
+        setData(CMD_ACTUATOR_SET_STATUS, outputChannel);
+    }
+
+    protected State getDimmingData() {
+        if (getCMD() == CMD_ACTUATOR_STATUS_RESPONE) {
+            return new PercentType((bytes[bytes.length - 1] & outputValueMask));
         }
 
         return UnDefType.UNDEF;
@@ -175,6 +205,12 @@ public abstract class D2_01 extends _VLDMessage {
             } else {
                 setSwitchingData((OnOffType) command, ChannelB_Mask);
             }
+        } else if (channelId.equals(CHANNEL_DIMMER)) {
+            if (command == RefreshType.REFRESH) {
+                setSwitchingQueryData(AllChannels_Mask);
+            } else {
+                setDimmingData(command, AllChannels_Mask);
+            }
         } else if (channelId.equals(CHANNEL_INSTANTPOWER) && command == RefreshType.REFRESH) {
             setPowerMeasurementQueryData(AllChannels_Mask);
         } else if (channelId.equals(CHANNEL_TOTALUSAGE) && command == RefreshType.REFRESH) {
@@ -192,6 +228,8 @@ public abstract class D2_01 extends _VLDMessage {
                 return getSwitchingData(ChannelA_Mask);
             case CHANNEL_GENERAL_SWITCHINGB:
                 return getSwitchingData(ChannelB_Mask);
+            case CHANNEL_DIMMER:
+                return getDimmingData();
             case CHANNEL_INSTANTPOWER:
                 return getPowerMeasurementData();
             case CHANNEL_TOTALUSAGE:

@@ -89,11 +89,25 @@ import org.openhab.binding.enocean.internal.eep.A5_38.A5_38_08_Switching;
 import org.openhab.binding.enocean.internal.eep.A5_3F.A5_3F_7F_EltakoFSB;
 import org.openhab.binding.enocean.internal.eep.Base.PTM200Message;
 import org.openhab.binding.enocean.internal.eep.Base.UTEResponse;
+import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_00;
+import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_01;
+import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_02;
+import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_03;
+import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_04;
+import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_05;
+import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_06;
+import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_07;
+import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_08;
 import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_09;
 import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_09_Permundo;
 import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_0A;
+import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_0B;
+import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_0C;
+import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_0D;
+import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_0E;
 import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_0F;
 import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_0F_NodON;
+import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_11;
 import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_12;
 import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_12_NodON;
 import org.openhab.binding.enocean.internal.eep.D2_05.D2_05_00;
@@ -321,17 +335,48 @@ public enum EEPType {
                 }
             }),
 
+    SwitchWithEnergyMeasurment_00(RORG.VLD, 0x01, 0x00, true, D2_01_00.class, THING_TYPE_MEASUREMENTSWITCH,
+            CHANNEL_GENERAL_SWITCHING, CHANNEL_TOTALUSAGE, CHANNEL_RECEIVINGSTATE),
+    SwitchWithEnergyMeasurment_01(RORG.VLD, 0x01, 0x01, true, D2_01_01.class, THING_TYPE_MEASUREMENTSWITCH,
+            CHANNEL_GENERAL_SWITCHING, CHANNEL_RECEIVINGSTATE),
+    SwitchWithEnergyMeasurment_02(RORG.VLD, 0x01, 0x02, true, D2_01_02.class, THING_TYPE_MEASUREMENTSWITCH,
+            CHANNEL_GENERAL_SWITCHING, CHANNEL_DIMMER, CHANNEL_TOTALUSAGE, CHANNEL_RECEIVINGSTATE),
+    SwitchWithEnergyMeasurment_03(RORG.VLD, 0x01, 0x03, true, D2_01_03.class, THING_TYPE_MEASUREMENTSWITCH,
+            CHANNEL_GENERAL_SWITCHING, CHANNEL_DIMMER, CHANNEL_RECEIVINGSTATE),
+    SwitchWithEnergyMeasurment_04(RORG.VLD, 0x01, 0x04, true, D2_01_04.class, THING_TYPE_MEASUREMENTSWITCH,
+            CHANNEL_GENERAL_SWITCHING, CHANNEL_DIMMER, CHANNEL_TOTALUSAGE, CHANNEL_INSTANTPOWER,
+            CHANNEL_RECEIVINGSTATE),
+    SwitchWithEnergyMeasurment_05(RORG.VLD, 0x01, 0x05, true, D2_01_05.class, THING_TYPE_MEASUREMENTSWITCH,
+            CHANNEL_GENERAL_SWITCHING, CHANNEL_DIMMER, CHANNEL_TOTALUSAGE, CHANNEL_INSTANTPOWER,
+            CHANNEL_RECEIVINGSTATE),
+    SwitchWithEnergyMeasurment_06(RORG.VLD, 0x01, 0x06, true, D2_01_06.class, THING_TYPE_MEASUREMENTSWITCH,
+            CHANNEL_GENERAL_SWITCHING, CHANNEL_TOTALUSAGE, CHANNEL_RECEIVINGSTATE),
+    SwitchWithEnergyMeasurment_07(RORG.VLD, 0x01, 0x07, true, D2_01_07.class, THING_TYPE_MEASUREMENTSWITCH,
+            CHANNEL_GENERAL_SWITCHING, CHANNEL_RECEIVINGSTATE),
+    SwitchWithEnergyMeasurment_08(RORG.VLD, 0x01, 0x08, true, D2_01_08.class, THING_TYPE_MEASUREMENTSWITCH,
+            CHANNEL_GENERAL_SWITCHING, CHANNEL_DIMMER, CHANNEL_TOTALUSAGE, CHANNEL_INSTANTPOWER,
+            CHANNEL_RECEIVINGSTATE),
     SwitchWithEnergyMeasurment_09(RORG.VLD, 0x01, 0x09, true, D2_01_09.class, THING_TYPE_MEASUREMENTSWITCH,
             CHANNEL_GENERAL_SWITCHING, CHANNEL_TOTALUSAGE, CHANNEL_INSTANTPOWER, CHANNEL_RECEIVINGSTATE),
-    SwitchWithEnergyMeasurment_12_PERMUNDO(RORG.VLD, 0x01, 0x09, true, "PERMUNDO", PermundoId, D2_01_09_Permundo.class,
+    SwitchWithEnergyMeasurment_09_PERMUNDO(RORG.VLD, 0x01, 0x09, true, "PERMUNDO", PermundoId, D2_01_09_Permundo.class,
             THING_TYPE_MEASUREMENTSWITCH, CHANNEL_GENERAL_SWITCHING, CHANNEL_TOTALUSAGE, CHANNEL_INSTANTPOWER,
             CHANNEL_ECOMODE, CHANNEL_REPEATERMODE, CHANNEL_RECEIVINGSTATE),
     SwitchWithEnergyMeasurment_0A(RORG.VLD, 0x01, 0x0A, true, D2_01_0A.class, THING_TYPE_MEASUREMENTSWITCH,
             CHANNEL_GENERAL_SWITCHING, CHANNEL_RECEIVINGSTATE),
+    SwitchWithEnergyMeasurment_0B(RORG.VLD, 0x01, 0x0B, true, D2_01_0B.class, THING_TYPE_MEASUREMENTSWITCH,
+            CHANNEL_GENERAL_SWITCHING, CHANNEL_TOTALUSAGE, CHANNEL_INSTANTPOWER, CHANNEL_RECEIVINGSTATE),
+    SwitchWithEnergyMeasurment_0C(RORG.VLD, 0x01, 0x0C, true, D2_01_0C.class, THING_TYPE_MEASUREMENTSWITCH,
+            CHANNEL_GENERAL_SWITCHING, CHANNEL_TOTALUSAGE, CHANNEL_INSTANTPOWER, CHANNEL_RECEIVINGSTATE),
+    SwitchWithEnergyMeasurment_0D(RORG.VLD, 0x01, 0x0D, true, D2_01_0D.class, THING_TYPE_MEASUREMENTSWITCH,
+            CHANNEL_GENERAL_SWITCHING, CHANNEL_RECEIVINGSTATE),
+    SwitchWithEnergyMeasurment_0E(RORG.VLD, 0x01, 0x0E, true, D2_01_0E.class, THING_TYPE_MEASUREMENTSWITCH,
+            CHANNEL_GENERAL_SWITCHING, CHANNEL_TOTALUSAGE, CHANNEL_INSTANTPOWER, CHANNEL_RECEIVINGSTATE),
     SwitchWithEnergyMeasurment_0F_NODON(RORG.VLD, 0x01, 0x0F, true, "NODON", NodONId, D2_01_0F_NodON.class,
             THING_TYPE_MEASUREMENTSWITCH, CHANNEL_GENERAL_SWITCHING, CHANNEL_REPEATERMODE, CHANNEL_RECEIVINGSTATE),
     SwitchWithEnergyMeasurment_0F(RORG.VLD, 0x01, 0x0F, true, D2_01_0F.class, THING_TYPE_MEASUREMENTSWITCH,
             CHANNEL_GENERAL_SWITCHING, CHANNEL_RECEIVINGSTATE),
+    SwitchWithEnergyMeasurment_11(RORG.VLD, 0x01, 0x11, true, D2_01_11.class, THING_TYPE_MEASUREMENTSWITCH,
+            CHANNEL_GENERAL_SWITCHINGA, CHANNEL_GENERAL_SWITCHINGB, CHANNEL_RECEIVINGSTATE),
     SwitchWithEnergyMeasurment_12_NODON(RORG.VLD, 0x01, 0x12, true, "NODON", NodONId, D2_01_12_NodON.class,
             THING_TYPE_MEASUREMENTSWITCH, CHANNEL_GENERAL_SWITCHINGA, CHANNEL_GENERAL_SWITCHINGB, CHANNEL_REPEATERMODE,
             CHANNEL_RECEIVINGSTATE),
