@@ -22,4 +22,6 @@ public class OpenThermGatewayConfiguration {
     public String ipaddress;
 
     public int port;
+
+    public int connectionRetryInterval;
 }

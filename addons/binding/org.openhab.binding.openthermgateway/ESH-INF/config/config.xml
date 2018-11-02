@@ -9,35 +9,23 @@
             <description>Connection settings.</description>
         </parameter-group>
 
-        <!-- 
-        <parameter-group name="otgw">
-            <label>OpenTherm Gateway</label>
-            <description>OpenTherm Gateway settings.</description>
-        </parameter-group>
-        -->
-        
         <parameter name="ipaddress" type="text" required="true" groupName="connection">
 		    <label>Hostname or IP address</label>
 		    <description>The hostname or IP address to connect to the OpenTherm Gateway.</description>
+		    <context>network-address</context>
 		</parameter>
 		
-		<parameter name="port" type="integer" required="true" groupName="connection">
+		<parameter name="port" type="integer" required="true" groupName="connection" min="0" max="65535">
 		    <label>Port</label>
 		    <description>The port used to connect to the OpenTherm Gateway.</description>
 		</parameter>				
 		
-        <!-- 
-        <parameter name="setpointcommand" type="text" required="true" groupName="otgw">
-            <label>Setpoint command</label>
-            <description>The command used to override the room temperature setpoint.</description>
-            <default>TT</default>
-            <options>
-                <option value="TT">Temperature Temporary (TT)</option>
-                <option value="TC">Temperature Constant (TC)</option>
-            </options>
-        </parameter>
-        -->
-        		 
+        <parameter name="connectionRetryInterval" type="integer" required="true" groupName="connection" min="1" unit="s">
+            <label>Connection Retry Interval</label>
+            <description>The interval in seconds to retry connecting.</description>
+            <default>60</default>
+        </parameter>                
+        
     </config-description>
 
 </config-description:config-descriptions>

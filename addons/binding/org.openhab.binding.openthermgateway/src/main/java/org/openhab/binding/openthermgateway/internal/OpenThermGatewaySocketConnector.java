@@ -1,15 +1,36 @@
+/**
+ * Copyright (c) 2010-2018 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.openthermgateway.internal;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.AbstractMap;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.openthermgateway.handler.TypeConverter;
 
+/**
+ * The {@link OpenThermGatewaySocketConnector} is responsible for handling the socket connection
+ *
+ * @author Arjen Korevaar - Initial contribution
+ * @author Arjan Mels - Improved robustness by re-sending commands, handling all message types (not only Boiler)
+ */
 public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnector {
+    private static final int COMMAND_RESPONSE_TIME = 100;
+    private static final int COMMAND_TIMEOUT = 5000;
     private OpenThermGatewayCallback callback;
     private String ipaddress;
     private int port;
@@ -31,6 +52,10 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
     @Override
     public synchronized void stop() {
         callback.log(LogLevel.Debug, "Stopping OpenThermGatewaySocketConnector");
+        try {
+            socket.close();
+        } catch (IOException ignore) {
+        }
         stopping = true;
     }
 
@@ -40,12 +65,14 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
         connected = false;
 
         try {
-            callback.log(LogLevel.Debug,
+            callback.log(LogLevel.Info,
                     String.format("Connecting OpenThermGatewaySocketConnector to %s:%s", this.ipaddress, this.port));
 
             callback.connecting();
 
-            socket = new Socket(this.ipaddress, this.port);
+            socket = new Socket();
+            socket.connect(new InetSocketAddress(this.ipaddress, this.port), COMMAND_TIMEOUT);
+            socket.setSoTimeout(COMMAND_TIMEOUT);
             writer = new PrintWriter(socket.getOutputStream(), true);
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
@@ -62,12 +89,16 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
             while (!stopping && !Thread.currentThread().isInterrupted()) {
                 String message = reader.readLine();
                 handleMessage(message);
+                if (message == null) {
+                    callback.log(LogLevel.Info, "Connection closed by OpenTherm Gateway");
+                    break;
+                }
             }
 
             callback.log(LogLevel.Debug, "Stopping OpenThermGatewaySocketConnector");
 
         } catch (Exception e) {
-            callback.log(LogLevel.Error, "An error occured in OpenThermGatewaySocketConnector", e);
+            callback.log(LogLevel.Error, "An error occured in OpenThermGatewaySocketConnector: %s", e.getMessage());
         } finally {
 
             if (writer != null) {
@@ -99,9 +130,14 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
         return connected;
     }
 
+    Map<String, Entry<Long, GatewayCommand>> pendingCommands = new HashMap<>();
+
     @Override
     public void sendCommand(GatewayCommand command) {
         String msg = command.toFullString();
+
+        pendingCommands.put(command.getCode(),
+                new AbstractMap.SimpleImmutableEntry<>(System.currentTimeMillis(), command));
 
         if (connected) {
             callback.log(LogLevel.Debug, "Sending message: %s", msg);
@@ -115,6 +151,24 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
     private void handleMessage(String message) {
         if (message == null) {
             return;
+        }
+
+        if (message.length() > 2 && message.charAt(2) == ':') {
+            String code = message.substring(0, 2);
+            String value = message.substring(3);
+            callback.log(LogLevel.Debug, String.format("Received command confirmation: %s: %s", code, value));
+            pendingCommands.remove(code);
+            return;
+        }
+
+        for (Entry<Long, GatewayCommand> timeAndCommand : pendingCommands.values()) {
+            if (System.currentTimeMillis() > timeAndCommand.getKey() + COMMAND_RESPONSE_TIME) {
+                callback.log(LogLevel.Debug,
+                        String.format("Resending command: %s", timeAndCommand.getValue().toFullString()));
+                sendCommand(timeAndCommand.getValue());
+            } else if (System.currentTimeMillis() > timeAndCommand.getKey() + COMMAND_TIMEOUT) {
+                pendingCommands.remove(timeAndCommand.getValue().getCode());
+            }
         }
 
         Message msg = Message.parse(message);
