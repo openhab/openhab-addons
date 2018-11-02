@@ -76,7 +76,7 @@ public class EnOceanSerialTransceiver extends EnOceanTransceiver implements Seri
 
             SerialPortIdentifier id = serialPortManager.getIdentifier(path);
             if (id == null) {
-                throw new IOException("Could not find a gateway on given path");
+                throw new IOException("Could not find a gateway on given path '" + path + "', " + serialPortManager.getIdentifiers().count() + " ports available.");
             }
 
             serialPort = id.open(EnOceanBindingConstants.BINDING_ID, 1000);
