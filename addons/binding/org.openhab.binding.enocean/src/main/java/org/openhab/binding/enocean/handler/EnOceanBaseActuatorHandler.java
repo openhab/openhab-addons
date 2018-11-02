@@ -93,7 +93,7 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
 
             try {
                 sendingEEPType = EEPType.getType(getConfiguration().sendingEEPId);
-                updateChannels(sendingEEPType, true);
+                updateChannels(sendingEEPType, false);
 
                 if (sendingEEPType.getSupportsRefresh()) {
                     if (getConfiguration().pollingInterval > 0) {

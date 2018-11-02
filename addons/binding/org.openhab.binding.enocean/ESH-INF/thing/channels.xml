@@ -274,5 +274,12 @@
 		<label>Cubic metre</label>
 		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
+	
+	<channel-type id="counter">
+        <item-type>Number</item-type>
+        <label>Counter</label>
+        <description>Counter</description>
+        <state readOnly="true" />
+    </channel-type>
 
 </thing:thing-descriptions>

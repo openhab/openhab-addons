@@ -83,6 +83,7 @@ import org.openhab.binding.enocean.internal.eep.A5_10.A5_10_21;
 import org.openhab.binding.enocean.internal.eep.A5_10.A5_10_22;
 import org.openhab.binding.enocean.internal.eep.A5_10.A5_10_23;
 import org.openhab.binding.enocean.internal.eep.A5_11.A5_11_03;
+import org.openhab.binding.enocean.internal.eep.A5_11.A5_11_04;
 import org.openhab.binding.enocean.internal.eep.A5_12.A5_12_01;
 import org.openhab.binding.enocean.internal.eep.A5_12.A5_12_02;
 import org.openhab.binding.enocean.internal.eep.A5_12.A5_12_03;
@@ -314,6 +315,11 @@ public enum EEPType {
     AutomatedMeterReading_03(RORG._4BS, 0x12, 0x03, false, A5_12_03.class, THING_TYPE_AUTOMATEDMETERSENSOR,
             CHANNEL_TOTALCUBICMETRE, CHANNEL_INSTANTLITRE, CHANNEL_RECEIVINGSTATE),
 
+    Rollershutter_A5(RORG._4BS, 0x11, 0x03, false, A5_11_03.class, THING_TYPE_ROLLERSHUTTER, CHANNEL_ROLLERSHUTTER,
+            CHANNEL_ANGLE, CHANNEL_RECEIVINGSTATE),
+    ExtendedLight_A5(RORG._4BS, 0x11, 0x04, false, A5_11_04.class, THING_TYPE_CENTRALCOMMAND, CHANNEL_GENERAL_SWITCHING,
+            CHANNEL_DIMMER, CHANNEL_TOTALUSAGE, CHANNEL_INSTANTPOWER, CHANNEL_COUNTER, CHANNEL_RECEIVINGSTATE),
+
     CentralCommandSwitching(RORG._4BS, 0x38, 0x08, false, A5_38_08_Switching.class, THING_TYPE_CENTRALCOMMAND, 0x01,
             CHANNEL_GENERAL_SWITCHING, CHANNEL_TEACHINCMD, CHANNEL_RECEIVINGSTATE),
     CentralCommandDimming(RORG._4BS, 0x38, 0x08, false, A5_38_08_Dimming.class, THING_TYPE_CENTRALCOMMAND, 0x02,
@@ -385,9 +391,6 @@ public enum EEPType {
             CHANNEL_RECEIVINGSTATE),
     SwitchWithEnergyMeasurment_12(RORG.VLD, 0x01, 0x12, true, D2_01_12.class, THING_TYPE_MEASUREMENTSWITCH,
             CHANNEL_GENERAL_SWITCHINGA, CHANNEL_GENERAL_SWITCHINGB, CHANNEL_RECEIVINGSTATE),
-
-    Rollershutter_A5(RORG._4BS, 0x11, 0x03, false, A5_11_03.class, THING_TYPE_ROLLERSHUTTER, CHANNEL_ROLLERSHUTTER,
-            CHANNEL_ANGLE, CHANNEL_RECEIVINGSTATE),
 
     Rollershutter_D2(RORG.VLD, 0x05, 0x00, true, D2_05_00.class, THING_TYPE_ROLLERSHUTTER, CHANNEL_ROLLERSHUTTER,
             CHANNEL_RECEIVINGSTATE);
