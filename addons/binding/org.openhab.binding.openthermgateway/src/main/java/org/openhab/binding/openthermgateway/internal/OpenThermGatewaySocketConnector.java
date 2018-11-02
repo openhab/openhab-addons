@@ -6,6 +6,9 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.openthermgateway.handler.TypeConverter;
+
 public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnector {
     private OpenThermGatewayCallback callback;
     private String ipaddress;
@@ -114,15 +117,51 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
             return;
         }
 
-        callback.log(LogLevel.Debug, "Received message: %s", message);
-
         Message msg = Message.parse(message);
 
-        if (msg != null) {
-            if (msg.getCode().equals("B")
-                    && (msg.getMessageType() == MessageType.ReadAck || msg.getMessageType() == MessageType.WriteAck)) {
-                receiveMessage(msg);
+        if (msg == null) {
+            callback.log(LogLevel.Debug, "Received message: %s, (unknown)", message);
+            return;
+        } else {
+            callback.log(LogLevel.Debug, String.format("Received message: %s, %d %s %s", message, msg.getID(),
+                    msg.getCode(), msg.getMessageType().toString()));
+        }
+
+        if (DataItemGroup.dataItemGroups.containsKey(msg.getID())) {
+            DataItem[] dataItems = DataItemGroup.dataItemGroups.get(msg.getID());
+
+            for (int i = 0; i < dataItems.length; i++) {
+                DataItem dataItem = dataItems[i];
+
+                State state = null;
+
+                switch (dataItem.getDataType()) {
+                    case Flags:
+                        state = TypeConverter.toOnOffType(msg.getBit(dataItem.getByteType(), dataItem.getBitPos()));
+                        break;
+                    case Uint8:
+                    case Uint16:
+                        state = TypeConverter.toDecimalType(msg.getUInt(dataItem.getByteType()));
+                        break;
+                    case Int8:
+                    case Int16:
+                        state = TypeConverter.toDecimalType(msg.getInt(dataItem.getByteType()));
+                        break;
+                    case Float:
+                        state = TypeConverter.toDecimalType(msg.getFloat());
+                        break;
+                    case DoWToD:
+                        break;
+                }
+                callback.log(LogLevel.Trace,
+                        String.format("  Data %d: %d %s %s %s", i, dataItem.getID(), dataItem.getSubject(),
+                                dataItem.getDataType().toString(), state == null ? "" : state.toString()));
+
             }
+        }
+
+        if (msg.getMessageType() == MessageType.ReadAck || msg.getMessageType() == MessageType.WriteData) {
+            receiveMessage(msg);
         }
     }
 

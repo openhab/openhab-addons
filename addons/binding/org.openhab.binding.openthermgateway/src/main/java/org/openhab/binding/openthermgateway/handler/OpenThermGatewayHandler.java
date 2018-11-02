@@ -160,6 +160,8 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
     @Override
     public void log(LogLevel loglevel, String message, Throwable t) {
         switch (loglevel) {
+            case Trace:
+                logger.trace(message, t);
             case Debug:
                 logger.debug(message, t);
                 break;
@@ -180,6 +182,9 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
     @Override
     public void log(LogLevel loglevel, String message) {
         switch (loglevel) {
+            case Trace:
+                logger.trace(message);
+                break;
             case Debug:
                 logger.debug(message);
                 break;
