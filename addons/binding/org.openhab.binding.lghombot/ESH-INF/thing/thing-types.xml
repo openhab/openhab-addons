@@ -160,6 +160,7 @@
 		<item-type>String</item-type>
 		<label>Move</label>
 		<description>Move direction.</description>
+		<category>MoveControl</category>
 		<state>
 			<options>
 				<option value="FORWARD">Forward</option>
