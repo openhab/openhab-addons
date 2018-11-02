@@ -363,6 +363,7 @@ public class Connection {
                 if (customHeaders == null || !customHeaders.containsKey("User-Agent")) {
                     connection.setRequestProperty("User-Agent", userAgent);
                 }
+                connection.setRequestProperty("Accept-Encoding", "");
                 connection.setRequestProperty("DNT", "1");
                 connection.setRequestProperty("Upgrade-Insecure-Requests", "1");
                 if (customHeaders != null) {
