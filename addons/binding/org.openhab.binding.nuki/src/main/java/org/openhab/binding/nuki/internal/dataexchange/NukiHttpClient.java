@@ -108,7 +108,7 @@ public class NukiHttpClient {
     }
 
     public synchronized BridgeInfoResponse getBridgeInfo() {
-        logger.debug("NukiHttpClient:getBridgeInfo()");
+        logger.debug("getBridgeInfo()");
         String uri = prepareUri(NukiBindingConstants.URI_INFO);
         try {
             ContentResponse contentResponse = executeRequest(uri);
@@ -128,7 +128,7 @@ public class NukiHttpClient {
     }
 
     public synchronized BridgeLockStateResponse getBridgeLockState(String nukiId) {
-        logger.debug("NukiHttpClient:getBridgeLockState({})", nukiId);
+        logger.debug("getBridgeLockState({})", nukiId);
         long timestampSecs = Instant.now().getEpochSecond();
         if (this.bridgeLockStateResponseCache != null
                 && timestampSecs < this.bridgeLockStateResponseCache.getCreated().getEpochSecond() + CACHE_PERIOD) {
@@ -158,7 +158,7 @@ public class NukiHttpClient {
     }
 
     public synchronized BridgeLockActionResponse getBridgeLockAction(String nukiId, int lockAction) {
-        logger.debug("NukiHttpClient:getBridgeLockAction({}, {})", nukiId, lockAction);
+        logger.debug("getBridgeLockAction({}, {})", nukiId, lockAction);
         String uri = prepareUri(NukiBindingConstants.URI_LOCKACTION, nukiId, Integer.toString(lockAction));
         try {
             ContentResponse contentResponse = executeRequest(uri);
@@ -178,7 +178,7 @@ public class NukiHttpClient {
     }
 
     public synchronized BridgeCallbackAddResponse getBridgeCallbackAdd(String callbackUrl) {
-        logger.debug("NukiHttpClient:getBridgeCallbackAdd({})", callbackUrl);
+        logger.debug("getBridgeCallbackAdd({})", callbackUrl);
         try {
             String uri = prepareUri(NukiBindingConstants.URI_CBADD, URLEncoder.encode(callbackUrl, "UTF-8"));
             ContentResponse contentResponse = executeRequest(uri);
@@ -199,7 +199,7 @@ public class NukiHttpClient {
     }
 
     public synchronized BridgeCallbackListResponse getBridgeCallbackList() {
-        logger.debug("NukiHttpClient:getBridgeCallbackList()");
+        logger.debug("getBridgeCallbackList()");
         String uri = prepareUri(NukiBindingConstants.URI_CBLIST);
         try {
             ContentResponse contentResponse = executeRequest(uri);
@@ -220,7 +220,7 @@ public class NukiHttpClient {
     }
 
     public synchronized BridgeCallbackRemoveResponse getBridgeCallbackRemove(int id) {
-        logger.debug("NukiHttpClient:getBridgeCallbackRemove({})", id);
+        logger.debug("getBridgeCallbackRemove({})", id);
         try {
             String uri = prepareUri(NukiBindingConstants.URI_CBREMOVE, Integer.toString(id));
             ContentResponse contentResponse = executeRequest(uri);

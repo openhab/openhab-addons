@@ -56,9 +56,9 @@ public class NukiBindingConstants {
     public static final String URI_CBLIST = "http://%s:%s/callback/list?token=%s";
     public static final String URI_CBREMOVE = "http://%s:%s/callback/remove?token=%s&id=%s";
 
-    // openHAB Callback Endpoint
-    public static final String CALLBACK_ENDPOINT = "/nuki/"; // "/nuki/NUKI_ID_HEX"
-    public static final String CALLBACK_URL = "http://%s" + CALLBACK_ENDPOINT + "%s";
+    // openHAB Callback Endpoint & Nuki Bridge Callback URL
+    public static final String CALLBACK_ENDPOINT = "/nuki/bcb";
+    public static final String CALLBACK_URL = "http://%s" + CALLBACK_ENDPOINT;
 
     // Nuki Bridge API Lock Actions
     public static final int LOCK_ACTIONS_UNLOCK = 1;

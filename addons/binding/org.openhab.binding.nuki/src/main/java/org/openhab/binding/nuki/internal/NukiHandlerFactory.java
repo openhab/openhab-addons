@@ -8,11 +8,7 @@
  */
 package org.openhab.binding.nuki.internal;
 
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.servlet.http.HttpServlet;
+import java.util.ArrayList;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.net.HttpServiceUtil;
@@ -20,7 +16,6 @@ import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
@@ -29,7 +24,6 @@ import org.openhab.binding.nuki.NukiBindingConstants;
 import org.openhab.binding.nuki.handler.NukiBridgeHandler;
 import org.openhab.binding.nuki.handler.NukiSmartLockHandler;
 import org.openhab.binding.nuki.internal.dataexchange.NukiApiServlet;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
@@ -42,7 +36,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Markus Katter - Initial contribution
  */
-@Component(service = { ThingHandlerFactory.class, NukiHandlerFactory.class }, configurationPid = "binding.nuki")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.nuki")
 public class NukiHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(NukiHandlerFactory.class);
@@ -50,8 +44,8 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
     private HttpService httpService;
     private HttpClient httpClient;
     private NetworkAddressService networkAddressService;
-    private Map<ThingUID, ServiceRegistration<NukiApiServlet>> nukiApiServletRegs = new ConcurrentHashMap<>();
-    private String openHabIpAndPort;
+    private String callbackUrl;
+    private NukiApiServlet nukiApiServlet;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -64,13 +58,16 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (NukiBindingConstants.THING_TYPE_BRIDGE_UIDS.contains(thingTypeUID)) {
-            NukiApiServlet nukiApiServlet = new NukiApiServlet(httpService);
-            @SuppressWarnings("unchecked")
-            ServiceRegistration<NukiApiServlet> reg = (ServiceRegistration<NukiApiServlet>) bundleContext
-                    .registerService(HttpServlet.class.getName(), nukiApiServlet, new Hashtable<String, Object>());
-            nukiApiServletRegs.put(thing.getUID(), reg);
-            openHabIpAndPort = getOpenHabIpAndPort();
-            return new NukiBridgeHandler((Bridge) thing, httpClient, nukiApiServlet, openHabIpAndPort);
+            callbackUrl = createCallbackUrl();
+            NukiBridgeHandler nukiBridgeHandler = new NukiBridgeHandler((Bridge) thing, httpClient, callbackUrl);
+            if (!nukiBridgeHandler.isInitializable()) {
+                return null;
+            }
+            if (nukiApiServlet == null) {
+                nukiApiServlet = new NukiApiServlet(httpService);
+            }
+            nukiApiServlet.add(nukiBridgeHandler);
+            return nukiBridgeHandler;
         } else if (NukiBindingConstants.THING_TYPE_SMARTLOCK_UIDS.contains(thingTypeUID)) {
             return new NukiSmartLockHandler(thing);
         }
@@ -82,10 +79,11 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
     public void unregisterHandler(Thing thing) {
         super.unregisterHandler(thing);
         logger.trace("NukiHandlerFactory:unregisterHandler({})", thing);
-        ServiceRegistration<NukiApiServlet> reg = nukiApiServletRegs.get(thing.getUID());
-        if (reg != null) {
-            logger.trace("Unregistering NukiApiServlet for Thing[{}])", thing.getUID());
-            reg.unregister();
+        if (thing.getHandler() instanceof NukiBridgeHandler && nukiApiServlet != null) {
+            nukiApiServlet.remove((NukiBridgeHandler) thing.getHandler());
+            if (nukiApiServlet.countNukiBridgeHandlers() == 0) {
+                nukiApiServlet = null;
+            }
         }
     }
 
@@ -116,10 +114,10 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
         this.networkAddressService = null;
     }
 
-    private String getOpenHabIpAndPort() {
-        logger.trace("NukiHandlerFactory:getOpenHabIpAndPort()");
-        if (openHabIpAndPort != null) {
-            return openHabIpAndPort;
+    private String createCallbackUrl() {
+        logger.trace("createCallbackUrl()");
+        if (callbackUrl != null) {
+            return callbackUrl;
         }
         final String ipAddress = networkAddressService.getPrimaryIpv4HostAddress();
         if (ipAddress == null) {
@@ -132,9 +130,11 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
             logger.warn("Cannot find port of the http service.");
             return null;
         }
-        openHabIpAndPort = ipAddress + ":" + port;
-        logger.trace("openHabIpAndPort[{}]", openHabIpAndPort);
-        return openHabIpAndPort;
+        ArrayList<String> parameters = new ArrayList<>();
+        parameters.add(ipAddress + ":" + port);
+        String callbackUrl = String.format(NukiBindingConstants.CALLBACK_URL, parameters.toArray());
+        logger.trace("callbackUrl[{}]", callbackUrl);
+        return callbackUrl;
     }
 
 }
