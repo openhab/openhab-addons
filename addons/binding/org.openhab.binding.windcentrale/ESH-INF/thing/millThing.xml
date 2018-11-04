@@ -36,7 +36,7 @@
 					<option value="121">De Trouwe Wachter</option>
 					<option value="131">De Blauwe Reiger</option>
 					<option value="141">De Vier Winden</option>
-					<option value="201">De Boerenzwaluw</option>
+					<option value="191">De Boerenzwaluw</option>
 				</options>
 				<default>131</default>
 			</parameter>
