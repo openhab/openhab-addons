@@ -488,6 +488,11 @@ public class UpnpRendererHandler extends UpnpHandler {
                 break;
             case "CurrentTrackDuration":
                 updateState(TRACK_DURATION, StringType.valueOf(value));
+                if (value == null) {
+                    trackDuration = "00:00:00";
+                } else {
+                    trackDuration = value;
+                }
                 scheduleTrackPositionRefresh();
             case "RelTime":
                 updateState(TRACK_POSITION, StringType.valueOf(value));
