@@ -134,19 +134,20 @@ public abstract class MeterDevice<T> {
     public Disposable readValues(ScheduledExecutorService executorService, Duration period) throws Exception {
 
         try {
-            Flowable<T> meterValuesFlowable = Flowable.fromPublisher(connector.getMeterValues(initMessage, period))
-                    .subscribeOn(Schedulers.from(executorService)).timeout(30, TimeUnit.SECONDS);
-
-            return meterValuesFlowable.doOnSubscribe(sub -> {
-                logger.info("Opening connection to {}", getDeviceId());
-                connector.openConnection();
-            }).doOnError(ex -> {
-                logger.error("Failed to read: {}. Closing connection and trying again...; {}", ex.getMessage(),
-                        getDeviceId(), ex);
-                connector.closeConnection();
-                notifyReadingError(ex);
-            }).doOnCancel(connector::closeConnection).doOnComplete(connector::closeConnection).share().retry()
-                    .subscribe((value) -> {
+            final int retryDelay = 2;
+            return Flowable.fromPublisher(connector.getMeterValues(initMessage, period, executorService))
+                    .timeout(30, TimeUnit.SECONDS, Schedulers.from(executorService)).doOnSubscribe(sub -> {
+                        logger.info("Opening connection to {}", getDeviceId());
+                        connector.openConnection();
+                    }).doOnError(ex -> {
+                        logger.error("Failed to read: {}. Closing connection and trying again in {} seconds...; {}",
+                                ex.getMessage(), retryDelay, getDeviceId(), ex);
+                        connector.closeConnection();
+                        notifyReadingError(ex);
+                    }).doOnCancel(connector::closeConnection).doOnComplete(connector::closeConnection)
+                    .retryWhen(publisher -> publisher.delay(retryDelay, TimeUnit.SECONDS,
+                            Schedulers.from(executorService)))
+                    .share().subscribeOn(Schedulers.from(executorService), true).subscribe((value) -> {
                         Map<String, MeterValue<?>> obisCodes = new HashMap<>(valueCache);
                         clearValueCache();
                         populateValueCache(value);

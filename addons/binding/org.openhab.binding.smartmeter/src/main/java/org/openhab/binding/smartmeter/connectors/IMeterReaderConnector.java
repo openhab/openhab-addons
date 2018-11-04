@@ -10,6 +10,7 @@ package org.openhab.binding.smartmeter.connectors;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.concurrent.ExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,7 +34,8 @@ public interface IMeterReaderConnector<T> {
      * @return native encoded SML informations from a device.
      * @throws IOException
      */
-    Publisher<T> getMeterValues(byte @Nullable [] initMessage, Duration period) throws IOException;
+    Publisher<T> getMeterValues(byte @Nullable [] initMessage, Duration period, ExecutorService executor)
+            throws IOException;
 
     /**
      * Open connection.

@@ -10,6 +10,7 @@ package org.openhab.binding.smartmeter.connectors;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -24,6 +25,7 @@ import com.google.common.base.Throwables;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.FlowableEmitter;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Represents a basic implementation of a SML device connector.
@@ -106,15 +108,16 @@ public abstract class ConnectorBase<T> implements IMeterReaderConnector<T> {
     }
 
     @Override
-    public Publisher<T> getMeterValues(byte @Nullable [] initMessage, Duration period) throws IOException {
-        Flowable<T> itemPublisher = Flowable.create((emitter) -> {
+    public Publisher<T> getMeterValues(byte @Nullable [] initMessage, Duration period, ExecutorService executor)
+            throws IOException {
+        Flowable<T> itemPublisher = Flowable.<T> create((emitter) -> {
             emitValues(initMessage, emitter);
         }, BackpressureStrategy.DROP);
 
         Flowable<T> result;
         if (applyPeriod()) {
-            result = Flowable.interval(0, period.toMillis(), TimeUnit.MILLISECONDS).buffer(1).onBackpressureDrop()
-                    .flatMap(number -> itemPublisher);
+            result = Flowable.timer(period.toMillis(), TimeUnit.MILLISECONDS, Schedulers.from(executor))
+                    .flatMap(event -> itemPublisher).repeat();
         } else {
             result = itemPublisher;
         }
@@ -130,7 +133,6 @@ public abstract class ConnectorBase<T> implements IMeterReaderConnector<T> {
 
     protected void emitValues(byte @Nullable [] initMessage, FlowableEmitter<@Nullable T> emitter) throws IOException {
         if (!emitter.isCancelled()) {
-
             emitter.onNext(readNext(initMessage));
             emitter.onComplete();
         }

@@ -9,7 +9,6 @@
 package org.openhab.binding.smartmeter.internal.helper;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  *
@@ -53,14 +52,14 @@ public enum Baudrate {
         return Baudrate._9600;
     }
 
-    public static @Nullable Baudrate fromString(String baudrate) {
+    public static Baudrate fromString(String baudrate) {
         try {
             if (baudrate.equalsIgnoreCase(AUTO.name())) {
                 return Baudrate.AUTO;
             }
             return valueOf("_" + baudrate.toUpperCase());
         } catch (Exception e) {
-            return null;
+            return Baudrate.AUTO;
         }
     }
 

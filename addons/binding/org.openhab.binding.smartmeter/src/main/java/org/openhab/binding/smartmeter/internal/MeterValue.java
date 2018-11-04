@@ -81,12 +81,8 @@ public class MeterValue<Q extends Quantity<Q>> {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        MeterValue other = (MeterValue) obj;
-        if (obis == null) {
-            if (other.obis != null) {
-                return false;
-            }
-        } else if (!obis.equals(other.obis)) {
+        MeterValue<?> other = (MeterValue<?>) obj;
+        if (!obis.equals(other.obis)) {
             return false;
         }
         if (status == null) {
@@ -103,11 +99,7 @@ public class MeterValue<Q extends Quantity<Q>> {
         } else if (!unit.equals(other.unit)) {
             return false;
         }
-        if (value == null) {
-            if (other.value != null) {
-                return false;
-            }
-        } else if (!value.equals(other.value)) {
+        if (!value.equals(other.value)) {
             return false;
         }
         return true;

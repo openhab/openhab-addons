@@ -276,6 +276,7 @@ public class SmartMeterHandler extends BaseThingHandler {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private <Q extends Quantity<Q>> State getStateForObisValue(MeterValue<?> value, @Nullable Channel channel) {
         Unit<?> unit = value.getUnit();
         String valueString = value.getValue();

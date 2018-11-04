@@ -58,7 +58,7 @@ public class NegateBitModel {
         final int prime = 31;
         int result = 1;
         result = prime * result + (negateBit ? 1231 : 1237);
-        result = prime * result + ((negateObis == null) ? 0 : negateObis.hashCode());
+        result = prime * result + (negateObis.hashCode());
         result = prime * result + negatePosition;
         return result;
     }
@@ -78,11 +78,7 @@ public class NegateBitModel {
         if (negateBit != other.negateBit) {
             return false;
         }
-        if (negateObis == null) {
-            if (other.negateObis != null) {
-                return false;
-            }
-        } else if (!negateObis.equals(other.negateObis)) {
+        if (!negateObis.equals(other.negateObis)) {
             return false;
         }
         if (negatePosition != other.negatePosition) {

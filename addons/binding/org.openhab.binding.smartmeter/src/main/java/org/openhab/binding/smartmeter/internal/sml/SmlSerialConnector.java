@@ -8,12 +8,11 @@
  */
 package org.openhab.binding.smartmeter.internal.sml;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.Stack;
 
 import org.apache.commons.codec.binary.Hex;
 import org.eclipse.jdt.annotation.NonNull;
@@ -40,8 +39,10 @@ import org.osgi.framework.ServiceReference;
 @NonNullByDefault
 public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
 
+    private static final Transport TRANSPORT = new Transport();
+
     private SerialPortManager serialManager;
-    @Nullable
+    @NonNullByDefault({})
     private SerialPort serialPort;
     @Nullable
     private DataInputStream is;
@@ -83,7 +84,17 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
                 os.flush();
             }
         }
-        return new Transport().getSMLFile(is);
+
+        // read out the whole buffer. We are only interested in the most recent SML file.
+        Stack<SmlFile> smlFiles = new Stack<>();
+        while (is != null && is.available() > 0) {
+            smlFiles.push(TRANSPORT.getSMLFile(is));
+        }
+        if (smlFiles.isEmpty()) {
+            throw new IOException(getPortName() + " : There is no SML file in buffer. Try to reduce Refresh rate.");
+        }
+        logger.debug("{} : Read {} SML files from Buffer", this.getPortName(), smlFiles.size());
+        return smlFiles.pop();
     }
 
     /**
@@ -104,8 +115,8 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
                         serialParameter.getStopbits(), serialParameter.getParity());
                 // serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT);
                 serialPort.notifyOnDataAvailable(true);
-                is = new DataInputStream(new BufferedInputStream(serialPort.getInputStream()));
-                os = new DataOutputStream(new BufferedOutputStream(serialPort.getOutputStream()));
+                is = new DataInputStream(serialPort.getInputStream());
+                os = new DataOutputStream(serialPort.getOutputStream());
             } else {
                 throw new IllegalStateException(MessageFormat.format("No provider for port {0} found", getPortName()));
             }
