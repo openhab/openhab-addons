@@ -27,6 +27,7 @@ public class NibeHeatPumpConfiguration {
     public boolean sendAckToRMU40;
     public boolean sendAckToSMS40;
     public String enableWriteCommandsToRegisters;
+    public int throttleTime;
 
     @Override
     public String toString() {
@@ -44,6 +45,7 @@ public class NibeHeatPumpConfiguration {
         str += ", sendAckToRMU40 = " + sendAckToRMU40;
         str += ", sendAckToSMS40 = " + sendAckToSMS40;
         str += ", enableCoilsForWriteCommands = " + enableWriteCommandsToRegisters;
+        str += ", throttleTime = " + throttleTime;
 
         return str;
     }
