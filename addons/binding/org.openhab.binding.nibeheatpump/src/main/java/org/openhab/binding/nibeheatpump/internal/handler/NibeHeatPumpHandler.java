@@ -82,6 +82,8 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
 
     private final Map<Integer, CacheObject> stateMap = Collections.synchronizedMap(new HashMap<Integer, CacheObject>());
 
+    private long lastUpdateTime = 0;
+
     protected class CacheObject {
 
         /** Time when cache object updated in milliseconds */
@@ -422,6 +424,7 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
 
     private void clearCache() {
         stateMap.clear();
+        lastUpdateTime = 0;
     }
 
     private void clearCache(int coilAddress) {
@@ -481,11 +484,25 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
     }
 
     private void handleDataReadOutMessage(ModbusDataReadOutMessage msg) {
-        List<ModbusValue> regValues = msg.getValues();
+        boolean parse = true;
 
-        if (regValues != null) {
-            for (ModbusValue val : regValues) {
-                handleVariableUpdate(pumpModel, val);
+        logger.debug("Received data read out message");
+        if (configuration.throttleTime > 0) {
+            if ((lastUpdateTime + configuration.throttleTime) > System.currentTimeMillis()) {
+                logger.debug("Skipping data read out message parsing");
+                parse = false;
+            }
+        }
+
+        if (parse) {
+            logger.debug("Parsing data read out message");
+            lastUpdateTime = System.currentTimeMillis();
+            List<ModbusValue> regValues = msg.getValues();
+
+            if (regValues != null) {
+                for (ModbusValue val : regValues) {
+                    handleVariableUpdate(pumpModel, val);
+                }
             }
         }
     }

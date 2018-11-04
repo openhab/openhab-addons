@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="nibeheatpump" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="nibeheatpump"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
@@ -14,21 +15,21 @@
 
 		<config-description>
 			<parameter name="hostName" type="text" required="true">
-				<label>Host name</label>
+				<label>Host Name</label>
 				<description>Network address of the NibeGW.</description>
 			</parameter>
 			<parameter name="port" type="integer">
-				<label>UDP port</label>
+				<label>UDP Port</label>
 				<description>UDP port to listening data packets from the NibeGW.</description>
 				<default>9999</default>
 			</parameter>
 			<parameter name="readCommandsPort" type="integer">
-				<label>UDP port for read commands</label>
+				<label>UDP Port For Read Commands</label>
 				<description>UDP port to send read commands to the NibeGW.</description>
 				<default>9999</default>
 			</parameter>
 			<parameter name="writeCommandsPort" type="integer">
-				<label>UDP port for write commands</label>
+				<label>UDP Port For Write Commands</label>
 				<description>UDP port to send write commands to the NibeGW.</description>
 				<default>10000</default>
 			</parameter>
@@ -38,21 +39,26 @@
 				<default>60</default>
 			</parameter>
 			<parameter name="enableReadCommands" type="boolean">
-				<label>Enable read commands</label>
+				<label>Enable Read Commands</label>
 				<description>Enable read commands to read additional variable from heat pump which are not included to data readout
 					messages. This is experimental feature, use it at your own risk!</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableWriteCommands" type="boolean">
-				<label>Enable write commands</label>
+				<label>Enable Write Commands</label>
 				<description>Enable write commands to change heat pump settings. This is experimental feature, use it at your own
 					risk!</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableWriteCommandsToRegisters" type="text">
-				<label>Registers list for write commands</label>
+				<label>Registers List For Write Commands</label>
 				<description>Comma separated list of registers, which are allowed to write to heat pump. E.g. 40940, 45171</description>
 				<default></default>
+			</parameter>
+			<parameter name="throttleTime" type="integer" unit="ms">
+				<label>Throttle Incoming Data</label>
+				<description>Throttle incoming data read out messages from heat pump. 0 = throttle is disabled, otherwise throttle time in milliseconds.</description>
+				<default>0</default>
 			</parameter>
 		</config-description>
 
@@ -69,7 +75,7 @@
 
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">
-				<label>Serial port</label>
+				<label>Serial Port</label>
 				<description>Serial port to connect to the heat pump.</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer">
@@ -78,36 +84,41 @@
 				<default>60</default>
 			</parameter>
 			<parameter name="enableReadCommands" type="boolean">
-				<label>Enable read commands</label>
+				<label>Enable Read Commands</label>
 				<description>Enable read commands to read additional variable from heat pump which are not included to data readout
 					messages. This is experimental feature, use it at your own risk!</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableWriteCommands" type="boolean">
-				<label>Enable write commands</label>
+				<label>Enable Write Commands</label>
 				<description>Enable write commands to change heat pump settings. This is experimental feature, use it at your own
 					risk!</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableWriteCommandsToRegisters" type="text">
-				<label>Register list for write commands</label>
+				<label>Register List For Write Commands</label>
 				<description>Comma separated list of registers, which are allowed to write to heat pump. E.g. 40940, 45171</description>
 				<default></default>
 			</parameter>
 			<parameter name="sendAckToMODBUS40" type="boolean">
-				<label>Enable acknowledges to MODBUS40 messages</label>
+				<label>Enable Acknowledges To MODBUS40 Messages</label>
 				<description>Binding emulates MODBUS40 device and send protocol acknowledges to heat pump.</description>
 				<default>true</default>
 			</parameter>
 			<parameter name="sendAckToRMU40" type="boolean">
-				<label>Enable acknowledges to RMU40 messages</label>
+				<label>Enable Acknowledges To RMU40 Messages</label>
 				<description>Binding emulates RMU40 device and send protocol acknowledges to heat pump.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="sendAckToSMS40" type="boolean">
-				<label>Enable acknowledges to SMS40 messages</label>
+				<label>Enable Acknowledges To SMS40 Messages</label>
 				<description>Binding emulates SMS40 device and send protocol acknowledges to heat pump.</description>
 				<default>false</default>
+			</parameter>
+			<parameter name="throttleTime" type="integer" unit="ms">
+				<label>Throttle Incoming Data</label>
+				<description>Throttle incoming data read out messages from heat pump. 0 = throttle is disabled, otherwise throttle time in milliseconds.</description>
+				<default>0</default>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -128,21 +139,26 @@
 				<default>60</default>
 			</parameter>
 			<parameter name="enableReadCommands" type="boolean">
-				<label>Enable read commands</label>
+				<label>Enable Read Commands</label>
 				<description>Enable read commands to read additional variable from heat pump which are not included to data readout
 					messages. This is experimental feature, use it at your own risk!</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableWriteCommands" type="boolean">
-				<label>Enable write commands</label>
+				<label>Enable Write Commands</label>
 				<description>Enable write commands to change heat pump settings. This is experimental feature, use it at your own
 					risk!</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableWriteCommandsToRegisters" type="text">
-				<label>Register list for write commands</label>
+				<label>Register List For Write Commands</label>
 				<description>Comma separated list of registers, which are allowed to write to heat pump. E.g. 40940, 45171</description>
 				<default></default>
+			</parameter>
+			<parameter name="throttleTime" type="integer" unit="ms">
+				<label>Throttle Incoming Data</label>
+				<description>Throttle incoming data read out messages from heat pump. 0 = throttle is disabled, otherwise throttle time in milliseconds.</description>
+				<default>0</default>
 			</parameter>
 		</config-description>
 	</thing-type>
