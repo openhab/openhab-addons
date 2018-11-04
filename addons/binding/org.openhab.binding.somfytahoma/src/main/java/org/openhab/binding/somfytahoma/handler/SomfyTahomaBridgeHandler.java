@@ -172,7 +172,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         } catch (SomfyTahomaException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized. Please check credentials");
         } catch (ExecutionException e) {
-            if (e.toString().contains(AUTHENTICATION_CHALLENGE)) {
+            if (isAuthenticationChallenge(e)) {
                 login();
             } else {
                 logger.debug("Cannot get Tahoma events!", e);
@@ -253,7 +253,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized. Please check credentials");
             return UNAUTHORIZED;
         } catch (ExecutionException e) {
-            if (e.toString().contains(AUTHENTICATION_CHALLENGE)) {
+            if (isAuthenticationChallenge(e)) {
                 login();
                 return UNAUTHORIZED;
             } else {
@@ -284,7 +284,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         } catch (SomfyTahomaException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized. Please check credentials");
         } catch (ExecutionException e) {
-            if (e.toString().contains(AUTHENTICATION_CHALLENGE)) {
+            if (isAuthenticationChallenge(e)) {
                 login();
             } else {
                 logger.debug("Cannot send getSetup command!", e);
@@ -339,7 +339,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         } catch (SomfyTahomaException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized. Please check credentials");
         } catch (ExecutionException e) {
-            if (e.toString().contains(AUTHENTICATION_CHALLENGE)) {
+            if (isAuthenticationChallenge(e)) {
                 login();
             } else {
                 logger.debug("Cannot send getStates command!", e);
@@ -373,7 +373,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
                 processStateChangedEvent(event);
                 break;
             case "RefreshAllDevicesStatesCompletedEvent":
-                //force update states of things which have not sent any event for a long time
+                //force update thing states
                 for (Thing th : getThing().getThings()) {
                     updateThingStates(th);
                 }
@@ -433,24 +433,10 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
     private void logout() {
         try {
-            sendToTahomaWithCookie(TAHOMA_URL + "logout");
+            sendGetToTahomaWithCookie(TAHOMA_URL + "logout");
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             logger.debug("Cannot send logout command!", e);
         }
-    }
-
-    private String sendToTahomaWithCookie(String url) throws InterruptedException, ExecutionException, TimeoutException, SomfyTahomaException {
-        logger.trace("Sending GET to Tahoma url: {}", url);
-        ContentResponse response = sendRequestBuilder(url, HttpMethod.GET).send();
-
-        logger.trace("Response: {}", response.getContentAsString());
-        if (response.getStatus() < 200 || response.getStatus() >= 300) {
-            logger.error("Received error code: {}", response.getStatus());
-            if (response.getStatus() == 404) {
-                throw new SomfyTahomaException("Not logged in");
-            }
-        }
-        return response.getContentAsString();
     }
 
     private String sendDataToTahomaWithCookie(String url, String urlParameters) throws InterruptedException, ExecutionException, TimeoutException, SomfyTahomaException {
@@ -467,6 +453,10 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             }
         }
         return response.getContentAsString();
+    }
+
+    private String sendGetToTahomaWithCookie(String url) throws InterruptedException, ExecutionException, TimeoutException, SomfyTahomaException {
+        return sendMethodToTahomaWithCookie(url, HttpMethod.GET);
     }
 
     private String sendPutToTahomaWithCookie(String url) throws InterruptedException, ExecutionException, TimeoutException, SomfyTahomaException {
@@ -536,7 +526,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized. Please check credentials");
             return false;
         } catch (ExecutionException e) {
-            if (e.toString().contains(AUTHENTICATION_CHALLENGE)) {
+            if (isAuthenticationChallenge(e)) {
                 login();
                 return false;
             } else {
@@ -599,7 +589,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized. Please check credentials");
             return UNAUTHORIZED;
         } catch (ExecutionException e) {
-            if (e.toString().contains(AUTHENTICATION_CHALLENGE)) {
+            if (isAuthenticationChallenge(e)) {
                 login();
                 return UNAUTHORIZED;
             } else {
@@ -631,7 +621,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized. Please check credentials");
             return false;
         } catch (ExecutionException e) {
-            if (e.toString().contains(AUTHENTICATION_CHALLENGE)) {
+            if (isAuthenticationChallenge(e)) {
                 login();
                 return false;
             } else {
@@ -649,7 +639,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         String line = "";
         try {
             String url = SETUP_URL + gatewayId + "/version";
-            line = sendToTahomaWithCookie(url);
+            line = sendGetToTahomaWithCookie(url);
             SomfyTahomaVersionResponse data = gson.fromJson(line, SomfyTahomaVersionResponse.class);
             logger.debug("Tahoma version: {}", data.getResult());
 
@@ -661,7 +651,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized. Please check credentials");
             return UNAUTHORIZED;
         } catch (ExecutionException e) {
-            if (e.toString().contains(AUTHENTICATION_CHALLENGE)) {
+            if (isAuthenticationChallenge(e)) {
                 login();
                 return UNAUTHORIZED;
             } else {
@@ -700,7 +690,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized. Please check credentials");
             return UNAUTHORIZED;
         } catch (ExecutionException e) {
-            if (e.toString().contains(AUTHENTICATION_CHALLENGE)) {
+            if (isAuthenticationChallenge(e)) {
                 login();
                 return UNAUTHORIZED;
             } else {
@@ -716,11 +706,11 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
     public void refreshDeviceStates() {
         try {
-            sendPutToTahomaWithCookie(REFRESH_URL);
+            sendGetToTahomaWithCookie(REFRESH_URL);
         } catch (SomfyTahomaException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized. Please check credentials");
         } catch (ExecutionException e) {
-            if (e.toString().contains(AUTHENTICATION_CHALLENGE)) {
+            if (isAuthenticationChallenge(e)) {
                 login();
             } else {
                 logger.debug("Cannot refresh device states!", e);
@@ -736,7 +726,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         String line = "";
         try {
             String url = SETUP_URL + gatewayId;
-            line = sendToTahomaWithCookie(url);
+            line = sendGetToTahomaWithCookie(url);
             SomfyTahomaStatusResponse data = gson.fromJson(line, SomfyTahomaStatusResponse.class);
             if (data.getConnectivity() == null) {
                 logger.warn("Got empty connectivity response");
@@ -751,7 +741,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized. Please check credentials");
             return UNAUTHORIZED;
         } catch (ExecutionException e) {
-            if (e.toString().contains(AUTHENTICATION_CHALLENGE)) {
+            if (isAuthenticationChallenge(e)) {
                 login();
                 return UNAUTHORIZED;
             } else {
@@ -765,4 +755,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         return null;
     }
 
+    private boolean isAuthenticationChallenge(Exception ex) {
+        return ex.getMessage().contains(AUTHENTICATION_CHALLENGE);
+    }
 }
