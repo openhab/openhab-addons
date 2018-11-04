@@ -50,6 +50,7 @@ public class SonyPS4Handler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SonyPS4Handler.class);
     private final SonyPS4PacketHandler ps4PacketHandler = new SonyPS4PacketHandler();
+    private final SonyPS4ArtworkHandler ps4ArtworkHandler = new SonyPS4ArtworkHandler();
     private static final int BROADCAST_PORT = 987;
     private static final int SOCKET_TIMEOUT_SECONDS = 4;
     private static final int POST_CONNECT_SENDKEY_DELAY = 1500;
@@ -479,7 +480,7 @@ public class SonyPS4Handler extends BaseThingHandler {
     private void updateApplicationTitleid(String titleid) {
         currentApplicationId = titleid;
         logger.debug("PS4 current application title id: {}", currentApplicationId);
-        RawType artWork = SonyPS4ArtworkHandler.fetchArtworkForTitleid(titleid, config.getArtworkSize());
+        RawType artWork = ps4ArtworkHandler.fetchArtworkForTitleid(titleid, config.getArtworkSize());
         if (artWork != null) {
             currentArtwork = artWork;
             ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_APPLICATION_IMAGE);
