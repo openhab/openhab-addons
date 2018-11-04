@@ -15,30 +15,4 @@
 	<name>Smartmeter Binding</name>
 	<packaging>eclipse-plugin</packaging>
 
-	<build>
-		<plugins>
-		    <!-- Following is used for j62056 lib as it is depending on jrxtx. 
-		    jrxtx creates a specific implementation of gnu.io.SerialPort (namely RXTXPort). 
-		    As this binding is also supporting RFC2217 which is using an instance of TelnetSerialPort, the org.openmuc.jrxtx.JRxTxPort is shaded and modified -->
-
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>add-source</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>add-source</goal>
-						</goals>
-						<configuration>
-							<sources>
-								<source>src/main/java-extern</source>
-							</sources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
 </project>
