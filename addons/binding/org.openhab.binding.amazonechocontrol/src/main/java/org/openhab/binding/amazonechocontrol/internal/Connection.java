@@ -34,6 +34,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.xml.bind.DatatypeConverter;
@@ -100,6 +103,7 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class Connection {
     private static final long expiresIn = 432000; // five days
+    private static final Pattern charsetPattern = Pattern.compile("(?i)\\bcharset=\\s*\"?([^\\s;\"]*)");
 
     private final Logger logger = LoggerFactory.getLogger(Connection.class);
 
@@ -321,11 +325,29 @@ public class Connection {
         return loginTime;
     }
 
-    public String convertStream(@Nullable InputStream input) throws IOException {
+    public String convertStream(HttpsURLConnection connection) throws IOException {
+        InputStream input = connection.getInputStream();
         if (input == null) {
             return "";
         }
-        Scanner inputScanner = new Scanner(input);
+
+        InputStream readerStream;
+        if (StringUtils.equalsIgnoreCase(connection.getContentEncoding(), "gzip")) {
+            readerStream = new GZIPInputStream(connection.getInputStream());
+        } else {
+            readerStream = input;
+        }
+        String contentType = connection.getContentType();
+        String charSet = null;
+        if (contentType != null) {
+            Matcher m = charsetPattern.matcher(contentType);
+            if (m.find()) {
+                charSet = m.group(1).trim().toUpperCase();
+            }
+        }
+
+        Scanner inputScanner = StringUtils.isEmpty(charSet) ? new Scanner(readerStream)
+                : new Scanner(readerStream, charSet);
         Scanner scannerWithoutDelimiter = inputScanner.useDelimiter("\\A");
         String result = scannerWithoutDelimiter.hasNext() ? scannerWithoutDelimiter.next() : null;
         inputScanner.close();
@@ -344,7 +366,7 @@ public class Connection {
     public String makeRequestAndReturnString(String verb, String url, @Nullable String postData, boolean json,
             @Nullable Map<String, String> customHeaders) throws IOException, URISyntaxException {
         HttpsURLConnection connection = makeRequest(verb, url, postData, json, true, customHeaders);
-        return convertStream(connection.getInputStream());
+        return convertStream(connection);
     }
 
     public HttpsURLConnection makeRequest(String verb, String url, @Nullable String postData, boolean json,
@@ -363,7 +385,7 @@ public class Connection {
                 if (customHeaders == null || !customHeaders.containsKey("User-Agent")) {
                     connection.setRequestProperty("User-Agent", userAgent);
                 }
-                connection.setRequestProperty("Accept-Encoding", "");
+                connection.setRequestProperty("Accept-Encoding", "gzip");
                 connection.setRequestProperty("DNT", "1");
                 connection.setRequestProperty("Upgrade-Insecure-Requests", "1");
                 if (customHeaders != null) {

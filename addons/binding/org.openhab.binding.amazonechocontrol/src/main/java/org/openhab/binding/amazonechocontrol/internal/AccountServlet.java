@@ -537,7 +537,7 @@ public class AccountServlet extends HttpServlet {
 
                     String startString = "https://www." + connection.getAmazonSite() + "/";
                     String newLocation = null;
-                    if (location.startsWith(startString)) {
+                    if (location.startsWith(startString) && connection.getIsLoggedIn()) {
                         newLocation = servletUrl + PROXY_URI_PART + location.substring(startString.length());
                     } else if (location.startsWith(startString)) {
                         newLocation = servletUrl + FORWARD_URI_PART + location.substring(startString.length());
@@ -549,8 +549,8 @@ public class AccountServlet extends HttpServlet {
                     }
                     if (newLocation != null) {
                         logger.debug("Redirect mapped from {} to {}", location, newLocation);
-                        resp.addHeader("location", newLocation);
-                        resp.sendError(302);
+
+                        resp.sendRedirect(newLocation);
                         return;
                     }
                     returnError(resp, "Invalid redirect to '" + location + "'");
@@ -561,7 +561,7 @@ public class AccountServlet extends HttpServlet {
             returnError(resp, e.getLocalizedMessage());
             return;
         }
-        String response = connection.convertStream(urlConnection.getInputStream());
+        String response = connection.convertStream(urlConnection);
         returnHtml(connection, resp, response, site);
     }
 

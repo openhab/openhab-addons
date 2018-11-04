@@ -10,6 +10,7 @@ package org.openhab.binding.amazonechocontrol.internal.handler;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,6 +30,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
@@ -251,7 +253,8 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
 
     private void checkLogin() {
         try {
-            logger.debug("check login {}", getThing().getUID().getAsString());
+            ThingUID uid = getThing().getUID();
+            logger.debug("check login {}", uid.getAsString());
 
             synchronized (synchronizeConnection) {
                 Connection currentConnection = this.connection;
@@ -274,7 +277,11 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                             setConnection(currentConnection);
                         }
                     }
-                    updateStatus(ThingStatus.ONLINE);
+                    if (!currentConnection.getIsLoggedIn()) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                                "Please login in through web site: http(s)://<YOUROPENHAB>:<YOURPORT>/amazonechocontrol/"
+                                        + URLEncoder.encode(uid.getId(), "UTF8"));
+                    }
                 } catch (ConnectionException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
                 } catch (HttpException e) {
