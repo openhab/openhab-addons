@@ -18,6 +18,16 @@ None
 -   totalEnergy
 -   dayEnergy
 -   status
+-   str1Voltage
+-   str1Current
+-   str2Voltage
+-   str2Current
+-   l1Voltage
+-   l1Power
+-   l2Voltage
+-   l2Power
+-   l3Voltage
+-   l3Power
 
 ## Thing Configuration
 
