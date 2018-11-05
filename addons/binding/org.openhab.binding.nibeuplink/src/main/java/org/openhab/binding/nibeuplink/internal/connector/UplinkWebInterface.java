@@ -109,7 +109,7 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
                 commandQueue.add(command);
             } catch (IllegalStateException ex) {
                 if (commandQueue.size() >= WEB_REQUEST_QUEUE_MAX_SIZE) {
-                    logger.info(
+                    logger.debug(
                             "Could not add command to command queue because queue is already full. Maybe NIBE Uplink is down?");
                 } else {
                     logger.warn("Could not add command to queue - IllegalStateException");
