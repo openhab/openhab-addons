@@ -22,6 +22,7 @@
 				<label>EEP</label>
 				<description>EEP which is used by panel</description>
 				<options>
+					<option value="A5_12_00">A5-12-00 Counter</option>
 					<option value="A5_12_01">A5-12-01 Electricity</option>
 					<option value="A5_12_02">A5-12-02 Gas</option>
 					<option value="A5_12_03">A5-12-03 Water</option>

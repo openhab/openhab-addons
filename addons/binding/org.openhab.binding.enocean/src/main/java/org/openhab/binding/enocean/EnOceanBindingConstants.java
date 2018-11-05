@@ -83,6 +83,7 @@ public class EnOceanBindingConstants {
     public final static String CHANNEL_MOTIONDETECTION = "motionDetection";
     public final static String CHANNEL_ILLUMINATION = "illumination";
     public final static String CHANNEL_COUNTER = "counter";
+    public final static String CHANNEL_CURRENTNUMBER = "currentNumber";
 
     public final static String CHANNEL_PUSHBUTTON = "pushButton";
 
@@ -152,6 +153,8 @@ public class EnOceanBindingConstants {
                             new ChannelTypeUID(BINDING_ID, CHANNEL_ILLUMINATION), CoreItemFactory.NUMBER));
                     put(CHANNEL_COUNTER, new ChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_COUNTER),
                             CoreItemFactory.NUMBER));
+                    put(CHANNEL_CURRENTNUMBER, new ChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_CURRENTNUMBER), CoreItemFactory.NUMBER));
                     put(CHANNEL_SETPOINT, new ChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_SETPOINT),
                             CoreItemFactory.NUMBER));
                     put(CHANNEL_CONTACT, new ChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_CONTACT),

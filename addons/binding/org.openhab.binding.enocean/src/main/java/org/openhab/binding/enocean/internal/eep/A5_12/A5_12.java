@@ -110,9 +110,11 @@ public abstract class A5_12 extends _4BSMessage {
         switch (channelId) {
             case CHANNEL_INSTANTPOWER:
             case CHANNEL_INSTANTLITRE:
+            case CHANNEL_CURRENTNUMBER:
                 return getCurrentValue();
             case CHANNEL_TOTALUSAGE:
             case CHANNEL_TOTALCUBICMETRE:
+            case CHANNEL_COUNTER:
                 return getCumulativeValue();
         }
 

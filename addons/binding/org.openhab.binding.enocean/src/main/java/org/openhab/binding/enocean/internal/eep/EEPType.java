@@ -84,6 +84,7 @@ import org.openhab.binding.enocean.internal.eep.A5_10.A5_10_22;
 import org.openhab.binding.enocean.internal.eep.A5_10.A5_10_23;
 import org.openhab.binding.enocean.internal.eep.A5_11.A5_11_03;
 import org.openhab.binding.enocean.internal.eep.A5_11.A5_11_04;
+import org.openhab.binding.enocean.internal.eep.A5_12.A5_12_00;
 import org.openhab.binding.enocean.internal.eep.A5_12.A5_12_01;
 import org.openhab.binding.enocean.internal.eep.A5_12.A5_12_02;
 import org.openhab.binding.enocean.internal.eep.A5_12.A5_12_03;
@@ -308,6 +309,8 @@ public enum EEPType {
     RoomPanel_A5_10_23(RORG._4BS, 0x10, 0x23, false, A5_10_23.class, THING_TYPE_ROOMOPERATINGPANEL, CHANNEL_TEMPERATURE,
             CHANNEL_SETPOINT, CHANNEL_OCCUPANCY, CHANNEL_RECEIVINGSTATE),
 
+    AutomatedMeterReading_00(RORG._4BS, 0x12, 0x00, false, A5_12_00.class, THING_TYPE_AUTOMATEDMETERSENSOR,
+            CHANNEL_COUNTER, CHANNEL_CURRENTNUMBER, CHANNEL_RECEIVINGSTATE),
     AutomatedMeterReading_01(RORG._4BS, 0x12, 0x01, false, A5_12_01.class, THING_TYPE_AUTOMATEDMETERSENSOR,
             CHANNEL_TOTALUSAGE, CHANNEL_INSTANTPOWER, CHANNEL_RECEIVINGSTATE),
     AutomatedMeterReading_02(RORG._4BS, 0x12, 0x02, false, A5_12_02.class, THING_TYPE_AUTOMATEDMETERSENSOR,
