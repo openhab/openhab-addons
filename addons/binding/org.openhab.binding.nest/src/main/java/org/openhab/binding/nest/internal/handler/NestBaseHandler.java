@@ -12,10 +12,7 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Set;
 import java.util.TimeZone;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.stream.Collectors;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
@@ -57,7 +54,6 @@ import org.slf4j.LoggerFactory;
 public abstract class NestBaseHandler<T> extends BaseThingHandler
         implements NestThingDataListener<T>, NestIdentifiable {
     private final Logger logger = LoggerFactory.getLogger(NestBaseHandler.class);
-    private final Set<ChannelUID> linkedChannelUIDs = new CopyOnWriteArraySet<>();
 
     private @Nullable String deviceId;
     private Class<T> dataClass;
@@ -70,9 +66,6 @@ public abstract class NestBaseHandler<T> extends BaseThingHandler
     @Override
     public void initialize() {
         logger.debug("Initializing handler for {}", getClass().getName());
-        linkedChannelUIDs.clear();
-        linkedChannelUIDs.addAll(this.getThing().getChannels().stream().filter(c -> isLinked(c.getUID()))
-                .map(c -> c.getUID()).collect(Collectors.toSet()));
 
         NestBridgeHandler handler = getNestBridgeHandler();
         if (handler != null) {
@@ -176,25 +169,13 @@ public abstract class NestBaseHandler<T> extends BaseThingHandler
     }
 
     protected void updateLinkedChannels(T oldData, T data) {
-        linkedChannelUIDs.forEach(channelUID -> {
+        getThing().getChannels().stream().map(c -> c.getUID()).filter(this::isLinked).forEach(channelUID -> {
             State newState = getChannelState(channelUID, data);
             if (oldData == null || !getChannelState(channelUID, oldData).equals(newState)) {
                 logger.debug("Updating {}", channelUID);
                 updateState(channelUID, newState);
             }
         });
-    }
-
-    @Override
-    public void channelLinked(ChannelUID channelUID) {
-        super.channelLinked(channelUID);
-        linkedChannelUIDs.add(channelUID);
-    }
-
-    @Override
-    public void channelUnlinked(ChannelUID channelUID) {
-        super.channelUnlinked(channelUID);
-        linkedChannelUIDs.remove(channelUID);
     }
 
     @Override
