@@ -63,6 +63,9 @@
 		<item-type>Switch</item-type>
 		<label>PS4 Power</label>
 		<description>Power channel for SonyPS4 Binding.</description>
+		<tags>
+			<tag>Switchable</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="application-channel">
 		<item-type>String</item-type>
@@ -74,6 +77,7 @@
 		<item-type>String</item-type>
 		<label>Application ID</label>
 		<description>Application ID channel for SonyPS4 Binding.</description>
+		<category>MediaControl</category>
 		<state>
 			<options>
 				<option value="CUSA00127">Netflix</option>
@@ -95,16 +99,19 @@
 		<item-type>Switch</item-type>
 		<label>Enter button</label>
 		<description>Push Enter button.</description>
+		<category>MediaControl</category>
 	</channel-type>
 	<channel-type id="keyBack-channel">
 		<item-type>Switch</item-type>
 		<label>Back button</label>
 		<description>Push Back button.</description>
+		<category>MediaControl</category>
 	</channel-type>
 	<channel-type id="keyPS-channel">
 		<item-type>Switch</item-type>
 		<label>PS button</label>
 		<description>Push PS button.</description>
+		<category>MediaControl</category>
 	</channel-type>
 
 </thing:thing-descriptions>
