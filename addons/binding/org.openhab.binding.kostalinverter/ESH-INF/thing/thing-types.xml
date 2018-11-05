@@ -8,10 +8,20 @@
 		<label>Kostal Inverter</label>
 		<description>Kostal Inverter</description>
 		<channels>
-			<channel typeId="acPower" id="acPower"></channel>
-			<channel typeId="totalEnergy" id="totalEnergy"></channel>
-			<channel typeId="dayEnergy" id="dayEnergy"></channel>
-			<channel typeId="status" id="status"></channel>
+			<channel typeId="acPower" id="acPower"/>
+			<channel typeId="totalEnergy" id="totalEnergy"/>
+			<channel typeId="dayEnergy" id="dayEnergy"/>
+			<channel typeId="status" id="status"/>
+			<channel typeId="str1Voltage" id="str1Voltage"/>
+			<channel typeId="str1Current" id="str1Current"/>
+			<channel typeId="str2Voltage" id="str2Voltage"/>
+			<channel typeId="str2Current" id="str2Current"/>
+			<channel typeId="l1Voltage" id="l1Voltage"/>
+			<channel typeId="l1Power" id="l1Power"/>
+			<channel typeId="l2Voltage" id="l2Voltage"/>
+			<channel typeId="l2Power" id="l2Power"/>
+			<channel typeId="l3Voltage" id="l3Voltage"/>
+			<channel typeId="l3Power" id="l3Power"/>
 		</channels>
 
 		<config-description>
@@ -38,7 +48,77 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-
+	
+	<channel-type id="str1Voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Str1 Voltage</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%" />
+	 </channel-type>
+	 
+	<channel-type id="str1Current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Str1 Current</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%" />
+	</channel-type>
+	
+	<channel-type id="str2Voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Str2 Voltage</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%" />
+	</channel-type>
+	
+	<channel-type id="str2Current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Str2 Current</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%" />
+	</channel-type>
+	
+	<channel-type id="l1Voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>L1 Voltage</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%" />
+	</channel-type>
+	
+	<channel-type id="l1Power">
+		<item-type>Number:Power</item-type>
+		<label>L1 Power</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%" />
+	</channel-type>
+	
+	<channel-type id="l2Voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>L2 Voltage</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%" />
+	</channel-type>
+	
+	<channel-type id="l2Power">
+		<item-type>Number:Power</item-type>
+		<label>L2 Power</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%" />
+	</channel-type>
+	
+	<channel-type id="l3Voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>L3 Voltage</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%" />
+	</channel-type>
+	
+	<channel-type id="l3Power">
+		<item-type>Number:Power</item-type>
+		<label>L3 Power</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%" />
+	</channel-type>
+	
 	<channel-type id="acPower">
 		<item-type>Number:Power</item-type>
 		<label>AC Power</label>
