@@ -11,7 +11,7 @@ package org.openhab.binding.samsungtv.internal.protocol;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -207,10 +207,26 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
 
     }
 
+    // temporary storage for source app. Will be used as value for the sourceApp channel when information is complete
+    private String currentSourceApp = null;
+    // last app in the apps list: used to detect when status information is complete
+    String lastApp = null;
+
+    /**
+     * Retrieve app status for all apps. In the WebSocketv2 handler the currently running app will be determined
+     */
     private void updateCurrentApp() {
         if (webSocketV2.isNotConnected()) {
             logger.warn("Cannot retrieve current app webSocketV2 is not connected");
             return;
+        }
+
+        currentSourceApp = null;
+        lastApp = null;
+
+        // retrieve last app (don't merge with next loop as this might run asynchronously
+        for (App app : apps.values()) {
+            lastApp = app.appId;
         }
 
         for (App app : apps.values()) {
@@ -294,6 +310,7 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
      *
      */
     class WebSocketV2 extends WebSocketBase {
+
         @Override
         public void onWebSocketText(String msgarg) {
             String msg = msgarg.replace('\n', ' ');
@@ -302,9 +319,17 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
                 JSONObject json = (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(msg);
                 JSONObject result = (JSONObject) json.get("result");
                 if (result != null) {
-                    if ("true".equals(result.getAsString("visible"))) {
+                    if ((currentSourceApp == null || currentSourceApp.isEmpty())
+                            && "true".equals(result.getAsString("visible"))) {
                         logger.debug("Running app: {} = {}", result.getAsString("id"), result.getAsString("name"));
-                        callback.currentAppUpdated(result.getAsString("name"));
+                        currentSourceApp = result.getAsString("name");
+                        callback.currentAppUpdated(currentSourceApp);
+                    }
+
+                    if (lastApp != null && lastApp.equals(result.getAsString("id"))) {
+                        if (currentSourceApp == null || currentSourceApp.isEmpty()) {
+                            callback.currentAppUpdated("");
+                        }
                     }
                 } else if (json.getAsString("event") != null) {
                     switch (json.getAsString("event")) {
@@ -455,7 +480,7 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
         }
     }
 
-    Map<String, App> apps = new HashMap<>();
+    Map<String, App> apps = new LinkedHashMap<>();
 
     /**
      * Send key code to Samsung TV.

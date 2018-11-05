@@ -19,7 +19,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -63,7 +64,7 @@ public class MediaRendererService implements UpnpIOParticipant, SamsungTvService
 
     private Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<String, String>());
 
-    private List<EventListener> listeners = new CopyOnWriteArrayList<>();
+    private Set<EventListener> listeners = new CopyOnWriteArraySet<>();
 
     public MediaRendererService(UpnpIOService upnpIOService, String udn, int pollingInterval) {
         logger.debug("Create a Samsung TV MediaRenderer service");

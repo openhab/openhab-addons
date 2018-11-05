@@ -17,7 +17,8 @@ import static org.openhab.binding.samsungtv.internal.SamsungTvBindingConstants.*
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -58,7 +59,7 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
     private int port;
     private boolean upnp;
 
-    private List<EventListener> listeners = new CopyOnWriteArrayList<>();
+    private Set<EventListener> listeners = new CopyOnWriteArraySet<>();
 
     private RemoteControllerService(String host, int port, boolean upnp) {
         logger.debug("Create a Samsung TV RemoteController service: " + upnp);
