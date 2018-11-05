@@ -10,6 +10,8 @@ package org.openhab.binding.kodi.internal.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Class representing Kodi system properties (https://kodi.wiki/view/JSON-RPC_API/v9#System.Property.Value)
  *
@@ -17,44 +19,48 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class KodiSystemProperties {
-    private boolean canhibernate;
-    private boolean canreboot;
-    private boolean cansuspend;
-    private boolean canshutdown;
+    @SerializedName("canhibernate")
+    private boolean canHibernate;
+    @SerializedName("canreboot")
+    private boolean canReboot;
+    @SerializedName("cansuspend")
+    private boolean canSuspend;
+    @SerializedName("canshutdown")
+    private boolean canShutdown;
 
     public boolean canHibernate() {
-        return canhibernate;
+        return canHibernate;
     }
 
-    public void setCanhibernate(boolean canhibernate) {
-        this.canhibernate = canhibernate;
+    public void setCanHibernate(boolean canHibernate) {
+        this.canHibernate = canHibernate;
     }
 
     public boolean canReboot() {
-        return canreboot;
+        return canReboot;
     }
 
-    public void setCanreboot(boolean canreboot) {
-        this.canreboot = canreboot;
+    public void setCanReboot(boolean canReboot) {
+        this.canReboot = canReboot;
     }
 
     public boolean canSuspend() {
-        return cansuspend;
+        return canSuspend;
     }
 
-    public void setCansuspend(boolean cansuspend) {
-        this.cansuspend = cansuspend;
+    public void setCansuspend(boolean canSuspend) {
+        this.canSuspend = canSuspend;
     }
 
-    public boolean canShutDown() {
-        return canshutdown;
+    public boolean canShutdown() {
+        return canShutdown;
     }
 
-    public void setCanshutdown(boolean canshutdown) {
-        this.canshutdown = canshutdown;
+    public void setCanShutdown(boolean canShutdown) {
+        this.canShutdown = canShutdown;
     }
 
     public boolean canQuit() {
-        return !canhibernate && !canreboot && !canshutdown && !cansuspend;
+        return !canHibernate && !canReboot && !canShutdown && !canSuspend;
     }
 }

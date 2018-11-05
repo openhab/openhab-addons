@@ -740,7 +740,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
             if (systemProperties.canReboot()) {
                 options.add(new StateOption(SYSTEM_COMMAND_REBOOT, SYSTEM_COMMAND_REBOOT));
             }
-            if (systemProperties.canShutDown()) {
+            if (systemProperties.canShutdown()) {
                 options.add(new StateOption(SYSTEM_COMMAND_SHUTDOWN, SYSTEM_COMMAND_SHUTDOWN));
             }
             if (systemProperties.canSuspend()) {
