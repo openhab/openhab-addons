@@ -153,10 +153,14 @@ It's not possible to connect to devices on a different network using `deviceId` 
 
 The thingId is the product type in lower case. For example `HS100` has thingId `hs100`.
 
-The thing can be configured or by `ipAddress` or by `deviceId`.
+The thing can be configured by `ipAddress` or by `deviceId`.
 If the one of them is used the other is automatically set by the binding.
 When manually configured it's preferred to set the `deviceId` because if the ip address of the device would change this will be automatically updated.
-When setting the `deviceId` it can take up to 1 minute before the ip address is set. By manually triggering a discovery process it will update it faster.
+Using a configuration with `deviceId` depends on the discovery service of the binding.
+The binding supports background discovery and this will update the ip address in case it changes within a minute.
+With background discovery disabled the ip address, which is needed to communicate with the device, needs to be set by starting a manual discovery.
+It won't update the ip address if background discovery is disabled and the ip address of the device changes.
+Manually starting a discovery can also be used to set the ip address directly instead of waiting for the 1 minute background discovery refresh period.
 
 The thing has the following configuration parameters:
 

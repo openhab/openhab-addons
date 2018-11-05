@@ -60,8 +60,8 @@ public class SmartHomeHandler extends BaseThingHandler {
     /**
      * Constructor
      *
-     * @param thing            The thing to handle
-     * @param smartHomeDevice  Specific Smart Home device handler
+     * @param thing The thing to handle
+     * @param smartHomeDevice Specific Smart Home device handler
      * @param ipAddressService Cache keeping track of ip addresses of tp link devices
      */
     public SmartHomeHandler(Thing thing, SmartHomeDevice smartHomeDevice, TPLinkIpAddressService ipAddressService) {
@@ -134,6 +134,7 @@ public class SmartHomeHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             return Optional.empty();
         } catch (RuntimeException e) {
+            logger.debug("Obtaining new device data unexpectedly crashed. If this keeps happening please report: ", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DISABLED, e.getMessage());
             return Optional.empty();
         }
@@ -166,7 +167,7 @@ public class SmartHomeHandler extends BaseThingHandler {
      *
      * @param actualDeviceId The id of the device as actual returned by the device.
      * @throws IllegalArgumentException if the configured device id doesn't match with the id reported by the device
-     *                                      itself.
+     *             itself.
      */
     private void updateDeviceId(String actualDeviceId) {
         if (StringUtil.isBlank(configuration.deviceId)) {
@@ -200,7 +201,7 @@ public class SmartHomeHandler extends BaseThingHandler {
     /**
      * Updates the state from the device data for the channel given the data..
      *
-     * @param channelUID  channel to update
+     * @param channelUID channel to update
      * @param deviceState the state object containing the value to set of the channel
      *
      */
