@@ -52,6 +52,16 @@ public class WebscrapeHandler extends BaseThingHandler {
         channelConfigs.add(new ChannelConfig("totalEnergy", "td", 7, SmartHomeUnits.KILOWATT_HOUR));
         channelConfigs.add(new ChannelConfig("dayEnergy", "td", 10, SmartHomeUnits.KILOWATT_HOUR));
         channelConfigs.add(new ChannelConfig("status", "td", 13, null));
+        channelConfigs.add(new ChannelConfig("str1Voltage", "td", 19, SmartHomeUnits.VOLT));
+        channelConfigs.add(new ChannelConfig("str1Current", "td", 25, SmartHomeUnits.AMPERE));
+        channelConfigs.add(new ChannelConfig("str2Voltage", "td", 33, SmartHomeUnits.VOLT));
+        channelConfigs.add(new ChannelConfig("str2Current", "td", 39, SmartHomeUnits.AMPERE));
+        channelConfigs.add(new ChannelConfig("l1Voltage", "td", 22, SmartHomeUnits.VOLT));
+        channelConfigs.add(new ChannelConfig("l1Power", "td", 28, SmartHomeUnits.WATT));
+        channelConfigs.add(new ChannelConfig("l2Voltage", "td", 36, SmartHomeUnits.VOLT));
+        channelConfigs.add(new ChannelConfig("l2Power", "td", 42, SmartHomeUnits.WATT));
+        channelConfigs.add(new ChannelConfig("l3Voltage", "td", 46, SmartHomeUnits.VOLT));
+        channelConfigs.add(new ChannelConfig("l3Power", "td", 49, SmartHomeUnits.WATT));
     }
 
     @Override
