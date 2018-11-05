@@ -10,6 +10,7 @@ Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
 Import-Package: 
  com.google.gson,
+ com.google.gson.annotations,
  javax.measure,
  javax.measure.quantity,
  org.apache.commons.lang,

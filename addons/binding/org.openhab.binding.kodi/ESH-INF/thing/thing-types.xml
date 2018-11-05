@@ -350,13 +350,14 @@
 	<channel-type id="systemcommand" advanced="true">
 		<item-type>String</item-type>
 		<label>Send system command</label>
-		<description>Sends a system command to Kodi. This allows to shutdown/suspend/hibernate/reboot Kodi</description>
+		<description>Sends a system command to Kodi. This allows to shutdown/suspend/hibernate/reboot/quit Kodi</description>
 		<state>
 			<options>
 				<option value="Shutdown">Shutdown</option>
 				<option value="Suspend">Suspend</option>
 				<option value="Hibernate">Hibernate</option>
 				<option value="Reboot">Reboot</option>
+				<option value="Quit">Quit</option>
 			</options>
 		</state>
 	</channel-type>
