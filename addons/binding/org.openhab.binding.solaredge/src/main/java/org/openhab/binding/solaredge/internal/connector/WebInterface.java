@@ -41,6 +41,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class WebInterface implements AtomicReferenceTrait {
 
+    private final static int API_KEY_THRESHOLD = 40;
+    private final static int TOKEN_THRESHOLD = 80;
+
     private final Logger logger = LoggerFactory.getLogger(WebInterface.class);
 
     /**
@@ -109,7 +112,7 @@ public class WebInterface implements AtomicReferenceTrait {
                 commandQueue.add(command);
             } catch (IllegalStateException ex) {
                 if (commandQueue.size() >= WEB_REQUEST_QUEUE_MAX_SIZE) {
-                    logger.info(
+                    logger.debug(
                             "Could not add command to command queue because queue is already full. Maybe SolarEdge is down?");
                 } else {
                     logger.warn("Could not add command to queue - IllegalStateException");
@@ -202,11 +205,11 @@ public class WebInterface implements AtomicReferenceTrait {
                         setAuthenticated(true);
                     } else if (status.getHttpCode().equals(Code.FOUND)) {
                         handler.setStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
-                                "invalid token");
+                                "login error with private API: invalid token");
                         setAuthenticated(false);
                     } else if (status.getHttpCode().equals(Code.FORBIDDEN)) {
                         handler.setStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
-                                "invalid api key or solarId is not valid for this api key");
+                                "login error with public API: invalid api key or solarId is not valid for this api key");
                         setAuthenticated(false);
                     } else if (status.getHttpCode().equals(Code.SERVICE_UNAVAILABLE)) {
                         handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
@@ -239,6 +242,10 @@ public class WebInterface implements AtomicReferenceTrait {
         String preCheckStatusMessage = "";
         if (this.config.getTokenOrApiKey() == null) {
             preCheckStatusMessage = "please configure token/api_key first";
+        } else if (this.config.isUsePrivateApi() && this.config.getTokenOrApiKey().length() < TOKEN_THRESHOLD) {
+            preCheckStatusMessage = "you will have to use a 'token' and not an 'api key' when using private API";
+        } else if (!this.config.isUsePrivateApi() && this.config.getTokenOrApiKey().length() > API_KEY_THRESHOLD) {
+            preCheckStatusMessage = "you will have to use an 'api key' and not a 'token' when using public API";
         } else if (this.config.getSolarId() == null || this.config.getSolarId().isEmpty()) {
             preCheckStatusMessage = "please configure solarId first";
         } else if (this.config.isUsePrivateApi() == false && calcRequestsPerDay() > WEB_REQUEST_PUBLIC_API_DAY_LIMIT) {
