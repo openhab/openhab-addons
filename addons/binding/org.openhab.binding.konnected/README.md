@@ -19,7 +19,7 @@ The binding will then create things for each module discovered which can be adde
 There is no configuration required for the binding.
 However, the ip address of the openHAB server can be configured via the OSGI NetworkAddressService property.  
 If this is configured the binding will use this as the local ip address of the openHAB server.
-If it is not configured the the binding will utilize the NetworkAddressServer to attempt to obtain the ipAddress of the openHAB server.
+If it is not configured the the binding will utilize the NetworkAddressService to attempt to obtain the ipAddress of the openHAB server.
 
 ## Thing Configuration
 

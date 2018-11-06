@@ -20,7 +20,6 @@ import java.util.Map.Entry;
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Temperature;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.core.validation.ConfigValidationException;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -177,13 +176,13 @@ public class KonnectedHandler extends BaseThingHandler {
     private void checkConfigruation() throws ConfigValidationException {
         KonnectedConfiguration testConfig = getConfigAs(KonnectedConfiguration.class);
 
-        if ((config.hostAddress == null) && (callbackIpAddress == null)) {
+        if ((testConfig.hostAddress == null) && (callbackIpAddress == null)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Unable to obtain hostaddress from OSGI service, please manually configure hostaddress");
         }
 
         else {
-            this.validateConfigurationParameters((Map<@NonNull String, @NonNull Object>) testConfig);
+            this.validateConfigurationParameters((Map<String, Object>) testConfig);
         }
     }
 
