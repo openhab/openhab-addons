@@ -50,7 +50,7 @@ public class Controller {
         Ku = PIDOutputUpperLimit.subtract(PIDOutputLowerLimit).divide(BigDecimal.valueOf(PID_RANGE_DEFAULT));
         Kp = Kpadjuster.multiply(Ku);
         Ki = Kiadjuster.multiply(Ku.multiply(BigDecimal.valueOf(2)).divide(BigDecimal.valueOf(LoopTime)));
-        Kd = Kiadjuster.multiply(Ku.multiply(BigDecimal.valueOf(LoopTime)));
+        Kd = Kdadjuster.multiply(Ku.multiply(BigDecimal.valueOf(LoopTime)));
         BigDecimal maxIntegral = PIDOutputUpperLimit.abs().subtract((Kp.multiply(Proportionalresult).abs())).divide(Ki);
 
         Error = PIDsetpoint.subtract(PIDinput);
