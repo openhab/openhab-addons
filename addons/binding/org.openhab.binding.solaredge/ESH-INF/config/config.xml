@@ -26,8 +26,8 @@
 			<description>The ID to identify the solarplant at SolarEdge.</description>
 		</parameter>
 		<parameter name="meterInstalled" type="boolean" required="false" groupName="general">
-			<label>Legacy Mode</label>
-			<description>Should only be activated for old installations where live data could otherwise not retrieved.</description>
+			<label>Meter Installed</label>
+			<description>If your setup contains a modbus meter, please activate this, to get more detailed data.</description>
 			<default>false</default>
 		</parameter>
 		<parameter name="usePrivateApi" type="boolean" required="false" groupName="general">
