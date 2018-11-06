@@ -27,7 +27,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.nibeuplink.config.NibeUplinkConfiguration;
-import org.openhab.binding.nibeuplink.internal.AtomicReferenceUtils;
+import org.openhab.binding.nibeuplink.internal.AtomicReferenceTrait;
 import org.openhab.binding.nibeuplink.internal.command.UpdateSetting;
 import org.openhab.binding.nibeuplink.internal.connector.UplinkWebInterface;
 import org.openhab.binding.nibeuplink.internal.model.Channel;
@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public abstract class UplinkBaseHandler extends BaseThingHandler implements NibeUplinkHandler, AtomicReferenceUtils {
+public abstract class UplinkBaseHandler extends BaseThingHandler implements NibeUplinkHandler, AtomicReferenceTrait {
     private final Logger logger = LoggerFactory.getLogger(UplinkBaseHandler.class);
 
     private final long POLLING_INITIAL_DELAY = 30;
