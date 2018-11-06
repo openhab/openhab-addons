@@ -151,7 +151,7 @@ public class ModbusDataHandlerTest extends JavaTest {
             if (item == null) {
                 throw new ItemNotFoundException(name);
             }
-            return super.get(name);
+            return item;
         }
 
         @Override
