@@ -20,6 +20,7 @@ Configuration is proper when /sys/bus/w1/devices folder is present, and contains
 The sensors are visible in the system as folders containing files with sensor data.
 By default all OneWire GPIO devices are stored in /sys/bus/w1/devices/DEVICE_ID_FOLDER, 
 and the temperature value is available in the file "w1_slave". The Thing needs full path to the w1_slave file.
+Note the values in sysfs are in Celsius.
 
 In the thing file, this looks e.g. like
 
@@ -40,10 +41,10 @@ sample onewiregpio.things file content:
 Thing onewiregpio:sensor:livingroom "Living room" [gpio_bus_file="/sys/bus/w1/devices/28-0000061b587b/w1_slave",refresh_time=30]
 ```
 
-sample onewiregpio.items file content:
+sample onewiregpio.items file content (implements QuantityType for unit conversion):
 
 ``` 
-Number LivingRoomTemperature      "Temperature: [%.2f °C]" <temperature>  { channel="onewiregpio:sensor:livingroom:temperature" }
+Number:Temperature LivingRoomTemperature      "Temperature: [%.2f %unit%]" <temperature>  { channel="onewiregpio:sensor:livingroom:temperature" }
 ```
 
 sample demo.sitemap file content:
