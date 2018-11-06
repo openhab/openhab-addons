@@ -15,7 +15,6 @@ import java.text.MessageFormat;
 import java.util.Stack;
 
 import org.apache.commons.codec.binary.Hex;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.transport.serial.SerialPort;
@@ -28,7 +27,7 @@ import org.openmuc.jsml.structures.SmlFile;
 import org.openmuc.jsml.transport.Transport;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.ServiceReference;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * Represents a serial SML device connector.
@@ -58,9 +57,10 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
     public SmlSerialConnector(String portName) {
         super(portName);
         BundleContext bundleContext = FrameworkUtil.getBundle(getClass()).getBundleContext();
-        ServiceReference<@NonNull SerialPortManager> serialPortManagerService = bundleContext
-                .getServiceReference(SerialPortManager.class);
-        this.serialManager = bundleContext.getService(serialPortManagerService);
+        ServiceTracker<SerialPortManager, SerialPortManager> serviceTracker = new ServiceTracker<>(bundleContext,
+                SerialPortManager.class, null);
+        serviceTracker.open();
+        this.serialManager = serviceTracker.getService();
     }
 
     /**

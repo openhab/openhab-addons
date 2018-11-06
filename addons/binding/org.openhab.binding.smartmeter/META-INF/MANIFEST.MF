@@ -38,6 +38,7 @@ Import-Package:
  org.openhab.binding.smartmeter,
  org.osgi.framework,
  org.osgi.service.component,
+ org.osgi.util.tracker,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.smartmeter;x-internal:=true,

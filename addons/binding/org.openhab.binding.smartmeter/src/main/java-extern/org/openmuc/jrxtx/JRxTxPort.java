@@ -7,14 +7,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.io.transport.serial.PortInUseException;
 import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.ServiceReference;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * <b>This class is a workaround:</b>
@@ -23,7 +22,7 @@ import org.osgi.framework.ServiceReference;
  * -> As a workaround I shaded the {@link JRxTxPort} class which is used by <code>j62056.jar</code> and modified it to
  * work with any implementation of {@link SerialPort} (formerly it was just working with the implementation
  * <code>gnu.io.RXTXPort</code>).
- * 
+ *
  * @author MatthiasS
  *
  */
@@ -54,9 +53,10 @@ class JRxTxPort implements org.openmuc.jrxtx.SerialPort {
             StopBits stopBits, FlowControl flowControl) throws IOException {
         try {
             BundleContext bundleContext = FrameworkUtil.getBundle(JRxTxPort.class).getBundleContext();
-            ServiceReference<@NonNull SerialPortManager> serialPortManagerService = bundleContext
-                    .getServiceReference(SerialPortManager.class);
-            SerialPortManager serialPortManager = bundleContext.getService(serialPortManagerService);
+            ServiceTracker<SerialPortManager, SerialPortManager> serviceTracker = new ServiceTracker<>(bundleContext,
+                    SerialPortManager.class, null);
+            serviceTracker.open();
+            SerialPortManager serialPortManager = serviceTracker.getService();
 
             SerialPortIdentifier serialPortIdentifier = serialPortManager.getIdentifier(portName);
             if (serialPortIdentifier == null) {
