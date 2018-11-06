@@ -23,7 +23,8 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -126,7 +127,7 @@ public class OneWireGPIOHandler extends BaseThingHandler {
     private void publishTemperatureSensorState(ChannelUID channelUID) {
         BigDecimal temp = readSensorTemperature(gpioBusFile);
         if (temp != null) {
-            updateState(channelUID, new DecimalType(temp));
+            updateState(channelUID, new QuantityType<>(temp, SIUnits.CELSIUS));
         }
     }
 
