@@ -10,6 +10,7 @@ package org.openhab.binding.nibeuplink;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -61,6 +62,11 @@ public final class NibeUplinkBindingConstants {
     public static final String DATA_API_FIELD_ID = "hpid";
     public static final String DATA_API_FIELD_DATA = "variables";
     public static final String DATA_API_FIELD_DATA_DEFAULT_VALUE = "0";
+
+    // web request constants
+    public static final long WEB_REQUEST_INITIAL_DELAY = TimeUnit.SECONDS.toMillis(30);
+    public static final long WEB_REQUEST_INTERVAL = TimeUnit.SECONDS.toMillis(5);
+    public static final int WEB_REQUEST_QUEUE_MAX_SIZE = 20;
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_VVM320, THING_TYPE_VVM310, THING_TYPE_F730, THING_TYPE_F750,

@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.nibeuplink.internal.connector;
 
+import static org.openhab.binding.nibeuplink.NibeUplinkBindingConstants.*;
+
 import java.io.UnsupportedEncodingException;
 import java.util.Queue;
 import java.util.concurrent.Future;
@@ -24,7 +26,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.openhab.binding.nibeuplink.config.NibeUplinkConfiguration;
 import org.openhab.binding.nibeuplink.handler.NibeUplinkHandler;
-import org.openhab.binding.nibeuplink.internal.AtomicReferenceUtils;
+import org.openhab.binding.nibeuplink.internal.AtomicReferenceTrait;
 import org.openhab.binding.nibeuplink.internal.command.Login;
 import org.openhab.binding.nibeuplink.internal.command.NibeUplinkCommand;
 import org.slf4j.Logger;
@@ -36,21 +38,17 @@ import org.slf4j.LoggerFactory;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class UplinkWebInterface implements AtomicReferenceUtils {
-
-    private static final long REQUEST_INITIAL_DELAY = 30000;
-    private static final long REQUEST_INTERVAL = 5000;
+public class UplinkWebInterface implements AtomicReferenceTrait {
 
     private final Logger logger = LoggerFactory.getLogger(UplinkWebInterface.class);
 
     /**
-     * Configuration of the bridge from
-     * {@link org.openhab.BoxHandler.fritzaha.handler.FritzAhaBridgeHandler}
+     * Configuration
      */
     private final NibeUplinkConfiguration config;
 
     /**
-     * Bridge thing handler for updating thing status
+     * handler for updating thing status
      */
     private final NibeUplinkHandler uplinkHandler;
 
@@ -98,7 +96,7 @@ public class UplinkWebInterface implements AtomicReferenceUtils {
          * constructor
          */
         WebRequestExecutor() {
-            this.commandQueue = new BlockingArrayQueue<>(20);
+            this.commandQueue = new BlockingArrayQueue<>(WEB_REQUEST_QUEUE_MAX_SIZE);
         }
 
         /**
@@ -107,7 +105,16 @@ public class UplinkWebInterface implements AtomicReferenceUtils {
          * @param command the command which will be queued
          */
         void enqueue(NibeUplinkCommand command) {
-            commandQueue.add(command);
+            try {
+                commandQueue.add(command);
+            } catch (IllegalStateException ex) {
+                if (commandQueue.size() >= WEB_REQUEST_QUEUE_MAX_SIZE) {
+                    logger.debug(
+                            "Could not add command to command queue because queue is already full. Maybe NIBE Uplink is down?");
+                } else {
+                    logger.warn("Could not add command to queue - IllegalStateException");
+                }
+            }
         }
 
         /**
@@ -163,7 +170,7 @@ public class UplinkWebInterface implements AtomicReferenceUtils {
      */
     public void start() {
         updateJobReference(requestExecutorJobReference, scheduler.scheduleWithFixedDelay(requestExecutor,
-                REQUEST_INITIAL_DELAY, REQUEST_INTERVAL, TimeUnit.MILLISECONDS));
+                WEB_REQUEST_INITIAL_DELAY, WEB_REQUEST_INTERVAL, TimeUnit.MILLISECONDS));
     }
 
     /**

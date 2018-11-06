@@ -63,10 +63,10 @@ public final class F730Channels extends BaseChannels {
             "EB100-EP14-BT16 Evaporator", ChannelGroup.COMPRESSOR, ScaleFactor.DIV_10, SIUnits.CELSIUS));
     public static final Channel CH_43136 = INSTANCE.addChannel(new QuantityChannel("43136",
             "Compressor Frequency, Actual", ChannelGroup.COMPRESSOR, ScaleFactor.DIV_10, SmartHomeUnits.HERTZ));
-    public static final Channel CH_43122 = INSTANCE.addChannel(new QuantityChannel("43122", "Compr. current min.freq.",
-            ChannelGroup.COMPRESSOR, ScaleFactor.DIV_10, SmartHomeUnits.HERTZ));
-    public static final Channel CH_43123 = INSTANCE.addChannel(new QuantityChannel("43123", "Compr. current max.freq.",
-            ChannelGroup.COMPRESSOR, ScaleFactor.DIV_10, SmartHomeUnits.HERTZ));
+    public static final Channel CH_43122 = INSTANCE.addChannel(
+            new QuantityChannel("43122", "Compr. current min.freq.", ChannelGroup.COMPRESSOR, SmartHomeUnits.HERTZ));
+    public static final Channel CH_43123 = INSTANCE.addChannel(
+            new QuantityChannel("43123", "Compr. current max.freq.", ChannelGroup.COMPRESSOR, SmartHomeUnits.HERTZ));
     public static final Channel CH_43066 = INSTANCE.addChannel(
             new QuantityChannel("43066", "Defrosting time", ChannelGroup.COMPRESSOR, SmartHomeUnits.SECOND));
 
