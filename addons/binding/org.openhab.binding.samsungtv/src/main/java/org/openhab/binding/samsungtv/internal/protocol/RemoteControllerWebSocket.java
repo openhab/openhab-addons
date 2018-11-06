@@ -413,8 +413,7 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
                                     break;
                                 case "wakeup":
                                     logger.debug("wakeup");
-                                    callback.powerUpdated(true, false);
-                                    // check artmode status to know for certain
+                                    // check artmode status to know complete status before updating
                                     getArtmodeStatus();
                                     break;
                                 default:
