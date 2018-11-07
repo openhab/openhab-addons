@@ -47,6 +47,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jsoup.helper.StringUtil;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAnnouncementContent;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAnnouncementTarget;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAnnouncementTarget.TargetDevice;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAscendingAlarm;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAscendingAlarm.AscendingAlarmModel;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAutomation;
@@ -913,6 +916,53 @@ public class Connection {
         }
     }
 
+    public void sendNotificationToMobileApp(String customerId, String text, @Nullable String title)
+            throws IOException, URISyntaxException {
+        Map<String, Object> parameters = new Hashtable<String, Object>();
+        parameters.put("notificationMessage", text);
+        parameters.put("alexaUrl", "#v2/behaviors");
+        if (title != null && !StringUtils.isEmpty(title)) {
+            parameters.put("title", title);
+        } else {
+            parameters.put("title", "OpenHAB");
+        }
+        parameters.put("customerId", customerId);
+        executeSequenceCommand(null, "Alexa.Notifications.SendMobilePush", parameters);
+    }
+
+    public void sendAnnouncement(Device device, String text, @Nullable String title)
+            throws IOException, URISyntaxException {
+        Map<String, Object> parameters = new Hashtable<String, Object>();
+        parameters.put("expireAfter", "PT5S");
+        JsonAnnouncementContent[] contentArray = new JsonAnnouncementContent[1];
+        JsonAnnouncementContent content = new JsonAnnouncementContent();
+        if (StringUtils.isEmpty(title)) {
+            content.display.title = "OpenHAB";
+        } else {
+            content.display.title = title;
+        }
+        content.display.body = text;
+        content.speak.value = text;
+
+        contentArray[0] = content;
+
+        parameters.put("content", contentArray);
+
+        JsonAnnouncementTarget target = new JsonAnnouncementTarget();
+        target.customerId = device.deviceOwnerCustomerId;
+        TargetDevice[] devices = new TargetDevice[1];
+        TargetDevice deviceTarget = target.new TargetDevice();
+        devices[0] = deviceTarget;
+        target.devices = devices;
+        parameters.put("target", target);
+
+        String customerId = device.deviceOwnerCustomerId;
+        if (customerId != null) {
+            parameters.put("customerId", customerId);
+        }
+        executeSequenceCommand(null, "AlexaAnnouncement", parameters);
+    }
+
     public void textToSpeech(Device device, String text, int ttsVolume, int standardVolume)
             throws IOException, URISyntaxException {
 
@@ -948,8 +998,8 @@ public class Connection {
 
     // commands: Alexa.Weather.Play, Alexa.Traffic.Play, Alexa.FlashBriefing.Play, Alexa.GoodMorning.Play,
     // Alexa.SingASong.Play, Alexa.TellStory.Play, Alexa.Speak (textToSpeach)
-    public void executeSequenceCommand(Device device, String command, @Nullable Map<String, Object> parameters)
-            throws IOException, URISyntaxException {
+    public void executeSequenceCommand(@Nullable Device device, String command,
+            @Nullable Map<String, Object> parameters) throws IOException, URISyntaxException {
         JsonObject nodeToExecute = createExecutionNode(device, command, parameters);
         executeSequenceNode(nodeToExecute);
     }
@@ -963,6 +1013,9 @@ public class Connection {
         request.sequenceJson = gson.toJson(sequenceJson);
         String json = gson.toJson(request);
 
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("Routines-Version", "1.1.218665");
+
         makeRequest("POST", alexaServer + "/api/behaviors/preview", json, true, true, null);
     }
 
@@ -975,12 +1028,15 @@ public class Connection {
         executeSequenceNode(serialNode);
     }
 
-    private JsonObject createExecutionNode(Device device, String command, @Nullable Map<String, Object> parameters) {
+    private JsonObject createExecutionNode(@Nullable Device device, String command,
+            @Nullable Map<String, Object> parameters) {
         JsonObject operationPayload = new JsonObject();
-        operationPayload.addProperty("deviceType", device.deviceType);
-        operationPayload.addProperty("deviceSerialNumber", device.serialNumber);
-        operationPayload.addProperty("locale", "");
-        operationPayload.addProperty("customerId", device.deviceOwnerCustomerId);
+        if (device != null) {
+            operationPayload.addProperty("deviceType", device.deviceType);
+            operationPayload.addProperty("deviceSerialNumber", device.serialNumber);
+            operationPayload.addProperty("locale", "");
+            operationPayload.addProperty("customerId", device.deviceOwnerCustomerId);
+        }
         if (parameters != null) {
             for (String key : parameters.keySet()) {
                 Object value = parameters.get(key);
@@ -1148,7 +1204,7 @@ public class Connection {
         String response;
         try {
             Map<String, String> headers = new HashMap<String, String>();
-            headers.put("Routines-Version", "1.1.201102");
+            headers.put("Routines-Version", "1.1.218665");
             response = makeRequestAndReturnString("GET",
                     alexaServer + "/api/behaviors/entities?skillId=amzn1.ask.1p.music", null, true, headers);
         } catch (IOException | URISyntaxException e) {
