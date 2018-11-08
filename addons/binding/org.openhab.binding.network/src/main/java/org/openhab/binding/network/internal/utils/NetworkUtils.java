@@ -202,7 +202,7 @@ public class NetworkUtils {
         if (StringUtils.isBlank(result)) {
             return null;
         } else if (result.contains("Thomas Habets")) {
-            if (result.matches("(.*)w sec(\s*)Specify a timeout(.*)")) {
+            if (result.matches("(.*)w sec(\\s*)Specify a timeout(.*)")) {
                 return ArpPingUtilEnum.THOMAS_HABERT_ARPING;
             } else {
                 return ArpPingUtilEnum.THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT;
