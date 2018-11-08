@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.icloud.internal.discovery;
 
-import static org.openhab.binding.icloud.ICloudBindingConstants.*;
+import static org.openhab.binding.icloud.internal.ICloudBindingConstants.*;
 
 import java.util.List;
 
@@ -18,8 +18,8 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.i18n.LocaleProvider;
 import org.eclipse.smarthome.core.i18n.TranslationProvider;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.icloud.handler.ICloudAccountBridgeHandler;
 import org.openhab.binding.icloud.internal.ICloudDeviceInformationListener;
+import org.openhab.binding.icloud.internal.handler.ICloudAccountBridgeHandler;
 import org.openhab.binding.icloud.internal.json.response.ICloudDeviceInformation;
 import org.openhab.binding.icloud.internal.utilities.ICloudTextTranslator;
 import org.osgi.framework.Bundle;

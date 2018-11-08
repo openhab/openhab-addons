@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.icloud.handler;
+package org.openhab.binding.icloud.internal.handler;
 
-import static org.openhab.binding.icloud.ICloudBindingConstants.*;
+import static org.openhab.binding.icloud.internal.ICloudBindingConstants.*;
 
 import java.io.IOException;
 import java.time.ZoneId;
