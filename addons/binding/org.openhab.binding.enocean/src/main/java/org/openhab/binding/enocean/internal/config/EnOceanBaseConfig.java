@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.enocean.internal.config;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.smarthome.core.util.HexUtils;
 
@@ -19,7 +19,7 @@ import org.eclipse.smarthome.core.util.HexUtils;
 public class EnOceanBaseConfig {
     public String enoceanId;
 
-    public ArrayList<String> receivingEEPId;
+    public List<String> receivingEEPId;
 
     public byte[] getEnOceanId() {
         return HexUtils.hexToBytes(enoceanId);

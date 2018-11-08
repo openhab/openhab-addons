@@ -13,7 +13,6 @@ Export-Package:
  org.openhab.binding.enocean.handler,
  org.openhab.binding.enocean.profiles
 Import-Package: 
- gnu.io,
  javax.measure.quantity,
  org.apache.commons.io,
  org.eclipse.jdt.annotation;resolution:=optional,
