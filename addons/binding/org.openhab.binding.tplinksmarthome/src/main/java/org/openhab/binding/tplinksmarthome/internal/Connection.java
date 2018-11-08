@@ -15,6 +15,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,18 +28,27 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class Connection {
 
+    public static final int TP_LINK_SMART_HOME_PORT = 9999;
+
     private Logger logger = LoggerFactory.getLogger(Connection.class);
 
-    public static final int SMART_PLUG_PORT = 9999;
-
-    private final String ipAddress;
+    private @Nullable String ipAddress;
 
     /**
      * Initializes a connection to the given ip address.
      *
      * @param ipAddress ip address of the connection
      */
-    public Connection(String ipAddress) {
+    public Connection(@Nullable String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
+
+    /**
+     * Set the ip address to connect to.
+     *
+     * @param ipAddress The ip address to connect to
+     */
+    public void setIpAddress(String ipAddress) {
         this.ipAddress = ipAddress;
     }
 
@@ -78,9 +88,12 @@ public class Connection {
      *
      * @return new Socket instance
      * @throws UnknownHostException exception in case the host could not be determined
-     * @throws IOException exception in case device not reachable
+     * @throws IOException          exception in case device not reachable
      */
     protected Socket createSocket() throws UnknownHostException, IOException {
-        return new Socket(ipAddress, SMART_PLUG_PORT);
+        if (ipAddress == null) {
+            throw new IOException("Ip address not set. Wait for discovery or manually trigger discovery process.");
+        }
+        return new Socket(ipAddress, TP_LINK_SMART_HOME_PORT);
     }
 }

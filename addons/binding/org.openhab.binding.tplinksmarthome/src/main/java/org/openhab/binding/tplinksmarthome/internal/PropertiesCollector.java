@@ -33,8 +33,8 @@ public final class PropertiesCollector {
      * Collect all properties of the thing from the {@link Sysinfo} object.
      *
      * @param thingTypeUID thing to get the properties for
-     * @param ipAddress ip address of the device
-     * @param sysinfo system info data returned from the device
+     * @param ipAddress    ip address of the device
+     * @param sysinfo      system info data returned from the device
      * @return map of properties
      */
     public static Map<String, Object> collectProperties(ThingTypeUID thingTypeUID, String ipAddress, Sysinfo sysinfo) {
@@ -58,11 +58,11 @@ public final class PropertiesCollector {
      * Collect generic properties.
      *
      * @param properties properties object to store properties in
-     * @param sysinfo system info data returned from the device
+     * @param sysinfo    system info data returned from the device
      */
     private static void collectProperties(Map<String, Object> properties, Sysinfo sysinfo) {
+        putNonNull(properties, CONFIG_DEVICE_ID, sysinfo.getDeviceId());
         putNonNull(properties, PROPERTY_MODEL, sysinfo.getModel());
-        putNonNull(properties, PROPERTY_DEVICE_ID, sysinfo.getDeviceId());
         putNonNull(properties, PROPERTY_HARDWARE_VERSION, sysinfo.getHwVer());
         putNonNull(properties, PROPERTY_SOFWARE_VERSION, sysinfo.getSwVer());
         putNonNull(properties, PROPERTY_HARDWARE_ID, sysinfo.getHwId());
@@ -73,7 +73,7 @@ public final class PropertiesCollector {
      * Collect Smart Bulb specific properties.
      *
      * @param properties properties object to store properties in
-     * @param sysinfo system info data returned from the device
+     * @param sysinfo    system info data returned from the device
      */
     private static void collectPropertiesBulb(Map<String, Object> properties, Sysinfo sysinfo) {
         putNonNull(properties, PROPERTY_TYPE, sysinfo.getType());
@@ -86,7 +86,7 @@ public final class PropertiesCollector {
      * Collect Smart Range Extender specific properties.
      *
      * @param properties properties object to store properties in
-     * @param sysinfo system info data returned from the device
+     * @param sysinfo    system info data returned from the device
      */
     private static void collectPropertiesRangeExtender(Map<String, Object> properties, Sysinfo sysinfo) {
         Sysinfo system = sysinfo.getSystem();
@@ -101,7 +101,7 @@ public final class PropertiesCollector {
      * Collect Smart Switch specific properties.
      *
      * @param properties properties object to store properties in
-     * @param sysinfo system info data returned from the device
+     * @param sysinfo    system info data returned from the device
      */
     private static void collectPropertiesOther(Map<String, Object> properties, Sysinfo sysinfo) {
         putNonNull(properties, PROPERTY_TYPE, sysinfo.getType());
