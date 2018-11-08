@@ -179,10 +179,10 @@ public class SonyPS4Handler extends BaseThingHandler {
             parsePacket(packet);
         } catch (SocketTimeoutException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.info("PS4 communication timeout. Diagnostic: {}", e.getMessage());
+            logger.debug("PS4 communication timeout. Diagnostic: {}", e.getMessage());
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.info("PS4 device not found. Diagnostic: {}", e.getMessage());
+            logger.debug("PS4 device not found. Diagnostic: {}", e.getMessage());
         }
     }
 
@@ -196,7 +196,7 @@ public class SonyPS4Handler extends BaseThingHandler {
             socket.send(packet);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.info("PS4 device not found. Diagnostic: {}", e.getMessage());
+            logger.debug("PS4 device not found. Diagnostic: {}", e.getMessage());
         }
     }
 
@@ -211,7 +211,7 @@ public class SonyPS4Handler extends BaseThingHandler {
             return true;
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.info("PS4 device not found. Diagnostic: {}", e.getMessage());
+            logger.debug("PS4 device not found. Diagnostic: {}", e.getMessage());
         }
         return false;
     }
@@ -264,7 +264,7 @@ public class SonyPS4Handler extends BaseThingHandler {
             // Todo! Here we should probably do some checks that we are actually logged in.
             return true;
         } else {
-            logger.warn("PS4 no login response!");
+            logger.debug("PS4 no login response!");
             return false;
         }
     }
@@ -353,7 +353,7 @@ public class SonyPS4Handler extends BaseThingHandler {
                 byte[] appDecrypt = ps4PacketHandler.decryptResponsePacket(respBuff);
                 logger.debug("PS4 application response: {}", appDecrypt);
             } else {
-                logger.warn("PS4 no application response!");
+                logger.debug("PS4 no application response!");
             }
 
         } catch (SocketTimeoutException e) {
@@ -480,6 +480,9 @@ public class SonyPS4Handler extends BaseThingHandler {
     private void updateApplicationTitleid(String titleid) {
         currentApplicationId = titleid;
         logger.debug("PS4 current application title id: {}", currentApplicationId);
+        if (!isLinked(CHANNEL_APPLICATION_IMAGE)) {
+            return;
+        }
         RawType artWork = ps4ArtworkHandler.fetchArtworkForTitleid(titleid, config.getArtworkSize());
         if (artWork != null) {
             currentArtwork = artWork;
