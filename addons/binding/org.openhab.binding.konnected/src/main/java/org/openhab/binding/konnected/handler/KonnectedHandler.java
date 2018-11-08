@@ -182,13 +182,16 @@ public class KonnectedHandler extends BaseThingHandler {
         }
 
         else {
-            this.validateConfigurationParameters((Map<String, Object>) testConfig);
+            this.config = testConfig;
         }
+
     }
 
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters)
             throws ConfigValidationException {
+
+        this.validateConfigurationParameters(configurationParameters);
         for (Entry<String, Object> configurationParameter : configurationParameters.entrySet()) {
             Object value = configurationParameter.getValue();
             logger.debug("Controller Configuration update {} to {}", configurationParameter.getKey(), value);
@@ -244,6 +247,7 @@ public class KonnectedHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
             }
         } catch (IOException e) {
+            logger.trace("There was an IOEcption Error thrown during HandleConfigurationUpdate()");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -263,6 +267,7 @@ public class KonnectedHandler extends BaseThingHandler {
             try {
                 webHookServlet.activate(this);
             } catch (KonnectedWebHookFail e) {
+                logger.trace("there was an error activating the servelet: {}", e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             }
             try {
