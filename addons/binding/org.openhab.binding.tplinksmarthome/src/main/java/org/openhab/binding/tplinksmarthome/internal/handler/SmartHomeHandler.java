@@ -11,7 +11,6 @@ package org.openhab.binding.tplinksmarthome.internal.handler;
 import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.*;
 
 import java.io.IOException;
-import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -55,7 +54,7 @@ public class SmartHomeHandler extends BaseThingHandler {
     private @NonNullByDefault({}) TPLinkSmartHomeConfiguration configuration;
     private @NonNullByDefault({}) Connection connection;
     private @NonNullByDefault({}) ScheduledFuture<?> refreshJob;
-    private @NonNullByDefault({}) ExpiringCache<Optional<DeviceState>> cache;
+    private @NonNullByDefault({}) ExpiringCache<@Nullable DeviceState> cache;
 
     /**
      * Constructor
@@ -101,7 +100,7 @@ public class SmartHomeHandler extends BaseThingHandler {
         }
         logger.debug("Initializing TP-Link Smart device on ip {}", configuration.ipAddress);
         connection = createConnection(configuration);
-        cache = new ExpiringCache<Optional<DeviceState>>(TimeUnit.SECONDS.toMillis(configuration.refresh),
+        cache = new ExpiringCache<@Nullable DeviceState>(TimeUnit.SECONDS.toMillis(configuration.refresh),
                 this::refreshCache);
         updateStatus(ThingStatus.UNKNOWN);
         // While config.xml defines refresh as min 1, this check is used to run a test that doesn't start refresh.
@@ -120,7 +119,8 @@ public class SmartHomeHandler extends BaseThingHandler {
         return new Connection(config.ipAddress);
     }
 
-    private Optional<DeviceState> refreshCache() {
+    @Nullable
+    private DeviceState refreshCache() {
         try {
             updateIpAddress();
             DeviceState deviceState = new DeviceState(connection.sendCommand(smartHomeDevice.getUpdateCommand()));
@@ -128,15 +128,14 @@ public class SmartHomeHandler extends BaseThingHandler {
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
             }
-
-            return Optional.of(deviceState);
+            return deviceState;
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            return Optional.empty();
+            return null;
         } catch (RuntimeException e) {
             logger.debug("Obtaining new device data unexpectedly crashed. If this keeps happening please report: ", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DISABLED, e.getMessage());
-            return Optional.empty();
+            return null;
         }
     }
 
@@ -194,7 +193,7 @@ public class SmartHomeHandler extends BaseThingHandler {
 
     void refreshChannels() {
         logger.trace("Update Channels for:{}", thing.getUID());
-        Optional<DeviceState> value = cache.getValue();
+        DeviceState value = cache.getValue();
         getThing().getChannels().forEach(channel -> updateChannelState(channel.getUID(), value));
     }
 
@@ -205,16 +204,16 @@ public class SmartHomeHandler extends BaseThingHandler {
      * @param deviceState the state object containing the value to set of the channel
      *
      */
-    private void updateChannelState(ChannelUID channelUID, @Nullable Optional<DeviceState> deviceState) {
+    private void updateChannelState(ChannelUID channelUID, @Nullable DeviceState deviceState) {
         String channelId = channelUID.getId();
         final State state;
 
-        if (deviceState == null || !deviceState.isPresent()) {
+        if (deviceState == null) {
             state = UnDefType.UNDEF;
         } else if (CHANNEL_RSSI.equals(channelId)) {
-            state = new DecimalType(deviceState.get().getSysinfo().getRssi());
+            state = new DecimalType(deviceState.getSysinfo().getRssi());
         } else {
-            state = smartHomeDevice.updateChannel(channelId, deviceState.get());
+            state = smartHomeDevice.updateChannel(channelId, deviceState);
         }
         updateState(channelUID, state);
     }
