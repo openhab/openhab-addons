@@ -9,7 +9,7 @@
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>Room operating panel</label>
+		<label>Room Operating Panel</label>
 		<description>Room operating panel with different kinds of sensors (EEP: A5-10)</description>
 
 		<config-description>

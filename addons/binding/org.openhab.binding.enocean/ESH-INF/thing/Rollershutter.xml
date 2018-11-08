@@ -9,7 +9,7 @@
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>Rollershutter actuator</label>
+		<label>Rollershutter Actuator</label>
 		<description>Rollershutter like Eltako FSB14/61/71 or NodOn SIN-2-RS-01 (EEP: A5-37, D2-05)</description>
 
 		<config-description>

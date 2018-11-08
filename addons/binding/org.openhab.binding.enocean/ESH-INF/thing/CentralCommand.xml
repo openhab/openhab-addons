@@ -9,7 +9,7 @@
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>Switching and Dimming actuator</label>
+		<label>Switching/Dimming Actuator</label>
 		<description>Controls a switching or dimming actuator (EEP: A5-38)</description>
 
 		<config-description>

@@ -10,7 +10,7 @@
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>Classic device</label>
+		<label>Classic Device</label>
 		<description>This thing lets you control classic EnOcean devices by rocker switch messages (EEP: F6-02)</description>
 
 		<config-description>

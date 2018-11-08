@@ -9,7 +9,7 @@
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>Temperature and humidity sensor</label>
+		<label>Temperature/Humidity Sensor</label>
 		<description>Sensor which sends temperature and humidity data (EEP: A5-04)</description>
 
 		<config-description>

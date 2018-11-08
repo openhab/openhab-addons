@@ -9,7 +9,7 @@
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>00-00 - Generic thing</label>
+		<label>Generic Thing</label>
 		<description>Thing whose EEP is unsupported. Use a TRANSFORM to convert things messages.</description>
 
 		<config-description>

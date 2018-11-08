@@ -9,7 +9,7 @@
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>Light, temperature and occupancy sensor</label>
+		<label>Light/Temperature/Occupancy Sensor</label>
 		<description>Sensor which sends light, temperature and occupancy data (EEP: A5-08)</description>
 
 		<config-description>

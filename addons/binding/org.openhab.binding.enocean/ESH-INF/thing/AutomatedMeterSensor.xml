@@ -9,7 +9,7 @@
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>Automated meter sensor</label>
+		<label>Automated Meter Sensor</label>
 		<description>Sensor for different meters like energy measurement (EEP: A5-12)</description>
 
 		<config-description>
