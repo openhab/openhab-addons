@@ -198,11 +198,11 @@ public class NetworkUtils {
      * Return true if the external arp ping utility (arping) is available and executable on the given path.
      */
     public ArpPingUtilEnum determineNativeARPpingMethod(String arpToolPath) {
-        String result = ExecUtil.executeCommandLineAndWaitResponse(arpToolPath, 100);
+        String result = ExecUtil.executeCommandLineAndWaitResponse(arpToolPath + " --help", 100);
         if (StringUtils.isBlank(result)) {
             return null;
         } else if (result.contains("Thomas Habets")) {
-            if (result.contains("-w sec Specify a timeout")) {
+            if (result.matches("(.*)w sec(\\s*)Specify a timeout(.*)")) {
                 return ArpPingUtilEnum.THOMAS_HABERT_ARPING;
             } else {
                 return ArpPingUtilEnum.THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT;
