@@ -21,9 +21,14 @@ public class TPLinkSmartHomeConfiguration {
     public String ipAddress;
 
     /**
+     * The id of the device;
+     */
+    public String deviceId;
+
+    /**
      * Refresh rate for the device in seconds.
      */
-    public Integer refresh;
+    public int refresh;
 
     /**
      * Transition period of light bulb state changes in seconds.

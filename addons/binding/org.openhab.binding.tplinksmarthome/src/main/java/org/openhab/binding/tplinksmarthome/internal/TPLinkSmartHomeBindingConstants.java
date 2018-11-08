@@ -58,6 +58,7 @@ public final class TPLinkSmartHomeBindingConstants {
 
     // List of configuration keys
     public static final String CONFIG_IP = "ipAddress";
+    public static final String CONFIG_DEVICE_ID = "deviceId";
     public static final String CONFIG_REFRESH = "refresh";
     // Only for bulbs
     public static final String CONFIG_TRANSITION_PERIOD = "transitionPeriod";
@@ -67,7 +68,6 @@ public final class TPLinkSmartHomeBindingConstants {
     public static final String PROPERTY_MODEL = "model";
     public static final String PROPERTY_DEVICE_NAME = "device name";
     public static final String PROPERTY_MAC = "mac";
-    public static final String PROPERTY_DEVICE_ID = "device id";
     public static final String PROPERTY_HARDWARE_VERSION = "hardware version";
     public static final String PROPERTY_SOFWARE_VERSION = "sofware version";
     public static final String PROPERTY_HARDWARE_ID = "hardware id";
