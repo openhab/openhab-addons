@@ -9,6 +9,7 @@
 package org.openhab.binding.icloud.handler;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -39,15 +40,17 @@ import org.slf4j.LoggerFactory;
  * information to {@link DeviceDiscover} and to the {@link ICloudDeviceHandler}s.
  *
  * @author Patrik Gfeller - Initial Contribution
- * @author Hans-Jörg Merk
+ * @author Hans-Jörg Merk - Extended support with initial Contribution
  */
 public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ICloudAccountBridgeHandler.class);
+
+    private static final int CACHE_EXPIRY = (int) TimeUnit.SECONDS.toMillis(5);
+
     private final ICloudDeviceInformationParser deviceInformationParser = new ICloudDeviceInformationParser();
     private ICloudConnection connection;
     private ICloudAccountThingConfiguration config;
-    private final int CACHE_EXPIRY = 5 * 1000; // 5s
     private ExpiringCache<String> iCloudDeviceInformationCache;
 
     ServiceRegistration<?> service;
@@ -79,7 +82,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
             try {
                 connection = new ICloudConnection(config.appleId, config.password);
                 return connection.requestDeviceStatusJSON();
-            } catch (IOException e) {
+            } catch (IOException | URISyntaxException e) {
                 logger.warn("Unable to refresh device data", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 return null;
