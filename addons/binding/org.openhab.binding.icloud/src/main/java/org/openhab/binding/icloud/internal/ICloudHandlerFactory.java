@@ -95,11 +95,11 @@ public class ICloudHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Reference
-    protected void setLocaleProvider(final LocaleProvider localeProvider) {
+    protected void setLocaleProvider(LocaleProvider localeProvider) {
         this.localeProvider = localeProvider;
     }
 
-    protected void unsetLocaleProvider(final LocaleProvider localeProvider) {
+    protected void unsetLocaleProvider(LocaleProvider localeProvider) {
         this.localeProvider = null;
     }
 
