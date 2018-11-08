@@ -30,7 +30,11 @@ public class ICloudTlsCertificateProvider implements TlsCertificateProvider {
 
     @Override
     public URL getCertificate() {
-        // FIXME according to the API getResource could return `null` shall we handle this here or else where
-        return Thread.currentThread().getContextClassLoader().getResource("fmipmobile.crt");
+        URL resource = Thread.currentThread().getContextClassLoader().getResource("fmipmobile.crt");
+        if (resource != null) {
+            return resource;
+        } else {
+            throw new IllegalStateException("Certifcate resource not found or not accesible");
+        }
     }
 }
