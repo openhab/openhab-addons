@@ -26,6 +26,7 @@ import org.openhab.binding.tplinksmarthome.internal.device.SmartHomeDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.SwitchDevice;
 import org.openhab.binding.tplinksmarthome.internal.handler.SmartHomeHandler;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link TPLinkSmartHomeHandlerFactory} is responsible for creating things and thing handlers.
@@ -36,6 +37,8 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.tplinksmarthome")
 public class TPLinkSmartHomeHandlerFactory extends BaseThingHandlerFactory {
+
+    private @NonNullByDefault({}) TPLinkIpAddressService ipAddressService;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -65,6 +68,15 @@ public class TPLinkSmartHomeHandlerFactory extends BaseThingHandlerFactory {
         } else {
             return null;
         }
-        return new SmartHomeHandler(thing, device);
+        return new SmartHomeHandler(thing, device, ipAddressService);
+    }
+
+    @Reference
+    protected void setTPLinkIpAddressCache(TPLinkIpAddressService ipAddressCache) {
+        this.ipAddressService = ipAddressCache;
+    }
+
+    protected void unsetTPLinkIpAddressCache(TPLinkIpAddressService ipAddressCache) {
+        this.ipAddressService = null;
     }
 }
