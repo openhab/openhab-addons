@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.icloud.internal.json.request;
 
-import static org.openhab.binding.icloud.ICloudBindingConstants.FIND_MY_DEVICE_REQUEST_SUBJECT;
+import static org.openhab.binding.icloud.internal.ICloudBindingConstants.FIND_MY_DEVICE_REQUEST_SUBJECT;
 
 import com.google.gson.annotations.SerializedName;
 
