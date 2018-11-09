@@ -12,6 +12,9 @@ import java.util.Optional;
 
 import javax.ws.rs.client.WebTarget;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Class for holding the set of parameters used by set and get control info.
  *
@@ -19,6 +22,8 @@ import javax.ws.rs.client.WebTarget;
  *
  */
 public class ControlInfo {
+    private static Logger logger = LoggerFactory.getLogger(ControlInfo.class);
+
     public enum Mode {
         UNKNOWN(-1),
         AUTO(0),
@@ -43,6 +48,8 @@ public class ControlInfo {
                     return m;
                 }
             }
+
+            logger.debug("Unexpected Mode value of \"{}\"", value);
 
             // Default to auto
             return AUTO;
@@ -75,6 +82,8 @@ public class ControlInfo {
                 }
             }
 
+            logger.debug("Unexpected FanSpeed value of \"{}\"", value);
+
             // Default to auto
             return AUTO;
         }
@@ -104,24 +113,27 @@ public class ControlInfo {
                 }
             }
 
+            logger.debug("Unexpected FanMovement value of \"{}\"", value);
+
             // Default to stopped
             return STOPPED;
         }
     }
 
-    public boolean power;
-    public Mode mode;
+    public boolean power = false;
+    public Mode mode = Mode.AUTO;
     /** Degrees in Celsius. */
-    public Optional<Double> temp;
-    public FanSpeed fanSpeed;
-    public FanMovement fanMovement;
+    public Optional<Double> temp = Optional.empty();
+    public FanSpeed fanSpeed = FanSpeed.AUTO;
+    public FanMovement fanMovement = FanMovement.STOPPED;
     /* Not supported by all units. Sets the target humidity for dehumidifying. */
-    public Optional<Integer> targetHumidity;
+    public Optional<Integer> targetHumidity = Optional.empty();
 
     private ControlInfo() {
     }
 
     public static ControlInfo parse(String response) {
+        logger.debug("Parsing string: \"{}\"", response);
         ControlInfo info = new ControlInfo();
 
         for (String keyValuePair : response.split(",")) {
