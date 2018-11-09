@@ -78,33 +78,40 @@ public class NeeoDevice {
     private final String iconName;
 
     /**
+     * The driver version for the device
+     */
+    private final int driverVersion;
+
+    /**
      * Creates the device from the given parameters
      *
-     * @param thing the non-null thing
+     * @param thing    the non-null thing
      * @param channels the non-null, possibly empty channels
-     * @param type the device type
-     * @param timing the possibly null device timings
+     * @param type     the device type
+     * @param timing   the possibly null device timings
      */
     public NeeoDevice(Thing thing, List<NeeoDeviceChannel> channels, NeeoDeviceType type,
             @Nullable NeeoDeviceTiming timing) {
-        this(new NeeoThingUID(thing.getUID()), type, "openHAB", thing.getLabel(), channels, timing, null, null, null);
+        this(new NeeoThingUID(thing.getUID()), 0, type, "openHAB", thing.getLabel(), channels, timing, null, null,
+                null);
     }
 
     /**
      * Creates the device from the given parameters
      *
-     * @param uid the non-null uid
-     * @param type the non-null device type
-     * @param manufacturer the non-empty manufacturer
-     * @param name the non-empty name
-     * @param channels the non-null, possibly empty list of channels
-     * @param deviceTiming a possibly null device timings
+     * @param uid                the non-null uid
+     * @param driverVersion      the driver version for the device
+     * @param type               the non-null device type
+     * @param manufacturer       the non-empty manufacturer
+     * @param name               the non-empty name
+     * @param channels           the non-null, possibly empty list of channels
+     * @param deviceTiming       a possibly null device timings
      * @param deviceCapabilities a possibly null, possibly empty list of device capabilities
-     * @param specificName a possibly null, possibly empty specific name
-     * @param iconName a possibly null, possibly empty custom icon name
+     * @param specificName       a possibly null, possibly empty specific name
+     * @param iconName           a possibly null, possibly empty custom icon name
      */
-    public NeeoDevice(NeeoThingUID uid, NeeoDeviceType type, String manufacturer, @Nullable String name,
-            List<NeeoDeviceChannel> channels, @Nullable NeeoDeviceTiming deviceTiming,
+    public NeeoDevice(NeeoThingUID uid, int driverVersion, NeeoDeviceType type, String manufacturer,
+            @Nullable String name, List<NeeoDeviceChannel> channels, @Nullable NeeoDeviceTiming deviceTiming,
             @Nullable List<String> deviceCapabilities, @Nullable String specificName, @Nullable String iconName) {
         Objects.requireNonNull(uid, "UID is required");
         Objects.requireNonNull(type, "type is required");
@@ -159,6 +166,7 @@ public class NeeoDevice {
         }
 
         this.uid = uid;
+        this.driverVersion = driverVersion;
         this.type = type;
         this.manufacturer = manufacturer;
         this.name = name == null || StringUtils.isEmpty(name) ? "(N/A)" : name;
@@ -225,6 +233,15 @@ public class NeeoDevice {
     @Nullable
     public String getIconName() {
         return iconName;
+    }
+
+    /**
+     * Returns the driver version for the device
+     *
+     * @return a non-null driver version
+     */
+    public int getDriverVersion() {
+        return driverVersion;
     }
 
     /**
@@ -304,8 +321,8 @@ public class NeeoDevice {
     /**
      * Gets the channel for the given item name (and channel number)
      *
-     * @param itemName the non-empty item name
-     * @param subType the non-null sub type
+     * @param itemName   the non-empty item name
+     * @param subType    the non-null sub type
      * @param channelNbr the channel nbr
      * @return the channel or null if none found
      */
@@ -384,8 +401,9 @@ public class NeeoDevice {
             }
         }
 
-        return new NeeoDevice(uid, type, manufacturer, thing.getLabel(), newChannels, timing, deviceCapabilities,
-                specificName, iconName);
+        // TODO (increase driver version?)
+        return new NeeoDevice(uid, driverVersion, type, manufacturer, thing.getLabel(), newChannels, timing,
+                deviceCapabilities, specificName, iconName);
     }
 
     /**
@@ -399,5 +417,4 @@ public class NeeoDevice {
         return !NeeoDeviceType.EXCLUDE.equals(device.type) && !NeeoDeviceType.ACCESSOIRE.equals(device.type)
                 && !NeeoDeviceType.LIGHT.equals(device.type);
     }
-
 }

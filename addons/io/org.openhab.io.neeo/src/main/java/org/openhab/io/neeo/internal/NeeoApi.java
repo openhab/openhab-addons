@@ -112,8 +112,8 @@ public class NeeoApi implements AutoCloseable {
      * Constructs the APi from the given IP address, brain identifier and {@link ServiceContext}
      *
      * @param ipAddress the non-empty ip address
-     * @param brainId the non-empty brain id
-     * @param context the non-null {@link ServiceContext}
+     * @param brainId   the non-empty brain id
+     * @param context   the non-null {@link ServiceContext}
      * @throws IOException if an exception occurs connecting to the brain
      */
     public NeeoApi(String ipAddress, String brainId, ServiceContext context) throws IOException {
@@ -306,7 +306,15 @@ public class NeeoApi implements AutoCloseable {
      * Start the API by scheduling the connection via {@link #scheduleConnect()}
      */
     public void start() {
-        scheduleConnect();
+        scheduleConnect(0);
+    }
+
+    /**
+     * Restarts the API by closing and reopening the connection. Please note that this is currently an alias for
+     * {@link #start()} (which does the same thing)
+     */
+    public void restart() {
+        start();
     }
 
     /**
@@ -319,12 +327,21 @@ public class NeeoApi implements AutoCloseable {
     }
 
     /**
-     * Schedules a connection attempt (will cancel any prior connection attempt if active)l
+     * Schedules a connection attempt in 5 seconds. Simply calls {@link #scheduleConnect(int)} with 5 as it's parameter
      */
     private void scheduleConnect() {
+        scheduleConnect(5);
+    }
+
+    /**
+     * Schedules a connection attempt (will cancel any prior connection attempt if active)
+     *
+     * @param scheduledTimeInSeconds the time to wait (in seconds) before scheduling a connect
+     */
+    private void scheduleConnect(int scheduledTimeInSeconds) {
         NeeoUtil.cancel(connect.getAndSet(scheduler.schedule(() -> {
             connect();
-        }, 5, TimeUnit.SECONDS)));
+        }, scheduledTimeInSeconds, TimeUnit.SECONDS)));
     }
 
     /**
@@ -481,7 +498,7 @@ public class NeeoApi implements AutoCloseable {
      * Executes a recipe for the given deviceKey
      *
      * @param deviceKey the non-empty device key
-     * @param on true to start the recipe, false to stop
+     * @param on        true to start the recipe, false to stop
      * @throws IOException Signals that an I/O exception has occurred.
      */
     public void executeRecipe(String deviceKey, boolean on) throws IOException {
@@ -543,7 +560,7 @@ public class NeeoApi implements AutoCloseable {
      * Adds a {@link PropertyChangeListener} for the given propertyChange
      *
      * @param propertyName a non-null, non-empty property name
-     * @param listener a non-null listener to add
+     * @param listener     a non-null listener to add
      */
     public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
         NeeoUtil.requireNotEmpty(propertyName, "propertyName must not be empty");
