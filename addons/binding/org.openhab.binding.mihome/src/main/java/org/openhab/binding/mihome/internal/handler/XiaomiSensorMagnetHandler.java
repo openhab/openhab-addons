@@ -56,7 +56,7 @@ public class XiaomiSensorMagnetHandler extends XiaomiSensorBaseHandlerWithTimer 
                 }
             }
         }
-        super.parseReport(data);
+        parseDefault(data);
     }
 
     @Override
