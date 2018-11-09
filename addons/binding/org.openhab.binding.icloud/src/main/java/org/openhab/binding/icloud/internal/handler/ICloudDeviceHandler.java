@@ -42,6 +42,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Patrik Gfeller - Initial Contribution
  * @author Hans-Jörg Merk
+ * @author Gaël L'hopital - Added low battery
+ *
  */
 public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDeviceInformationListener {
     private final Logger logger = LoggerFactory.getLogger(ICloudDeviceHandler.class);
@@ -58,17 +60,14 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
         if (deviceInformationRecord != null) {
             deviceId = deviceInformationRecord.getId();
 
-            if (deviceInformationRecord.getDeviceStatus() == 200) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
-            }
+            updateStatus(deviceInformationRecord.getDeviceStatus() == 200 ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
 
             updateState(BATTERY_STATUS, new StringType(deviceInformationRecord.getBatteryStatus()));
 
             Double batteryLevel = deviceInformationRecord.getBatteryLevel();
             if (batteryLevel != Double.NaN) {
                 updateState(BATTERY_LEVEL, new DecimalType(deviceInformationRecord.getBatteryLevel() * 100));
+                updateState(LOW_BATTERY, batteryLevel < 0.2 ? OnOffType.ON : OnOffType.OFF);
             }
 
             if (deviceInformationRecord.getLocation() != null) {
@@ -116,9 +115,10 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
     private void updateLocationRelatedStates(ICloudDeviceInformation deviceInformationRecord) {
         DecimalType latitude = new DecimalType(deviceInformationRecord.getLocation().getLatitude());
         DecimalType longitude = new DecimalType(deviceInformationRecord.getLocation().getLongitude());
+        DecimalType altitude = new DecimalType(deviceInformationRecord.getLocation().getAltitude());
         DecimalType accuracy = new DecimalType(deviceInformationRecord.getLocation().getHorizontalAccuracy());
 
-        PointType location = new PointType(latitude, longitude);
+        PointType location = new PointType(latitude, longitude, altitude);
 
         updateState(LOCATION, location);
         updateState(LOCATION_ACCURACY, accuracy);
