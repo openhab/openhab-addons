@@ -107,9 +107,10 @@ public class NeeoDeviceSerializer implements JsonSerializer<NeeoDevice>, JsonDes
         final String specificName = jo.has("specificName") ? jo.get("specificName").getAsString() : null;
 
         final String iconName = jo.has("iconName") ? jo.get("iconName").getAsString() : null;
+        final int driverVersion = jo.has("driverVersion") ? jo.get("driverVersion").getAsInt() : 0;
 
         try {
-            return new NeeoDevice(uid, devType,
+            return new NeeoDevice(uid, driverVersion, devType,
                     manufacturer == null || StringUtils.isEmpty(manufacturer) ? NeeoUtil.NOTAVAILABLE : manufacturer,
                     name, Arrays.asList(channels), timing,
                     deviceCapabilities == null ? null : Arrays.asList(deviceCapabilities), specificName, iconName);
@@ -134,6 +135,7 @@ public class NeeoDeviceSerializer implements JsonSerializer<NeeoDevice>, JsonDes
         jsonObject.addProperty("name", device.getName());
         jsonObject.addProperty("specificName", device.getSpecificName());
         jsonObject.addProperty("iconName", device.getIconName());
+        jsonObject.addProperty("driverVersion", device.getDriverVersion());
 
         final JsonArray channels = (JsonArray) jsonContext.serialize(device.getChannels());
 
