@@ -61,6 +61,7 @@ public class NeeoBrainDeviceSerializer implements JsonSerializer<NeeoDevice> {
         final String adapterName = device.getUid().getNeeoUID();
         // jsonObject.addProperty("apiversion", "1.0"); // haven't decided if needed
         jsonObject.addProperty("adapterName", adapterName);
+        jsonObject.addProperty("driverVersion", device.getDriverVersion());
 
         jsonObject.addProperty("type", device.getType().toString());
         jsonObject.addProperty("manufacturer", device.getManufacturer());
@@ -235,10 +236,10 @@ public class NeeoBrainDeviceSerializer implements JsonSerializer<NeeoDevice> {
     /**
      * Helper method to create a base element with the given name/label/type/path
      *
-     * @param name the element name
+     * @param name  the element name
      * @param label the element label
-     * @param type the element type
-     * @param path the element path
+     * @param type  the element type
+     * @param path  the element path
      * @return the json object representing the base element
      */
     private JsonObject createBase(String name, String label, String type, String path) {
@@ -248,10 +249,10 @@ public class NeeoBrainDeviceSerializer implements JsonSerializer<NeeoDevice> {
     /**
      * Helper method to create a base element with the given name/label/type/path/sensor
      *
-     * @param name the element name
-     * @param label the element label
-     * @param type the element type
-     * @param path the element path
+     * @param name   the element name
+     * @param label  the element label
+     * @param type   the element type
+     * @param path   the element path
      * @param sensor the element sensor
      * @return the json object representing the base element
      */
@@ -262,12 +263,12 @@ public class NeeoBrainDeviceSerializer implements JsonSerializer<NeeoDevice> {
     /**
      * Helper method to create a base element with the given name/label/type/path/sensorname/sensor
      *
-     * @param name the element name
-     * @param label the element label
-     * @param type the element type
-     * @param path the element path
+     * @param name       the element name
+     * @param label      the element label
+     * @param type       the element type
+     * @param path       the element path
      * @param sensorName the element sensor name
-     * @param sensor the element sensor
+     * @param sensor     the element sensor
      * @return the json object representing the base element
      */
     private JsonObject createBase(String name, String label, String type, String path, @Nullable String sensorName,
