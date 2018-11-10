@@ -209,6 +209,7 @@ public class WiFiLEDHandler extends BaseThingHandler {
             updateState(WiFiLEDBindingConstants.CHANNEL_POWER, ledState.getPower());
             updateState(WiFiLEDBindingConstants.CHANNEL_COLOR, color);
             updateState(WiFiLEDBindingConstants.CHANNEL_WHITE, ledState.getWhite());
+            updateState(WiFiLEDBindingConstants.CHANNEL_WHITE2, ledState.getWhite2());
             updateState(WiFiLEDBindingConstants.CHANNEL_PROGRAM, ledState.getProgram());
             updateState(WiFiLEDBindingConstants.CHANNEL_PROGRAM_SPEED, ledState.getProgramSpeed());
 
