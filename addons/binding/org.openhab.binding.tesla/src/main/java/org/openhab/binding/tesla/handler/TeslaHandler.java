@@ -121,6 +121,7 @@ public class TeslaHandler extends BaseThingHandler {
     public final WebTarget vehicleTarget = vehiclesTarget.path(PATH_VEHICLE_ID);
     public final WebTarget dataRequestTarget = vehicleTarget.path(PATH_DATA_REQUEST);
     public final WebTarget commandTarget = vehicleTarget.path(PATH_COMMAND);
+    public final WebTarget wakeUpTarget = vehicleTarget.path(PATH_WAKE_UP);
     protected WebTarget eventTarget;
 
     // Threading and Job related variables
@@ -682,7 +683,7 @@ public class TeslaHandler extends BaseThingHandler {
     }
 
     protected boolean isAwake() {
-        return vehicle != null && !"asleep".equals(vehicle.state) && vehicle.vehicle_id != null;
+        return vehicle != null && "online".equals(vehicle.state) && vehicle.vehicle_id != null;
     }
 
     protected boolean isOnline() {
@@ -812,7 +813,7 @@ public class TeslaHandler extends BaseThingHandler {
     }
 
     public void wakeUp() {
-        sendCommand(COMMAND_WAKE_UP);
+        sendCommand(COMMAND_WAKE_UP, wakeUpTarget);
     }
 
     protected Vehicle queryVehicle() {
@@ -1250,8 +1251,10 @@ public class TeslaHandler extends BaseThingHandler {
             try {
                 String result = "";
 
-                if (isAwake() && getThing().getStatus() == ThingStatus.ONLINE) {
-                    result = invokeAndParse(request, payLoad, target);
+                if (getThing().getStatus() == ThingStatus.ONLINE) {
+                    if (request.equals(COMMAND_WAKE_UP) || isAwake()) {
+                        result = invokeAndParse(request, payLoad, target);
+                    }
                 }
 
                 if (result != null && !"".equals(result)) {
