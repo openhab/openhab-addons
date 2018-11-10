@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
@@ -45,6 +46,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.TypeParser;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.smartmeter.SmartMeterBindingConstants;
 import org.openhab.binding.smartmeter.SmartMeterConfiguration;
 import org.openhab.binding.smartmeter.internal.conformity.Conformity;
@@ -71,11 +73,14 @@ public class SmartMeterHandler extends BaseThingHandler {
     private Conformity conformity;
     private MeterValueListener valueChangeListener;
     private SmartMeterChannelTypeProvider channelTypeProvider;
+    private @NonNull Supplier<SerialPortManager> serialPortManagerSupplier;
 
-    public SmartMeterHandler(Thing thing, SmartMeterChannelTypeProvider channelProvider) {
+    public SmartMeterHandler(Thing thing, SmartMeterChannelTypeProvider channelProvider,
+            Supplier<SerialPortManager> serialPortManagerSupplier) {
         super(thing);
         Objects.requireNonNull(channelProvider, "SmartMeterChannelTypeProvider must not be null");
         this.channelTypeProvider = channelProvider;
+        this.serialPortManagerSupplier = serialPortManagerSupplier;
     }
 
     @Override
@@ -107,8 +112,8 @@ public class SmartMeterHandler extends BaseThingHandler {
             int baudrate = config.baudrate == null ? Baudrate.AUTO.getBaudrate()
                     : Baudrate.fromString(config.baudrate).getBaudrate();
             this.conformity = config.conformity == null ? Conformity.NONE : Conformity.valueOf(config.conformity);
-            this.smlDevice = MeterDeviceFactory.getDevice(config.mode, this.thing.getUID().getAsString(), config.port,
-                    pullSequence, baudrate, config.baudrateChangeDelay);
+            this.smlDevice = MeterDeviceFactory.getDevice(serialPortManagerSupplier, config.mode,
+                    this.thing.getUID().getAsString(), config.port, pullSequence, baudrate, config.baudrateChangeDelay);
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.HANDLER_CONFIGURATION_PENDING,
                     "Waiting for messages from device");
 

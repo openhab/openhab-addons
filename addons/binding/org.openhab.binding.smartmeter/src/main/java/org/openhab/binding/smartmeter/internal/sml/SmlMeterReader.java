@@ -9,9 +9,11 @@
 package org.openhab.binding.smartmeter.internal.sml;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.smartmeter.connectors.IMeterReaderConnector;
 import org.openhab.binding.smartmeter.internal.MeterDevice;
 import org.openhab.binding.smartmeter.internal.MeterValue;
@@ -41,16 +43,18 @@ public final class SmlMeterReader extends MeterDevice<SmlFile> {
     /**
      * Static factory method to create a SmlDevice object with a serial connector member.
      *
+     * @param serialPortManagerSupplier
+     *
      * @param deviceId the id of the device as defined in openHAB configuration.
      * @param pullRequestRequired identicates if SML values have to be actively requested.
      * @param serialPort the port where the device is connected as defined in openHAB configuration.
      * @param serialParameter
      * @param initMessage
      */
-    public static SmlMeterReader createInstance(String deviceId, String serialPort, byte @Nullable [] initMessage,
-            int baudrate, int baudrateChangeDelay) {
-        SmlMeterReader device = new SmlMeterReader(deviceId, serialPort, initMessage, baudrate, baudrateChangeDelay,
-                ProtocolMode.SML);
+    public static SmlMeterReader createInstance(Supplier<SerialPortManager> serialPortManagerSupplier, String deviceId,
+            String serialPort, byte @Nullable [] initMessage, int baudrate, int baudrateChangeDelay) {
+        SmlMeterReader device = new SmlMeterReader(serialPortManagerSupplier, deviceId, serialPort, initMessage,
+                baudrate, baudrateChangeDelay, ProtocolMode.SML);
 
         return device;
     }
@@ -64,9 +68,10 @@ public final class SmlMeterReader extends MeterDevice<SmlFile> {
      * @param initMessage
      * @param baudrate
      */
-    private SmlMeterReader(String deviceId, String serialPort, byte @Nullable [] initMessage, int baudrate,
-            int baudrateChangeDelay, ProtocolMode protocolMode) {
-        super(deviceId, serialPort, initMessage, baudrate, baudrateChangeDelay, protocolMode);
+    private SmlMeterReader(Supplier<SerialPortManager> serialPortManagerSupplier, String deviceId, String serialPort,
+            byte @Nullable [] initMessage, int baudrate, int baudrateChangeDelay, ProtocolMode protocolMode) {
+        super(serialPortManagerSupplier, deviceId, serialPort, initMessage, baudrate, baudrateChangeDelay,
+                protocolMode);
 
         logger.debug("Created SmlDevice instance {} with serial connector on port {}", deviceId, serialPort);
     }
@@ -141,9 +146,9 @@ public final class SmlMeterReader extends MeterDevice<SmlFile> {
     }
 
     @Override
-    protected IMeterReaderConnector<SmlFile> createConnector(String serialPort, int baudrate, int baudrateChangeDelay,
-            ProtocolMode protocolMode) {
-        return new SmlSerialConnector(serialPort, baudrate, baudrateChangeDelay);
+    protected IMeterReaderConnector<SmlFile> createConnector(Supplier<SerialPortManager> serialPortManagerSupplier,
+            String serialPort, int baudrate, int baudrateChangeDelay, ProtocolMode protocolMode) {
+        return new SmlSerialConnector(serialPortManagerSupplier, serialPort, baudrate, baudrateChangeDelay);
     }
 
     @Override

@@ -8,11 +8,14 @@
  */
 package org.openhab.binding.smartmeter.internal.iec62056;
 
+import java.util.function.Supplier;
+
 import javax.measure.Quantity;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.smartmeter.connectors.IMeterReaderConnector;
 import org.openhab.binding.smartmeter.internal.MeterDevice;
 import org.openhab.binding.smartmeter.internal.MeterValue;
@@ -29,15 +32,18 @@ import org.openmuc.j62056.DataSet;
 @NonNullByDefault
 public class Iec62056_21MeterReader extends MeterDevice<DataMessage> {
 
-    public Iec62056_21MeterReader(String deviceId, String serialPort, byte @Nullable [] initMessage, int baudrate,
-            int baudrateChangeDelay, ProtocolMode protocolMode) {
-        super(deviceId, serialPort, initMessage, baudrate, baudrateChangeDelay, protocolMode);
+    public Iec62056_21MeterReader(Supplier<SerialPortManager> serialPortManagerSupplier, String deviceId,
+            String serialPort, byte @Nullable [] initMessage, int baudrate, int baudrateChangeDelay,
+            ProtocolMode protocolMode) {
+        super(serialPortManagerSupplier, deviceId, serialPort, initMessage, baudrate, baudrateChangeDelay,
+                protocolMode);
     }
 
     @Override
-    protected IMeterReaderConnector<DataMessage> createConnector(String serialPort, int baudrate,
-            int baudrateChangeDelay, ProtocolMode protocolMode) {
-        return new Iec62056_21SerialConnector(serialPort, baudrate, baudrateChangeDelay, protocolMode);
+    protected IMeterReaderConnector<DataMessage> createConnector(Supplier<SerialPortManager> serialPortManagerSupplier,
+            String serialPort, int baudrate, int baudrateChangeDelay, ProtocolMode protocolMode) {
+        return new Iec62056_21SerialConnector(serialPortManagerSupplier, serialPort, baudrate, baudrateChangeDelay,
+                protocolMode);
     }
 
     @Override

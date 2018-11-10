@@ -10,9 +10,11 @@ package org.openhab.binding.smartmeter.internal.iec62056;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.smartmeter.connectors.ConnectorBase;
 import org.openhab.binding.smartmeter.internal.helper.Baudrate;
 import org.openhab.binding.smartmeter.internal.helper.ProtocolMode;
@@ -42,8 +44,8 @@ public class Iec62056_21SerialConnector extends ConnectorBase<DataMessage> {
     @Nullable
     private Iec21Port iec21Port;
 
-    public Iec62056_21SerialConnector(String portName, int baudrate, int baudrateChangeDelay,
-            ProtocolMode protocolMode) {
+    public Iec62056_21SerialConnector(Supplier<SerialPortManager> serialPortManagerSupplier, String portName,
+            int baudrate, int baudrateChangeDelay, ProtocolMode protocolMode) {
         super(portName);
         this.baudrate = baudrate;
         this.baudrateChangeDelay = baudrateChangeDelay;

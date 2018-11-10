@@ -12,6 +12,7 @@ import static org.openhab.binding.smartmeter.SmartMeterBindingConstants.THING_TY
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -20,6 +21,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Reference;
@@ -38,6 +40,8 @@ public class SmartMeterHandlerFactory extends BaseThingHandlerFactory {
 
     private @NonNullByDefault({}) SmartMeterChannelTypeProvider channelProvider;
 
+    private @NonNullByDefault({}) Supplier<SerialPortManager> serialPortManagerSupplier = () -> null;
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -52,13 +56,22 @@ public class SmartMeterHandlerFactory extends BaseThingHandlerFactory {
         this.channelProvider = null;
     }
 
+    @Reference
+    protected void setSerialPortManager(SerialPortManager serialPortManager) {
+        serialPortManagerSupplier = () -> serialPortManager;
+    }
+
+    protected void unsetSerialPortManager(SerialPortManager serialPortManager) {
+        this.serialPortManagerSupplier = () -> null;
+    }
+
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_SMLREADER)) {
-            return new SmartMeterHandler(thing, channelProvider);
+            return new SmartMeterHandler(thing, channelProvider, serialPortManagerSupplier);
         }
 
         return null;

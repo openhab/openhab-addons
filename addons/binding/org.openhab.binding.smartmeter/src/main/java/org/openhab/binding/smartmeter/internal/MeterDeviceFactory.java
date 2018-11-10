@@ -8,8 +8,11 @@
  */
 package org.openhab.binding.smartmeter.internal;
 
+import java.util.function.Supplier;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.smartmeter.internal.helper.ProtocolMode;
 import org.openhab.binding.smartmeter.internal.iec62056.Iec62056_21MeterReader;
 import org.openhab.binding.smartmeter.internal.sml.SmlMeterReader;
@@ -23,16 +26,17 @@ import org.openhab.binding.smartmeter.internal.sml.SmlMeterReader;
 @NonNullByDefault
 public class MeterDeviceFactory {
 
-    public static @Nullable MeterDevice<?> getDevice(String mode, String deviceId, String serialPort,
-            byte @Nullable [] initMessage, int baudrate, int baudrateChangeDelay) {
+    public static @Nullable MeterDevice<?> getDevice(Supplier<SerialPortManager> serialPortManagerSupplier, String mode,
+            String deviceId, String serialPort, byte @Nullable [] initMessage, int baudrate, int baudrateChangeDelay) {
         ProtocolMode protocolMode = ProtocolMode.valueOf(mode.toUpperCase());
         switch (protocolMode) {
             case D:
             case ABC:
-                return new Iec62056_21MeterReader(deviceId, serialPort, initMessage, baudrate, baudrateChangeDelay,
-                        protocolMode);
+                return new Iec62056_21MeterReader(serialPortManagerSupplier, deviceId, serialPort, initMessage,
+                        baudrate, baudrateChangeDelay, protocolMode);
             case SML:
-                return SmlMeterReader.createInstance(deviceId, serialPort, initMessage, baudrate, baudrateChangeDelay);
+                return SmlMeterReader.createInstance(serialPortManagerSupplier, deviceId, serialPort, initMessage,
+                        baudrate, baudrateChangeDelay);
             default:
                 return null;
         }

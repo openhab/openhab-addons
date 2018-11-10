@@ -13,6 +13,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Stack;
+import java.util.function.Supplier;
 
 import org.apache.commons.codec.binary.Hex;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -25,9 +26,6 @@ import org.openhab.binding.smartmeter.internal.helper.Baudrate;
 import org.openhab.binding.smartmeter.internal.helper.SerialParameter;
 import org.openmuc.jsml.structures.SmlFile;
 import org.openmuc.jsml.transport.Transport;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * Represents a serial SML device connector.
@@ -40,7 +38,7 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
 
     private static final Transport TRANSPORT = new Transport();
 
-    private SerialPortManager serialManager;
+    private Supplier<SerialPortManager> serialManagerSupplier;
     @NonNullByDefault({})
     private SerialPort serialPort;
     @Nullable
@@ -54,13 +52,9 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
      *
      * @param portName the port where the device is connected as defined in openHAB configuration.
      */
-    public SmlSerialConnector(String portName) {
+    public SmlSerialConnector(Supplier<SerialPortManager> serialPortManagerSupplier, String portName) {
         super(portName);
-        BundleContext bundleContext = FrameworkUtil.getBundle(getClass()).getBundleContext();
-        ServiceTracker<SerialPortManager, SerialPortManager> serviceTracker = new ServiceTracker<>(bundleContext,
-                SerialPortManager.class, null);
-        serviceTracker.open();
-        this.serialManager = serviceTracker.getService();
+        this.serialManagerSupplier = serialPortManagerSupplier;
     }
 
     /**
@@ -70,8 +64,9 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
      * @param baudrate
      * @throws IOException
      */
-    public SmlSerialConnector(String portName, int baudrate, int baudrateChangeDelay) {
-        this(portName);
+    public SmlSerialConnector(Supplier<SerialPortManager> serialPortManagerSupplier, String portName, int baudrate,
+            int baudrateChangeDelay) {
+        this(serialPortManagerSupplier, portName);
         this.baudrate = baudrate;
     }
 
@@ -91,7 +86,7 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
             smlFiles.push(TRANSPORT.getSMLFile(is));
         }
         if (smlFiles.isEmpty()) {
-            throw new IOException(getPortName() + " : There is no SML file in buffer. Try to reduce Refresh rate.");
+            throw new IOException(getPortName() + " : There is no SML file in buffer. Try to increase Refresh rate.");
         }
         logger.debug("{} : Read {} SML files from Buffer", this.getPortName(), smlFiles.size());
         return smlFiles.pop();
@@ -105,7 +100,7 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
     public void openConnection() throws IOException {
         try {
             closeConnection();
-            SerialPortIdentifier id = serialManager.getIdentifier(getPortName());
+            SerialPortIdentifier id = serialManagerSupplier.get().getIdentifier(getPortName());
             if (id != null) {
                 serialPort = id.open("meterreaderbinding", 0);
                 SerialParameter serialParameter = SerialParameter._8N1;

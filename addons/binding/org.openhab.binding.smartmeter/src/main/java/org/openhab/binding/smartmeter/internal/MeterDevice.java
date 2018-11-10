@@ -18,11 +18,13 @@ import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 import javax.measure.Quantity;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.smartmeter.connectors.IMeterReaderConnector;
 import org.openhab.binding.smartmeter.internal.helper.ProtocolMode;
 import org.slf4j.Logger;
@@ -62,18 +64,19 @@ public abstract class MeterDevice<T> {
     private List<MeterValueListener> valueChangeListeners;
     private final static Logger logger = LoggerFactory.getLogger(MeterDevice.class);
 
-    public MeterDevice(String deviceId, String serialPort, byte @Nullable [] initMessage, int baudrate,
-            int baudrateChangeDelay, ProtocolMode protocolMode) {
+    public MeterDevice(Supplier<SerialPortManager> serialPortManagerSupplier, String deviceId, String serialPort,
+            byte @Nullable [] initMessage, int baudrate, int baudrateChangeDelay, ProtocolMode protocolMode) {
         super();
         this.deviceId = deviceId;
         this.valueCache = new HashMap<String, MeterValue<?>>();
         this.valueChangeListeners = new CopyOnWriteArrayList<>();
         this.printMeterInfo = true;
-        this.connector = createConnector(serialPort, baudrate, baudrateChangeDelay, protocolMode);
+        this.connector = createConnector(serialPortManagerSupplier, serialPort, baudrate, baudrateChangeDelay,
+                protocolMode);
     }
 
-    protected abstract IMeterReaderConnector<T> createConnector(String serialPort, int baudrate,
-            int baudrateChangeDelay, ProtocolMode protocolMode);
+    protected abstract IMeterReaderConnector<T> createConnector(Supplier<SerialPortManager> serialPortManagerSupplier,
+            String serialPort, int baudrate, int baudrateChangeDelay, ProtocolMode protocolMode);
 
     /**
      * Gets the configured deviceId.
