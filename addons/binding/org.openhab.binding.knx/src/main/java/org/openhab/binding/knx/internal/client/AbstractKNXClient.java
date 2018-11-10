@@ -248,7 +248,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         GroupAddress destination = event.getDestination();
         IndividualAddress source = event.getSourceAddr();
         byte[] asdu = event.getASDU();
-        logger.trace("Received a {} telegram from '{}' to '{}'", task, source, destination);
+        logger.trace("Received a {} telegram from '{}' to '{}' with value '{}'", task, source, destination, asdu);
         for (GroupAddressListener listener : groupAddressListeners) {
             if (listener.listensTo(destination)) {
                 knxScheduler.schedule(() -> action.apply(listener, source, destination, asdu), 0, TimeUnit.SECONDS);
@@ -406,6 +406,9 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
             return;
         }
         GroupAddress groupAddress = commandSpec.getGroupAddress();
+
+        logger.trace("writeToKNX groupAddress '{}', commandSpec '{}'", groupAddress, commandSpec);
+
         if (groupAddress != null) {
             sendToKNX(processCommunicator, link, groupAddress, commandSpec.getDPT(), commandSpec.getType());
         }
@@ -422,6 +425,9 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
             return;
         }
         GroupAddress groupAddress = responseSpec.getGroupAddress();
+
+        logger.trace("respondToKNX groupAddress '{}', responseSpec '{}'", groupAddress, responseSpec);
+
         if (groupAddress != null) {
             sendToKNX(responseCommunicator, link, groupAddress, responseSpec.getDPT(), responseSpec.getType());
         }
@@ -435,6 +441,9 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
 
         Datapoint datapoint = new CommandDP(groupAddress, thingUID.toString(), 0, dpt);
         String mappedValue = toDPTValue(type, dpt);
+
+        logger.trace("sendToKNX mappedValue: '{}' groupAddress: '{}'", mappedValue, groupAddress);
+
         if (mappedValue == null) {
             logger.debug("Value '{}' cannot be mapped to datapoint '{}'", type, datapoint);
             return;
