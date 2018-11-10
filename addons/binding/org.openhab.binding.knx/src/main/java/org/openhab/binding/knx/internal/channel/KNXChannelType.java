@@ -43,7 +43,7 @@ import tuwien.auto.calimero.KNXFormatException;
 public abstract class KNXChannelType {
 
     private static final Pattern PATTERN = Pattern.compile(
-            "^((?<dpt>[0-9]{1,2}\\.[0-9]{3}):)?(?<read>\\<)?(?<mainGA>[0-9]{1,5}(/[0-9]{1,4}){0,2})(?<listenGAs>(\\+(\\<?[0-9]{1,5}(/[0-9]{1,4}){0,2}))*)$");
+            "^((?<dpt>[0-9]{1,3}\\.[0-9]{3,4}):)?(?<read>\\<)?(?<mainGA>[0-9]{1,5}(/[0-9]{1,4}){0,2})(?<listenGAs>(\\+(\\<?[0-9]{1,5}(/[0-9]{1,4}){0,2}))*)$");
 
     private static final Pattern PATTERN_LISTEN = Pattern
             .compile("\\+((?<read>\\<)?(?<GA>[0-9]{1,5}(/[0-9]{1,4}){0,2}))");
@@ -157,6 +157,7 @@ public abstract class KNXChannelType {
 
     public final @Nullable OutboundSpec getCommandSpec(Configuration configuration, KNXTypeMapper typeHelper,
             Type command) throws KNXFormatException {
+        logger.trace("getCommandSpec testing Keys '{}' for command '{}'", getAllGAKeys(), command);
         for (String key : getAllGAKeys()) {
             ChannelConfiguration config = parse((String) configuration.get(key));
             if (config != null) {
@@ -167,11 +168,15 @@ public abstract class KNXChannelType {
                 Class<? extends Type> expectedTypeClass = typeHelper.toTypeClass(dpt);
                 if (expectedTypeClass != null) {
                     if (expectedTypeClass.isInstance(command)) {
+                        logger.trace(
+                                "getCommandSpec key '{}' uses expectedTypeClass '{}' witch isInstance for command '{}' and dpt '{}'",
+                                key, expectedTypeClass, command, dpt);
                         return new WriteSpecImpl(config, dpt, command);
                     }
                 }
             }
         }
+        logger.trace("getCommandSpec no Spec found!");
         return null;
     }
 

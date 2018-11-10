@@ -576,6 +576,11 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
             logger.error("toDPTValue couldn't identify mainnumber in dptID: {}", dptID);
             return null;
         }
+        int subNumber = getSubNumber(dptID);
+        if (subNumber == -1) {
+            logger.debug("toType: couldn't identify sub number in dptID: {}.", dptID);
+            return null;
+        }
 
         try {
             DPTXlator translator = TranslatorTypes.createTranslator(mainNumber, dptID);
@@ -587,9 +592,20 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
         try {
             // check for HSBType first, because it extends PercentType as well
             if (type instanceof HSBType) {
-                HSBType hc = ((HSBType) type);
-                return "r:" + hc.getRed().intValue() + " g:" + hc.getGreen().intValue() + " b:"
-                        + hc.getBlue().intValue();
+                switch (mainNumber) {
+                    case 5:
+                        switch (subNumber) {
+                            case 3: // * 5.003: Angle, values: 0...360 °
+                                return ((HSBType) type).getHue().toString();
+                            case 1: // * 5.001: Scaling, values: 0...100 %
+                            default:
+                                return ((HSBType) type).getBrightness().toString();
+                        }
+                    default:
+                        HSBType hc = ((HSBType) type);
+                        return "r:" + hc.getRed().intValue() + " g:" + hc.getGreen().intValue() + " b:"
+                                + hc.getBlue().intValue();
+                }
             } else if (type instanceof OnOffType) {
                 return type.equals(OnOffType.OFF) ? dpt.getLowerValue() : dpt.getUpperValue();
             } else if (type instanceof UpDownType) {
