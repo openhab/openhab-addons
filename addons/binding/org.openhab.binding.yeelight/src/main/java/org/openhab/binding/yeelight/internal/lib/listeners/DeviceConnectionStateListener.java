@@ -6,21 +6,13 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.yeelight.lib.device;
+package org.openhab.binding.yeelight.internal.lib.listeners;
+
+import org.openhab.binding.yeelight.internal.lib.device.ConnectState;
 
 /**
  * @author Coaster Li - Initial contribution
  */
-public class ColorFlowItem {
-    public int duration;
-    public int mode;
-    public int value;
-    public int brightness;
-
-    @Override
-    public String toString() {
-        return "ColorFlowItem [duration=" + duration + ", mode=" + mode + ", value=" + value + ", brightness="
-                + brightness + "]";
-    }
-
+public interface DeviceConnectionStateListener {
+    void onConnectionStateChanged(ConnectState connectState);
 }

@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.yeelight.lib.listeners;
+package org.openhab.binding.yeelight.internal.lib.listeners;
 
-import org.openhab.binding.yeelight.lib.device.DeviceBase;
+import org.openhab.binding.yeelight.internal.lib.device.DeviceBase;
 
 /**
  * @author Coaster Li - Initial contribution

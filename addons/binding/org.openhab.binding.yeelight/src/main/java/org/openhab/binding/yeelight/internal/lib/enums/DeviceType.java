@@ -6,13 +6,19 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.yeelight.lib.listeners;
-
-import org.openhab.binding.yeelight.lib.device.ConnectState;
+package org.openhab.binding.yeelight.internal.lib.enums;
 
 /**
+ * The {@link DeviceType} lists the available device/model types.
+ *
  * @author Coaster Li - Initial contribution
  */
-public interface DeviceConnectionStateListener {
-    void onConnectionStateChanged(ConnectState connectState);
+public enum DeviceType {
+    mono,
+    ct_bulb,
+    color,
+    ceiling,
+    ceiling1,
+    ceiling3,
+    stripe
 }

@@ -6,11 +6,11 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.yeelight.lib.device;
+package org.openhab.binding.yeelight.internal.lib.device;
 
 import java.util.List;
 
-import org.openhab.binding.yeelight.lib.enums.DeviceMode;
+import org.openhab.binding.yeelight.internal.lib.enums.DeviceMode;
 
 /**
  * @author Coaster Li - Initial contribution

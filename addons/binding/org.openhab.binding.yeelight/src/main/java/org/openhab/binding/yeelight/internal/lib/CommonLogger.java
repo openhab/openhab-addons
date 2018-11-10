@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.yeelight.lib;
+package org.openhab.binding.yeelight.internal.lib;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

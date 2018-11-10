@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.yeelight.lib.services;
+package org.openhab.binding.yeelight.internal.lib.services;
 
 import java.awt.Color;
 import java.net.DatagramPacket;
@@ -17,11 +17,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.openhab.binding.yeelight.lib.device.DeviceBase;
-import org.openhab.binding.yeelight.lib.device.DeviceFactory;
-import org.openhab.binding.yeelight.lib.device.DeviceStatus;
-import org.openhab.binding.yeelight.lib.enums.DeviceAction;
-import org.openhab.binding.yeelight.lib.listeners.DeviceListener;
+import org.openhab.binding.yeelight.internal.lib.device.DeviceBase;
+import org.openhab.binding.yeelight.internal.lib.device.DeviceFactory;
+import org.openhab.binding.yeelight.internal.lib.device.DeviceStatus;
+import org.openhab.binding.yeelight.internal.lib.enums.DeviceAction;
+import org.openhab.binding.yeelight.internal.lib.listeners.DeviceListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.yeelight.lib.device;
+package org.openhab.binding.yeelight.internal.lib.device;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -15,12 +15,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.openhab.binding.yeelight.lib.device.connection.ConnectionBase;
-import org.openhab.binding.yeelight.lib.enums.DeviceMode;
-import org.openhab.binding.yeelight.lib.enums.DeviceType;
-import org.openhab.binding.yeelight.lib.enums.MethodAction;
-import org.openhab.binding.yeelight.lib.listeners.DeviceConnectionStateListener;
-import org.openhab.binding.yeelight.lib.listeners.DeviceStatusChangeListener;
+import org.openhab.binding.yeelight.internal.lib.device.connection.ConnectionBase;
+import org.openhab.binding.yeelight.internal.lib.enums.DeviceMode;
+import org.openhab.binding.yeelight.internal.lib.enums.DeviceType;
+import org.openhab.binding.yeelight.internal.lib.enums.MethodAction;
+import org.openhab.binding.yeelight.internal.lib.listeners.DeviceConnectionStateListener;
+import org.openhab.binding.yeelight.internal.lib.listeners.DeviceStatusChangeListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

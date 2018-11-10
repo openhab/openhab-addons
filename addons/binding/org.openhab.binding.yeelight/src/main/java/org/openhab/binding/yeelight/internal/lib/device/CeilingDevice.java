@@ -6,10 +6,10 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.yeelight.lib.device;
+package org.openhab.binding.yeelight.internal.lib.device;
 
-import org.openhab.binding.yeelight.lib.device.connection.WifiConnection;
-import org.openhab.binding.yeelight.lib.enums.DeviceType;
+import org.openhab.binding.yeelight.internal.lib.device.connection.WifiConnection;
+import org.openhab.binding.yeelight.internal.lib.enums.DeviceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,16 +18,16 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- * The {@link CtBulbDevice} contains methods for handling the CT bulb device.
+ * The {@link CeilingDevice} contains methods for handling the ceiling device.
  *
- * @author Claudius Ellsel - Initial contribution
+ * @author Coaster Li - Initial contribution
  */
-public class CtBulbDevice extends DeviceBase {
-    private final Logger logger = LoggerFactory.getLogger(CtBulbDevice.class);
+public class CeilingDevice extends DeviceBase {
+    private final Logger logger = LoggerFactory.getLogger(CeilingDevice.class);
 
-    public CtBulbDevice(String id) {
+    public CeilingDevice(String id) {
         super(id);
-        mDeviceType = DeviceType.ct_bulb;
+        mDeviceType = DeviceType.ceiling;
         mConnection = new WifiConnection(this);
         mMinCt = 2700;
         mMaxCt = 6500;

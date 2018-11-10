@@ -6,10 +6,10 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.yeelight.lib.device;
+package org.openhab.binding.yeelight.internal.lib.device;
 
-import org.openhab.binding.yeelight.lib.device.connection.WifiConnection;
-import org.openhab.binding.yeelight.lib.enums.DeviceType;
+import org.openhab.binding.yeelight.internal.lib.device.connection.WifiConnection;
+import org.openhab.binding.yeelight.internal.lib.enums.DeviceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,19 +18,17 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- * The {@link CeilingDevice} contains methods for handling the ceiling device.
+ * The {@link MonoDevice} contains methods for handling the mono color device.
  *
  * @author Coaster Li - Initial contribution
  */
-public class CeilingDevice extends DeviceBase {
-    private final Logger logger = LoggerFactory.getLogger(CeilingDevice.class);
+public class MonoDevice extends DeviceBase {
+    private final Logger logger = LoggerFactory.getLogger(MonoDevice.class);
 
-    public CeilingDevice(String id) {
+    public MonoDevice(String id) {
         super(id);
-        mDeviceType = DeviceType.ceiling;
+        mDeviceType = DeviceType.mono;
         mConnection = new WifiConnection(this);
-        mMinCt = 2700;
-        mMaxCt = 6500;
     }
 
     @Override
@@ -44,7 +42,7 @@ public class CeilingDevice extends DeviceBase {
 
                 if (mQueryList.contains(id)) {
                     mQueryList.remove(id);
-                    // DeviceMethod(MethodAction.PROP, new Object[] { "power", "name", "bright", "ct" });
+                    // DeviceMethod(MethodAction.PROP, new Object[] { "power", "name", "bright" });
                     JsonArray status = result.get("result").getAsJsonArray();
 
                     // power:
@@ -59,13 +57,10 @@ public class CeilingDevice extends DeviceBase {
 
                     // brightness:
                     mDeviceStatus.setBrightness(status.get(2).getAsInt());
-
-                    // ct:
-                    mDeviceStatus.setCt(status.get(3).getAsInt());
                 }
             }
         } catch (Exception e) {
-            logger.debug("Problem setting values: {}", e);
+            logger.debug("Exception: {}", e);
         }
 
         super.onNotify(msg);

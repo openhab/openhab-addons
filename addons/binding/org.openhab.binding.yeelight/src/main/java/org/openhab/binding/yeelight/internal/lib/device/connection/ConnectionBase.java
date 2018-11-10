@@ -6,19 +6,21 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.yeelight.lib.enums;
+package org.openhab.binding.yeelight.internal.lib.device.connection;
+
+import org.openhab.binding.yeelight.internal.lib.device.DeviceMethod;
 
 /**
- * The {@link DeviceType} lists the available device/model types.
+ * Created by jiang on 16/10/21.
  *
  * @author Coaster Li - Initial contribution
  */
-public enum DeviceType {
-    mono,
-    ct_bulb,
-    color,
-    ceiling,
-    ceiling1,
-    ceiling3,
-    stripe
+public interface ConnectionBase {
+
+    boolean invoke(DeviceMethod method);
+
+    boolean connect();
+
+    boolean disconnect();
+
 }

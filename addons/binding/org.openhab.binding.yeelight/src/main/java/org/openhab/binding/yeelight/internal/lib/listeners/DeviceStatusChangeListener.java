@@ -6,19 +6,13 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.yeelight.lib.device;
+package org.openhab.binding.yeelight.internal.lib.listeners;
+
+import org.openhab.binding.yeelight.internal.lib.device.DeviceStatus;
 
 /**
- * The {@link ConnectState} lists different connection states.
- *
  * @author Coaster Li - Initial contribution
  */
-public enum ConnectState {
-
-    DISCONNECTED,
-
-    CONNECTTING,
-
-    CONNECTED;
-
+public interface DeviceStatusChangeListener {
+    void onStatusChanged(String prop, DeviceStatus status);
 }

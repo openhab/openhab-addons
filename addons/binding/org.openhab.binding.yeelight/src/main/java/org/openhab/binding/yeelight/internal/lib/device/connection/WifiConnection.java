@@ -6,16 +6,16 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.yeelight.lib.device.connection;
+package org.openhab.binding.yeelight.internal.lib.device.connection;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
-import org.openhab.binding.yeelight.lib.device.ConnectState;
-import org.openhab.binding.yeelight.lib.device.DeviceBase;
-import org.openhab.binding.yeelight.lib.device.DeviceMethod;
+import org.openhab.binding.yeelight.internal.lib.device.ConnectState;
+import org.openhab.binding.yeelight.internal.lib.device.DeviceBase;
+import org.openhab.binding.yeelight.internal.lib.device.DeviceMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

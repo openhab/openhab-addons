@@ -6,10 +6,10 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.yeelight.lib.device;
+package org.openhab.binding.yeelight.internal.lib.device;
 
-import org.openhab.binding.yeelight.lib.device.connection.WifiConnection;
-import org.openhab.binding.yeelight.lib.enums.DeviceType;
+import org.openhab.binding.yeelight.internal.lib.device.connection.WifiConnection;
+import org.openhab.binding.yeelight.internal.lib.enums.DeviceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,17 +18,19 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- * The {@link MonoDevice} contains methods for handling the mono color device.
+ * The {@link CtBulbDevice} contains methods for handling the CT bulb device.
  *
- * @author Coaster Li - Initial contribution
+ * @author Claudius Ellsel - Initial contribution
  */
-public class MonoDevice extends DeviceBase {
-    private final Logger logger = LoggerFactory.getLogger(MonoDevice.class);
+public class CtBulbDevice extends DeviceBase {
+    private final Logger logger = LoggerFactory.getLogger(CtBulbDevice.class);
 
-    public MonoDevice(String id) {
+    public CtBulbDevice(String id) {
         super(id);
-        mDeviceType = DeviceType.mono;
+        mDeviceType = DeviceType.ct_bulb;
         mConnection = new WifiConnection(this);
+        mMinCt = 2700;
+        mMaxCt = 6500;
     }
 
     @Override
@@ -42,7 +44,7 @@ public class MonoDevice extends DeviceBase {
 
                 if (mQueryList.contains(id)) {
                     mQueryList.remove(id);
-                    // DeviceMethod(MethodAction.PROP, new Object[] { "power", "name", "bright" });
+                    // DeviceMethod(MethodAction.PROP, new Object[] { "power", "name", "bright", "ct" });
                     JsonArray status = result.get("result").getAsJsonArray();
 
                     // power:
@@ -57,10 +59,13 @@ public class MonoDevice extends DeviceBase {
 
                     // brightness:
                     mDeviceStatus.setBrightness(status.get(2).getAsInt());
+
+                    // ct:
+                    mDeviceStatus.setCt(status.get(3).getAsInt());
                 }
             }
         } catch (Exception e) {
-            logger.debug("Exception: {}", e);
+            logger.debug("Problem setting values: {}", e);
         }
 
         super.onNotify(msg);

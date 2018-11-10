@@ -6,10 +6,10 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.yeelight.lib.device;
+package org.openhab.binding.yeelight.internal.lib.device;
 
-import org.openhab.binding.yeelight.lib.device.connection.WifiConnection;
-import org.openhab.binding.yeelight.lib.enums.DeviceType;
+import org.openhab.binding.yeelight.internal.lib.device.connection.WifiConnection;
+import org.openhab.binding.yeelight.internal.lib.enums.DeviceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,16 +18,16 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- * The {@link WonderDevice} contains methods for handling the color bulb device.
+ * The {@link PitayaDevice} contains methods for handling the light strip device.
  *
  * @author Coaster Li - Initial contribution
  */
-public class WonderDevice extends DeviceBase {
-    private final Logger logger = LoggerFactory.getLogger(WonderDevice.class);
+public class PitayaDevice extends DeviceBase {
+    private final Logger logger = LoggerFactory.getLogger(PitayaDevice.class);
 
-    public WonderDevice(String id) {
+    public PitayaDevice(String id) {
         super(id);
-        mDeviceType = DeviceType.color;
+        mDeviceType = DeviceType.stripe;
         mConnection = new WifiConnection(this);
         mMinCt = 1700;
         mMaxCt = 6500;

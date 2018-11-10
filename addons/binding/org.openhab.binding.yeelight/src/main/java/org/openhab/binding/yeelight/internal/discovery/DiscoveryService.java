@@ -15,9 +15,9 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.yeelight.YeelightBindingConstants;
 import org.openhab.binding.yeelight.internal.YeelightHandlerFactory;
-import org.openhab.binding.yeelight.lib.device.DeviceBase;
-import org.openhab.binding.yeelight.lib.listeners.DeviceListener;
-import org.openhab.binding.yeelight.lib.services.DeviceManager;
+import org.openhab.binding.yeelight.internal.lib.device.DeviceBase;
+import org.openhab.binding.yeelight.internal.lib.listeners.DeviceListener;
+import org.openhab.binding.yeelight.internal.lib.services.DeviceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

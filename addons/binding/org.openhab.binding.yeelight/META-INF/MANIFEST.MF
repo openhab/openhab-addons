@@ -18,19 +18,7 @@ Import-Package:
  org.eclipse.smarthome.core.types,
  org.openhab.binding.yeelight,
  org.openhab.binding.yeelight.handler,
- org.openhab.binding.yeelight.lib,
- org.openhab.binding.yeelight.lib.device,
- org.openhab.binding.yeelight.lib.device.connection,
- org.openhab.binding.yeelight.lib.enums,
- org.openhab.binding.yeelight.lib.listeners,
- org.openhab.binding.yeelight.lib.services,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.yeelight,
- org.openhab.binding.yeelight.handler,
- org.openhab.binding.yeelight.lib,
- org.openhab.binding.yeelight.lib.device,
- org.openhab.binding.yeelight.lib.device.connection,
- org.openhab.binding.yeelight.lib.enums,
- org.openhab.binding.yeelight.lib.listeners,
- org.openhab.binding.yeelight.lib.services
+ org.openhab.binding.yeelight.handler

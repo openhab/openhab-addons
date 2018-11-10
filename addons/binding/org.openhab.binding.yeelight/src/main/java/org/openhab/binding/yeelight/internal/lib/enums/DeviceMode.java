@@ -6,21 +6,35 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.yeelight.lib.device.connection;
-
-import org.openhab.binding.yeelight.lib.device.DeviceMethod;
+package org.openhab.binding.yeelight.internal.lib.enums;
 
 /**
- * Created by jiang on 16/10/21.
- *
  * @author Coaster Li - Initial contribution
  */
-public interface ConnectionBase {
+public enum DeviceMode {
 
-    boolean invoke(DeviceMethod method);
+    /*
+     * color temperature mode
+     */
+    MODE_SUNHINE,
 
-    boolean connect();
+    /*
+     * color mode
+     */
+    MODE_COLOR,
 
-    boolean disconnect();
+    /*
+     * color mode
+     */
+    MODE_HSV,
 
+    /*
+     * color flow mode
+     */
+    MODE_COLORFLOW,
+
+    /*
+     * device is off.
+     */
+    MODE_OFF;
 }
