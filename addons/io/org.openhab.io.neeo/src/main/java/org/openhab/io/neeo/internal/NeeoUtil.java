@@ -34,6 +34,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.openhab.io.neeo.NeeoService;
 import org.openhab.io.neeo.internal.models.ItemSubType;
+import org.openhab.io.neeo.internal.models.ListUiAction;
 import org.openhab.io.neeo.internal.models.NeeoCapabilityType;
 import org.openhab.io.neeo.internal.models.NeeoDevice;
 import org.openhab.io.neeo.internal.models.NeeoDeviceChannel;
@@ -42,6 +43,7 @@ import org.openhab.io.neeo.internal.models.NeeoDeviceType;
 import org.openhab.io.neeo.internal.models.NeeoThingUID;
 import org.openhab.io.neeo.internal.serialization.ChannelUIDSerializer;
 import org.openhab.io.neeo.internal.serialization.ItemSubTypeSerializer;
+import org.openhab.io.neeo.internal.serialization.ListUiActionSerializer;
 import org.openhab.io.neeo.internal.serialization.NeeoBrainDeviceSerializer;
 import org.openhab.io.neeo.internal.serialization.NeeoCapabilityTypeSerializer;
 import org.openhab.io.neeo.internal.serialization.NeeoDeviceChannelKindSerializer;
@@ -114,6 +116,7 @@ public class NeeoUtil {
         gsonBuilder.registerTypeAdapter(NeeoDeviceChannelKind.class, new NeeoDeviceChannelKindSerializer());
         gsonBuilder.registerTypeAdapter(NeeoCapabilityType.class, new NeeoCapabilityTypeSerializer());
         gsonBuilder.registerTypeAdapter(ItemSubType.class, new ItemSubTypeSerializer());
+        gsonBuilder.registerTypeAdapter(ListUiAction.class, new ListUiActionSerializer());
         gsonBuilder.registerTypeHierarchyAdapter(NeeoDeviceChannel.class, new NeeoDeviceChannelSerializer(context));
         gsonBuilder.registerTypeAdapter(NeeoDeviceType.class, new NeeoDeviceTypeSerializer());
         gsonBuilder.registerTypeAdapter(NeeoDevice.class, new NeeoDeviceSerializer(service, context));
@@ -189,7 +192,7 @@ public class NeeoUtil {
      * Write a response out to the {@link HttpServletResponse}
      *
      * @param resp the non-null {@link HttpServletResponse}
-     * @param str the possibly null, possibly empty string content to write
+     * @param str  the possibly null, possibly empty string content to write
      * @throws IOException Signals that an I/O exception has occurred.
      */
     public static void write(HttpServletResponse resp, String str) throws IOException {
@@ -252,7 +255,7 @@ public class NeeoUtil {
      * Require the specified value to be a non-null, non-empty string
      *
      * @param value the value to check
-     * @param msg the msg to use when throwing an {@link IllegalArgumentException}
+     * @param msg   the msg to use when throwing an {@link IllegalArgumentException}
      * @throws IllegalArgumentException if value is null or an empty string
      */
     public static void requireNotEmpty(String value, String msg) {
@@ -265,7 +268,7 @@ public class NeeoUtil {
     /**
      * Converts a JSON property to a string
      *
-     * @param jo the non-null {@link JsonObject} to use
+     * @param jo           the non-null {@link JsonObject} to use
      * @param propertyName the non-empty property name
      * @return the possibly null string representation
      */
@@ -281,7 +284,7 @@ public class NeeoUtil {
     /**
      * Converts a JSON property to an integer
      *
-     * @param jo the non-null {@link JsonObject} to use
+     * @param jo           the non-null {@link JsonObject} to use
      * @param propertyName the non-empty property name
      * @return the possibly null integer
      */
@@ -297,7 +300,7 @@ public class NeeoUtil {
     /**
      * Gets the {@link Command} for the specified enum name - ignoring case
      *
-     * @param cmd the non-null {@link Command}
+     * @param cmd      the non-null {@link Command}
      * @param enumName the non-empty enum name to search for
      * @return the {@link Command} or null if not found (or null if cmd's class is not an enum)
      */
@@ -330,7 +333,7 @@ public class NeeoUtil {
     /**
      * Gets the label to use from the item or channelType
      *
-     * @param item the possibly null item
+     * @param item        the possibly null item
      * @param channelType the possibly null channel type
      * @return the label to use (or null if no label)
      */
@@ -355,7 +358,7 @@ public class NeeoUtil {
     /**
      * Gets the pattern to use from the item or channelType
      *
-     * @param item the possibly null item
+     * @param item        the possibly null item
      * @param channelType the possibly null channel type
      * @return the pattern to use (or null if no pattern to use)
      */
@@ -389,7 +392,7 @@ public class NeeoUtil {
     /**
      * Returns the unique label name given a set of labels. The unique label will be added to the set of labels.
      *
-     * @param labels the non-null, possibly empty set of labels
+     * @param labels    the non-null, possibly empty set of labels
      * @param itemLabel the possibly null, possibly empty item label to get a unique name for
      * @return the unique label
      */
@@ -413,7 +416,7 @@ public class NeeoUtil {
      * Returns the group label for the given {@link ThingType} and groupId
      *
      * @param thingType a non null thingType
-     * @param groupId a possibly empty, possibly null group ID
+     * @param groupId   a possibly empty, possibly null group ID
      * @return the group label or null if none
      */
     @Nullable

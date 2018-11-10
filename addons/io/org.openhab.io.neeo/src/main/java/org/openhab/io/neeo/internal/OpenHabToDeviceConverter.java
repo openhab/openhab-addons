@@ -141,7 +141,7 @@ class OpenHabToDeviceConverter {
             final String[] deviceCapabilities = StringUtils.isEmpty(dc) ? new String[0] : StringUtils.split(dc, ',');
 
             try {
-                return new NeeoDevice(new NeeoThingUID(thing.getUID()),
+                return new NeeoDevice(new NeeoThingUID(thing.getUID()), 0,
                         exposeNeeoBinding ? NeeoDeviceType.parse(neeoType) : NeeoDeviceType.EXCLUDE, manufacturer,
                         thing.getLabel(), channels, timing, Arrays.asList(deviceCapabilities), null, null);
             } catch (IllegalArgumentException e) {

@@ -168,8 +168,9 @@ The properties page (accessible via the gear icon) will present properties speci
 
 ##### Advanced Properties
 
-1. The 'Specific name' can be used to override the thing name presented to the NEEO Brain.
-2. The 'Custom Icon' can be used to assign a custom icon to the device (if left blank, the icon is assigned by the NEEO Brain according to the NEEO Type).
+1. The driver version can be used to override the driver version sent to the brain.  Please note that this number is automatically incremented by one whenever you save the device definition.
+2. The 'Specific name' can be used to override the thing name presented to the NEEO Brain.
+3. The 'Custom Icon' can be used to assign a custom icon to the device (if left blank, the icon is assigned by the NEEO Brain according to the NEEO Type).
 The only 'officially' supported custom icon is "sonos" however you can assign any variety of icons available on the brain.
 A list of some of the icons that can be assigned: ![Configuration](doc/icons.png)
 
@@ -342,6 +343,13 @@ As definitions are saved, this file will be updated.
 
 The following are notes on some of the NEEO Firmwares:
 
+
+### 52.10
+
+The following changes have occurred:
+
+1. Added support for driver version
+2. Added support for UI actions on lists
 
 ### 51.1
 

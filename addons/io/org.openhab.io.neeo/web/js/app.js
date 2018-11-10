@@ -115,7 +115,7 @@ function neeoController($scope, $http, $timeout, $window, orderBy, $uibModal, _)
         }
 
         return _.find(channel.acceptedCommandTypes, function(type) {            
-            return type === "stringtype" || type === "decimaltype";
+            return type === "stringtype" || type === "decimaltype" || type === "quantitytype";
         }) !== undefined;
     }
 
@@ -386,6 +386,7 @@ function neeoController($scope, $http, $timeout, $window, orderBy, $uibModal, _)
     
     ctrl.saveDevice = function(device) {
         $("div.jGrowl").jGrowl("close"); // close all messages
+        device.driverVersion = device.driverVersion + 1;
         $http.post("neeostatus/updatedevice", device)
         .then(function(response) {
             if (response.data.success === true) {
@@ -397,7 +398,7 @@ function neeoController($scope, $http, $timeout, $window, orderBy, $uibModal, _)
                     ctrl.oldDevices[idx] = _.cloneDeep(device);
                 }
                 if (device.keys !== undefined && device.keys.length > 0) {
-                    $.jGrowl("'" + device.name + "' was saved but you'll need to drop and re-add the device on the brain to see changes/");
+                    $.jGrowl("'" + device.name + "' was saved but you'll need to drop and re-add the device on the brain if you deleted or made changes (adding new items or changing lists will be active immediately).");
                 }
             } else {
                 $.jGrowl(response.data.message, {theme : 'jgrowl-error', sticky: true});
