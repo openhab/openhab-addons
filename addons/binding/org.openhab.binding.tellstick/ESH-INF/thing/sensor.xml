@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="tellstick"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="sensor">
 		<supported-bridge-type-refs>
@@ -16,8 +16,9 @@
 			<channel id="humidity" typeId="humidity" />
 			<channel id="timestamp" typeId="timestamp" />
 			<channel id="temperature" typeId="temperature" />
+			<channel id="lux" typeId="lux" />
 		</channels>
-		<config-description-ref uri="thing-type:tellstick:sensor-config"/>
+		<config-description-ref uri="thing-type:tellstick:sensor-config" />
 	</thing-type>
 	<thing-type id="rainsensor">
 		<supported-bridge-type-refs>
@@ -32,7 +33,21 @@
 			<channel id="rainrate" typeId="rainrate" />
 			<channel id="raintotal" typeId="raintotal" />
 		</channels>
-		<config-description-ref uri="thing-type:tellstick:sensor-config"/>
+		<config-description-ref uri="thing-type:tellstick:sensor-config" />
+	</thing-type>
+	<thing-type id="powersensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="telldus-live" />
+		</supported-bridge-type-refs>
+
+		<label>PowerSensor</label>
+		<description>This Thing defines a Power Sensor</description>
+		<channels>
+			<channel id="timestamp" typeId="timestamp" />
+			<channel id="watt" typeId="watt" />
+			<channel id="ampere" typeId="ampere" />
+		</channels>
+		<config-description-ref uri="thing-type:tellstick:sensor-config" />
 	</thing-type>
 	<thing-type id="windsensor">
 		<supported-bridge-type-refs>
@@ -48,7 +63,7 @@
 			<channel id="winddirection" typeId="winddirection" />
 			<channel id="windaverage" typeId="windaverage" />
 		</channels>
-		<config-description-ref uri="thing-type:tellstick:sensor-config"/>
+		<config-description-ref uri="thing-type:tellstick:sensor-config" />
 	</thing-type>
 	<channel-type id="temperature">
 		<item-type>Number</item-type>
@@ -72,7 +87,7 @@
 		<item-type>Number</item-type>
 		<label>Rainrate</label>
 		<description>The current rain rate</description>
-		<state pattern="%d" readOnly="true"/>
+		<state pattern="%d" readOnly="true" />
 	</channel-type>
 
 	<channel-type id="raintotal">
@@ -91,6 +106,27 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="watt">
+		<item-type>Number</item-type>
+		<label>Watt</label>
+		<description>Current kWatt</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="lux">
+		<item-type>Number</item-type>
+		<label>Lux</label>
+		<description>Current lumination</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="ampere">
+		<item-type>Number</item-type>
+		<label>Ampere</label>
+		<description>Current ampere</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
 	<channel-type id="windaverage">
 		<item-type>Number</item-type>
 		<label>Wind Average</label>
@@ -103,7 +139,7 @@
 		<item-type>String</item-type>
 		<label>Wind Direction</label>
 		<description>Current wind directoin</description>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="timestamp">
@@ -113,5 +149,4 @@
 		<state readOnly="true">
 		</state>
 	</channel-type>
-
 </thing:thing-descriptions>

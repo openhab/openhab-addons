@@ -17,7 +17,6 @@ import org.tellstick.device.iface.TellstickEvent;
  * or a device has been removed or added.
  *
  * @author Jarle Hjortland - Initial contribution
- *
  */
 public interface DeviceStatusListener {
 

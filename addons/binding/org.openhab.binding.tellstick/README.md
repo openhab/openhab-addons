@@ -25,12 +25,10 @@ Additionally the binding have two types of bridge things which correspond to ava
 *   *Telldus Core Bridge* - Oldest API, used by USB devices. `telldus-core`
 *   *Telldus Live Bridge* - Telldus Cloud service, all devices with online access. `telldus-live`
 
-The attentive reader discovers that there is many missing sensor types; `UV`, `Luminance`, `Dew point`, `Barometic pressure` `Rainrate`, `Raintotal`, `Winddirection`, `Windaverage` and `Windgust` which is supported by the Tellstick devices.
-Support have not been implemented on the openhab side yet, contributions are welcome.  
 
-***Switchbased sensors workaround*** <br>
-*   Some 433MHz magnetic & PIR sensors, for example, magnetic door sensors, are detected as regular `switch` Things instead of type `contact`. There is technically no way of distinguish them apart from regulur `switch` Things.
-For using them as sensors only (not paired to a lamp) please consult the workaround in the channel section.
+***Switchbased sensors workaround***
+
+*   Some 433MHz magnetic & PIR sensors, for example, magnetic door sensors, are detected as regular `switch` Things instead of type `contact`. There is technically no way of distinguish them apart from regulur `switch` Things. For using them as sensors only (not paired to a lamp) please consult the workaround in the channel section.
 
 ## Discovery
 
@@ -58,7 +56,7 @@ Use the option `repeat` for that. Default resend count is 2.
 ### Bridges
 
 Depending on your tellstick device type there is different ways of using this binding.
-The binding implements two different API:  
+The binding implements two different API:
 **1)** *Telldus Core* which is a local only interface supported by USB based device. <br>
 **2)** *Telldus Live* which is a REST based cloud service maintained by Telldus. <br>
 
@@ -67,15 +65,14 @@ The binding implements two different API:
 
 Depending on your Tellstick model, different bridge-types are available:
 
-<table>
-<tr><td><b>Model</b></td> <td><b>Telldus Core</b></td> <td><b>Telldus Live</b></td> <td>Local REST API</td> <td><b>Verified working with openHAB</b></td></tr>
-<tr><td>Tellstick Basic</td><td>X</td><td>X</td><td></td><td></td></tr>
-<tr><td>Tellstick Duo</td><td>X</td><td>X</td><td></td><td>X</td></tr>
-<tr><td>Tellstick Net v.1</td><td></td><td>X</td><td></td><td></td></tr>
-<tr><td>Tellstick Net v.2</td><td></td><td>X</td><td>X</td><td></td></tr>
-<tr><td>Tellstick ZNet Lite v.1</td><td></td><td>X</td><td>X</td><td>X</td></tr>
-<tr><td>Tellstick ZNet Lite v.2</td><td></td><td>X</td><td>X</td><td></td></tr>
-</table>
+| Model                   | Telldus Core | Telldus Live | Local REST API | Verified working with openHAB |
+|-------------------------|:------------:|:------------:|:--------------:|:-----------------------------:|
+| Tellstick Basic         |       X      |       X      |                |               X               |
+| Tellstick Duo           |       X      |       X      |                |               X               |
+| Tellstick Net v.1       |              |       X      |                |                               |
+| Tellstick Net v.2       |              |       X      |        X       |                               |
+| Tellstick ZNet Lite v.1 |              |       X      |        X       |               X               |
+| Tellstick ZNet Lite v.2 |              |       X      |        X       |                               |
 
 #### Telldus Core Bridge
 
@@ -118,27 +115,47 @@ Optional:
 
 Actuators (dimmer/switch) support the following channels:
 
-<table>
-<tr><td><b>Channel Type ID</b></td> <td><b>Item Type</b></td> <td><b>Description</b></td> </tr>
-<tr><td>dimmer</td><td>Number</td><td>This channel indicates the current dim level</td></tr>
-<tr><td>state</td><td>Switch</td><td>This channel indicates whether a device is turned on or off.</td></tr>
-<tr><td>timestamp</td><td>DateTime</td><td>This channel reports the last time this device state changed.</td></tr>
-</table>
+| Channel Type ID | Item Type | Description                                                   |
+|-----------------|-----------|---------------------------------------------------------------|
+| dimmer          | Number    | This channel indicates the current dim level                  |
+| state           | Switch    | This channel indicates whether a device is turned on or off.  |
+| timestamp       | DateTime  | This channel reports the last time this device state changed. |
 
 Sensors (sensor) support the following channels:
 
-<table>
-<tr><td><b>Channel Type ID</b></td> <td><b>Item Type</b></td> <td><b>Description</b></td> </tr>
-<tr><td>humidity</td><td>Number</td><td>This channel reports the current humidity in percentage.</td></tr>
-<tr><td>temperature</td><td>Number</td><td>This channel reports the current temperature in celsius.</td></tr>
-<tr><td>timestamp</td><td>DateTime</td><td> This channel reports the last time this sensor was updates.</td></tr>
-</table>
+| Channel Type ID | Item Type | Description                                                 |
+|-----------------|-----------|-------------------------------------------------------------|
+| humidity        | Number    | This channel reports the current humidity in percentage.    |
+| temperature     | Number    | This channel reports the current temperature in celsius.    |
+| timestamp       | DateTime  | This channel reports the last time this sensor was updates. |
+
+PowerSensors ([powersensor]) support the following channels:
+
+| Channel Type ID | Item Type | Description                                                 |
+|-----------------|-----------|-------------------------------------------------------------|
+| watt            | Number    | This channel reports the current watt.                      |
+| ampere          | Number    | This channel reports the current ampere.                    |
+| timestamp       | DateTime  | This channel reports the last time this sensor was updates. |
+
+WindSensors ([windsensor]) support the following channels:
+
+| Channel Type ID | Item Type | Description                  |
+|-----------------|-----------|------------------------------|
+| windgust        | Number    | This current peak wind gust. |
+| winddirection   | Number    | The current wind direction.  |
+| windaverage     | DateTime  | The current wind avarage.    |
+
+RainSensors ([rainsensor]) support the following channels:
+
+| Channel Type ID | Item Type | Description                |
+|-----------------|-----------|----------------------------|
+| rainrate        | Number    | This current rate of rain. |
+| raintotal       | Number    | The total rain.            |
 
 ### Switchbased sensor workaround
 
-All switchbased sensors are binary and the goal is to represent them as a `contact` item in openhab. Eg. a door is open or closed and can't be altered by sending a radio signal.
+All switchbased sensors are binary and the goal is to represent them as a `contact` item in openHAB. Eg. a door is open or closed and can't be altered by sending a radio signal.
 To achive that we will create a proxy item which is updated by a rule.
-
 
 First create another proxy item for every sensor:
 
