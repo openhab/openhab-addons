@@ -218,7 +218,7 @@ class GoogleCloudAPI {
 
             // if not in cache, get audio data and put to cache
             byte[] audio = synthesizeSpeechByGoogle(text, voice, format[0]);
-            saveAudioAndTextToFile(text, audioFileInCache, audio);
+            saveAudioAndTextToFile(text, audioFileInCache, audio, voice.getTechnicalName());
             return audio;
         } catch (FileNotFoundException ex) {
             logger.warn("Could not write {} to cache", audioFileInCache, ex);
@@ -235,9 +235,10 @@ class GoogleCloudAPI {
      * @param text Converted text.
      * @param cacheFile Cache entry file.
      * @param audio Byte array of the audio.
+     * @param voiceName Used voice
      * @throws IOException in case of file handling exceptions
      */
-    private void saveAudioAndTextToFile(String text, File cacheFile, byte[] audio) throws IOException {
+    private void saveAudioAndTextToFile(String text, File cacheFile, byte[] audio, String voiceName) throws IOException {
         FileOutputStream fos = new FileOutputStream(cacheFile);
         fos.write(audio);
         fos.close();
@@ -247,7 +248,10 @@ class GoogleCloudAPI {
         // this allows to know which contents is in which audio file
         String txtFileName = FilenameUtils.removeExtension(cacheFile.getName()) + ".txt";
         FileOutputStream txtFos = new FileOutputStream(new File(cacheFolder, txtFileName));
-        txtFos.write(text.getBytes(UTF_8));
+        StringBuilder sb = new StringBuilder("Config: ").append(config.toConfigString())
+                .append(",voice=").append(voiceName).append("\n")
+                .append("Text: ").append(text).append("\n");
+        txtFos.write(sb.toString().getBytes(UTF_8));
         txtFos.close();
         logger.debug("Caching text file {}", txtFileName);
     }
