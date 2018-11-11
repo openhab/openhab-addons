@@ -46,6 +46,7 @@ Using your favourite configuration UI (e.g. PaperUI) edit **Services/Voice/Googl
 * **Pitch** - The pitch of selected voice, up to 20 semitones
 * **Volume Gain** - The volume of the output between 16dB and -96dB
 * **Speaking Rate** - The speaking rate can be 4x faster or slower than the normal rate 
+* **Purge Cache** - Purges the cache e.g. after testing different voice configuration parameters. When enabled the cache is purged once. Make sure to disable this setting again so the cache is maintained after restarts.
 
 ## Voice Configuration
 

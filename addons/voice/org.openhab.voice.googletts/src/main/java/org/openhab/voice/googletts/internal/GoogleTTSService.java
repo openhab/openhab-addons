@@ -11,10 +11,9 @@ package org.openhab.voice.googletts.internal;
 import com.google.cloud.texttospeech.v1beta1.AudioEncoding;
 import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.eclipse.smarthome.config.core.ConfigurableService;
-import org.eclipse.smarthome.core.audio.AudioException;
 import org.eclipse.smarthome.core.audio.AudioFormat;
 import org.eclipse.smarthome.core.audio.AudioStream;
-import org.eclipse.smarthome.core.audio.FileAudioStream;
+import org.eclipse.smarthome.core.audio.ByteArrayAudioStream;
 import org.eclipse.smarthome.core.voice.TTSException;
 import org.eclipse.smarthome.core.voice.TTSService;
 import org.eclipse.smarthome.core.voice.Voice;
@@ -76,6 +75,7 @@ public class GoogleTTSService implements TTSService {
     private static final String PARAM_PITCH = "pitch";
     private static final String PARAM_SPEAKING_RATE = "speakingRate";
     private static final String PARAM_VOLUME_GAIN_DB = "volumeGainDb";
+    private static final String PARAM_PURGE_CACHE = "purgeCache";
 
     /**
      * Logger.
@@ -112,7 +112,6 @@ public class GoogleTTSService implements TTSService {
         File homeFolder = new File(userData, SERVICE_ID);
 
         if (!homeFolder.exists()) {
-            //noinspection ResultOfMethodCallIgnored
             homeFolder.mkdirs();
         }
         logger.info("Using home folder: {}", homeFolder.getAbsolutePath());
@@ -120,7 +119,6 @@ public class GoogleTTSService implements TTSService {
         //create cache folder
         File cacheFolder = new File(new File(userData, CACHE_FOLDER_NAME), SERVICE_PID);
         if (!cacheFolder.exists()) {
-            //noinspection ResultOfMethodCallIgnored
             cacheFolder.mkdirs();
         }
         logger.info("Using cache folder {}", cacheFolder.getAbsolutePath());
@@ -209,6 +207,12 @@ public class GoogleTTSService implements TTSService {
             if (param != null) {
                 config.setVolumeGainDb(Double.parseDouble(param));
             }
+
+            //purgeCache
+            param = newConfig.containsKey(PARAM_PURGE_CACHE) ? newConfig.get(PARAM_PURGE_CACHE).toString() : null;
+            if (param != null) {
+                config.setPurgeCache(Boolean.parseBoolean(param));
+            }
             logger.trace("New configuration: {}", config.toString());
 
             if (config.getServiceAccountKey() != null) {
@@ -273,8 +277,8 @@ public class GoogleTTSService implements TTSService {
     /**
      * Checks parameters and calls the API to synthesize voice.
      *
-     * @param text            Input text.
-     * @param voice           Selected voice.
+     * @param text Input text.
+     * @param voice Selected voice.
      * @param requestedFormat Format that is supported by the target sink as well.
      * @return Output audio stream
      * @throws TTSException in case the service is unavailable or a parameter is invalid.
@@ -306,16 +310,11 @@ public class GoogleTTSService implements TTSService {
             throw new TTSException("The passed AudioFormat is unsupported");
         }
 
-        // now create the input stream for given text, locale, format. There is
-        // only a default voice
-        try {
-            File audioFile = apiImpl.synthesizeSpeech(text, (GoogleTTSVoice) voice, requestedFormat.getCodec());
-            if (audioFile == null) {
-                throw new TTSException("Could not read from Google Cloud TTS Service");
-            }
-            return new FileAudioStream(audioFile, requestedFormat);
-        } catch (AudioException ex) {
-            throw new TTSException("Could not create AudioStream", ex);
+        //create the audio byte array for given text, locale, format
+        byte[] audio = apiImpl.synthesizeSpeech(text, (GoogleTTSVoice) voice, requestedFormat.getCodec());
+        if (audio == null) {
+            throw new TTSException("Could not read from Google Cloud TTS Service");
         }
+        return new ByteArrayAudioStream(audio, requestedFormat);
     }
 }
