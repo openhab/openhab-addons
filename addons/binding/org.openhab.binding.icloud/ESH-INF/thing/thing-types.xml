@@ -37,6 +37,7 @@
 		<channels>
 			<channel typeId="BatteryStatus" id="batteryStatus" />
 			<channel typeId="system.battery-level" id="batteryLevel" />
+			<channel typeId="system.low-battery" id="lowBattery"  />
 			<channel typeId="FindMyPhone" id="findMyPhone" />
 			<channel typeId="Location" id="location" />
 			<channel typeId="LocationAccuracy" id="locationAccuracy" />
