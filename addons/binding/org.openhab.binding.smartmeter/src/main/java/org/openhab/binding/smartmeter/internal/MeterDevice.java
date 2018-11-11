@@ -147,10 +147,10 @@ public abstract class MeterDevice<T> {
                                 ex.getMessage(), retryDelay, getDeviceId(), ex);
                         connector.closeConnection();
                         notifyReadingError(ex);
-                    }).doOnCancel(connector::closeConnection).doOnComplete(connector::closeConnection)
+                    }).doOnCancel(connector::closeConnection).doOnComplete(connector::closeConnection).share()
                     .retryWhen(publisher -> publisher.delay(retryDelay, TimeUnit.SECONDS,
                             Schedulers.from(executorService)))
-                    .share().subscribeOn(Schedulers.from(executorService), true).subscribe((value) -> {
+                    .subscribeOn(Schedulers.from(executorService), true).subscribe((value) -> {
                         Map<String, MeterValue<?>> obisCodes = new HashMap<>(valueCache);
                         clearValueCache();
                         populateValueCache(value);

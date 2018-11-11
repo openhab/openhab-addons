@@ -20,8 +20,6 @@ import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Throwables;
-
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.FlowableEmitter;
@@ -94,7 +92,7 @@ public abstract class ConnectorBase<T> implements IMeterReaderConnector<T> {
         return Flowable.fromPublisher(attempts)
                 .zipWith(Flowable.range(1, NUMBER_OF_RETRIES + 1), (throwable, attempt) -> {
                     if (throwable instanceof TimeoutException || attempt == NUMBER_OF_RETRIES + 1) {
-                        throw Throwables.propagate(throwable);
+                        throw new RuntimeException(throwable);
                     } else {
                         logger.warn("{}. reading attempt failed: {}. Retrying {}...", attempt, throwable.getMessage(),
                                 getPortName());
