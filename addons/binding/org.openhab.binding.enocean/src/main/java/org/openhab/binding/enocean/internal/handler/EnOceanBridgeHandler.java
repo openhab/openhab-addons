@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.enocean.handler;
+package org.openhab.binding.enocean.internal.handler;
 
-import static org.openhab.binding.enocean.EnOceanBindingConstants.*;
+import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;

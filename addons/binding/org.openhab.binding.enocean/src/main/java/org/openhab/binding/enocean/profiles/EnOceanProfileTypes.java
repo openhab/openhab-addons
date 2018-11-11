@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.enocean.profiles;
 
-import static org.openhab.binding.enocean.EnOceanBindingConstants.*;
+import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import org.eclipse.smarthome.core.library.CoreItemFactory;
 import org.eclipse.smarthome.core.thing.DefaultSystemChannelTypeProvider;
@@ -18,6 +18,7 @@ import org.eclipse.smarthome.core.thing.profiles.StateProfileType;
 import org.eclipse.smarthome.core.thing.profiles.TriggerProfileType;
 
 /**
+ * Class holds ProfileTypeUIDs and ProfileTypes of EnOcean profiles
  *
  * @author Daniel Weber - Initial contribution
  */

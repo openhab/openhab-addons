@@ -6,13 +6,13 @@
 
 	<config-description uri="enocean:genericChannel:config">
 		<parameter name="transformationType" type="text">
-			<label>Type of transformation</label>
-			<description>e.g. "MAP"</description>
+			<label>Transformation Type</label>
+			<description>The type of the transformation, e.g. "MAP"</description>
 			<required>true</required>
 		</parameter>
-		<parameter name="transformationFuntion" type="text">
-			<label>Function of transformation type</label>
-			<description>e.g. for transformation type map => filename of mapping file</description>
+		<parameter name="transformationFunction" type="text">
+			<label>Transformation Function</label>
+			<description>The transformation function, e.g. for transformation type map => filename of mapping file</description>
 			<required>true</required>
 		</parameter>
 	</config-description>

@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.enocean.internal.eep.D5_00;
 
-import static org.openhab.binding.enocean.EnOceanBindingConstants.CHANNEL_CONTACT;
+import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.CHANNEL_CONTACT;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;

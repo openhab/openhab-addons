@@ -9,8 +9,7 @@ Bundle-SymbolicName: org.openhab.binding.enocean;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
 Export-Package: 
- org.openhab.binding.enocean,
- org.openhab.binding.enocean.handler,
+ org.openhab.binding.enocean.internal.handler,
  org.openhab.binding.enocean.profiles
 Import-Package: 
  javax.measure.quantity,
@@ -33,13 +32,9 @@ Import-Package:
  org.eclipse.smarthome.core.transform.actions,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.core.util,
- org.eclipse.smarthome.model.script.engine.action,
- org.openhab.binding.enocean,
- org.openhab.binding.enocean.handler,
+ org.eclipse.smarthome.io.transport.serial,
+ org.openhab.binding.enocean.internal.handler,
  org.openhab.binding.enocean.profiles,
  org.osgi.framework,
- org.slf4j,
- org.eclipse.smarthome.io.transport.serial,
- org.eclipse.smarthome.io.transport.serial.rxtx
+ org.slf4j
 Service-Component: OSGI-INF/*.xml 
-

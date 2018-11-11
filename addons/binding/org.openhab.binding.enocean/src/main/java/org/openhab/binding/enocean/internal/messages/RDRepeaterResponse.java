@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.enocean.internal.messages;
 
-import static org.openhab.binding.enocean.EnOceanBindingConstants.*;
+import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.StringType;

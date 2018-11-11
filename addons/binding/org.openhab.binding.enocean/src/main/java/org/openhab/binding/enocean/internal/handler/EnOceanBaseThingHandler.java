@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.enocean.handler;
+package org.openhab.binding.enocean.internal.handler;
 
-import static org.openhab.binding.enocean.EnOceanBindingConstants.ChannelId2ChannelDescription;
+import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.ChannelId2ChannelDescription;
 
 import java.util.Collection;
 import java.util.Hashtable;
@@ -31,7 +31,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.enocean.ChannelDescription;
+import org.openhab.binding.enocean.internal.EnOceanChannelDescription;
 import org.openhab.binding.enocean.internal.config.EnOceanBaseConfig;
 import org.openhab.binding.enocean.internal.eep.EEPType;
 import org.slf4j.Logger;
@@ -125,10 +125,10 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
                 continue;
             }
 
-            ChannelDescription t = ChannelId2ChannelDescription.get(id);
-            Channel channel = ChannelBuilder.create(new ChannelUID(this.getThing().getUID(), id), t.ItemType)
-                    .withConfiguration(eep.getChannelConfig(id)).withType(t.ChannelTypeUID)
-                    .withKind(t.IsStateChannel ? ChannelKind.STATE : ChannelKind.TRIGGER).withLabel(t.Label).build();
+            EnOceanChannelDescription t = ChannelId2ChannelDescription.get(id);
+            Channel channel = ChannelBuilder.create(new ChannelUID(this.getThing().getUID(), id), t.itemType)
+                    .withConfiguration(eep.getChannelConfig(id)).withType(t.channelTypeUID)
+                    .withKind(t.isStateChannel ? ChannelKind.STATE : ChannelKind.TRIGGER).withLabel(t.label).build();
 
             channelList.add(channel);
             channelListChanged = true;

@@ -41,7 +41,7 @@ public class A5_3F_7F_Universal extends _4BSMessage {
                 EnOceanChannelTransformationConfig transformationInfo = config
                         .as(EnOceanChannelTransformationConfig.class);
                 String c = Transformation.transform(transformationInfo.transformationType,
-                        transformationInfo.transformationFuntion, command.toString());
+                        transformationInfo.transformationFunction, command.toString());
 
                 if (c != null && c != command.toString()) {
                     setData(HexUtils.hexToBytes(c));

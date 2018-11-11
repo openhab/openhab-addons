@@ -20,7 +20,7 @@ import org.eclipse.smarthome.io.transport.serial.SerialPortEventListener;
 import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
-import org.openhab.binding.enocean.EnOceanBindingConstants;
+import org.openhab.binding.enocean.internal.EnOceanBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

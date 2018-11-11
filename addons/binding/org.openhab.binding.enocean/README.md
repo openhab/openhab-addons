@@ -25,7 +25,7 @@ For security reasons you cannot choose a random id, instead each gateway has 127
 A SenderId of your gateway is made up its base id and a number between 1 and 127.
 This number can be chosen manually or the next free/unused number can be determined by the binding.
 
-## Supported things
+## Supported Things
 
 This binding is developed on and tested with the following devices
 
@@ -48,7 +48,8 @@ This binding is developed on and tested with the following devices
  * Hoppe SecuSignal window handles
  * Rocker switches (NodOn, Eltako FT55 etc)
 
-However because of the standardized EnOcean protocol it is more important which EEP this binding supports. Hence if your device supports one of the following EEPs the chances are good that your device is also supported by this binding.
+However, because of the standardized EnOcean protocol it is more important which EEP this binding supports.
+Hence if your device supports one of the following EEPs the chances are good that your device is also supported by this binding.
 
 |Thing type                       | EEP family  | EEP Types     | Channels¹                    |  Devices²                      | Pairing   |
 |---------------------------------|-------------|---------------|------------------------------|--------------------------------|-----------|
@@ -73,8 +74,8 @@ However because of the standardized EnOcean protocol it is more important which 
 
 Furthermore following supporting EEP family is available too: A5-11, types 0x03 (rollershutter position status) and 0x04 (extended light status).
 
-A rockerSwitch is used to receive message from a physical EnOcean Rocker Switch.
-A classicDevice is used to for older EnOcean devices which react only on rocker switch messages (like Opus GN-A-R12V-SR-4).
+A `rockerSwitch` is used to receive message from a physical EnOcean Rocker Switch.
+A `classicDevice` is used to for older EnOcean devices which react only on rocker switch messages (like Opus GN-A-R12V-SR-4).
 As these devices do not send their current status, you have to bind additional rockerSwitches to your items.
 In this way you can still sync your item status with the physical status of your device whenever it gets modified by a physical rocker switch.
 
@@ -241,7 +242,7 @@ Switch Garage_Light "Switch" {channel="enocean:classicDevice:gtwy:cd01:virtualRo
 
 ## Generic Things
 
-If an EnOcean device uses an unsupported EEP or _A5-3F-7F_, you have to create a genericThing.
+If an EnOcean device uses an unsupported EEP or _A5-3F-7F_, you have to create a `genericThing`.
 Generic things support all channels like switch, number, string etc as generic channels.
 However you have to specify how to convert the EnOcean messages of the device into openHAB state updates and how to convert the openHAB commands into EnOcean messages.
 These conversion functions can be defined with the help of transformation functions like MAP.
@@ -256,7 +257,7 @@ These conversion functions can be defined with the help of transformation functi
 |                                 | suppressRepeating |                            | true, false |
 
 Supported channels: genericSwitch, genericRollershutter, genericDimmer, genericNumber, genericString, genericColor, genericTeachInCMD.
-You have to define the transformationType (e.g. MAP) and transformationFuntion (e.g. for MAP: file name of mapping file) for each of these channels. 
+You have to define the transformationType (e.g. MAP) and transformationFunction (e.g. for MAP: file name of mapping file) for each of these channels. 
 
 For an inbound transformation (EnOcean message => openHAB state) you receive the channel id and the EnOcean data in hex separated by a pipe.
 Your transformation function has to return the openHAB State type and value separated by a pipe.
@@ -280,14 +281,3 @@ ChannelId|OpenhabCommand=EnoceanData(Hex)
 genericSwitch|ON=01000009
 genericSwitch|OFF=01000008
 ```
-
-## Credits
-
-Many thanks to:
-
- * The NodOn support for their hints about the ADT and UTE teach in messages.
- * The fhem project for the inspiration and their EnOcean addon 
- * [Casshern81](https://github.com/Casshern81) for his work on the documentation, valuable hints and testing efforts
- * [bodiroga](https://github.com/bodiroga) for implementing the USB Discovery service
- * [dominikkv](https://github.com/dominikkv) for implementing a lot of EEPs and source code improvements
- * [bakkerv](https://github.com/bakkerv) for implementing EEP A5-11-04

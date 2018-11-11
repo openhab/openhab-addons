@@ -8,14 +8,14 @@
  */
 package org.openhab.binding.enocean.internal.eep.D2_01;
 
-import static org.openhab.binding.enocean.EnOceanBindingConstants.CHANNEL_REPEATERMODE;
+import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.CHANNEL_REPEATERMODE;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.enocean.EnOceanBindingConstants;
+import org.openhab.binding.enocean.internal.EnOceanBindingConstants;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
 

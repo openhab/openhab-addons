@@ -16,6 +16,7 @@ import org.eclipse.smarthome.core.thing.profiles.TriggerProfile;
 import org.eclipse.smarthome.core.types.State;
 
 /**
+ * Profile to convert rockerswitch events into RollershutterItem commands (up, down)
  *
  * @author Daniel Weber - Initial contribution
  */

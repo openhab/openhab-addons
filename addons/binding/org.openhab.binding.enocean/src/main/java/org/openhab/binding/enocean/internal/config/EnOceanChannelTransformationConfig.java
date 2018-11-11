@@ -16,5 +16,5 @@ package org.openhab.binding.enocean.internal.config;
 public class EnOceanChannelTransformationConfig {
 
     public String transformationType;
-    public String transformationFuntion;
+    public String transformationFunction;
 }

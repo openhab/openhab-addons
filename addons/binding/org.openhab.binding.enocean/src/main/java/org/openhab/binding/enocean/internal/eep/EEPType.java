@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.enocean.internal.eep;
 
-import static org.openhab.binding.enocean.EnOceanBindingConstants.*;
+import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.Collections;
 import java.util.Hashtable;

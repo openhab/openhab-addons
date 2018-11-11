@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelVirtualRockerSwitchConfig;
 
 /**
+ * Profile to convert Rollershutter commands into EnOcean rockerswitch messages
  *
  * @author Daniel Weber - Initial contribution
  */

@@ -16,7 +16,8 @@ import org.eclipse.smarthome.core.thing.profiles.TriggerProfile;
 import org.eclipse.smarthome.core.types.State;
 
 /**
- *
+ * Profile to convert rockerswitch events into PlayerItem commands (play, pause)
+ * 
  * @author Daniel Weber - Initial contribution
  */
 public class RockerSwitchToPlayPauseProfile implements TriggerProfile {

@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.enocean.internal.eep.Generic;
 
-import static org.openhab.binding.enocean.EnOceanBindingConstants.PARAMETER_EEPID;
+import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.PARAMETER_EEPID;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
@@ -81,7 +81,7 @@ public class GenericEEP extends EEP {
 
             String input = channelId + "|" + command.toString();
             String output = Transformation.transform(transformationInfo.transformationType,
-                    transformationInfo.transformationFuntion, input);
+                    transformationInfo.transformationFunction, input);
 
             if (output != null && !output.isEmpty() && !input.equals(output)) {
                 try {
@@ -103,7 +103,7 @@ public class GenericEEP extends EEP {
             String payload = HexUtils.bytesToHex(bytes);
             String input = channelId + "|" + payload;
             String output = Transformation.transform(transformationInfo.transformationType,
-                    transformationInfo.transformationFuntion, input);
+                    transformationInfo.transformationFunction, input);
 
             if (output != null && !output.isEmpty() && !input.equals(output)) {
                 String[] parts = output.split("\\|");
