@@ -31,6 +31,12 @@
 				<default>10</default>
 				<advanced>true</advanced>
 			</parameter>
+            <parameter name="reconnectInterval" type="integer" required="false">
+                <label>@text/parameter.reconnectinterval.label</label>
+                <description>@text/parameter.reconnectinterval.description</description>
+                <default>300</default>
+                <advanced>true</advanced>
+            </parameter>
 		</config-description>
 	</bridge-type>
 
@@ -61,6 +67,12 @@
 				<default>20</default>
 				<advanced>true</advanced>
 			</parameter>
+            <parameter name="reconnectInterval" type="integer" required="false">
+                <label>@text/parameter.reconnectinterval.label</label>
+                <description>@text/parameter.reconnectinterval.description</description>
+                <default>300</default>
+                <advanced>true</advanced>
+            </parameter>
 		</config-description>
 	</bridge-type>
 
@@ -89,6 +101,12 @@
 				<default>10</default>
 				<advanced>true</advanced>
 			</parameter>
+            <parameter name="reconnectInterval" type="integer" required="false">
+                <label>@text/parameter.reconnectinterval.label</label>
+                <description>@text/parameter.reconnectinterval.description</description>
+                <default>300</default>
+                <advanced>true</advanced>
+            </parameter>
 		</config-description>
 
 	</bridge-type>
@@ -121,6 +139,12 @@
 				<default>20</default>
 				<advanced>true</advanced>
 			</parameter>
+            <parameter name="reconnectInterval" type="integer" required="false">
+                <label>@text/parameter.reconnectinterval.label</label>
+                <description>@text/parameter.reconnectinterval.description</description>
+                <default>300</default>
+                <advanced>true</advanced>
+            </parameter>
 		</config-description>
 
 	</bridge-type>
