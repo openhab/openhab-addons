@@ -47,8 +47,7 @@ import org.tellstick.enums.DataType;
  * to the framework. All {@link TelldusDevicesHandler}s use the
  * {@link TelldusCoreDeviceController} to execute the actual commands.
  *
- * @author Jarle Hjortland
- *
+ * @author Jarle Hjortland - Initial contribution
  */
 public class TelldusCoreBridgeHandler extends BaseBridgeHandler
         implements DeviceChangeListener, SensorListener, TelldusBridgeHandler {

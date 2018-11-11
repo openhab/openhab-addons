@@ -38,6 +38,7 @@ public class TellstickBindingConstants {
     public static final String DEVICE_SENSOR = "sensor";
     public static final String DEVICE_WINDSENSOR = "windsensor";
     public static final String DEVICE_RAINSENSOR = "rainsensor";
+    public static final String DEVICE_POWERSENSOR = "powersensor";
     public static final String DEVICE_DIMMER = "dimmer";
     public static final String DEVICE_SWITCH = "switch";
     // List of all Thing Type UIDs
@@ -45,6 +46,7 @@ public class TellstickBindingConstants {
     public static final ThingTypeUID SWITCH_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_SWITCH);
     public static final ThingTypeUID SENSOR_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_SENSOR);
     public static final ThingTypeUID RAINSENSOR_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_RAINSENSOR);
+    public static final ThingTypeUID POWERSENSOR_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_POWERSENSOR);
     public static final ThingTypeUID WINDSENSOR_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_WINDSENSOR);
 
     public static final ThingTypeUID TELLDUSBRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, BRIDGE_TELLDUS_CORE);
@@ -61,13 +63,16 @@ public class TellstickBindingConstants {
     public static final String CHANNEL_WINDAVERAGE = "windaverage";
     public static final String CHANNEL_WINDDIRECTION = "winddirection";
     public static final String CHANNEL_WINDGUST = "windgust";
+    public static final String CHANNEL_WATT = "watt";
+    public static final String CHANNEL_AMPERE = "ampere";
+    public static final String CHANNEL_LUX = "lux";
 
     public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = Sets
             .newHashSet(TELLDUSCOREBRIDGE_THING_TYPE, TELLDUSLIVEBRIDGE_THING_TYPE);
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Sets.newHashSet(DIMMER_THING_TYPE,
-            SWITCH_THING_TYPE, SENSOR_THING_TYPE, RAINSENSOR_THING_TYPE, WINDSENSOR_THING_TYPE);
+            SWITCH_THING_TYPE, SENSOR_THING_TYPE, RAINSENSOR_THING_TYPE, WINDSENSOR_THING_TYPE, POWERSENSOR_THING_TYPE);
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(DIMMER_THING_TYPE,
-            SWITCH_THING_TYPE, SENSOR_THING_TYPE, RAINSENSOR_THING_TYPE, WINDSENSOR_THING_TYPE,
+            SWITCH_THING_TYPE, SENSOR_THING_TYPE, RAINSENSOR_THING_TYPE, WINDSENSOR_THING_TYPE, POWERSENSOR_THING_TYPE,
             TELLDUSCOREBRIDGE_THING_TYPE, TELLDUSLIVEBRIDGE_THING_TYPE);
 
 }

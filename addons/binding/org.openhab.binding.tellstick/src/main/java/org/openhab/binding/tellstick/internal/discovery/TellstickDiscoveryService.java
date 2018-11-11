@@ -20,6 +20,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.tellstick.TellstickBindingConstants;
 import org.openhab.binding.tellstick.handler.TelldusBridgeHandler;
+import org.openhab.binding.tellstick.internal.live.xml.LiveDataType;
 import org.openhab.binding.tellstick.internal.live.xml.TellstickNetDevice;
 import org.openhab.binding.tellstick.internal.live.xml.TellstickNetSensor;
 import org.slf4j.Logger;
@@ -157,10 +158,12 @@ public class TellstickDiscoveryService extends AbstractDiscoveryService
             }
         } else {
             TellstickNetSensor sensor = (TellstickNetSensor) device;
-            if (sensor.isWindSensor()) {
+            if (sensor.isSensorOfType(LiveDataType.WINDAVERAGE)) {
                 sensorThingId = TellstickBindingConstants.WINDSENSOR_THING_TYPE;
-            } else if (sensor.isRainSensor()) {
+            } else if (sensor.isSensorOfType(LiveDataType.RAINRATE)) {
                 sensorThingId = TellstickBindingConstants.RAINSENSOR_THING_TYPE;
+            } else if (sensor.isSensorOfType(LiveDataType.WATT)) {
+                sensorThingId = TellstickBindingConstants.POWERSENSOR_THING_TYPE;
             } else {
                 sensorThingId = TellstickBindingConstants.SENSOR_THING_TYPE;
             }
