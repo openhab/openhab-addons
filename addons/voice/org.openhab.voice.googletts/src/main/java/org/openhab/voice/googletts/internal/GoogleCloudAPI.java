@@ -12,12 +12,14 @@ import com.google.api.gax.core.FixedCredentialsProvider;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.texttospeech.v1beta1.*;
 import com.google.protobuf.ByteString;
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.smarthome.core.audio.AudioFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.math.BigInteger;
+import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -28,11 +30,6 @@ import java.util.*;
  * @author Gabor Bicskei - Initial contribution and API
  */
 class GoogleCloudAPI {
-    /**
-     * Stream buffer size
-     */
-    private static final int READ_BUFFER_SIZE = 4096;
-
     /**
      * Default encoding
      */
@@ -105,13 +102,22 @@ class GoogleCloudAPI {
                 voices.clear();
             }
         }
+
+        //maintain cache
+        if (config.getPurgeCache() != null && config.getPurgeCache()) {
+            File[] files = cacheFolder.listFiles();
+            if (files != null && files.length > 0) {
+                Arrays.stream(files).forEach(File::delete);
+            }
+            logger.debug("Cache purged.");
+        }
     }
 
     private boolean checkArch() {
         PlatformUtil.Architecture architecture = PlatformUtil.checkArchitecture();
 
         if (PlatformUtil.Architecture.X86_64 != architecture) {
-            logger.error("The architecture is not x86_64 but {}. Only x86_64 platforms are supported. " , architecture);
+            logger.error("The architecture is not x86_64 but {}. Only x86_64 platforms are supported. ", architecture);
             return false;
         } else {
             logger.debug("openHAB is running on architecture {} - supported by Google Cloud TTS API", architecture);
@@ -199,27 +205,21 @@ class GoogleCloudAPI {
         }
     }
 
-    File synthesizeSpeech(String text, GoogleTTSVoice voice, String codec) {
+    byte[] synthesizeSpeech(String text, GoogleTTSVoice voice, String codec) {
         String[] format = getFormatForCodec(codec);
-        String fileNameInCache = getUniqueFilenameForText(text, voice.getLocale());
-        // check if in cache
+        String fileNameInCache = getUniqueFilenameForText(text, voice.getTechnicalName());
         File audioFileInCache = new File(cacheFolder, fileNameInCache + "." + format[1]);
-        if (audioFileInCache.exists()) {
-            logger.debug("Audio file {} was found in cache.", audioFileInCache.getName());
-            return audioFileInCache;
-        }
+        try {
+            // check if in cache
+            if (audioFileInCache.exists()) {
+                logger.debug("Audio file {} was found in cache.", audioFileInCache.getName());
+                return Files.readAllBytes(audioFileInCache.toPath());
+            }
 
-        // if not in cache, get audio data and put to cache
-        try (InputStream is = synthesizeSpeechByGoogle(text, voice, format[0]);
-             FileOutputStream fos = new FileOutputStream(audioFileInCache)) {
-            logger.debug("Caching audio file {}", audioFileInCache.getName());
-            copyStream(is, fos);
-            // write text to file for transparency too
-            // this allows to know which contents is in which audio file
-            File txtFileInCache = new File(cacheFolder, fileNameInCache + ".txt");
-            writeText(txtFileInCache, text);
-            // return from cache
-            return audioFileInCache;
+            // if not in cache, get audio data and put to cache
+            byte[] audio = synthesizeSpeechByGoogle(text, voice, format[0]);
+            saveAudioAndTextToFile(text, audioFileInCache, audio, voice.getTechnicalName());
+            return audio;
         } catch (FileNotFoundException ex) {
             logger.warn("Could not write {} to cache", audioFileInCache, ex);
             return null;
@@ -230,13 +230,40 @@ class GoogleCloudAPI {
     }
 
     /**
+     * Create cache entry.
+     *
+     * @param text Converted text.
+     * @param cacheFile Cache entry file.
+     * @param audio Byte array of the audio.
+     * @param voiceName Used voice
+     * @throws IOException in case of file handling exceptions
+     */
+    private void saveAudioAndTextToFile(String text, File cacheFile, byte[] audio, String voiceName) throws IOException {
+        FileOutputStream fos = new FileOutputStream(cacheFile);
+        fos.write(audio);
+        fos.close();
+        logger.debug("Caching audio file {}", cacheFile.getName());
+
+        // write text to file for transparency too
+        // this allows to know which contents is in which audio file
+        String txtFileName = FilenameUtils.removeExtension(cacheFile.getName()) + ".txt";
+        FileOutputStream txtFos = new FileOutputStream(new File(cacheFolder, txtFileName));
+        StringBuilder sb = new StringBuilder("Config: ").append(config.toConfigString())
+                .append(",voice=").append(voiceName).append("\n")
+                .append("Text: ").append(text).append("\n");
+        txtFos.write(sb.toString().getBytes(UTF_8));
+        txtFos.close();
+        logger.debug("Caching text file {}", txtFileName);
+    }
+
+    /**
      * Call Google service to synthesize the required text
      *
-     * @param text  Text to synthesise
+     * @param text Text to synthesise
      * @param voice Voice parameter
      * @return Audio input stream
      */
-    private InputStream synthesizeSpeechByGoogle(String text, GoogleTTSVoice voice, String audioFormat) {
+    private byte[] synthesizeSpeechByGoogle(String text, GoogleTTSVoice voice, String audioFormat) {
         // Set the text input to be synthesized
         SynthesisInput.Builder builder = SynthesisInput.newBuilder();
         if (text.startsWith("<speak>")) {
@@ -268,7 +295,7 @@ class GoogleCloudAPI {
         // Get the audio contents from the response
         ByteString audioContents = response.getAudioContent();
 
-        return new ByteArrayInputStream(audioContents.toByteArray());
+        return audioContents.toByteArray();
     }
 
     /**
@@ -277,9 +304,9 @@ class GoogleCloudAPI {
      * <p>
      * Sample: "en-US_00a2653ac5f77063bc4ea2fee87318d3"
      */
-    private String getUniqueFilenameForText(String text, Locale locale) {
+    private String getUniqueFilenameForText(String text, String voiceName) {
         try {
-            byte[] bytesOfMessage = text.getBytes(UTF_8);
+            byte[] bytesOfMessage = (config.toConfigString() + text).getBytes(UTF_8);
             MessageDigest md = MessageDigest.getInstance("MD5");
             byte[] md5Hash = md.digest(bytesOfMessage);
             BigInteger bigInt = new BigInteger(1, md5Hash);
@@ -289,26 +316,11 @@ class GoogleCloudAPI {
             while (hashText.length() < 32) {
                 hashText.insert(0, "0");
             }
-            return locale.getLanguage() + "_" + hashText;
+            return voiceName + "_" + hashText;
         } catch (UnsupportedEncodingException | NoSuchAlgorithmException ex) {
             // should not happen
             logger.error("Could not create MD5 hash for '{}'", text, ex);
             return null;
-        }
-    }
-
-    private void copyStream(InputStream inputStream, OutputStream outputStream) throws IOException {
-        byte[] bytes = new byte[READ_BUFFER_SIZE];
-        int read = inputStream.read(bytes, 0, READ_BUFFER_SIZE);
-        while (read > 0) {
-            outputStream.write(bytes, 0, read);
-            read = inputStream.read(bytes, 0, READ_BUFFER_SIZE);
-        }
-    }
-
-    private void writeText(File file, String text) throws IOException {
-        try (OutputStream outputStream = new FileOutputStream(file)) {
-            outputStream.write(text.getBytes(UTF_8));
         }
     }
 

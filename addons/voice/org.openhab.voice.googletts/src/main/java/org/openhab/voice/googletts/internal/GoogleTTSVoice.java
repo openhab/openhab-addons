@@ -48,29 +48,22 @@ public class GoogleTTSVoice implements Voice {
     }
 
     /**
-     * Copy constructor
-     *
-     * @param voice Voice instance
-     */
-    GoogleTTSVoice(Voice voice) {
-        this.locale = voice.getLocale();
-        this.label = voice.getLabel();
-        if (voice instanceof GoogleTTSVoice) {
-            this.ssmlGender = ((GoogleTTSVoice) voice).getSsmlGender();
-        } else {
-            this.ssmlGender = null;
-        }
-    }
-
-    /**
      * Globally unique identifier of the voice.
      *
      * @return A String uniquely identifying the voice globally
      */
     @Override
     public String getUID() {
-        String voiceName = label.replaceAll("[^a-zA-Z0-9_]", "");
-        return "googletts:" + voiceName;
+        return "googletts:" + getTechnicalName();
+    }
+
+    /**
+     * Technical name of the voice.
+     *
+     * @return A String voice technical name
+     */
+    String getTechnicalName() {
+        return label.replaceAll("[^a-zA-Z0-9_]", "");
     }
 
     /**
