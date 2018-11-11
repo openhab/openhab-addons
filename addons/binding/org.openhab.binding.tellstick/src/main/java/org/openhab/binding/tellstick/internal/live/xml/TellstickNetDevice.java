@@ -19,8 +19,7 @@ import org.tellstick.enums.DeviceType;
 /**
  * Class used to deserialize XML from Telldus Live.
  *
- * @author Jarle Hjortland
- *
+ * @author Jarle Hjortland - Initial contribution
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 public class TellstickNetDevice implements Device {
@@ -95,12 +94,6 @@ public class TellstickNetDevice implements Device {
         this.name = name;
     }
 
-    @Override
-    public String toString() {
-        return "TellstickNetDevice [deviceId=" + deviceId + ", name=" + name + ", online=" + online + ", state=" + state
-                + ", statevalue=" + statevalue + ", updated=" + updated + "]";
-    }
-
     public boolean getOnline() {
         return online;
     }
@@ -136,7 +129,7 @@ public class TellstickNetDevice implements Device {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
+        int prime = 31;
         int result = 1;
         result = prime * result + deviceId;
         return result;
@@ -167,4 +160,11 @@ public class TellstickNetDevice implements Device {
     public void setMethods(int methods) {
         this.methods = methods;
     }
+
+    @Override
+    public String toString() {
+        return "TellstickNetDevice [deviceId=" + deviceId + ", name=" + name + ", online=" + online + ", state=" + state
+                + ", statevalue=" + statevalue + ", updated=" + updated + "]";
+    }
+
 }

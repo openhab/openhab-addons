@@ -36,6 +36,7 @@ import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.tellstick.handler.TelldusDeviceController;
+import org.openhab.binding.tellstick.internal.TelldusBindingException;
 import org.openhab.binding.tellstick.internal.live.xml.TelldusLiveResponse;
 import org.openhab.binding.tellstick.internal.live.xml.TellstickNetDevice;
 import org.slf4j.Logger;
@@ -54,9 +55,8 @@ import org.tellstick.device.iface.SwitchableDevice;
  * {@link TelldusLiveDeviceController} is the communication with Telldus Live service (Tellstick.NET and ZNET)
  * This controller uses XML based Rest API to communicate with Telldus Live.
  *
- * @author Jarle Hjortland
+ * @author Jarle Hjortland - Initial contribution
  */
-
 public class TelldusLiveDeviceController implements DeviceChangeListener, SensorListener, TelldusDeviceController {
     private final Logger logger = LoggerFactory.getLogger(TelldusLiveDeviceController.class);
     private long lastSend = 0;
@@ -66,7 +66,8 @@ public class TelldusLiveDeviceController implements DeviceChangeListener, Sensor
     static final String HTTP_API_TELLDUS_COM_XML = "http://api.telldus.com/xml/";
     static final String HTTP_TELLDUS_CLIENTS = HTTP_API_TELLDUS_COM_XML + "clients/list";
     static final String HTTP_TELLDUS_DEVICES = HTTP_API_TELLDUS_COM_XML + "devices/list?supportedMethods=19";
-    static final String HTTP_TELLDUS_SENSORS = HTTP_API_TELLDUS_COM_XML + "sensors/list?includeValues=1&includeScale=1";
+    static final String HTTP_TELLDUS_SENSORS = HTTP_API_TELLDUS_COM_XML
+            + "sensors/list?includeValues=1&includeScale=1&includeUnit=1";
     static final String HTTP_TELLDUS_SENSOR_INFO = HTTP_API_TELLDUS_COM_XML + "sensor/info";
     static final String HTTP_TELLDUS_DEVICE_DIM = HTTP_API_TELLDUS_COM_XML + "device/dim?id=%d&level=%d";
     static final String HTTP_TELLDUS_DEVICE_TURNOFF = HTTP_API_TELLDUS_COM_XML + "device/turnOff?id=%d";
@@ -168,7 +169,7 @@ public class TelldusLiveDeviceController implements DeviceChangeListener, Sensor
                     TelldusLiveResponse.class);
             handleResponse((TellstickNetDevice) dev, response);
         } else {
-            throw new RuntimeException("Cannot send DIM to " + dev);
+            throw new TelldusBindingException("Cannot send DIM to " + dev);
         }
     }
 
@@ -178,21 +179,21 @@ public class TelldusLiveDeviceController implements DeviceChangeListener, Sensor
                     TelldusLiveResponse.class);
             handleResponse((TellstickNetDevice) dev, response);
         } else {
-            throw new RuntimeException("Cannot send OFF to " + dev);
+            throw new TelldusBindingException("Cannot send OFF to " + dev);
         }
     }
 
-    private void handleResponse(TellstickNetDevice device, TelldusLiveResponse response) {
+    private void handleResponse(TellstickNetDevice device, TelldusLiveResponse response) throws TellstickException {
         if (response == null || (response.status == null && response.error == null)) {
-            throw new RuntimeException("No response " + response);
+            throw new TelldusBindingException("No response " + response);
         } else if (response.error != null) {
             if (response.error.equals("The client for this device is currently offline")) {
                 device.setOnline(false);
                 device.setUpdated(true);
             }
-            throw new RuntimeException("Error " + response.error);
+            throw new TelldusBindingException("Error " + response.error);
         } else if (!response.status.trim().equals("success")) {
-            throw new RuntimeException("Response " + response.status);
+            throw new TelldusBindingException("Response " + response.status);
         }
     }
 
@@ -202,7 +203,7 @@ public class TelldusLiveDeviceController implements DeviceChangeListener, Sensor
                     TelldusLiveResponse.class);
             handleResponse((TellstickNetDevice) dev, response);
         } else {
-            throw new RuntimeException("Cannot send ON to " + dev);
+            throw new TelldusBindingException("Cannot send ON to " + dev);
         }
     }
 

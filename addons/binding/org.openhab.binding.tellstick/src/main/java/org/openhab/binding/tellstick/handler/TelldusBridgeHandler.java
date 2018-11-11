@@ -15,8 +15,7 @@ import org.tellstick.device.iface.Device;
 /**
  * Interface for the telldus bridge modules
  *
- * @author Jarle Hjortland
- *
+ * @author Jarle Hjortland - Initial contribution
  */
 public interface TelldusBridgeHandler {
 

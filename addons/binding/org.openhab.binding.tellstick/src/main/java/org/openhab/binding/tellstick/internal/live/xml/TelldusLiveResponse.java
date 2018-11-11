@@ -14,8 +14,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * Class used to deserialize XML from Telldus Live.
  *
- * @author Jarle Hjortland
- *
+ * @author Jarle Hjortland - Initial contribution
  */
 @XmlRootElement(name = "device")
 public class TelldusLiveResponse {

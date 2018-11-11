@@ -12,28 +12,30 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.tellstick.enums.DataType;
-
 /**
  * Class used to deserialize XML from Telldus Live.
  *
- * @author Jarle Hjortland
- *
+ * @author Jarle Hjortland - Initial contribution
  */
 @XmlRootElement(name = "data")
 public class DataTypeValue {
 
     @XmlAttribute(name = "name")
     @XmlJavaTypeAdapter(value = NameToDataType.class)
-    private DataType dataType;
+    private LiveDataType dataType;
+
     @XmlAttribute(name = "value")
     private String data;
 
-    public DataType getName() {
+    private String unit;
+
+    private Integer scale;
+
+    public LiveDataType getName() {
         return dataType;
     }
 
-    public void setName(DataType dataType) {
+    public void setName(LiveDataType dataType) {
         this.dataType = dataType;
     }
 
@@ -45,8 +47,26 @@ public class DataTypeValue {
         this.data = data;
     }
 
+    @XmlAttribute(name = "unit")
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
+    @XmlAttribute(name = "scale")
+    public Integer getScale() {
+        return scale;
+    }
+
+    public void setScale(Integer scale) {
+        this.scale = scale;
+    }
+
     @Override
     public String toString() {
-        return "DataTypeValue [dataType=" + dataType + ", data=" + data + "]";
+        return "DataTypeValue [dataType=" + dataType + ", data=" + data + ", unit=" + unit + "]";
     }
 }
