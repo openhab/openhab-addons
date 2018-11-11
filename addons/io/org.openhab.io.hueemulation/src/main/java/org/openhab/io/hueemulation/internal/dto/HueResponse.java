@@ -6,38 +6,47 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.io.hueemulation.internal.api;
+package org.openhab.io.hueemulation.internal.dto;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Hue API error response object
- * 
- * @author Dan Cunningham
+ * Hue API response base type
+ *
+ * @author David Graeff - Initial contribution
  */
-public class HueErrorResponse {
+@NonNullByDefault
+public class HueResponse {
     public static final int UNAUTHORIZED = 1;
+    public static final int INVALID_JSON = 2;
     public static final int NOT_AVAILABLE = 3;
     public static final int METHOD_NOT_AVAILABLE = 4;
     public static final int LINK_BUTTON_NOT_PRESSED = 101;
     public static final int INTERNAL_ERROR = 901;
 
-    public HueErrorMessage error;
+    public final @Nullable HueErrorMessage error;
+    public final @Nullable HueSuccessResponse success;
 
-    public HueErrorResponse(int type, String address, String description) {
-        super();
-        this.error = new HueErrorMessage(type, address, description);
+    public HueResponse(HueErrorMessage error) {
+        this.error = error;
+        this.success = null;
     }
 
-    public class HueErrorMessage {
-        public int type;
-        public String address;
-        public String description;
+    public HueResponse(HueSuccessResponse success) {
+        this.error = null;
+        this.success = success;
+    }
+
+    public static class HueErrorMessage {
+        public final String address;
+        public final String description;
+        public final int type;
 
         public HueErrorMessage(int type, String address, String description) {
-            super();
             this.type = type;
             this.address = address;
             this.description = description;
         }
-
     }
 }
