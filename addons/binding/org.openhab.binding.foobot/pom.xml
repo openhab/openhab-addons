@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -15,4 +15,47 @@
 	<name>Foobot Binding</name>
 	<packaging>eclipse-plugin</packaging>
 
+	<profiles>
+		<profile>
+			<id>check</id>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.openhab.tools.sat</groupId>
+							<artifactId>sat-plugin</artifactId>
+							<version>${sat.version}</version>
+							<executions>
+								<execution>
+									<phase>verify</phase>
+									<goals>
+										<goal>checkstyle</goal>
+										<goal>pmd</goal>
+										<goal>spotbugs</goal>
+										<goal>report</goal>
+									</goals>
+								</execution>
+							</executions>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+		</profile>
+		<profile>
+			<id>check-bundles</id>
+			<activation>
+				<file>
+					<exists>META-INF/MANIFEST.MF</exists>
+				</file>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.openhab.tools.sat</groupId>
+						<artifactId>sat-plugin</artifactId>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>

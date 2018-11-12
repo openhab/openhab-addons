@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.foobot;
+package org.openhab.binding.foobot.internal;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +25,11 @@ public class FoobotBindingConstants {
 
     private static final String BINDING_ID = "foobot";
 
+    // List Foobot URLs
+    public static final String URL_TO_FETCH_UUID = "https://api.foobot.io/v2/owner/%username%/device/";
+
     // List of all Thing Type UIDs
+    public static final ThingTypeUID BRIDGE_TYPE_FOOBOTACCOUNT = new ThingTypeUID(BINDING_ID, "foobotaccount");
     public static final ThingTypeUID THING_TYPE_FOOBOT = new ThingTypeUID(BINDING_ID, "device");
 
     // List of all Channel ids
@@ -45,4 +49,15 @@ public class FoobotBindingConstants {
         SENSOR_MAP.put(CO2, "co2");
         SENSOR_MAP.put(GPI, "allpollu");
     }
+
+    // List Foobot attributes
+    public static final String CONFIG_APIKEY = "apiKey";
+    public static final String CONFIG_UUID = "uuid";
+    public static final String CONFIG_MAC = "mac";
+    public static final String CONFIG_NAME_ = "name";
+    public static final String CONFIG_REFRESHTIME = "refreshIntervalInMinutes";
+
+    public static final String PROPERTY_NAME = "foobot-name";
+
+    public static final int DEFAULT_REFRESH_PERIOD_MINUTES = 7;
 }

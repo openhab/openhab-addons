@@ -7,32 +7,17 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.foobot;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
-Export-Package: 
- org.openhab.binding.foobot,
- org.openhab.binding.foobot.handler
 Import-Package: 
  com.google.gson,
- com.google.gson.reflect,
- org.apache.commons.httpclient.params,
- org.apache.commons.io,
+ com.google.gson.reflect, 
  org.apache.commons.lang,
-  org.apache.http,
- org.apache.http.client,
- org.apache.http.client.cache,
- org.apache.http.client.methods,
- org.apache.http.conn,
- org.apache.http.entity,
- org.apache.http.entity.mime,
- org.apache.http.impl.client,
- org.apache.http.message,
- org.apache.http.params,
- org.apache.http.util,
  org.eclipse.jdt.annotation;resolution:=optional,
- org.eclipse.jetty.client;version="9.3.22",
- org.eclipse.jetty.client.api;version="9.3.22",
+ org.eclipse.jetty.client,
+ org.eclipse.jetty.client.api,
  org.eclipse.jetty.util.component,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.cache,
+ org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
@@ -40,7 +25,7 @@ Import-Package:
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.io.net.http,
- org.openhab.binding.foobot,
- org.openhab.binding.foobot.handler,
+ org.osgi.framework,
+ org.osgi.service.component,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

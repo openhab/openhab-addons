@@ -28,7 +28,7 @@ The thing has a few configuration parameters:
 | apikey    | API Key from https://api.foobot.io/apidoc/index.html. Mandatory.        |
 | username  | your UserName for the foobot App. Mandatory.                            |
 | MAC Id    | Unique ID of your foobot device. Mandatory.                             |
-| refresh   | Refresh interval in minutes. Optional, the default value is 30 minutes. |
+| refresh   | Refresh interval in minutes. Optional, the default value is 7 minutes.  |
 
 
 ## Channels
@@ -50,7 +50,7 @@ The AirQuality information that is retrieved is available as these channels:
 demo.things:
 
 ```
-foobotbinding:foobot:mac [apikey="XXXXXX", username="XXXXXX", mac="XXXXXX", refresh=5]
+foobotbinding:foobot:mac [apikey="XXXXXX", username="XXXXXX", mac="XXXXXX", refresh=7]
 ```
 
 demo.items:

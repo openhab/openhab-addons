@@ -9,12 +9,13 @@
 package org.openhab.binding.foobot.internal.json;
 
 /**
- * The {@link FoobotJsonResponse} is the Java class used to map the JSON
+ * The {@link FoobotDevice} is the Java class used to map the JSON
  * response to the foobot.io request.
  *
  * @author Divya Chauhan - Initial contribution
+ * @author George Katsis - Code refactor
  */
-public class FoobotJsonResponse {
+public class FoobotDevice {
 
     private String uuid;
 
@@ -55,5 +56,4 @@ public class FoobotJsonResponse {
     public void setName(String name) {
         this.name = name;
     }
-
 }
