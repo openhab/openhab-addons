@@ -15,8 +15,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.yeelight.YeelightBindingConstants;
-
-import com.yeelight.sdk.device.DeviceStatus;
+import org.openhab.binding.yeelight.internal.lib.device.DeviceStatus;
 
 /**
  * The {@link YeelightCeilingHandler} is responsible for handling commands, which are
