@@ -40,7 +40,7 @@ The AirQuality information that is retrieved is available as these channels:
 | pm              | Number    | Fine particles pollution level (ug/m3)       |
 | co2             | Number    | Carbon diOxide level (ppm)                   |
 | humidity        | Number    | Humidity level (pc)                          |
-| voc             | Number    | Volatice Organic Compounds level (ppb)       |
+| voc             | Number    | Volatile Organic Compounds level (ppb)       |
 | gpi             | Number    | Global Pollution Index                       |
 | temperature     | Number    | Temperature in Celsius degrees               |
 

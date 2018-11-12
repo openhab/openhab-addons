@@ -186,7 +186,6 @@ public class FoobotHandler extends BaseThingHandler {
 
         updateStatus(ThingStatus.ONLINE);
         startAutomaticRefresh();
-
     }
 
     /**

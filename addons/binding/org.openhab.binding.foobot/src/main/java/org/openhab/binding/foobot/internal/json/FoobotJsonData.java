@@ -80,5 +80,4 @@ public class FoobotJsonData {
         this.datapointsList = datapoints.get(0);
         return datapointsList;
     }
-
 }

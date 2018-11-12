@@ -50,7 +50,7 @@ public class FoobotBindingConstants {
         SENSOR_MAP.put(GPI, "allpollu");
     }
 
-    // List Foobot attributes
+    // List Foobot configuration attributes
     public static final String CONFIG_APIKEY = "apiKey";
     public static final String CONFIG_UUID = "uuid";
     public static final String CONFIG_MAC = "mac";
