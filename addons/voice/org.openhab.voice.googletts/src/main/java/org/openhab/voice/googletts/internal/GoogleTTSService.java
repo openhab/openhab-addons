@@ -8,7 +8,14 @@
  */
 package org.openhab.voice.googletts.internal;
 
-import com.google.cloud.texttospeech.v1beta1.AudioEncoding;
+import static org.openhab.voice.googletts.internal.GoogleTTSService.*;
+
+import java.io.File;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.eclipse.smarthome.config.core.ConfigurableService;
 import org.eclipse.smarthome.core.audio.AudioFormat;
@@ -17,6 +24,7 @@ import org.eclipse.smarthome.core.audio.ByteArrayAudioStream;
 import org.eclipse.smarthome.core.voice.TTSException;
 import org.eclipse.smarthome.core.voice.TTSService;
 import org.eclipse.smarthome.core.voice.Voice;
+import org.openhab.voice.googletts.internal.protocol.AudioEncoding;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -24,24 +32,15 @@ import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-
-import static org.openhab.voice.googletts.internal.GoogleTTSService.*;
-
 /**
  * Voice service implementation.
  *
  * @author Gabor Bicskei - Initial contribution
  */
-@Component(configurationPid = SERVICE_PID, property = {
-        Constants.SERVICE_PID + "=" + SERVICE_PID,
+@Component(configurationPid = SERVICE_PID, property = { Constants.SERVICE_PID + "=" + SERVICE_PID,
         ConfigurableService.SERVICE_PROPERTY_LABEL + "=" + SERVICE_NAME + " Text-to-Speech",
         ConfigurableService.SERVICE_PROPERTY_DESCRIPTION_URI + "=" + SERVICE_CATEGORY + ":" + SERVICE_ID,
-        ConfigurableService.SERVICE_PROPERTY_CATEGORY + "=" + SERVICE_CATEGORY})
+        ConfigurableService.SERVICE_PROPERTY_CATEGORY + "=" + SERVICE_CATEGORY })
 public class GoogleTTSService implements TTSService {
     /**
      * Service name
@@ -107,7 +106,7 @@ public class GoogleTTSService implements TTSService {
      */
     @Activate
     protected void activate(Map<String, Object> config) {
-        //create home folder
+        // create home folder
         File userData = new File(ConfigConstants.getUserDataFolder());
         File homeFolder = new File(userData, SERVICE_ID);
 
@@ -116,7 +115,7 @@ public class GoogleTTSService implements TTSService {
         }
         logger.info("Using home folder: {}", homeFolder.getAbsolutePath());
 
-        //create cache folder
+        // create cache folder
         File cacheFolder = new File(new File(userData, CACHE_FOLDER_NAME), SERVICE_PID);
         if (!cacheFolder.exists()) {
             cacheFolder.mkdirs();
@@ -183,32 +182,34 @@ public class GoogleTTSService implements TTSService {
     private void updateConfig(Map<String, Object> newConfig) {
         logger.debug("Updating configuration");
         if (newConfig != null) {
-            //account key
-            String param = newConfig.containsKey(PARAM_SERVICE_ACCOUNT_KEY) ? newConfig.get(PARAM_SERVICE_ACCOUNT_KEY).toString() : null;
+            // account key
+            String param = newConfig.containsKey(PARAM_SERVICE_ACCOUNT_KEY)
+                    ? newConfig.get(PARAM_SERVICE_ACCOUNT_KEY).toString()
+                    : null;
             config.setServiceAccountKey(param);
             if (param == null) {
                 logger.error("Missing service account key configuration to access Google Cloud TTS API.");
             }
 
-            //pitch
+            // pitch
             param = newConfig.containsKey(PARAM_PITCH) ? newConfig.get(PARAM_PITCH).toString() : null;
             if (param != null) {
                 config.setPitch(Double.parseDouble(param));
             }
 
-            //speakingRate
+            // speakingRate
             param = newConfig.containsKey(PARAM_SPEAKING_RATE) ? newConfig.get(PARAM_SPEAKING_RATE).toString() : null;
             if (param != null) {
                 config.setSpeakingRate(Double.parseDouble(param));
             }
 
-            //volumeGainDb
+            // volumeGainDb
             param = newConfig.containsKey(PARAM_VOLUME_GAIN_DB) ? newConfig.get(PARAM_VOLUME_GAIN_DB).toString() : null;
             if (param != null) {
                 config.setVolumeGainDb(Double.parseDouble(param));
             }
 
-            //purgeCache
+            // purgeCache
             param = newConfig.containsKey(PARAM_PURGE_CACHE) ? newConfig.get(PARAM_PURGE_CACHE).toString() : null;
             if (param != null) {
                 config.setPurgeCache(Boolean.parseBoolean(param));
@@ -262,12 +263,12 @@ public class GoogleTTSService implements TTSService {
         switch (encoding) {
             case MP3:
                 // we use by default: MP3, 44khz_16bit_mono with bitrate 64 kbps
-                return new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_MP3, null, bitDepth,
-                        64000, frequency);
+                return new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_MP3, null, bitDepth, 64000,
+                        frequency);
             case LINEAR16:
                 // we use by default: wav, 44khz_16bit_mono
-                return new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, null, bitDepth,
-                        null, frequency);
+                return new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, null, bitDepth, null,
+                        frequency);
             default:
                 logger.warn("Audio format {} is not yet supported.", format);
                 return null;
@@ -310,7 +311,7 @@ public class GoogleTTSService implements TTSService {
             throw new TTSException("The passed AudioFormat is unsupported");
         }
 
-        //create the audio byte array for given text, locale, format
+        // create the audio byte array for given text, locale, format
         byte[] audio = apiImpl.synthesizeSpeech(text, (GoogleTTSVoice) voice, requestedFormat.getCodec());
         if (audio == null) {
             throw new TTSException("Could not read from Google Cloud TTS Service");

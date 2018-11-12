@@ -8,21 +8,48 @@
  */
 package org.openhab.voice.googletts.internal;
 
-import com.google.api.gax.core.FixedCredentialsProvider;
-import com.google.auth.oauth2.GoogleCredentials;
-import com.google.cloud.texttospeech.v1beta1.*;
-import com.google.protobuf.ByteString;
-import org.apache.commons.io.FilenameUtils;
-import org.eclipse.smarthome.core.audio.AudioFormat;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.io.FilenameUtils;
+import org.eclipse.smarthome.core.audio.AudioFormat;
+import org.eclipse.smarthome.io.net.http.HttpRequestBuilder;
+import org.openhab.voice.googletts.internal.protocol.AudioConfig;
+import org.openhab.voice.googletts.internal.protocol.AudioEncoding;
+import org.openhab.voice.googletts.internal.protocol.ListVoicesResponse;
+import org.openhab.voice.googletts.internal.protocol.SsmlVoiceGender;
+import org.openhab.voice.googletts.internal.protocol.SynthesisInput;
+import org.openhab.voice.googletts.internal.protocol.SynthesizeSpeechRequest;
+import org.openhab.voice.googletts.internal.protocol.SynthesizeSpeechResponse;
+import org.openhab.voice.googletts.internal.protocol.Voice;
+import org.openhab.voice.googletts.internal.protocol.VoiceSelectionParams;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.api.gax.core.FixedCredentialsProvider;
+import com.google.auth.Credentials;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * Google Cloud TTS API call implementation.
@@ -36,6 +63,31 @@ class GoogleCloudAPI {
     private static final String UTF_8 = "UTF-8";
 
     /**
+     * JSON content type
+     */
+    private static final String APPLICATION_JSON = "application/json";
+
+    /**
+     * Authorization header
+     */
+    private static final String AUTH_HEADER_NAME = "Authorization";
+
+    /**
+     * Google Cloud Platform authorization scope
+     */
+    private static final String GCP_SCOPE = "https://www.googleapis.com/auth/cloud-platform";
+
+    /**
+     * URL used for retrieving the list of available voices
+     */
+    private static final String LIST_VOICES_URL = "https://texttospeech.googleapis.com/v1/voices";
+
+    /**
+     * URL used for synthesizing text to speech
+     */
+    private static final String SYTNHESIZE_SPEECH_URL = "https://texttospeech.googleapis.com/v1/text:synthesize";
+
+    /**
      * Logger
      */
     private final Logger logger = LoggerFactory.getLogger(GoogleCloudAPI.class);
@@ -44,11 +96,6 @@ class GoogleCloudAPI {
      * Supported voices and locales
      */
     private final Map<Locale, Set<GoogleTTSVoice>> voices = new HashMap<>();
-
-    /**
-     * Google client
-     */
-    private TextToSpeechClient googleClient;
 
     /**
      * Cache folder
@@ -64,6 +111,10 @@ class GoogleCloudAPI {
      * Status flag
      */
     private boolean initialized;
+
+    private Credentials credentials;
+
+    private final Gson gson = new GsonBuilder().create();
 
     /**
      * Constructor.
@@ -81,29 +132,23 @@ class GoogleCloudAPI {
      */
     void setConfig(GoogleTTSConfig config) {
         this.config = config;
-        if (checkArch()) {
-            String serviceAccountKey = config.getServiceAccountKey();
-            if (serviceAccountKey != null) {
-                try {
-                    ByteArrayInputStream bis = new ByteArrayInputStream(serviceAccountKey.getBytes());
-                    GoogleCredentials credential = GoogleCredentials.fromStream(bis);
-                    FixedCredentialsProvider credentialProvider = FixedCredentialsProvider.create(credential);
-                    TextToSpeechSettings settings = TextToSpeechSettings.newBuilder().setCredentialsProvider(credentialProvider)
-                            .build();
-                    googleClient = TextToSpeechClient.create(settings);
-                    initialized = true;
-                    initVoices();
-                } catch (IOException e) {
-                    logger.error("Error initializing the service", e);
-                    initialized = false;
-                }
-            } else {
-                googleClient = null;
-                voices.clear();
+        String serviceAccountKey = config.getServiceAccountKey();
+        if (serviceAccountKey != null && !serviceAccountKey.isEmpty()) {
+            try {
+                credentials = createCredentials(serviceAccountKey);
+                initialized = true;
+                initVoices();
+            } catch (IOException e) {
+                logger.error("Error initializing the service", e);
+                initialized = false;
             }
+        } else {
+            credentials = null;
+            initialized = false;
+            voices.clear();
         }
 
-        //maintain cache
+        // maintain cache
         if (config.getPurgeCache() != null && config.getPurgeCache()) {
             File[] files = cacheFolder.listFiles();
             if (files != null && files.length > 0) {
@@ -113,16 +158,15 @@ class GoogleCloudAPI {
         }
     }
 
-    private boolean checkArch() {
-        PlatformUtil.Architecture architecture = PlatformUtil.checkArchitecture();
+    private Credentials createCredentials(String serviceAccountKey) throws IOException {
+        ByteArrayInputStream bis = new ByteArrayInputStream(serviceAccountKey.getBytes());
+        GoogleCredentials credential = GoogleCredentials.fromStream(bis).createScoped(Collections.singleton(GCP_SCOPE));
+        return FixedCredentialsProvider.create(credential).getCredentials();
+    }
 
-        if (PlatformUtil.Architecture.X86_64 != architecture) {
-            logger.error("The architecture is not x86_64 but {}. Only x86_64 platforms are supported. ", architecture);
-            return false;
-        } else {
-            logger.debug("openHAB is running on architecture {} - supported by Google Cloud TTS API", architecture);
-            return true;
-        }
+    private String getAuthorization() throws IOException {
+        Map<String, List<String>> metadata = credentials.getRequestMetadata();
+        return metadata.get(AUTH_HEADER_NAME).get(0);
     }
 
     /**
@@ -134,8 +178,7 @@ class GoogleCloudAPI {
         Set<String> formats = new HashSet<>();
         AudioEncoding[] values = AudioEncoding.values();
         for (AudioEncoding c : values) {
-            if (c != AudioEncoding.AUDIO_ENCODING_UNSPECIFIED &&
-                    c != AudioEncoding.UNRECOGNIZED) {
+            if (c != AudioEncoding.AUDIO_ENCODING_UNSPECIFIED) {
                 formats.add(c.toString());
             }
         }
@@ -165,27 +208,41 @@ class GoogleCloudAPI {
     /**
      * Google API call to load locales and voices.
      */
-    private void initVoices() {
-        if (googleClient != null) {
+    private void initVoices() throws IOException {
+        if (credentials != null) {
             voices.clear();
-            ListVoicesResponse resp = googleClient.listVoices(""); //without language code to get all the voices
-            for (Voice v : resp.getVoicesList()) {
-                for (int i = 0; i < v.getLanguageCodesCount(); i++) {
-                    String languageCode = v.getLanguageCodes(i);
-                    Locale l = Locale.forLanguageTag(languageCode);
-                    Set<GoogleTTSVoice> localVoices;
-                    if (!voices.containsKey(l)) {
-                        localVoices = new HashSet<>();
-                        voices.put(l, localVoices);
-                    } else {
-                        localVoices = voices.get(l);
-                    }
-                    localVoices.add(new GoogleTTSVoice(l, v.getName(), v.getSsmlGenderValue()));
+
+            for (GoogleTTSVoice voice : listVoices()) {
+                Locale locale = voice.getLocale();
+                Set<GoogleTTSVoice> localVoices;
+                if (!voices.containsKey(locale)) {
+                    localVoices = new HashSet<>();
+                    voices.put(locale, localVoices);
+                } else {
+                    localVoices = voices.get(locale);
                 }
+                localVoices.add(voice);
             }
         } else {
             logger.error("Google client is not initialized!");
         }
+    }
+
+    private List<GoogleTTSVoice> listVoices() throws IOException {
+        HttpRequestBuilder builder = HttpRequestBuilder.getFrom(LIST_VOICES_URL).withHeader(AUTH_HEADER_NAME,
+                getAuthorization());
+
+        ListVoicesResponse lvr = gson.fromJson(builder.getContentAsString(), ListVoicesResponse.class);
+
+        List<GoogleTTSVoice> result = new ArrayList<>();
+        for (Voice voice : lvr.getVoices()) {
+            for (String languageCode : voice.getLanguageCodes()) {
+                result.add(new GoogleTTSVoice(Locale.forLanguageTag(languageCode), voice.getName(),
+                        voice.getSsmlGender().name()));
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -197,9 +254,9 @@ class GoogleCloudAPI {
     private String[] getFormatForCodec(String codec) {
         switch (codec) {
             case AudioFormat.CODEC_MP3:
-                return new String[]{AudioEncoding.MP3.toString(), "mp3"};
+                return new String[] { AudioEncoding.MP3.toString(), "mp3" };
             case AudioFormat.CODEC_PCM_SIGNED:
-                return new String[]{AudioEncoding.LINEAR16.toString(), "wav"};
+                return new String[] { AudioEncoding.LINEAR16.toString(), "wav" };
             default:
                 throw new IllegalArgumentException("Audio format " + codec + " is not yet supported");
         }
@@ -238,7 +295,8 @@ class GoogleCloudAPI {
      * @param voiceName Used voice
      * @throws IOException in case of file handling exceptions
      */
-    private void saveAudioAndTextToFile(String text, File cacheFile, byte[] audio, String voiceName) throws IOException {
+    private void saveAudioAndTextToFile(String text, File cacheFile, byte[] audio, String voiceName)
+            throws IOException {
         FileOutputStream fos = new FileOutputStream(cacheFile);
         fos.write(audio);
         fos.close();
@@ -248,9 +306,8 @@ class GoogleCloudAPI {
         // this allows to know which contents is in which audio file
         String txtFileName = FilenameUtils.removeExtension(cacheFile.getName()) + ".txt";
         FileOutputStream txtFos = new FileOutputStream(new File(cacheFolder, txtFileName));
-        StringBuilder sb = new StringBuilder("Config: ").append(config.toConfigString())
-                .append(",voice=").append(voiceName).append("\n")
-                .append("Text: ").append(text).append("\n");
+        StringBuilder sb = new StringBuilder("Config: ").append(config.toConfigString()).append(",voice=")
+                .append(voiceName).append("\n").append("Text: ").append(text).append("\n");
         txtFos.write(sb.toString().getBytes(UTF_8));
         txtFos.close();
         logger.debug("Caching text file {}", txtFileName);
@@ -261,41 +318,27 @@ class GoogleCloudAPI {
      *
      * @param text Text to synthesise
      * @param voice Voice parameter
+     * @param audioFormat Audio encoding format
      * @return Audio input stream
      */
-    private byte[] synthesizeSpeechByGoogle(String text, GoogleTTSVoice voice, String audioFormat) {
-        // Set the text input to be synthesized
-        SynthesisInput.Builder builder = SynthesisInput.newBuilder();
-        if (text.startsWith("<speak>")) {
-            builder.setSsml(text);
-        } else {
-            builder.setText(text);
-        }
-        SynthesisInput input = builder.build();
+    private byte[] synthesizeSpeechByGoogle(String text, GoogleTTSVoice voice, String audioFormat) throws IOException {
+        AudioConfig audioConfig = new AudioConfig(AudioEncoding.valueOf(audioFormat), config.getPitch(),
+                config.getSpeakingRate(), config.getVolumeGainDb());
+        SynthesisInput synthesisInput = new SynthesisInput(text);
+        VoiceSelectionParams voiceSelectionParams = new VoiceSelectionParams(voice.getLocale().getLanguage(),
+                voice.getLabel(), SsmlVoiceGender.valueOf(voice.getSsmlGender()));
 
-        // Build the voice request
-        VoiceSelectionParams voiceParam = VoiceSelectionParams.newBuilder()
-                .setLanguageCode(voice.getLocale().getLanguage())
-                .setName(voice.getLabel())
-                .setSsmlGender(SsmlVoiceGender.forNumber(voice.getSsmlGender()))
-                .build();
+        SynthesizeSpeechRequest request = new SynthesizeSpeechRequest(audioConfig, synthesisInput,
+                voiceSelectionParams);
 
-        // Select the type of audio file you want returned
-        AudioConfig audioConfig = AudioConfig.newBuilder()
-                .setAudioEncoding(AudioEncoding.valueOf(audioFormat)) // MP3 or LINEAR16 audio.
-                .setPitch(config.getPitch())
-                .setSpeakingRate(config.getSpeakingRate())
-                .setVolumeGainDb(config.getVolumeGainDb())
-                .build();
+        HttpRequestBuilder builder = HttpRequestBuilder.postTo(SYTNHESIZE_SPEECH_URL)
+                .withHeader(AUTH_HEADER_NAME, getAuthorization()).withContent(gson.toJson(request), APPLICATION_JSON);
 
-        // Perform the text-to-speech request
-        SynthesizeSpeechResponse response = googleClient.synthesizeSpeech(input, voiceParam,
-                audioConfig);
+        SynthesizeSpeechResponse synthesizeSpeechResponse = gson.fromJson(builder.getContentAsString(),
+                SynthesizeSpeechResponse.class);
 
-        // Get the audio contents from the response
-        ByteString audioContents = response.getAudioContent();
-
-        return audioContents.toByteArray();
+        byte[] encodedBytes = synthesizeSpeechResponse.getAudioContent().getBytes(StandardCharsets.UTF_8);
+        return Base64.getDecoder().decode(encodedBytes);
     }
 
     /**
@@ -327,4 +370,5 @@ class GoogleCloudAPI {
     boolean isInitialized() {
         return initialized;
     }
+
 }
