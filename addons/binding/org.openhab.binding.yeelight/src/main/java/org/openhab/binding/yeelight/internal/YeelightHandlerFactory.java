@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.yeelight.internal;
 
-import static org.openhab.binding.yeelight.YeelightBindingConstants.*;
+import static org.openhab.binding.yeelight.internal.YeelightBindingConstants.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -17,10 +17,10 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.yeelight.handler.YeelightCeilingHandler;
-import org.openhab.binding.yeelight.handler.YeelightColorHandler;
-import org.openhab.binding.yeelight.handler.YeelightStripeHandler;
-import org.openhab.binding.yeelight.handler.YeelightWhiteHandler;
+import org.openhab.binding.yeelight.internal.handler.YeelightCeilingHandler;
+import org.openhab.binding.yeelight.internal.handler.YeelightColorHandler;
+import org.openhab.binding.yeelight.internal.handler.YeelightStripeHandler;
+import org.openhab.binding.yeelight.internal.handler.YeelightWhiteHandler;
 
 /**
  * The {@link YeelightHandlerFactory} is responsible for returning supported things and handlers for the devices.

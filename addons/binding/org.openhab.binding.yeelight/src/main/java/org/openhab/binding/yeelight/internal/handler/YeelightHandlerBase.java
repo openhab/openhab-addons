@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.yeelight.handler;
+package org.openhab.binding.yeelight.internal.handler;
 
-import static org.openhab.binding.yeelight.YeelightBindingConstants.*;
+import static org.openhab.binding.yeelight.internal.YeelightBindingConstants.*;
 
 import java.util.concurrent.TimeUnit;
 
@@ -25,7 +25,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.yeelight.YeelightBindingConstants;
+import org.openhab.binding.yeelight.internal.YeelightBindingConstants;
 import org.openhab.binding.yeelight.internal.lib.device.ConnectState;
 import org.openhab.binding.yeelight.internal.lib.device.DeviceBase;
 import org.openhab.binding.yeelight.internal.lib.device.DeviceFactory;
