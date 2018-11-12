@@ -57,7 +57,7 @@ e.g.:
 
 ## Unit Conversion
 
-Please use the [Units Of Measurement](https://docs.openhab.org/concepts/units-of-measurement.html) concept of openhab for unit conversion which is fully supported by this binding. Please see the item example on how to use it.
+Please use the [Units Of Measurement](https://www.openhab.org/docs/concepts/units-of-measurement.html) concept of openhab for unit conversion which is fully supported by this binding. Please see the item example on how to use it.
 *NOTE:* your meter device needs to provide correct unit information to work properly.
 
 ## Full Example
