@@ -85,7 +85,6 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
         ampereChannel = new ChannelUID(getThing().getUID(), CHANNEL_AMPERE);
         timestampChannel = new ChannelUID(getThing().getUID(), CHANNEL_TIMESTAMP);
         luxChannel = new ChannelUID(getThing().getUID(), CHANNEL_LUX);
-
     }
 
     @Override
@@ -137,7 +136,6 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
 
     @Override
     public void initialize() {
-
         Configuration config = getConfig();
         logger.debug("Initialize TelldusDeviceHandler {}. class {}", config, config.getClass());
         final Object configDeviceId = config.get(TellstickBindingConstants.DEVICE_ID);
@@ -238,7 +236,6 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
     }
 
     private synchronized TelldusBridgeHandler getTellstickBridgeHandler() {
-
         if (this.bridgeHandler == null) {
             logger.debug("No available bridge handler found for {} bridge {} .", deviceId, getBridge());
         }
@@ -250,7 +247,6 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
         logger.debug("Updating states of ({} {} ({}) id: {} or {}", device.getDeviceType(), device.getName(),
                 device.getUUId(), getThing().getUID(), deviceId);
         if (device.getUUId().equals(deviceId)) {
-
             if (event instanceof TellstickDeviceEvent) {
                 updateDeviceState(device);
             } else if (event instanceof TellstickNetSensorEvent) {
@@ -265,9 +261,7 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
             Calendar cal = Calendar.getInstance();
             cal.setTimeInMillis(event.getTimestamp());
             updateState(timestampChannel, new DateTimeType(cal));
-
         }
-
     }
 
     private void updateSensorDataState(DataType dataType, String data) {

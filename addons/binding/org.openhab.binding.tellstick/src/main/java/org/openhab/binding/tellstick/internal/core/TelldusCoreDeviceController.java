@@ -38,8 +38,7 @@ import org.tellstick.device.iface.SwitchableDevice;
  * This communicates with the telldus DLL using the javatellstick
  * library.
  *
- * @author Jarle Hjortland - Initial contribution
- * @author Elias Gabrielsson
+ * @author Jarle Hjortland, Elias Gabrielsson - Initial contribution
  */
 public class TelldusCoreDeviceController implements DeviceChangeListener, SensorListener, TelldusDeviceController {
     private final Logger logger = LoggerFactory.getLogger(TelldusCoreDeviceController.class);
@@ -66,7 +65,6 @@ public class TelldusCoreDeviceController implements DeviceChangeListener, Sensor
     @Override
     public void handleSendEvent(Device device, int resendCount, boolean isDimmer, Command command)
             throws TellstickException {
-
         if (!workerThread.isAlive()) {
             workerThread.start();
         }
