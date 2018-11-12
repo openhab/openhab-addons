@@ -13,6 +13,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -57,7 +58,7 @@ public class SonyPS4ArtworkHandler {
     SonyPS4ArtworkHandler() {
         // create home folder
         File userData = new File(ConfigConstants.getUserDataFolder());
-        File homeFolder = new File(userData, SERVICE_ID);
+        File homeFolder = new File(userData, CACHE_FOLDER_NAME);
 
         if (!homeFolder.exists()) {
             homeFolder.mkdirs();
@@ -65,7 +66,7 @@ public class SonyPS4ArtworkHandler {
         logger.debug("Using home folder: {}", homeFolder.getAbsolutePath());
 
         // create cache folder
-        File cacheFolder = new File(homeFolder, CACHE_FOLDER_NAME);
+        File cacheFolder = new File(homeFolder, SERVICE_PID);
         if (!cacheFolder.exists()) {
             cacheFolder.mkdirs();
         }
@@ -74,7 +75,7 @@ public class SonyPS4ArtworkHandler {
     }
 
     @Nullable
-    RawType fetchArtworkForTitleid(String titleid, Integer size) {
+    RawType fetchArtworkForTitleid(String titleid, Integer size, Locale locale) {
         // Try to find the image in the cache first, then try to download it from PlayStation Store.
         RawType artwork = null;
         if (titleid.isEmpty()) {
@@ -96,16 +97,18 @@ public class SonyPS4ArtworkHandler {
             }
             return artwork;
         }
-        artwork = HttpUtil
-                .downloadImage("https://store.playstation.com/store/api/chihiro/00_09_000/titlecontainer/US/en/999/"
-                        + titleid + "_00/image?w=" + size.toString() + "&h=" + size.toString(), 1000);
-        try (FileOutputStream fos = new FileOutputStream(artworkFileInCache)) {
-            logger.debug("Caching artwork file {}", artworkFileInCache.getName());
-            fos.write(artwork.getBytes(), 0, artwork.getBytes().length);
-        } catch (FileNotFoundException ex) {
-            logger.warn("Could not create {} in cache. ", artworkFileInCache, ex);
-        } catch (IOException ex) {
-            logger.error("Could not write {} to cache. ", artworkFileInCache, ex);
+        String storeLocale = locale.getCountry() + "/" + locale.getLanguage();
+        artwork = HttpUtil.downloadImage("https://store.playstation.com/store/api/chihiro/00_09_000/titlecontainer/"
+                + storeLocale + "/999/" + titleid + "_00/image?w=" + size.toString() + "&h=" + size.toString(), 1000);
+        if (artwork != null) {
+            try (FileOutputStream fos = new FileOutputStream(artworkFileInCache)) {
+                logger.debug("Caching artwork file {}", artworkFileInCache.getName());
+                fos.write(artwork.getBytes(), 0, artwork.getBytes().length);
+            } catch (FileNotFoundException ex) {
+                logger.warn("Could not create {} in cache. ", artworkFileInCache, ex);
+            } catch (IOException ex) {
+                logger.error("Could not write {} to cache. ", artworkFileInCache, ex);
+            }
         }
         return artwork;
     }

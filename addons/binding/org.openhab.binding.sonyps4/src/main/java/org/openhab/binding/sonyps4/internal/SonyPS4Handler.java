@@ -19,11 +19,13 @@ import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.i18n.LocaleProvider;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -60,6 +62,8 @@ public class SonyPS4Handler extends BaseThingHandler {
     private SonyPS4Configuration config = getConfigAs(SonyPS4Configuration.class);
 
     @Nullable
+    private LocaleProvider localeProvider;
+    @Nullable
     private ScheduledFuture<?> refreshTimer;
 
     // State of PS4
@@ -69,8 +73,9 @@ public class SonyPS4Handler extends BaseThingHandler {
     private State currentArtwork = UnDefType.UNDEF;
     private Integer currentComPort = 997;
 
-    public SonyPS4Handler(Thing thing) {
+    public SonyPS4Handler(Thing thing, @Nullable LocaleProvider localeProvider) {
         super(thing);
+        this.localeProvider = localeProvider;
     }
 
     @Override
@@ -131,7 +136,7 @@ public class SonyPS4Handler extends BaseThingHandler {
      * Sets up a refresh timer (using the scheduler) with the given interval.
      *
      * @param initialWaitTime The delay before the first refresh. Maybe 0 to immediately
-     *                            initiate a refresh.
+     *            initiate a refresh.
      */
     private void setupRefreshTimer(int initialWaitTime) {
         if (refreshTimer != null) {
@@ -221,6 +226,7 @@ public class SonyPS4Handler extends BaseThingHandler {
         String hostName = config.getIpAddress();
         channel.configureBlocking(true);
 
+        // TODO Loop here a couple of times and check if we are connected.
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e1) {
@@ -261,7 +267,7 @@ public class SonyPS4Handler extends BaseThingHandler {
             readBuffer.get(respBuff, 0, responseLength);
             byte[] loginDecrypt = ps4PacketHandler.decryptResponsePacket(respBuff);
             logger.debug("PS4 login response: {}", loginDecrypt);
-            // Todo! Here we should probably do some checks that we are actually logged in.
+            // TODO Here we should probably do some checks that we are actually logged in.
             return true;
         } else {
             logger.debug("PS4 no login response!");
@@ -483,7 +489,11 @@ public class SonyPS4Handler extends BaseThingHandler {
         if (!isLinked(CHANNEL_APPLICATION_IMAGE)) {
             return;
         }
-        RawType artWork = ps4ArtworkHandler.fetchArtworkForTitleid(titleid, config.getArtworkSize());
+        Locale locale = Locale.US;
+        if (localeProvider != null) {
+            locale = localeProvider.getLocale();
+        }
+        RawType artWork = ps4ArtworkHandler.fetchArtworkForTitleid(titleid, config.getArtworkSize(), locale);
         if (artWork != null) {
             currentArtwork = artWork;
             ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_APPLICATION_IMAGE);
