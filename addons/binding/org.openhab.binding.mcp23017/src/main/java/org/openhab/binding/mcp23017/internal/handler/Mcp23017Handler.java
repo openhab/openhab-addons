@@ -109,30 +109,16 @@ public class Mcp23017Handler extends BaseThingHandler implements GpioPinListener
     }
 
     private void handleOutputCommand(ChannelUID channelUID, Command command) {
-        GpioPinDigitalOutput outputPin = pinStateHolder.getOutputPin(channelUID);
-        
-        Configuration configuration = this.getThing().getChannel(channelUID.getId()).getConfiguration();
-        String invertLogic = (String) configuration.get(ACTIVE_LOW);        
-        PinState newState = null;
-        
-        // invertLogic is null if not configured
-        boolean activeLowFlag = ACTIVE_LOW_ENABLED.equalsIgnoreCase(invertLogic);
-        if (activeLowFlag) {
-            if (OnOffType.ON == command) {
-                newState = PinState.LOW;
-            } else if (OnOffType.OFF == command) {
-                newState = PinState.HIGH;
-            }
-        } else {
-            if (OnOffType.ON == command) {
-                newState = PinState.HIGH;
-            } else if (OnOffType.OFF == command) {
-                newState = PinState.LOW;
-            }
+        if (command instanceof OnOffType) {
+            GpioPinDigitalOutput outputPin = pinStateHolder.getOutputPin(channelUID);
+            Configuration configuration = this.getThing().getChannel(channelUID.getId()).getConfiguration();
+
+            // invertLogic is null if not configured
+            boolean activeLowFlag = ACTIVE_LOW_ENABLED.equalsIgnoreCase(configuration.get(ACTIVE_LOW).toString());
+            PinState pinState = command == OnOffType.ON ^ activeLowFlag ? PinState.HIGH : PinState.LOW;
+            logger.debug("got output pin {} for channel {} and command {} [active_low={}, new_state={}]", outputPin, channelUID, command, activeLowFlag, pinState);            
+            GPIODataHolder.GPIO.setState(pinState, outputPin);
         }
-        
-        logger.debug("got output pin {} for channel {} and command {} [active_low={}, new_state={}]", outputPin, channelUID, command, activeLowFlag, newState);
-        GPIODataHolder.GPIO.setState(newState, outputPin);
     }
 
     private void handleInputCommand(ChannelUID channelUID, Command command) {
