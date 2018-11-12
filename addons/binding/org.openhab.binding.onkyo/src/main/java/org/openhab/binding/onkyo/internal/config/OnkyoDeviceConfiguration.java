@@ -20,6 +20,7 @@ public class OnkyoDeviceConfiguration {
     public String udn;
     public int refreshInterval;
     public int volumeLimit;
+    public int volumeScale;
 
     @Override
     public String toString() {
@@ -30,6 +31,7 @@ public class OnkyoDeviceConfiguration {
         str += ", udn = " + udn;
         str += ", refreshInterval = " + refreshInterval;
         str += ", volumeLimit = " + volumeLimit;
+        str += ", volumeScale = " + volumeScale;
 
         return str;
     }
