@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.yeelight.handler;
+package org.openhab.binding.yeelight.internal.handler;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -14,20 +14,20 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.yeelight.internal.lib.device.DeviceStatus;
 
 /**
- * The {@link YeelightStripeHandler} is responsible for handling commands, which are
+ * The {@link YeelightColorHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Coaster Li - Initial contribution
  */
-public class YeelightStripeHandler extends YeelightHandlerBase {
+public class YeelightColorHandler extends YeelightHandlerBase {
 
-    public YeelightStripeHandler(Thing thing) {
+    public YeelightColorHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        handleCommandHelper(channelUID, command, "Handle Stripe Command {}");
+        handleCommandHelper(channelUID, command, "Handle Color Command {}");
     }
 
     @Override
