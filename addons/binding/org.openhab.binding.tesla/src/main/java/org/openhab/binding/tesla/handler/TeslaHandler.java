@@ -100,7 +100,7 @@ public class TeslaHandler extends BaseThingHandler {
     private static final int API_ERROR_INTERVAL_SECONDS = 15;
     private static final int EVENT_MAXIMUM_ERRORS_IN_INTERVAL = 10;
     private static final int EVENT_ERROR_INTERVAL_SECONDS = 15;
-    private static final int API_SLEEP_INTERVAL_MINUTES = 30;
+    private static final int API_SLEEP_INTERVAL_MINUTES = 15;
     private static final int MOVE_THRESHOLD_INTERVAL_MINUTES = 5;
 
     private final Logger logger = LoggerFactory.getLogger(TeslaHandler.class);
