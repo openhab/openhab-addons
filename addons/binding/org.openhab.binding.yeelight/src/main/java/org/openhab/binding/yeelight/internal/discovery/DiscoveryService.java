@@ -15,12 +15,11 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.yeelight.YeelightBindingConstants;
 import org.openhab.binding.yeelight.internal.YeelightHandlerFactory;
+import org.openhab.binding.yeelight.internal.lib.device.DeviceBase;
+import org.openhab.binding.yeelight.internal.lib.listeners.DeviceListener;
+import org.openhab.binding.yeelight.internal.lib.services.DeviceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.yeelight.sdk.device.DeviceBase;
-import com.yeelight.sdk.listeners.DeviceListener;
-import com.yeelight.sdk.services.DeviceManager;
 
 /**
  * The {@link DiscoveryService} is responsible for search and discovery of new devices.
@@ -80,10 +79,16 @@ public class DiscoveryService extends AbstractDiscoveryService implements Device
         switch (device.getDeviceType()) {
             case ceiling:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_CEILING, device.getDeviceId());
+            case ceiling1:
+                return new ThingUID(YeelightBindingConstants.THING_TYPE_CEILING, device.getDeviceId());
+            case ceiling3:
+                return new ThingUID(YeelightBindingConstants.THING_TYPE_CEILING, device.getDeviceId());
             case color:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_WONDER, device.getDeviceId());
             case mono:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_DOLPHIN, device.getDeviceId());
+            case ct_bulb:
+                return new ThingUID(YeelightBindingConstants.THING_TYPE_CTBULB, device.getDeviceId());
             case stripe:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_STRIPE, device.getDeviceId());
             default:
@@ -95,10 +100,16 @@ public class DiscoveryService extends AbstractDiscoveryService implements Device
         switch (device.getDeviceType()) {
             case ceiling:
                 return YeelightBindingConstants.THING_TYPE_CEILING;
+            case ceiling1:
+                return YeelightBindingConstants.THING_TYPE_CEILING1;
+            case ceiling3:
+                return YeelightBindingConstants.THING_TYPE_CEILING3;
             case color:
                 return YeelightBindingConstants.THING_TYPE_WONDER;
             case mono:
                 return YeelightBindingConstants.THING_TYPE_DOLPHIN;
+            case ct_bulb:
+                return YeelightBindingConstants.THING_TYPE_CTBULB;
             case stripe:
                 return YeelightBindingConstants.THING_TYPE_STRIPE;
             default:

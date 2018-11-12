@@ -26,19 +26,18 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.yeelight.YeelightBindingConstants;
+import org.openhab.binding.yeelight.internal.lib.device.ConnectState;
+import org.openhab.binding.yeelight.internal.lib.device.DeviceBase;
+import org.openhab.binding.yeelight.internal.lib.device.DeviceFactory;
+import org.openhab.binding.yeelight.internal.lib.device.DeviceStatus;
+import org.openhab.binding.yeelight.internal.lib.enums.DeviceAction;
+import org.openhab.binding.yeelight.internal.lib.enums.DeviceMode;
+import org.openhab.binding.yeelight.internal.lib.enums.DeviceType;
+import org.openhab.binding.yeelight.internal.lib.listeners.DeviceConnectionStateListener;
+import org.openhab.binding.yeelight.internal.lib.listeners.DeviceStatusChangeListener;
+import org.openhab.binding.yeelight.internal.lib.services.DeviceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.yeelight.sdk.device.ConnectState;
-import com.yeelight.sdk.device.DeviceBase;
-import com.yeelight.sdk.device.DeviceFactory;
-import com.yeelight.sdk.device.DeviceStatus;
-import com.yeelight.sdk.enums.DeviceAction;
-import com.yeelight.sdk.enums.DeviceMode;
-import com.yeelight.sdk.enums.DeviceType;
-import com.yeelight.sdk.listeners.DeviceConnectionStateListener;
-import com.yeelight.sdk.listeners.DeviceStatusChangeListener;
-import com.yeelight.sdk.services.DeviceManager;
 
 /**
  * The {@link YeelightHandlerBase} is responsible for handling commands, which are
@@ -79,10 +78,14 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
     private DeviceType getDeviceModel(ThingTypeUID typeUID) {
         if (typeUID.equals(YeelightBindingConstants.THING_TYPE_CEILING)) {
             return DeviceType.ceiling;
+        } else if (typeUID.equals(YeelightBindingConstants.THING_TYPE_CEILING3)) {
+            return DeviceType.ceiling3;
         } else if (typeUID.equals(YeelightBindingConstants.THING_TYPE_WONDER)) {
             return DeviceType.color;
         } else if (typeUID.equals(YeelightBindingConstants.THING_TYPE_DOLPHIN)) {
             return DeviceType.mono;
+        } else if (typeUID.equals(YeelightBindingConstants.THING_TYPE_CTBULB)) {
+            return DeviceType.ct_bulb;
         } else if (typeUID.equals(YeelightBindingConstants.THING_TYPE_STRIPE)) {
             return DeviceType.stripe;
         } else {

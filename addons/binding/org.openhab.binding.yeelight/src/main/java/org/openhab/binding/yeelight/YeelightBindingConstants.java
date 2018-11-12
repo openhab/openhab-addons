@@ -22,7 +22,10 @@ public class YeelightBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_CEILING = new ThingTypeUID(BINDING_ID, "ceiling");
+    public static final ThingTypeUID THING_TYPE_CEILING1 = new ThingTypeUID(BINDING_ID, "ceiling1");
+    public static final ThingTypeUID THING_TYPE_CEILING3 = new ThingTypeUID(BINDING_ID, "ceiling3");
     public static final ThingTypeUID THING_TYPE_DOLPHIN = new ThingTypeUID(BINDING_ID, "dolphin");
+    public static final ThingTypeUID THING_TYPE_CTBULB = new ThingTypeUID(BINDING_ID, "ct_bulb");
     public static final ThingTypeUID THING_TYPE_WONDER = new ThingTypeUID(BINDING_ID, "wonder");
     public static final ThingTypeUID THING_TYPE_STRIPE = new ThingTypeUID(BINDING_ID, "stripe");
 

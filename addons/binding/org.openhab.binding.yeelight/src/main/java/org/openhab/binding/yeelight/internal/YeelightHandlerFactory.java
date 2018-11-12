@@ -31,7 +31,10 @@ public class YeelightHandlerFactory extends BaseThingHandlerFactory {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
     static {
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_CEILING);
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_CEILING1);
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_CEILING3);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_DOLPHIN);
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_CTBULB);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_WONDER);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_STRIPE);
     }
@@ -46,13 +49,13 @@ public class YeelightHandlerFactory extends BaseThingHandlerFactory {
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_DOLPHIN)) {
+        if (thingTypeUID.equals(THING_TYPE_DOLPHIN) || thingTypeUID.equals(THING_TYPE_CTBULB)) {
             return new YeelightWhiteHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_WONDER)) {
             return new YeelightColorHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_STRIPE)) {
             return new YeelightStripeHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_CEILING)) {
+        } else if (thingTypeUID.equals(THING_TYPE_CEILING) || thingTypeUID.equals(THING_TYPE_CEILING1) || thingTypeUID.equals(THING_TYPE_CEILING3)) {
             return new YeelightCeilingHandler(thing);
         } else {
             return null;
