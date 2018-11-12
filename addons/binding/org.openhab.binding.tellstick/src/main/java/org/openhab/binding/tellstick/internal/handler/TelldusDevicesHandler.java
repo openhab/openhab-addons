@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.tellstick.handler;
+package org.openhab.binding.tellstick.internal.handler;
 
-import static org.openhab.binding.tellstick.TellstickBindingConstants.*;
+import static org.openhab.binding.tellstick.internal.TellstickBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
@@ -28,7 +28,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.tellstick.TellstickBindingConstants;
+import org.openhab.binding.tellstick.internal.TellstickBindingConstants;
 import org.openhab.binding.tellstick.internal.live.xml.DataTypeValue;
 import org.openhab.binding.tellstick.internal.live.xml.TellstickNetSensor;
 import org.openhab.binding.tellstick.internal.live.xml.TellstickNetSensorEvent;

@@ -18,8 +18,9 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.tellstick.TellstickBindingConstants;
-import org.openhab.binding.tellstick.handler.TelldusBridgeHandler;
+import org.openhab.binding.tellstick.internal.TellstickBindingConstants;
+import org.openhab.binding.tellstick.internal.handler.DeviceStatusListener;
+import org.openhab.binding.tellstick.internal.handler.TelldusBridgeHandler;
 import org.openhab.binding.tellstick.internal.live.xml.LiveDataType;
 import org.openhab.binding.tellstick.internal.live.xml.TellstickNetDevice;
 import org.openhab.binding.tellstick.internal.live.xml.TellstickNetSensor;
@@ -39,8 +40,7 @@ import org.tellstick.enums.DataType;
  *
  * @author Jarle Hjortland - Initial contribution
  */
-public class TellstickDiscoveryService extends AbstractDiscoveryService
-        implements org.openhab.binding.tellstick.handler.DeviceStatusListener {
+public class TellstickDiscoveryService extends AbstractDiscoveryService implements DeviceStatusListener {
     private static final long DEFAULT_TTL = 60 * 60; // 1 Hour
 
     public TellstickDiscoveryService(int timeout) throws IllegalArgumentException {
