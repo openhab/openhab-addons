@@ -11,6 +11,7 @@ package org.openhab.binding.yeelight.internal.discovery;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.yeelight.internal.YeelightBindingConstants;
@@ -18,19 +19,21 @@ import org.openhab.binding.yeelight.internal.YeelightHandlerFactory;
 import org.openhab.binding.yeelight.internal.lib.device.DeviceBase;
 import org.openhab.binding.yeelight.internal.lib.listeners.DeviceListener;
 import org.openhab.binding.yeelight.internal.lib.services.DeviceManager;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link DiscoveryService} is responsible for search and discovery of new devices.
+ * The {@link YeelightDiscoveryService} is responsible for search and discovery of new devices.
  *
  * @author Coaster Li - Initial contribution
  */
-public class DiscoveryService extends AbstractDiscoveryService implements DeviceListener {
+@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.yeelight")
+public class YeelightDiscoveryService extends AbstractDiscoveryService implements DeviceListener {
 
-    private final Logger logger = LoggerFactory.getLogger(DiscoveryService.class.getSimpleName());
+    private final Logger logger = LoggerFactory.getLogger(YeelightDiscoveryService.class.getSimpleName());
 
-    public DiscoveryService() {
+    public YeelightDiscoveryService() {
         super(YeelightHandlerFactory.SUPPORTED_THING_TYPES_UIDS, 2, false);
     }
 

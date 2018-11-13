@@ -9,6 +9,7 @@
 package org.openhab.binding.yeelight.internal.lib.services;
 
 import java.awt.Color;
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -45,11 +46,10 @@ public class DeviceManager {
     public boolean mSearching = false;
     public Thread mDiscoveryThread;
     public DatagramSocket mDiscoverySocket;
-    public HashMap<String, DeviceBase> mDeviceList = new HashMap<String, DeviceBase>();
+    public Map<String, DeviceBase> mDeviceList = new HashMap<>();
     public List<DeviceListener> mListeners = new ArrayList<>();
 
     private DeviceManager() {
-
     }
 
     public static DeviceManager getInstance() {
@@ -76,22 +76,16 @@ public class DeviceManager {
     public void startDiscovery(long timeToStop) {
         searchDevice();
         if (timeToStop > 0) {
-            new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-
-                    try {
-                        Thread.sleep(timeToStop);
-                    } catch (InterruptedException e) {
-                        logger.debug("Exception: {}", e);
-                    } finally {
-                        stopDiscovery();
-                    }
+            new Thread(() -> {
+                try {
+                    Thread.sleep(timeToStop);
+                } catch (InterruptedException e) {
+                    logger.debug("Exception: {}", e);
+                } finally {
+                    stopDiscovery();
                 }
             }).start();
         }
-
     }
 
     public void stopDiscovery() {
@@ -99,63 +93,60 @@ public class DeviceManager {
     }
 
     private void searchDevice() {
-        if (mSearching == true && mDiscoveryThread != null) {
+        if (mSearching && mDiscoveryThread != null) {
             logger.debug("{}: Already in discovery, return!", TAG);
             return;
         }
         mSearching = true;
-        mDiscoveryThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    mDiscoverySocket = new DatagramSocket();
-                    DatagramPacket dpSend = new DatagramPacket(DISCOVERY_MSG.getBytes(),
-                            DISCOVERY_MSG.getBytes().length, InetAddress.getByName(MULTI_CAST_HOST), MULTI_CAST_PORT);
-                    mDiscoverySocket.send(dpSend);
-                    logger.debug("{}: send discovery message!", TAG);
-                    while (mSearching) {
-                        byte[] buf = new byte[1024];
-                        DatagramPacket dpRecv = new DatagramPacket(buf, buf.length);
-                        mDiscoverySocket.receive(dpRecv);
-                        byte[] bytes = dpRecv.getData();
-                        StringBuffer buffer = new StringBuffer();
-                        for (int i = 0; i < dpRecv.getLength(); i++) {
-                            // parse /r
-                            if (bytes[i] == 13) {
-                                continue;
-                            }
-                            buffer.append((char) bytes[i]);
+        mDiscoveryThread = new Thread(() -> {
+            try {
+                mDiscoverySocket = new DatagramSocket();
+                DatagramPacket dpSend = new DatagramPacket(DISCOVERY_MSG.getBytes(), DISCOVERY_MSG.getBytes().length,
+                        InetAddress.getByName(MULTI_CAST_HOST), MULTI_CAST_PORT);
+                mDiscoverySocket.send(dpSend);
+                logger.debug("{}: send discovery message!", TAG);
+                while (mSearching) {
+                    byte[] buf = new byte[1024];
+                    DatagramPacket dpRecv = new DatagramPacket(buf, buf.length);
+                    mDiscoverySocket.receive(dpRecv);
+                    byte[] bytes = dpRecv.getData();
+                    StringBuffer buffer = new StringBuffer();
+                    for (int i = 0; i < dpRecv.getLength(); i++) {
+                        // parse /r
+                        if (bytes[i] == 13) {
+                            continue;
                         }
-                        logger.debug("{}: got message: {}", TAG, buffer.toString());
-                        String[] infos = buffer.toString().split("\n");
-                        HashMap<String, String> bulbInfo = new HashMap<String, String>();
-                        for (String info : infos) {
-                            int index = info.indexOf(":");
-                            if (index == -1) {
-                                continue;
-                            }
-                            String key = info.substring(0, index).trim();
-                            String value = info.substring(index + 1).trim();
-
-                            bulbInfo.put(key, value);
-                        }
-                        logger.debug("{}: got bulbInfo: {}", TAG, bulbInfo);
-                        if (bulbInfo.containsKey("model") && bulbInfo.containsKey("id")) {
-                            DeviceBase device = DeviceFactory.build(bulbInfo);
-                            if (bulbInfo.containsKey("name")) {
-                                device.setDeviceName(bulbInfo.get("name"));
-                            } else {
-                                device.setDeviceName("");
-                            }
-                            if (mDeviceList.containsKey(device.getDeviceId())) {
-                                updateDevice(mDeviceList.get(device.getDeviceId()), bulbInfo);
-                            }
-                            notifyDeviceFound(device);
-                        }
+                        buffer.append((char) bytes[i]);
                     }
-                } catch (Exception e) {
-                    logger.debug("Exception: {}", e);
+                    logger.debug("{}: got message: {}", TAG, buffer.toString());
+                    String[] infos = buffer.toString().split("\n");
+                    Map<String, String> bulbInfo = new HashMap<>();
+                    for (String info : infos) {
+                        int index = info.indexOf(":");
+                        if (index == -1) {
+                            continue;
+                        }
+                        String key = info.substring(0, index).trim();
+                        String value = info.substring(index + 1).trim();
+
+                        bulbInfo.put(key, value);
+                    }
+                    logger.debug("{}: got bulbInfo: {}", TAG, bulbInfo);
+                    if (bulbInfo.containsKey("model") && bulbInfo.containsKey("id")) {
+                        DeviceBase device = DeviceFactory.build(bulbInfo);
+                        if (bulbInfo.containsKey("name")) {
+                            device.setDeviceName(bulbInfo.get("name"));
+                        } else {
+                            device.setDeviceName("");
+                        }
+                        if (mDeviceList.containsKey(device.getDeviceId())) {
+                            updateDevice(mDeviceList.get(device.getDeviceId()), bulbInfo);
+                        }
+                        notifyDeviceFound(device);
+                    }
                 }
+            } catch (Exception e) {
+                logger.debug("Exception: {}", e);
             }
         });
         mDiscoveryThread.start();
@@ -209,7 +200,6 @@ public class DeviceManager {
     }
 
     public void updateDevice(DeviceBase device, Map<String, String> bulbInfo) {
-
         String[] addressInfo = bulbInfo.get("Location").split(":");
         device.setAddress(addressInfo[1].substring(2));
         device.setPort(Integer.parseInt(addressInfo[2]));
@@ -222,11 +212,9 @@ public class DeviceManager {
         status.setCt(Integer.parseInt(bulbInfo.get("ct")));
         status.setHue(Integer.parseInt(bulbInfo.get("hue")));
         status.setSat(Integer.parseInt(bulbInfo.get("sat")));
-
     }
 
     public static String getDefaultName(DeviceBase device) {
-
         if (device.getDeviceModel() != null && !device.getDeviceName().equals("")) {
             return device.getDeviceName();
         }

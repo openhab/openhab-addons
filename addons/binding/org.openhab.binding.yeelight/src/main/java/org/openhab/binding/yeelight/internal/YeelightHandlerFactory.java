@@ -17,16 +17,19 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.yeelight.internal.handler.YeelightCeilingHandler;
 import org.openhab.binding.yeelight.internal.handler.YeelightColorHandler;
 import org.openhab.binding.yeelight.internal.handler.YeelightStripeHandler;
 import org.openhab.binding.yeelight.internal.handler.YeelightWhiteHandler;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * The {@link YeelightHandlerFactory} is responsible for returning supported things and handlers for the devices.
  *
  * @author Coaster Li - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.yeelight")
 public class YeelightHandlerFactory extends BaseThingHandlerFactory {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
     static {
@@ -46,7 +49,6 @@ public class YeelightHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_DOLPHIN) || thingTypeUID.equals(THING_TYPE_CTBULB)) {
@@ -55,7 +57,8 @@ public class YeelightHandlerFactory extends BaseThingHandlerFactory {
             return new YeelightColorHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_STRIPE)) {
             return new YeelightStripeHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_CEILING) || thingTypeUID.equals(THING_TYPE_CEILING1) || thingTypeUID.equals(THING_TYPE_CEILING3)) {
+        } else if (thingTypeUID.equals(THING_TYPE_CEILING) || thingTypeUID.equals(THING_TYPE_CEILING1)
+                || thingTypeUID.equals(THING_TYPE_CEILING3)) {
             return new YeelightCeilingHandler(thing);
         } else {
             return null;

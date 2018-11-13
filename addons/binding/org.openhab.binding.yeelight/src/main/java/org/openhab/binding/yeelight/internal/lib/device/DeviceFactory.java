@@ -9,6 +9,7 @@
 package org.openhab.binding.yeelight.internal.lib.device;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.openhab.binding.yeelight.internal.lib.enums.DeviceType;
 import org.slf4j.Logger;
@@ -20,7 +21,7 @@ import org.slf4j.LoggerFactory;
  * @author Coaster Li - Initial contribution
  */
 public class DeviceFactory {
-    private final static Logger logger = LoggerFactory.getLogger(DeviceFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceFactory.class);
 
     private static final String TAG = DeviceFactory.class.getSimpleName();
 
@@ -46,7 +47,7 @@ public class DeviceFactory {
         }
     }
 
-    public static DeviceBase build(HashMap<String, String> bulbInfo) {
+    public static DeviceBase build(Map<String, String> bulbInfo) {
         DeviceType type = DeviceType.valueOf(bulbInfo.get("model"));
         DeviceBase device;
         switch (type) {
@@ -74,16 +75,16 @@ public class DeviceFactory {
             default:
                 return null;
         }
-        HashMap<String, Object> infos = new HashMap<>();
+        Map<String, Object> infos = new HashMap<>();
         infos.putAll(bulbInfo);
         device.setBulbInfo(infos);
-        logger.debug("{}: DeviceFactory Device = {}", TAG, bulbInfo.get("Location"));
+        LOGGER.debug("{}: DeviceFactory Device = {}", TAG, bulbInfo.get("Location"));
         // TODO enhancement!!!
         String[] addressInfo = bulbInfo.get("Location").split(":");
         device.setAddress(addressInfo[1].substring(2));
         device.setPort(Integer.parseInt(addressInfo[2]));
         device.setOnline(true);
-        logger.debug("{}: DeviceFactory Device info = {}, port = {}", TAG, device.getAddress(), device.getPort());
+        LOGGER.debug("{}: DeviceFactory Device info = {}, port = {}", TAG, device.getAddress(), device.getPort());
         return device;
     }
 
