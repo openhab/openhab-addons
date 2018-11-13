@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;;
+import com.google.gson.JsonParser;
 
 /**
  * The {@link DeviceBase} is a generic class for all devices.
@@ -56,7 +56,7 @@ public abstract class DeviceBase {
 
     protected int mMinCt, mMaxCt;
 
-    List<DeviceConnectionStateListener> mConnecttionListeners = new ArrayList<>();
+    List<DeviceConnectionStateListener> mConnectionListeners = new ArrayList<>();
     List<DeviceStatusChangeListener> mStatusChangeListeners = new ArrayList<>();
 
     public DeviceBase(String id) {
@@ -139,7 +139,7 @@ public abstract class DeviceBase {
                                 mDeviceStatus.setFlowCount(Integer.parseInt(flowStrs[0]));
                                 mDeviceStatus.setFlowEndAction(Integer.parseInt(flowStrs[1]));
                                 if (mDeviceStatus.getFlowItems() == null) {
-                                    mDeviceStatus.setFlowItems(new ArrayList<ColorFlowItem>());
+                                    mDeviceStatus.setFlowItems(new ArrayList<>());
                                 }
                                 mDeviceStatus.getFlowItems().clear();
                                 for (int i = 0; i < ((flowStrs.length - 2) / 4); i++) {
@@ -254,8 +254,8 @@ public abstract class DeviceBase {
         }
         if (mConnectState != connectState) {
             mConnectState = connectState;
-            if (mConnecttionListeners != null) {
-                for (DeviceConnectionStateListener listener : mConnecttionListeners) {
+            if (mConnectionListeners != null) {
+                for (DeviceConnectionStateListener listener : mConnectionListeners) {
                     listener.onConnectionStateChanged(mConnectState);
                 }
             }
@@ -340,7 +340,7 @@ public abstract class DeviceBase {
     }
 
     public void registerConnectStateListener(DeviceConnectionStateListener listener) {
-        mConnecttionListeners.add(listener);
+        mConnectionListeners.add(listener);
 
     }
 
