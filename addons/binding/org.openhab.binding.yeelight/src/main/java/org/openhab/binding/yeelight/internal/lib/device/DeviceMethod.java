@@ -15,33 +15,33 @@ import org.openhab.binding.yeelight.internal.lib.enums.MethodAction;
  */
 public class DeviceMethod {
 
-    public final static String EFFECT_SMOOTH = "smooth";
-    public final static String EFFECT_SUDDEN = "sudden";
+    public static final String EFFECT_SMOOTH = "smooth";
+    public static final String EFFECT_SUDDEN = "sudden";
 
-    public final static int CF_END_STATE_RECOVER = 0;
-    public final static int CF_END_STATE_STAY = 1;
-    public final static int CF_END_STATE_TURNOFF = 2;
+    public static final int CF_END_STATE_RECOVER = 0;
+    public static final int CF_END_STATE_STAY = 1;
+    public static final int CF_END_STATE_TURNOFF = 2;
 
-    public final static int CF_ITEM_MODE_COLOR = 1;
-    public final static int CF_ITEM_MODE_CT = 2;
-    public final static int CF_ITEM_MODE_SLEEP = 7;
+    public static final int CF_ITEM_MODE_COLOR = 1;
+    public static final int CF_ITEM_MODE_CT = 2;
+    public static final int CF_ITEM_MODE_SLEEP = 7;
 
-    public final static String SCENE_TYPE_COLOR = "color";
-    public final static String SCENE_TYPE_HSV = "hsv";
-    public final static String SCENE_TYPE_CT = "ct";
-    public final static String SCENE_TYPE_CF = "cf";
-    public final static String SCENE_TYPE_DELAY = "auto_delay_off";
+    public static final String SCENE_TYPE_COLOR = "color";
+    public static final String SCENE_TYPE_HSV = "hsv";
+    public static final String SCENE_TYPE_CT = "ct";
+    public static final String SCENE_TYPE_CF = "cf";
+    public static final String SCENE_TYPE_DELAY = "auto_delay_off";
 
-    public final static String ADJUST_ACTION_INCREASE = "increase";
-    public final static String ADJUST_ACTION_DECREASE = "decrease";
-    public final static String ADJUST_ACTION_CIRCLE = "circle";
+    public static final String ADJUST_ACTION_INCREASE = "increase";
+    public static final String ADJUST_ACTION_DECREASE = "decrease";
+    public static final String ADJUST_ACTION_CIRCLE = "circle";
 
-    public final static String ADJUST_PROP_BRIGHT = "bright";
-    public final static String ADJUST_PROP_CT = "ct";
-    public final static String ADJUST_PROP_COLOR = "color";
+    public static final String ADJUST_PROP_BRIGHT = "bright";
+    public static final String ADJUST_PROP_CT = "ct";
+    public static final String ADJUST_PROP_COLOR = "color";
 
-    public final static int MUSIC_ACTION_ON = 1;
-    public final static int MUSIC_ACTION_OFF = 0;
+    public static final int MUSIC_ACTION_ON = 1;
+    public static final int MUSIC_ACTION_OFF = 0;
 
     private static int sIndex = 0;
 

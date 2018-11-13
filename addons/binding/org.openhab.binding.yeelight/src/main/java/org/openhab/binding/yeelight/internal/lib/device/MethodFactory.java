@@ -16,7 +16,6 @@ import org.openhab.binding.yeelight.internal.lib.enums.MethodAction;
  */
 public class MethodFactory {
     public static DeviceMethod buildBrightnessMethd(int brightness, String effect, int duration) {
-
         return new DeviceMethod(MethodAction.BRIGHTNESS, new Object[] { brightness, effect, duration });
     }
 
@@ -65,17 +64,15 @@ public class MethodFactory {
     }
 
     public static DeviceMethod buildScnene(String type, int value, int brightness) {
-
         return buildScene(type, value, brightness, 0, 0, null);
-
     }
 
     /**
      * @param type scene type {@link DeviceMethod#SCENE_TYPE_COLOR}
-     *                 {@link DeviceMethod#SCENE_TYPE_CT}
-     *                 {@link DeviceMethod#SCENE_TYPE_DELAY}
-     *                 {@link DeviceMethod#SCENE_TYPE_HSV}
-     *                 {@link DeviceMethod#SCENE_TYPE_CF}
+     *            {@link DeviceMethod#SCENE_TYPE_CT}
+     *            {@link DeviceMethod#SCENE_TYPE_DELAY}
+     *            {@link DeviceMethod#SCENE_TYPE_HSV}
+     *            {@link DeviceMethod#SCENE_TYPE_CF}
      *
      */
     public static DeviceMethod buildScene(String type, int value, int brightness, int count, int endAction,
