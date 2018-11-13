@@ -258,20 +258,12 @@ public class TelldusLiveBridgeHandler extends BaseBridgeHandler implements Telld
         if (deviceStatusListener == null) {
             throw new IllegalArgumentException("It's not allowed to pass a null deviceStatusListener.");
         }
-        boolean result = deviceStatusListeners.add(deviceStatusListener);
-        if (result) {
-            // onUpdate();
-        }
-        return result;
+        return deviceStatusListeners.add(deviceStatusListener);
     }
 
     @Override
     public boolean unregisterDeviceStatusListener(DeviceStatusListener deviceStatusListener) {
-        boolean result = deviceStatusListeners.remove(deviceStatusListener);
-        if (result) {
-            // onUpdate();
-        }
-        return result;
+        return deviceStatusListeners.remove(deviceStatusListener);
     }
 
     private Device getDevice(String id, List<TellstickNetDevice> devices) {

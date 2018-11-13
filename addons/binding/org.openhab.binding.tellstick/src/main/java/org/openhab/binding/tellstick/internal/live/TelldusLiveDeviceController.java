@@ -95,9 +95,7 @@ public class TelldusLiveDeviceController implements DeviceChangeListener, Sensor
             this.client.setSignatureCalculator(calc);
             Response response = client.prepareGet(HTTP_TELLDUS_CLIENTS).execute().get();
             logger.debug("Response {} statusText {}", response.getResponseBody(), response.getStatusText());
-
         } catch (InterruptedException | ExecutionException e) {
-            // TODO Auto-generated catch block
             logger.error("Failed to connect", e);
         }
     }
@@ -111,7 +109,6 @@ public class TelldusLiveDeviceController implements DeviceChangeListener, Sensor
     @Override
     public void handleSendEvent(Device device, int resendCount, boolean isdimmer, Command command)
             throws TellstickException {
-
         logger.info("Send {} to {}", command, device);
         if (device instanceof TellstickNetDevice) {
             if (command == OnOffType.ON) {
