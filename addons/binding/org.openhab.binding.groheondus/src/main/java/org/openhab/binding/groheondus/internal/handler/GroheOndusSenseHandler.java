@@ -18,6 +18,7 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
@@ -52,23 +53,6 @@ public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<SenseApp
     }
 
     @Override
-    public void channelLinked(ChannelUID channelUID) {
-        super.channelLinked(channelUID);
-
-        OndusService ondusService = getOndusService();
-        if (ondusService == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                    "No initialized OndusService available from bridge.");
-            return;
-        }
-        SenseAppliance appliance = getAppliance(ondusService);
-        if (appliance == null) {
-            return;
-        }
-        updateChannel(channelUID, appliance, getLastMeasurement(appliance));
-    }
-
-    @Override
     protected int getPollingInterval(SenseAppliance appliance) {
         if (config.pollingInterval > 0) {
             return config.pollingInterval;
@@ -91,7 +75,7 @@ public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<SenseApp
                 newState = new QuantityType<>(measurement.getHumidity(), SmartHomeUnits.PERCENT);
                 break;
             case CHANNEL_BATTERY:
-                newState = new QuantityType<>(getBatteryStatus(appliance), SmartHomeUnits.PERCENT);
+                newState = new DecimalType(getBatteryStatus(appliance));
                 break;
             default:
                 throw new IllegalArgumentException("Channel " + channelUID + " not supported.");

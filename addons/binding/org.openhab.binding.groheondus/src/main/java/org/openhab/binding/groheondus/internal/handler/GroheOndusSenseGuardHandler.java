@@ -51,23 +51,6 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<Sen
     }
 
     @Override
-    public void channelLinked(ChannelUID channelUID) {
-        super.channelLinked(channelUID);
-
-        OndusService ondusService = getOndusService();
-        if (ondusService == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                    "No initialized OndusService available from bridge.");
-            return;
-        }
-        SenseGuardAppliance appliance = getAppliance(ondusService);
-        if (appliance == null) {
-            return;
-        }
-        updateChannel(channelUID, appliance, getLastMeasurement(appliance));
-    }
-
-    @Override
     protected int getPollingInterval(SenseGuardAppliance appliance) {
         if (config.pollingInterval > 0) {
             return config.pollingInterval;
