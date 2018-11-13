@@ -85,7 +85,6 @@ public class TellstickDiscoveryService extends AbstractDiscoveryService implemen
                     .withProperty(TellstickBindingConstants.DEVICE_NAME, device.getName()).withBridge(bridge.getUID())
                     .withLabel(device.getDeviceType() + ": " + device.getName()).build();
             thingDiscovered(discoveryResult);
-
         } else {
             logger.warn("Discovered Tellstick! device is unsupported: type '{}' with id '{}'", device.getDeviceType(),
                     device.getId());
