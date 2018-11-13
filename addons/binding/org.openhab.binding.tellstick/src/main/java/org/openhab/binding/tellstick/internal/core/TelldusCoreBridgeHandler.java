@@ -183,20 +183,12 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
         if (deviceStatusListener == null) {
             throw new IllegalArgumentException("It's not allowed to pass a null deviceStatusListener.");
         }
-        boolean result = deviceStatusListeners.add(deviceStatusListener);
-        if (result) {
-            // onUpdate();
-        }
-        return result;
+        return deviceStatusListeners.add(deviceStatusListener);
     }
 
     @Override
     public boolean unregisterDeviceStatusListener(DeviceStatusListener deviceStatusListener) {
-        boolean result = deviceStatusListeners.remove(deviceStatusListener);
-        if (result) {
-            // onUpdate();
-        }
-        return result;
+        return deviceStatusListeners.remove(deviceStatusListener);
     }
 
     public void clearDeviceList() {
@@ -220,7 +212,6 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void onRequest(TellstickSensorEvent newEvent) {
-
         String uuid = TellstickSensor.createUUId(newEvent.getSensorId(), newEvent.getModel(), newEvent.getProtocol());
         Device device = getSensor(uuid);
         logger.debug("Sensor Event for {} event {}", device, newEvent);
