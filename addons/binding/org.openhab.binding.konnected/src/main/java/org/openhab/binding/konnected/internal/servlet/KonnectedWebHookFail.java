@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.konnected.internal.servelet;
+package org.openhab.binding.konnected.internal.servlet;
 
 /**
  * Custom exception class to be thrown by servlet when unable to start.

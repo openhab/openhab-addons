@@ -251,7 +251,7 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.kodi/${project.version}</bundle>
     </feature>
 	
-	<feature name="openhab-binding-konnected" description="Konnected Binding" version="${project.version}">
+    <feature name="openhab-binding-konnected" description="Konnected Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-http</feature>
         <feature>openhab-transport-upnp</feature>

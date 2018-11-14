@@ -32,7 +32,6 @@ public class KonnectedHTTPUtils {
      * Sends a {@link doPut} request with a timeout of 30 seconds
      *
      * @param urlAddress the address to send the request
-     *
      * @param payload    the json payload to include with the request
      */
     public String doPut(String urlAddress, String payload) throws IOException {
@@ -60,6 +59,22 @@ public class KonnectedHTTPUtils {
     public synchronized String doGet(String urlAddress) throws IOException {
         logger.debug("The String url we want to get is : {}", urlAddress);
         logTest = HttpUtil.executeUrl("GET", urlAddress, KonnectedHTTPUtils.REQUEST_TIMEOUT);
+        logger.debug(logTest);
+        return logTest;
+    }
+
+    /**
+     * Sends a {@link doGet} request with a timeout of 30 seconds
+     *
+     * @param urlAddress the address to send the request
+     * @param payload    the json payload you want to send as part of the request
+     */
+
+    public synchronized String doGet(String urlAddress, String payload) throws IOException {
+        logger.debug("The String url we want to get is : {}", urlAddress);
+        ByteArrayInputStream input = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8));
+        logTest = HttpUtil.executeUrl("GET", urlAddress, getHttpHeaders(), input, "application/json",
+                KonnectedHTTPUtils.REQUEST_TIMEOUT);
         logger.debug(logTest);
         return logTest;
     }

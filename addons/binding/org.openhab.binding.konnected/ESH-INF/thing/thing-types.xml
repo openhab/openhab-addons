@@ -4,11 +4,11 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 	<!-- This is the Konnected Thing-Type -->
-	<thing-type id="module" extensible="sensor,actuator,temperature,humidity">
-		<label>Konnected Binding Thing</label>
+	<thing-type id="module" extensible="switch,actuator,temperature,humidity">
+		<label>The Konnected Alarm Panel</label>
 		<description>The Konnected Module</description>
 		<channels>
-			<channel id="Zone_6" typeId="sensor">
+			<channel id="Zone_6" typeId="switch">
 				<label>Zone 6</label>
 				<description>Zone 6 Sensor</description>
 			</channel>
@@ -19,20 +19,49 @@
 		<config-description-ref uri="thing-type:konnected:module" />
 	</thing-type>
 	<!-- Zone Channel Type -->
-	<channel-type id="sensor">
+	<channel-type id="switch">
 		<item-type>Contact</item-type>
-		<label>Sensor</label>
-		<description>This zone is a sensor</description>
+		<label>ON/OFF Switch</label>
+		<description>This zone is a read only switch type zone</description>
 		<state readOnly="true" />
+		<config-description>
+		<parameter name="channel_zone" type="text">
+                <label>Zone Number</label>
+                <description>The Zone Number of the channel.</description>
+                <default>6</default>
+                <options>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">Out</option>
+                </options>
+            </parameter>
+		</config-description>
 	</channel-type>
 	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
-		<description>This zone measures Temperature</description>
+		<description>This zone measures temperature</description>
 		<state readOnly="true" />
 		<config-description>
+			<parameter name="channel_zone" type="text" required="true">
+                <label>Zone Number</label>
+                <description>The Zone Number of the channel.</description>
+                <options>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">Out</option>
+                </options>
+            </parameter>
 			<parameter name="tempsensorType" type="boolean">
-				<label>dht22</label>
+				<label>DHT22</label>
 				<description>Is the sensor a dht22 or a ds18b20? Set to true for dht22 sensor</description>
 			</parameter>
 			<parameter name="pollinterval" type="integer">
@@ -40,7 +69,7 @@
 				<description>The interval in minutes to poll the sensor.</description>
 			</parameter>
 			<parameter name="ds18b20_address" type="text">
-				<label>Address of DS18b20</label>
+				<label>DS18b20 Address</label>
 				<description>This is the unique address of the sensor on the one wire bus.</description>
 			</parameter>
 		</config-description>
@@ -48,14 +77,43 @@
 	<channel-type id="humidity">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
-		<description>This zone measures Humidity</description>
+		<description>This zone measures humidity</description>
 		<state readOnly="true" />
+		<config-description>
+        <parameter name="channel_zone" type="text" required="true">
+                <label>Zone Number</label>
+                <description>The Zone Number of the channel.</description>
+                <options>
+                   <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">Out</option>
+                </options>
+            </parameter>
+            </config-description>
 	</channel-type>
 	<channel-type id="actuator">
 		<item-type>Switch</item-type>
-		<label>An actuator</label>
-		<description>This zone is an Actuator</description>
+		<label>Actuator</label>
+		<description>This zone is an actuator</description>
 		<config-description>
+        <parameter name="channel_zone" type="text" required="true">
+                <label>Zone Number</label>
+                <description>The Zone Number of the channel.</description>
+                <default>7</default>
+                <options>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">Out</option>
+                </options>
+            </parameter>
 			<parameter name="momentary" type="integer">
 				<label>Momentary</label>
 				<description>The duration of the pulse in millisecods</description>
@@ -65,7 +123,7 @@
 				<description>The time between pulses in millisecods</description>
 			</parameter>
 			<parameter name="times" type="integer">
-				<label>times</label>
+				<label>Times</label>
 				<description>is the number of times to repeat or `-1` for an infinitely repeating pulse</description>
 			</parameter>
 		</config-description>

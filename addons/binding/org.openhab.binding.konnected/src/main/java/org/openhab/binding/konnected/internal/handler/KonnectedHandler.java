@@ -6,13 +6,12 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.konnected.handler;
+package org.openhab.binding.konnected.internal.handler;
 
-import static org.openhab.binding.konnected.KonnectedBindingConstants.*;
+import static org.openhab.binding.konnected.internal.KonnectedBindingConstants.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -25,7 +24,6 @@ import org.eclipse.smarthome.config.core.validation.ConfigValidationException;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -35,12 +33,11 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.konnected.internal.KonnectedConfiguration;
 import org.openhab.binding.konnected.internal.KonnectedHTTPUtils;
 import org.openhab.binding.konnected.internal.gson.KonnectedModuleGson;
 import org.openhab.binding.konnected.internal.gson.KonnectedModulePayload;
-import org.openhab.binding.konnected.internal.servelet.KonnectedHTTPServlet;
-import org.openhab.binding.konnected.internal.servelet.KonnectedWebHookFail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +53,8 @@ import com.google.gson.GsonBuilder;
 public class KonnectedHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(KonnectedHandler.class);
     private KonnectedConfiguration config;
-    private KonnectedHTTPServlet webHookServlet;
+
+    private final String konnectedServletPath;
     private final KonnectedHTTPUtils http = new KonnectedHTTPUtils();
     private String callbackIpAddress = null;
     private String moduleIpAddress;
@@ -68,12 +66,13 @@ public class KonnectedHandler extends BaseThingHandler {
      * @param thing          the instance of the Konnected thing
      * @param webHookServlet the instance of the callback servlet that is running for communication with the Konnected
      *                           Module
-     * @param hostAddress    the webaddress of the OpenHAB server instance obtained by the runtime
-     * @param port           the port on which the OpenHAB instance is running that was obtained by the runtime.
+     * @param hostAddress    the webaddress of the openHAB server instance obtained by the runtime
+     * @param port           the port on which the openHAB instance is running that was obtained by the runtime.
      */
-    public KonnectedHandler(Thing thing, KonnectedHTTPServlet webHookServlet, String hostAddress, String port) {
+    public KonnectedHandler(Thing thing, String path, String hostAddress, String port) {
         super(thing);
-        this.webHookServlet = webHookServlet;
+
+        this.konnectedServletPath = path;
         callbackIpAddress = hostAddress + ":" + port;
         logger.debug("The callback ip address is: {}", callbackIpAddress);
     }
@@ -81,11 +80,12 @@ public class KonnectedHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // get the zone number in integer form
-        Integer zone = Integer.parseInt(channelUID.getId().substring((channelUID.getId().length() - 1)));
+        Channel channel = this.getThing().getChannel(channelUID.getId());
+        String zoneNumber = (String) channel.getConfiguration().get(CHANNEL_ZONE);
+        Integer zone = Integer.parseInt(zoneNumber);
         logger.debug("The channelUID is: {} and the zone is :", channelUID.getAsString(), zone);
         // convert the zone to the pin based on value at index of zone
         Integer pin = Arrays.asList(PIN_TO_ZONE).get(zone);
-        logger.debug("Zachary test {}", command instanceof OnOffType);
         // if the command is OnOfftype
         if (command instanceof OnOffType) {
             int sendCommand = (OnOffType.OFF.compareTo((OnOffType) command));
@@ -94,18 +94,18 @@ public class KonnectedHandler extends BaseThingHandler {
             sendActuatorCommand(Integer.toString(sendCommand), pin, channelUID);
         } else if (command instanceof OpenClosedType) {
             logger.debug("A command was sent to a sensor type so we are ignoring the command");
+        } else if (command instanceof RefreshType) {
+            getSwitchState(pin, channelUID);
         }
     }
 
     /**
      * Process a {@link WebHookEvent} that has been received by the Servlet from a Konnected module with respect to a
-     * sensor event
+     * sensor event or status update request
      *
-     * @param pin     the pin number which which was activated
-     * @param state   the state of the pin
-     * @param setAuth the token sent with the response
+     * @param event the {@link KonnectedModuleGson} event that contains the state and pin information to be processed
      */
-    public void handleWebHookEvent(KonnectedModuleGson event, String sentAuth) {
+    public void handleWebHookEvent(KonnectedModuleGson event) {
         // if we receive a command upteate the thing status to being online
         updateStatus(ThingStatus.ONLINE);
         // get the zone number based off of the index location of the pin value
@@ -113,84 +113,73 @@ public class KonnectedHandler extends BaseThingHandler {
         // check that the zone number is in one of the channelUID definitions
         getThing().getChannels().forEach(channel -> {
             ChannelUID channelId = channel.getUID();
-            String zoneNumber = channelId.getId().substring((channelId.getId().length() - 1));
+            String zoneNumber = (String) channel.getConfiguration().get(CHANNEL_ZONE);
             // if the string zone that was sent equals the last digit of the channelId found process it as the
             // channelId else do nothing
             if (sentZone.equalsIgnoreCase(zoneNumber)) {
-                logger.debug("The channelID of the event is: {}, the Auth Token is: {}", channelId, sentAuth);
-                // check that the auth token sent matches the authToken configured on the Thing
-                if (sentAuth.endsWith(config.authToken)) {
-                    String itemType = channel.getAcceptedItemType();
-                    // check if the itemType has been defined for the zone received
-                    if (itemType == null) {
-                        logger.error(
-                                "The itemType is not configured for channel {} on thing {}, please check your configuration.",
-                                channelId, getThing().getThingTypeUID().toString());
+                logger.debug(
+                        "The configrued zone of channelID: {}  was a match for the zone sent by the alarm panel: {} on thing: {}",
+                        channelId, sentZone, this.getThing().getUID().getId());
+
+                String channelType = channel.getChannelTypeUID().getAsString();
+                logger.debug("The channeltypeID is: {}", channelType);
+                // check if the itemType has been defined for the zone received
+                // check the itemType of the Zone, if Contact, send the State if Temp send Temp, etc.
+                if (channelType.equalsIgnoreCase(CHANNEL_SWITCH)) {
+                    OpenClosedType openClosedType = event.getState().equalsIgnoreCase("1") ? OpenClosedType.OPEN
+                            : OpenClosedType.CLOSED;
+                    updateState(channelId, openClosedType);
+                } else if (channelType.equalsIgnoreCase(CHANNEL_ACTUATOR)) {
+                    OnOffType onOffType = event.getState().equalsIgnoreCase("1") ? OnOffType.ON : OnOffType.OFF;
+                    updateState(channelId, onOffType);
+                } else if (channelType.equalsIgnoreCase(CHANNEL_HUMIDITY)) {
+                    // if the state is of type number then this means it is the humidity channel of the dht22
+                    updateState(channelId, new QuantityType<Dimensionless>(Double.parseDouble(event.getHumi()),
+                            SmartHomeUnits.PERCENT));
+                } else if (channelType.equalsIgnoreCase(CHANNEL_TEMPERATURE)) {
+                    Configuration configuration = channel.getConfiguration();
+                    if (((Boolean) configuration.get(CHANNEL_TEMPERATURE_TYPE) == true)) {
+                        updateState(channelId,
+                                new QuantityType<Temperature>(Double.parseDouble(event.getTemp()), SIUnits.CELSIUS));
                     } else {
-                        // check the itemType of the Zone, if Contact, send the State if Temp send Temp, etc.
-                        if (itemType.equalsIgnoreCase("Contact")) {
-                            OpenClosedType openClosedType = event.getState().equalsIgnoreCase("1") ? OpenClosedType.OPEN
-                                    : OpenClosedType.CLOSED;
-                            updateState(channelId, openClosedType);
-                        } else if (itemType.equalsIgnoreCase("Switch")) {
-                            OnOffType onOffType = event.getState().equalsIgnoreCase("1") ? OnOffType.ON : OnOffType.OFF;
-                            updateState(channelId, onOffType);
-                        } else if (itemType.equalsIgnoreCase("Number:Dimensionless")) {
-                            // if the state is of type number then this means it is the humidity channel of the dht22
-                            updateState(channelId, new QuantityType<Dimensionless>(Double.parseDouble(event.getHumi()),
-                                    SmartHomeUnits.PERCENT));
-                        } else if ((itemType.equalsIgnoreCase("Number:Temperature"))) {
-                            Configuration configuration = channel.getConfiguration();
-                            if (((Boolean) configuration.get("tempsensorType") == true)) {
-                                updateState(channelId, new QuantityType<Temperature>(
-                                        Double.parseDouble(event.getTemp()), SIUnits.CELSIUS));
-                            } else {
-                                // need to check to make sure right dsb1820 address
-                                logger.debug("The address of the DSB1820 sensor received from modeule {} is: {}",
-                                        this.thing.getBridgeUID(), event.getAddr());
-                                if (event.getAddr().toString()
-                                        .equalsIgnoreCase((String) (configuration.get("ds18b20_address")))) {
-                                    updateState(channelId, new QuantityType<Temperature>(
-                                            Double.parseDouble(event.getTemp()), SIUnits.CELSIUS));
-                                } else {
-                                    logger.debug("The address of {} does not match {} not updating this channel",
-                                            event.getAddr().toString(), (configuration.get("ds18b20_address")));
-                                }
-                            }
+                        // need to check to make sure right dsb1820 address
+                        logger.debug("The address of the DSB1820 sensor received from modeule {} is: {}",
+                                this.thing.getUID(), event.getAddr());
+                        if (event.getAddr().toString()
+                                .equalsIgnoreCase((String) (configuration.get(CHANNEL_TEMPERATURE_DS18B20_ADDRESS)))) {
+                            updateState(channelId, new QuantityType<Temperature>(Double.parseDouble(event.getTemp()),
+                                    SIUnits.CELSIUS));
+                        } else {
+                            logger.debug("The address of {} does not match {} not updating this channel",
+                                    event.getAddr().toString(),
+                                    (configuration.get(CHANNEL_TEMPERATURE_DS18B20_ADDRESS)));
                         }
                     }
-                } else {
-                    logger.warn(
-                            "The auth token: {}  did not match {} configured in the thing {} so the state was not accepted.",
-                            sentAuth, config.authToken, getThing().getThingTypeUID().toString());
                 }
             } else {
-                // by logging all of the ones that don't match in debug we can see all of the channel ids that have been
-                // defined
-                logger.debug("The channel sent by the module: {} did not match channelId: {} for thing {}", sentZone,
-                        channelId, getThing().getThingTypeUID().toString());
+                logger.trace(
+                        "The zone number sent by the alarm panel: {} was not a match the configured zone for channelId: {} for thing {}",
+                        sentZone, channelId, getThing().getThingTypeUID().toString());
             }
         });
     }
 
-    private void checkConfigruation() throws ConfigValidationException {
+    private void checkConfiguration() throws ConfigValidationException {
         KonnectedConfiguration testConfig = getConfigAs(KonnectedConfiguration.class);
 
-        if ((testConfig.hostAddress == null) && (callbackIpAddress == null)) {
+        if ((callbackIpAddress == null)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Unable to obtain hostaddress from OSGI service, please manually configure hostaddress");
+                    "Unable to obtain hostaddress from OSGI service, please configure hostaddress");
         }
 
         else {
             this.config = testConfig;
         }
-
     }
 
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters)
             throws ConfigValidationException {
-
         this.validateConfigurationParameters(configurationParameters);
         for (Entry<String, Object> configurationParameter : configurationParameters.entrySet()) {
             Object value = configurationParameter.getValue();
@@ -199,44 +188,55 @@ public class KonnectedHandler extends BaseThingHandler {
             if (value == null) {
                 continue;
             }
-
+            // this is a nonstandard implementation to to address the configuration of the konnected alarm panel (as
+            // opposed to the handler) until
+            // https://github.com/eclipse/smarthome/issues/3484 has been implemented in the framework
             String[] cfg = configurationParameter.getKey().split("_");
             if ("controller".equals(cfg[0])) {
                 if (cfg[1].equals("softreset") && value instanceof Boolean && ((Boolean) value) == true) {
-                    try {
-                        http.doGet(moduleIpAddress + "/settings?restart=true");
-                    } catch (IOException e) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                    }
+                    scheduler.execute(() -> {
+                        try {
+                            http.doGet(moduleIpAddress + "/settings?restart=true");
+                        } catch (IOException e) {
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                        }
+                    });
                     value = false;
                 } else if (cfg[1].equals("removewifi") && value instanceof Boolean && ((Boolean) value) == true) {
-                    try {
-                        http.doGet(moduleIpAddress + "/settings?restore=true");
-                    } catch (IOException e) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                    }
+                    scheduler.execute(() -> {
+                        try {
+                            http.doGet(moduleIpAddress + "/settings?restore=true");
+                        } catch (IOException e) {
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                        }
+                    });
                     value = false;
                 } else if (cfg[1].equals("sendConfig") && value instanceof Boolean && ((Boolean) value) == true) {
-                    try {
-                        String response = updateKonnectedModule();
-                        logger.trace("The response from the konnected module with thingID {} was {}",
-                                getThing().getUID().toString(), response);
-                        if (response == null) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "Unable to communicate with Konnected Module confirm settings.");
-                        } else {
-                            updateStatus(ThingStatus.ONLINE);
+                    scheduler.execute(() -> {
+                        try {
+                            String response = updateKonnectedModule();
+                            logger.trace("The response from the konnected module with thingID {} was {}",
+                                    getThing().getUID().toString(), response);
+                            if (response == null) {
+                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                        "Unable to communicate with Konnected Module.");
+                            } else {
+                                updateStatus(ThingStatus.ONLINE);
+                            }
+                        } catch (IOException e) {
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                         }
-                    } catch (IOException e) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                    }
+
+                    });
                     value = false;
                 }
             }
         }
 
         super.handleConfigurationUpdate(configurationParameters);
-        try {
+        try
+
+        {
             String response = updateKonnectedModule();
             logger.trace("The response from the konnected module with thingID {} was {}",
                     getThing().getUID().toString(), response);
@@ -247,7 +247,7 @@ public class KonnectedHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
             }
         } catch (IOException e) {
-            logger.trace("There was an IOEcption Error thrown during HandleConfigurationUpdate()");
+            logger.trace("There was an IOExcption Error thrown during HandleConfigurationUpdate()");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -255,21 +255,13 @@ public class KonnectedHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
+        try {
+            checkConfiguration();
+        } catch (ConfigValidationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        }
+        this.moduleIpAddress = this.getThing().getProperties().get(HOST).toString();
         scheduler.execute(() -> {
-            try {
-                checkConfigruation();
-            } catch (ConfigValidationException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-            }
-            this.moduleIpAddress = this.getThing().getProperties().get(HOST).toString();
-            // add the isActuator elements to the boolean array
-            logger.debug("Setting up Konnected Module WebHook");
-            try {
-                webHookServlet.activate(this);
-            } catch (KonnectedWebHookFail e) {
-                logger.trace("there was an error activating the servelet: {}", e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-            }
             try {
                 String response = updateKonnectedModule();
                 if (response == null) {
@@ -278,9 +270,7 @@ public class KonnectedHandler extends BaseThingHandler {
                 } else {
                     updateStatus(ThingStatus.ONLINE);
                 }
-            }
-
-            catch (IOException e) {
+            } catch (IOException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         });
@@ -289,8 +279,7 @@ public class KonnectedHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         logger.debug("Running dispose()");
-        logger.debug("Releasing Konnected WebHook");
-        webHookServlet.deactivate();
+        super.dispose();
     }
 
     /**
@@ -302,16 +291,10 @@ public class KonnectedHandler extends BaseThingHandler {
      *
      * @return a json settings payload which can be sent to the Konnected Module based on the Thing
      */
-    private String contructSettingsPayload() {
+    private String constructSettingsPayload() {
         String hostPath = "";
-        try {
-            hostPath = getHostName() + webHookServlet.getPath();
-            logger.debug("The host path is: {}", hostPath);
-        } catch (UnknownHostException e) {
-            logger.debug("Unable to obtain hostname: {}", e.getMessage());
-            return "none";
-        }
-        String authToken = config.authToken;
+        hostPath = callbackIpAddress + this.konnectedServletPath;
+        String authToken = this.getThing().getUID().getAsString();
         logger.debug("The Auth_Token is: {}", authToken);
         KonnectedModulePayload payload = new KonnectedModulePayload(authToken, "http://" + hostPath);
         payload.setBlink(config.blink);
@@ -322,55 +305,60 @@ public class KonnectedHandler extends BaseThingHandler {
                 // adds linked channels to list based on last value of Channel ID
                 // which is set to a number
                 // get the zone number in integer form
-                Integer zone = Integer.parseInt(channelId.getId().substring((channelId.getId().length() - 1)));
-
+                String zoneNumber = (String) channel.getConfiguration().get(CHANNEL_ZONE);
+                Integer zone = Integer.parseInt(zoneNumber);
                 // convert the zone to the pin based on value at index of zone
                 Integer pin = Arrays.asList(PIN_TO_ZONE).get(zone);
-
                 // if the pin is an actuator add to actuator string
                 // else add to sensor string
                 // This is determined based off of the accepted item type, contact types are sensors
                 // switch types are actuators
-                String itemType = channel.getAcceptedItemType();
-                logger.trace("The itemType is: {} ", itemType);
-
-                // if the itemType is a contact then the user has configured this to be a sensor
+                String channelType = channel.getChannelTypeUID().getAsString();
+                logger.debug("The channeltypeID is: {}", channelType);
                 KonnectedModuleGson module = new KonnectedModuleGson();
                 module.setPin(pin);
-                if (itemType.equalsIgnoreCase("contact")) {
+                if (channelType.equalsIgnoreCase(CHANNEL_SWITCH)) {
                     payload.addSensor(module);
-                    logger.trace("Channel {} is of type Contact", channel.toString());
+                    logger.trace("Channel {} will be configured on the konnected alarm panel as a switch",
+                            channel.toString());
                 }
-                // if the itemType is a switch then the user has configure this to be a switch
-                if (itemType.equalsIgnoreCase("Switch")) {
+                if (channelType.equalsIgnoreCase(CHANNEL_ACTUATOR)) {
                     payload.addActuators(module);
-                    StringType state = new StringType("0");
-                    updateState(channelId, state);
-                    logger.trace("Channel {} is of type Switch", channel.toString());
-                } // if the itemType is dimensionless then this is the humididty of the dht22, which we add in the Temp,
-                  // so we don't add anything here
-                if (itemType.equalsIgnoreCase("Number:Dimensionless")) {
-                    logger.trace("Channel {} is of type Number:Dimensionless", channel.toString());
-                } // if the itemType is Number:Temperature then this is a Temp Sensor
-                if (itemType.equalsIgnoreCase("Number:Temperature")) {
-                    logger.trace("Channel {} is of type Number:Temperature", channel.toString());
+                    logger.trace("Channel {} will be configured on the konnected alarm panel as an actuator",
+                            channel.toString());
+                }
+                if (channelType.equalsIgnoreCase(CHANNEL_HUMIDITY)) {
+                    // the humidity channels do not need to be added because the supported sensor (dht22) is added under
+                    // the temp sensor
+                    logger.trace("Channel {} is a humidity channel.", channel.toString());
+                }
+                if (channelType.equalsIgnoreCase(CHANNEL_TEMPERATURE)) {
+                    logger.trace("Channel {} will be configured on the konnected alarm panel as a temperature sensor",
+                            channel.toString());
                     Configuration configuration = channel.getConfiguration();
-                    if (configuration.get("pollinterval") == null) {
+                    if (configuration.get(CHANNEL_TEMPERATRUE_POLL) == null) {
                         module.setPollInterval(3);
                     } else {
-                        module.setPollInterval(((BigDecimal) configuration.get("pollinterval")).intValue());
+                        module.setPollInterval(((BigDecimal) configuration.get(CHANNEL_TEMPERATRUE_POLL)).intValue());
                     }
-                    logger.trace("The Temperature Sensor Type is: ", configuration.get("tempsensorType").toString());
-                    if ((boolean) configuration.get("tempsensorType")) {
+                    logger.trace("The Temperature Sensor Type is: {} ",
+                            configuration.get(CHANNEL_TEMPERATURE_TYPE).toString());
+                    if ((boolean) configuration.get(CHANNEL_TEMPERATURE_TYPE)) {
                         // add it as a dht22 module
                         payload.addDht22(module);
+                        logger.trace(
+                                "Channel {} will be configured on the konnected alarm panel as a DHT22 temperature sensor",
+                                channel.toString());
                     } else {
                         // add to payload as a DS18B20 module if the parameter is false
                         payload.addDs18b20(module);
+                        logger.trace(
+                                "Channel {} will be configured on the konnected alarm panel as a DS18B20 temperature sensor",
+                                channel.toString());
                     }
                 } else {
                     logger.debug("Channel {} is of type {} which is not supported by the konnected binding",
-                            channel.toString(), itemType);
+                            channel.toString(), channelType);
                 }
             } else {
                 logger.debug("The Channel {} is not linked to an item", channel.getUID());
@@ -384,33 +372,15 @@ public class KonnectedHandler extends BaseThingHandler {
     }
 
     /**
-     * Obtains the configured hostname of the openHAB server to send to the moduele.
-     *
-     * @return either the ipaddress obtained by the runtime or defined by the user in the thing configuration
-     * @throws UnknownHostException if no host defined
-     */
-    protected String getHostName() throws UnknownHostException {
-        // returns the local address of the openHAB server from the NetworkAddressService,
-        // or uses the configured path from the thing if the user adds one
-        if (config.hostAddress == null) {
-            return callbackIpAddress;
-        } else {
-            logger.debug("User has provided an Ip address on the thing for the openhab host of : {}",
-                    config.hostAddress);
-            return config.hostAddress;
-        }
-    }
-
-    /**
      * Prepares and sends the {@link KonnectedModulePayload} via the {@link KonnectedHttpUtils}
      *
      * @return response obtained from sending the settings payload to Konnected module defined by the thing
      * @throws IOException if unable to communicate with the Konnected module defined by the Thing
      */
     private String updateKonnectedModule() throws IOException {
-        String payload = contructSettingsPayload();
+        String payload = constructSettingsPayload();
         String response = http.doPut(moduleIpAddress + "/settings", payload);
-        logger.debug("The resposne of the put request was: {}", response);
+        logger.debug("The response of the put request was: {}", response);
         return response;
     }
 
@@ -431,46 +401,69 @@ public class KonnectedHandler extends BaseThingHandler {
                 payload.setState(scommand);
                 payload.setPin(pin);
 
-                if (configuration.get("times") == null) {
+                if (configuration.get(CHANNEL_ACTUATOR_TIMES) == null) {
                     logger.debug("The times configuration was not set for channelID: {}, not adding it to the payload.",
                             channelId.toString());
                 } else {
-                    payload.setTimes(configuration.get("times").toString());
+                    payload.setTimes(configuration.get(CHANNEL_ACTUATOR_TIMES).toString());
                     logger.debug("The times configuration was set to: {} for channelID: {}.",
-                            configuration.get("times").toString(), channelId.toString());
+                            configuration.get(CHANNEL_ACTUATOR_TIMES).toString(), channelId.toString());
                 }
-                if (configuration.get("momentary") == null) {
+                if (configuration.get(CHANNEL_ACTUATOR_MOMENTARY) == null) {
                     logger.debug(
                             "The momentary configuration was not set for channelID: {}, not adding it to the payload.",
                             channelId.toString());
                 } else {
-                    payload.setMomentary(configuration.get("momentary").toString());
+                    payload.setMomentary(configuration.get(CHANNEL_ACTUATOR_MOMENTARY).toString());
                     logger.debug("The momentary configuration set to: {} channelID: {}.",
-                            configuration.get("momentary").toString(), channelId.toString());
+                            configuration.get(CHANNEL_ACTUATOR_MOMENTARY).toString(), channelId.toString());
                 }
-                if (configuration.get("pause") == null) {
+                if (configuration.get(CHANNEL_ACTUATOR_PAUSE) == null) {
                     logger.debug("The pause configuration was not set for channelID: {}, not adding it to the payload.",
                             channelId.toString());
                 } else {
-                    payload.setPause(configuration.get("pause").toString());
+                    payload.setPause(configuration.get(CHANNEL_ACTUATOR_PAUSE).toString());
                     logger.debug("The pause configuration was set to: {} for channelID: {}.",
-                            configuration.get("pause").toString(), channelId.toString());
+                            configuration.get(CHANNEL_ACTUATOR_PAUSE).toString(), channelId.toString());
                 }
-
                 String payloadString = gson.toJson(payload);
                 logger.debug("The command payload  is: {}", payloadString);
                 http.doPut(moduleIpAddress + "/device", payloadString);
             } else {
                 logger.debug("The channel {} returned null for channelId.getID(): {}", channelId.toString(),
                         channelId.getId());
-                KonnectedModuleGson payload = new KonnectedModuleGson();
-                payload.setState(scommand);
-                payload.setPin(pin);
             }
         } catch (IOException e) {
-            logger.debug("Attempting to set the state of the actuator failed: {}", e);
+            logger.debug("Attempting to set the state of the actuator on thing {} failed: {}",
+                    this.thing.getUID().getId(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Unable to communicate with Konnected Module confirm settings, and that module is online.");
+                    "Unable to communicate with Konnected Alarm Panel confirm settings, and that module is online.");
         }
     }
+
+    private void getSwitchState(Integer pin, ChannelUID channelId) {
+        try {
+            Channel channel = getThing().getChannel(channelId.getId());
+            if (!(channel == null)) {
+                logger.debug("getasstring: {} getID: {} getGroupId: {} toString:{}", channelId.getAsString(),
+                        channelId.getId(), channelId.getGroupId(), channelId.toString());
+                KonnectedModuleGson payload = new KonnectedModuleGson();
+                payload.setPin(pin);
+                String payloadString = gson.toJson(payload);
+                logger.debug("The command payload  is: {}", payloadString);
+                String response = http.doGet(moduleIpAddress + "/device", payloadString);
+                KonnectedModuleGson event = gson.fromJson(response, KonnectedModuleGson.class);
+                this.handleWebHookEvent(event);
+            } else {
+                logger.debug("The channel {} returned null for channelId.getID(): {}", channelId.toString(),
+                        channelId.getId());
+            }
+        } catch (IOException e) {
+            logger.debug("Attempting to set the state of the actuator on thing {} failed: {}",
+                    this.thing.getUID().getId(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Unable to communicate with Konnected Alarm Panel confirm settings, and that module is online.");
+        }
+    }
+
 }

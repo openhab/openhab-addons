@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.konnected.internal;
 
-import static org.openhab.binding.konnected.KonnectedBindingConstants.*;
+import static org.openhab.binding.konnected.internal.KonnectedBindingConstants.*;
 
 import java.util.Collections;
 import java.util.Dictionary;
@@ -28,8 +28,9 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.konnected.handler.KonnectedHandler;
-import org.openhab.binding.konnected.internal.servelet.KonnectedHTTPServlet;
+import org.openhab.binding.konnected.internal.handler.KonnectedHandler;
+import org.openhab.binding.konnected.internal.servlet.KonnectedHTTPServlet;
+import org.openhab.binding.konnected.internal.servlet.KonnectedWebHookFail;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
@@ -49,9 +50,11 @@ public class KonnectedHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(KonnectedHandlerFactory.class);
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_MODULE);
     private Map<ThingUID, ServiceRegistration<?>> webHookServiceRegs = new HashMap<>();
+    private ServiceRegistration<?> webHookServiceReg;
     private HttpService httpService;
     private String callbackUrl = null;
     private NetworkAddressService networkAddressService;
+    private KonnectedHTTPServlet servlet;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -63,12 +66,27 @@ public class KonnectedHandlerFactory extends BaseThingHandlerFactory {
         super.activate(componentContext);
         Dictionary<String, Object> properties = componentContext.getProperties();
         callbackUrl = (String) properties.get("callbackUrl");
+        KonnectedHTTPServlet servlet = registerWebHookServlet();
+        this.servlet = servlet;
+    }
+
+    @Override
+    protected void deactivate(ComponentContext componentContext) {
+        super.deactivate(componentContext);
+        unregisterWebHookServlet();
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        KonnectedHTTPServlet servlet = registerWebHookServlet(thing);
-        return new KonnectedHandler(thing, servlet, createCallbackUrl(), createCallbackPort());
+        KonnectedHandler thingHandler = new KonnectedHandler(thing, '/' + BINDING_ID, createCallbackUrl(),
+                createCallbackPort());
+        logger.debug("Adding thinghandler for thing {} to webhook.", thing.getUID().getId());
+        try {
+            servlet.add(thingHandler);
+        } catch (KonnectedWebHookFail e) {
+            logger.trace("there was an error adding the thing handler to the servlet: {}", e.getMessage());
+        }
+        return thingHandler;
     }
 
     /**
@@ -76,30 +94,25 @@ public class KonnectedHandlerFactory extends BaseThingHandlerFactory {
      */
     @Override
     protected void removeHandler(ThingHandler thingHandler) {
-        unregisterWebHookServlet(thingHandler.getThing().getUID());
+        servlet.remove((KonnectedHandler) thingHandler);
+        thingHandler.dispose();
+        super.removeHandler(thingHandler);
     }
 
-    private KonnectedHTTPServlet registerWebHookServlet(Thing thing) {
+    private KonnectedHTTPServlet registerWebHookServlet() {
         KonnectedHTTPServlet servlet = null;
-        ThingUID thingUID = thing.getUID();
-        String configCallBack = (String) thing.getConfiguration().get(CALLBACK_PATH);
-        if (configCallBack == null) {
-            configCallBack = "/Konnected/" + thingUID.getId();
-        }
+
+        String configCallBack = '/' + BINDING_ID;
         servlet = new KonnectedHTTPServlet(httpService, configCallBack);
         if (bundleContext != null) {
-            webHookServiceRegs.put(thingUID, bundleContext.registerService(HttpServlet.class.getName(), servlet,
-                    new Hashtable<String, Object>()));
+            webHookServiceReg = bundleContext.registerService(HttpServlet.class.getName(), servlet,
+                    new Hashtable<String, Object>());
         }
         return servlet;
     }
 
-    private void unregisterWebHookServlet(ThingUID thingUID) {
-        ServiceRegistration<?> serviceReg = webHookServiceRegs.get(thingUID);
-        if (serviceReg != null) {
-            serviceReg.unregister();
-            webHookServiceRegs.remove(thingUID);
-        }
+    private void unregisterWebHookServlet() {
+        webHookServiceReg.unregister();
     }
 
     @Reference

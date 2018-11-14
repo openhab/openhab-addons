@@ -18,16 +18,9 @@ import org.eclipse.smarthome.config.core.Configuration;
 public class KonnectedConfiguration extends Configuration {
 
     /**
-     * @param authToken
-     *                        Configurable token for authentication of messages from Konnected modules
-     *
-     * @param hostAddress
-     *                        Allows for manual identification of the host ip address of the openHAB server the
-     *                        Konnected module
-     *                        should send messages to
+     * @param blink     identifies whether the Konnected Alarm Panel LED will blink on transmission of Wifi Commands
+     * @param discovery identifies whether the Konnected Alarm Panel will be discoverable via UPnP
      */
-    public String authToken;
-    public String hostAddress;
     public boolean blink;
     public boolean discovery;
 }

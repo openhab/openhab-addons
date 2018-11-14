@@ -9,21 +9,6 @@
 			<label>Actions</label>
 			<description></description>
 		</parameter-group>
-
-		<parameter name="authToken" type="text" required="true">
-			<label>Auth_Token</label>
-			<description>This is the Authority Token used to communicate with the Konnected Module.</description>
-		</parameter>
-		<parameter name="hostAddress" type="text">
-			<label>OpenHAB Address</label>
-			<description> The host address and port of openhab: example 192.168.1.180:8080.  If blank the binding will auto determine the address based on the address and port the server is bound to.</description>
-			<advanced>true</advanced>
-		</parameter>
-		<parameter name="callBackPath" type="text">
-			<label>OpenHAB CallBack</label>
-			<description> The callback path for where the module can send status updates. If left blank the binding will default to /Konnected/{ThingId}</description>
-			<advanced>true</advanced>
-		</parameter>
 		<parameter name="blink" type="boolean">
 			<label>blink</label>
 			<description> When set to false the Led on the device won't blink during transmission.</description>

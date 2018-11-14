@@ -6,9 +6,10 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.konnected.internal.servelet;
+package org.openhab.binding.konnected.internal.servlet;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Scanner;
 
 import javax.servlet.ServletException;
@@ -16,14 +17,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.openhab.binding.konnected.handler.KonnectedHandler;
 import org.openhab.binding.konnected.internal.gson.KonnectedModuleGson;
+import org.openhab.binding.konnected.internal.handler.KonnectedHandler;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * Main OSGi service and HTTP servlet for Konnected Webhook.
@@ -39,12 +41,33 @@ public class KonnectedHTTPServlet extends HttpServlet {
     private final Gson gson = new Gson();
 
     private final HttpService httpService;
-    private KonnectedHandler thingHandler;
+
     private final String path;
+    private HashMap<String, KonnectedHandler> konnectedThingHandlers = new HashMap<>();
 
     public KonnectedHTTPServlet(HttpService httpService, String id) {
         this.httpService = httpService;
         this.path = id;
+    }
+
+    public void add(KonnectedHandler thingHandler) throws KonnectedWebHookFail {
+        logger.trace("Adding KonnectedHandler[{}] to KonnectedHTTPServlet.", thingHandler.getThing().getUID());
+
+        if (konnectedThingHandlers.size() == 0) {
+            this.activate();
+        }
+
+        konnectedThingHandlers.put(thingHandler.getThing().getUID().getAsString(), thingHandler);
+    }
+
+    public void remove(KonnectedHandler thingHandler) {
+        logger.trace("Removing KonnectedHandler [{}] from KonnectedHTTP Servlet. ", thingHandler.getThing().getUID());
+
+        konnectedThingHandlers.remove(thingHandler.getThing().getUID().getAsString());
+
+        if (konnectedThingHandlers.size() == 0) {
+            this.deactivate();
+        }
     }
 
     /**
@@ -52,11 +75,9 @@ public class KonnectedHTTPServlet extends HttpServlet {
      *
      * @param config Service config.
      **/
-    public void activate(KonnectedHandler thingHandler) throws KonnectedWebHookFail {
-        this.thingHandler = thingHandler;
-
+    public void activate() throws KonnectedWebHookFail {
         try {
-            logger.debug("Trying to Start Webhook.");
+            logger.debug("Trying to Start Webhook at {}.", path);
             httpService.registerServlet(path, this, null, httpService.createDefaultHttpContext());
             logger.debug("Started Konnected Webhook servlet at {}", path);
         } catch (ServletException | NamespaceException e) {
@@ -70,20 +91,34 @@ public class KonnectedHTTPServlet extends HttpServlet {
     public void deactivate() {
         httpService.unregister(path);
         logger.debug("Konnected webhook servlet stopped");
-        this.thingHandler = null;
     }
 
     @Override
-    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String data = inputStreamToString(req);
-        if (data != null && thingHandler != null) {
-            KonnectedModuleGson event = gson.fromJson(data, KonnectedModuleGson.class);
-            String auth = req.getHeader("Authorization");
-            this.thingHandler.handleWebHookEvent(event, auth);
-        }
+    protected void service(HttpServletRequest req, HttpServletResponse resp) {
+        try {
+            String data = inputStreamToString(req);
+            logger.debug("The raw json data is: {}", data);
+            if (data != null && !(konnectedThingHandlers.size() == 0)) {
+                KonnectedModuleGson event = gson.fromJson(data, KonnectedModuleGson.class);
+                String authorizationHeader = req.getHeader("Authorization");
+                String thingHandlerKey = authorizationHeader.substring("Bearer".length()).trim();
+                logger.debug("The path of the response was: {}", req.getContextPath());
+                logger.debug("The json received was: {}", event.toString());
+                logger.debug("The thing handler to send the command to is the handler for thing: {}", thingHandlerKey);
+                try {
+                    KonnectedHandler thingHandler = konnectedThingHandlers.get(thingHandlerKey);
+                    thingHandler.handleWebHookEvent(event);
+                } catch (NullPointerException e) {
+                    logger.debug("There was not a handler registered on the servlet to handler commands for thing: {}",
+                            thingHandlerKey);
+                }
+            }
 
-        setHeaders(resp);
-        resp.getWriter().write("");
+            setHeaders(resp);
+            resp.getWriter().write("");
+        } catch (IOException | JsonSyntaxException e) {
+            logger.debug("The response received from the module was not valid. {}", e.getMessage());
+        }
     }
 
     private String inputStreamToString(HttpServletRequest req) throws IOException {
