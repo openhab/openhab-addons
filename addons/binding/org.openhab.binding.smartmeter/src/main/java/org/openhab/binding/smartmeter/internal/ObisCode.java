@@ -17,15 +17,15 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartmeter.SmartMeterBindingConstants;
 
 /**
+ * Represents an OBIS code.
  *
- * @author MatthiasS
+ * @see For more information see https://de.wikipedia.org/wiki/OBIS-Kennzahlen
+ * @author Matthias Steigenberger - Initial contribution
  *
  */
 @NonNullByDefault
 public class ObisCode {
-    /**
-     * For more information see https://de.wikipedia.org/wiki/OBIS-Kennzahlen
-     */
+
     public static final String OBIS_PATTERN = "((?<A>[0-9]{1,3})-(?<B>[0-9]{1,3}):)?(?<C>[0-9]{1,3}).(?<D>[0-9]{1,3}).(?<E>[0-9]{1,3})(\\*(?<F>[0-9][0-9]{1,3}))?";
 
     private static Pattern obisPattern = Pattern.compile(OBIS_PATTERN);
@@ -42,6 +42,13 @@ public class ObisCode {
         this.f = f;
     }
 
+    /**
+     * Gets a {@link ObisCode} from a String. It must follow the pattern {@value #OBIS_PATTERN}
+     *
+     * @param obis The obis as String.
+     * @return The new Obis code. Can not be null.
+     * @throws IllegalArgumentException If the <code>obis</code> has not the right format.
+     */
     public static ObisCode from(String obis) throws IllegalArgumentException {
         try {
             Matcher matcher = obisPattern.matcher(obis);
@@ -64,6 +71,11 @@ public class ObisCode {
         }
     }
 
+    /**
+     * Gets the OBIS as a String.
+     * 
+     * @return the obis as string.
+     */
     public String asDecimalString() {
         try (Formatter format = new Formatter()) {
             format.format(SmartMeterBindingConstants.OBIS_FORMAT, a != null ? a & 0xFF : 0, b != null ? b & 0xFF : 0,

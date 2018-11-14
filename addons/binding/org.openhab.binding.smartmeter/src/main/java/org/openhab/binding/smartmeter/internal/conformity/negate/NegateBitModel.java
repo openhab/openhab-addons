@@ -12,19 +12,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
+ * Models the negate bit - namely the OBIS code, whether its in the status bytes and on which position (of the status)
+ * it is encoded.
  *
- * @author MatthiasS
+ * @author Matthias Steigenberger - Initial contribution
  *
  */
 @NonNullByDefault
 public class NegateBitModel {
 
     private int negatePosition;
-
     private boolean negateBit;
-
     private String negateObis;
-
     private boolean status;
 
     /**

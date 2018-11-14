@@ -15,8 +15,6 @@ Import-Package:
  javax.measure.format,
  javax.measure.quantity,
  javax.measure.spi,
- org.apache.commons.codec,
- org.apache.commons.codec.binary,
  org.apache.commons.lang,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
@@ -31,13 +29,15 @@ Import-Package:
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.core.types.util,
+ org.eclipse.smarthome.core.util,
  org.eclipse.smarthome.io.transport.serial,
- org.openhab.binding.smartmeter,
  org.osgi.framework,
  org.osgi.service.component,
  org.osgi.util.tracker,
- org.slf4j
+ org.slf4j,
+ org.openhab.binding.smartmeter,
+ org.openhab.binding.smartmeter.connectors
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.smartmeter;x-internal:=true,
- org.openhab.binding.smartmeter.connectors
+ org.openhab.binding.smartmeter.connectors;x-internal:=true
 Bundle-ActivationPolicy: lazy

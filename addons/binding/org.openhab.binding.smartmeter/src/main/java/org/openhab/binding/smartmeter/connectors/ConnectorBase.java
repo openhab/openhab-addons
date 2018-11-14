@@ -28,8 +28,8 @@ import io.reactivex.schedulers.Schedulers;
 /**
  * Represents a basic implementation of a SML device connector.
  *
- * @author Mathias Gilhuber
- * @since 1.7.0
+ * @author Matthias Steigenberger - Initial contribution
+ * @author Mathias Gilhuber - Also-By
  */
 @NonNullByDefault
 public abstract class ConnectorBase<T> implements IMeterReaderConnector<T> {
@@ -39,14 +39,13 @@ public abstract class ConnectorBase<T> implements IMeterReaderConnector<T> {
      * The name of the port where the device is connected as defined in openHAB configuration.
      */
     private String portName;
-    private static final int NUMBER_OF_RETRIES = 3;
+    public static final int NUMBER_OF_RETRIES = 3;
 
     /**
      * Contructor for basic members.
      *
      * This constructor has to be called from derived classes!
      *
-     * @throws IOException
      */
     protected ConnectorBase(String portName) {
         this.portName = portName;
@@ -56,15 +55,15 @@ public abstract class ConnectorBase<T> implements IMeterReaderConnector<T> {
      * Reads a new IO message.
      *
      * @param initMessage
-     * @return
-     * @throws IOException
+     * @return The payload
+     * @throws IOException Whenever there was a reading error.
      */
     protected abstract T readNext(byte @Nullable [] initMessage) throws IOException;
 
     /**
      * Whether to periodically emit values.
      *
-     * @return
+     * @return whether periodically emit values or not
      */
     protected boolean applyPeriod() {
         return false;
@@ -73,7 +72,7 @@ public abstract class ConnectorBase<T> implements IMeterReaderConnector<T> {
     /**
      * Whether to apply a retry handling whenever the read out failed.
      *
-     * @return
+     * @return whether to use the retry handling or not.
      */
     protected boolean applyRetryHandling() {
         return false;
@@ -86,7 +85,7 @@ public abstract class ConnectorBase<T> implements IMeterReaderConnector<T> {
      *
      * @param period
      * @param attempts
-     * @return
+     * @return The publisher which emits events for a retry.
      */
     protected Publisher<?> getRetryPublisher(Duration period, Publisher<Throwable> attempts) {
         return Flowable.fromPublisher(attempts)
@@ -99,15 +98,24 @@ public abstract class ConnectorBase<T> implements IMeterReaderConnector<T> {
                         return attempt;
                     }
                 }).flatMap(i -> {
-                    Duration additionalDelay = Duration.ofSeconds(i);
+                    retryHook(i);
+                    Duration additionalDelay = period;
                     logger.warn("Delaying retry by {}", additionalDelay);
                     return Flowable.timer(additionalDelay.toMillis(), TimeUnit.MILLISECONDS);
                 });
     }
 
+    /**
+     * Called whenever a retry shall happen. Clients can do something here.
+     *
+     * @param retryCount The current number of retries
+     */
+    protected void retryHook(int retryCount) {
+
+    }
+
     @Override
-    public Publisher<T> getMeterValues(byte @Nullable [] initMessage, Duration period, ExecutorService executor)
-            throws IOException {
+    public Publisher<T> getMeterValues(byte @Nullable [] initMessage, Duration period, ExecutorService executor) {
         Flowable<T> itemPublisher = Flowable.<T> create((emitter) -> {
             emitValues(initMessage, emitter);
         }, BackpressureStrategy.DROP);
@@ -129,6 +137,13 @@ public abstract class ConnectorBase<T> implements IMeterReaderConnector<T> {
 
     }
 
+    /**
+     * Emitting of values shall happen here. If there is a event based emitting, this can be overriden.
+     * 
+     * @param initMessage The message which shall be written before reading the values.
+     * @param emitter The {@link FlowableEmitter} to emit the values to.
+     * @throws IOException thrown if any reading error occurs.
+     */
     protected void emitValues(byte @Nullable [] initMessage, FlowableEmitter<@Nullable T> emitter) throws IOException {
         if (!emitter.isCancelled()) {
             emitter.onNext(readNext(initMessage));
@@ -136,6 +151,11 @@ public abstract class ConnectorBase<T> implements IMeterReaderConnector<T> {
         }
     }
 
+    /**
+     * Gets the name of the serial port.
+     * 
+     * @return The actual name of the serial port.
+     */
     public String getPortName() {
         return portName;
     }

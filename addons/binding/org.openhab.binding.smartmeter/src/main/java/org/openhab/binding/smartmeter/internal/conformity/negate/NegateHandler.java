@@ -15,13 +15,22 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartmeter.internal.MeterValue;
 
 /**
+ * Handles the Negate Bit property for a specific meter value.
  *
- * @author MatthiasS
+ * @author Matthias Steigenberger - Initial contribution
  *
  */
 @NonNullByDefault
 public class NegateHandler {
 
+    /**
+     * Gets whether negation should be applied for the given <code>negateProperty</code> and the {@link MeterValue}
+     * provided by the <code>getObisValueFunction</code>
+     *
+     * @param negateProperty The negate property (in form <OBIS>:<POSITION>:<BIT_SET>)
+     * @param getObisValueFunction The function to get the {@link MeterValue} from an OBIS code.
+     * @return whether to negate or not.
+     */
     public static boolean shouldNegateState(String negateProperty,
             Function<String, @Nullable MeterValue<?>> getObisValueFunction) {
         NegateBitModel negateModel = NegateBitParser.parseNegateProperty(negateProperty);
@@ -44,6 +53,13 @@ public class NegateHandler {
         }
     }
 
+    /**
+     * Gets whether the bit at position <code>negatePosition</code> is set or not.
+     *
+     * @param value The value which must be a number to check the bit
+     * @param negatePosition The position to check
+     * @return Whether the given bit is set or not
+     */
     public static boolean isNegateSet(String value, int negatePosition) {
         long longValue = Long.parseLong(value);
         return (longValue & (1L << negatePosition)) != 0;

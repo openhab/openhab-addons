@@ -30,14 +30,15 @@ import io.reactivex.Flowable;
 import io.reactivex.FlowableEmitter;
 
 /**
+ * This connector reads meter values with IEC62056-21 protocol.
  *
- * @author MatthiasS
+ * @author Matthias Steigenberger - Initial contribution
  *
  */
 @NonNullByDefault
 public class Iec62056_21SerialConnector extends ConnectorBase<DataMessage> {
 
-    private final static Logger logger = LoggerFactory.getLogger(Iec62056_21SerialConnector.class);
+    private final Logger logger = LoggerFactory.getLogger(Iec62056_21SerialConnector.class);
     private int baudrate;
     private int baudrateChangeDelay;
     private ProtocolMode protocolMode;
@@ -100,7 +101,7 @@ public class Iec62056_21SerialConnector extends ConnectorBase<DataMessage> {
 
                         @Override
                         public void exceptionWhileListening(@Nullable Exception e) {
-                            logger.error("Exception while listening for mode D data message", e);
+                            logger.warn("Exception while listening for mode D data message", e);
                         }
                     });
                 }

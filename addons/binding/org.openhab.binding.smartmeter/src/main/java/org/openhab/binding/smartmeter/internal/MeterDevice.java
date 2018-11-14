@@ -35,10 +35,13 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 /**
+ * This represents a meter device.
+ * All read values of the device are cached here and can be obtained. The reading can be started with
+ * {@link #readValues(ScheduledExecutorService, Duration)}
  *
- * @author MatthiasS
+ * @author Matthias Steigenberger - Initial contribution
  *
- * @param <T>
+ * @param <T> The type of Payload which is read from the device.
  */
 @NonNullByDefault
 public abstract class MeterDevice<T> {
@@ -56,13 +59,14 @@ public abstract class MeterDevice<T> {
      * The id of the SML device from openHAB configuration.
      */
     private String deviceId;
-
     /**
      * Used to establish the device connection
      */
     IMeterReaderConnector<T> connector;
     private List<MeterValueListener> valueChangeListeners;
-    private final static Logger logger = LoggerFactory.getLogger(MeterDevice.class);
+
+    private final static int RETRY_DELAY = 2;
+    private final Logger logger = LoggerFactory.getLogger(MeterDevice.class);
 
     public MeterDevice(Supplier<SerialPortManager> serialPortManagerSupplier, String deviceId, String serialPort,
             byte @Nullable [] initMessage, int baudrate, int baudrateChangeDelay, ProtocolMode protocolMode) {
@@ -75,6 +79,18 @@ public abstract class MeterDevice<T> {
                 protocolMode);
     }
 
+    /**
+     * Creates the actual connector that handles the serial port communication and protocol.
+     *
+     * @param serialPortManagerSupplier Supplies the {@link SerialPortManager} which is used to obtain the serial port
+     *            implementation
+     * @param serialPort The name of the port to communicate with.
+     * @param baudrate The Baudrate to set for communication.
+     * @param baudrateChangeDelay The delay which is used before changing the baudrate (used only for specific
+     *            protocols).
+     * @param protocolMode The {@link ProtocolMode} to use.
+     * @return The connector which handles the serial port communication.
+     */
     protected abstract IMeterReaderConnector<T> createConnector(Supplier<SerialPortManager> serialPortManagerSupplier,
             String serialPort, int baudrate, int baudrateChangeDelay, ProtocolMode protocolMode);
 
@@ -95,7 +111,7 @@ public abstract class MeterDevice<T> {
      */
     @Nullable
     public String getValue(String obisId) {
-        MeterValue<?> smlValue = getSmlValue(obisId);
+        MeterValue<?> smlValue = getMeterValue(obisId);
         if (smlValue != null) {
             return smlValue.getValue();
         }
@@ -110,15 +126,18 @@ public abstract class MeterDevice<T> {
      */
     @SuppressWarnings("unchecked")
     @Nullable
-    public <Q extends Quantity<Q>> MeterValue<Q> getSmlValue(String obisId) {
-
+    public <Q extends Quantity<Q>> MeterValue<Q> getMeterValue(String obisId) {
         if (valueCache.containsKey(obisId)) {
             return (MeterValue<Q>) valueCache.get(obisId);
         }
-
         return null;
     }
 
+    /**
+     * Gets all currently available OBIS codes.
+     *
+     * @return All cached OBIS codes.
+     */
     public Collection<String> getObisCodes() {
         return new ArrayList<>(this.valueCache.keySet());
     }
@@ -130,42 +149,32 @@ public abstract class MeterDevice<T> {
      * by {@code period} seconds.
      * If its still failing, the connection will be closed and opened again.
      *
-     * @return
+     * @return The {@link Disposable} which needs to be disposed whenever not used anymore.
      *
-     * @throws Exception
      */
-    public Disposable readValues(ScheduledExecutorService executorService, Duration period) throws Exception {
-
-        try {
-            final int retryDelay = 2;
-            return Flowable.fromPublisher(connector.getMeterValues(initMessage, period, executorService))
-                    .timeout(30, TimeUnit.SECONDS, Schedulers.from(executorService)).doOnSubscribe(sub -> {
-                        logger.info("Opening connection to {}", getDeviceId());
-                        connector.openConnection();
-                    }).doOnError(ex -> {
-                        logger.error("Failed to read: {}. Closing connection and trying again in {} seconds...; {}",
-                                ex.getMessage(), retryDelay, getDeviceId(), ex);
-                        connector.closeConnection();
-                        notifyReadingError(ex);
-                    }).doOnCancel(connector::closeConnection).doOnComplete(connector::closeConnection).share()
-                    .retryWhen(publisher -> publisher.delay(retryDelay, TimeUnit.SECONDS,
-                            Schedulers.from(executorService)))
-                    .subscribeOn(Schedulers.from(executorService), true).subscribe((value) -> {
-                        Map<String, MeterValue<?>> obisCodes = new HashMap<>(valueCache);
-                        clearValueCache();
-                        populateValueCache(value);
-                        printInfo();
-                        Collection<String> newObisCodes = getObisCodes();
-                        // notify every removed obis code.
-                        obisCodes.values().stream().filter((val) -> !newObisCodes.contains(val.getObisCode()))
-                                .forEach((val) -> notifyValuesRemoved(val));
-                    });
-
-        } catch (Exception ex) {
-            logger.error("{}: Error during receive values from device: {}", this.toString(), ex.getMessage());
-            throw ex;
-        }
-
+    public Disposable readValues(ScheduledExecutorService executorService, Duration period) {
+        return Flowable.fromPublisher(connector.getMeterValues(initMessage, period, executorService))
+                .timeout(30, TimeUnit.SECONDS, Schedulers.from(executorService)).doOnSubscribe(sub -> {
+                    logger.info("Opening connection to {}", getDeviceId());
+                    connector.openConnection();
+                }).doOnError(ex -> {
+                    logger.warn("Failed to read: {}. Closing connection and trying again in {} seconds...; {}",
+                            ex.getMessage(), RETRY_DELAY, getDeviceId(), ex);
+                    connector.closeConnection();
+                    notifyReadingError(ex);
+                }).doOnCancel(connector::closeConnection).doOnComplete(connector::closeConnection).share()
+                .retryWhen(
+                        publisher -> publisher.delay(RETRY_DELAY, TimeUnit.SECONDS, Schedulers.from(executorService)))
+                .subscribeOn(Schedulers.from(executorService), true).subscribe((value) -> {
+                    Map<String, MeterValue<?>> obisCodes = new HashMap<>(valueCache);
+                    clearValueCache();
+                    populateValueCache(value);
+                    printInfo();
+                    Collection<String> newObisCodes = getObisCodes();
+                    // notify every removed obis code.
+                    obisCodes.values().stream().filter((val) -> !newObisCodes.contains(val.getObisCode()))
+                            .forEach((val) -> notifyValuesRemoved(val));
+                });
     }
 
     /**
@@ -177,8 +186,19 @@ public abstract class MeterDevice<T> {
         valueCache.clear();
     }
 
-    protected abstract <Q extends Quantity<Q>> void populateValueCache(T smlFile);
+    /**
+     * Called whenever a new value was made available. The value cache needs to be filled here with
+     * {@link #addObisCache(MeterValue)}.
+     *
+     * @param payload The actual payload value.
+     */
+    protected abstract <Q extends Quantity<Q>> void populateValueCache(T payload);
 
+    /**
+     * Adds a {@link MeterValue} to the current cache.
+     * 
+     * @param value The value to add.
+     */
     protected <Q extends Quantity<Q>> void addObisCache(MeterValue<Q> value) {
         logger.debug("Value changed: {}", value);
         this.valueCache.put(value.getObisCode(), value);
@@ -202,14 +222,23 @@ public abstract class MeterDevice<T> {
             stringBuilder.append("Obis: " + entry.getKey() + " " + entry.getValue().toString());
             stringBuilder.append(System.lineSeparator());
         }
-
         return stringBuilder.toString();
     }
 
+    /**
+     * Adds a {@link MeterValueListener} to the list of listeners which gets notified on new values being read.
+     * 
+     * @param valueChangeListener The new {@link MeterValueListener}
+     */
     public void addValueChangeListener(MeterValueListener valueChangeListener) {
         this.valueChangeListeners.add(valueChangeListener);
     }
 
+    /**
+     * Removes a {@link MeterValueListener} from the list of listeners.
+     * 
+     * @param valueChangeListener The listener to remove.
+     */
     public void removeValueChangeListener(MeterValueListener valueChangeListener) {
         this.valueChangeListeners.remove(valueChangeListener);
     }
@@ -219,7 +248,7 @@ public abstract class MeterDevice<T> {
     }
 
     private void notifyReadingError(Throwable e) {
-        this.valueChangeListeners.forEach((listener) -> listener.errorOccoured(e));
+        this.valueChangeListeners.forEach((listener) -> listener.errorOccurred(e));
     }
 
     /**
@@ -229,7 +258,6 @@ public abstract class MeterDevice<T> {
      */
     protected void printInfo() {
         if (this.getPrintMeterInfo()) {
-
             logger.info("Read out following values: {}", toString());
             setPrintMeterInfo(false);
         }

@@ -25,8 +25,9 @@ import org.openhab.binding.smartmeter.internal.helper.ProtocolMode;
 import org.osgi.service.component.annotations.Component;
 
 /**
+ * Provides the configuration options for a meter device.
  *
- * @author MatthiasS
+ * @author Matthias Steigenberger - Initial contribution
  *
  */
 @NonNullByDefault
@@ -41,7 +42,6 @@ public class SmartMeterConfigProvider implements ConfigOptionProvider {
 
     @Override
     public @Nullable Collection<ParameterOption> getParameterOptions(URI uri, String param, @Nullable Locale locale) {
-
         if (!SmartMeterBindingConstants.THING_TYPE_SMLREADER.getAsString().equals(uri.getSchemeSpecificPart())) {
             return null;
         }

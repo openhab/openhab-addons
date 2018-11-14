@@ -14,7 +14,7 @@ import org.eclipse.smarthome.io.transport.serial.SerialPort;
 
 /**
  *
- * @author MatthiasS
+ * @author Matthias Steigenberger - Initial contribution
  *
  */
 @NonNullByDefault

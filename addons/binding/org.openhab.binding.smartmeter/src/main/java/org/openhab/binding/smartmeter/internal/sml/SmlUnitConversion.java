@@ -18,8 +18,9 @@ import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.openmuc.jsml.EUnit;
 
 /**
- *
- * @author MatthiasS
+ * Converts a {@link EUnit} to an {@link Unit}.
+ * 
+ * @author Matthias Steigenberger - Initial contribution
  *
  */
 @NonNullByDefault

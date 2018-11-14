@@ -15,18 +15,20 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.smartmeter.SmartMeterBindingConstants;
 
 /**
+ * Parses the NegateBit property.
  *
- * @author MatthiasS
+ * @author Matthias Steigenberger - Initial contribution
  *
  */
 @NonNullByDefault
 public class NegateBitParser {
 
     /**
-     * "1-0:1-8-0:5:1"
+     * Parsing of negate bit property. This is in the format: {@literal <OBIS>:<POSITION>:<BIT_SET>"}
+     * e.g. "1-0:1-8-0:5:1"
      *
      * @param negateProperty
-     * @return
+     * @return The parsed model
      */
     public static NegateBitModel parseNegateProperty(String negateProperty) throws IllegalArgumentException {
         Pattern obisPattern = Pattern.compile(SmartMeterBindingConstants.OBIS_PATTERN_CHANNELID);

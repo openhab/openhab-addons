@@ -23,8 +23,8 @@ import org.openmuc.jsml.structures.SmlListEntry;
 /**
  * Proxy class to encapsulate a openMUC SML_ListEntry-Object to read informations.
  *
- * @author Mathias Gilhuber
- * @since 1.7.0
+ * @author Matthias Steigenberger - Initial contribution
+ * @author Mathias Gilhuber - Also-By
  */
 @NonNullByDefault
 public final class SmlValueExtractor {
@@ -69,7 +69,7 @@ public final class SmlValueExtractor {
     /**
      * Gets a human readable name of the OBIS code.
      *
-     * @return
+     * @return The name of the obis code or {@link EObis#UNKNOWN} if not known
      */
     public String getObisName() {
         String obisName = null;

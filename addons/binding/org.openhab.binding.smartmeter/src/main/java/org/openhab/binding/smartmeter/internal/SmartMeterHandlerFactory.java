@@ -37,9 +37,7 @@ import org.osgi.service.component.annotations.Reference;
 public class SmartMeterHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SMLREADER);
-
     private @NonNullByDefault({}) SmartMeterChannelTypeProvider channelProvider;
-
     private @NonNullByDefault({}) Supplier<SerialPortManager> serialPortManagerSupplier = () -> null;
 
     @Override
@@ -48,11 +46,11 @@ public class SmartMeterHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Reference
-    protected void setSmartMeterChannelProvider(SmartMeterChannelTypeProvider provider) {
+    protected void setSmartMeterChannelTypeProvider(SmartMeterChannelTypeProvider provider) {
         this.channelProvider = provider;
     }
 
-    protected void unsetSmartMeterChannelProvider(SmartMeterChannelTypeProvider provider) {
+    protected void unsetSmartMeterChannelTypeProvider(SmartMeterChannelTypeProvider provider) {
         this.channelProvider = null;
     }
 
@@ -67,7 +65,6 @@ public class SmartMeterHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_SMLREADER)) {

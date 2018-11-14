@@ -12,21 +12,15 @@ package org.openhab.binding.smartmeter;
  * The {@link SmartMeterConfiguration} is the class used to match the
  * thing configuration.
  *
- * @author Matthias Steigenberger- Initial contribution
+ * @author Matthias Steigenberger - Initial contribution
  */
 public class SmartMeterConfiguration {
 
     public String port;
-
     public Integer refresh;
-
     public Integer baudrateChangeDelay;
-
     public String initMessage;
-
     public String baudrate;
-
     public String mode;
-
     public String conformity;
 }

@@ -31,17 +31,21 @@ import org.eclipse.smarthome.core.types.StateDescriptionFragmentBuilder;
 import org.eclipse.smarthome.core.types.util.UnitUtils;
 import org.openhab.binding.smartmeter.SmartMeterBindingConstants;
 import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A {@link ChannelTypeProvider} that listens for changes to the {@link MeterDevice} and updates the
  * {@link ChannelType}s according to all available OBIS values.
  * It creates one {@link ChannelType} per available OBIS value.
  *
- * @author MatthiasS
+ * @author Matthias Steigenberger - Initial contribution
  *
  */
 @Component(service = { ChannelTypeProvider.class, SmartMeterChannelTypeProvider.class })
 public class SmartMeterChannelTypeProvider implements ChannelTypeProvider, MeterValueListener {
+
+    private final Logger logger = LoggerFactory.getLogger(SmartMeterChannelTypeProvider.class);
 
     private Map<String, ChannelType> obisChannelMap = new ConcurrentHashMap<>();
 
@@ -60,32 +64,16 @@ public class SmartMeterChannelTypeProvider implements ChannelTypeProvider, Meter
     public @Nullable ChannelGroupType getChannelGroupType(ChannelGroupTypeUID channelGroupTypeUID,
             @Nullable Locale locale) {
         return null;
-        // getChannelGroupTypes(locale).stream().filter(group -> group.getUID().equals(channelGroupTypeUID))
-        // .findFirst().orElse(null);
     }
 
     @Override
     public @Nullable Collection<@NonNull ChannelGroupType> getChannelGroupTypes(@Nullable Locale locale) {
-        // return getChannelTypes(null).stream().collect(Collectors.groupingBy(ChannelType::getItemType)).entrySet()
-        // .stream().map(entry -> {
-        // String typeExtension = ItemUtil.getItemTypeExtension(entry.getKey());
-        // if (typeExtension == null) {
-        // typeExtension = "others";
-        // }
-        // List<ChannelDefinition> channelDefs = entry.getValue().stream()
-        // .map(channel -> new ChannelDefinition(channel.getUID().getId(), channel.getUID()))
-        // .collect(Collectors.toList());
-        // return ChannelGroupTypeBuilder
-        // .instance(new ChannelGroupTypeUID(SmartMeterBindingConstants.BINDING_ID, typeExtension),
-        // typeExtension)
-        // .withChannelDefinitions(channelDefs).build();
-        // }).collect(Collectors.toList());
         return null;
     }
 
     @Override
-    public void errorOccoured(Throwable e) {
-        // TODO Auto-generated method stub
+    public void errorOccurred(Throwable e) {
+        // Nothing to do if there is an reading error...
 
     }
 
@@ -98,7 +86,6 @@ public class SmartMeterChannelTypeProvider implements ChannelTypeProvider, Meter
     }
 
     private ChannelType getChannelType(Unit<?> unit, String obis) {
-
         String obisChannelId = SmartMeterBindingConstants.getObisChannelId(obis);
         StateChannelTypeBuilder stateDescriptionBuilder;
         if (unit != null) {
@@ -125,6 +112,12 @@ public class SmartMeterChannelTypeProvider implements ChannelTypeProvider, Meter
         obisChannelMap.remove(value.getObisCode());
     }
 
+    /**
+     * Gets the {@link ChannelTypeUID} for the given OBIS code.
+     * 
+     * @param obis The obis code.
+     * @return The {@link ChannelTypeUID} or null.
+     */
     public ChannelTypeUID getChannelTypeIdForObis(String obis) {
         return obisChannelMap.get(obis).getUID();
     }

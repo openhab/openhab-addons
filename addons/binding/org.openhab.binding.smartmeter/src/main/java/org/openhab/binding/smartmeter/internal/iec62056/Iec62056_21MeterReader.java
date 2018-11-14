@@ -26,7 +26,7 @@ import org.openmuc.j62056.DataSet;
 /**
  * Reads meter values from an IEC 62056-21 compatible device with mode A,B,C or D.
  *
- * @author MatthiasS
+ * @author Matthias Steigenberger - Initial contribution
  *
  */
 @NonNullByDefault
@@ -51,7 +51,6 @@ public class Iec62056_21MeterReader extends MeterDevice<DataMessage> {
         for (DataSet dataSet : smlFile.getDataSets()) {
             String address = dataSet.getAddress();
             if (address != null && !address.isEmpty()) {
-
                 addObisCache(new MeterValue<Q>(address, dataSet.getValue(),
                         Iec62056_21UnitConversion.getUnit(dataSet.getUnit())));
             }

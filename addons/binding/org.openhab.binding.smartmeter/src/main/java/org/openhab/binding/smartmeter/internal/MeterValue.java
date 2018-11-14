@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * Represents one value of the meter device.
  *
- * @author MatthiasS
+ * @author Matthias Steigenberger - Initial contribution
  *
  */
 @NonNullByDefault

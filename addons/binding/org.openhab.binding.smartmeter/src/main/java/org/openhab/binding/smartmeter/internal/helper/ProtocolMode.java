@@ -12,7 +12,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  *
- * @author MatthiasS
+ * @author Matthias Steigenberger - Initial contribution
  *
  */
 @NonNullByDefault

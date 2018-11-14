@@ -18,8 +18,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
- * @author MatthiasS
+ * Converts a unit from IEC62056-21 protocol to a {@link Unit}
+ * 
+ * @author Matthias Steigenberger - Initial contribution
  *
  */
 @NonNullByDefault

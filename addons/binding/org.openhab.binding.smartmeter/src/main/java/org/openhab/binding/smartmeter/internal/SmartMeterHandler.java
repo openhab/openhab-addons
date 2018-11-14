@@ -22,8 +22,6 @@ import java.util.function.Supplier;
 import javax.measure.Quantity;
 import javax.measure.Unit;
 
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.DefaultLocation;
 import org.eclipse.jdt.annotation.NonNull;
@@ -46,6 +44,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.TypeParser;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.smartmeter.SmartMeterBindingConstants;
 import org.openhab.binding.smartmeter.SmartMeterConfiguration;
@@ -100,15 +99,8 @@ public class SmartMeterHandler extends BaseThingHandler {
         }
 
         if (validConfig) {
-            byte[] pullSequence = null;
-            try {
-                pullSequence = config.initMessage == null ? null
-                        : Hex.decodeHex(StringUtils.deleteWhitespace(config.initMessage).toCharArray());
-            } catch (DecoderException e) {
-                logger.error("Failed to decode init message", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Parameter 'initMessage' can not be decoded: " + e.getLocalizedMessage());
-            }
+            byte[] pullSequence = config.initMessage == null ? null
+                    : HexUtils.hexToBytes(StringUtils.deleteWhitespace(config.initMessage));
             int baudrate = config.baudrate == null ? Baudrate.AUTO.getBaudrate()
                     : Baudrate.fromString(config.baudrate).getBaudrate();
             this.conformity = config.conformity == null ? Conformity.NONE : Conformity.valueOf(config.conformity);
@@ -157,112 +149,97 @@ public class SmartMeterHandler extends BaseThingHandler {
      *
      */
     private void updateOBISValue() {
-        try {
-            cancelRead();
+        cancelRead();
 
-            valueChangeListener = new MeterValueListener() {
-                @Override
-                public <Q extends @NonNull Quantity<Q>> void valueChanged(MeterValue<Q> value) {
-                    ThingBuilder thingBuilder = editThing();
+        valueChangeListener = new MeterValueListener() {
+            @Override
+            public <Q extends @NonNull Quantity<Q>> void valueChanged(MeterValue<Q> value) {
+                ThingBuilder thingBuilder = editThing();
 
-                    String obis = value.getObisCode();
+                String obis = value.getObisCode();
 
-                    String obisChannelString = SmartMeterBindingConstants.getObisChannelId(obis);
-                    Channel channel = thing.getChannel(obisChannelString);
-                    ChannelTypeUID channelTypeId = channelTypeProvider.getChannelTypeIdForObis(obis);
+                String obisChannelString = SmartMeterBindingConstants.getObisChannelId(obis);
+                Channel channel = thing.getChannel(obisChannelString);
+                ChannelTypeUID channelTypeId = channelTypeProvider.getChannelTypeIdForObis(obis);
 
-                    ChannelType channelType = channelTypeProvider.getChannelType(channelTypeId, null);
-                    if (channelType != null) {
+                ChannelType channelType = channelTypeProvider.getChannelType(channelTypeId, null);
+                if (channelType != null) {
+                    String itemType = channelType.getItemType();
 
-                        String itemType = channelType.getItemType();
+                    State state = getStateForObisValue(value, channel);
+                    if (channel == null) {
+                        logger.debug("Adding channel: {} with item type: {}", obisChannelString, itemType);
 
-                        State state = getStateForObisValue(value, channel);
-                        if (channel == null) {
-                            logger.debug("Adding channel: {} with item type: {}", obisChannelString, itemType);
+                        // channel has not been created yet
+                        ChannelBuilder channelBuilder = ChannelBuilder
+                                .create(new ChannelUID(thing.getUID(), obisChannelString), itemType)
+                                .withType(channelTypeId);
 
-                            // channel has not been created yet
-                            ChannelBuilder channelBuilder = ChannelBuilder
-                                    .create(new ChannelUID(thing.getUID(), obisChannelString), itemType)
-                                    .withType(channelTypeId);
+                        Configuration configuration = new Configuration();
+                        configuration.put(SmartMeterBindingConstants.CONFIGURATION_CONVERSION, 1);
+                        channelBuilder.withConfiguration(configuration);
+                        channelBuilder.withLabel(obis);
+                        Map<String, String> channelProps = new HashMap<>();
+                        channelProps.put(SmartMeterBindingConstants.CHANNEL_PROPERTY_OBIS, obis);
+                        channelBuilder.withProperties(channelProps);
+                        channelBuilder.withDescription(
+                                MessageFormat.format("Value for OBIS code: {0} with Unit: {1}", obis, value.getUnit()));
+                        channel = channelBuilder.build();
+                        ChannelUID channelId = channel.getUID();
 
-                            Configuration configuration = new Configuration();
-                            configuration.put(SmartMeterBindingConstants.CONFIGURATION_CONVERSION, 1);
-                            channelBuilder.withConfiguration(configuration);
-                            channelBuilder.withLabel(obis);
-                            Map<String, String> channelProps = new HashMap<>();
-                            channelProps.put(SmartMeterBindingConstants.CHANNEL_PROPERTY_OBIS, obis);
-                            channelBuilder.withProperties(channelProps);
-                            channelBuilder.withDescription(MessageFormat
-                                    .format("Value for OBIS code: {0} with Unit: {1}", obis, value.getUnit()));
-                            channel = channelBuilder.build();
-                            ChannelUID channelId = channel.getUID();
-
-                            // add all valid channels to the thing builder
-                            List<Channel> channels = new ArrayList<Channel>(getThing().getChannels());
-                            if (channels.stream().filter((element) -> element.getUID().equals(channelId))
-                                    .count() == 0) {
-                                channels.add(channel);
-                                thingBuilder.withChannels(channels);
-                                updateThing(thingBuilder.build());
-                            }
-
+                        // add all valid channels to the thing builder
+                        List<Channel> channels = new ArrayList<Channel>(getThing().getChannels());
+                        if (channels.stream().filter((element) -> element.getUID().equals(channelId)).count() == 0) {
+                            channels.add(channel);
+                            thingBuilder.withChannels(channels);
+                            updateThing(thingBuilder.build());
                         }
-
-                        if (!channel.getProperties().containsKey(SmartMeterBindingConstants.CHANNEL_PROPERTY_OBIS)) {
-                            addObisPropertyToChannel(obis, channel);
-                        }
-                        updateState(channel.getUID(), state);
-
-                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-                    } else {
-                        logger.warn("No ChannelType found for OBIS {}", obis);
                     }
 
+                    if (!channel.getProperties().containsKey(SmartMeterBindingConstants.CHANNEL_PROPERTY_OBIS)) {
+                        addObisPropertyToChannel(obis, channel);
+                    }
+                    updateState(channel.getUID(), state);
+
+                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                } else {
+                    logger.warn("No ChannelType found for OBIS {}", obis);
                 }
+            }
 
-                private void addObisPropertyToChannel(String obis, Channel channel) {
-                    String description = channel.getDescription();
-                    String label = channel.getLabel();
-                    ChannelBuilder newChannel = ChannelBuilder.create(channel.getUID(), channel.getAcceptedItemType())
-                            .withDefaultTags(channel.getDefaultTags()).withConfiguration(channel.getConfiguration())
-                            .withDescription(description == null ? "" : description).withKind(channel.getKind())
-                            .withLabel(label == null ? "" : label).withType(channel.getChannelTypeUID());
-                    HashMap<String, String> properties = new HashMap<>(channel.getProperties());
-                    properties.put(SmartMeterBindingConstants.CHANNEL_PROPERTY_OBIS, obis);
-                    newChannel.withProperties(properties);
-                    updateThing(editThing().withoutChannel(channel.getUID()).withChannel(newChannel.build()).build());
-                }
+            private void addObisPropertyToChannel(String obis, Channel channel) {
+                String description = channel.getDescription();
+                String label = channel.getLabel();
+                ChannelBuilder newChannel = ChannelBuilder.create(channel.getUID(), channel.getAcceptedItemType())
+                        .withDefaultTags(channel.getDefaultTags()).withConfiguration(channel.getConfiguration())
+                        .withDescription(description == null ? "" : description).withKind(channel.getKind())
+                        .withLabel(label == null ? "" : label).withType(channel.getChannelTypeUID());
+                HashMap<String, String> properties = new HashMap<>(channel.getProperties());
+                properties.put(SmartMeterBindingConstants.CHANNEL_PROPERTY_OBIS, obis);
+                newChannel.withProperties(properties);
+                updateThing(editThing().withoutChannel(channel.getUID()).withChannel(newChannel.build()).build());
+            }
 
-                @Override
-                public <Q extends @NonNull Quantity<Q>> void valueRemoved(MeterValue<Q> value) {
+            @Override
+            public <Q extends @NonNull Quantity<Q>> void valueRemoved(MeterValue<Q> value) {
+                // channels that are not available are removed
+                String obisChannelId = SmartMeterBindingConstants.getObisChannelId(value.getObisCode());
+                logger.debug("Removing channel: {}", obisChannelId);
+                ThingBuilder thingBuilder = editThing();
+                thingBuilder.withoutChannel(new ChannelUID(thing.getUID(), obisChannelId));
+                updateThing(thingBuilder.build());
+            }
 
-                    // channels that are not available are removed
-                    String obisChannelId = SmartMeterBindingConstants.getObisChannelId(value.getObisCode());
-                    logger.debug("Removing channel: {}", obisChannelId);
-                    ThingBuilder thingBuilder = editThing();
-                    thingBuilder.withoutChannel(new ChannelUID(thing.getUID(), obisChannelId));
-                    updateThing(thingBuilder.build());
+            @Override
+            public void errorOccurred(Throwable e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+            }
+        };
+        this.smlDevice.addValueChangeListener(valueChangeListener);
 
-                }
-
-                @Override
-                public void errorOccoured(Throwable e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
-                }
-            };
-            this.smlDevice.addValueChangeListener(valueChangeListener);
-
-            SmartMeterConfiguration config = getConfigAs(SmartMeterConfiguration.class);
-            int delay = config.refresh != null ? config.refresh : DEFAULT_REFRESH_PERIOD;
-
-            valueReader = this.smlDevice.readValues(this.scheduler, Duration.ofSeconds(delay));
-
-        } catch (Exception e) {
-            // Update the thing status
-            logger.error("Failed to read SML", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getLocalizedMessage());
-        }
-
+        SmartMeterConfiguration config = getConfigAs(SmartMeterConfiguration.class);
+        int delay = config.refresh != null ? config.refresh : DEFAULT_REFRESH_PERIOD;
+        valueReader = this.smlDevice.readValues(this.scheduler, Duration.ofSeconds(delay));
     }
 
     private void updateOBISChannel(ChannelUID channelId) {
@@ -271,7 +248,7 @@ public class SmartMeterHandler extends BaseThingHandler {
             if (channel != null) {
 
                 String obis = channel.getProperties().get(SmartMeterBindingConstants.CHANNEL_PROPERTY_OBIS);
-                MeterValue<?> value = this.smlDevice.getSmlValue(obis);
+                MeterValue<?> value = this.smlDevice.getMeterValue(obis);
                 if (value != null) {
 
                     State state = getStateForObisValue(value, channel);
@@ -304,7 +281,7 @@ public class SmartMeterHandler extends BaseThingHandler {
         try {
             return this.conformity.apply(channel, currentState, getThing(), this.smlDevice);
         } catch (Exception e) {
-            logger.error("Failed to apply negation for channel: {}", channel.getUID(), e);
+            logger.warn("Failed to apply negation for channel: {}", channel.getUID(), e);
         }
         return currentState;
     }

@@ -15,12 +15,14 @@ import java.text.MessageFormat;
 import java.util.Stack;
 import java.util.function.Supplier;
 
-import org.apache.commons.codec.binary.Hex;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.util.HexUtils;
+import org.eclipse.smarthome.io.transport.serial.PortInUseException;
 import org.eclipse.smarthome.io.transport.serial.SerialPort;
 import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
+import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
 import org.openhab.binding.smartmeter.connectors.ConnectorBase;
 import org.openhab.binding.smartmeter.internal.helper.Baudrate;
 import org.openhab.binding.smartmeter.internal.helper.SerialParameter;
@@ -30,8 +32,8 @@ import org.openmuc.jsml.transport.Transport;
 /**
  * Represents a serial SML device connector.
  *
- * @author Mathias Gilhuber
- * @since 1.7.0
+ * @author Matthias Steigenberger - Initial contribution
+ * @author Mathias Gilhuber - Also-By
  */
 @NonNullByDefault
 public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
@@ -73,7 +75,7 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
     @Override
     protected SmlFile readNext(byte @Nullable [] initMessage) throws IOException {
         if (initMessage != null) {
-            logger.debug("Writing init message: {}", Hex.encodeHexString(initMessage));
+            logger.debug("Writing init message: {}", HexUtils.bytesToHex(initMessage, " "));
             if (os != null) {
                 os.write(initMessage);
                 os.flush();
@@ -92,34 +94,34 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
         return smlFiles.pop();
     }
 
-    /**
-     * @throws IOException
-     * @{inheritDoc}
-     */
     @Override
     public void openConnection() throws IOException {
-        try {
-            closeConnection();
-            SerialPortIdentifier id = serialManagerSupplier.get().getIdentifier(getPortName());
-            if (id != null) {
+        closeConnection();
+        SerialPortIdentifier id = serialManagerSupplier.get().getIdentifier(getPortName());
+        if (id != null) {
+            try {
                 serialPort = id.open("meterreaderbinding", 0);
-                SerialParameter serialParameter = SerialParameter._8N1;
-                int baudrateToUse = this.baudrate == Baudrate.AUTO.getBaudrate() ? Baudrate._9600.getBaudrate()
-                        : this.baudrate;
+            } catch (PortInUseException e) {
+                throw new IOException(MessageFormat
+                        .format("Error at SerialConnector.openConnection: unable to open port {0}.", getPortName()), e);
+            }
+            SerialParameter serialParameter = SerialParameter._8N1;
+            int baudrateToUse = this.baudrate == Baudrate.AUTO.getBaudrate() ? Baudrate._9600.getBaudrate()
+                    : this.baudrate;
+            try {
                 serialPort.setSerialPortParams(baudrateToUse, serialParameter.getDatabits(),
                         serialParameter.getStopbits(), serialParameter.getParity());
-                // serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT);
-                serialPort.notifyOnDataAvailable(true);
-                is = new DataInputStream(serialPort.getInputStream());
-                os = new DataOutputStream(serialPort.getOutputStream());
-            } else {
-                throw new IllegalStateException(MessageFormat.format("No provider for port {0} found", getPortName()));
+            } catch (UnsupportedCommOperationException e) {
+                throw new IOException(MessageFormat.format(
+                        "Error at SerialConnector.openConnection: unable to set serial port parameters for port {0}.",
+                        getPortName()), e);
             }
-
-        } catch (Exception e) {
-            throw new IOException(MessageFormat.format(
-                    "Error at SerialConnector.openConnection: unable to get inputstream for port {0}.", getPortName()),
-                    e);
+            // serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT);
+            serialPort.notifyOnDataAvailable(true);
+            is = new DataInputStream(serialPort.getInputStream());
+            os = new DataOutputStream(serialPort.getOutputStream());
+        } else {
+            throw new IllegalStateException(MessageFormat.format("No provider for port {0} found", getPortName()));
         }
     }
 
@@ -133,7 +135,7 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
                 is.close();
                 is = null;
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.error("Failed to close serial input stream", e);
         }
         try {
@@ -141,16 +143,12 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
                 os.close();
                 os = null;
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.error("Failed to close serial output stream", e);
         }
-        try {
-            if (serialPort != null) {
-                serialPort.close();
-                serialPort = null;
-            }
-        } catch (Exception e) {
-            logger.error("Error at SerialConnector.closeConnection", e);
+        if (serialPort != null) {
+            serialPort.close();
+            serialPort = null;
         }
     }
 

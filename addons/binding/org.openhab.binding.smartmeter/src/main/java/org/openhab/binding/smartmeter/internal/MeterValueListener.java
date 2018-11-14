@@ -11,22 +11,34 @@ package org.openhab.binding.smartmeter.internal;
 import javax.measure.Quantity;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
+ * Listener which can be notified whenever new values are read form a meter device.
  *
- * @author MatthiasS
+ * @author Matthias Steigenberger - Initial contribution
  *
  */
 @NonNullByDefault
 public interface MeterValueListener {
 
-    static Logger logger = LoggerFactory.getLogger(MeterValueListener.class);
+    /**
+     * Called whenever some (reading-) error occurred.
+     *
+     * @param e The Exception that was thrown.
+     */
+    public void errorOccurred(Throwable e);
 
-    public void errorOccoured(Throwable e);
-
+    /**
+     * Called whenever some value was added or changed for a meter device.
+     *
+     * @param value The changed value.
+     */
     public <Q extends Quantity<Q>> void valueChanged(MeterValue<Q> value);
 
+    /**
+     * Called whenever some value was removed from the meter device (not available anymore).
+     *
+     * @param value The removed value.
+     */
     public <Q extends Quantity<Q>> void valueRemoved(MeterValue<Q> value);
 }

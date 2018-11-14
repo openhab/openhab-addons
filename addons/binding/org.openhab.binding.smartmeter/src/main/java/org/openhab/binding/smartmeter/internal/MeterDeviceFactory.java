@@ -20,12 +20,25 @@ import org.openhab.binding.smartmeter.internal.sml.SmlMeterReader;
 /**
  * Factory to get the correct device reader for a specific {@link ProtocolMode}
  *
- * @author MatthiasS
+ * @author Matthias Steigenberger - Initial contribution
  *
  */
 @NonNullByDefault
 public class MeterDeviceFactory {
 
+    /**
+     * Gets a concrete {@link MeterDevice} for given values.
+     * 
+     * @param serialPortManagerSupplier The Supplier of a {@link SerialPortManager}
+     * @param mode The {@link ProtocolMode}.
+     * @param deviceId
+     * @param serialPort The serial port identifier to connect ot.
+     * @param initMessage The message which shall be sent before reading values (or to actually make the meter sent
+     *            values).
+     * @param baudrate The baudrate to set before communication.
+     * @param baudrateChangeDelay The change delay before changing the baudrate (used only for specific protocols).
+     * @return The new {@link MeterDevice} or null.
+     */
     public static @Nullable MeterDevice<?> getDevice(Supplier<SerialPortManager> serialPortManagerSupplier, String mode,
             String deviceId, String serialPort, byte @Nullable [] initMessage, int baudrate, int baudrateChangeDelay) {
         ProtocolMode protocolMode = ProtocolMode.valueOf(mode.toUpperCase());

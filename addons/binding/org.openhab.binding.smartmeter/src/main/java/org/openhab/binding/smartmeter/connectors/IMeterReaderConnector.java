@@ -17,10 +17,10 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.reactivestreams.Publisher;
 
 /**
- * Specifies the generic method to retrieve SML values from a device
+ * Specifies the generic method to retrieve values from a device
  *
- * @author Mathias Gilhuber
- * @since 1.7.0
+ * @author Matthias Steigenberger - Initial contribution
+ * @author Mathias Gilhuber - Also-By
  */
 @NonNullByDefault
 public interface IMeterReaderConnector<T> {
@@ -32,23 +32,19 @@ public interface IMeterReaderConnector<T> {
      * @param serialParmeter
      * @param period hint for the connector to emit items in this time intervals.
      * @return native encoded SML informations from a device.
-     * @throws IOException
      */
-    Publisher<T> getMeterValues(byte @Nullable [] initMessage, Duration period, ExecutorService executor)
-            throws IOException;
+    Publisher<T> getMeterValues(byte @Nullable [] initMessage, Duration period, ExecutorService executor);
 
     /**
-     * Open connection.
+     * Opens the connection to the serial port.
      *
-     * @throws IOException
+     * @throws IOException Whenever something goes wrong while opening the connection.
      *
      */
     void openConnection() throws IOException;
 
     /**
-     * Close connection.
-     *
-     * @throws ConnectorException
+     * Closes the connection to the serial port.
      *
      */
     void closeConnection();

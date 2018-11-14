@@ -32,8 +32,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Represents a SML capable device.
  *
- * @author Mathias Gilhuber
- * @since 1.7.0
+ * @author Matthias Steigenberger - Initial contribution
+ * @author Mathias Gilhuber - Also-By
  */
 @NonNullByDefault
 public final class SmlMeterReader extends MeterDevice<SmlFile> {
@@ -113,7 +113,7 @@ public final class SmlMeterReader extends MeterDevice<SmlFile> {
                     SmlValueExtractor valueExtractor = new SmlValueExtractor(entry);
                     String obis = valueExtractor.getObisCode();
 
-                    MeterValue<?> smlValue = getSmlValue(obis);
+                    MeterValue<?> smlValue = getMeterValue(obis);
 
                     if (smlValue == null) {
                         smlValue = valueExtractor.getSmlValue();

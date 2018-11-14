@@ -26,7 +26,7 @@ import org.openmuc.jsml.structures.responses.SmlPublicOpenRes;
 /**
  * Class to parse a SML_FILE
  *
- * @author MatthiasS
+ * @author Matthias Steigenberger - Initial contribution
  */
 @NonNullByDefault
 public class SmlFileDebugOutput {
@@ -108,7 +108,6 @@ public class SmlFileDebugOutput {
 
         // consumer.accept(sml_listRes.toString());
 
-        // TODO working on indents for better human readability
         consumer.accept(sml_listRes.toStringIndent(" "));
     }
 
@@ -153,36 +152,29 @@ public class SmlFileDebugOutput {
 
     private static void parseCloseRequest(SmlMessage smlMessage, Consumer<String> consumer) {
         consumer.accept("Got CloseRequest");
-        // TODO further parsing
     }
 
     private static void parseGetProfileListRequest(SmlMessage smlMessage, Consumer<String> consumer) {
         consumer.accept("Got GetProfileListRequest");
-        // TODO further parsing
     }
 
     private static void parseGetProfilePackRequest(SmlMessage smlMessage, Consumer<String> consumer) {
         consumer.accept("Got GetProfilePackRequest");
-        // TODO further parsing
     }
 
     private static void parseOpenRequest(SmlMessage smlMessage, Consumer<String> consumer) {
         consumer.accept("Got OpenRequest");
-        // TODO further parsing
     }
 
     private static void parseGetProcParameterRequest(SmlMessage smlMessage, Consumer<String> consumer) {
         consumer.accept("Got GetProcParameterRequest");
-        // TODO further parsing
     }
 
     private static void parseSetProcParameterRequest(SmlMessage smlMessage, Consumer<String> consumer) {
         consumer.accept("Got SetProcParameterRequest");
-        // TODO further parsing
     }
 
     private static void parseGetListRequest(SmlMessage smlMessage, Consumer<String> consumer) {
         consumer.accept("Got GetListRequest");
-        // TODO further parsing
     }
 }
