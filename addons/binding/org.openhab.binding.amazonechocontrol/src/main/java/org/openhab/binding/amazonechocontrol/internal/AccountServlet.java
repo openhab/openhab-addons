@@ -247,7 +247,13 @@ public class AccountServlet extends HttpServlet {
 
             if (connection != null && connection.verifyLogin()) {
 
-                // handle diagnostic commands
+                // handle commands
+                if (baseUrl.equals("/logout") || baseUrl.equals("/logout/")) {
+                    this.account.setConnection(null);
+                    resp.sendRedirect(this.servletUrl);
+                    return;
+                }
+
                 if (baseUrl.equals("/devices") || baseUrl.equals("/devices/")) {
                     handleDevices(resp, connection);
                     return;
@@ -264,7 +270,7 @@ public class AccountServlet extends HttpServlet {
                     }
                 }
                 // return hint that everything is ok
-                handleDefaultPageResult(resp, "The Account is already logged in.");
+                handleDefaultPageResult(resp, "The Account is logged in.");
                 return;
             }
             connection = this.connectionToInitialize;
@@ -308,13 +314,21 @@ public class AccountServlet extends HttpServlet {
     }
 
     private void handleDefaultPageResult(HttpServletResponse resp, String message) throws IOException {
-        StringBuilder html = createPageStart("Index");
-        html.append(StringEscapeUtils.escapeHtml(message + " The account thing should be online."));
+        StringBuilder html = createPageStart("");
+        html.append(StringEscapeUtils.escapeHtml(message));
+
+        // logout link
+        html.append("<br><a href='" + servletUrl + "/logout' >");
+        html.append(StringEscapeUtils.escapeHtml("Logout"));
+        html.append("</a><br>");
+
+        // paper ui link
         html.append("<br><a href='/paperui/index.html#/configuration/things/view/" + BINDING_ID + ":"
                 + URLEncoder.encode(THING_TYPE_ACCOUNT.getId(), "UTF8") + ":" + URLEncoder.encode(id, "UTF8") + "'>");
         html.append(StringEscapeUtils.escapeHtml("Check Thing in Paper UI"));
         html.append("</a><br><br>");
 
+        // device list
         html.append(
                 "<table><tr><th align='left'>Device</th><th align='left'>Serial Number</th><th align='left'>State</th><th align='left'>Thing</th><th align='left'>Type</th><th align='left'>Family</th></tr>");
         for (Device device : this.account.getLastKnownDevices()) {
@@ -360,15 +374,25 @@ public class AccountServlet extends HttpServlet {
     StringBuilder createPageStart(String title) {
         StringBuilder html = new StringBuilder();
         html.append("<html><head><title>"
-                + StringEscapeUtils
-                        .escapeHtml(BINDING_NAME + " - " + this.account.getThing().getLabel() + " - " + title)
-                + "</title><head><body>");
-        html.append("<h1>" + StringEscapeUtils
-                .escapeHtml(BINDING_NAME + " - " + this.account.getThing().getLabel() + " - " + title) + "</h1>");
+                + StringEscapeUtils.escapeHtml(BINDING_NAME + " - " + this.account.getThing().getLabel()));
+        if (StringUtils.isNotEmpty(title)) {
+            html.append(StringEscapeUtils.escapeHtml(title));
+        }
+        html.append("</title><head><body>");
+        html.append("<h1>" + StringEscapeUtils.escapeHtml(BINDING_NAME + " - " + this.account.getThing().getLabel()));
+        if (StringUtils.isNotEmpty(title)) {
+            html.append(StringEscapeUtils.escapeHtml(title));
+        }
+        html.append("</h1>");
         return html;
     }
 
     private void createPageEndAndSent(HttpServletResponse resp, StringBuilder html) {
+        // account overview link
+        html.append("<br><a href='" + servletUrl + "/../' >");
+        html.append(StringEscapeUtils.escapeHtml("Account overview"));
+        html.append("</a><br>");
+
         html.append("</body></html>");
         resp.addHeader("content-type", "text/html;charset=UTF-8");
         try {

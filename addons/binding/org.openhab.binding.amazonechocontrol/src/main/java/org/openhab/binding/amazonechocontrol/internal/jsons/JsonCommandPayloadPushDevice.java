@@ -25,5 +25,4 @@ public class JsonCommandPayloadPushDevice {
         public @Nullable String deviceSerialNumber;
         public @Nullable String deviceType;
     }
-
 }

@@ -63,6 +63,5 @@ public class JsonActivities {
             Gson gson = new Gson();
             return gson.fromJson(description, Description.class);
         }
-
     }
 }

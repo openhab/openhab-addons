@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class JsonAnnouncementTarget {
+
     public @Nullable String customerId;
     public @Nullable TargetDevice @Nullable [] devices;
 

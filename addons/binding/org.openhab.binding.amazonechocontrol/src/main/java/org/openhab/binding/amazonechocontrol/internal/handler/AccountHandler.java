@@ -302,16 +302,23 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     }
 
     // used to set a valid connection from the web proxy login
-    public void setConnection(Connection connection) {
+    public void setConnection(@Nullable Connection connection) {
         this.connection = connection;
-        String serializedStorage = connection.serializeLoginData();
-        this.stateStorage.put("sessionStorage", serializedStorage);
+        if (connection != null) {
+            String serializedStorage = connection.serializeLoginData();
+            this.stateStorage.put("sessionStorage", serializedStorage);
+        } else {
+            this.stateStorage.put("sessionStorage", null);
+            updateStatus(ThingStatus.OFFLINE);
+        }
         closeWebSocketConnection();
-        updateDeviceList();
-        updateFlashBriefingHandlers();
-        updateStatus(ThingStatus.ONLINE);
-        checkDataCounter = 0;
-        checkData();
+        if (connection != null) {
+            updateDeviceList();
+            updateFlashBriefingHandlers();
+            updateStatus(ThingStatus.ONLINE);
+            checkDataCounter = 0;
+            checkData();
+        }
     }
 
     void closeWebSocketConnection() {

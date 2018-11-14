@@ -93,5 +93,4 @@ public class JsonRegisterAppResponse {
         @Nullable
         public String expires_in;
     }
-
 }

@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class JsonAnnouncementContent {
+
     public @Nullable String locale;
     public final Display display = new Display();
     public final Speak speak = new Speak();

@@ -28,5 +28,4 @@ public class JsonCommandPayloadPushActivity {
         public @Nullable String entryId;
         public @Nullable String registeredUserId;
     }
-
 }

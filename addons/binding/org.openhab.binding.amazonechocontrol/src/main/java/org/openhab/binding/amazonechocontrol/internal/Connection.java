@@ -426,6 +426,7 @@ public class Connection {
                 }
                 if (postData != null) {
 
+                    logger.debug("{}: {}", verb, postData);
                     // post data
                     byte[] postDataBytes = postData.getBytes(StandardCharsets.UTF_8);
                     int postDataLength = postDataBytes.length;
