@@ -235,7 +235,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
                 if (linkedTemplateChannels.containsKey(ain)) {
                     StateOption stateOption = new StateOption(template.getIdentifier(), template.getName());
                     ChannelUID channelUID = linkedTemplateChannels.get(ain);
-                    logger.debug("Add template '{}' ({}) to state options for channel {}", template.getName(),
+                    logger.debug("Add template '{}' ('{}') to state options for channel '{}'", template.getName(),
                             template.getIdentifier(), channelUID);
                     if (channelStateOptionsMap.containsKey(channelUID)) {
                         channelStateOptionsMap.get(channelUID).add(stateOption);

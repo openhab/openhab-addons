@@ -32,12 +32,11 @@ import org.osgi.service.component.annotations.Deactivate;
 @Component(service = { DynamicStateDescriptionProvider.class, AVMFritzDynamicStateDescriptionProvider.class })
 @NonNullByDefault
 public class AVMFritzDynamicStateDescriptionProvider implements DynamicStateDescriptionProvider {
-
     private final Map<ChannelUID, @Nullable List<StateOption>> channelOptionsMap = new ConcurrentHashMap<>();
 
     public void setStateOptions(Map<ChannelUID, List<StateOption>> channelOptionsMap) {
         for (Map.Entry<ChannelUID, List<StateOption>> entry : channelOptionsMap.entrySet()) {
-            channelOptionsMap.put(entry.getKey(), entry.getValue());
+            this.channelOptionsMap.put(entry.getKey(), entry.getValue());
         }
     }
 

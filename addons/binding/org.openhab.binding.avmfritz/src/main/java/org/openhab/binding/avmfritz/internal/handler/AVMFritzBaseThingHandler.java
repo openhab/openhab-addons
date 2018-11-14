@@ -89,7 +89,7 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler {
     @Override
     public void channelLinked(ChannelUID channelUID) {
         String channelId = channelUID.getIdWithoutGroup();
-        logger.debug("Handle channel linked for channel {}", channelId);
+        logger.debug("Handle channel linked for channel '{}'", channelId);
         switch (channelId) {
             case CHANNEL_TEMPLATE:
                 String ain = getIdentifier();
@@ -100,19 +100,15 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler {
                         ((AVMFritzBaseBridgeHandler) bridgeHandler).addLinkedTemplateChannel(ain, channelUID);
                     }
                 }
-                updateState(CHANNEL_TEMPLATE, UnDefType.UNDEF);
-                break;
-            default:
-                super.channelLinked(channelUID);
                 break;
         }
-
+        super.channelLinked(channelUID);
     }
 
     @Override
     public void channelUnlinked(ChannelUID channelUID) {
         String channelId = channelUID.getIdWithoutGroup();
-        logger.debug("Handle channel unlinked for channel {}", channelId);
+        logger.debug("Handle channel unlinked for channel '{}'", channelId);
         switch (channelId) {
             case CHANNEL_TEMPLATE:
                 String ain = getIdentifier();
@@ -124,17 +120,15 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler {
                     }
                 }
                 break;
-            default:
-                // do nothing
-                break;
         }
+        super.channelUnlinked(channelUID);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         String channelId = channelUID.getIdWithoutGroup();
         logger.debug("Handle command '{}' for channel {}", command, channelId);
-        if (command instanceof RefreshType) {
+        if (command == RefreshType.REFRESH) {
             Bridge bridge = getBridge();
             if (bridge != null) {
                 BridgeHandler bridgeHandler = bridge.getHandler();
