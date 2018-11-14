@@ -84,9 +84,9 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
 
         // read out the whole buffer. We are only interested in the most recent SML file.
         Stack<SmlFile> smlFiles = new Stack<>();
-        while (is != null && is.available() > 0) {
+        do {
             smlFiles.push(TRANSPORT.getSMLFile(is));
-        }
+        } while (is != null && is.available() > 0);
         if (smlFiles.isEmpty()) {
             throw new IOException(getPortName() + " : There is no SML file in buffer. Try to increase Refresh rate.");
         }

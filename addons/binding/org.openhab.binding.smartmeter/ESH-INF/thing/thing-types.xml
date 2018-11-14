@@ -19,7 +19,7 @@
 				<advanced>true</advanced>
 				<label>Refresh Rate</label>
 				<description>Refresh rate in seconds</description>
-				<default>20</default>
+				<default>10</default>
 				<unitLabel>s</unitLabel>
 			</parameter>
 			<parameter name="baudrateChangeDelay" type="integer">
