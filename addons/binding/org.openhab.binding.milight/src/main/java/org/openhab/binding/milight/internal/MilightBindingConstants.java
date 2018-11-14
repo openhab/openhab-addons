@@ -40,9 +40,6 @@ public class MilightBindingConstants {
 
     public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(BRIDGEV3_THING_TYPE, BRIDGEV6_THING_TYPE).collect(Collectors.toSet()));
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(RGB_V2_THING_TYPE, RGB_THING_TYPE, WHITE_THING_TYPE, RGB_W_THING_TYPE,
-                    RGB_CW_WW_THING_TYPE, RGB_IBOX_THING_TYPE).collect(Collectors.toSet()));
 
     // List of all Channel ids
     public static final String CHANNEL_COLOR = "ledcolor";
@@ -61,16 +58,9 @@ public class MilightBindingConstants {
     public static final int PORT_VER3 = 8899;
     public static final int PORT_VER6 = 5987;
 
-    public static final String CONFIG_HOST_NAME = "ADDR";
-    public static final String CONFIG_CUSTOM_PORT = "CUSTOM_PORT";
-    public static final String CONFIG_PROTOCOL_VERSION = "CONFIG_PROTOCOL_VERSION";
-    public static final String CONFIG_ID = "ID";
-    public static final String CONFIG_REFRESH_SEC = "REFRESH_IN_SEC";
-    public static final String CONFIG_PASSWORD_BYTE_1 = "PASSWORD_BYTE_1";
-    public static final String CONFIG_PASSWORD_BYTE_2 = "PASSWORD_BYTE_2";
-    public static final String CONFIG_REPEAT = "REPEAT";
-    public static final String CONFIG_WAIT_BETWEEN_COMMANDS = "WAIT_BETWEEN_COMMANDS";
-
     public static final String PROPERTY_SESSIONID = "sessionid";
     public static final String PROPERTY_SESSIONCONFIRMED = "sessionid_last_refresh";
+
+    public static final byte[] DISCOVER_MSG_V3 = "Link_Wi-Fi".getBytes();
+    public static final byte[] DISCOVER_MSG_V6 = "HF-A11ASSISTHREAD".getBytes();
 }

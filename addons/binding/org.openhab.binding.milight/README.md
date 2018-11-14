@@ -7,7 +7,7 @@ This binding is for using your Milight, Easybulb or LimitlessLed bulbs and the i
 ## Supported Things
 
 The binding supports Milight/Easybulb bridges from 2014+, iBox from 2016 and iBox2 from 2017 and their respective bulbs.
-The Dual White bulbs from 2015 and the new generation of Dual White bulbs is supported.
+The Dual White bulbs from 2015 and the new generation of Dual White bulbs are supported.
 RGB/White from 2014 and the new generation RGB/White from 2016 as well as RGB/Cold,Warmwhite and iBox bulbs work.
 
 | Bulb Type          | Milight Bridge | iBox  | iBox2 |
@@ -26,8 +26,7 @@ Please note that LD382, LD382A, LD686 RGB stripes and bulbs are supported by the
 All supported bridges can be discovered by triggering a search in openHAB's Inbox.
 Found bridges will show up and can easily be added as things.
 Unfortunately Milight like bulbs have no back channel and can not report their presence, therefore
-all possible bulbs are listed as new things after a bridge has been added.
-Add the bulbs you actually configured and hide the rest of the detected things.
+bulb discovery is not possible.
 
 Your device needs to be connected to your local network (i.e. by using the WPS button connection method or the native App shipped with the device).
 Read the device manual for more information about how to connect your device to your network.
@@ -39,19 +38,19 @@ configuration file.
 iBox and iBox2 have the version 6, older milight bridges have the version 3.
 The ID is the MAC address of the bridge in hexadecimal digits.
 
-    Bridge milight:bridgeV3:ACCF23A6C0B4 [ ADDR="192.168.0.70", ID="ACCF23A6C0B4" ] {
-        Thing whiteLed 0
-        Thing rgbwwLed 4
-        Thing rgbLed 1
+    Bridge milight:bridgeV3:mybridge [ host="192.168.0.70", bridgeid="ACCF23A6C0B4", passwordByte1=0, passwordByte2=0 ] {
+        Thing whiteLed myWhite [ zone="0" ]
+        Thing rgbwwLed myRGB [ zone="4" ]
+        Thing rgbLed myOldRGB [ zone="1" ]
     }
 
 The Thing configuration for the bridge uses the following syntax
 
-*   Bridge milight:bridgeV3:<mac address of bridge> &lsqb ADDR="<IP-Address of bridge>", ID="<mac>" &rsqb
-* Bridge milight:bridgeV6:<mac address of bridge> &lsqb ADDR="<IP-Address of bridge>", ID="<mac>" &rsqb
+* Bridge milight:bridgeV3:<any name> &lsqb host="<IP-Address of bridge>", bridgeid="<mac>" &rsqb
+* Bridge milight:bridgeV6:<any name> &lsqb host="<IP-Address of bridge>", bridgeid="<mac>", passwordByte1="<0-255>", passwordByte2="<0-255>" &rsqb
 
 The Thing configuration for the bulbs uses the following syntax:
-&lsqbThing&rsqb <type of bulb> <zone>
+&lsqbThing&rsqb <type of bulb> <any name> &lsqb zone="<0-4>" &rsqb
 
 The following bulb types are valid for configuration:
 
@@ -62,7 +61,7 @@ The following bulb types are valid for configuration:
 *   rgbwLed: The 2016/2017 color bulb without saturation support. About 6630 (255*26) colors.
 *   rgbwwLed: The 2016/2017 color bulb with saturation support. About 1.044.480 (255*64*64) different color shades. Use this also for the newer generation of the dual white bulbs.
 
-The zone number is either 0 for meaning all bulbs of the same type or a valid zone number (1-4 with bridges up to and including version 6).
+The zone number is either 0 for meaning all bulbs of the same type or a valid zone number (1-4).
 Future bridges may support more zones.
 
 ## Features
@@ -143,47 +142,3 @@ Limitations:
     Switch item=AnimationSpeed mappings=[DECREASE='-', INCREASE='+']
     Switch item=Light_GroundfloorN mappings=[ON='Night Mode']
 
-## Example for Scenes
-
-    .items
-
-    Number Light_scene		"Scenes"
-    Color  Light_scene_ColorSelect "Scene Selector"   <colorwheel> (MiLight)
-    # Link this item in paperui now.
-
-    .sitemap
-
-    Selection item=Light_scene mappings=[0="weiß", 1="rot", 2="gelb", 3="grün", 4="dunkelgrün", 5="cyan", 6="blau", 7="magenta"]
-
-    .rules
-    # [https://en.wikipedia.org/wiki/HSL_and_HSV](https://en.wikipedia.org/wiki/HSL_and_HSV)
-
-    rule "Light Scenes"
-    when
-    Item Light_scene received command
-    then
-    if (receivedCommand==0) {
-	    sendCommand(Light_scene_ColorSelect, new HSBType(new DecimalType(0),new PercentType(0),new PercentType(100)))
-    }
-    if (receivedCommand==1) {
-	    sendCommand(Light_scene_ColorSelect, new HSBType(new DecimalType(0),new PercentType(100),new PercentType(100)))
-    }
-    if (receivedCommand==2) {
-	    sendCommand(Light_scene_ColorSelect, new HSBType(new DecimalType(60),new PercentType(100),new PercentType(100)))
-    }
-    if (receivedCommand==3) {
-	    sendCommand(Light_scene_ColorSelect, new HSBType(new DecimalType(120),new PercentType(100),new PercentType(100)))
-    }
-    if (receivedCommand==4) {
-	    sendCommand(Light_scene_ColorSelect, new HSBType(new DecimalType(120),new PercentType(100),new PercentType(50)))
-    }
-    if (receivedCommand==5) {
-	    sendCommand(Light_scene_ColorSelect, new HSBType(new DecimalType(180),new PercentType(100),new PercentType(100)))
-    }
-    if (receivedCommand==6) {
-	    sendCommand(Light_scene_ColorSelect, new HSBType(new DecimalType(240),new PercentType(100),new PercentType(100)))
-    }
-    if (receivedCommand==7) {
-	    sendCommand(Light_scene_ColorSelect, new HSBType(new DecimalType(300),new PercentType(100),new PercentType(100)))
-    }
-    end

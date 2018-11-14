@@ -6,9 +6,13 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.milight.internal.protocol;
+package org.openhab.binding.milight.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.milight.internal.MilightThingState;
+import org.openhab.binding.milight.internal.protocol.QueueItem;
+import org.openhab.binding.milight.internal.protocol.QueuedSend;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,12 +23,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author David Graeff - Initial contribution
  */
-public abstract class MilightV3 extends AbstractBulbInterface {
+@NonNullByDefault
+public abstract class AbstractLedV3Handler extends AbstractLedHandler {
     public static final int MAX_ANIM_MODES = 10;
-    protected final Logger logger = LoggerFactory.getLogger(MilightV3.class);
+    protected final Logger logger = LoggerFactory.getLogger(AbstractLedV3Handler.class);
 
-    public MilightV3(int typeOffset, QueuedSend sendQueue, int zone) {
-        super(typeOffset, sendQueue, zone);
+    public AbstractLedV3Handler(Thing thing, QueuedSend sendQueue, int typeOffset) {
+        super(thing, sendQueue, typeOffset);
     }
 
     // we have to map [0,360] to [0,0xFF], where red equals hue=0 and the milight color 0xB0 (=176)
@@ -41,5 +46,22 @@ public abstract class MilightV3 extends AbstractBulbInterface {
     @Override
     public void setSaturation(int value, MilightThingState state) {
         // Not supported
+    }
+
+    @Override
+    public void changeSaturation(int relativeSaturation, MilightThingState state) {
+        // Not supported
+    }
+
+    protected QueueItem createRepeatable(byte[] data) {
+        return QueueItem.createRepeatable(socket, delayTimeMS, repeatTimes, address, port, data);
+    }
+
+    protected QueueItem createRepeatable(int uidc, byte[] data) {
+        return new QueueItem(socket, uidc, data, true, delayTimeMS, repeatTimes, address, port);
+    }
+
+    protected QueueItem createNonRepeatable(byte[] data) {
+        return QueueItem.createNonRepeatable(socket, delayTimeMS, address, port, data);
     }
 }

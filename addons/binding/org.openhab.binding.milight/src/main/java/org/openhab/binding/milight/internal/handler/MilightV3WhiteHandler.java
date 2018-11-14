@@ -6,9 +6,14 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.milight.internal.protocol;
+package org.openhab.binding.milight.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.milight.internal.MilightThingState;
+import org.openhab.binding.milight.internal.protocol.ProtocolConstants;
+import org.openhab.binding.milight.internal.protocol.QueueItem;
+import org.openhab.binding.milight.internal.protocol.QueuedSend;
 
 /**
  * Implements functionality for the Dual White bulbs for protocol version 3.
@@ -16,11 +21,12 @@ import org.openhab.binding.milight.internal.MilightThingState;
  *
  * @author David Graeff - Initial contribution
  */
-public class MilightV3White extends MilightV3 {
+@NonNullByDefault
+public class MilightV3WhiteHandler extends AbstractLedV3Handler {
     protected static final int BRIGHTNESS_LEVELS = 11;
 
-    public MilightV3White(QueuedSend sendQueue, int zone) {
-        super(0, sendQueue, zone);
+    public MilightV3WhiteHandler(Thing thing, QueuedSend sendQueue) {
+        super(thing, sendQueue, 0);
     }
 
     private static final byte COMMAND_FULL[] = { (byte) 0xB5, (byte) 0xB8, (byte) 0xBD, (byte) 0xB7, (byte) 0xB2 };
@@ -31,7 +37,8 @@ public class MilightV3White extends MilightV3 {
     private static final byte NEXT_ANIMATION_MODE[] = { 0x27, 0x00, 0x55 };
 
     protected void setFull(int zone, MilightThingState state) {
-        sendQueue.queueRepeatable(uidc(CAT_BRIGHTNESS_SET), new byte[] { COMMAND_FULL[zone], 0x00, 0x55 });
+        sendQueue.queue(createRepeatable(uidc(ProtocolConstants.CAT_BRIGHTNESS_SET),
+                new byte[] { COMMAND_FULL[zone], 0x00, 0x55 }));
         state.brightness = 100;
     }
 
@@ -46,9 +53,11 @@ public class MilightV3White extends MilightV3 {
     @Override
     public void setPower(boolean on, MilightThingState state) {
         if (on) {
-            sendQueue.queueRepeatable(uidc(CAT_POWER_SET), new byte[] { COMMAND_ON[zone], 0x00, 0x55 });
+            sendQueue.queue(createRepeatable(uidc(ProtocolConstants.CAT_POWER_MODE),
+                    new byte[] { COMMAND_ON[config.zone], 0x00, 0x55 }));
         } else {
-            sendQueue.queueRepeatable(uidc(CAT_POWER_SET), new byte[] { COMMAND_OFF[zone], 0x00, 0x55 });
+            sendQueue.queue(createRepeatable(uidc(ProtocolConstants.CAT_POWER_MODE),
+                    new byte[] { COMMAND_OFF[config.zone], 0x00, 0x55 }));
             state.brightness = 0;
         }
     }
@@ -59,9 +68,9 @@ public class MilightV3White extends MilightV3 {
 
     @Override
     public void nightMode(MilightThingState state) {
-        final byte cOn[] = { COMMAND_ON[zone], 0x00, 0x55 };
-        final byte cNight[] = { COMMAND_NIGHTMODE[zone], 0x00, 0x55 };
-        sendQueue.queue(QueueItem.createRepeatable(uidc(CAT_NIGHTMODE), cOn).addRepeatable(cNight));
+        final byte cOn[] = { COMMAND_ON[config.zone], 0x00, 0x55 };
+        final byte cNight[] = { COMMAND_NIGHTMODE[config.zone], 0x00, 0x55 };
+        sendQueue.queue(createRepeatable(uidc(ProtocolConstants.CAT_POWER_MODE), cOn).addRepeatable(cNight));
     }
 
     @Override
@@ -100,9 +109,9 @@ public class MilightV3White extends MilightV3 {
     @Override
     public void changeColorTemperature(int colorTempRelative, MilightThingState state) {
         state.colorTemperature = Math.min(100, Math.max(state.colorTemperature + colorTempRelative, 0));
-        final byte cOn[] = { COMMAND_ON[zone], 0x00, 0x55 };
+        final byte cOn[] = { COMMAND_ON[config.zone], 0x00, 0x55 };
         final byte cTemp[] = { (byte) (colorTempRelative > 0 ? 0x3E : 0x3F), 0x00, 0x55 };
-        sendQueue.queue(QueueItem.createRepeatable(cOn).addNonRepeatable(cTemp));
+        sendQueue.queue(createRepeatable(cOn).addNonRepeatable(cTemp));
     }
 
     // This just emulates an absolute brightness command with the relative commands.
@@ -112,7 +121,7 @@ public class MilightV3White extends MilightV3 {
             setPower(false, state);
             return;
         } else if (value >= 100) {
-            setFull(zone, state);
+            setFull(config.zone, state);
             return;
         }
 
@@ -121,8 +130,8 @@ public class MilightV3White extends MilightV3 {
 
         // When turning on start from full brightness
         int oldLevel;
-        final byte cFull[] = { COMMAND_FULL[zone], 0x00, 0x55 };
-        QueueItem item = QueueItem.createRepeatable(cFull);
+        final byte cFull[] = { COMMAND_FULL[config.zone], 0x00, 0x55 };
+        QueueItem item = createRepeatable(cFull);
         boolean skipFirst = false;
 
         if (state.brightness == 0) {
@@ -142,13 +151,18 @@ public class MilightV3White extends MilightV3 {
                 String.valueOf(value), repeatCount);
 
         int op = newLevel > oldLevel ? +1 : -1;
-        final byte cOn[] = { COMMAND_ON[zone], 0x00, 0x55 };
+        final byte cOn[] = { COMMAND_ON[config.zone], 0x00, 0x55 };
         for (int i = 0; i < repeatCount; i++) {
             final byte[] cBr = { (byte) (op < 0 ? 0x34 : 0x3C), 0x00, 0x55 };
             item = item.addRepeatable(cOn).addNonRepeatable(cBr);
         }
 
-        sendQueue.queue(skipFirst ? item.next : item);
+        final QueueItem nextItem = item.next;
+        if (nextItem != null && skipFirst) {
+            sendQueue.queue(nextItem);
+        } else {
+            sendQueue.queue(item);
+        }
 
         state.brightness = value;
     }
@@ -161,11 +175,12 @@ public class MilightV3White extends MilightV3 {
         state.brightness = Math.min(Math.max(state.brightness + relativeBrightness, 0), 100);
 
         if (state.brightness == 0) {
-            sendQueue.queueRepeatable(uidc(CAT_POWER_SET), new byte[] { COMMAND_OFF[zone], 0x00, 0x55 });
+            sendQueue.queue(createRepeatable(uidc(ProtocolConstants.CAT_POWER_MODE),
+                    new byte[] { COMMAND_OFF[config.zone], 0x00, 0x55 }));
         } else {
-            final byte cOn[] = { COMMAND_ON[zone], 0x00, 0x55 };
+            final byte cOn[] = { COMMAND_ON[config.zone], 0x00, 0x55 };
             final byte cBr[] = { (byte) (relativeBrightness < 0 ? 0x34 : 0x3C), 0x00, 0x55 };
-            sendQueue.queue(QueueItem.createRepeatable(cOn).addNonRepeatable(cBr));
+            sendQueue.queue(createRepeatable(cOn).addNonRepeatable(cBr));
         }
     }
 
@@ -175,15 +190,15 @@ public class MilightV3White extends MilightV3 {
 
     @Override
     public void previousAnimationMode(MilightThingState state) {
-        final byte cOn[] = { COMMAND_ON[zone], 0x00, 0x55 };
-        sendQueue.queue(QueueItem.createRepeatable(cOn).addNonRepeatable(PREV_ANIMATION_MODE));
+        final byte cOn[] = { COMMAND_ON[config.zone], 0x00, 0x55 };
+        sendQueue.queue(createRepeatable(cOn).addNonRepeatable(PREV_ANIMATION_MODE));
         state.animationMode = Math.max(state.animationMode - 1, 0);
     }
 
     @Override
     public void nextAnimationMode(MilightThingState state) {
-        final byte cOn[] = { COMMAND_ON[zone], 0x00, 0x55 };
-        sendQueue.queue(QueueItem.createRepeatable(cOn).addNonRepeatable(NEXT_ANIMATION_MODE));
+        final byte cOn[] = { COMMAND_ON[config.zone], 0x00, 0x55 };
+        sendQueue.queue(createRepeatable(cOn).addNonRepeatable(NEXT_ANIMATION_MODE));
         state.animationMode = Math.min(state.animationMode + 1, MAX_ANIM_MODES);
     }
 
