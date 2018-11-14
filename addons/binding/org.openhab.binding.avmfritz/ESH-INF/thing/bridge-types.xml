@@ -20,6 +20,7 @@
 			<channel id="mode" typeId="mode" />
 			<channel id="locked" typeId="locked" />
 			<channel id="device_locked" typeId="device_locked" />
+			<channel id="template" typeId="template" />
 			<channel id="energy" typeId="energy" />
 			<channel id="power" typeId="power" />
 			<channel id="outlet" typeId="outlet" />

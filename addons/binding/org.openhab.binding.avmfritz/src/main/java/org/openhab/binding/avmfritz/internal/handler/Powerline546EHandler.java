@@ -17,6 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -28,6 +29,8 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.avmfritz.internal.AVMFritzDynamicStateDescriptionProvider;
 import org.openhab.binding.avmfritz.internal.BindingConstants;
 import org.openhab.binding.avmfritz.internal.ahamodel.AVMFritzBaseModel;
@@ -126,9 +129,46 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler {
     }
 
     @Override
+    public void channelLinked(ChannelUID channelUID) {
+        String channelId = channelUID.getIdWithoutGroup();
+        logger.debug("Handle channel linked for channel '{}'", channelId);
+        switch (channelId) {
+            case CHANNEL_TEMPLATE:
+                String ain = getIdentifier();
+                if (ain != null) {
+                    addLinkedTemplateChannel(ain, channelUID);
+                }
+                updateState(CHANNEL_TEMPLATE, UnDefType.UNDEF);
+                break;
+            default:
+                super.channelLinked(channelUID);
+                break;
+        }
+    }
+
+    @Override
+    public void channelUnlinked(ChannelUID channelUID) {
+        String channelId = channelUID.getIdWithoutGroup();
+        logger.debug("Handle channel unlinked for channel '{}'", channelId);
+        switch (channelId) {
+            case CHANNEL_TEMPLATE:
+                String ain = getIdentifier();
+                if (ain != null) {
+                    removeLinkedTemplateChannel(ain);
+                }
+                break;
+        }
+        super.channelUnlinked(channelUID);
+    }
+
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         String channelId = channelUID.getIdWithoutGroup();
         logger.debug("Handle command '{}' for channel {}", command, channelId);
+        if (command == RefreshType.REFRESH) {
+            handleRefreshCommand();
+            return;
+        }
         FritzAhaWebInterface fritzBox = getWebInterface();
         if (fritzBox == null) {
             logger.debug("Cannot handle command '{}' because connection is missing", command);
@@ -147,6 +187,12 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler {
             case CHANNEL_POWER:
             case CHANNEL_VOLTAGE:
                 logger.debug("Channel {} is a read-only channel and cannot handle command '{}'", channelId, command);
+                break;
+            case CHANNEL_TEMPLATE:
+                if (command instanceof StringType) {
+                    fritzBox.applyTempalte(command.toString());
+                }
+                updateState(CHANNEL_TEMPLATE, UnDefType.UNDEF);
                 break;
             case CHANNEL_OUTLET:
                 if (command instanceof OnOffType) {

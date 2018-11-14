@@ -100,9 +100,12 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler {
                         ((AVMFritzBaseBridgeHandler) bridgeHandler).addLinkedTemplateChannel(ain, channelUID);
                     }
                 }
+                updateState(CHANNEL_TEMPLATE, UnDefType.UNDEF);
+                break;
+            default:
+                super.channelLinked(channelUID);
                 break;
         }
-        super.channelLinked(channelUID);
     }
 
     @Override
@@ -134,6 +137,7 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler {
                 BridgeHandler bridgeHandler = bridge.getHandler();
                 if (bridgeHandler != null && bridgeHandler instanceof AVMFritzBaseBridgeHandler) {
                     ((AVMFritzBaseBridgeHandler) bridgeHandler).handleRefreshCommand();
+                    return;
                 }
             }
         }
