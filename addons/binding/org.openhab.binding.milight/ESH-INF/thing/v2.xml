@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="milight"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="rgbv2Led">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridgeV3" />
+		</supported-bridge-type-refs>
+		<label>Color bulb (old)</label>
+		<description>The oldest produced color bulb. Without a white channel. No saturation support.</description>
+		<category>Lightbulb</category>
+
+		<channels>
+			<channel id="ledbrightness" typeId="ledbrightness" />
+			<channel id="ledcolor" typeId="ledcolor" />
+			<channel id="animation_mode_relative" typeId="animation_mode_relative" />
+		</channels>
+
+		<config-description>
+			<parameter name="zone" type="integer" required="true">
+				<label>Zone</label>
+				<description>A milight bulb can be assigned to zone 0-4. zone 0 controls all bulbs of that type.
+				</description>
+				<default>1</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

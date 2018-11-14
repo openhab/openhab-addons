@@ -6,9 +6,13 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.milight.internal.protocol;
+package org.openhab.binding.milight.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.milight.internal.MilightThingState;
+import org.openhab.binding.milight.internal.protocol.ProtocolConstants;
+import org.openhab.binding.milight.internal.protocol.QueuedSend;
 
 /**
  * Implements the iBox led bulb. The bulb is integrated into the iBox and does not include a white channel, so no
@@ -16,11 +20,12 @@ import org.openhab.binding.milight.internal.MilightThingState;
  *
  * @author David Graeff - Initial contribution
  */
-public class MilightV6RGBIBOX extends MilightV6 {
+@NonNullByDefault
+public class MilightV6RGBIBOXHandler extends AbstractLedV6Handler {
     private static final byte ADDR = 0x00;
 
-    public MilightV6RGBIBOX(QueuedSend sendQueue, MilightV6SessionManager session) {
-        super(0, sendQueue, session, 1);
+    public MilightV6RGBIBOXHandler(Thing thing, QueuedSend sendQueue) {
+        super(thing, sendQueue, 0);
     }
 
     @Override
@@ -30,26 +35,12 @@ public class MilightV6RGBIBOX extends MilightV6 {
 
     @Override
     public void setPower(boolean on, MilightThingState state) {
-        if (!session.isValid()) {
-            logger.error("Bridge communication session not valid yet!");
-            return;
-        }
-
-        if (on) {
-            sendQueue.queueRepeatable(uidc(CAT_POWER_SET), makeCommand(3, 3));
-        } else {
-            sendQueue.queueRepeatable(uidc(CAT_POWER_SET), makeCommand(3, 4));
-        }
+        sendNonRepeatable(3, on ? 3 : 4);
     }
 
     @Override
     public void whiteMode(MilightThingState state) {
-        if (!session.isValid()) {
-            logger.error("Bridge communication session not valid yet!");
-            return;
-        }
-
-        sendQueue.queueRepeatable(uidc(CAT_WHITEMODE), makeCommand(3, 5));
+        sendRepeatableCat(ProtocolConstants.CAT_POWER_MODE, 3, 5);
     }
 
     @Override
@@ -78,33 +69,14 @@ public class MilightV6RGBIBOX extends MilightV6 {
     }
 
     @Override
-    public void setLedMode(int mode, MilightThingState state) {
-        if (!session.isValid()) {
-            logger.error("Bridge communication session not valid yet!");
-            return;
-        }
-
-        mode = Math.min(mode, 9);
-        mode = Math.max(mode, 1);
-        sendQueue.queueRepeatable(uidc(CAT_MODE_SET), makeCommand(4, mode));
+    public void setLedMode(int newmode, MilightThingState state) {
+        int mode = Math.max(Math.min(newmode, 9), 1);
+        sendRepeatableCat(ProtocolConstants.CAT_MODE_SET, 4, Math.max(Math.min(newmode, 9), 1));
         state.animationMode = mode;
     }
 
     @Override
     public void changeSpeed(int relativeSpeed, MilightThingState state) {
-        if (relativeSpeed > 1) {
-            sendQueue.queue(QueueItem.createNonRepeatable(makeCommand(3, 2)));
-        } else if (relativeSpeed < 1) {
-            sendQueue.queue(QueueItem.createNonRepeatable(makeCommand(3, 1)));
-        }
+        sendNonRepeatable(3, relativeSpeed > 1 ? 2 : 1);
     }
-
-    @Override
-    public void link(int zone) {
-    }
-
-    @Override
-    public void unlink(int zone) {
-    }
-
 }

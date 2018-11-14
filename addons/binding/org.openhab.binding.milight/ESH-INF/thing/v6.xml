@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="milight"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="bridgeV6">
+		<label>Milight Bridge (iBox)</label>
+		<description>A bridge for all newer light bulbs (2016+) of the Milight/Easybulb system.</description>
+
+		<properties>
+			<property name="sessionid">N/A</property>
+			<property name="sessionid_last_refresh">N/A</property>
+		</properties>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>IP or Host Name</label>
+				<description>Will be resolved by discovery if auto configured
+				</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="passwordByte1" type="integer" required="true" min="0" max="255">
+				<label>Password Byte 1</label>
+				<description>Bridge V6 allows to set two password bytes. A value from 0-255 is allowed.
+				</description>
+				<context>password</context>
+				<default>0</default>
+			</parameter>
+			<parameter name="passwordByte2" type="integer" required="true" min="0" max="255">
+				<label>Password Byte 2</label>
+				<description>Bridge V6 allows to set two password bytes. A value from 0-255 is allowed.
+				</description>
+				<context>password</context>
+				<default>0</default>
+			</parameter>
+			<parameter name="repeat" type="integer" required="false" min="0" max="5">
+				<label>Repeat commands</label>
+				<description>Usually the bridge receives all commands albeit UDP is used. But the actual bulbs might be slightly out
+					of bridge radio range and it sometimes helps to send commands multiple times.
+				</description>
+				<default>1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="delayTime" type="integer" required="false" min="0" max="400">
+				<label>Wait between commands (ms)</label>
+				<description>Time to wait before sending another command to the bridge. It is safe to have a wait time of 1/10s but
+					usually sufficient to just wait 50ms. If the value is too high, commands queue up.
+				</description>
+				<default>100</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="port" type="integer" required="false">
+				<label>Custom port</label>
+				<description>You can set a custom port that will take precedence over the default port which is selected depending
+					on the bridge version: Version 6 uses 5987, Version 3/4/5 uses 8899. Version 2 uses 50000.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="bridgeid" type="text" required="true">
+				<label>Bridge ID</label>
+				<description>The mac address of the bridge in upper case letters without delimiter.
+					This is used to check if the
+					given IP corresponds to the right device. The bridge is set offline if the device
+					does not respond with the correct
+					Bride ID and a re-detection is started. Useful for DHCP environments where
+					IPs may change over time, after power
+					outage etc. Will be resolved by discovery if auto configured.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="refreshTime" type="integer" min="100" max="10000" required="true">
+				<label>Keep alive interval</label>
+				<description>Interval in milliseconds to send a keep alive ping. If the value is too high, a session may expire and
+					the bridge and all devices could go offline for a few seconds.
+				</description>
+				<default>5000</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="rgbiboxLed">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridgeV6" />
+		</supported-bridge-type-refs>
+		<label>Integrated bulb (iBox)</label>
+		<description>Integrated bulb of the ibox bridge with no dedicated white channel and therefore no saturation control
+		</description>
+		<category>Lightbulb</category>
+
+		<channels>
+			<channel id="ledwhitemode" typeId="ledwhitemode" />
+			<channel id="ledbrightness" typeId="ledbrightness" />
+			<channel id="ledcolor" typeId="ledcolor" />
+			<channel id="animation_speed_relative" typeId="animation_speed_relative" />
+			<channel id="animation_mode" typeId="animation_mode" />
+			<channel id="animation_mode_relative" typeId="animation_mode_relative" />
+		</channels>
+
+		<config-description>
+			<parameter name="zone" type="integer" required="true">
+				<label>Zone</label>
+				<description>A milight bulb can be assigned to zone 0-4. zone 0 controls all bulbs of that type.
+                </description>
+				<default>1</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="rgbwLed">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridgeV6" />
+		</supported-bridge-type-refs>
+		<label>Color bulb with cold white (iBox)</label>
+		<description>Color bulb with white channel for the new Milight/Easybulb system.</description>
+		<category>Lightbulb</category>
+
+		<channels>
+			<channel id="ledlink" typeId="ledlink" />
+			<channel id="ledunlink" typeId="ledunlink" />
+			<channel id="lednightmode" typeId="lednightmode" />
+			<channel id="ledwhitemode" typeId="ledwhitemode" />
+			<channel id="ledbrightness" typeId="ledbrightness" />
+			<channel id="ledcolor" typeId="ledcolor" />
+			<channel id="animation_speed_relative" typeId="animation_speed_relative" />
+			<channel id="animation_mode" typeId="animation_mode" />
+			<channel id="animation_mode_relative" typeId="animation_mode_relative" />
+		</channels>
+
+		<config-description>
+			<parameter name="zone" type="integer" required="true">
+				<label>Zone</label>
+				<description>A milight bulb can be assigned to zone 0-4. zone 0 controls all bulbs of that type.
+                </description>
+				<default>1</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="rgbwwLed">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridgeV6" />
+		</supported-bridge-type-refs>
+		<label>Color bulb with cold/warm white (iBox)</label>
+		<description>Color bulb with warm and cold white support for the new Milight/Easybulb system.</description>
+		<category>Lightbulb</category>
+
+		<channels>
+			<channel id="ledlink" typeId="ledlink" />
+			<channel id="ledunlink" typeId="ledunlink" />
+			<channel id="lednightmode" typeId="lednightmode" />
+			<channel id="ledwhitemode" typeId="ledwhitemode" />
+			<channel id="ledtemperature" typeId="ledtemperature" />
+			<channel id="ledbrightness" typeId="ledbrightness" />
+			<channel id="ledsaturation" typeId="ledsaturation" />
+			<channel id="ledcolor" typeId="ledcolor" />
+			<channel id="animation_speed_relative" typeId="animation_speed_relative" />
+			<channel id="animation_mode" typeId="animation_mode" />
+			<channel id="animation_mode_relative" typeId="animation_mode_relative" />
+		</channels>
+
+		<config-description>
+			<parameter name="zone" type="integer" required="true">
+				<label>Zone</label>
+				<description>A milight bulb can be assigned to zone 0-4. zone 0 controls all bulbs of that type.
+                </description>
+				<default>1</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

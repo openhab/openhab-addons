@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="milight"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="lednightmode">
+		<item-type>Switch</item-type>
+		<label>Nightmode</label>
+		<description>Switch to night mode, a very dimmed brightness mode</description>
+		<state>
+			<options>
+				<option value="ON">Nightmode</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="ledwhitemode">
+		<item-type>Switch</item-type>
+		<label>Whitemode</label>
+		<description>Switch to white mode, which basically sets the saturation to 0 (turns off the color leds)</description>
+		<state>
+			<options>
+				<option value="ON">Whitemode</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="ledlink" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Link bulb</label>
+		<description>Sync bulb to this zone within 3 seconds of light bulb socket power on</description>
+	</channel-type>
+
+	<channel-type id="ledunlink" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Unlink bulb</label>
+		<description>Clear bulb from this zone within 3 seconds of light bulb socket power on</description>
+	</channel-type>
+
+	<channel-type id="ledcolor">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<description>Color of the LED. Bind to a Dimmer to just set the brightness, bind to a Color chooser for the full
+			control and bind to a Switch for turning the led on or off.
+		</description>
+		<category>ColorLight</category>
+		<tags>
+			<tag>ColorLighting</tag>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="ledbrightness">
+		<item-type>Dimmer</item-type>
+		<label>Brightness</label>
+		<description>The brightness can be set in 16 steps for RGBW/White leds and in 64 steps for RGBWW leds</description>
+		<category>Light</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+		<state min="0" max="100" step="1" pattern="%d"></state>
+	</channel-type>
+
+	<channel-type id="ledsaturation" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Saturation</label>
+		<description>The saturation can be set in 64 steps for RGBWW leds</description>
+		<state min="0" max="100" step="1" pattern="%d"></state>
+	</channel-type>
+
+	<channel-type id="ledtemperature">
+		<item-type>Dimmer</item-type>
+		<label>Color temperature</label>
+		<description>White leds and RGBWW allow to change between a cold and a warm color temperature. White support 16, RGBWW
+			support 64 steps
+		</description>
+		<category>DimmableLight</category>
+		<state min="0" max="100" step="1" pattern="%d"></state>
+	</channel-type>
+
+	<channel-type id="animation_speed_relative">
+		<item-type>Dimmer</item-type>
+		<label>Animation speed</label>
+		<description>The speed of some animations can be increased or decreased</description>
+	</channel-type>
+
+	<channel-type id="animation_mode_relative">
+		<item-type>Dimmer</item-type>
+		<label>Animation mode</label>
+		<description>Switch to the next/previous animation mode of your RGBW or white LED. Bind this to a Next/Previous
+			channel type.
+		</description>
+	</channel-type>
+
+	<channel-type id="animation_mode">
+		<item-type>Number</item-type>
+		<label>Animation mode</label>
+		<description>Animation mode of your LED. RGBWW leds support 9 animation modes.</description>
+		<category>Light</category>
+		<state>
+			<options>
+				<option value="1">Animation 1</option>
+				<option value="2">Animation 2</option>
+				<option value="3">Animation 3</option>
+				<option value="4">Animation 4</option>
+				<option value="5">Animation 5</option>
+				<option value="6">Animation 6</option>
+				<option value="7">Animation 7</option>
+				<option value="8">Animation 8</option>
+				<option value="9">Animation 9</option>
+			</options>
+		</state>
+	</channel-type>
+
+</thing:thing-descriptions>
