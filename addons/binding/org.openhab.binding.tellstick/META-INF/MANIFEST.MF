@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 Automatic-Module-Name: org.openhab.binding.tellstick
 Bundle-ClassPath: 
  .,
- lib/jna-4.0.0.jar,
- lib/javatellstick-1.0.jar,
+ lib/jna-4.5.2.jar,
+ lib/javatellstick-1.1.jar,
  lib/async-http-client-2.0.19.jar,
  lib/async-http-client-netty-utils-2.0.19.jar,
  lib/netty-reactive-streams-1.0.8.jar,
