@@ -8,14 +8,14 @@
 		<label>Deconz</label>
 		<description>A running deCONZ software instance</description>
 		<config-description>
-			<parameter name="ip" type="text" required="true">
-				<label>IP Address</label>
+			<parameter name="host" type="text" required="true">
+				<label>Host Address</label>
 				<context>network-address</context>
-				<description>IP address or host name of online interface of ventilation unit</description>
+				<description>IP address or host name and port</description>
 			</parameter>
 			<parameter name="apikey" type="text" required="false">
 				<label>API Key</label>
-				<description>If no API Key is provided, a new one will be requested. You need to authorize the access on the Deconz web interface.</description>
+				<description>If no API Key is provided, a new one will be requested. You need to authorize the access on the deCONZ web interface.</description>
 			</parameter>
 		</config-description>
 	</bridge-type>

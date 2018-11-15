@@ -9,7 +9,7 @@
 package org.openhab.binding.deconz.internal.netutils;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.deconz.internal.protocol.SensorState;
+import org.openhab.binding.deconz.internal.dto.SensorState;
 
 /**
  * Informs about updated sensor states

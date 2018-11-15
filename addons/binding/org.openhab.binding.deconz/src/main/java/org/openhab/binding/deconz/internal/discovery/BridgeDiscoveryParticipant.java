@@ -10,9 +10,9 @@ package org.openhab.binding.deconz.internal.discovery;
 
 import java.net.URL;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -45,8 +45,7 @@ public class BridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
     }
 
     @Override
-    @Nullable
-    public DiscoveryResult createResult(RemoteDevice device) {
+    public @Nullable DiscoveryResult createResult(RemoteDevice device) {
         ThingUID uid = getThingUID(device);
         if (uid == null) {
             return null;
@@ -64,19 +63,16 @@ public class BridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
         String host = descriptorURL.getHost() + ":" + String.valueOf(descriptorURL.getPort());
         name = name + " (" + host + ")";
 
-        Map<String, Object> properties = new HashMap<>(2);
+        Map<String, Object> properties = new TreeMap<>();
 
-        // RaspBee reports wrong IP address on baseURL
-        // properties.put(HOST, device.getDetails().getBaseURL().getHost());
-        properties.put(BindingConstants.CONFIG_IP, host);
+        properties.put(BindingConstants.CONFIG_HOST, host);
 
         return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(name)
                 .withRepresentationProperty(UDN).build();
     }
 
     @Override
-    @Nullable
-    public ThingUID getThingUID(RemoteDevice device) {
+    public @Nullable ThingUID getThingUID(RemoteDevice device) {
         DeviceDetails details = device.getDetails();
         if (details != null && details.getManufacturerDetails() != null
                 && "dresden elektronik".equals(details.getManufacturerDetails().getManufacturer())) {

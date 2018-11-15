@@ -24,11 +24,11 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.deconz.internal.BindingConstants;
+import org.openhab.binding.deconz.internal.dto.SensorMessage;
+import org.openhab.binding.deconz.internal.dto.SensorState;
 import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
 import org.openhab.binding.deconz.internal.netutils.ValueUpdateListener;
 import org.openhab.binding.deconz.internal.netutils.WebSocketConnection;
-import org.openhab.binding.deconz.internal.protocol.SensorMessage;
-import org.openhab.binding.deconz.internal.protocol.SensorState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,56 +111,59 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
             return;
         }
 
-        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
-
-            Bridge bridge = getBridge();
-            if (bridge == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-                return;
-            }
-            DeconzBridgeHandler handler = (DeconzBridgeHandler) bridge.getHandler();
-            if (handler == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-                return;
-            }
-
-            final WebSocketConnection webSocketConnection = handler.getWebsocketConnection();
-            this.connection = webSocketConnection;
-            this.bridgeConfig = handler.getBridgeConfig();
-
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING);
-
-            // Get initial data
-            AsyncHttpClient
-                    .getAsync("http://" + bridgeConfig.ip + "/api/" + bridgeConfig.apikey + "/sensors/" + config.id,
-                            scheduler)
-                    .thenApply(this::parseStateResponse) //
-                    .exceptionally(e -> {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                        logger.warn("Get state failed", e);
-                        return null;
-                    }).thenAccept(newState -> {
-                        // Auth failed
-                        if (newState == null) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Auth failed");
-                            return;
-                        }
-
-                        // Initial data
-                        valueUpdated(config.id, newState.state);
-
-                        // Real-time data
-                        webSocketConnection.registerValueListener(config.id, this);
-                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-                    });
-
-        } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
+        if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             WebSocketConnection webSocketConnection = connection;
             if (webSocketConnection != null) {
                 webSocketConnection.unregisterValueListener(config.id);
             }
+            return;
         }
+
+        if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
+            return;
+        }
+
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            return;
+        }
+        DeconzBridgeHandler handler = (DeconzBridgeHandler) bridge.getHandler();
+        if (handler == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            return;
+        }
+
+        final WebSocketConnection webSocketConnection = handler.getWebsocketConnection();
+        this.connection = webSocketConnection;
+        this.bridgeConfig = handler.getBridgeConfig();
+
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING);
+
+        String url = BindingConstants.url(bridgeConfig.host, bridgeConfig.apikey, "sensors", config.id);
+
+        // Get initial data
+        AsyncHttpClient.getAsync(url.toString(), scheduler).thenApply(this::parseStateResponse) //
+                .exceptionally(e -> {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    logger.debug("Get state failed", e);
+                    return null;
+                }).thenAccept(newState -> {
+                    // Auth failed
+                    if (newState == null) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Auth failed");
+                        return;
+                    }
+
+                    // Initial data
+                    valueUpdated(config.id, newState.state);
+
+                    // Real-time data
+                    webSocketConnection.registerValueListener(config.id, this);
+                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                });
+
     }
 
     @Override
@@ -185,7 +188,7 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
     private void updateLightChannel() {
         if (state.dark != null) {
             boolean dark = state.dark;
-            if (dark) { // if its dark, its dark.
+            if (dark) { // if it's dark, it's dark ;)
                 updateState(BindingConstants.CHANNEL_LIGHT, new StringType("Dark"));
             } else if (state.daylight != null) { // if its not dark, it might be between darkness and daylight
                 boolean daylight = state.daylight;
@@ -211,7 +214,7 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
         Integer power = state.power;
         Integer buttonevent = state.buttonevent;
 
-        // Daylight sensor of Deconz
+        // Daylight sensor of deCONZ
         if (state.daylight != null && status != null) {
             updateState(BindingConstants.CHANNEL_VALUE, new DecimalType(status));
         }

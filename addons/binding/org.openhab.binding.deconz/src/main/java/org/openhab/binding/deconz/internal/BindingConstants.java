@@ -8,13 +8,14 @@
  */
 package org.openhab.binding.deconz.internal;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
  * The {@link BindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Björn Brings - Initial contribution
+ * @author David Graeff - Initial contribution
  */
 
 public class BindingConstants {
@@ -36,6 +37,26 @@ public class BindingConstants {
     public static final String CHANNEL_BUTTONEVENT = "buttonevent";
 
     // Thing configuration
-    public static final String CONFIG_IP = "ip";
+    public static final String CONFIG_HOST = "host";
     public static final String CONFIG_APIKEY = "apikey";
+
+    public static String url(String host, @Nullable String apikey, @Nullable String endpointType,
+            @Nullable String endpointID) {
+        StringBuilder url = new StringBuilder();
+        url.append("http://");
+        url.append(host);
+        url.append("/api/");
+        if (apikey != null) {
+            url.append(apikey);
+        }
+        if (endpointType != null) {
+            url.append("/");
+            url.append(endpointType);
+            url.append("/");
+        }
+        if (endpointID != null) {
+            url.append(endpointID);
+        }
+        return url.toString();
+    }
 }

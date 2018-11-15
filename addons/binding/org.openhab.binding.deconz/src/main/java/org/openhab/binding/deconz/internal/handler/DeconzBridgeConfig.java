@@ -18,6 +18,6 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class DeconzBridgeConfig {
-    public String ip = "";
+    public String host = "";
     public @Nullable String apikey;
 }

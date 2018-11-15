@@ -21,7 +21,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.deconz.internal.BindingConstants;
-import org.openhab.binding.deconz.internal.protocol.SensorMessage;
+import org.openhab.binding.deconz.internal.dto.SensorMessage;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 

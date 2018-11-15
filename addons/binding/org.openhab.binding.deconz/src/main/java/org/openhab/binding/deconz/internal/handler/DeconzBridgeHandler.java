@@ -24,11 +24,11 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.deconz.internal.BindingConstants;
 import org.openhab.binding.deconz.internal.discovery.ThingDiscoveryService;
+import org.openhab.binding.deconz.internal.dto.ApiKeyMessage;
+import org.openhab.binding.deconz.internal.dto.BridgeFullState;
 import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
 import org.openhab.binding.deconz.internal.netutils.WebSocketConnection;
 import org.openhab.binding.deconz.internal.netutils.WebSocketConnectionListener;
-import org.openhab.binding.deconz.internal.protocol.ApiKeyMessage;
-import org.openhab.binding.deconz.internal.protocol.BridgeFullState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -121,52 +121,53 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
      * and configuration.
      */
     private void requestFullState() {
-        AsyncHttpClient.getAsync("http://" + config.ip + "/api/" + config.apikey + "/", scheduler)
-                .thenApply(this::parseBridgeFullStateResponse).exceptionally(e -> {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                    logger.warn("Get full state failed", e);
-                    return null;
-                }).thenAccept(fullState -> {
-                    // Auth failed
-                    if (fullState == null) {
-                        requestApiKey();
-                        return;
-                    }
-                    if (fullState.config.name.isEmpty()) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                                "You are connected to a HUE bridge, not a deCONZ software!");
-                        return;
-                    }
-                    if (fullState.config.websocketport == 0) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                                "deCONZ software too old. No websocket support!");
-                        return;
-                    }
-                    // Hand sensors to discovery
-                    fullState.sensors.forEach(
-                            (sensorID, sensor) -> thingDiscoveryService.addDevice(sensor, sensorID, thing.getUID()));
+        String url = BindingConstants.url(config.host, config.apikey, null, null);
 
-                    // Add some information about the bridge
-                    Map<String, String> editProperties = editProperties();
-                    editProperties.put("apiversion", fullState.config.apiversion);
-                    editProperties.put("swversion", fullState.config.swversion);
-                    editProperties.put("fwversion", fullState.config.fwversion);
-                    editProperties.put("uuid", fullState.config.uuid);
-                    editProperties.put("zigbeechannel", String.valueOf(fullState.config.zigbeechannel));
-                    editProperties.put("ipaddress", fullState.config.ipaddress);
-                    updateProperties(editProperties);
+        AsyncHttpClient.getAsync(url, scheduler).thenApply(this::parseBridgeFullStateResponse).exceptionally(e -> {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            logger.warn("Get full state failed", e);
+            return null;
+        }).thenAccept(fullState -> {
+            // Auth failed
+            if (fullState == null) {
+                requestApiKey();
+                return;
+            }
+            if (fullState.config.name.isEmpty()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                        "You are connected to a HUE bridge, not a deCONZ software!");
+                return;
+            }
+            if (fullState.config.websocketport == 0) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                        "deCONZ software too old. No websocket support!");
+                return;
+            }
+            // Hand sensors to discovery
+            fullState.sensors
+                    .forEach((sensorID, sensor) -> thingDiscoveryService.addDevice(sensor, sensorID, thing.getUID()));
 
-                    String host = config.ip;
-                    if (host.indexOf(':') > 0) {
-                        host = host.substring(0, host.indexOf(':'));
-                    }
+            // Add some information about the bridge
+            Map<String, String> editProperties = editProperties();
+            editProperties.put("apiversion", fullState.config.apiversion);
+            editProperties.put("swversion", fullState.config.swversion);
+            editProperties.put("fwversion", fullState.config.fwversion);
+            editProperties.put("uuid", fullState.config.uuid);
+            editProperties.put("zigbeechannel", String.valueOf(fullState.config.zigbeechannel));
+            editProperties.put("ipaddress", fullState.config.ipaddress);
+            updateProperties(editProperties);
 
-                    websocket.start(host + ":" + String.valueOf(fullState.config.websocketport));
-                }).exceptionally(e -> {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
-                    logger.warn("Full state parsing failed", e);
-                    return null;
-                });
+            String host = config.host;
+            if (host.indexOf(':') > 0) {
+                host = host.substring(0, host.indexOf(':'));
+            }
+
+            websocket.start(host + ":" + String.valueOf(fullState.config.websocketport));
+        }).exceptionally(e -> {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
+            logger.warn("Full state parsing failed", e);
+            return null;
+        });
     }
 
     /**
@@ -177,7 +178,8 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
     private CompletableFuture<?> requestApiKey() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Requesting API Key");
         stopGetAPIKeyTimer();
-        return AsyncHttpClient.postAsync("http://" + config.ip + "/api/", "{\"devicetype\":\"openHAB\"}", scheduler)
+        String url = BindingConstants.url(config.host, null, null, null);
+        return AsyncHttpClient.postAsync(url, "{\"devicetype\":\"openHAB\"}", scheduler)
                 .thenAccept(this::parseAPIKeyResponse).exceptionally(e -> {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                     logger.warn("Authorisation failed", e);
