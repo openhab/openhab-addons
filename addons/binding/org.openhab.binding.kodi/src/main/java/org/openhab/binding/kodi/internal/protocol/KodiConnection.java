@@ -35,6 +35,7 @@ import org.openhab.binding.kodi.internal.model.KodiPVRChannel;
 import org.openhab.binding.kodi.internal.model.KodiPVRChannelGroup;
 import org.openhab.binding.kodi.internal.model.KodiSystemProperties;
 import org.openhab.binding.kodi.internal.model.KodiVideoStream;
+import org.openhab.binding.kodi.internal.utils.ByteArrayFileCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,6 +56,8 @@ import com.google.gson.JsonSyntaxException;
  */
 public class KodiConnection implements KodiClientSocketEventListener {
 
+    private static final String PROPERTY_FANART = "fanart";
+    private static final String PROPERTY_THUMBNAIL = "thumbnail";
     private static final String PROPERTY_VERSION = "version";
     private static final String PROPERTY_VOLUME = "volume";
     private static final String PROPERTY_MUTED = "muted";
@@ -74,8 +77,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
     // 0 = STOP or -1 = PLAY BACKWARDS are valid as well, but we don't want use them for FAST FORWARD or REWIND speeds
     private static final List<Integer> SPEEDS = Arrays
             .asList(new Integer[] { -32, -16, -8, -4, -2, 1, 2, 4, 8, 16, 32 });
-    private static final ExpiringCacheMap<String, RawType> IMAGE_CACHE = new ExpiringCacheMap<>(
-            TimeUnit.MINUTES.toMillis(15));
+    private static final ByteArrayFileCache IMAGE_CACHE = new ByteArrayFileCache("org.openhab.binding.kodi");
     private static final ExpiringCacheMap<String, JsonElement> REQUEST_CACHE = new ExpiringCacheMap<>(
             TimeUnit.MINUTES.toMillis(5));
 
@@ -466,8 +468,8 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     private void requestPlayerItemUpdate(int activePlayer) {
-        final String[] properties = { "title", "album", "artist", "director", "thumbnail", "file", "fanart",
-                "showtitle", "streamdetails", "channel", "channeltype", "genre" };
+        final String[] properties = { "title", "album", "artist", "director", PROPERTY_THUMBNAIL, "file",
+                PROPERTY_FANART, "showtitle", "streamdetails", "channel", "channeltype", "genre" };
 
         JsonObject params = new JsonObject();
         params.addProperty("playerid", activePlayer);
@@ -528,13 +530,19 @@ public class KodiConnection implements KodiClientSocketEventListener {
                 }
 
                 RawType thumbnail = null;
-                if (item.has("thumbnail")) {
-                    thumbnail = downloadImage(convertToImageUrl(item.get("thumbnail")));
+                if (item.has(PROPERTY_THUMBNAIL)) {
+                    String thumbnailURL = convertToImageUrl(item.get(PROPERTY_THUMBNAIL));
+                    if (thumbnailURL != null) {
+                        thumbnail = downloadImageFromCache(thumbnailURL);
+                    }
                 }
 
                 RawType fanart = null;
-                if (item.has("fanart")) {
-                    fanart = downloadImage(convertToImageUrl(item.get("fanart")));
+                if (item.has(PROPERTY_FANART)) {
+                    String fanartURL = convertToImageUrl(item.get(PROPERTY_FANART));
+                    if (fanartURL != null) {
+                        fanart = downloadImageFromCache(fanartURL);
+                    }
                 }
 
                 listener.updateAlbum(album);
@@ -567,7 +575,9 @@ public class KodiConnection implements KodiClientSocketEventListener {
                 try {
                     KodiAudioStream audioStream = gson.fromJson(result.get(PROPERTY_CURRENTAUDIOSTREAM),
                             KodiAudioStream.class);
-                    audioCodec = audioStream.getCodec();
+                    if (audioStream != null) {
+                        audioCodec = audioStream.getCodec();
+                    }
                 } catch (JsonSyntaxException e) {
                     // do nothing
                 }
@@ -578,7 +588,9 @@ public class KodiConnection implements KodiClientSocketEventListener {
                 try {
                     KodiVideoStream videoStream = gson.fromJson(result.get(PROPERTY_CURRENTVIDEOSTREAM),
                             KodiVideoStream.class);
-                    videoCodec = videoStream.getCodec();
+                    if (videoStream != null) {
+                        videoCodec = videoStream.getCodec();
+                    }
                 } catch (JsonSyntaxException e) {
                     // do nothing
                 }
@@ -633,7 +645,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
         return list;
     }
 
-    private String convertToImageUrl(JsonElement element) {
+    private @Nullable String convertToImageUrl(JsonElement element) {
         String text = element.getAsString();
         if (!text.isEmpty()) {
             try {
@@ -651,15 +663,24 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     private @Nullable RawType downloadImage(String url) {
-        if (StringUtils.isNotEmpty(url)) {
-            RawType image = IMAGE_CACHE.putIfAbsentAndGet(url, () -> {
-                logger.debug("Trying to download the content of URL {}", url);
-                return HttpUtil.downloadImage(url);
-            });
-            if (image == null) {
-                logger.debug("Failed to download the content of URL {}", url);
-                return null;
-            } else {
+        logger.debug("Trying to download the content of URL '{}'", url);
+        RawType downloadedImage = HttpUtil.downloadImage(url);
+        if (downloadedImage == null) {
+            logger.debug("Failed to download the content of URL '{}'", url);
+        }
+        return downloadedImage;
+    }
+
+    private @Nullable RawType downloadImageFromCache(String url) {
+        if (IMAGE_CACHE.containsKey(url)) {
+            byte[] bytes = IMAGE_CACHE.get(url);
+            String contentType = HttpUtil.guessContentTypeFromData(bytes);
+            return new RawType(bytes,
+                    contentType == null || contentType.isEmpty() ? RawType.DEFAULT_MIME_TYPE : contentType);
+        } else {
+            RawType image = downloadImage(url);
+            if (image != null) {
+                IMAGE_CACHE.put(url, image.getBytes());
                 return image;
             }
         }

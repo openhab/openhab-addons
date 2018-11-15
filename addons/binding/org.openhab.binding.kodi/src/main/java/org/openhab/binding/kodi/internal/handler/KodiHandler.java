@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 import javax.measure.Unit;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
@@ -77,14 +76,12 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     private final Logger logger = LoggerFactory.getLogger(KodiHandler.class);
 
     private final KodiConnection connection;
-
-    private ScheduledFuture<?> connectionCheckerFuture;
-
-    private ScheduledFuture<?> statusUpdaterFuture;
-
     private final KodiDynamicStateDescriptionProvider stateDescriptionProvider;
 
-    public KodiHandler(@NonNull Thing thing, KodiDynamicStateDescriptionProvider stateDescriptionProvider,
+    private ScheduledFuture<?> connectionCheckerFuture;
+    private ScheduledFuture<?> statusUpdaterFuture;
+
+    public KodiHandler(Thing thing, KodiDynamicStateDescriptionProvider stateDescriptionProvider,
             WebSocketClient webSocketClient) {
         super(thing);
         connection = new KodiConnection(this, webSocketClient);
