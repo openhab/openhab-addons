@@ -12,23 +12,32 @@ If you have multiple foobots in your home or office, you can add multiple Things
 
 ## Discovery
 
-There is no discovery implemented.
-You have to create your things manually.
+If you don't manually create things in the *.things file, the Foboot Binding is able to discover automatically all devices associated with your Foobot account.
 
 ## Binding Configuration
 
 The binding has no configuration options, all configuration is done at Thing level.
 
-## Thing Configuration
+## Bridge and Thing Configuration
 
-The thing has a few configuration parameters:
+You can either create a Bridge (i.e. your Foobot account) or a Thing (i.e. your Foobot device).
 
-| Parameter | Description                                                             |
-|-----------|-------------------------------------------------------------------------|
-| apikey    | API Key from https://api.foobot.io/apidoc/index.html. Mandatory.        |
-| username  | your UserName for the foobot App. Mandatory.                            |
-| MAC Id    | Unique ID of your foobot device. Mandatory.                             |
-| refresh   | Refresh interval in minutes. Optional, the default value is 7 minutes.  |
+Bridge and Thing have the following configuration parameters:
+
+Bridge:<br />
+| Parameter                 | Description                                                               |
+|---------------------------|---------------------------------------------------------------------------|
+| apikey                    | API Key from https://api.foobot.io/apidoc/index.html. Mandatory.          |
+| username                  | your UserName for the foobot App. Mandatory.                              |
+| refreshIntervalInMinutes  | Refresh interval in minutes. Optional, the default value is 7 minutes.    |
+
+Thing:<br />
+| Parameter                 | Description                                                               |
+|---------------------------|---------------------------------------------------------------------------|
+| apikey                    | API Key from https://api.foobot.io/apidoc/index.html. Mandatory.          |
+| username                  | your UserName for the foobot App. Mandatory.                              |
+| mac                       | Unique ID of your foobot device. Mandatory.                               |
+| refreshIntervalInMinutes  | Refresh interval in minutes. Optional, the default value is 7 minutes.    |
 
 
 ## Channels
@@ -50,7 +59,11 @@ The AirQuality information that is retrieved is available as these channels:
 demo.things:
 
 ```
-foobotbinding:foobot:mac [apikey="XXXXXX", username="XXXXXX", mac="XXXXXX", refresh=7]
+// Bridge configuration:
+foobotbinding:foobot:account [apikey="XXXXXX", username="XXXXXX", refreshIntervalInMinutes=7]
+
+// Thing configuration:
+foobotbinding:foobot:mac [apikey="XXXXXX", username="XXXXXX", mac="XXXXXX", refreshIntervalInMinutes=7]
 ```
 
 demo.items:
