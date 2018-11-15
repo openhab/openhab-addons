@@ -32,7 +32,7 @@ The auto discovered thing adds two default channels.
 | Channel  | Channel Id | Channel Type | Description |
 | ------------- | ------------- |-------------| -------------| 
 |1| Zone_6  | Switch  |A Switch channel for zone 6 |    
-|2|Zone_7  | Actuator  |The Channel for the Out Pin on the Konnected Alarm Panel|
+|2|Out  | Actuator  |The Channel for the Out Pin on the Konnected Alarm Panel|
 
 One channel for Zone 6 which is a sensor type channel, and one channel for the out pin that is an actuator type channel.
 These channels represent the two pins on the Konnected Alarm Panel whose type cannot be changed.
@@ -85,6 +85,6 @@ Thing konnected:module:generic "Konnected Module" [ipAddress="http://192.168.30.
    Type actuator :  actuator    "Siren"    [channel_zone=1 , momentary = 50 , times = 2 , pause = 50]
    Type humidity    :  humidity "DHT - Humidity"    [channel_zone=1]
    Type temperature : temperature   "DHT Temperature"    [channel_zone=1, tempsensorType = true, pollinterval = 1]
-   Type temperature : temperature   "DS18B20 Temperature"    [channel_zone=1, tempsensorType = false, pollinterval = 1, ds18b20_address = XX:XX:XX:XX:XX:XX:XX]
+   Type temperature : temperature   "DS18B20 Temperature"    [channel_zone=1, tempsensorType = false, pollinterval = 1, ds18b20_address = "XX:XX:XX:XX:XX:XX:XX"]
 
 }

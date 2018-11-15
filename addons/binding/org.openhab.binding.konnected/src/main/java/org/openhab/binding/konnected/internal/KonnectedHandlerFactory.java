@@ -13,11 +13,8 @@ import static org.openhab.binding.konnected.internal.KonnectedBindingConstants.*
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
-
-import javax.servlet.http.HttpServlet;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.net.HttpServiceUtil;
@@ -104,10 +101,6 @@ public class KonnectedHandlerFactory extends BaseThingHandlerFactory {
 
         String configCallBack = '/' + BINDING_ID;
         servlet = new KonnectedHTTPServlet(httpService, configCallBack);
-        if (bundleContext != null) {
-            webHookServiceReg = bundleContext.registerService(HttpServlet.class.getName(), servlet,
-                    new Hashtable<String, Object>());
-        }
         return servlet;
     }
 
