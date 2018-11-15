@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<binding:binding id="foobot"
-				 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-				 xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
-				 xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+<binding:binding id="foobot" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
 	<name>Foobot</name>
 	<description>Foobot binding allow users to connect to their foobots in home or office and get real-time updates on the Air Quality.</description>
-	<author>Divya Chauhan</author>
-	<author>George Katsis</author>
+	<author>Divya Chauhan and George Katsis</author>	
 </binding:binding>
