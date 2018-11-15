@@ -8,7 +8,7 @@ To use this binding, you first need to [register and get your API key](https://a
 
 There is exactly one supported thing type, which provides the Indoor air quality information from the foobot device.
 It has the `foobot` id.
-If you have multiple foobots in your home or office, you can add multiple Things, using the unique MAC Address for each device.
+If you have multiple foobots in your home or office, you can add multiple Things, using the unique MAC Address for each device or use the Bridge which is going to retrieve all your devices.
 
 ## Discovery
 
