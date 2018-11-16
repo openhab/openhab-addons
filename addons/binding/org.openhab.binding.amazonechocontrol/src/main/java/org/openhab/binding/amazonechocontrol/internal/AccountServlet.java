@@ -343,15 +343,20 @@ public class AccountServlet extends HttpServlet {
             throws IOException {
         StringBuilder html = createPageStart("");
         html.append(StringEscapeUtils.escapeHtml(message));
+        // logout link
+        html.append(" <a href='" + servletUrl + "/logout' >");
+        html.append(StringEscapeUtils.escapeHtml("Logout"));
+        html.append("</a>");
+        // device name
+        html.append("<br>App name: ");
+        html.append(StringEscapeUtils.escapeHtml(connection.getDeviceName()));
+        // connection
         html.append("<br>Connected to: ");
         html.append(StringEscapeUtils.escapeHtml(connection.getAlexaServer()));
-        html.append("<br><a href='");
+        // domain
+        html.append(" <a href='");
         html.append(servletUrl);
-        html.append("/changeDomain'>Change Domain</a>");
-        // logout link
-        html.append("<br><a href='" + servletUrl + "/logout' >");
-        html.append(StringEscapeUtils.escapeHtml("Logout"));
-        html.append("</a><br>");
+        html.append("/changeDomain'>Change</a>");
 
         // paper ui link
         html.append("<br><a href='/paperui/index.html#/configuration/things/view/" + BINDING_ID + ":"
