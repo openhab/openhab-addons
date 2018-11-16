@@ -198,6 +198,10 @@ public class Connection {
         return amazonSite;
     }
 
+    public String getAlexaServer() {
+        return alexaServer;
+    }
+
     public String serializeLoginData() {
         Date loginTime = this.loginTime;
         if (refreshToken == null || loginTime == null) {
@@ -259,8 +263,8 @@ public class Connection {
         return "";
     }
 
-    public boolean tryRestoreLogin(@Nullable String data) {
-        Date loginTime = tryRestoreSessionData(data);
+    public boolean tryRestoreLogin(@Nullable String data, @Nullable String overloadedDomain) {
+        Date loginTime = tryRestoreSessionData(data, overloadedDomain);
         if (loginTime != null) {
             try {
                 if (verifyLogin()) {
@@ -276,7 +280,7 @@ public class Connection {
         return false;
     }
 
-    private @Nullable Date tryRestoreSessionData(@Nullable String data) {
+    private @Nullable Date tryRestoreSessionData(@Nullable String data, @Nullable String overloadedDomain) {
         // verify store data
         if (StringUtils.isEmpty(data)) {
             return null;
@@ -295,7 +299,12 @@ public class Connection {
 
         // Recreate session and cookies
         refreshToken = scanner.nextLine();
-        setAmazonSite(scanner.nextLine());
+        String domain = scanner.nextLine();
+        if (overloadedDomain != null) {
+            domain = overloadedDomain;
+        }
+        setAmazonSite(domain);
+
         deviceName = scanner.nextLine();
         Date loginTime = new Date(Long.parseLong(scanner.nextLine()));
         CookieStore cookieStore = cookieManager.getCookieStore();

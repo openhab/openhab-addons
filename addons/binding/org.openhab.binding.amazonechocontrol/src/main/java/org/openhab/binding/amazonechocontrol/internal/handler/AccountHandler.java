@@ -273,7 +273,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                         String sessionStore = this.stateStorage.get("sessionStorage");
 
                         // try use the session data
-                        if (currentConnection.tryRestoreLogin(sessionStore)) {
+                        if (currentConnection.tryRestoreLogin(sessionStore, null)) {
                             setConnection(currentConnection);
                         }
                     }

@@ -44,6 +44,7 @@
 			<channel id="lastVoiceCommand" typeId="lastVoiceCommand" />
 			<channel id="notificationVolume" typeId="notificationVolume" />
 			<channel id="ascendingAlarm" typeId="ascendingAlarm" />
+			<channel id="announcement" typeId="announcement" />
 		</channels>
 		<representation-property>serialNumber</representation-property>
 		<config-description>
@@ -90,6 +91,7 @@
 			<channel id="lastVoiceCommand" typeId="lastVoiceCommand" />
 			<channel id="notificationVolume" typeId="notificationVolume" />
 			<channel id="ascendingAlarm" typeId="ascendingAlarm" />
+            <channel id="announcement" typeId="announcement" />
 		</channels>
 		<representation-property>serialNumber</representation-property>
 		<config-description>
@@ -136,6 +138,7 @@
 			<channel id="lastVoiceCommand" typeId="lastVoiceCommand" />
 			<channel id="notificationVolume" typeId="notificationVolume" />
 			<channel id="ascendingAlarm" typeId="ascendingAlarm" />
+            <channel id="announcement" typeId="announcement" />
 		</channels>
 		<representation-property>serialNumber</representation-property>
 		<config-description>
@@ -374,6 +377,11 @@
 			</options>
 		</state>
 	</channel-type>
+    <channel-type id="announcement" advanced="true">
+        <item-type>String</item-type>
+        <label>Announcement (USA only)</label>
+        <description>Push Announcement Notification (Write only, not supported in all amazon domains)</description>
+    </channel-type>
 	<channel-type id="notificationVolume" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Notification volume</label>

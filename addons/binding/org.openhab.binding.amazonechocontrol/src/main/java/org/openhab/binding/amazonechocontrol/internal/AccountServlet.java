@@ -143,6 +143,17 @@ public class AccountServlet extends HttpServlet {
         }
 
         Connection connection = this.account.findConnection();
+        if (connection != null && uri.equals("/changedomain")) {
+            Map<String, String[]> map = req.getParameterMap();
+            String domain = map.get("domain")[0];
+            String loginData = connection.serializeLoginData();
+            Connection newConnection = new Connection();
+            if (newConnection.tryRestoreLogin(loginData, domain)) {
+                account.setConnection(newConnection);
+            }
+            resp.sendRedirect(servletUrl);
+            return;
+        }
         if (uri.startsWith(PROXY_URI_PART)) {
             // handle proxy request
 
@@ -153,7 +164,7 @@ public class AccountServlet extends HttpServlet {
             String getUrl = "https://alexa." + connection.getAmazonSite() + "/"
                     + uri.substring(PROXY_URI_PART.length());
 
-            this.HandleProxyRequest(connection, resp, verb, getUrl, null, null, connection.getAmazonSite());
+            this.handleProxyRequest(connection, resp, verb, getUrl, null, null, connection.getAmazonSite());
             return;
         }
 
@@ -200,7 +211,7 @@ public class AccountServlet extends HttpServlet {
         }
         String referer = "https://www." + site;
         String postData = postDataBuilder.toString();
-        HandleProxyRequest(connection, resp, "POST", postUrl, referer, postData, site);
+        handleProxyRequest(connection, resp, "POST", postUrl, referer, postData, site);
     }
 
     @Override
@@ -226,7 +237,7 @@ public class AccountServlet extends HttpServlet {
                 String getUrl = "https://www." + connection.getAmazonSite() + "/"
                         + uri.substring(FORWARD_URI_PART.length());
 
-                this.HandleProxyRequest(connection, resp, "GET", getUrl, null, null, connection.getAmazonSite());
+                this.handleProxyRequest(connection, resp, "GET", getUrl, null, null, connection.getAmazonSite());
                 return;
             }
 
@@ -241,7 +252,7 @@ public class AccountServlet extends HttpServlet {
                 String getUrl = "https://alexa." + connection.getAmazonSite() + "/"
                         + uri.substring(PROXY_URI_PART.length());
 
-                this.HandleProxyRequest(connection, resp, "GET", getUrl, null, null, connection.getAmazonSite());
+                this.handleProxyRequest(connection, resp, "GET", getUrl, null, null, connection.getAmazonSite());
                 return;
             }
 
@@ -258,6 +269,10 @@ public class AccountServlet extends HttpServlet {
                     handleDevices(resp, connection);
                     return;
                 }
+                if (baseUrl.equals("/changeDomain") || baseUrl.equals("/changeDomain/")) {
+                    handleChangeDomain(resp, connection);
+                    return;
+                }
                 if (baseUrl.equals("/ids") || baseUrl.equals("/ids/")) {
                     String serialNumber = getQueryMap(queryString).get("serialNumber");
                     Device device = account.findDeviceJson(serialNumber);
@@ -270,7 +285,7 @@ public class AccountServlet extends HttpServlet {
                     }
                 }
                 // return hint that everything is ok
-                handleDefaultPageResult(resp, "The Account is logged in.");
+                handleDefaultPageResult(resp, "The Account is logged in.", connection);
                 return;
             }
             connection = this.connectionToInitialize;
@@ -313,10 +328,26 @@ public class AccountServlet extends HttpServlet {
         return map;
     }
 
-    private void handleDefaultPageResult(HttpServletResponse resp, String message) throws IOException {
+    private void handleChangeDomain(HttpServletResponse resp, Connection connection) {
+        StringBuilder html = createPageStart("Change Domain");
+        html.append("<form action='");
+        html.append(servletUrl);
+        html.append("/changedomain' method='post'>\nDomain:\n<input type='text' name='domain' value='");
+        html.append(connection.getAmazonSite());
+        html.append("'>\n<br>\n<input type=\"submit\" value=\"Submit\">\n</form>");
+
+        createPageEndAndSent(resp, html);
+    }
+
+    private void handleDefaultPageResult(HttpServletResponse resp, String message, Connection connection)
+            throws IOException {
         StringBuilder html = createPageStart("");
         html.append(StringEscapeUtils.escapeHtml(message));
-
+        html.append("<br>Connected to: ");
+        html.append(StringEscapeUtils.escapeHtml(connection.getAlexaServer()));
+        html.append("<br><a href='");
+        html.append(servletUrl);
+        html.append("/changeDomain'>Change Domain</a>");
         // logout link
         html.append("<br><a href='" + servletUrl + "/logout' >");
         html.append(StringEscapeUtils.escapeHtml("Logout"));
@@ -376,11 +407,13 @@ public class AccountServlet extends HttpServlet {
         html.append("<html><head><title>"
                 + StringEscapeUtils.escapeHtml(BINDING_NAME + " - " + this.account.getThing().getLabel()));
         if (StringUtils.isNotEmpty(title)) {
+            html.append(" - ");
             html.append(StringEscapeUtils.escapeHtml(title));
         }
         html.append("</title><head><body>");
         html.append("<h1>" + StringEscapeUtils.escapeHtml(BINDING_NAME + " - " + this.account.getThing().getLabel()));
         if (StringUtils.isNotEmpty(title)) {
+            html.append(" - ");
             html.append(StringEscapeUtils.escapeHtml(title));
         }
         html.append("</h1>");
@@ -528,7 +561,7 @@ public class AccountServlet extends HttpServlet {
         }
     }
 
-    void HandleProxyRequest(Connection connection, HttpServletResponse resp, String verb, String url,
+    void handleProxyRequest(Connection connection, HttpServletResponse resp, String verb, String url,
             @Nullable String referer, @Nullable String postData, String site) throws IOException {
         HttpsURLConnection urlConnection;
         try {
@@ -547,7 +580,7 @@ public class AccountServlet extends HttpServlet {
                         try {
                             connection.registerConnectionAsApp(location);
                             account.setConnection(connection);
-                            handleDefaultPageResult(resp, "Login succeeded");
+                            handleDefaultPageResult(resp, "Login succeeded", connection);
                             this.connectionToInitialize = null;
                             return;
                         } catch (URISyntaxException | ConnectionException e) {
@@ -594,7 +627,9 @@ public class AccountServlet extends HttpServlet {
     }
 
     private void returnHtml(Connection connection, HttpServletResponse resp, String html, String amazonSite) {
-        String resultHtml = html.replace("https://www." + amazonSite + "/", servletUrl + "/");
+        String resultHtml = html.replace("https://www." + amazonSite + "/", servletUrl + "/")
+                .replace("https:&#x2F;&#x2F;www." + amazonSite + "&#x2F;", servletUrl + "/");
+
         resp.addHeader("content-type", "text/html;charset=UTF-8");
         try {
             resp.getWriter().write(resultHtml);
