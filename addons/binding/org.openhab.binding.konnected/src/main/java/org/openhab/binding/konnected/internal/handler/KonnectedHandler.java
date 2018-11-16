@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Temperature;
@@ -442,28 +443,41 @@ public class KonnectedHandler extends BaseThingHandler {
     }
 
     private void getSwitchState(Integer pin, ChannelUID channelId) {
-        try {
-            Channel channel = getThing().getChannel(channelId.getId());
-            if (!(channel == null)) {
-                logger.debug("getasstring: {} getID: {} getGroupId: {} toString:{}", channelId.getAsString(),
-                        channelId.getId(), channelId.getGroupId(), channelId.toString());
-                KonnectedModuleGson payload = new KonnectedModuleGson();
-                payload.setPin(pin);
-                String payloadString = gson.toJson(payload);
-                logger.debug("The command payload  is: {}", payloadString);
-                String response = http.doGet(moduleIpAddress + "/device", payloadString);
-                KonnectedModuleGson event = gson.fromJson(response, KonnectedModuleGson.class);
-                this.handleWebHookEvent(event);
-            } else {
-                logger.debug("The channel {} returned null for channelId.getID(): {}", channelId.toString(),
-                        channelId.getId());
+        Channel channel = getThing().getChannel(channelId.getId());
+        if (!(channel == null)) {
+            logger.debug("getasstring: {} getID: {} getGroupId: {} toString:{}", channelId.getAsString(),
+                    channelId.getId(), channelId.getGroupId(), channelId.toString());
+            KonnectedModuleGson payload = new KonnectedModuleGson();
+            payload.setPin(pin);
+            String payloadString = gson.toJson(payload);
+            logger.debug("The command payload  is: {}", payloadString);
+            try {
+                sendSetSwitchState(payloadString);
+            } catch (IOException e) {
+                // try to get the state of the device one more time 30 seconds later. This way it can be confirmed if
+                // the device was simply in a reboot loop when device state was attempted the first time
+                scheduler.schedule(() -> {
+                    try {
+                        sendSetSwitchState(payloadString);
+                    } catch (IOException ex) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Unable to communicate with Konnected Alarm Panel confirm settings, and that module is online.");
+                        logger.debug("Attempting to get the state of the zone on thing {} failed: {}",
+                                this.thing.getUID().getId(), ex);
+                    }
+                }, 30, TimeUnit.SECONDS);
             }
-        } catch (IOException e) {
-            logger.debug("Attempting to set the state of the actuator on thing {} failed: {}",
-                    this.thing.getUID().getId(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Unable to communicate with Konnected Alarm Panel confirm settings, and that module is online.");
+        } else {
+            logger.debug("The channel {} returned null for channelId.getID(): {}", channelId.toString(),
+                    channelId.getId());
         }
+
+    }
+
+    private void sendSetSwitchState(String payloadString) throws IOException {
+        String response = http.doGet(moduleIpAddress + "/device", payloadString);
+        KonnectedModuleGson event = gson.fromJson(response, KonnectedModuleGson.class);
+        this.handleWebHookEvent(event);
     }
 
 }
