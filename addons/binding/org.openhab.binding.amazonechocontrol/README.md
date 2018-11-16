@@ -146,7 +146,7 @@ http://openhab:8080/amazonechocontrol/account1/PROXY/api/activities?startTime=&s
 ### amazonechocontrol.things
 
 ```
-Bridge amazonechocontrol:account:account1 "Amazon Account" @ "Accounts" [amazonSite="amazon.de", email="mail@example.com", password="secure", pollingIntervalInSeconds=60]
+Bridge amazonechocontrol:account:account1 "Amazon Account" @ "Accounts" 
 {
     Thing echo                 echo1          "Alexa" @ "Living Room" [serialNumber="SERIAL_NUMBER"]
     Thing echoshow             echoshow1      "Alexa" @ "Kitchen" [serialNumber="SERIAL_NUMBER"]
