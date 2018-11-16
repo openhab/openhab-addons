@@ -520,38 +520,20 @@ public class TeslaHandler extends BaseThingHandler {
 
             JsonParser parser = new JsonParser();
 
-            if (response != null && response.getStatus() == 200) {
-                try {
-                    JsonObject jsonObject = parser.parse(response.readEntity(String.class)).getAsJsonObject();
-                    logger.trace("Request : {}:{}:{} yields {}", new Object[] { command, payLoad, target.toString(),
-                            jsonObject.get("response").toString() });
-                    return jsonObject.get("response").toString();
-                } catch (Exception e) {
-                    logger.error("An exception occurred while invoking a REST request : '{}'", e.getMessage());
-                }
-            } else {
+            if (!checkResponse(response, false)) {
                 logger.error("An error occurred while communicating with the vehicle during request {} : {}:{}",
                         new Object[] { command, (response != null) ? response.getStatus() : "",
                                 (response != null) ? response.getStatusInfo() : "No Response" });
+                return null;
+            }
 
-                if (apiIntervalErrors == 0 && response != null && response.getStatus() == 401) {
-                    authenticate();
-                }
-
-                apiIntervalErrors++;
-                if (apiIntervalErrors >= API_MAXIMUM_ERRORS_IN_INTERVAL) {
-                    logger.warn("Reached the maximum number of errors ({}) for the current interval ({} seconds)",
-                            API_MAXIMUM_ERRORS_IN_INTERVAL, API_ERROR_INTERVAL_SECONDS);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                    eventClient.close();
-                    return null;
-                }
-
-                if ((System.currentTimeMillis() - apiIntervalTimestamp) > 1000 * API_ERROR_INTERVAL_SECONDS) {
-                    logger.trace("Resetting the error counter. ({} errors in the last interval)", apiIntervalErrors);
-                    apiIntervalTimestamp = System.currentTimeMillis();
-                    apiIntervalErrors = 0;
-                }
+            try {
+                JsonObject jsonObject = parser.parse(response.readEntity(String.class)).getAsJsonObject();
+                logger.trace("Request : {}:{}:{} yields {}",
+                        new Object[] { command, payLoad, target.toString(), jsonObject.get("response").toString() });
+                return jsonObject.get("response").toString();
+            } catch (Exception e) {
+                logger.error("An exception occurred while invoking a REST request : '{}'", e.getMessage());
             }
         }
 
@@ -777,6 +759,32 @@ public class TeslaHandler extends BaseThingHandler {
         return allowWakeUp || (isOnline() && !isInactive());
     }
 
+    protected boolean checkResponse(Response response, boolean immediatelyFail) {
+
+        if (response != null && response.getStatus() == 200) {
+            return true;
+        } else {
+            apiIntervalErrors++;
+            if (immediatelyFail || apiIntervalErrors >= API_MAXIMUM_ERRORS_IN_INTERVAL) {
+                if (immediatelyFail) {
+                    logger.warn("Got an unsuccessful result, setting vehicle to offline and will try again");
+                } else {
+                    logger.warn("Reached the maximum number of errors ({}) for the current interval ({} seconds)",
+                            API_MAXIMUM_ERRORS_IN_INTERVAL, API_ERROR_INTERVAL_SECONDS);
+                }
+
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                eventClient.close();
+            } else if ((System.currentTimeMillis() - apiIntervalTimestamp) > 1000 * API_ERROR_INTERVAL_SECONDS) {
+                logger.trace("Resetting the error counter. ({} errors in the last interval)", apiIntervalErrors);
+                apiIntervalTimestamp = System.currentTimeMillis();
+                apiIntervalErrors = 0;
+            }
+        }
+
+        return false;
+    }
+
     public void setChargeLimit(int percent) {
         JsonObject payloadObject = new JsonObject();
         payloadObject.addProperty("percent", percent);
@@ -899,6 +907,11 @@ public class TeslaHandler extends BaseThingHandler {
                 .header("Authorization", "Bearer " + logonToken.access_token).get();
 
         logger.debug("Querying the vehicle : Response : {}:{}", response.getStatus(), response.getStatusInfo());
+
+        if (!checkResponse(response, true)) {
+            logger.error("An error occurred while querying the vehicle");
+            return null;
+        }
 
         JsonParser parser = new JsonParser();
 
