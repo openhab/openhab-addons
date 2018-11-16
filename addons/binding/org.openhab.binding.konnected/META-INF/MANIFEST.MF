@@ -1,0 +1,34 @@
+Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-ManifestVersion: 2
+Bundle-Name: Konnected Binding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.binding.konnected;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.4.0.qualifier
+Import-Package: 
+ com.google.gson,
+ com.google.gson.annotations,
+ javax.measure.quantity,
+ javax.servlet,
+ javax.servlet.http,
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.config.core.validation,
+ org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.config.discovery.upnp,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.library.unit,
+ org.eclipse.smarthome.core.net,
+ org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.thing.type,
+ org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.io.net.http,
+ org.jupnp.model.meta,
+ org.osgi.framework,
+ org.osgi.service.component,
+ org.osgi.service.http,
+ org.slf4j
+Service-Component: OSGI-INF/*.xml
