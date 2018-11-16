@@ -30,7 +30,7 @@ Import-Package:
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.io.rest,
  org.osgi.framework,
- org.osgi.service.cm;version="1.5.0",
+ org.osgi.service.cm,
  org.osgi.service.component,
  org.osgi.service.event,
  org.osgi.service.http,
