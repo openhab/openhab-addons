@@ -41,6 +41,10 @@ import com.google.api.services.gmail.model.MessagePartBody;
  * @author Konstantin_Polihronov - Initial contribution
  */
 public class GmailAdapter implements MailAdapter {
+    public static final String QUERY_UNREAD = "label:unread";
+    public static final String QUERY_READ = "label:read";
+    public static final String INITIAL_QUERY = "newer_than:24h";
+
     private static final String APPLICATION_NAME = "Gmail Paradox mail parser";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private static Gmail googleService;

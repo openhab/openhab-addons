@@ -23,9 +23,6 @@ import com.google.api.services.gmail.model.Message;
  * @author Konstantin_Polihronov - Initial contribution
  */
 public interface MailAdapter {
-    static final String QUERY_UNREAD = "label:unread";
-    static final String QUERY_READ = "label:read";
-    static final String INITIAL_QUERY = "newer_than:24h";
 
     public List<Message> retrieveMessages(String query) throws IOException, UnsupportedEncodingException;
 
