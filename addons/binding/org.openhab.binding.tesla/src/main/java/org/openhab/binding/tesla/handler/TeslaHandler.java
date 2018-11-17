@@ -213,7 +213,7 @@ public class TeslaHandler extends BaseThingHandler {
                 slowStateJob = null;
             }
 
-            if (!eventThread.isInterrupted()) {
+            if (eventThread != null && !eventThread.isInterrupted()) {
                 eventThread.interrupt();
                 eventThread = null;
             }
