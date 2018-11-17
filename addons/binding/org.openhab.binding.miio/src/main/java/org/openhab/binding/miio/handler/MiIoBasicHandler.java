@@ -143,6 +143,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                 } else if (command instanceof OnOffType) {
                     if (paramType == CommandParameterType.ONOFF) {
                         cmd = cmd + "[" + preCommandPara1 + "\"" + command.toString().toLowerCase() + "\"" + para + "]";
+                    } else if (paramType == CommandParameterType.ONOFFPARA) {
+                        cmd = cmd.replace("*", command.toString().toLowerCase()) + "[]";
                     } else {
                         cmd = cmd + "[]";
                     }
