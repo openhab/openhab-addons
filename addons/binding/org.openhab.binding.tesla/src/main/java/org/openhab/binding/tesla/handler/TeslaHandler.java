@@ -365,6 +365,18 @@ public class TeslaHandler extends BaseThingHandler {
                             }
                             break;
                         }
+                        case FORCE_REFRESH: {
+                            if (command instanceof OnOffType) {
+                                if (((OnOffType) command) == OnOffType.ON) {
+                                    if (!isOnline()) {
+                                        wakeUp();
+                                    } else {
+                                        setActive();
+                                    }
+                                }
+                            }
+                            break;
+                        }
                         case ALLOWWAKEUP: {
                             if (command instanceof OnOffType) {
                                 allowWakeUp = (((OnOffType) command) == OnOffType.ON);
@@ -597,17 +609,14 @@ public class TeslaHandler extends BaseThingHandler {
                                 requestAllData();
                             }
 
-                            isInactive = false;
+                            setActive();
                         }
 
                         // reset timestamp if elapsed and set inactive to false
                         if (isInactive && lastStateTimestamp + (API_SLEEP_INTERVAL_MINUTES * 60 * 1000) < System
                                 .currentTimeMillis()) {
-                            isInactive = false;
                             logger.debug("Vehicle did not fall asleep within sleep period, checking again");
-                            lastLocationChangeTimestamp = System.currentTimeMillis();
-                            lastLatitude = 0;
-                            lastLongitude = 0;
+                            setActive();
                         } else {
                             boolean wasInactive = isInactive;
                             isInactive = !isCharging() && !hasMovedInSleepInterval();
@@ -757,6 +766,13 @@ public class TeslaHandler extends BaseThingHandler {
 
     protected boolean allowQuery() {
         return allowWakeUp || (isOnline() && !isInactive());
+    }
+
+    protected void setActive() {
+        isInactive = false;
+        lastLocationChangeTimestamp = System.currentTimeMillis();
+        lastLatitude = 0;
+        lastLongitude = 0;
     }
 
     protected boolean checkResponse(Response response, boolean immediatelyFail) {
