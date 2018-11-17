@@ -91,7 +91,7 @@
 			<channel id="lastVoiceCommand" typeId="lastVoiceCommand" />
 			<channel id="notificationVolume" typeId="notificationVolume" />
 			<channel id="ascendingAlarm" typeId="ascendingAlarm" />
-            <channel id="announcement" typeId="announcement" />
+			<channel id="announcement" typeId="announcement" />
 		</channels>
 		<representation-property>serialNumber</representation-property>
 		<config-description>
@@ -138,7 +138,7 @@
 			<channel id="lastVoiceCommand" typeId="lastVoiceCommand" />
 			<channel id="notificationVolume" typeId="notificationVolume" />
 			<channel id="ascendingAlarm" typeId="ascendingAlarm" />
-            <channel id="announcement" typeId="announcement" />
+			<channel id="announcement" typeId="announcement" />
 		</channels>
 		<representation-property>serialNumber</representation-property>
 		<config-description>
@@ -226,7 +226,8 @@
 	<channel-type id="startRoutine" advanced="true">
 		<item-type>String</item-type>
 		<label>Start a routine</label>
-		<description>The command which must be spoken to active the routing without the preceding "Alexa," (Write Only)</description>
+		<description>The command which must be spoken to active the routing without the preceding "Alexa," (Write Only)
+		</description>
 	</channel-type>
 	<channel-type id="playAlarmSound" advanced="true">
 		<item-type>String</item-type>
@@ -377,11 +378,11 @@
 			</options>
 		</state>
 	</channel-type>
-    <channel-type id="announcement" advanced="true">
-        <item-type>String</item-type>
-        <label>Announcement (USA only)</label>
-        <description>Push Announcement Notification (Write only, not supported in all amazon domains)</description>
-    </channel-type>
+	<channel-type id="announcement" advanced="true">
+		<item-type>String</item-type>
+		<label>Announcement (USA only)</label>
+		<description>Push Announcement Notification (Write only, not supported in all amazon domains)</description>
+	</channel-type>
 	<channel-type id="notificationVolume" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Notification volume</label>

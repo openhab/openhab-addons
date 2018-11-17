@@ -202,6 +202,14 @@ public class Connection {
         return alexaServer;
     }
 
+    public String getDeviceName() {
+        String deviceName = this.deviceName;
+        if (deviceName == null) {
+            return "Unknown";
+        }
+        return deviceName;
+    }
+
     public String serializeLoginData() {
         Date loginTime = this.loginTime;
         if (refreshToken == null || loginTime == null) {
@@ -560,6 +568,7 @@ public class Connection {
         if (success == null) {
             throw new ConnectionException("Error: No success received from register application");
         }
+
         Tokens tokens = success.tokens;
         if (tokens == null) {
             throw new ConnectionException("Error: No tokens received from register application");
