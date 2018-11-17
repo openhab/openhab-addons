@@ -87,16 +87,29 @@ The following things are available:
 | Xiaomi Wifi Extender       | miio:unsupported | xiaomi.repeater.v2     | No        |            |
 | Mi Internet Speaker        | miio:unsupported | xiaomi.wifispeaker.v1  | No        |            |
 | Yeelight Lamp              | miio:basic       | yeelink.light.bslamp1  | Yes       |            |
-| Yeelight Color Bulb        | miio:basic       | yeelink.light.color1   | Yes       |            |
-| Yeelight Color Bulb YLDP06YL 10W | miio:basic       | yeelink.light.color2   | Yes       |            |
+| Yeelight Lamp              | miio:basic       | yeelink.light.bslamp2  | Yes       |            |
 | Yeelight LED Ceiling Lamp  | miio:basic       | yeelink.light.ceiling1 | Yes       |            |
 | Yeelight LED Ceiling Lamp v2 | miio:basic       | yeelink.light.ceiling2 | Yes       |            |
 | Yeelight LED Ceiling Lamp v3 | miio:basic       | yeelink.light.ceiling3 | Yes       |            |
 | Yeelight LED Ceiling Lamp v4 (JIAOYUE 650 RGB) | miio:basic       | yeelink.light.ceiling4 | Yes       |            |
-| Yeelight                   | miio:basic       | yeelink.light.lamp1    | Yes       |            |
+| Yeelight LED Ceiling Lamp v4 | miio:basic       | yeelink.light.ceiling4.ambi | Yes       |            |
+| Yeelight LED Ceiling Lamp v5 | miio:basic       | yeelink.light.ceiling5 | Yes       |            |
+| Yeelight LED Ceiling Lamp v6 | miio:basic       | yeelink.light.ceiling6 | Yes       |            |
+| Yeelight LED Ceiling Lamp v7 | miio:basic       | yeelink.light.ceiling7 | Yes       |            |
+| Yeelight LED Ceiling Lamp v8 | miio:basic       | yeelink.light.ceiling8 | Yes       |            |
+| Yeelight ct2               | miio:basic       | yeelink.light.ct2      | Yes       |            |
 | Yeelight White Bulb        | miio:basic       | yeelink.light.mono1    | Yes       |            |
 | Yeelight White Bulb v2     | miio:basic       | yeelink.light.mono2    | Yes       |            |
+| Yeelight Wifi Speaker      | miio:unsupported | yeelink.wifispeaker.v1 | No        |            |
+| Yeelight                   | miio:basic       | yeelink.light.lamp1    | Yes       |            |
+| Yeelight                   | miio:basic       | yeelink.light.lamp2    | Yes       |            |
+| Yeelight                   | miio:basic       | yeelink.light.lamp3    | Yes       |            |
 | Yeelight Strip             | miio:basic       | yeelink.light.strip1   | Yes       |            |
+| Yeelight Strip             | miio:basic       | yeelink.light.strip2   | Yes       |            |
+| Yeelight                   | miio:basic       | yeelink.light.virtual  | Yes       |            |
+| Yeelight Color Bulb        | miio:basic       | yeelink.light.color1   | Yes       |            |
+| Yeelight Color Bulb YLDP06YL 10W | miio:basic       | yeelink.light.color2   | Yes       |            |
+| Yeelight Color Bulb        | miio:basic       | yeelink.light.color3   | Yes       |            |
 
 
 # Discovery
@@ -840,19 +853,6 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
 | brightness       | Number  | Brightness                          |
-| delayoff         | Number  | Shutdowm Timer                      |
-| colorTemperature | Number  | Color Temperature                   |
-| colorMode        | Number  | Color Mode                          |
-| name             | String  | Name                                |
-
-
-### Yeelight Color Bulb (yeelink.light.color1 ) Channels
-
-
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
 | delayoff         | String  | Shutdowm Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | String  | Color Mode                          |
@@ -861,7 +861,7 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | name             | String  | Name                                |
 
 
-### Yeelight Color Bulb YLDP06YL 10W (yeelink.light.color2 ) Channels
+### Yeelight Lamp (yeelink.light.bslamp2 ) Channels
 
 
 | Channel          | Type    | Description                         |
@@ -883,10 +883,17 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
 | brightness       | Number  | Brightness                          |
+| ambientBrightness | Number  | Ambient Brightness                  |
 | delayoff         | Number  | Shutdowm Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | Number  | Color Mode                          |
 | name             | String  | Name                                |
+| ambientPower     | Switch  | Ambient Power                       |
+| ambientColor     | Color   | Ambient Color                       |
+| ambientColorTemperature | Number  | Ambient Color Temperature           |
+| customScene      | String  | Set Scene                           |
+| ambientColorMode | Number  | Ambient Color Mode                  |
+| nightlightBrightness | Number  | Nightlight Brightness               |
 
 
 ### Yeelight LED Ceiling Lamp v2 (yeelink.light.ceiling2 ) Channels
@@ -896,10 +903,17 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
 | brightness       | Number  | Brightness                          |
+| ambientBrightness | Number  | Ambient Brightness                  |
 | delayoff         | Number  | Shutdowm Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | Number  | Color Mode                          |
 | name             | String  | Name                                |
+| ambientPower     | Switch  | Ambient Power                       |
+| ambientColor     | Color   | Ambient Color                       |
+| ambientColorTemperature | Number  | Ambient Color Temperature           |
+| customScene      | String  | Set Scene                           |
+| ambientColorMode | Number  | Ambient Color Mode                  |
+| nightlightBrightness | Number  | Nightlight Brightness               |
 
 
 ### Yeelight LED Ceiling Lamp v3 (yeelink.light.ceiling3 ) Channels
@@ -909,10 +923,17 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
 | brightness       | Number  | Brightness                          |
+| ambientBrightness | Number  | Ambient Brightness                  |
 | delayoff         | Number  | Shutdowm Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | Number  | Color Mode                          |
 | name             | String  | Name                                |
+| ambientPower     | Switch  | Ambient Power                       |
+| ambientColor     | Color   | Ambient Color                       |
+| ambientColorTemperature | Number  | Ambient Color Temperature           |
+| customScene      | String  | Set Scene                           |
+| ambientColorMode | Number  | Ambient Color Mode                  |
+| nightlightBrightness | Number  | Nightlight Brightness               |
 
 
 ### Yeelight LED Ceiling Lamp v4 (JIAOYUE 650 RGB) (yeelink.light.ceiling4 ) Channels
@@ -935,7 +956,107 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | nightlightBrightness | Number  | Nightlight Brightness               |
 
 
-### Yeelight (yeelink.light.lamp1 ) Channels
+### Yeelight LED Ceiling Lamp v4 (yeelink.light.ceiling4.ambi ) Channels
+
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| brightness       | Number  | Brightness                          |
+| ambientBrightness | Number  | Ambient Brightness                  |
+| delayoff         | Number  | Shutdowm Timer                      |
+| colorTemperature | Number  | Color Temperature                   |
+| colorMode        | Number  | Color Mode                          |
+| name             | String  | Name                                |
+| ambientPower     | Switch  | Ambient Power                       |
+| ambientColor     | Color   | Ambient Color                       |
+| ambientColorTemperature | Number  | Ambient Color Temperature           |
+| customScene      | String  | Set Scene                           |
+| ambientColorMode | Number  | Ambient Color Mode                  |
+| nightlightBrightness | Number  | Nightlight Brightness               |
+
+
+### Yeelight LED Ceiling Lamp v5 (yeelink.light.ceiling5 ) Channels
+
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| brightness       | Number  | Brightness                          |
+| ambientBrightness | Number  | Ambient Brightness                  |
+| delayoff         | Number  | Shutdowm Timer                      |
+| colorTemperature | Number  | Color Temperature                   |
+| colorMode        | Number  | Color Mode                          |
+| name             | String  | Name                                |
+| ambientPower     | Switch  | Ambient Power                       |
+| ambientColor     | Color   | Ambient Color                       |
+| ambientColorTemperature | Number  | Ambient Color Temperature           |
+| customScene      | String  | Set Scene                           |
+| ambientColorMode | Number  | Ambient Color Mode                  |
+| nightlightBrightness | Number  | Nightlight Brightness               |
+
+
+### Yeelight LED Ceiling Lamp v6 (yeelink.light.ceiling6 ) Channels
+
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| brightness       | Number  | Brightness                          |
+| ambientBrightness | Number  | Ambient Brightness                  |
+| delayoff         | Number  | Shutdowm Timer                      |
+| colorTemperature | Number  | Color Temperature                   |
+| colorMode        | Number  | Color Mode                          |
+| name             | String  | Name                                |
+| ambientPower     | Switch  | Ambient Power                       |
+| ambientColor     | Color   | Ambient Color                       |
+| ambientColorTemperature | Number  | Ambient Color Temperature           |
+| customScene      | String  | Set Scene                           |
+| ambientColorMode | Number  | Ambient Color Mode                  |
+| nightlightBrightness | Number  | Nightlight Brightness               |
+
+
+### Yeelight LED Ceiling Lamp v7 (yeelink.light.ceiling7 ) Channels
+
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| brightness       | Number  | Brightness                          |
+| ambientBrightness | Number  | Ambient Brightness                  |
+| delayoff         | Number  | Shutdowm Timer                      |
+| colorTemperature | Number  | Color Temperature                   |
+| colorMode        | Number  | Color Mode                          |
+| name             | String  | Name                                |
+| ambientPower     | Switch  | Ambient Power                       |
+| ambientColor     | Color   | Ambient Color                       |
+| ambientColorTemperature | Number  | Ambient Color Temperature           |
+| customScene      | String  | Set Scene                           |
+| ambientColorMode | Number  | Ambient Color Mode                  |
+| nightlightBrightness | Number  | Nightlight Brightness               |
+
+
+### Yeelight LED Ceiling Lamp v8 (yeelink.light.ceiling8 ) Channels
+
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| brightness       | Number  | Brightness                          |
+| ambientBrightness | Number  | Ambient Brightness                  |
+| delayoff         | Number  | Shutdowm Timer                      |
+| colorTemperature | Number  | Color Temperature                   |
+| colorMode        | Number  | Color Mode                          |
+| name             | String  | Name                                |
+| ambientPower     | Switch  | Ambient Power                       |
+| ambientColor     | Color   | Ambient Color                       |
+| ambientColorTemperature | Number  | Ambient Color Temperature           |
+| customScene      | String  | Set Scene                           |
+| ambientColorMode | Number  | Ambient Color Mode                  |
+| nightlightBrightness | Number  | Nightlight Brightness               |
+
+
+### Yeelight ct2 (yeelink.light.ct2 ) Channels
 
 
 | Channel          | Type    | Description                         |
@@ -974,7 +1095,119 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | name             | String  | Name                                |
 
 
+### Yeelight (yeelink.light.lamp1 ) Channels
+
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| brightness       | Number  | Brightness                          |
+| delayoff         | Number  | Shutdowm Timer                      |
+| colorTemperature | Number  | Color Temperature                   |
+| colorMode        | Number  | Color Mode                          |
+| name             | String  | Name                                |
+
+
+### Yeelight (yeelink.light.lamp2 ) Channels
+
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| brightness       | Number  | Brightness                          |
+| delayoff         | Number  | Shutdowm Timer                      |
+| colorTemperature | Number  | Color Temperature                   |
+| colorMode        | Number  | Color Mode                          |
+| name             | String  | Name                                |
+
+
+### Yeelight (yeelink.light.lamp3 ) Channels
+
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| brightness       | Number  | Brightness                          |
+| delayoff         | Number  | Shutdowm Timer                      |
+| colorTemperature | Number  | Color Temperature                   |
+| colorMode        | Number  | Color Mode                          |
+| name             | String  | Name                                |
+
+
 ### Yeelight Strip (yeelink.light.strip1 ) Channels
+
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| brightness       | Number  | Brightness                          |
+| delayoff         | String  | Shutdowm Timer                      |
+| colorTemperature | Number  | Color Temperature                   |
+| colorMode        | String  | Color Mode                          |
+| toggle           | Switch  | toggle                              |
+| rgbColor         | Color   | RGB Color                           |
+| name             | String  | Name                                |
+
+
+### Yeelight Strip (yeelink.light.strip2 ) Channels
+
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| brightness       | Number  | Brightness                          |
+| delayoff         | String  | Shutdowm Timer                      |
+| colorTemperature | Number  | Color Temperature                   |
+| colorMode        | String  | Color Mode                          |
+| toggle           | Switch  | toggle                              |
+| rgbColor         | Color   | RGB Color                           |
+| name             | String  | Name                                |
+
+
+### Yeelight (yeelink.light.virtual ) Channels
+
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| brightness       | Number  | Brightness                          |
+| delayoff         | Number  | Shutdowm Timer                      |
+| colorTemperature | Number  | Color Temperature                   |
+| colorMode        | Number  | Color Mode                          |
+| name             | String  | Name                                |
+
+
+### Yeelight Color Bulb (yeelink.light.color1 ) Channels
+
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| brightness       | Number  | Brightness                          |
+| delayoff         | String  | Shutdowm Timer                      |
+| colorTemperature | Number  | Color Temperature                   |
+| colorMode        | String  | Color Mode                          |
+| toggle           | Switch  | toggle                              |
+| rgbColor         | Color   | RGB Color                           |
+| name             | String  | Name                                |
+
+
+### Yeelight Color Bulb YLDP06YL 10W (yeelink.light.color2 ) Channels
+
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| brightness       | Number  | Brightness                          |
+| delayoff         | String  | Shutdowm Timer                      |
+| colorTemperature | Number  | Color Temperature                   |
+| colorMode        | String  | Color Mode                          |
+| toggle           | Switch  | toggle                              |
+| rgbColor         | Color   | RGB Color                           |
+| name             | String  | Name                                |
+
+
+### Yeelight Color Bulb (yeelink.light.color3 ) Channels
 
 
 | Channel          | Type    | Description                         |
@@ -1798,6 +2031,362 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "Yeelight Lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+String delayoff "Shutdowm Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+String colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+Switch toggle "toggle" (G_light) {channel="miio:basic:light:toggle"}
+Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+```
+
+### Yeelight Lamp (yeelink.light.bslamp2) item file lines
+
+
+note: Autogenerated example. Replace the id (light) in the channel with your own.
+
+```
+Group G_light "Yeelight Lamp" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+String delayoff "Shutdowm Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+String colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+Switch toggle "toggle" (G_light) {channel="miio:basic:light:toggle"}
+Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+```
+
+### Yeelight LED Ceiling Lamp (yeelink.light.ceiling1) item file lines
+
+
+note: Autogenerated example. Replace the id (light) in the channel with your own.
+
+```
+Group G_light "Yeelight LED Ceiling Lamp" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
+Number delayoff "Shutdowm Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
+Color ambientColor "Ambient Color" (G_light) {channel="miio:basic:light:ambientColor"}
+Number ambientColorTemperature "Ambient Color Temperature" (G_light) {channel="miio:basic:light:ambientColorTemperature"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number ambientColorMode "Ambient Color Mode" (G_light) {channel="miio:basic:light:ambientColorMode"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Yeelight LED Ceiling Lamp v2 (yeelink.light.ceiling2) item file lines
+
+
+note: Autogenerated example. Replace the id (light) in the channel with your own.
+
+```
+Group G_light "Yeelight LED Ceiling Lamp v2" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
+Number delayoff "Shutdowm Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
+Color ambientColor "Ambient Color" (G_light) {channel="miio:basic:light:ambientColor"}
+Number ambientColorTemperature "Ambient Color Temperature" (G_light) {channel="miio:basic:light:ambientColorTemperature"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number ambientColorMode "Ambient Color Mode" (G_light) {channel="miio:basic:light:ambientColorMode"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Yeelight LED Ceiling Lamp v3 (yeelink.light.ceiling3) item file lines
+
+
+note: Autogenerated example. Replace the id (light) in the channel with your own.
+
+```
+Group G_light "Yeelight LED Ceiling Lamp v3" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
+Number delayoff "Shutdowm Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
+Color ambientColor "Ambient Color" (G_light) {channel="miio:basic:light:ambientColor"}
+Number ambientColorTemperature "Ambient Color Temperature" (G_light) {channel="miio:basic:light:ambientColorTemperature"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number ambientColorMode "Ambient Color Mode" (G_light) {channel="miio:basic:light:ambientColorMode"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Yeelight LED Ceiling Lamp v4 (JIAOYUE 650 RGB) (yeelink.light.ceiling4) item file lines
+
+
+note: Autogenerated example. Replace the id (light) in the channel with your own.
+
+```
+Group G_light "Yeelight LED Ceiling Lamp v4 (JIAOYUE 650 RGB)" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
+Number delayoff "Shutdowm Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
+Color ambientColor "Ambient Color" (G_light) {channel="miio:basic:light:ambientColor"}
+Number ambientColorTemperature "Ambient Color Temperature" (G_light) {channel="miio:basic:light:ambientColorTemperature"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number ambientColorMode "Ambient Color Mode" (G_light) {channel="miio:basic:light:ambientColorMode"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Yeelight LED Ceiling Lamp v4 (yeelink.light.ceiling4.ambi) item file lines
+
+
+note: Autogenerated example. Replace the id (ceiling4) in the channel with your own.
+
+```
+Group G_ceiling4 "Yeelight LED Ceiling Lamp v4" <status>
+Switch power "Power" (G_ceiling4) {channel="miio:basic:ceiling4:power"}
+Number brightness "Brightness" (G_ceiling4) {channel="miio:basic:ceiling4:brightness"}
+Number ambientBrightness "Ambient Brightness" (G_ceiling4) {channel="miio:basic:ceiling4:ambientBrightness"}
+Number delayoff "Shutdowm Timer" (G_ceiling4) {channel="miio:basic:ceiling4:delayoff"}
+Number colorTemperature "Color Temperature" (G_ceiling4) {channel="miio:basic:ceiling4:colorTemperature"}
+Number colorMode "Color Mode" (G_ceiling4) {channel="miio:basic:ceiling4:colorMode"}
+String name "Name" (G_ceiling4) {channel="miio:basic:ceiling4:name"}
+Switch ambientPower "Ambient Power" (G_ceiling4) {channel="miio:basic:ceiling4:ambientPower"}
+Color ambientColor "Ambient Color" (G_ceiling4) {channel="miio:basic:ceiling4:ambientColor"}
+Number ambientColorTemperature "Ambient Color Temperature" (G_ceiling4) {channel="miio:basic:ceiling4:ambientColorTemperature"}
+String customScene "Set Scene" (G_ceiling4) {channel="miio:basic:ceiling4:customScene"}
+Number ambientColorMode "Ambient Color Mode" (G_ceiling4) {channel="miio:basic:ceiling4:ambientColorMode"}
+Number nightlightBrightness "Nightlight Brightness" (G_ceiling4) {channel="miio:basic:ceiling4:nightlightBrightness"}
+```
+
+### Yeelight LED Ceiling Lamp v5 (yeelink.light.ceiling5) item file lines
+
+
+note: Autogenerated example. Replace the id (light) in the channel with your own.
+
+```
+Group G_light "Yeelight LED Ceiling Lamp v5" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
+Number delayoff "Shutdowm Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
+Color ambientColor "Ambient Color" (G_light) {channel="miio:basic:light:ambientColor"}
+Number ambientColorTemperature "Ambient Color Temperature" (G_light) {channel="miio:basic:light:ambientColorTemperature"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number ambientColorMode "Ambient Color Mode" (G_light) {channel="miio:basic:light:ambientColorMode"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Yeelight LED Ceiling Lamp v6 (yeelink.light.ceiling6) item file lines
+
+
+note: Autogenerated example. Replace the id (light) in the channel with your own.
+
+```
+Group G_light "Yeelight LED Ceiling Lamp v6" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
+Number delayoff "Shutdowm Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
+Color ambientColor "Ambient Color" (G_light) {channel="miio:basic:light:ambientColor"}
+Number ambientColorTemperature "Ambient Color Temperature" (G_light) {channel="miio:basic:light:ambientColorTemperature"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number ambientColorMode "Ambient Color Mode" (G_light) {channel="miio:basic:light:ambientColorMode"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Yeelight LED Ceiling Lamp v7 (yeelink.light.ceiling7) item file lines
+
+
+note: Autogenerated example. Replace the id (light) in the channel with your own.
+
+```
+Group G_light "Yeelight LED Ceiling Lamp v7" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
+Number delayoff "Shutdowm Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
+Color ambientColor "Ambient Color" (G_light) {channel="miio:basic:light:ambientColor"}
+Number ambientColorTemperature "Ambient Color Temperature" (G_light) {channel="miio:basic:light:ambientColorTemperature"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number ambientColorMode "Ambient Color Mode" (G_light) {channel="miio:basic:light:ambientColorMode"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Yeelight LED Ceiling Lamp v8 (yeelink.light.ceiling8) item file lines
+
+
+note: Autogenerated example. Replace the id (light) in the channel with your own.
+
+```
+Group G_light "Yeelight LED Ceiling Lamp v8" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
+Number delayoff "Shutdowm Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
+Color ambientColor "Ambient Color" (G_light) {channel="miio:basic:light:ambientColor"}
+Number ambientColorTemperature "Ambient Color Temperature" (G_light) {channel="miio:basic:light:ambientColorTemperature"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number ambientColorMode "Ambient Color Mode" (G_light) {channel="miio:basic:light:ambientColorMode"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Yeelight ct2 (yeelink.light.ct2) item file lines
+
+
+note: Autogenerated example. Replace the id (light) in the channel with your own.
+
+```
+Group G_light "Yeelight ct2" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdowm Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+```
+
+### Yeelight White Bulb (yeelink.light.mono1) item file lines
+
+
+note: Autogenerated example. Replace the id (light) in the channel with your own.
+
+```
+Group G_light "Yeelight White Bulb" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdowm Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+```
+
+### Yeelight White Bulb v2 (yeelink.light.mono2) item file lines
+
+
+note: Autogenerated example. Replace the id (light) in the channel with your own.
+
+```
+Group G_light "Yeelight White Bulb v2" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdowm Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+```
+
+### Yeelight (yeelink.light.lamp1) item file lines
+
+
+note: Autogenerated example. Replace the id (light) in the channel with your own.
+
+```
+Group G_light "Yeelight" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdowm Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+```
+
+### Yeelight (yeelink.light.lamp2) item file lines
+
+
+note: Autogenerated example. Replace the id (light) in the channel with your own.
+
+```
+Group G_light "Yeelight" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdowm Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+```
+
+### Yeelight (yeelink.light.lamp3) item file lines
+
+
+note: Autogenerated example. Replace the id (light) in the channel with your own.
+
+```
+Group G_light "Yeelight" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdowm Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+```
+
+### Yeelight Strip (yeelink.light.strip1) item file lines
+
+
+note: Autogenerated example. Replace the id (light) in the channel with your own.
+
+```
+Group G_light "Yeelight Strip" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+String delayoff "Shutdowm Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+String colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+Switch toggle "toggle" (G_light) {channel="miio:basic:light:toggle"}
+Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+```
+
+### Yeelight Strip (yeelink.light.strip2) item file lines
+
+
+note: Autogenerated example. Replace the id (light) in the channel with your own.
+
+```
+Group G_light "Yeelight Strip" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+String delayoff "Shutdowm Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+String colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+Switch toggle "toggle" (G_light) {channel="miio:basic:light:toggle"}
+Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+```
+
+### Yeelight (yeelink.light.virtual) item file lines
+
+
+note: Autogenerated example. Replace the id (light) in the channel with your own.
+
+```
+Group G_light "Yeelight" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdowm Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
@@ -1838,125 +2427,13 @@ Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
-### Yeelight LED Ceiling Lamp (yeelink.light.ceiling1) item file lines
+### Yeelight Color Bulb (yeelink.light.color3) item file lines
 
 
 note: Autogenerated example. Replace the id (light) in the channel with your own.
 
 ```
-Group G_light "Yeelight LED Ceiling Lamp" <status>
-Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number delayoff "Shutdowm Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
-String name "Name" (G_light) {channel="miio:basic:light:name"}
-```
-
-### Yeelight LED Ceiling Lamp v2 (yeelink.light.ceiling2) item file lines
-
-
-note: Autogenerated example. Replace the id (light) in the channel with your own.
-
-```
-Group G_light "Yeelight LED Ceiling Lamp v2" <status>
-Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number delayoff "Shutdowm Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
-String name "Name" (G_light) {channel="miio:basic:light:name"}
-```
-
-### Yeelight LED Ceiling Lamp v3 (yeelink.light.ceiling3) item file lines
-
-
-note: Autogenerated example. Replace the id (light) in the channel with your own.
-
-```
-Group G_light "Yeelight LED Ceiling Lamp v3" <status>
-Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number delayoff "Shutdowm Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
-String name "Name" (G_light) {channel="miio:basic:light:name"}
-```
-
-### Yeelight LED Ceiling Lamp v4 (JIAOYUE 650 RGB) (yeelink.light.ceiling4) item file lines
-
-
-note: Autogenerated example. Replace the id (light) in the channel with your own.
-
-```
-Group G_light "Yeelight LED Ceiling Lamp v4 (JIAOYUE 650 RGB)" <status>
-Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
-Number delayoff "Shutdowm Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
-String name "Name" (G_light) {channel="miio:basic:light:name"}
-Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
-Color ambientColor "Ambient Color" (G_light) {channel="miio:basic:light:ambientColor"}
-Number ambientColorTemperature "Ambient Color Temperature" (G_light) {channel="miio:basic:light:ambientColorTemperature"}
-String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number ambientColorMode "Ambient Color Mode" (G_light) {channel="miio:basic:light:ambientColorMode"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
-```
-
-### Yeelight (yeelink.light.lamp1) item file lines
-
-
-note: Autogenerated example. Replace the id (light) in the channel with your own.
-
-```
-Group G_light "Yeelight" <status>
-Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number delayoff "Shutdowm Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
-String name "Name" (G_light) {channel="miio:basic:light:name"}
-```
-
-### Yeelight White Bulb (yeelink.light.mono1) item file lines
-
-
-note: Autogenerated example. Replace the id (light) in the channel with your own.
-
-```
-Group G_light "Yeelight White Bulb" <status>
-Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number delayoff "Shutdowm Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
-String name "Name" (G_light) {channel="miio:basic:light:name"}
-```
-
-### Yeelight White Bulb v2 (yeelink.light.mono2) item file lines
-
-
-note: Autogenerated example. Replace the id (light) in the channel with your own.
-
-```
-Group G_light "Yeelight White Bulb v2" <status>
-Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number delayoff "Shutdowm Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
-String name "Name" (G_light) {channel="miio:basic:light:name"}
-```
-
-### Yeelight Strip (yeelink.light.strip1) item file lines
-
-
-note: Autogenerated example. Replace the id (light) in the channel with your own.
-
-```
-Group G_light "Yeelight Strip" <status>
+Group G_light "Yeelight Color Bulb" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 String delayoff "Shutdowm Timer" (G_light) {channel="miio:basic:light:delayoff"}

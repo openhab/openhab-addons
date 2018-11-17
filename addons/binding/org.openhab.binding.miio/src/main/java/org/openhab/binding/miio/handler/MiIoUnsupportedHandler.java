@@ -65,8 +65,6 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
             case POWERSTRIP:
             case POWERSTRIP2:
             case YEELIGHT_C1:
-            case YEELIGHT_L1:
-            case YEELIGHT_M1:
                 break;
             case VACUUM:
                 testCommands = new String[] { "miIO.info", "get_current_sound", "get_map_v1", "get_serial_number",

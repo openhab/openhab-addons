@@ -2,9 +2,12 @@
 	"deviceMapping": {
 		"id": [
 			"yeelink.light.lamp1",
-			"yeelink.light.bslamp1",
+			"yeelink.light.lamp2",
+			"yeelink.light.lamp3",
+			"yeelink.light.ct2",
 			"yeelink.light.mono1",
-			"yeelink.light.mono2"
+			"yeelink.light.mono2",
+			"yeelink.light.virtual"
 		],
 		"channels": [
 			{
