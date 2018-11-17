@@ -33,3 +33,4 @@ Import-Package:
  org.osgi.service.component.annotations;resolution:=optional,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
+Require-Bundle: org.eclipse.smarthome.io.net
