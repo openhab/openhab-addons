@@ -64,9 +64,7 @@ public class LiveDataUpdatePublicApi extends AbstractCommandCallback implements 
             if (json != null) {
                 logger.debug("JSON String: {}", json);
                 DataResponse jsonObject = gson.fromJson(json, LiveDataResponse.class);
-                if (jsonObject != null) {
-                    handler.updateChannelStatus(jsonObject.getValues());
-                }
+                handler.updateChannelStatus(jsonObject.getValues());
             }
         }
     }

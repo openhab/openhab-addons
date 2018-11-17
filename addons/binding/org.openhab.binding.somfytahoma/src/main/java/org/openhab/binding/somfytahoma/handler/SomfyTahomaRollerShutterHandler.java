@@ -15,7 +15,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
 
@@ -32,11 +32,7 @@ public class SomfyTahomaRollerShutterHandler extends SomfyTahomaBaseThingHandler
 
     public SomfyTahomaRollerShutterHandler(Thing thing) {
         super(thing);
-    }
-
-    @Override
-    public Hashtable<String, String> getStateNames() {
-        return new Hashtable<String, String>() {{
+        stateNames = new HashMap<String, String>() {{
             put(CONTROL, "core:ClosureState");
         }};
     }
@@ -44,24 +40,24 @@ public class SomfyTahomaRollerShutterHandler extends SomfyTahomaBaseThingHandler
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command {} for channel {}", command, channelUID);
-        if (!channelUID.getId().equals(CONTROL)) {
+        if (!CONTROL.equals(channelUID.getId())) {
             return;
         }
 
-        if (command.equals(RefreshType.REFRESH)) {
+        if (RefreshType.REFRESH.equals(command)) {
                 updateChannelState(channelUID);
         } else {
             String cmd = getTahomaCommand(command.toString());
-            //Check if the rollershutter is not moving
-            String executionId = getCurrentExecutions();
-            if (executionId != null) {
-                //STOP command should be interpreted if rollershutter is moving
-                //otherwise do nothing
-                if (cmd.equals(COMMAND_MY)) {
+            if (COMMAND_MY.equals(cmd)) {
+                String executionId = getCurrentExecutions();
+                if (executionId != null) {
+                    //Check if the roller shutter is moving and MY is sent => STOP it
                     cancelExecution(executionId);
+                } else {
+                    sendCommand(COMMAND_MY, "[]");
                 }
             } else {
-                String param = cmd.equals(COMMAND_SET_CLOSURE) ? "[" + command.toString() + "]" : "[]";
+                String param = COMMAND_SET_CLOSURE.equals(cmd) ? "[" + command.toString() + "]" : "[]";
                 sendCommand(cmd, param);
             }
         }

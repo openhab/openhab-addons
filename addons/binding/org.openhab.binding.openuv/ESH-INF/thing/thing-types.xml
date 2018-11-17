@@ -26,7 +26,7 @@
 			<bridge-type-ref id="openuvapi" />
 		</supported-bridge-type-refs>
 		
-		<label>Open UV</label>
+		<label>UV Report</label>
 		<description>
 		Provides various UV data from the OpenUV Project for a given location.
 		</description>
@@ -63,45 +63,42 @@
 		<item-type>Number</item-type>
 		<label>UV Index</label>
 		<description>UV Index</description>
-		<state readOnly="true" pattern="%.2f">
-		</state>
+		<state readOnly="true" pattern="%.2f/16" min="0" max="16" />
 	</channel-type>
 
 	<channel-type id="UVMax" advanced="true">
 		<item-type>Number</item-type>
 		<label>UV Max</label>
 		<description>Max UV Index for the day (at solar noon)</description>
-		<state readOnly="true" pattern="%.2f">
-		</state>
+		<state readOnly="true" pattern="%.2f/16" min="0" max="16" />
 	</channel-type>
 
 	<channel-type id="Ozone">
-		<item-type>Number</item-type>
+		<item-type>Number:ArealDensity</item-type>
 		<label>Ozone</label>
-		<description>Ozone level in du (Dobson Units) from OMI data</description>
-		<state readOnly="true" pattern="%.2f du">
-		</state>
+		<description>Ozone level from OMI data</description>
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 	<channel-type id="OzoneTime" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Ozone Observation Time</label>
 		<description>Latest OMI ozone update time</description>
-		<state readOnly="true" pattern="%1$ta %1$tR" />
+		<state readOnly="true" pattern="%1$tF %1$tR" />
 	</channel-type>
 
 	<channel-type id="UVMaxTime" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>UV Max Time</label>
 		<description>Max UV Index time (solar noon)</description>
-		<state readOnly="true" pattern="%1$ta %1$tR" />
+		<state readOnly="true" pattern="%1$tF %1$tR" />
 	</channel-type>
 
 	<channel-type id="UVTime" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>UV Time</label>
 		<description>UV Index time</description>
-		<state readOnly="true" pattern="%1$ta %1$tR" />
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
 	<channel-type id="UVColor" advanced="true">

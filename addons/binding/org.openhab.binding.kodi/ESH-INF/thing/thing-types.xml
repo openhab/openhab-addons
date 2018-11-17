@@ -33,6 +33,14 @@
 			<channel id="fanart" typeId="fanart" />
 			<channel id="playfavorite" typeId="playfavorite" />
 			<channel id="playnotification" typeId="playnotification" />
+			<channel id="audio-codec" typeId="codec">
+				<label>Audio Codec</label>
+				<description>Audio codec of currently playing media</description>
+			</channel>
+			<channel id="video-codec" typeId="codec">
+				<label>Video Codec</label>
+				<description>Video codec of currently playing media</description>
+			</channel>
 			<channel id="currenttime" typeId="currenttime" />
 			<channel id="currenttimepercentage" typeId="currenttimepercentage" />
 			<channel id="duration" typeId="duration" />
@@ -342,13 +350,14 @@
 	<channel-type id="systemcommand" advanced="true">
 		<item-type>String</item-type>
 		<label>Send system command</label>
-		<description>Sends a system command to Kodi. This allows to shutdown/suspend/hibernate/reboot Kodi</description>
+		<description>Sends a system command to Kodi. This allows to shutdown/suspend/hibernate/reboot/quit Kodi</description>
 		<state>
 			<options>
 				<option value="Shutdown">Shutdown</option>
 				<option value="Suspend">Suspend</option>
 				<option value="Hibernate">Hibernate</option>
 				<option value="Reboot">Reboot</option>
+				<option value="Quit">Quit</option>
 			</options>
 		</state>
 	</channel-type>
@@ -407,6 +416,12 @@
 		<label>Fanart</label>
 		<description>The current fanart</description>
 		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="codec" advanced="true">
+		<item-type>String</item-type>
+		<label>Codec</label>
+		<description>Codec of currently playing media</description>
+		<state readOnly="true" pattern="%s" />
 	</channel-type>
 	<channel-type id="currenttime">
 		<item-type>Number:Time</item-type>

@@ -18,7 +18,8 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.tellstick.handler.TelldusDeviceController;
+import org.openhab.binding.tellstick.internal.TelldusBindingException;
+import org.openhab.binding.tellstick.internal.handler.TelldusDeviceController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellstick.JNA;
@@ -37,9 +38,7 @@ import org.tellstick.device.iface.SwitchableDevice;
  * This communicates with the telldus DLL using the javatellstick
  * library.
  *
- * @author Jarle Hjortland
- * @author Elias Gabrielsson
- *
+ * @author Jarle Hjortland, Elias Gabrielsson - Initial contribution
  */
 public class TelldusCoreDeviceController implements DeviceChangeListener, SensorListener, TelldusDeviceController {
     private final Logger logger = LoggerFactory.getLogger(TelldusCoreDeviceController.class);
@@ -66,7 +65,6 @@ public class TelldusCoreDeviceController implements DeviceChangeListener, Sensor
     @Override
     public void handleSendEvent(Device device, int resendCount, boolean isDimmer, Command command)
             throws TellstickException {
-
         if (!workerThread.isAlive()) {
             workerThread.start();
         }
@@ -204,7 +202,7 @@ public class TelldusCoreDeviceController implements DeviceChangeListener, Sensor
             long tdVal = Math.round((value / 100) * 255);
             ((DimmableDevice) dev).dim((int) tdVal);
         } else {
-            throw new RuntimeException("Cannot send DIM to " + dev);
+            throw new TelldusBindingException("Cannot send DIM to " + dev);
         }
     }
 
@@ -212,7 +210,7 @@ public class TelldusCoreDeviceController implements DeviceChangeListener, Sensor
         if (dev instanceof SwitchableDevice) {
             ((SwitchableDevice) dev).off();
         } else {
-            throw new RuntimeException("Cannot send OFF to " + dev);
+            throw new TelldusBindingException("Cannot send OFF to " + dev);
         }
     }
 
@@ -220,7 +218,7 @@ public class TelldusCoreDeviceController implements DeviceChangeListener, Sensor
         if (dev instanceof SwitchableDevice) {
             ((SwitchableDevice) dev).on();
         } else {
-            throw new RuntimeException("Cannot send ON to " + dev);
+            throw new TelldusBindingException("Cannot send ON to " + dev);
         }
     }
 

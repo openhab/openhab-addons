@@ -16,9 +16,6 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalTime;
-import java.util.Hashtable;
-
 import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
 import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.STATUS;
 
@@ -42,28 +39,20 @@ public class SomfyTahomaGatewayHandler extends SomfyTahomaBaseThingHandler {
     }
 
     @Override
-    public Hashtable<String, String> getStateNames() {
-        return null;
-    }
-
-    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command {} for channel {}", command, channelUID);
-        if (command.equals(RefreshType.REFRESH)) {
+        if (RefreshType.REFRESH.equals(command)) {
             updateChannelState(channelUID);
         }
     }
 
     @Override
     public void updateChannelState(ChannelUID channelUID) {
-        if (isStatusExpired()) {
+        if (STATUS.equals(channelUID.getId())) {
             String id = getThing().getConfiguration().get("id").toString();
-            if (channelUID.getId().equals(STATUS)) {
-                updateState(channelUID, new StringType(getTahomaStatus(id)));
-                //update the firmware property
-                updateProperty(PROPERTY_FIRMWARE_VERSION, getTahomaVersion(id));
-            }
-            lastUpdated = LocalTime.now();
+            updateState(channelUID, new StringType(getTahomaStatus(id)));
+            //update the firmware property
+            updateProperty(PROPERTY_FIRMWARE_VERSION, getTahomaVersion(id));
         }
     }
 

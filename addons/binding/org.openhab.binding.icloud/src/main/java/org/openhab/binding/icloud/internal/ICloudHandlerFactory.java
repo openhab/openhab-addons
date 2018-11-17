@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.icloud.internal;
 
-import static org.openhab.binding.icloud.ICloudBindingConstants.*;
+import static org.openhab.binding.icloud.internal.ICloudBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -25,9 +25,9 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.icloud.handler.ICloudAccountBridgeHandler;
-import org.openhab.binding.icloud.handler.ICloudDeviceHandler;
 import org.openhab.binding.icloud.internal.discovery.ICloudDeviceDiscovery;
+import org.openhab.binding.icloud.internal.handler.ICloudAccountBridgeHandler;
+import org.openhab.binding.icloud.internal.handler.ICloudDeviceHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -95,11 +95,11 @@ public class ICloudHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Reference
-    protected void setLocaleProvider(final LocaleProvider localeProvider) {
+    protected void setLocaleProvider(LocaleProvider localeProvider) {
         this.localeProvider = localeProvider;
     }
 
-    protected void unsetLocaleProvider(final LocaleProvider localeProvider) {
+    protected void unsetLocaleProvider(LocaleProvider localeProvider) {
         this.localeProvider = null;
     }
 

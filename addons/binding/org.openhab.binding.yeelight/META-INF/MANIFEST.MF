@@ -6,8 +6,6 @@ Bundle-SymbolicName: org.openhab.binding.yeelight;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: .,
- lib/yeelight.jar
 Import-Package: 
  com.google.gson,
  org.eclipse.jdt.annotation;resolution:=optional,
@@ -19,9 +17,5 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.openhab.binding.yeelight,
- org.openhab.binding.yeelight.handler,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.yeelight,
- org.openhab.binding.yeelight.handler

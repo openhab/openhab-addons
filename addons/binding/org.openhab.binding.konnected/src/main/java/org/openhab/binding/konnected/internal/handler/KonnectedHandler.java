@@ -81,6 +81,7 @@ public class KonnectedHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         // get the zone number in integer form
         Channel channel = this.getThing().getChannel(channelUID.getId());
+
         String channelType = channel.getChannelTypeUID().getAsString();
         String zoneNumber = (String) channel.getConfiguration().get(CHANNEL_ZONE);
         Integer zone = Integer.parseInt(zoneNumber);
@@ -128,6 +129,7 @@ public class KonnectedHandler extends BaseThingHandler {
                 // check if the itemType has been defined for the zone received
                 // check the itemType of the Zone, if Contact, send the State if Temp send Temp, etc.
                 if (channelType.equalsIgnoreCase(CHANNEL_SWITCH) || channelType.equalsIgnoreCase(CHANNEL_ACTUATOR)) {
+
                     OnOffType onOffType = event.getState().equalsIgnoreCase("1") ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelId, onOffType);
                 } else if (channelType.equalsIgnoreCase(CHANNEL_HUMIDITY)) {

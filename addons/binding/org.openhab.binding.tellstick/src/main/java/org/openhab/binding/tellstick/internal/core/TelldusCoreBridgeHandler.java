@@ -22,11 +22,11 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.tellstick.handler.DeviceStatusListener;
-import org.openhab.binding.tellstick.handler.TelldusBridgeHandler;
-import org.openhab.binding.tellstick.handler.TelldusDeviceController;
-import org.openhab.binding.tellstick.handler.TelldusDevicesHandler;
 import org.openhab.binding.tellstick.internal.conf.TellstickBridgeConfiguration;
+import org.openhab.binding.tellstick.internal.handler.DeviceStatusListener;
+import org.openhab.binding.tellstick.internal.handler.TelldusBridgeHandler;
+import org.openhab.binding.tellstick.internal.handler.TelldusDeviceController;
+import org.openhab.binding.tellstick.internal.handler.TelldusDevicesHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellstick.JNA;
@@ -47,8 +47,7 @@ import org.tellstick.enums.DataType;
  * to the framework. All {@link TelldusDevicesHandler}s use the
  * {@link TelldusCoreDeviceController} to execute the actual commands.
  *
- * @author Jarle Hjortland
- *
+ * @author Jarle Hjortland - Initial contribution
  */
 public class TelldusCoreBridgeHandler extends BaseBridgeHandler
         implements DeviceChangeListener, SensorListener, TelldusBridgeHandler {
@@ -184,20 +183,12 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
         if (deviceStatusListener == null) {
             throw new IllegalArgumentException("It's not allowed to pass a null deviceStatusListener.");
         }
-        boolean result = deviceStatusListeners.add(deviceStatusListener);
-        if (result) {
-            // onUpdate();
-        }
-        return result;
+        return deviceStatusListeners.add(deviceStatusListener);
     }
 
     @Override
     public boolean unregisterDeviceStatusListener(DeviceStatusListener deviceStatusListener) {
-        boolean result = deviceStatusListeners.remove(deviceStatusListener);
-        if (result) {
-            // onUpdate();
-        }
-        return result;
+        return deviceStatusListeners.remove(deviceStatusListener);
     }
 
     public void clearDeviceList() {
@@ -221,7 +212,6 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void onRequest(TellstickSensorEvent newEvent) {
-
         String uuid = TellstickSensor.createUUId(newEvent.getSensorId(), newEvent.getModel(), newEvent.getProtocol());
         Device device = getSensor(uuid);
         logger.debug("Sensor Event for {} event {}", device, newEvent);

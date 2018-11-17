@@ -18,8 +18,10 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.tellstick.TellstickBindingConstants;
-import org.openhab.binding.tellstick.handler.TelldusBridgeHandler;
+import org.openhab.binding.tellstick.internal.TellstickBindingConstants;
+import org.openhab.binding.tellstick.internal.handler.DeviceStatusListener;
+import org.openhab.binding.tellstick.internal.handler.TelldusBridgeHandler;
+import org.openhab.binding.tellstick.internal.live.xml.LiveDataType;
 import org.openhab.binding.tellstick.internal.live.xml.TellstickNetDevice;
 import org.openhab.binding.tellstick.internal.live.xml.TellstickNetSensor;
 import org.slf4j.Logger;
@@ -38,8 +40,7 @@ import org.tellstick.enums.DataType;
  *
  * @author Jarle Hjortland - Initial contribution
  */
-public class TellstickDiscoveryService extends AbstractDiscoveryService
-        implements org.openhab.binding.tellstick.handler.DeviceStatusListener {
+public class TellstickDiscoveryService extends AbstractDiscoveryService implements DeviceStatusListener {
     private static final long DEFAULT_TTL = 60 * 60; // 1 Hour
 
     public TellstickDiscoveryService(int timeout) throws IllegalArgumentException {
@@ -84,7 +85,6 @@ public class TellstickDiscoveryService extends AbstractDiscoveryService
                     .withProperty(TellstickBindingConstants.DEVICE_NAME, device.getName()).withBridge(bridge.getUID())
                     .withLabel(device.getDeviceType() + ": " + device.getName()).build();
             thingDiscovered(discoveryResult);
-
         } else {
             logger.warn("Discovered Tellstick! device is unsupported: type '{}' with id '{}'", device.getDeviceType(),
                     device.getId());
@@ -157,10 +157,12 @@ public class TellstickDiscoveryService extends AbstractDiscoveryService
             }
         } else {
             TellstickNetSensor sensor = (TellstickNetSensor) device;
-            if (sensor.isWindSensor()) {
+            if (sensor.isSensorOfType(LiveDataType.WINDAVERAGE)) {
                 sensorThingId = TellstickBindingConstants.WINDSENSOR_THING_TYPE;
-            } else if (sensor.isRainSensor()) {
+            } else if (sensor.isSensorOfType(LiveDataType.RAINRATE)) {
                 sensorThingId = TellstickBindingConstants.RAINSENSOR_THING_TYPE;
+            } else if (sensor.isSensorOfType(LiveDataType.WATT)) {
+                sensorThingId = TellstickBindingConstants.POWERSENSOR_THING_TYPE;
             } else {
                 sensorThingId = TellstickBindingConstants.SENSOR_THING_TYPE;
             }

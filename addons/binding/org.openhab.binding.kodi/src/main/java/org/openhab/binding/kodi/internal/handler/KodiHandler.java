@@ -22,6 +22,8 @@ import javax.measure.Unit;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -50,6 +52,7 @@ import org.openhab.binding.kodi.internal.config.KodiChannelConfig;
 import org.openhab.binding.kodi.internal.config.KodiConfig;
 import org.openhab.binding.kodi.internal.model.KodiFavorite;
 import org.openhab.binding.kodi.internal.model.KodiPVRChannel;
+import org.openhab.binding.kodi.internal.model.KodiSystemProperties;
 import org.openhab.binding.kodi.internal.protocol.KodiConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +68,12 @@ import org.slf4j.LoggerFactory;
  */
 public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
+    private static final String SYSTEM_COMMAND_HIBERNATE = "Hibernate";
+    private static final String SYSTEM_COMMAND_REBOOT = "Reboot";
+    private static final String SYSTEM_COMMAND_SHUTDOWN = "Shutdown";
+    private static final String SYSTEM_COMMAND_SUSPEND = "Suspend";
+    private static final String SYSTEM_COMMAND_QUIT = "Quit";
+
     private final Logger logger = LoggerFactory.getLogger(KodiHandler.class);
 
     private final KodiConnection connection;
@@ -75,9 +84,10 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
     private final KodiDynamicStateDescriptionProvider stateDescriptionProvider;
 
-    public KodiHandler(@NonNull Thing thing, KodiDynamicStateDescriptionProvider stateDescriptionProvider) {
+    public KodiHandler(@NonNull Thing thing, KodiDynamicStateDescriptionProvider stateDescriptionProvider,
+            WebSocketClient webSocketClient) {
         super(thing);
-        connection = new KodiConnection(this);
+        connection = new KodiConnection(this, webSocketClient);
 
         this.stateDescriptionProvider = stateDescriptionProvider;
     }
@@ -237,7 +247,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 break;
             case CHANNEL_SYSTEMCOMMAND:
                 if (command instanceof StringType) {
-                    connection.sendSystemCommand(command.toString());
+                    handleSystemCommand(command.toString());
                     updateState(CHANNEL_SYSTEMCOMMAND, UnDefType.UNDEF);
                 } else if (RefreshType.REFRESH == command) {
                     updateState(CHANNEL_SYSTEMCOMMAND, UnDefType.UNDEF);
@@ -252,6 +262,8 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
             case CHANNEL_PVR_CHANNEL:
             case CHANNEL_THUMBNAIL:
             case CHANNEL_FANART:
+            case CHANNEL_AUDIO_CODEC:
+            case CHANNEL_VIDEO_CODEC:
             case CHANNEL_CURRENTTIME:
             case CHANNEL_CURRENTTIMEPERCENTAGE:
             case CHANNEL_DURATION:
@@ -325,6 +337,23 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
             return pvrChannelGroupId;
         }
         return 0;
+    }
+
+    private void handleSystemCommand(String command) {
+        switch (command) {
+            case SYSTEM_COMMAND_QUIT:
+                connection.sendApplicationQuit();
+                break;
+            case SYSTEM_COMMAND_HIBERNATE:
+            case SYSTEM_COMMAND_REBOOT:
+            case SYSTEM_COMMAND_SHUTDOWN:
+            case SYSTEM_COMMAND_SUSPEND:
+                connection.sendSystemCommand(command);
+                break;
+            default:
+                logger.debug("Received unknown system command '{}'.", command);
+                break;
+        }
     }
 
     /*
@@ -569,6 +598,8 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     public void updateConnectionState(boolean connected) {
         if (connected) {
             updateStatus(ThingStatus.ONLINE);
+            scheduler.schedule(() -> connection.getSystemProperties(), 1, TimeUnit.SECONDS);
+            scheduler.schedule(() -> connection.updateVolume(), 1, TimeUnit.SECONDS);
             try {
                 String version = connection.getVersion();
                 thing.setProperty(PROPERTY_VERSION, version);
@@ -660,7 +691,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     }
 
     @Override
-    public void updatePVRChannel(final String channel) {
+    public void updatePVRChannel(String channel) {
         updateState(CHANNEL_PVR_CHANNEL, createStringState(channel));
     }
 
@@ -672,6 +703,16 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     @Override
     public void updateFanart(RawType fanart) {
         updateState(CHANNEL_FANART, createImageState(fanart));
+    }
+
+    @Override
+    public void updateAudioCodec(String codec) {
+        updateState(CHANNEL_AUDIO_CODEC, createStringState(codec));
+    }
+
+    @Override
+    public void updateVideoCodec(String codec) {
+        updateState(CHANNEL_VIDEO_CODEC, createStringState(codec));
     }
 
     @Override
@@ -687,6 +728,30 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     @Override
     public void updateDuration(long duration) {
         updateState(CHANNEL_DURATION, createQuantityState(duration, SmartHomeUnits.SECOND));
+    }
+
+    @Override
+    public void updateSystemProperties(KodiSystemProperties systemProperties) {
+        if (systemProperties != null) {
+            List<StateOption> options = new ArrayList<>();
+            if (systemProperties.canHibernate()) {
+                options.add(new StateOption(SYSTEM_COMMAND_HIBERNATE, SYSTEM_COMMAND_HIBERNATE));
+            }
+            if (systemProperties.canReboot()) {
+                options.add(new StateOption(SYSTEM_COMMAND_REBOOT, SYSTEM_COMMAND_REBOOT));
+            }
+            if (systemProperties.canShutdown()) {
+                options.add(new StateOption(SYSTEM_COMMAND_SHUTDOWN, SYSTEM_COMMAND_SHUTDOWN));
+            }
+            if (systemProperties.canSuspend()) {
+                options.add(new StateOption(SYSTEM_COMMAND_SUSPEND, SYSTEM_COMMAND_SUSPEND));
+            }
+            if (systemProperties.canQuit()) {
+                options.add(new StateOption(SYSTEM_COMMAND_QUIT, SYSTEM_COMMAND_QUIT));
+            }
+            stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_SYSTEMCOMMAND),
+                    options);
+        }
     }
 
     /**
@@ -715,7 +780,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     /**
      * Wrap the given RawType and return it as {@link State} or return {@link UnDefType#UNDEF} if the RawType is null.
      */
-    private State createImageState(RawType image) {
+    private State createImageState(@Nullable RawType image) {
         if (image == null) {
             return UnDefType.UNDEF;
         } else {

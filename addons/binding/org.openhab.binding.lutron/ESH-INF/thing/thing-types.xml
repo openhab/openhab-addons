@@ -366,6 +366,69 @@
 		</config-description>
 	</thing-type>
 
+	<thing-type id="timeclock">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Timeclock</label>
+		<description>RA2/HWQS timeclock and scheduler module</description>
+
+		<channels>
+			<channel id="clockmode" typeId="clockmode"/>
+			<channel id="sunrise" typeId="timeROAdvanced">
+				<label>Sunrise</label>
+				<description>Today's sunrise time</description>
+			</channel>
+			<channel id="sunset" typeId="timeROAdvanced">
+				<label>Sunset</label>
+				<description>Today's sunset time</description>
+			</channel>
+			<channel id="execevent" typeId="eventindex">
+				<label>Execute Event</label>
+			</channel>
+			<channel id="enableevent" typeId="eventindex">
+				<label>Enable Event</label>
+			</channel>
+			<channel id="disableevent" typeId="eventindex">
+				<label>Disable Event</label>
+			</channel>
+		</channels>
+
+		<config-description>
+			<parameter name="integrationId" type="integer" required="true">
+				<label>Integration ID</label>
+				<description>Address of timeclock in the Lutron control system</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="greenmode">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Green Mode</label>
+		<description>Green mode step control</description>
+
+		<channels>
+			<channel id="step" typeId="greenstep"/>
+		</channels>
+
+		<config-description>
+			<parameter name="integrationId" type="integer" required="true">
+				<label>Integration ID</label>
+				<description>Address of green mode controller in the Lutron control system</description>
+			</parameter>
+			<parameter name="pollInterval" type="integer" min="0" max="240" unit="min">
+				<label>Poll Interval</label>
+				<description>Poll interval in minutes (0 = polling disabled)</description>
+				<unitLabel>minutes</unitLabel>
+				<default>15</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
 	<bridge-type id="prgbridge">
 		<label>Lutron GRX-PRG or GRX-CI-PRG Bridge</label>
 		<description>Ethernet access point to Lutron Grafik Eye 3x/4x Systems</description>
@@ -861,10 +924,42 @@
 
 	<channel-type id="sunrisesunset">
 		<item-type>DateTime</item-type>
-		<label>Sunrise</label>
-		<description>Today's sunrise</description>
+		<label>Sunrise/Sunset</label>
+		<description>Today's sunrise/sunset time</description>
 		<category>Schedule</category>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="timeROAdvanced" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>DateTime</label>
+		<description>Advanced read-only DateTime</description>
+		<category>Schedule</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="clockmode">
+		<item-type>Number</item-type>
+		<label>Timeclock Mode</label>
+		<description>Mode number for timeclock</description>
+		<category>Number</category>
+		<state min="0"/>
+	</channel-type>
+
+	<channel-type id="eventindex" advanced="true">
+		<item-type>Number</item-type>
+		<label>Timeclock Event Index</label>
+		<description>Timeclock event index number</description>
+		<category>Number</category>
+		<state min="1"/>
+	</channel-type>
+
+	<channel-type id="greenstep">
+		<item-type>Number</item-type>
+		<label>Step</label>
+		<description>Green mode step number</description>
+		<category>Number</category>
+		<state min="1"/>
 	</channel-type>
 
 	<channel-type id="superschedulebutton">

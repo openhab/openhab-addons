@@ -16,7 +16,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.ALARM_COMMAND;
 
@@ -32,24 +32,18 @@ public class SomfyTahomaExternalAlarmHandler extends SomfyTahomaBaseThingHandler
 
     public SomfyTahomaExternalAlarmHandler(Thing thing) {
         super(thing);
-    }
-
-    @Override
-    public Hashtable<String, String> getStateNames() {
-        return new Hashtable<String, String>() {
-            {
-                put("active_zones_state", "core:ActiveZonesState");
-            }
-        };
+        stateNames = new HashMap<String, String>() {{
+            put("active_zones_state", "core:ActiveZonesState");
+        }};
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command {} for channel {}", command, channelUID);
-        if (channelUID.getId().equals(ALARM_COMMAND) && command instanceof StringType) {
+        if (ALARM_COMMAND.equals(channelUID.getId()) && command instanceof StringType) {
             sendCommand(command.toString(), "[]");
         }
-        if (command.equals(RefreshType.REFRESH)) {
+        if (RefreshType.REFRESH.equals(command)) {
             sendCommand("refreshState", "[]");
             updateChannelState(channelUID);
         }

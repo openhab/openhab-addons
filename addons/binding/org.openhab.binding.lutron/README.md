@@ -26,6 +26,8 @@ This binding currently supports the following thing types:
 * vcrx - Visor control receiver
 * virtualkeypad - Repeater virtual keypad
 * shade - Lutron shade or motorized drape
+* greenmode - Green Mode subsystem
+* timeclock - Scheduling subsystem
 
 ## Discovery
 
@@ -249,6 +251,56 @@ Thing lutron:virtualkeypad:repeaterbuttons (lutron:ipbridge:radiora2) [ integrat
 
 The behavior of this binding is the same as the other keypad bindings, with the exception that the button and led channels created have the Advanced flag set.
 
+### Green Mode
+
+The Radio RA2 system has a "Green Mode" or "Green Button" feature which allows the system to be placed in to one or more user-defined power saving modes called "steps".
+Each step can take actions such as trimming down the 100% level on selected lighting dimmers by a specified percentage, shutting off certain loads, modifying thermostat settings, etc.
+Typically step 1 is "Off" or "Normal", and step 2 is "Green Mode", however other steps may be defined by the installer as desired.
+The greenmode thing is used to interface to the green mode subsystem.
+It requires that the `integrationId` parameter be set to the ID of the green mode subsystem.
+This should generally be 22.
+It creates a single channel "step" that can be used to set or query the active green mode step number.
+Unlike other Lutron system state settings, the binding is not automatically notified by the bridge device of changes to the current green mode step.
+This may be due to a bug in the Lutron firmware.
+The handler can be set to poll for the active green mode step so that the binding will know if it has been changed by another station.
+The optional `pollInterval` configuration parameter controls how often the handler polls.
+It can be set to anywhere between 0 and 240 minutes, and defaults to 15 minutes.
+A setting of 0 will disabled polling.
+You can also initiate a poll at any time by sending a refresh command (RefreshType.REFRESH) to the step channel.
+Note that it should usually be unnecessary for the poll interval to be set to less than 5-10 minutes, since the green mode step typically changes rather infrequently and takes effect gradually.
+
+Example:
+
+```
+Thing lutron:greenmode:greenmode (lutron:ipbridge:radiora2) [ integrationId=22 ]
+```
+
+### Timeclock
+
+Radio RA2 and Homeworks QS have timeclock subsystems that provide scheduled execution of tasks at set times, randomized times, or at arbitrary offsets from local sunrise/sunset.
+The tasks executed depend on which timeclock mode (e.g. Normal, Away, Suspend) is currently selected, and the modes themselves are user-definable (Radio RA2 only).
+In addition, tasks can be individually executed, and enabled or disabled for scheduled execution.
+The timeclock thing provides an interface to timeclock functions.
+It allows you to get and set the current timeclock mode, get the current day's sunrise and sunset times, execute a specific task, be notified when a task executes, and enable or disable tasks.
+The `integrationId` parameter must be set to the ID of the timeclock subsystem.
+
+It creates the following six channels:
+
+* clockmode - Gets or sets the current timeclock mode.
+* sunrise - The timeclock's local sunrise time for the current day. Read only. You must send a refresh command (RefreshType.REFRESH) to query the system for the current day's sunrise time, as it is not automatically updated.
+* sunset - The timeclock's local sunset time for the current day. Read only. You must send a refresh command to query the system for the current day's sunset time, as it is not automatically updated.
+* execevent - Updates with the index number of each executing event. Send an event's index number to start execution of it.
+* enableevent - Updates with an event's index number when it is enabled. Send an event's index number to enable it.
+* disableevent - Updates with an event's index number when it is disabled. Send an event's index number to disable it.
+
+All channels except clockmode are marked as advanced.
+
+Example:
+
+```
+Thing lutron:timeclock:timeclock (lutron:ipbridge:radiora2) [ integrationId=23 ]
+```
+
 ## Channels
 
 The following channels are supported:
@@ -263,6 +315,13 @@ The following channels are supported:
 | keypads(except pico)| led*              | Switch        | LED indicator for the associated button      |
 | vcrx                | cci*              | Contact       | Contact closure input on/off status          |
 | shade               | shadelevel        | Rollershutter | Accepts Up, Down, Stop, & Percent commands   |
+| greenmode           | step              | Number        | Get/set active green mode step number        |
+| timeclock           | clockmode         | Number        | Get/set active clock mode index number       |
+| timeclock           | sunrise           | DateTime      | Get the timeclock's sunrise time             |
+| timeclock           | sunset            | DateTime      | Get the timeclock's sunset time              |
+| timeclock           | execevent         | Number        | Execute event or monitor events executed     |
+| timeclock           | enableevent       | Number        | Enable event or monitor events enabled       |
+| timeclock           | disableevent      | Number        | Disable event or monitor events disabled     |
 
 The channels available on each keypad device (i.e. keypad, ttkeypad, pico, vcrx, and virtualkeypad) will vary with keypad type and model.
 Appropriate channels will created automatically by the keypad, ttkeypad, and pico handlers based on the setting of the "model" parameter for those thing types.

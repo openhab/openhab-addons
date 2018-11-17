@@ -11,7 +11,9 @@ package org.openhab.binding.kodi.internal;
 import java.util.EventListener;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.RawType;
+import org.openhab.binding.kodi.internal.model.KodiSystemProperties;
 import org.openhab.binding.kodi.internal.protocol.KodiConnection;
 
 /**
@@ -65,15 +67,21 @@ public interface KodiEventListener extends EventListener {
 
     void updateGenreList(List<String> genreList);
 
-    void updatePVRChannel(final String channel);
+    void updatePVRChannel(String channel);
 
-    void updateThumbnail(RawType thumbnail);
+    void updateThumbnail(@Nullable RawType thumbnail);
 
-    void updateFanart(RawType fanart);
+    void updateFanart(@Nullable RawType fanart);
+
+    void updateAudioCodec(String codec);
+
+    void updateVideoCodec(String codec);
 
     void updateCurrentTime(long currentTime);
 
     void updateCurrentTimePercentage(double currentTimePercentage);
 
     void updateDuration(long duration);
+
+    void updateSystemProperties(@Nullable KodiSystemProperties systemProperties);
 }

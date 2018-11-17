@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.tellstick.internal;
 
-import static org.openhab.binding.tellstick.TellstickBindingConstants.*;
+import static org.openhab.binding.tellstick.internal.TellstickBindingConstants.*;
 
 import java.util.Hashtable;
 
@@ -18,11 +18,13 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.tellstick.handler.TelldusBridgeHandler;
-import org.openhab.binding.tellstick.handler.TelldusDevicesHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.tellstick.internal.core.TelldusCoreBridgeHandler;
 import org.openhab.binding.tellstick.internal.discovery.TellstickDiscoveryService;
+import org.openhab.binding.tellstick.internal.handler.TelldusBridgeHandler;
+import org.openhab.binding.tellstick.internal.handler.TelldusDevicesHandler;
 import org.openhab.binding.tellstick.internal.live.TelldusLiveBridgeHandler;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +34,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jarle Hjortland - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.tellstick")
 public class TellstickHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(TellstickHandlerFactory.class);
     private TellstickDiscoveryService discoveryService = null;
@@ -45,8 +48,7 @@ public class TellstickHandlerFactory extends BaseThingHandlerFactory {
         if (discoveryService == null) {
             discoveryService = new TellstickDiscoveryService(tellstickBridgeHandler);
             discoveryService.activate();
-            bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
-                    new Hashtable<String, Object>());
+            bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>());
         } else {
             discoveryService.addBridgeHandler(tellstickBridgeHandler);
         }

@@ -21,6 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.openhab.io.neeo.NeeoService;
+import org.openhab.io.neeo.internal.NeeoBrainServlet;
 import org.openhab.io.neeo.internal.NeeoConstants;
 import org.openhab.io.neeo.internal.NeeoUtil;
 import org.openhab.io.neeo.internal.ServiceContext;
@@ -53,6 +54,9 @@ public class ThingDashboardService extends DefaultServletService {
     /** The service context */
     private final ServiceContext context;
 
+    /** The service */
+    private final NeeoService service;
+
     /**
      * Constructs the servlet from the {@link NeeoService} and {@link ServiceContext}
      *
@@ -64,6 +68,7 @@ public class ThingDashboardService extends DefaultServletService {
         Objects.requireNonNull(context, "context cannot be null");
 
         this.context = context;
+        this.service = service;
         gson = NeeoUtil.createNeeoDeviceGsonBuilder(service, context).create();
     }
 
@@ -110,7 +115,7 @@ public class ThingDashboardService extends DefaultServletService {
                 }
             } else if (StringUtils.equalsIgnoreCase(paths[0], "getvirtualdevice")) {
                 final NeeoThingUID uid = context.generate(NeeoConstants.VIRTUAL_THING_TYPE);
-                final NeeoDevice device = new NeeoDevice(uid, NeeoDeviceType.EXCLUDE, "NEEO Integration",
+                final NeeoDevice device = new NeeoDevice(uid, 0, NeeoDeviceType.EXCLUDE, "NEEO Integration",
                         "New Virtual Thing", new ArrayList<>(), null, null, null, null);
                 NeeoUtil.write(resp, gson.toJson(new ReturnStatus(device)));
             } else {
@@ -140,6 +145,11 @@ public class ThingDashboardService extends DefaultServletService {
             if (StringUtils.equalsIgnoreCase(paths[0], "updatedevice")) {
                 final NeeoDevice device = gson.fromJson(req.getReader(), NeeoDevice.class);
                 context.getDefinitions().put(device);
+
+                for (NeeoBrainServlet servlet : service.getServlets()) {
+                    servlet.getBrainApi().restart(); // restart so brain will query changes
+                }
+
                 NeeoUtil.write(resp, gson.toJson(ReturnStatus.SUCCESS));
             } else if (StringUtils.equalsIgnoreCase(paths[0], "restoredevice")) {
                 final NeeoThingUID uid = new NeeoThingUID(IOUtils.toString(req.getReader()));
@@ -183,7 +193,7 @@ public class ThingDashboardService extends DefaultServletService {
     /**
      * Helper method to produce an examples rules file and write it to the {@link HttpServletResponse}
      *
-     * @param resp the non-null {@link HttpServletResponse}
+     * @param resp   the non-null {@link HttpServletResponse}
      * @param device the non-null {@link NeeoDevice}
      * @throws IOException if an IOException occurs while writing the file
      */
@@ -221,7 +231,7 @@ public class ThingDashboardService extends DefaultServletService {
     /**
      * Helper method to append a line of text ot the string builder with a line separator
      *
-     * @param sb a non-null string builder
+     * @param sb   a non-null string builder
      * @param text the non-null, possibly empty text
      */
     private void appendLine(StringBuilder sb, String text) {

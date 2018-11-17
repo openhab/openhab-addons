@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.somfytahoma.handler;
 
-import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
@@ -16,7 +15,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
 
@@ -32,11 +31,7 @@ public class SomfyTahomaOnOffHeatingSystemHandler extends SomfyTahomaBaseThingHa
 
     public SomfyTahomaOnOffHeatingSystemHandler(Thing thing) {
         super(thing);
-    }
-
-    @Override
-    public Hashtable<String, String> getStateNames() {
-        return new Hashtable<String, String>() {
+        stateNames = new HashMap<String, String>() {
             {
                 put(TARGET_HEATING_LEVEL, "io:TargetHeatingLevelState");
             }
@@ -46,10 +41,10 @@ public class SomfyTahomaOnOffHeatingSystemHandler extends SomfyTahomaBaseThingHa
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command {} for channel {}", command, channelUID);
-        if (command.equals(RefreshType.REFRESH)) {
+        if (RefreshType.REFRESH.equals(command)) {
             updateChannelState(channelUID);
         } else {
-            if (channelUID.getId().equals(TARGET_HEATING_LEVEL)) {
+            if (TARGET_HEATING_LEVEL.equals(channelUID.getId())) {
                 String param = "[\"" + command.toString() + "\"]";
                 sendCommand(COMMAND_SET_HEATINGLEVEL, param);
             }
