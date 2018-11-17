@@ -5,7 +5,7 @@
 		],
 		"channels": [
 			{
-				"property": "on",
+				"property": "power",
 				"friendlyName": "Power",
 				"channel": "power",
 				"type": "Switch",
