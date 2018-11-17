@@ -93,7 +93,7 @@ public class KonnectedHandler extends BaseThingHandler {
                 logger.debug("A command was sent to a sensor type so we are ignoring the command");
             } else {
                 int sendCommand = (OnOffType.OFF.compareTo((OnOffType) command));
-                logger.debug("The command being sent to pin {} for channel:  is {}", channelUID.getAsString(), pin,
+                logger.debug("The command being sent to pin {} for channel:{}  is {}", pin, channelUID.getAsString(),
                         sendCommand);
                 sendActuatorCommand(Integer.toString(sendCommand), pin, channelUID);
             }
