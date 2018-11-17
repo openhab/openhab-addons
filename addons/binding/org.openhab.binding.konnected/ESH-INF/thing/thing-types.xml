@@ -28,6 +28,7 @@
 			<parameter name="zone" type="text" required="true">
 				<label>Zone Number</label>
 				<description>The Zone Number of the channel.</description>
+				<default>6</default>
 				<options>
 					<option value="1">1</option>
 					<option value="2">2</option>
@@ -49,7 +50,6 @@
 			<parameter name="zone" type="text">
 				<label>Zone Number</label>
 				<description>The Zone Number of the channel.</description>
-				<default>6</default>
 				<options>
 					<option value="1">1</option>
 					<option value="2">2</option>
