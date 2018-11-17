@@ -15,8 +15,6 @@ import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.Nullable;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -41,17 +39,16 @@ public class ParadoxCommunicationHandler extends BaseThingHandler {
     private static final int DEFAULT_REFRESH_INTERVAL = 60; // sec
 
     private final Logger logger = LoggerFactory.getLogger(ParadoxCommunicationHandler.class);
+
     ScheduledFuture<?> schedule;
 
     private MailAdapter mailAdapter;
 
-    @Nullable
     private ParadoxCommunicationConfiguration config;
 
     @SuppressWarnings("null")
     public ParadoxCommunicationHandler(Thing thing) {
         super(thing);
-
     }
 
     @Override
@@ -61,7 +58,7 @@ public class ParadoxCommunicationHandler extends BaseThingHandler {
 
     private void refreshData() {
         try {
-            List<String> retrievedMessages = mailAdapter.retrieveAndMarkRead(MailAdapter.QUERY_UNREAD);
+            List<String> retrievedMessages = mailAdapter.retrieveAndMarkRead(GmailAdapter.QUERY_UNREAD);
             ParadoxStatesCache.getInstance().refresh(retrievedMessages);
         } catch (IOException e) {
             logger.info("Unable to retrieve data from GMAIL", e);
@@ -97,7 +94,7 @@ public class ParadoxCommunicationHandler extends BaseThingHandler {
 
             mailAdapter = new GmailAdapter(config.username, config.clientId, config.clientSecrets, config.accessToken,
                     config.refreshToken);
-            List<String> retrievedMessages = mailAdapter.retrieveAndMarkRead(MailAdapter.INITIAL_QUERY);
+            List<String> retrievedMessages = mailAdapter.retrieveAndMarkRead(GmailAdapter.INITIAL_QUERY);
             return retrievedMessages;
 
         } catch (GeneralSecurityException | IOException e) {
