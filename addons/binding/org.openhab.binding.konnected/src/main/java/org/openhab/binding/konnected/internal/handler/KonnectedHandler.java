@@ -23,7 +23,6 @@ import javax.measure.quantity.Temperature;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.core.validation.ConfigValidationException;
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
@@ -82,6 +81,7 @@ public class KonnectedHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         // get the zone number in integer form
         Channel channel = this.getThing().getChannel(channelUID.getId());
+        String channelType = channel.getChannelTypeUID().getAsString();
         String zoneNumber = (String) channel.getConfiguration().get(CHANNEL_ZONE);
         Integer zone = Integer.parseInt(zoneNumber);
         logger.debug("The channelUID is: {} and the zone is :", channelUID.getAsString(), zone);
@@ -89,12 +89,14 @@ public class KonnectedHandler extends BaseThingHandler {
         Integer pin = Arrays.asList(PIN_TO_ZONE).get(zone);
         // if the command is OnOfftype
         if (command instanceof OnOffType) {
-            int sendCommand = (OnOffType.OFF.compareTo((OnOffType) command));
-            logger.debug("The command being sent to pin {} for channel:  is {}", channelUID.getAsString(), pin,
-                    sendCommand);
-            sendActuatorCommand(Integer.toString(sendCommand), pin, channelUID);
-        } else if (command instanceof OpenClosedType) {
-            logger.debug("A command was sent to a sensor type so we are ignoring the command");
+            if (channelType.equalsIgnoreCase(CHANNEL_SWITCH)) {
+                logger.debug("A command was sent to a sensor type so we are ignoring the command");
+            } else {
+                int sendCommand = (OnOffType.OFF.compareTo((OnOffType) command));
+                logger.debug("The command being sent to pin {} for channel:{}  is {}", pin, channelUID.getAsString(),
+                        sendCommand);
+                sendActuatorCommand(Integer.toString(sendCommand), pin, channelUID);
+            }
         } else if (command instanceof RefreshType) {
             getSwitchState(pin, channelUID);
         }
@@ -121,16 +123,11 @@ public class KonnectedHandler extends BaseThingHandler {
                 logger.debug(
                         "The configrued zone of channelID: {}  was a match for the zone sent by the alarm panel: {} on thing: {}",
                         channelId, sentZone, this.getThing().getUID().getId());
-
                 String channelType = channel.getChannelTypeUID().getAsString();
                 logger.debug("The channeltypeID is: {}", channelType);
                 // check if the itemType has been defined for the zone received
                 // check the itemType of the Zone, if Contact, send the State if Temp send Temp, etc.
-                if (channelType.equalsIgnoreCase(CHANNEL_SWITCH)) {
-                    OpenClosedType openClosedType = event.getState().equalsIgnoreCase("1") ? OpenClosedType.OPEN
-                            : OpenClosedType.CLOSED;
-                    updateState(channelId, openClosedType);
-                } else if (channelType.equalsIgnoreCase(CHANNEL_ACTUATOR)) {
+                if (channelType.equalsIgnoreCase(CHANNEL_SWITCH) || channelType.equalsIgnoreCase(CHANNEL_ACTUATOR)) {
                     OnOffType onOffType = event.getState().equalsIgnoreCase("1") ? OnOffType.ON : OnOffType.OFF;
                     updateState(channelId, onOffType);
                 } else if (channelType.equalsIgnoreCase(CHANNEL_HUMIDITY)) {

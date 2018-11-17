@@ -21,7 +21,7 @@ The auto-discovery service of the binding will detect the ip address and port of
 But once it is added you will need to provide an Auth Token to secure communication between the module and openHAB.  
 As discussed above the binding will attempt to discover the ip address of your openHAB server.  However, if it is unable to determine the ip address you can manually define the ip address and port in the thing configuration.
 In addition you can also turn off discovery which when this setting is synced to the module will cause the device to no longer respond to UPnP requests as documented. https://help.konnected.io/support/solutions/articles/32000023968-disabling-device-discovery
-Please use this setting with caution and do not enable until a static ip address has been provided for your Konnected Alarm Panel via DHCP, router or otherwise.
+Please use this setting with caution and do not disable until a static ip address has been provided for your Konnected Alarm Panel via DHCP, router or otherwise.
 The blink setting will disable the transmission LED on the Konnected Alarm Panel.
 
 
@@ -41,7 +41,7 @@ For zones 1-5, you will need to add channels for the remaining zones that you ha
 
 | Channel Type  | ItemType | ConfigParameters| Description |
 | ------------- | ------------- |-------------| -------------| 
-|Switch|Contact|Zone Number| This is the channel type for sensors or other read only devices   |
+|Switch|Switch|Zone Number| This is the channel type for sensors or other read only devices   |
 |Actuator|Switch|Zone Number, Momentary, Pause, Times| This is the channel type for devices whose state can be turned on an off by the Konnected Alarm Panel |
 |Temperature|Number:Temperature|Zone Number, DHT22, Poll Interval, DS18b20 Address| This is the channel for sensors which measure temperature (DHT22 and DS18B20). The DHT22 setting should be set to true when the channel is monitoring a zone connected to a DHT22 sensor and false if the zone is connected to a DS1820B sensor |
 |Humidity|Number:Dimonsionless|Zone Number| This is the channel type for the humidity sensor on a connected DHT22 sensor |
