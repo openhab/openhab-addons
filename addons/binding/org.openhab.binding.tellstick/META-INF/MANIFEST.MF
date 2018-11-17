@@ -2,7 +2,6 @@ Manifest-Version: 1.0
 Automatic-Module-Name: org.openhab.binding.tellstick
 Bundle-ClassPath: 
  .,
- lib/jna-4.5.2.jar,
  lib/javatellstick-1.1.jar,
  lib/async-http-client-2.0.19.jar,
  lib/async-http-client-netty-utils-2.0.19.jar,
@@ -19,6 +18,7 @@ Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
 Import-Package: 
  com.google.common.collect,
+ com.sun.jna,
  org.apache.commons.lang,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
