@@ -165,6 +165,12 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         }
     }
 
+    protected void cacheStateType(String stateName, int type) {
+        if (type > 0 && !typeTable.containsKey(stateName)) {
+            typeTable.put(stateName, type);
+        }
+    }
+
     private State parseTahomaState(String acceptedState, SomfyTahomaState state) {
 
         if (state == null) {
@@ -174,11 +180,16 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         int type = state.getType();
 
         try {
-            if (type == 0) {
+            if (typeTable.containsKey(state.getName())) {
                 type = typeTable.get(state.getName());
+            } else {
+                cacheStateType(state);
             }
 
-            cacheStateType(state);
+            if (type == 0) {
+                logger.debug("Cannot recognize the state type for: {}!", state.getValue());
+                return null;
+            }
 
             logger.trace("Value to parse: {}, type: {}", state.getValue(), type);
             switch (type) {

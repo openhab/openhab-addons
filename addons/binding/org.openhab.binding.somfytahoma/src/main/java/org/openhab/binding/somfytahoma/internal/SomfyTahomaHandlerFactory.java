@@ -48,7 +48,7 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             THING_TYPE_GARAGEDOOR, THING_TYPE_AWNING, THING_TYPE_ACTIONGROUP, THING_TYPE_ONOFF, THING_TYPE_LIGHT,
             THING_TYPE_LIGHTSENSOR, THING_TYPE_SMOKESENSOR, THING_TYPE_CONTACTSENSOR, THING_TYPE_OCCUPANCYSENSOR,
             THING_TYPE_WINDOW, THING_TYPE_INTERNAL_ALARM, THING_TYPE_EXTERNAL_ALARM, THING_TYPE_POD,
-            THING_TYPE_HEATING_SYSTEM, THING_TYPE_ONOFF_HEATING_SYSTEM, THING_TYPE_DOOR_LOCK, THING_TYPE_PERGOLA, THING_TYPE_WINDOW_HANDLE));
+            THING_TYPE_HEATING_SYSTEM, THING_TYPE_ONOFF_HEATING_SYSTEM, THING_TYPE_DOOR_LOCK, THING_TYPE_PERGOLA, THING_TYPE_WINDOW_HANDLE, THING_TYPE_TEMPERATURESENSOR));
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
@@ -136,6 +136,9 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
         }
         if (thingTypeUID.equals(THING_TYPE_WINDOW_HANDLE)) {
             return new SomfyTahomaWindowHandleHandler(thing);
+        }
+        if (thingTypeUID.equals(THING_TYPE_TEMPERATURESENSOR)) {
+            return new SomfyTahomaTemperatureSensorHandler(thing);
         }
         return null;
     }
