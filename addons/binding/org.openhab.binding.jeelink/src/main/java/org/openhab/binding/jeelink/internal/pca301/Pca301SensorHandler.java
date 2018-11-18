@@ -69,6 +69,7 @@ public class Pca301SensorHandler extends JeeLinkSensorHandler<Pca301Reading> {
 
     @Override
     public void dispose() {
+        super.dispose();
         cancelRetry();
     }
 
