@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Tests for {@link DevicelistModel}.
+ * Tests for {@link DeviceListModel}.
  *
  * @author Christoph Weitkamp - Initial contribution
  */
@@ -34,7 +34,7 @@ public class AVMFritzModelTest {
 
     private final Logger logger = LoggerFactory.getLogger(AVMFritzModelTest.class);
 
-    private DevicelistModel devices;
+    private DeviceListModel devices;
 
     @Before
     public void setUp() {
@@ -56,15 +56,15 @@ public class AVMFritzModelTest {
         //@formatter:off
 
         try {
-            Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
-            devices = (DevicelistModel) u.unmarshal(new StringReader(xml));
+            Unmarshaller u = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
+            devices = (DeviceListModel) u.unmarshal(new StringReader(xml));
         } catch (JAXBException e) {
             logger.error("Exception creating Unmarshaller: {}", e.getLocalizedMessage(), e);
         }
     }
 
     @Test
-    public void validateDevicelistModel() {
+    public void validateDeviceListModel() {
         assertNotNull(devices);
         assertEquals(11, devices.getDevicelist().size());
         assertEquals("1", devices.getXmlApiVersion());
