@@ -106,16 +106,8 @@ public class GoogleTTSService implements TTSService {
      */
     @Activate
     protected void activate(Map<String, Object> config) {
-        // create home folder
-        File userData = new File(ConfigConstants.getUserDataFolder());
-        File homeFolder = new File(userData, SERVICE_ID);
-
-        if (!homeFolder.exists()) {
-            homeFolder.mkdirs();
-        }
-        logger.info("Using home folder: {}", homeFolder.getAbsolutePath());
-
         // create cache folder
+        File userData = new File(ConfigConstants.getUserDataFolder());
         File cacheFolder = new File(new File(userData, CACHE_FOLDER_NAME), SERVICE_PID);
         if (!cacheFolder.exists()) {
             cacheFolder.mkdirs();
@@ -140,18 +132,17 @@ public class GoogleTTSService implements TTSService {
      */
     private Set<AudioFormat> initAudioFormats() {
         logger.trace("Initializing audio formats");
-        Set<AudioFormat> ret = new HashSet<>();
-        Set<String> formats = apiImpl.getSupportedAudioFormats();
-        for (String format : formats) {
+        Set<AudioFormat> result = new HashSet<>();
+        for (String format : apiImpl.getSupportedAudioFormats()) {
             AudioFormat audioFormat = getAudioFormat(format);
             if (audioFormat != null) {
-                ret.add(audioFormat);
+                result.add(audioFormat);
                 logger.trace("Audio format supported: {}", format);
             } else {
                 logger.trace("Audio format not supported: {}", format);
             }
         }
-        return ret;
+        return result;
     }
 
     /**
@@ -161,16 +152,16 @@ public class GoogleTTSService implements TTSService {
      */
     private Set<Voice> initVoices() {
         logger.trace("Initializing voices");
-        Set<Voice> ret = new HashSet<>();
-        for (Locale l : apiImpl.getSupportedLocales()) {
-            ret.addAll(apiImpl.getVoicesForLocale(l));
+        Set<Voice> result = new HashSet<>();
+        for (Locale locale : apiImpl.getSupportedLocales()) {
+            result.addAll(apiImpl.getVoicesForLocale(locale));
         }
         if (logger.isTraceEnabled()) {
-            for (Voice v : ret) {
-                logger.trace("Google Cloud TTS voice: {}", v.getLabel());
+            for (Voice voice : result) {
+                logger.trace("Google Cloud TTS voice: {}", voice.getLabel());
             }
         }
-        return ret;
+        return result;
     }
 
     /**
@@ -293,8 +284,8 @@ public class GoogleTTSService implements TTSService {
         }
         // Validate arguments
         // trim text
-        text = text.trim();
-        if (text.isEmpty()) {
+        String trimmedText = text.trim();
+        if (trimmedText.isEmpty()) {
             throw new TTSException("The passed text is null or empty");
         }
         if (!this.allVoices.contains(voice)) {
@@ -312,7 +303,7 @@ public class GoogleTTSService implements TTSService {
         }
 
         // create the audio byte array for given text, locale, format
-        byte[] audio = apiImpl.synthesizeSpeech(text, (GoogleTTSVoice) voice, requestedFormat.getCodec());
+        byte[] audio = apiImpl.synthesizeSpeech(trimmedText, (GoogleTTSVoice) voice, requestedFormat.getCodec());
         if (audio == null) {
             throw new TTSException("Could not read from Google Cloud TTS Service");
         }

@@ -54,10 +54,7 @@ public class AudioConfig {
     }
 
     public AudioConfig(AudioEncoding audioEncoding, Double pitch, Double speakingRate, Double volumeGainDb) {
-        this.audioEncoding = audioEncoding;
-        this.pitch = pitch;
-        this.speakingRate = speakingRate;
-        this.volumeGainDb = volumeGainDb;
+        this(audioEncoding, pitch, null, speakingRate, volumeGainDb);
     }
 
     public AudioConfig(AudioEncoding audioEncoding, Double pitch, Long sampleRateHertz, Double speakingRate,
