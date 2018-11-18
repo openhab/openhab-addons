@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * through possible addresses and asks for status on that address. If it's a valid module, the processor will return
  * with the dimmer status and it will be discovered.
  *
- * @author Andrew Shilliday
+ * @author Andrew Shilliday - Initial contribution
  *
  */
 public class HwDiscoveryService extends AbstractDiscoveryService {

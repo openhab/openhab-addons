@@ -12,8 +12,8 @@ import java.math.BigDecimal;
 
 /**
  * Configuration class for Dimmer type
- * 
- * @author Jeff Lauterbach
+ *
+ * @author Jeff Lauterbach - Initial contribution
  *
  */
 public class DimmerConfig {

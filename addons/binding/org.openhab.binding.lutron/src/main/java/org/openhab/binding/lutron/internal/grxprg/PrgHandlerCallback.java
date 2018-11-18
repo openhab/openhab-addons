@@ -18,7 +18,7 @@ import org.eclipse.smarthome.core.types.State;
  * A callback to {@link PrgBridgeHandler} that will be used by the {@link PrgProtocolHandler} to update the status and
  * state of the {@link PrgBridgeHandler} or a specific {@link GrafikEyeHandler}
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  *
  */
 interface PrgHandlerCallback {
@@ -27,7 +27,7 @@ interface PrgHandlerCallback {
      *
      * @param status a non-null {@link org.eclipse.smarthome.core.thing.ThingStatus}
      * @param detail a non-null {@link org.eclipse.smarthome.core.thing.ThingStatusDetail}
-     * @param msg a possibly null, possibly empty message
+     * @param msg    a possibly null, possibly empty message
      */
     void statusChanged(ThingStatus status, ThingStatusDetail detail, String msg);
 
@@ -35,7 +35,7 @@ interface PrgHandlerCallback {
      * Callback to the {@link PrgBridgeHandler} to update the state of an item
      *
      * @param channelId the non-null, non-empty channel id
-     * @param state the new non-null {@State}
+     * @param state     the new non-null {@State}
      */
     void stateChanged(String channelId, State state);
 
@@ -43,8 +43,8 @@ interface PrgHandlerCallback {
      * Callback to the {@link PrgBridgeHandler} to update the state of an item in a specific {@link GrafikEyeHandler}.
      *
      * @param controlUnit the control unit identifier to update
-     * @param channelId the non-null, non-empty channel id
-     * @param state the new non-null {@State}
+     * @param channelId   the non-null, non-empty channel id
+     * @param state       the new non-null {@State}
      */
     void stateChanged(int controlUnit, String channelId, State state);
 
@@ -53,7 +53,7 @@ interface PrgHandlerCallback {
      * or not
      *
      * @param controlUnit the control unit identifier
-     * @param zone the zone identify
+     * @param zone        the zone identify
      * @return true if a shade zone, false otherwise
      */
     boolean isShade(int controlUnit, int zone);

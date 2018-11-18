@@ -34,7 +34,6 @@ public class PhantomButtonHandler extends LutronHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (channelUID.getId().equals(LutronBindingConstants.CHANNEL_SWITCH)) {
             if (command instanceof OnOffType) {
-
                 ButtonPressCommand cmd = new ButtonPressCommand(
                         getConfigAs(PhantomButtonConfig.class).getButtonNumber(),
                         ButtonPressCommand.ButtonState.valueOf(command.toString()));
@@ -52,11 +51,9 @@ public class PhantomButtonHandler extends LutronHandler {
     }
 
     private void handleLEDMapFeedback(LEDMapFeedback feedback) {
-
         boolean zoneEnabled = feedback.getZoneValue(getConfigAs(PhantomButtonConfig.class).getButtonNumber()) == '1';
 
         updateState(LutronBindingConstants.CHANNEL_SWITCH, zoneEnabled ? OnOffType.ON : OnOffType.OFF);
-
     }
 
 }

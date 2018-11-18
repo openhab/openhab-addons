@@ -11,7 +11,7 @@ package org.openhab.binding.lutron.internal.grxprg;
 /**
  * Configuration class for the Grafik Eye controlled by the PRG interface
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  */
 public class GrafikEyeConfig {
     /**

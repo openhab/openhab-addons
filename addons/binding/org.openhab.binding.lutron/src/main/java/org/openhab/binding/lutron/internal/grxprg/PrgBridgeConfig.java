@@ -11,7 +11,7 @@ package org.openhab.binding.lutron.internal.grxprg;
 /**
  * Configuration class for the GRX-PRG/GRX-CI-PRG bridge
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  */
 public class PrgBridgeConfig {
 

@@ -11,7 +11,7 @@ package org.openhab.binding.lutron.internal.grxprg;
 /**
  * Interface defining a callback from {@link SocketSession} when a response was received (or an exception occurred)
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  */
 public interface SocketSessionCallback {
     /**
