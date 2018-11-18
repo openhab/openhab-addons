@@ -1,8 +1,7 @@
 {
 	"deviceMapping": {
 		"id": [
-			"chuangmi.plug.v1",
-			"chuangmi.plug.v2"
+			"chuangmi.plug.v1"
 		],
 		"channels": [
 			{
