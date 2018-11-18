@@ -97,6 +97,9 @@ public class SomfyTahomaBindingConstants {
     // Window handle
     public static final ThingTypeUID THING_TYPE_WINDOW_HANDLE = new ThingTypeUID(BINDING_ID, "windowhandle");
 
+    // Temperature sensor
+    public static final ThingTypeUID THING_TYPE_TEMPERATURESENSOR = new ThingTypeUID(BINDING_ID, "temperaturesensor");
+
     // List of all Channel ids
     // Gateway
     public static final String STATUS = "status";
@@ -125,6 +128,9 @@ public class SomfyTahomaBindingConstants {
 
     // Light sensor
     public static final String LUMINANCE = "luminance";
+
+    // Temperature sensor
+    public static final String TEMPERATURE = "temperature";
 
     // Alarm
     public static final String ALARM_COMMAND = "alarm_command";
@@ -194,6 +200,7 @@ public class SomfyTahomaBindingConstants {
     public static final String DOORLOCK = "DoorLock";
     public static final String PERGOLA = "Pergola";
     public static final String WINDOWHANDLE = "WindowHandle";
+    public static final String TEMPERATURESENSOR = "TemperatureSensor";
 
     // unsupported uiClasses
     public static final String PROTOCOLGATEWAY = "ProtocolGateway";
