@@ -6,17 +6,17 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.paradoxalarm.internal;
+package org.openhab.binding.paradoxalarm.internal.communication.messages;
+
+import java.io.IOException;
 
 /**
- * The {@link ParadoxAlarmConfiguration} class contains fields mapping thing configuration parameters.
+ * Interface representing what we need to add IPPacketPayload.
+ * Not sure if we need it as it needs only getBytes() method so far.
  *
  * @author Konstantin_Polihronov - Initial contribution
  */
-public class ParadoxAlarmConfiguration {
+public interface IPPacketPayload {
 
-    /**
-     * Sample configuration parameter. Replace with your own.
-     */
-    public String config1;
+    public byte[] getBytes() throws IOException;
 }

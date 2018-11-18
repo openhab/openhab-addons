@@ -1,7 +1,8 @@
 Manifest-Version: 1.0
 Automatic-Module-Name: org.openhab.binding.paradoxalarm
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: .
+Bundle-ClassPath: .,
+ lib/logback-classic-1.2.3.jar
 Bundle-ManifestVersion: 2
 Bundle-Name: ParadoxAlarm Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
@@ -9,6 +10,7 @@ Bundle-SymbolicName: org.openhab.binding.paradoxalarm;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
 Import-Package: 
+ ch.qos.logback.classic;version="1.0.7",
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.library.types,
