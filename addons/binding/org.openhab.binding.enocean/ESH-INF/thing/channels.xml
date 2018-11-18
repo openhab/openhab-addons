@@ -20,7 +20,7 @@
 
 	<channel-type id="setBaseId" advanced="true">
 		<item-type>String</item-type>
-		<label>Set base Id</label>
+		<label>Set Base Id</label>
 		<description>Set base id of EnOcean gateway. Use this with care! Must be between 0xFF800000 and 0xFFFFFF80</description>
 	</channel-type>
 
@@ -95,7 +95,7 @@
 
 	<channel-type id="fanSpeedStage">
 		<item-type>String</item-type>
-		<label>Fan speed</label>
+		<label>Fan Speed</label>
 		<state readOnly="true">
 			<options>
 				<option value="-1">Auto</option>
@@ -123,7 +123,7 @@
 
 	<channel-type id="windowHandleState">
 		<item-type>String</item-type>
-		<label>Window handle state</label>
+		<label>Window Handle State</label>
 		<description>Describes the window handle state</description>
 		<state readOnly="true">
 			<options>
@@ -171,35 +171,13 @@
 
 	<channel-type id="receivingState">
 		<item-type>String</item-type>
-		<label>Receiving status</label>
+		<label>Receiving Status</label>
 		<state readOnly="true" />
 	</channel-type>
-
-	<!-- virtual rocker switch channel -->
-	<channel-type id="virtualRockerswitch">
-		<item-type>String</item-type>
-		<label>Rocker switch</label>
-		<description>The rocker switch channel allows to send rocker msg.</description>
-		<config-description>
-			<parameter name="duration" type="integer">
-				<label>Time in ms between Press and Release message</label>
-				<default>250</default>
-			</parameter>
-			<parameter name="switchMode" type="text">
-				<label>Switch mode</label>
-				<options>
-					<option value="rockerSwitch">Rocker switch</option>
-					<option value="toggleButtonDir1">Toggle button (upper button)</option>
-					<option value="toggleButtonDir2">Toggle button (lower button)</option>
-				</options>
-				<default>rockerSwitch</default>
-			</parameter>
-		</config-description>
-	</channel-type>
-
+	
 	<channel-type id="motionDetection">
 		<item-type>Switch</item-type>
-		<label>Motion detected</label>
+		<label>Motion Detected</label>
 		<description>Motion detection sensor state.</description>
 		<category>Switch</category>
 		<state readOnly="true" />
@@ -221,14 +199,14 @@
 
 	<channel-type id="delayRadioOFF" advanced="true">
 		<item-type>Number:Duration</item-type>
-		<label>Delay radio off</label>
+		<label>Delay Radio Off</label>
 		<description>Delay switch off by radio for given seconds</description>
 		<state pattern="%d %unit%" />
 	</channel-type>
 
 	<channel-type id="externalInterfaceMode" advanced="true">
 		<item-type>String</item-type>
-		<label>External interface mode</label>
+		<label>External Interface Mode</label>
 		<description>This option is to selected the type of the wired switch</description>
 		<state>
 			<options>
@@ -241,14 +219,14 @@
 
 	<channel-type id="twoStateSwitch" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Switching state</label>
+		<label>Switching State</label>
 		<description>Switch state according to specific on/off positions (otherwise toggle)</description>
 		<category>Switch</category>
 	</channel-type>
 
 	<channel-type id="ecoMode">
 		<item-type>Switch</item-type>
-		<label>Eco mode</label>
+		<label>Eco Mode</label>
 		<description>Activates eco mode (disables certain messages)</description>
 	</channel-type>
 
@@ -274,5 +252,19 @@
 		<label>Cubic metre</label>
 		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
+	
+	<channel-type id="counter">
+        <item-type>Number</item-type>
+        <label>Counter</label>
+        <description>Counter</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="currentNumber">
+        <item-type>Number</item-type>
+        <label>Current</label>
+        <description>Current</description>
+        <state readOnly="true" />
+    </channel-type>
 
 </thing:thing-descriptions>

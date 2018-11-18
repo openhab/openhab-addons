@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.enocean.internal.config;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.smarthome.core.util.HexUtils;
@@ -21,22 +19,7 @@ import org.eclipse.smarthome.core.util.HexUtils;
 public class EnOceanBaseConfig {
     public String enoceanId;
 
-    // TODO uncomment this line if ESH can parse parameter value list (issue eclipse/smarthome #6146)
-    // public ArrayList<String> receivingEEPId;
-    protected ArrayList<String> rEEPId;
-
-    public List<String> getReceivingEEPId() {
-        return rEEPId;
-    }
-
-    public void setReceivingEEPId(String receivingEEPId) {
-        rEEPId = new ArrayList<String>(Arrays.asList(receivingEEPId.split(",")));
-    }
-
-    public void setReceivingEEPId(ArrayList<String> receivingEEPId) {
-        rEEPId = new ArrayList<>();
-        rEEPId.addAll(receivingEEPId);
-    }
+    public List<String> receivingEEPId;
 
     public byte[] getEnOceanId() {
         return HexUtils.hexToBytes(enoceanId);

@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.enocean.internal.eep.A5_12;
 
-import static org.openhab.binding.enocean.EnOceanBindingConstants.*;
+import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -110,9 +110,11 @@ public abstract class A5_12 extends _4BSMessage {
         switch (channelId) {
             case CHANNEL_INSTANTPOWER:
             case CHANNEL_INSTANTLITRE:
+            case CHANNEL_CURRENTNUMBER:
                 return getCurrentValue();
             case CHANNEL_TOTALUSAGE:
             case CHANNEL_TOTALCUBICMETRE:
+            case CHANNEL_COUNTER:
                 return getCumulativeValue();
         }
 

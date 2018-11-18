@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.enocean.internal.eep.A5_38;
 
-import static org.openhab.binding.enocean.EnOceanBindingConstants.CHANNEL_DIMMER;
+import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.CHANNEL_DIMMER;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;

@@ -9,7 +9,7 @@
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>Energy measurement switch</label>
+		<label>Energy Measurement Switch</label>
 		<description>Electronic switches and dimmers with energy measurement and local control (EEP: D2-01)</description>
 
 		<config-description>
@@ -31,11 +31,25 @@
 			<parameter name="sendingEEPId" type="text">
 				<label>EEP for sending commands</label>
 				<options>
+					<option value="D2_01_00">Switching and energy measurement (EEP: D2_01_00)</option>
+					<option value="D2_01_01">Switching (EEP: D2_01_01)</option>
+					<option value="D2_01_02">Switching, dimming and energy measurement (EEP: D2_01_02)</option>
+					<option value="D2_01_03">Switching and dimming (EEP: D2_01_03)</option>
+					<option value="D2_01_04">Switching, dimming and energy measurement (EEP: D2_01_04)</option>
+					<option value="D2_01_05">Switching, dimming and energy measurement (EEP: D2_01_05)</option>
+					<option value="D2_01_06">Switching and energy measurement (EEP: D2_01_06)</option>
+					<option value="D2_01_07">Switching (EEP: D2_01_07)</option>
+					<option value="D2_01_08">Switching, dimming and energy measurement (EEP: D2_01_08)</option>
 					<option value="D2_01_09">Switching, dimming and energy measurement (EEP: D2_01_09)</option>
 					<option value="D2_01_09_PERMUNDO">Permundo PSC</option>
-					<option value="D2_01_0A">Switching, dimming and energy measurement (EEP: D2_01_0A)</option>
+					<option value="D2_01_0A">Switching and energy measurement (EEP: D2_01_0A)</option>
+					<option value="D2_01_0B">Switching and energy measurement (EEP: D2_01_0B)</option>
+					<option value="D2_01_0C">Switching and energy measurement (EEP: D2_01_0C)</option>
+					<option value="D2_01_0D">Switching (EEP: D2_01_0D)</option>
+					<option value="D2_01_0E">Switching and energy measurement (EEP: D2_01_0E)</option>
 					<option value="D2_01_0F">Switching (EEP: D2_01_0F)</option>
 					<option value="D2_01_0F_NODON">NodON SIN-2-1-00 (EEP: D2_01_0F)</option>
+					<option value="D2_01_11">Switching (EEP: D2_01_11)</option>
 					<option value="D2_01_12">Switching (EEP: D2_01_12)</option>
 					<option value="D2_01_12_NODON">NodON SIN-2-2-0x (EEP: D2_01_12)</option>
 				</options>
@@ -49,16 +63,30 @@
 			<parameter name="receivingEEPId" type="text" multiple="true">
 				<label>EEP for receiving commands</label>
 				<options>
+					<option value="D2_01_00">Switching and energy measurement (EEP: D2_01_00)</option>
+					<option value="D2_01_01">Switching (EEP: D2_01_01)</option>
+					<option value="D2_01_02">Switching, dimming and energy measurement (EEP: D2_01_02)</option>
+					<option value="D2_01_03">Switching and dimming (EEP: D2_01_03)</option>
+					<option value="D2_01_04">Switching, dimming and energy measurement (EEP: D2_01_04)</option>
+					<option value="D2_01_05">Switching, dimming and energy measurement (EEP: D2_01_05)</option>
+					<option value="D2_01_06">Switching and energy measurement (EEP: D2_01_06)</option>
+					<option value="D2_01_07">Switching (EEP: D2_01_07)</option>
+					<option value="D2_01_08">Switching, dimming and energy measurement (EEP: D2_01_08)</option>
 					<option value="D2_01_09">Switching, dimming and energy measurement (EEP: D2_01_09)</option>
 					<option value="D2_01_09_PERMUNDO">Permundo PSC</option>
-					<option value="D2_01_0A">Switching, dimming and energy measurement (EEP: D2_01_0A)</option>
+					<option value="D2_01_0A">Switching and energy measurement (EEP: D2_01_0A)</option>
+					<option value="D2_01_0B">Switching and energy measurement (EEP: D2_01_0B)</option>
+					<option value="D2_01_0C">Switching and energy measurement (EEP: D2_01_0C)</option>
+					<option value="D2_01_0D">Switching (EEP: D2_01_0D)</option>
+					<option value="D2_01_0E">Switching and energy measurement (EEP: D2_01_0E)</option>
 					<option value="D2_01_0F">Switching (EEP: D2_01_0F)</option>
 					<option value="D2_01_0F_NODON">NodON SIN-2-1-00 (EEP: D2_01_0F)</option>
+					<option value="D2_01_11">Switching (EEP: D2_01_11)</option>
 					<option value="D2_01_12">Switching (EEP: D2_01_12)</option>
 					<option value="D2_01_12_NODON">NodON SIN-2-2-0x (EEP: D2_01_12)</option>
 					<option value="A5_12_01">AMR Electricity (EEP: A5_12_01)</option>
 				</options>
-				<multipleLimit>4</multipleLimit>
+				<multipleLimit>2</multipleLimit>
 				<limitToOptions>true</limitToOptions>
 				<required>true</required>
 			</parameter>

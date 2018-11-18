@@ -9,7 +9,7 @@
 package org.openhab.binding.enocean.internal.messages;
 
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.openhab.binding.enocean.EnOceanBindingConstants;
+import org.openhab.binding.enocean.internal.EnOceanBindingConstants;
 import org.openhab.binding.enocean.internal.messages.ESP3Packet.ESPPacketType;
 
 /**

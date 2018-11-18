@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.enocean.profiles;
 
-import static org.openhab.binding.enocean.EnOceanBindingConstants.*;
+import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,11 +34,11 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
+ * Factory class for creating and advising profiles
  *
  * @author Daniel Weber - Initial contribution
  */
 @Component(service = { ProfileFactory.class, ProfileTypeProvider.class, ProfileAdvisor.class })
-
 public class EnOceanProfileFactory implements ProfileFactory, ProfileAdvisor, ProfileTypeProvider {
 
     private ChannelTypeRegistry channelTypeRegistry;

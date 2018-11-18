@@ -9,50 +9,16 @@
 
 package org.openhab.binding.enocean.internal.config;
 
-import java.security.InvalidParameterException;
-
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
-public class EnOceanChannelVirtualRockerSwitchConfig {
+public class EnOceanChannelVirtualRockerSwitchConfig extends EnOceanChannelRockerSwitchConfigBase {
 
     public Integer duration;
-    public String switchMode;
-
-    public enum SwitchMode {
-        Unkown(""),
-        RockerSwitch("rockerSwitch"),
-        ToggleDir1("toggleButtonDir1"),
-        ToggleDir2("toggleButtonDir2");
-
-        private String value;
-
-        SwitchMode(String value) {
-            this.value = value;
-        }
-
-        public static SwitchMode getSwitchMode(String value) {
-            if (value == null) {
-                return SwitchMode.Unkown;
-            }
-
-            for (SwitchMode t : SwitchMode.values()) {
-                if (t.value.equals(value)) {
-                    return t;
-                }
-            }
-
-            throw new InvalidParameterException("Unknown SwitchMode");
-        }
-    }
 
     public EnOceanChannelVirtualRockerSwitchConfig() {
+        super();
         duration = 350;
-        switchMode = "rockerSwitch";
-    }
-
-    public SwitchMode getSwitchMode() {
-        return SwitchMode.getSwitchMode(switchMode);
     }
 }

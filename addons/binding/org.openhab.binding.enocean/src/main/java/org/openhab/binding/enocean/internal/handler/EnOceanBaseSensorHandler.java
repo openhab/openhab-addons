@@ -6,11 +6,10 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.enocean.handler;
+package org.openhab.binding.enocean.internal.handler;
 
-import static org.openhab.binding.enocean.EnOceanBindingConstants.*;
+import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -42,10 +41,10 @@ import org.openhab.binding.enocean.internal.transceiver.ESP3PacketListener;
 public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements ESP3PacketListener {
 
     // List of all thing types which support receiving of eep messages
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>(
-            Arrays.asList(THING_TYPE_ROOMOPERATINGPANEL, THING_TYPE_MECHANICALHANDLE, THING_TYPE_CONTACT,
-                    THING_TYPE_TEMPERATURESENSOR, THING_TYPE_TEMPERATUREHUMIDITYSENSOR, THING_TYPE_ROCKERSWITCH,
-                    THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR, THING_TYPE_PUSHBUTTON));
+    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>(Arrays.asList(
+            THING_TYPE_ROOMOPERATINGPANEL, THING_TYPE_MECHANICALHANDLE, THING_TYPE_CONTACT,
+            THING_TYPE_TEMPERATURESENSOR, THING_TYPE_TEMPERATUREHUMIDITYSENSOR, THING_TYPE_ROCKERSWITCH,
+            THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR, THING_TYPE_PUSHBUTTON, THING_TYPE_AUTOMATEDMETERSENSOR));
 
     protected Hashtable<RORG, EEPType> receivingEEPTypes = null;
 
@@ -53,21 +52,9 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
         super(thing);
     }
 
-    protected void setReceivingEEP(EnOceanBaseConfig cfg) {
-        Configuration c = getConfig();
-        Object r = c.get(PARAMETER_RECEIVINGEEPID);
-        if (r != null && r instanceof String) {
-            cfg.setReceivingEEPId(r.toString());
-        }
-        if (r != null && r instanceof ArrayList<?>) {
-            cfg.setReceivingEEPId((ArrayList<String>) r);
-        }
-    }
-
     @Override
     void initializeConfig() {
         config = getConfigAs(EnOceanBaseConfig.class);
-        setReceivingEEP(config);
     }
 
     @Override
@@ -75,11 +62,11 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
         receivingEEPTypes = null;
 
         try {
-            if (config.getReceivingEEPId() != null && !config.getReceivingEEPId().isEmpty()) {
+            if (config.receivingEEPId != null && !config.receivingEEPId.isEmpty()) {
                 boolean first = true;
                 receivingEEPTypes = new Hashtable<>();
 
-                for (String receivingEEP : config.getReceivingEEPId()) {
+                for (String receivingEEP : config.receivingEEPId) {
                     if (receivingEEP == null) {
                         continue;
                     }

@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.enocean.internal.discovery;
 
-import static org.openhab.binding.enocean.EnOceanBindingConstants.*;
+import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.Arrays;
 import java.util.HashSet;

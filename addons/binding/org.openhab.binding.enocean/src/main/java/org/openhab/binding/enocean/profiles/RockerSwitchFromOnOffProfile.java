@@ -23,7 +23,8 @@ import org.openhab.binding.enocean.internal.config.EnOceanChannelVirtualRockerSw
 import org.openhab.binding.enocean.internal.config.EnOceanChannelVirtualRockerSwitchConfig.SwitchMode;
 
 /**
- *
+ * Profile to convert Switch commands into EnOcean rockerswitch messages
+ * 
  * @author Daniel Weber - Initial contribution
  */
 public class RockerSwitchFromOnOffProfile implements StateProfile {

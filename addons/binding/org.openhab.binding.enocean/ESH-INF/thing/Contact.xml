@@ -9,7 +9,7 @@
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>Single input contact</label>
+		<label>Single Input Contact</label>
 		<description>Single input contact sensor (EEP: D5-00)</description>
 
 		<config-description>

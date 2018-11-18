@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.enocean.handler;
+package org.openhab.binding.enocean.internal.handler;
 
-import static org.openhab.binding.enocean.EnOceanBindingConstants.*;
+import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -42,8 +42,8 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
 
     // List of thing types which support sending of eep messages
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>(
-            Arrays.asList(THING_TYPE_CENTRALCOMMAND, THING_TYPE_CLASSICDEVICE, THING_TYPE_MEASUREMENTSWITCH,
-                    THING_TYPE_GENERICTHING, THING_TYPE_ROLLERSHUTTER));
+            Arrays.asList(THING_TYPE_CENTRALCOMMAND, THING_TYPE_MEASUREMENTSWITCH, THING_TYPE_GENERICTHING,
+                    THING_TYPE_ROLLERSHUTTER));
 
     protected byte[] senderId; // base id of bridge + senderIdOffset, used for sending msg
     protected byte[] destinationId; // in case of broadcast FFFFFFFF otherwise the enocean id of the device
@@ -80,7 +80,6 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
     @Override
     void initializeConfig() {
         config = getConfigAs(EnOceanActuatorConfig.class);
-        setReceivingEEP(config);
     }
 
     protected EnOceanActuatorConfig getConfiguration() {
@@ -93,7 +92,7 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
 
             try {
                 sendingEEPType = EEPType.getType(getConfiguration().sendingEEPId);
-                updateChannels(sendingEEPType, true);
+                updateChannels(sendingEEPType, false);
 
                 if (sendingEEPType.getSupportsRefresh()) {
                     if (getConfiguration().pollingInterval > 0) {

@@ -10,7 +10,7 @@
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>Simple push button</label>
+		<label>Simple Push Button</label>
 		<description>Represents a physical push button (EEP: F6-01)</description>
 
 		<config-description>

@@ -6,7 +6,7 @@
 
 	<!-- EnOcean Bridge -->
 	<bridge-type id="bridge">
-		<label>EnOcean gateway</label>
+		<label>EnOcean Gateway</label>
 		<description>The EnOcean gateway connects to an ESP3 device.</description>
 
 		<channels>

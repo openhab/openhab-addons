@@ -9,7 +9,7 @@
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
-		<label>Temperature sensor</label>
+		<label>Temperature Sensor</label>
 		<description>Sensor which send temperature data (EEP: A5-02)</description>
 
 		<config-description>
