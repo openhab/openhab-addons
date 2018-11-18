@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * the TCP/IP session (either in response to our own commands or in response to external events [other TCP/IP sessions,
  * web GUI, etc]).
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  *
  */
 class PrgProtocolHandler {
@@ -250,10 +250,9 @@ class PrgProtocolHandler {
      * Constructs the protocol handler from given parameters
      *
      * @param session a non-null {@link SocketSession} (may be connected or disconnected)
-     * @param config a non-null {@link PrgHandlerCallback}
+     * @param config  a non-null {@link PrgHandlerCallback}
      */
     PrgProtocolHandler(SocketSession session, PrgHandlerCallback callback) {
-
         if (session == null) {
             throw new IllegalArgumentException("session cannot be null");
         }
@@ -273,7 +272,6 @@ class PrgProtocolHandler {
      * @throws IOException an IO exception occurred during login
      */
     String login(String username) throws Exception {
-
         logger.info("Logging into the PRG interface");
         final NoDispatchingCallback callback = new NoDispatchingCallback();
         _session.setCallback(callback);
@@ -398,8 +396,8 @@ class PrgProtocolHandler {
      * Validates a zone intensity and returns the hex corresponding value (handles shade intensity zones as well)
      *
      * @param controlUnit the control unit
-     * @param zone the zone
-     * @param intensity the new intensity level
+     * @param zone        the zone
+     * @param intensity   the new intensity level
      * @return a valid hex representation
      * @throws IllegalArgumentException if controlUnit, zone or intensity are invalid
      */
@@ -431,8 +429,8 @@ class PrgProtocolHandler {
      * Converts a hex zone intensity back to a integer - handles shade zones as well
      *
      * @param controlUnit the control unit
-     * @param zone the zone
-     * @param intensity the hex intensity value
+     * @param zone        the zone
+     * @param intensity   the hex intensity value
      * @return the new intensity (between 0-100)
      * @throws IllegalArgumentException if controlUnit, zone or intensity are invalid
      */
@@ -464,7 +462,7 @@ class PrgProtocolHandler {
      * Selects a specific scene on a control unit
      *
      * @param controlUnit the control unit
-     * @param scene the new scene
+     * @param scene       the new scene
      * @throws IllegalArgumentException if controlUnit or scene are invalid
      */
     void selectScene(int controlUnit, int scene) {
@@ -483,7 +481,7 @@ class PrgProtocolHandler {
      * Sets the scene locked/unlocked for the specific control unit
      *
      * @param controlUnit the control unit
-     * @param locked true for locked, false otherwise
+     * @param locked      true for locked, false otherwise
      * @throws IllegalArgumentException if controlUnit is invalid
      */
     void setSceneLock(int controlUnit, boolean locked) {
@@ -495,7 +493,7 @@ class PrgProtocolHandler {
      * Sets the scene sequence on/off for the specific control unit
      *
      * @param controlUnit the control unit
-     * @param on true for sequencing on, false otherwise
+     * @param on          true for sequencing on, false otherwise
      * @throws IllegalArgumentException if controlUnit is invalid
      */
     void setSceneSequence(int controlUnit, boolean on) {
@@ -507,7 +505,7 @@ class PrgProtocolHandler {
      * Sets the zone locked/unlocked for the specific control unit
      *
      * @param controlUnit the control unit
-     * @param locked true for locked, false otherwise
+     * @param locked      true for locked, false otherwise
      * @throws IllegalArgumentException if controlUnit is invalid
      */
     void setZoneLock(int controlUnit, boolean locked) {
@@ -519,7 +517,7 @@ class PrgProtocolHandler {
      * Sets the zone to lowering for the specific control unit
      *
      * @param controlUnit the control unit
-     * @param zone the zone to lower
+     * @param zone        the zone to lower
      * @throws IllegalArgumentException if controlUnit or zone is invalid
      */
     void setZoneLower(int controlUnit, int zone) {
@@ -539,7 +537,7 @@ class PrgProtocolHandler {
      * Sets the zone to raising for the specific control unit
      *
      * @param controlUnit the control unit
-     * @param zone the zone to raise
+     * @param zone        the zone to raise
      * @throws IllegalArgumentException if controlUnit or zone is invalid
      */
     void setZoneRaise(int controlUnit, int zone) {
@@ -560,9 +558,9 @@ class PrgProtocolHandler {
      * nothing if already at floor or ceiling. If the specified zone is a shade, does nothing.
      *
      * @param controlUnit the control unit
-     * @param zone the zone
-     * @param fade the fade time (0-59 seconds, 60-3600 seconds converted to minutes)
-     * @param increase true to increase by 1, false otherwise
+     * @param zone        the zone
+     * @param fade        the fade time (0-59 seconds, 60-3600 seconds converted to minutes)
+     * @param increase    true to increase by 1, false otherwise
      * @throws IllegalArgumentException if controlUnit, zone or fade is invalid
      */
     void setZoneIntensity(int controlUnit, int zone, int fade, boolean increase) {
@@ -589,9 +587,9 @@ class PrgProtocolHandler {
      * If a shade, only deals with intensities from 0 to 5 (stop, open close, preset 1, preset 2, preset 3).
      *
      * @param controlUnit the control unit
-     * @param zone the zone
-     * @param fade the fade time (0-59 seconds, 60-3600 seconds converted to minutes)
-     * @param increase true to increase by 1, false otherwise
+     * @param zone        the zone
+     * @param fade        the fade time (0-59 seconds, 60-3600 seconds converted to minutes)
+     * @param increase    true to increase by 1, false otherwise
      * @throws IllegalArgumentException if controlUnit, zone, fade or intensity is invalid
      */
     void setZoneIntensity(int controlUnit, int zone, int fade, int intensity) {
@@ -743,97 +741,78 @@ class PrgProtocolHandler {
                     case 2: {
                         errorMsg = "Invalid scene selected";
                         break;
-
                     }
                     case 6: {
                         errorMsg = "Bad command was sent";
                         break;
-
                     }
                     case 13: {
                         errorMsg = "Not a timeclock unit (GRX-ATC or GRX-PRG)";
                         break;
-
                     }
                     case 14: {
                         errorMsg = "Illegal time was entered";
                         break;
-
                     }
                     case 15: {
                         errorMsg = "Invalid schedule";
                         break;
-
                     }
                     case 16: {
                         errorMsg = "No Super Sequence has been loaded";
                         break;
-
                     }
                     case 20: {
                         errorMsg = "Command was missing Control Units";
                         break;
-
                     }
                     case 21: {
                         errorMsg = "Command was missing data";
                         break;
-
                     }
                     case 22: {
                         errorMsg = "Error in command argument (improper hex value)";
                         break;
-
                     }
                     case 24: {
                         errorMsg = "Invalid Control Unit";
                         break;
-
                     }
                     case 25: {
                         errorMsg = "Invalid value, outside range of acceptable values";
                         break;
-
                     }
                     case 26: {
                         errorMsg = "Invalid Accessory Control";
                         break;
-
                     }
                     case 31: {
                         errorMsg = "Network address illegally formatted; 4 octets required (xxx.xxx.xxx.xxx)";
                         break;
-
                     }
                     case 80: {
                         errorMsg = "Time-out error, no response received";
                         break;
-
                     }
                     case 100: {
                         errorMsg = "Invalid Telnet login number";
                         break;
-
                     }
                     case 101: {
                         errorMsg = "Invalid Telnet login";
                         break;
-
                     }
                     case 102: {
                         errorMsg = "Telnet login name exceeds 8 characters";
                         break;
-
                     }
                     case 103: {
                         errorMsg = "INvalid number of arguments";
                         break;
-
                     }
                     case 255: {
                         errorMsg = "GRX-PRG must be in programming mode for specific commands";
                         break;
-
                     }
                 }
                 logger.error("Error response: {} ({})", errorMsg, errorNbr);
@@ -848,7 +827,7 @@ class PrgProtocolHandler {
     /**
      * Handles the scene status response
      *
-     * @param m the non-null {@link Matcher} that matched the response
+     * @param m    the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleSceneStatus(Matcher m, String resp) {
@@ -883,7 +862,7 @@ class PrgProtocolHandler {
     /**
      * Handles the report time response
      *
-     * @param m the non-null {@link Matcher} that matched the response
+     * @param m    the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleReportTime(Matcher m, String resp) {
@@ -902,7 +881,6 @@ class PrgProtocolHandler {
                 c.set(Calendar.YEAR, yr + (yr < 50 ? 1900 : 2000));
 
                 _callback.stateChanged(PrgConstants.CHANNEL_TIMECLOCK, new DateTimeType(c));
-
             } catch (NumberFormatException e) {
                 logger.error("Invalid time response (can't parse number): '{}'", resp);
             }
@@ -914,7 +892,7 @@ class PrgProtocolHandler {
     /**
      * Handles the report schedule response
      *
-     * @param m the non-null {@link Matcher} that matched the response
+     * @param m    the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleReportSchedule(Matcher m, String resp) {
@@ -936,7 +914,7 @@ class PrgProtocolHandler {
     /**
      * Handles the sunrise/sunset response
      *
-     * @param m the non-null {@link Matcher} that matched the response
+     * @param m    the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleSunriseSunset(Matcher m, String resp) {
@@ -958,7 +936,6 @@ class PrgProtocolHandler {
                 sunset.set(Calendar.HOUR_OF_DAY, Integer.parseInt(m.group(3)));
                 sunset.set(Calendar.MINUTE, Integer.parseInt(m.group(4)));
                 _callback.stateChanged(PrgConstants.CHANNEL_SUNSET, new DateTimeType(sunset));
-
             } catch (NumberFormatException e) {
                 logger.error("Invalid sunrise/sunset response (can't parse number): '{}'", resp);
             }
@@ -970,7 +947,7 @@ class PrgProtocolHandler {
     /**
      * Handles the super sequence response
      *
-     * @param m the non-null {@link Matcher} that matched the response
+     * @param m    the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleSuperSequenceStatus(Matcher m, String resp) {
@@ -997,7 +974,7 @@ class PrgProtocolHandler {
     /**
      * Handles the zone intensity response
      *
-     * @param m the non-null {@link Matcher} that matched the response
+     * @param m    the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleZoneIntensity(Matcher m, String resp) {
@@ -1028,7 +1005,7 @@ class PrgProtocolHandler {
     /**
      * Handles the controller information response (currently not used).
      *
-     * @param m the non-null {@link Matcher} that matched the response
+     * @param m    the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleControlInfo(Matcher m, String resp) {
@@ -1065,7 +1042,7 @@ class PrgProtocolHandler {
     /**
      * Handles the interface being reset
      *
-     * @param m the non-null {@link Matcher} that matched the response
+     * @param m    the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleResetting(Matcher m, String resp) {
@@ -1075,7 +1052,7 @@ class PrgProtocolHandler {
     /**
      * Handles the button press response
      *
-     * @param m the non-null {@link Matcher} that matched the response
+     * @param m    the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleButton(Matcher m, String resp) {
@@ -1237,7 +1214,6 @@ class PrgProtocolHandler {
                 _responses.put(e);
             } catch (InterruptedException e1) {
             }
-
         }
 
     }

@@ -15,7 +15,7 @@ import org.openhab.binding.lutron.internal.LutronBindingConstants;
 /**
  * Defines common constants, which are used across the whole binding.
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  */
 @NonNullByDefault
 public class PrgConstants {
