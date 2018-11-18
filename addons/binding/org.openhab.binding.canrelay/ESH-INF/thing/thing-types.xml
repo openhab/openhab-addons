@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="canrelay"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="hwBridge">
+		<label>@text/bridge-type.canrelay.hwBridge.label</label>
+		<description>@text/bridge-type.canrelay.hwBridge.description</description>
+		<config-description>
+			<parameter name="serialPort" type="text" required="true">
+				<context>serial-port</context>
+				<default>/dev/ttyACM0</default>
+				<label>@text/parameter.serialPort.label</label>
+				<description>@text/parameter.serialPort.description</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="light">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="hwBridge" />
+		</supported-bridge-type-refs>
+		<label>@text/thing-type.canrelay.light.label</label>
+		<description>@text/thing-type.canrelay.light.description</description>
+		<category>Lightbulb</category>
+		<channels>
+			<channel id="lightSwitch" typeId="lightSwitchType" />
+		</channels>
+		<properties>
+			<property name="vendor">Lubos Housa</property>
+			<property name="modelId">CanRelay</property>
+			<property name="protocol">CANBUS</property>
+		</properties>
+		<representation-property>nodeID</representation-property>
+		<config-description>
+			<parameter name="nodeID" type="integer" required="true">
+				<label>@text/parameter.nodeID.label</label>
+				<description>@text/parameter.nodeID.description</description>
+			</parameter>
+			<parameter name="initialState" type="boolean" required="true">
+				<label>@text/parameter.initialState.label</label>
+				<description>@text/parameter.initialState.description</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Sample Channel Type -->
+	<channel-type id="lightSwitchType">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.canrelay.lightSwitchType.label</label>
+		<description>@text/channel-type.canrelay.lightSwitchType.description</description>
+		<category>Switch</category>
+        <tags>
+            <tag>Lighting</tag>
+        </tags>
+	</channel-type>
+
+</thing:thing-descriptions>

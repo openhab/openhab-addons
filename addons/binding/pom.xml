@@ -28,6 +28,8 @@
     <module>org.openhab.binding.avmfritz.test</module>
     <module>org.openhab.binding.bigassfan</module>
     <module>org.openhab.binding.boschindego</module>
+    <module>org.openhab.binding.canrelay</module>
+    <module>org.openhab.binding.canrelay.test</module>
     <module>org.openhab.binding.chromecast</module>
     <module>org.openhab.binding.chromecast.test</module>
     <module>org.openhab.binding.cm11a</module>
