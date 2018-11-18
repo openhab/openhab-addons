@@ -31,9 +31,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellstick.JNA;
 import org.tellstick.device.SupportedMethodsException;
-import org.tellstick.device.TellsticEventHandler;
 import org.tellstick.device.TellstickDevice;
 import org.tellstick.device.TellstickDeviceEvent;
+import org.tellstick.device.TellstickEventHandler;
 import org.tellstick.device.TellstickSensor;
 import org.tellstick.device.TellstickSensorEvent;
 import org.tellstick.device.iface.Device;
@@ -60,7 +60,7 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
     private TelldusDeviceController deviceController = null;
     private List<TellstickDevice> deviceList = new Vector<TellstickDevice>();
     private List<TellstickSensor> sensorList = new Vector<TellstickSensor>();
-    private TellsticEventHandler eventHandler;
+    private TellstickEventHandler eventHandler;
     private static boolean initialized = false;
     private List<DeviceStatusListener> deviceStatusListeners = new CopyOnWriteArrayList<>();
 
@@ -94,10 +94,10 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
     private String init(String libraryPath) {
         if (!initialized) {
             if (libraryPath != null) {
-                logger.info("Loading {} from {}", JNA.library, libraryPath);
+                logger.info("Loading {} from {}", JNA.nativeLibrary, libraryPath);
                 System.setProperty("jna.library.path", libraryPath);
             } else {
-                logger.info("Loading {} from system default paths", JNA.library);
+                logger.info("Loading {} from system default paths", JNA.nativeLibrary);
             }
             TellstickDevice.setSupportedMethods(JNA.CLibrary.TELLSTICK_BELL | JNA.CLibrary.TELLSTICK_TURNOFF
                     | JNA.CLibrary.TELLSTICK_TURNON | JNA.CLibrary.TELLSTICK_DIM);
@@ -163,7 +163,7 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
     }
 
     private synchronized void setupListeners() {
-        eventHandler = new TellsticEventHandler(deviceList);
+        eventHandler = new TellstickEventHandler(deviceList);
         eventHandler.addListener(this);
 
     }
