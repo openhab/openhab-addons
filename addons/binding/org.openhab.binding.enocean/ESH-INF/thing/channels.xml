@@ -174,29 +174,7 @@
 		<label>Receiving Status</label>
 		<state readOnly="true" />
 	</channel-type>
-
-	<!-- virtual rocker switch channel -->
-	<channel-type id="virtualRockerswitch">
-		<item-type>String</item-type>
-		<label>Rocker Switch</label>
-		<description>The rocker switch channel allows to send rocker msg.</description>
-		<config-description>
-			<parameter name="duration" type="integer">
-				<label>Time in ms between Press and Release message</label>
-				<default>250</default>
-			</parameter>
-			<parameter name="switchMode" type="text">
-				<label>Switch mode</label>
-				<options>
-					<option value="rockerSwitch">Rocker switch</option>
-					<option value="toggleButtonDir1">Toggle button (upper button)</option>
-					<option value="toggleButtonDir2">Toggle button (lower button)</option>
-				</options>
-				<default>rockerSwitch</default>
-			</parameter>
-		</config-description>
-	</channel-type>
-
+	
 	<channel-type id="motionDetection">
 		<item-type>Switch</item-type>
 		<label>Motion Detected</label>

@@ -15,7 +15,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -29,6 +28,7 @@ import org.openhab.binding.enocean.internal.discovery.EnOceanDeviceDiscoveryServ
 import org.openhab.binding.enocean.internal.handler.EnOceanBaseActuatorHandler;
 import org.openhab.binding.enocean.internal.handler.EnOceanBaseSensorHandler;
 import org.openhab.binding.enocean.internal.handler.EnOceanBridgeHandler;
+import org.openhab.binding.enocean.internal.handler.EnOceanClassicDeviceHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
@@ -50,7 +50,7 @@ public class EnOceanHandlerFactory extends BaseThingHandlerFactory {
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
-    private @NonNullByDefault({}) SerialPortManager serialPortManager;
+    private SerialPortManager serialPortManager;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -74,6 +74,8 @@ public class EnOceanHandlerFactory extends BaseThingHandlerFactory {
             return new EnOceanBaseActuatorHandler(thing);
         } else if (EnOceanBaseSensorHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new EnOceanBaseSensorHandler(thing);
+        } else if (EnOceanClassicDeviceHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            return new EnOceanClassicDeviceHandler(thing);
         }
 
         return null;

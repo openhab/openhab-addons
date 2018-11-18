@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Queue;
 import java.util.TooManyListenersException;
@@ -114,7 +115,7 @@ public abstract class EnOceanTransceiver {
     RequestQueue requestQueue;
     Request currentRequest = null;
 
-    protected Map<Long, ESP3PacketListener> listeners;
+    protected Map<Long, HashSet<ESP3PacketListener>> listeners;
     protected ESP3PacketListener teachInListener;
 
     // Input and output streams, must be created by transceiver implementations
@@ -133,7 +134,7 @@ public abstract class EnOceanTransceiver {
     public EnOceanTransceiver(TransceiverErrorListener errorListener, ScheduledExecutorService scheduler) {
 
         requestQueue = new RequestQueue(scheduler);
-        listeners = new HashMap<Long, ESP3PacketListener>();
+        listeners = new HashMap<Long, HashSet<ESP3PacketListener>>();
         teachInListener = null;
         this.errorListener = errorListener;
     }
@@ -398,9 +399,9 @@ public abstract class EnOceanTransceiver {
                 }
 
                 long s = Long.parseLong(HexUtils.bytesToHex(senderId), 16);
-                ESP3PacketListener listener = listeners.get(s);
-                if (listener != null) {
-                    listener.espPacketReceived(msg);
+                HashSet<ESP3PacketListener> pl = listeners.get(s);
+                if (pl != null) {
+                    pl.forEach(l -> l.espPacketReceived(msg));
                 }
             }
         } catch (Exception e) {
@@ -409,12 +410,20 @@ public abstract class EnOceanTransceiver {
     }
 
     public void addPacketListener(ESP3PacketListener listener) {
-        listeners.putIfAbsent(listener.getSenderIdToListenTo(), listener);
+
+        listeners.computeIfAbsent(listener.getSenderIdToListenTo(), k -> new HashSet<ESP3PacketListener>())
+                .add(listener);
         logger.debug("Listener added: {}", listener.getSenderIdToListenTo());
     }
 
     public void removePacketListener(ESP3PacketListener listener) {
-        listeners.remove(listener.getSenderIdToListenTo());
+        HashSet<ESP3PacketListener> pl = listeners.get(listener.getSenderIdToListenTo());
+        if (pl != null) {
+            pl.remove(listener);
+            if (pl.isEmpty()) {
+                listeners.remove(listener.getSenderIdToListenTo());
+            }
+        }
     }
 
     public void startDiscovery(ESP3PacketListener teachInListener) {

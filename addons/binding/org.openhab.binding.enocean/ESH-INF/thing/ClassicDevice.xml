@@ -5,13 +5,17 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<!-- RockerSwitch -->
-	<thing-type id="classicDevice">
+	<thing-type id="classicDevice" extensible="rockerswitchListenerSwitch, rockerswitchListenerRollershutter">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge" />
 		</supported-bridge-type-refs>
 
 		<label>Classic Device</label>
 		<description>This thing lets you control classic EnOcean devices by rocker switch messages (EEP: F6-02)</description>
+
+		<channels>
+			<channel typeId="virtualRockerswitch" id="virtualRockerswitch" />
+		</channels>
 
 		<config-description>
 			<parameter name="senderIdOffset" type="integer">
@@ -39,5 +43,50 @@
 			</parameter>
 		</config-description>
 	</thing-type>
+	
+	<!-- virtual rocker switch channel -->
+    <channel-type id="virtualRockerswitch">
+        <item-type>String</item-type>
+        <label>Rocker Switch</label>
+        <description>The rocker switch channel allows to send rocker msg.</description>
+        <config-description>
+            <parameter name="duration" type="integer">
+                <label>Time in ms between Press and Release message</label>
+                <default>250</default>
+            </parameter>
+            <parameter name="channel" type="text">
+                <label>Channel</label>
+                <description>Channel of rocker switch to listen to</description>
+                <options>
+                    <option value="channelA">Channel A</option>
+                    <option value="channelB">Channel B</option>
+                </options>
+                <default>channelA</default>
+            </parameter>
+            <parameter name="switchMode" type="text">
+                <label>Switch mode</label>
+                <options>
+                    <option value="rockerSwitch">Rocker switch</option>
+                    <option value="toggleButtonDir1">Toggle button (upper button)</option>
+                    <option value="toggleButtonDir2">Toggle button (lower button)</option>
+                </options>
+                <default>rockerSwitch</default>
+            </parameter>
+        </config-description>
+    </channel-type>
+    
+    <!-- rocker switch listener channel -->
+    <channel-type id="rockerswitchListenerSwitch">
+        <item-type>Switch</item-type>
+        <label>Rocker Switch Listener (Switch)</label>
+        <config-description-ref uri="enocean:listeningChannel:config"/>
+    </channel-type>
+    
+    <!-- rocker switch listener channel -->
+    <channel-type id="rockerswitchListenerRollershutter">
+        <item-type>Rollershutter</item-type>
+        <label>Rocker Switch Listener (Rollershutter)</label>
+        <config-description-ref uri="enocean:listeningChannel:config"/>
+    </channel-type>
 
 </thing:thing-descriptions>
