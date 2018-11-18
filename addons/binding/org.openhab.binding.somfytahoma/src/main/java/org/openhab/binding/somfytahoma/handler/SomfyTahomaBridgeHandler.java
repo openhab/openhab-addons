@@ -368,15 +368,17 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     }
 
     private void processEvent(SomfyTahomaEvent event) {
-        switch(event.getName()) {
+        switch (event.getName()) {
             case "DeviceStateChangedEvent":
                 processStateChangedEvent(event);
                 break;
             case "RefreshAllDevicesStatesCompletedEvent":
-                //force update thing states
-                for (Thing th : getThing().getThings()) {
-                    updateThingStates(th);
-                }
+                scheduler.schedule(() -> {
+                    //force update thing states
+                    for (Thing th : getThing().getThings()) {
+                        updateThingStates(th);
+                    }
+                }, 1, TimeUnit.SECONDS);
                 break;
             default:
                 //ignore other states

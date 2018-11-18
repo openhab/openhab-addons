@@ -165,4 +165,11 @@
 		<description>A state of the Somfy Window Handle</description>
 		<state readOnly="true"/>
 	</channel-type>
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>The temperature value of the sensor</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
 </thing:thing-descriptions>
