@@ -13,6 +13,7 @@ import static org.openhab.binding.valloxmv.internal.ValloxMVBindingConstants.THI
 import java.util.Collections;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -31,7 +32,9 @@ import org.osgi.service.component.annotations.Reference;
  * @author Björn Brings - Initial contribution
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.valloxmv")
+@NonNullByDefault
 public class ValloxMVHandlerFactory extends BaseThingHandlerFactory {
+    @Nullable
     private WebSocketClient webSocketClient;
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_VALLOXMV);

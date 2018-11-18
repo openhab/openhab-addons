@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Temperature;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -53,7 +53,7 @@ public class ValloxMVHandler extends BaseThingHandler {
     /**
      * IP of vallox ventilation unit web interface.
      */
-    public ValloxMVHandler(@NonNull Thing thing, WebSocketClient webSocketClient) {
+    public ValloxMVHandler(@NonNullByDefault Thing thing, WebSocketClient webSocketClient) {
         super(thing);
         this.webSocketClient = webSocketClient;
     }
