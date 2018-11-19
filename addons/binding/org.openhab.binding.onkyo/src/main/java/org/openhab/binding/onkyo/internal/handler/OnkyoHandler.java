@@ -795,24 +795,11 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
     }
 
     private DecimalType scaleVolumeForReceiver(PercentType volume) {
-        return new DecimalType(((Double) (volume.doubleValue() * getScaleCoefficient())).intValue());
+        return new DecimalType(((Double) (volume.doubleValue() * configuration.volumeScale)).intValue());
     }
 
     private PercentType scaleVolumeFromReceiver(DecimalType volume) {
-        return new PercentType(((Double) (volume.intValue() / getScaleCoefficient())).intValue());
-    }
-
-    private double getScaleCoefficient() {
-        switch (configuration.volumeScale) {
-            case 1:
-                return 2d;
-            case 2:
-                return 0.8d;
-            case 3:
-                return 0.5d;
-            default:
-                return 1d;
-        }
+        return new PercentType(((Double) (volume.intValue() / configuration.volumeScale)).intValue());
     }
 
     @Override

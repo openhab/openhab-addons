@@ -90,20 +90,22 @@ onkyo:onkyoAVR:avr-livingroom [ipAddress="192.168.1.100", port=60128, volumeLimi
 
 Binding then automatically scale the volume level in both directions (100% = 50 = 100%).
 
-You can also change the way volume scaling works. This can be necessary if your receiver uses a different scaling system than 0-100.
-The following values are available:
+You can also change the way volume scaling works.
+This can be necessary if your receiver uses a different scaling system than 0-100.
+You can specify a decimal number that acts as the coefficient for scaling.
+See below for a few examples:
 
 | Value  | Description                                          | Value for 100%   |
 |--------|------------------------------------------------------|------------------|
-| 0      | Default, don't scale                                 |              100 |
-| 1      | For receivers that support 0.5 increments in volume  |              200 |
-| 2      | For receivers that go from 0-80                      |               80 |
-| 3      | For receivers that go from 0-50                      |               50 |
+| 1      | Default, don't scale                                 |              100 |
+| 2      | For receivers that support 0.5 increments in volume  |              200 |
+| 0.8    | For receivers that go from 0-80                      |               80 |
+| 0.5    | For receivers that go from 0-50                      |               50 |
 
 Note that this is applied after the volume limiting took place.
 
 ```text
-onkyo:onkyoAVR:avr-livingroom [ipAddress="192.168.1.100", port=60128, scale=1]
+onkyo:onkyoAVR:avr-livingroom [ipAddress="192.168.1.100", port=60128, volumeScale=2]
 ```
 
 The binding will send value 200 for maximum volume to the receiver.
