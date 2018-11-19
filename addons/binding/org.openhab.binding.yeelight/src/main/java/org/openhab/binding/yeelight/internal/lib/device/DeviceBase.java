@@ -33,6 +33,7 @@ import com.google.gson.JsonParser;
  * The {@link DeviceBase} is a generic class for all devices.
  *
  * @author Coaster Li - Initial contribution
+ * @author Daniel Walters - Correct handling of brightness
  */
 public abstract class DeviceBase {
     private final Logger logger = LoggerFactory.getLogger(DeviceBase.class);
@@ -197,7 +198,7 @@ public abstract class DeviceBase {
         mConnection.invoke(new DeviceMethod(MethodAction.SWITCH, new Object[] { "off", "smooth", 500 }));
     }
 
-    public void increaseBrightness() {
+    public void decreaseBrightness() {
         int bright = getDeviceStatus().getBrightness() - 10;
         if (bright <= 0) {
             close();
@@ -206,7 +207,7 @@ public abstract class DeviceBase {
         }
     }
 
-    public void decreaseBrightness() {
+    public void increaseBrightness() {
         int bright = getDeviceStatus().getBrightness() + 10;
         if (bright > 100) {
             bright = 100;
