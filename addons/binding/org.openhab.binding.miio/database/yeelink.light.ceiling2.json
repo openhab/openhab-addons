@@ -33,20 +33,6 @@
 				]
 			},
 			{
-				"property": "bg_bright",
-				"friendlyName": "Ambient Brightness",
-				"channel": "ambientBrightness",
-				"type": "Number",
-				"refresh": true,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "bg_set_bright",
-						"parameterType": "NUMBER"
-					}
-				]
-			},
-			{
 				"property": "delayoff",
 				"friendlyName": "Shutdowm Timer",
 				"channel": "delayoff",
@@ -101,50 +87,6 @@
 				]
 			},
 			{
-				"property": "bg_power",
-				"friendlyName": "Ambient Power",
-				"channel": "ambientPower",
-				"type": "Switch",
-				"refresh": true,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "bg_set_power",
-						"parameterType": "ONOFF"
-					}
-				]
-			},
-			{
-				"property": "bg_rgb",
-				"friendlyName": "Ambient Color",
-				"channel": "ambientColor",
-				"type": "Color",
-				"refresh": true,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "bg_set_rgb",
-						"parameterType": "COLOR"
-					}
-				]
-			},
-			{
-				"property": "bg_ct",
-				"friendlyName": "Ambient Color Temperature",
-				"channel": "ambientColorTemperature",
-				"type": "Number",
-				"refresh": true,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "bg_set_ct_abx",
-						"parameterType": "NUMBER",
-						"parameter1": "\"smooth\"",
-						"parameter2": "500"
-					}
-				]
-			},
-			{
 				"property": "",
 				"friendlyName": "Set Scene",
 				"channel": "customScene",
@@ -157,15 +99,6 @@
 						"parameterType": "CUSTOMSTRING"
 					}
 				]
-			},
-			{
-				"property": "bg_lmode",
-				"friendlyName": "Ambient Color Mode",
-				"channel": "ambientColorMode",
-				"type": "Number",
-				"refresh": true,
-				"ChannelGroup": "",
-				"actions": []
 			},
 			{
 				"property": "nl_br",

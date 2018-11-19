@@ -173,9 +173,14 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
 | aqi              | Number  | Air Quality Index                   |
 | battery          | Number  | Battery                             |
-| usb_state        | Number  | USB State                           |
+| usb_state        | Switch  | USB State                           |
+| time_state       | Switch  | Time State                          |
+| night_state      | Switch  | Night State                         |
+| night_begin      | Number  | Night Begin Time                    |
+| night_end        | Number  | USB State                           |
 
 
 ### Mi Air Humidifier (zhimi.humidifier.v1 ) Channels
@@ -883,16 +888,11 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
 | brightness       | Number  | Brightness                          |
-| ambientBrightness | Number  | Ambient Brightness                  |
 | delayoff         | Number  | Shutdowm Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | Number  | Color Mode                          |
 | name             | String  | Name                                |
-| ambientPower     | Switch  | Ambient Power                       |
-| ambientColor     | Color   | Ambient Color                       |
-| ambientColorTemperature | Number  | Ambient Color Temperature           |
 | customScene      | String  | Set Scene                           |
-| ambientColorMode | Number  | Ambient Color Mode                  |
 | nightlightBrightness | Number  | Nightlight Brightness               |
 
 
@@ -903,16 +903,11 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
 | brightness       | Number  | Brightness                          |
-| ambientBrightness | Number  | Ambient Brightness                  |
 | delayoff         | Number  | Shutdowm Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | Number  | Color Mode                          |
 | name             | String  | Name                                |
-| ambientPower     | Switch  | Ambient Power                       |
-| ambientColor     | Color   | Ambient Color                       |
-| ambientColorTemperature | Number  | Ambient Color Temperature           |
 | customScene      | String  | Set Scene                           |
-| ambientColorMode | Number  | Ambient Color Mode                  |
 | nightlightBrightness | Number  | Nightlight Brightness               |
 
 
@@ -923,16 +918,11 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
 | brightness       | Number  | Brightness                          |
-| ambientBrightness | Number  | Ambient Brightness                  |
 | delayoff         | Number  | Shutdowm Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | Number  | Color Mode                          |
 | name             | String  | Name                                |
-| ambientPower     | Switch  | Ambient Power                       |
-| ambientColor     | Color   | Ambient Color                       |
-| ambientColorTemperature | Number  | Ambient Color Temperature           |
 | customScene      | String  | Set Scene                           |
-| ambientColorMode | Number  | Ambient Color Mode                  |
 | nightlightBrightness | Number  | Nightlight Brightness               |
 
 
@@ -983,16 +973,11 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
 | brightness       | Number  | Brightness                          |
-| ambientBrightness | Number  | Ambient Brightness                  |
 | delayoff         | Number  | Shutdowm Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | Number  | Color Mode                          |
 | name             | String  | Name                                |
-| ambientPower     | Switch  | Ambient Power                       |
-| ambientColor     | Color   | Ambient Color                       |
-| ambientColorTemperature | Number  | Ambient Color Temperature           |
 | customScene      | String  | Set Scene                           |
-| ambientColorMode | Number  | Ambient Color Mode                  |
 | nightlightBrightness | Number  | Nightlight Brightness               |
 
 
@@ -1003,16 +988,11 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
 | brightness       | Number  | Brightness                          |
-| ambientBrightness | Number  | Ambient Brightness                  |
 | delayoff         | Number  | Shutdowm Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | Number  | Color Mode                          |
 | name             | String  | Name                                |
-| ambientPower     | Switch  | Ambient Power                       |
-| ambientColor     | Color   | Ambient Color                       |
-| ambientColorTemperature | Number  | Ambient Color Temperature           |
 | customScene      | String  | Set Scene                           |
-| ambientColorMode | Number  | Ambient Color Mode                  |
 | nightlightBrightness | Number  | Nightlight Brightness               |
 
 
@@ -1023,16 +1003,11 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
 | brightness       | Number  | Brightness                          |
-| ambientBrightness | Number  | Ambient Brightness                  |
 | delayoff         | Number  | Shutdowm Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | Number  | Color Mode                          |
 | name             | String  | Name                                |
-| ambientPower     | Switch  | Ambient Power                       |
-| ambientColor     | Color   | Ambient Color                       |
-| ambientColorTemperature | Number  | Ambient Color Temperature           |
 | customScene      | String  | Set Scene                           |
-| ambientColorMode | Number  | Ambient Color Mode                  |
 | nightlightBrightness | Number  | Nightlight Brightness               |
 
 
@@ -1043,16 +1018,11 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
 | brightness       | Number  | Brightness                          |
-| ambientBrightness | Number  | Ambient Brightness                  |
 | delayoff         | Number  | Shutdowm Timer                      |
 | colorTemperature | Number  | Color Temperature                   |
 | colorMode        | Number  | Color Mode                          |
 | name             | String  | Name                                |
-| ambientPower     | Switch  | Ambient Power                       |
-| ambientColor     | Color   | Ambient Color                       |
-| ambientColorTemperature | Number  | Ambient Color Temperature           |
 | customScene      | String  | Set Scene                           |
-| ambientColorMode | Number  | Ambient Color Mode                  |
 | nightlightBrightness | Number  | Nightlight Brightness               |
 
 
@@ -1269,9 +1239,14 @@ note: Autogenerated example. Replace the id (airmonitor) in the channel with you
 
 ```
 Group G_airmonitor "Mi Air Monitor v1" <status>
+Switch power "Power" (G_airmonitor) {channel="miio:basic:airmonitor:power"}
 Number aqi "Air Quality Index" (G_airmonitor) {channel="miio:basic:airmonitor:aqi"}
 Number battery "Battery" (G_airmonitor) {channel="miio:basic:airmonitor:battery"}
-Number usb_state "USB State" (G_airmonitor) {channel="miio:basic:airmonitor:usb_state"}
+Switch usb_state "USB State" (G_airmonitor) {channel="miio:basic:airmonitor:usb_state"}
+Switch time_state "Time State" (G_airmonitor) {channel="miio:basic:airmonitor:time_state"}
+Switch night_state "Night State" (G_airmonitor) {channel="miio:basic:airmonitor:night_state"}
+Number night_begin "Night Begin Time" (G_airmonitor) {channel="miio:basic:airmonitor:night_begin"}
+Number night_end "USB State" (G_airmonitor) {channel="miio:basic:airmonitor:night_end"}
 ```
 
 ### Mi Air Humidifier (zhimi.humidifier.v1) item file lines
@@ -2065,16 +2040,11 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "Yeelight LED Ceiling Lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
 Number delayoff "Shutdowm Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
-Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
-Color ambientColor "Ambient Color" (G_light) {channel="miio:basic:light:ambientColor"}
-Number ambientColorTemperature "Ambient Color Temperature" (G_light) {channel="miio:basic:light:ambientColorTemperature"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number ambientColorMode "Ambient Color Mode" (G_light) {channel="miio:basic:light:ambientColorMode"}
 Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
@@ -2087,16 +2057,11 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "Yeelight LED Ceiling Lamp v2" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
 Number delayoff "Shutdowm Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
-Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
-Color ambientColor "Ambient Color" (G_light) {channel="miio:basic:light:ambientColor"}
-Number ambientColorTemperature "Ambient Color Temperature" (G_light) {channel="miio:basic:light:ambientColorTemperature"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number ambientColorMode "Ambient Color Mode" (G_light) {channel="miio:basic:light:ambientColorMode"}
 Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
@@ -2109,16 +2074,11 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "Yeelight LED Ceiling Lamp v3" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
 Number delayoff "Shutdowm Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
-Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
-Color ambientColor "Ambient Color" (G_light) {channel="miio:basic:light:ambientColor"}
-Number ambientColorTemperature "Ambient Color Temperature" (G_light) {channel="miio:basic:light:ambientColorTemperature"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number ambientColorMode "Ambient Color Mode" (G_light) {channel="miio:basic:light:ambientColorMode"}
 Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
@@ -2175,16 +2135,11 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "Yeelight LED Ceiling Lamp v5" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
 Number delayoff "Shutdowm Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
-Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
-Color ambientColor "Ambient Color" (G_light) {channel="miio:basic:light:ambientColor"}
-Number ambientColorTemperature "Ambient Color Temperature" (G_light) {channel="miio:basic:light:ambientColorTemperature"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number ambientColorMode "Ambient Color Mode" (G_light) {channel="miio:basic:light:ambientColorMode"}
 Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
@@ -2197,16 +2152,11 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "Yeelight LED Ceiling Lamp v6" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
 Number delayoff "Shutdowm Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
-Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
-Color ambientColor "Ambient Color" (G_light) {channel="miio:basic:light:ambientColor"}
-Number ambientColorTemperature "Ambient Color Temperature" (G_light) {channel="miio:basic:light:ambientColorTemperature"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number ambientColorMode "Ambient Color Mode" (G_light) {channel="miio:basic:light:ambientColorMode"}
 Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
@@ -2219,16 +2169,11 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "Yeelight LED Ceiling Lamp v7" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
 Number delayoff "Shutdowm Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
-Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
-Color ambientColor "Ambient Color" (G_light) {channel="miio:basic:light:ambientColor"}
-Number ambientColorTemperature "Ambient Color Temperature" (G_light) {channel="miio:basic:light:ambientColorTemperature"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number ambientColorMode "Ambient Color Mode" (G_light) {channel="miio:basic:light:ambientColorMode"}
 Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
@@ -2241,16 +2186,11 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "Yeelight LED Ceiling Lamp v8" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
 Number delayoff "Shutdowm Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
-Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
-Color ambientColor "Ambient Color" (G_light) {channel="miio:basic:light:ambientColor"}
-Number ambientColorTemperature "Ambient Color Temperature" (G_light) {channel="miio:basic:light:ambientColorTemperature"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number ambientColorMode "Ambient Color Mode" (G_light) {channel="miio:basic:light:ambientColorMode"}
 Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
