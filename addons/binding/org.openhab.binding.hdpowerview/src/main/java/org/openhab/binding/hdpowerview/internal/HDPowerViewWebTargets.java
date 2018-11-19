@@ -78,7 +78,7 @@ public class HDPowerViewWebTargets {
     }
 
     public void activateScene(int sceneId) {
-        WebTarget target = sceneActivate.queryParam("sceneid", sceneId);
+        WebTarget target = sceneActivate.queryParam("sceneId", sceneId);
         invoke(target.request().buildGet(), sceneActivate);
     }
 
