@@ -44,7 +44,8 @@ e.g.
 
 ### Channel Configuration
 
-**negate:** Energy meters often provide absolute values and provide information about the *energy direction* in a separate bit. With this config you can specify the channel where this bit is located, the bit position and the bits value which shall be set.
+**negate:** Energy meters often provide absolute values and provide information about the *energy direction* in a separate bit. 
+With this config you can specify the channel where this bit is located, the bit position and the bits value which shall be set.
 
 `<negate> ::= <CHANNEL_ID>:<BIT_POSITION>:<BIT_VALUE>[:status]`
 
@@ -57,7 +58,8 @@ e.g.:
 
 ## Unit Conversion
 
-Please use the [Units Of Measurement](https://www.openhab.org/docs/concepts/units-of-measurement.html) concept of openhab for unit conversion which is fully supported by this binding. Please see the item example on how to use it.
+Please use the [Units Of Measurement](https://www.openhab.org/docs/concepts/units-of-measurement.html) concept of openHAB for unit conversion which is fully supported by this binding.
+Please see the item example on how to use it.
 *NOTE:* your meter device needs to provide correct unit information to work properly.
 
 ## Full Example
@@ -90,7 +92,7 @@ Number:Power HeatingActualUsage   "Heating Current usage [%.2f %unit%]"       { 
 Number:Power HouseActualUsage     "Current usage [%.2f %unit%]"               { channel="smartmeter:meter:house:1-0_16-7-0" }
 ```
 
-## Known limitations/issues
+## Known Limitations
 
 - Octet encoding for OBIS Codes
  
