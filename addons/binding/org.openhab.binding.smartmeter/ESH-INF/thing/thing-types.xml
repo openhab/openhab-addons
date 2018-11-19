@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="smartmeter" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="meter">
+		<label>Smart Meter</label>
+		<description>The meter device to read the SML or IEC 62056-21 messages from</description>
+		<config-description>
+			<parameter name="port" type="text">
+				<label>Serial Port</label>
+				<description>The device serial port (e.g. /dev/tty0 or COM1)</description>
+				<required>true</required>
+				<limitToOptions>false</limitToOptions>
+				<context>serial-port</context>
+			</parameter>
+			<parameter name="refresh" type="integer">
+				<advanced>true</advanced>
+				<label>Refresh Rate</label>
+				<description>Refresh rate in seconds</description>
+				<default>10</default>
+				<unitLabel>s</unitLabel>
+			</parameter>
+			<parameter name="baudrateChangeDelay" type="integer">
+				<advanced>true</advanced>
+				<label>Delay of baudrate change</label>
+				<unitLabel>ms</unitLabel>
+				<default>0</default>
+				<description>USB to serial converters often require a delay of up to 250ms after the ACK before changing baudrate</description>
+			</parameter>
+			<parameter name="baudrate" type="text">
+				<advanced>true</advanced>
+				<label>Baudrate</label>
+				<default>AUTO</default>
+				<description>The baudrate of the serial port. If set to 'AUTO', it is dependent on the selected mode. The default is 300 baud for modes A, B, and C and 2400 baud for mode D, and 9600 baud for SML.</description>
+				<limitToOptions>false</limitToOptions>
+			</parameter>
+			<parameter name="mode" type="text">
+				<advanced>true</advanced>
+				<label>The protocol mode to use</label>
+				<default>SML</default>
+				<description>Can be SML (PUSH mode), Mode A,B,C (PULL)or D (PUSH)</description>
+			</parameter>
+			<parameter name="conformity" type="text">
+				<advanced>true</advanced>
+				<label>Conform to specific standard semantics</label>
+				<default>NONE</default>
+				<description>Reserved to conform to special semantics specified in specific standards. EDL_FNN: Currently applies the energy direction to WATT channels (which are absolute values) (see fnn lastenheft edl)</description>
+				<limitToOptions>true</limitToOptions>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>
