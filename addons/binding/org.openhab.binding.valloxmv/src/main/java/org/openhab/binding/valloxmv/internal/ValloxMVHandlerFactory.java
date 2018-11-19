@@ -32,10 +32,9 @@ import org.osgi.service.component.annotations.Reference;
  * @author Björn Brings - Initial contribution
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.valloxmv")
-@NonNullByDefault
+@NonNullByDefault()
 public class ValloxMVHandlerFactory extends BaseThingHandlerFactory {
-    @Nullable
-    private WebSocketClient webSocketClient;
+    private @Nullable WebSocketClient webSocketClient;
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_VALLOXMV);
 
@@ -49,7 +48,11 @@ public class ValloxMVHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_VALLOXMV.equals(thingTypeUID)) {
-            return new ValloxMVHandler(thing, webSocketClient);
+            if (webSocketClient != null) {
+                return new ValloxMVHandler(thing, webSocketClient);
+            } else {
+                return null;
+            }
         }
 
         return null;

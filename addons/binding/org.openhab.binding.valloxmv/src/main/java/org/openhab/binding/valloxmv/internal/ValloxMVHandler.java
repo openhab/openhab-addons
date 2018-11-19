@@ -16,6 +16,7 @@ import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -37,12 +38,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Björn Brings - Initial contribution
  */
+@NonNullByDefault
 public class ValloxMVHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ValloxMVHandler.class);
-    private ScheduledFuture<?> updateTasks;
-    private ValloxMVWebSocket valloxSendSocket;
-    private WebSocketClient webSocketClient;
+    private @Nullable ScheduledFuture<?> updateTasks;
+    private @Nullable ValloxMVWebSocket valloxSendSocket;
+    private @Nullable WebSocketClient webSocketClient;
 
     /**
      * Refresh interval in seconds.
@@ -53,14 +55,17 @@ public class ValloxMVHandler extends BaseThingHandler {
     /**
      * IP of vallox ventilation unit web interface.
      */
-    public ValloxMVHandler(@NonNullByDefault Thing thing, WebSocketClient webSocketClient) {
+    public ValloxMVHandler(Thing thing, WebSocketClient webSocketClient) {
         super(thing);
         this.webSocketClient = webSocketClient;
     }
 
+    @SuppressWarnings({ "null", "unchecked" })
     @Override
-    @SuppressWarnings("unchecked")
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (valloxSendSocket == null) {
+            return;
+        }
         if (command instanceof RefreshType) {
             if (lastUpdate > System.currentTimeMillis() + updateInterval * 1000) {
                 valloxSendSocket.request(null, null);
@@ -160,7 +165,9 @@ public class ValloxMVHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        updateTasks.cancel(true);
+        if (updateTasks != null) {
+            updateTasks.cancel(true);
+        }
         updateTasks = null;
     }
 
