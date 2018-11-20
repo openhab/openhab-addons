@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.seneye.handler;
+package org.openhab.binding.seneye.internal.handler;
 
-import static org.openhab.binding.seneye.SeneyeBindingConstants.*;
+import static org.openhab.binding.seneye.internal.SeneyeBindingConstants.*;
 
 import java.util.concurrent.TimeUnit;
 
