@@ -39,6 +39,10 @@ public class SeneyeBindingConstants {
     public final static String CHANNEL_KELVIN = "kelvin";
     public final static String CHANNEL_LASTREADING = "lastreading";
     public final static String CHANNEL_SLIDEEXPIRES = "slideexpires";
+    public final static String CHANNEL_WRONGSLIDE = "wrongslide";
+    public final static String CHANNEL_SLIDESERIAL = "slideserial";
+    public final static String CHANNEL_OUTOFWATER = "outofwater";
+    public final static String CHANNEL_DISCONNECTED = "disconnected";
 
     // List of all Parameters
     public final static String PARAMETER_AQUARIUMNAME = "aquariumname";
