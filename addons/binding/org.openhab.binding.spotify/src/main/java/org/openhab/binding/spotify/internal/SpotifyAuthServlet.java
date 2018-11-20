@@ -106,6 +106,7 @@ public class SpotifyAuthServlet extends HttpServlet {
             @Nullable String queryString) {
         replaceMap.put(KEY_AUTHORIZED_USER, "");
         replaceMap.put(KEY_ERROR, "");
+        replaceMap.put(KEY_PAGE_REFRESH, "");
 
         if (queryString != null) {
             MultiMap<String> params = new MultiMap<>();
@@ -146,7 +147,7 @@ public class SpotifyAuthServlet extends HttpServlet {
     }
 
     /**
-     * Formats the HTML of a Spotify Brige Player and returns it as a String
+     * Formats the HTML of a Spotify Bridge Player and returns it as a String
      *
      * @param playerTemplate The player template to format the player values in
      * @param handler The handler for the player to format
@@ -160,12 +161,15 @@ public class SpotifyAuthServlet extends HttpServlet {
         map.put(PLAYER_NAME, handler.getLabel());
         String spotifyUser = handler.getUser();
 
-        if (StringUtil.isBlank(spotifyUser)) {
-            map.put(PLAYER_AUTHORIZED_CLASS, "");
-            map.put(PLAYER_SPOTIFY_USER_ID, "");
-        } else {
+        if (handler.isAuthorized()) {
             map.put(PLAYER_AUTHORIZED_CLASS, " authorized");
             map.put(PLAYER_SPOTIFY_USER_ID, String.format(" (Authorized user: %s)", spotifyUser));
+        } else if (!StringUtil.isBlank(spotifyUser)) {
+            map.put(PLAYER_AUTHORIZED_CLASS, " Unauthorized");
+            map.put(PLAYER_SPOTIFY_USER_ID, String.format(" (Unauthorized user: %s)", spotifyUser));
+        } else {
+            map.put(PLAYER_AUTHORIZED_CLASS, "");
+            map.put(PLAYER_SPOTIFY_USER_ID, "");
         }
 
         map.put(PLAYER_AUTHORIZE, handler.formatAuthorizationUrl(servletBaseURL));

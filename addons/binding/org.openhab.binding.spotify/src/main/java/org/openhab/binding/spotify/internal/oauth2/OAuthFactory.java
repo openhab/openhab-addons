@@ -9,6 +9,7 @@
 package org.openhab.binding.spotify.internal.oauth2;
 
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -24,14 +25,15 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 public class OAuthFactory {
 
-    public OAuthClientService getOrCreateOAuthClientService(String handle, String spotifyApiTokenUrl,
-            String spotifyAuthorizeUrl, String clientId, String clientSecret, String spotifyScopes,
-            boolean supportsBasicAuth, ScheduledExecutorService scheduler, HttpClient httpClient, String refreshToken) {
+    public void createOAuthClientService(String handle, String spotifyApiTokenUrl, String spotifyAuthorizeUrl,
+            String clientId, String clientSecret, String spotifyScopes, boolean supportsBasicAuth,
+            Consumer<OAuthClientService> consumer, ScheduledExecutorService scheduler, HttpClient httpClient,
+            String refreshToken) {
         OAuthClientService service = new OAuthClientService(clientId, clientSecret, scheduler, httpClient);
         AccessTokenResponse acr = new AccessTokenResponse();
         acr.setRefreshToken(refreshToken);
         service.importAccessTokenResponse(acr);
-        return service;
+        consumer.accept(service);
     }
 
     public void ungetOAuthService(String handle) {

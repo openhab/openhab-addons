@@ -42,7 +42,7 @@ public class OAuthClientService {
         accessTokenCache.setAuthorizationCodeCredentials(credentials);
     }
 
-    public AccessTokenResponse getAccessToken() throws OAuthResponseException, OAuthException, IOException {
+    public AccessTokenResponse getAccessTokenResponse() throws OAuthResponseException, OAuthException, IOException {
         AccessTokenResponse atr = new AccessTokenResponse();
         atr.setAccessToken(accessTokenCache.getAccessToken());
         return atr;
@@ -50,7 +50,7 @@ public class OAuthClientService {
 
     public AccessTokenResponse refreshToken() throws OAuthResponseException, OAuthException, IOException {
         accessTokenCache.invalidateValue();
-        return getAccessToken();
+        return getAccessTokenResponse();
     }
 
     public void addAccessTokenRefreshListener(AccessTokenRefreshListener accessTokenRefreshListener) {

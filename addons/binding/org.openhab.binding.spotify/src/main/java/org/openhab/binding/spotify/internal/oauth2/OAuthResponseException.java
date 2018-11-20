@@ -9,12 +9,15 @@
 package org.openhab.binding.spotify.internal.oauth2;
 
 /**
- * OAuthResponseException class modeled after the ESH OAuth2 service. Used to have the same interface. This exception is
- * not thrown by the current implementation.
+ * OAuthResponseException class modeled after the ESH OAuth2 service. Used to have the same interface.
  * This class will be removed when the ESH OAuth2 service can be used with this binding.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
 public class OAuthResponseException extends Exception {
+
+    public OAuthResponseException(String message) {
+        super(message);
+    }
 
 }

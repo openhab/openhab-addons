@@ -69,7 +69,8 @@ public class SpotifyAuthorizer {
     public String formatAuthorizationUrl(String redirectUri, String clientId, String reqCode) {
         try {
             return String.format(AUTHORIZATION_URL, SPOTIFY_AUTHORIZE_URL, clientId,
-                    URLEncoder.encode(redirectUri, StandardCharsets.UTF_8.name()), reqCode, SPOTIFY_SCOPES);
+                    URLEncoder.encode(redirectUri, StandardCharsets.UTF_8.name()), reqCode,
+                    URLEncoder.encode(SPOTIFY_SCOPES));
         } catch (UnsupportedEncodingException e) {
             logger.warn("Error creating the spotify authorization url: ", e);
             return redirectUri;

@@ -270,7 +270,7 @@ public class SpotifyApi {
                 .header("Accept", CONTENT_TYPE).content(new StringContentProvider(requestData), CONTENT_TYPE);
         try {
             try {
-                AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessToken();
+                AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
                 String accessToken = accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();
 
                 if (accessToken == null || accessToken.isEmpty()) {

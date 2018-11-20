@@ -75,7 +75,7 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
 
         Configuration config = thing.getConfiguration();
         deviceId = (String) config.get(PROPERTY_SPOTIFY_DEVICE_ID);
-        commandHandler = new SpotifyHandleCommands(spotifyApi, deviceId);
+        commandHandler = new SpotifyHandleCommands(spotifyApi);
         updateStatus(ThingStatus.UNKNOWN);
     }
 

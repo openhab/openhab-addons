@@ -23,5 +23,5 @@ public interface AccessTokenRefreshListener {
      *
      * @param accessToken the new access token
      */
-    void onTokenResponse(AccessTokenResponse accessToken);
+    void onAccessTokenResponse(AccessTokenResponse accessToken);
 }

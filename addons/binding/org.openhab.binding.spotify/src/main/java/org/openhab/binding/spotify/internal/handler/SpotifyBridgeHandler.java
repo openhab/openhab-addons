@@ -114,7 +114,8 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
      */
     private volatile boolean active;
     private State lastTrackId = StringType.EMPTY;
-    private String activeDeviceId = "";
+    private String lastKnownDeviceId = "";
+    private boolean lastKnownDeviceActive;
 
     public SpotifyBridgeHandler(Bridge bridge, OAuthFactory oAuthFactory, HttpClient httpClient,
             SpotifyDynamicStateDescriptionProvider spotifyDynamicStateDescriptionProvider) {
@@ -130,21 +131,30 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
             albumUpdater.refreshAlbumImage(channelUID);
         } else {
             try {
-                if (handleCommand != null && handleCommand.handleCommand(channelUID, command, true, activeDeviceId)) {
-                    scheduler.schedule(() -> {
-                        boolean statusNoPolling = pollingFuture == null || pollingFuture.isCancelled();
-                        playingContextCache.invalidateValue();
-                        playlistCache.invalidateValue();
-                        devicesCache.invalidateValue();
-
-                        if (pollStatus() && statusNoPolling) {
-                            startPolling();
-                        }
-                    }, POLL_DELAY_AFTER_COMMAND_S, TimeUnit.SECONDS);
+                if (handleCommand != null
+                        && handleCommand.handleCommand(channelUID, command, lastKnownDeviceActive, lastKnownDeviceId)) {
+                    scheduler.schedule(this::scheduledPollingRestart, POLL_DELAY_AFTER_COMMAND_S, TimeUnit.SECONDS);
                 }
             } catch (SpotifyException e) {
+                logger.debug("Handle Spotify command failed: ", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
             }
+        }
+    }
+
+    private void scheduledPollingRestart() {
+        try {
+            final boolean pollingNotRunning = pollingFuture == null || pollingFuture.isCancelled();
+
+            playingContextCache.invalidateValue();
+            playlistCache.invalidateValue();
+            devicesCache.invalidateValue();
+
+            if (pollStatus() && pollingNotRunning) {
+                startPolling();
+            }
+        } catch (RuntimeException e) {
+            logger.debug("Restarting polling failed: ", e);
         }
     }
 
@@ -166,6 +176,16 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     @Override
     public String getLabel() {
         return thing.getLabel() == null ? "" : thing.getLabel().toString();
+    }
+
+    @Override
+    public boolean isAuthorized() {
+        try {
+            return oAuthService != null && oAuthService.getAccessTokenResponse() != null
+                    && oAuthService.getAccessTokenResponse().getAccessToken() != null;
+        } catch (OAuthException | IOException | OAuthResponseException | RuntimeException e) {
+            return false;
+        }
     }
 
     @Override
@@ -208,9 +228,11 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
             startPolling();
             return user;
         } catch (RuntimeException | OAuthException | IOException e) {
+            logger.debug("Authorize failed: ", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             throw new SpotifyException(e.getMessage());
         } catch (OAuthResponseException e) {
+            logger.debug("Authorize failed: ", e);
             throw new SpotifyAuthorizationException(e.getMessage());
         }
     }
@@ -239,17 +261,22 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     public void initialize() {
         active = true;
         configuration = getConfigAs(SpotifyBridgeConfiguration.class);
-        oAuthService = oAuthFactory.getOrCreateOAuthClientService(thing.getUID().getAsString(), SPOTIFY_API_TOKEN_URL,
+        oAuthFactory.createOAuthClientService(thing.getUID().getAsString(), SPOTIFY_API_TOKEN_URL,
                 SPOTIFY_AUTHORIZE_URL, configuration.clientId, configuration.clientSecret, SPOTIFY_SCOPES, true,
-                scheduler, httpClient, configuration.refreshToken);
-        oAuthService.addAccessTokenRefreshListener(this);
+                this::initWithOAuthClientService, scheduler, httpClient, configuration.refreshToken);
+        updateStatus(ThingStatus.UNKNOWN);
+    }
+
+    private void initWithOAuthClientService(OAuthClientService oAuthService) {
+        this.oAuthService = oAuthService;
+        oAuthService.addAccessTokenRefreshListener(SpotifyBridgeHandler.this);
         spotifyApi = new SpotifyApi(oAuthService, scheduler, httpClient);
-        handleCommand = new SpotifyHandleCommands(spotifyApi, "");
+        handleCommand = new SpotifyHandleCommands(spotifyApi);
         playingContextCache = new ExpiringCache<>(configuration.refreshPeriod, spotifyApi::getPlayerInfo);
         playlistCache = new ExpiringCache<>(configuration.refreshPeriod, spotifyApi::getPlaylists);
         devicesCache = new ExpiringCache<>(configuration.refreshPeriod, spotifyApi::getDevices);
-        updateStatus(ThingStatus.UNKNOWN);
-        // start with update status by calling Spotify. If no credentials available no polling should be started.
+
+        // Start with update status by calling Spotify. If no credentials available no polling should be started.
         if (pollStatus()) {
             startPolling();
         }
@@ -277,9 +304,19 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         }
     }
 
+    /**
+     * Calls the Spotify API and collects user data. Returns true if method completed without errors.
+     *
+     * @return true if method completed without errors.
+     */
     private boolean pollStatus() {
         synchronized (scheduler) {
             try {
+                // Collect devices and populate selection with available devices.
+                List<Device> ld = devicesCache.getValue();
+                List<Device> listDevices = ld == null ? Collections.emptyList() : ld;
+                spotifyDynamicStateDescriptionProvider.setDevices(listDevices);
+                // Collect currently playing context.
                 CurrentlyPlayingContext pc = playingContextCache.getValue();
                 CurrentlyPlayingContext playingContext = pc == null ? EMPTY_CURRENTLYPLAYINGCONTEXT : pc;
                 updateStatus(ThingStatus.ONLINE);
@@ -289,19 +326,16 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
                 spotifyDynamicStateDescriptionProvider
                         .setPlayList(playlists == null ? Collections.emptyList() : playlists);
 
-                List<Device> ld = devicesCache.getValue();
-                List<Device> listDevices = ld == null ? Collections.emptyList() : ld;
-                spotifyDynamicStateDescriptionProvider.setDevices(listDevices);
                 updateDevicesStatus(listDevices, playingContext.isPlaying());
                 return true;
             } catch (SpotifyAuthorizationException e) {
-                logger.debug(e.getMessage());
+                logger.debug("Authorization error during polling: ", e);
 
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
                 cancelSchedulers();
                 devicesCache.invalidateValue();
             } catch (SpotifyException e) {
-                logger.info(e.getMessage());
+                logger.info("Spotify returned an error during polling: {}", e.getMessage());
 
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (RuntimeException e) {
@@ -325,7 +359,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     }
 
     @Override
-    public void onTokenResponse(AccessTokenResponse tokenResponse) {
+    public void onAccessTokenResponse(AccessTokenResponse tokenResponse) {
         updateChannelState(CHANNEL_ACCESSTOKEN, new StringType(tokenResponse.getAccessToken()));
     }
 
@@ -399,10 +433,14 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
             updateChannelState(CHANNEL_PLAYED_ARTISTTYPE, valueOrEmpty(firstArtist.getType()));
         }
         Device device = playerInfo.getDevice() == null ? EMPTY_DEVICE : playerInfo.getDevice();
-        activeDeviceId = device.getId() == null ? "" : device.getId();
-        updateChannelState(CHANNEL_DEVICEID, valueOrEmpty(activeDeviceId));
-        updateChannelState(CHANNEL_DEVICEACTIVE, device.isActive() ? OnOffType.ON : OnOffType.OFF);
-        updateChannelState(CHANNEL_DEVICENAME, valueOrEmpty(activeDeviceId));
+        // Only update activeDeviceId if it has a value, otherwise keep old value.
+        if (device.getId() != null) {
+            lastKnownDeviceId = device.getId();
+            updateChannelState(CHANNEL_DEVICEID, valueOrEmpty(lastKnownDeviceId));
+            updateChannelState(CHANNEL_DEVICENAME, valueOrEmpty(lastKnownDeviceId));
+        }
+        lastKnownDeviceActive = device.isActive();
+        updateChannelState(CHANNEL_DEVICEACTIVE, lastKnownDeviceActive ? OnOffType.ON : OnOffType.OFF);
         updateChannelState(CHANNEL_DEVICETYPE, valueOrEmpty(device.getType()));
 
         // experienced situations where volume seemed to be undefined...
@@ -552,12 +590,18 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         public void refreshAlbumImage(ChannelUID channelUID) {
             if (!lastAlbumImageUrl.isEmpty() && isLinked(channelUID)) {
                 String imageUrl = lastAlbumImageUrl;
-                scheduler.execute(() -> {
-                    if (lastAlbumImageUrl.equals(imageUrl) && isLinked(channelUID)) {
-                        RawType image = HttpUtil.downloadImage(imageUrl, true, MAX_IMAGE_SIZE);
-                        updateChannelState(CHANNEL_PLAYED_ALBUMIMAGE, image == null ? UnDefType.UNDEF : image);
-                    }
-                });
+                scheduler.execute(() -> refreshAlbumAsynced(channelUID, imageUrl));
+            }
+        }
+
+        private void refreshAlbumAsynced(ChannelUID channelUID, String imageUrl) {
+            try {
+                if (lastAlbumImageUrl.equals(imageUrl) && isLinked(channelUID)) {
+                    RawType image = HttpUtil.downloadImage(imageUrl, true, MAX_IMAGE_SIZE);
+                    updateChannelState(CHANNEL_PLAYED_ALBUMIMAGE, image == null ? UnDefType.UNDEF : image);
+                }
+            } catch (RuntimeException e) {
+                logger.debug("Async call to refresh Album image failed: ", e);
             }
         }
     }

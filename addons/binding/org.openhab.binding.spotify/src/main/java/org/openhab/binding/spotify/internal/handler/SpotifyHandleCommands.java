@@ -35,17 +35,14 @@ class SpotifyHandleCommands {
     private final Logger logger = LoggerFactory.getLogger(SpotifyDeviceHandler.class);
 
     private SpotifyApi spotifyApi;
-    private String deviceId;
 
     /**
      * Constructor. For the bridge the deviceId is empty.
      *
      * @param spotifyApi The api class to use to call the spotify api
-     * @param deviceId spotify device id or empty for bridge
      */
-    public SpotifyHandleCommands(SpotifyApi spotifyApi, String deviceId) {
+    public SpotifyHandleCommands(SpotifyApi spotifyApi) {
         this.spotifyApi = spotifyApi;
-        this.deviceId = deviceId;
     }
 
     /**
@@ -53,10 +50,11 @@ class SpotifyHandleCommands {
      *
      * @param channelUID Channel the command is from
      * @param command command to run
-     * @param active true if the device this command is send to is the active device
+     * @param active true if current known device is the active device
+     * @param deviceId Current known active Spotify device id
      * @return true if the command was done or else if no channel or command matched
      */
-    public boolean handleCommand(ChannelUID channelUID, Command command, boolean active, String activeDeviceId) {
+    public boolean handleCommand(ChannelUID channelUID, Command command, boolean active, String deviceId) {
         logger.debug("Received channel: {}, command: {}", channelUID, command);
         boolean commandRun = false;
         String channel = channelUID.getId();
@@ -66,7 +64,7 @@ class SpotifyHandleCommands {
                 if (command instanceof StringType) {
                     String newDeviceId = command.toString();
 
-                    if (activeDeviceId.isEmpty() || activeDeviceId.equals(newDeviceId)) {
+                    if (deviceId.equals(newDeviceId) && active) {
                         spotifyApi.play(newDeviceId);
                     } else {
                         spotifyApi.transferPlay(newDeviceId, true);
@@ -76,7 +74,7 @@ class SpotifyHandleCommands {
                 break;
             case CHANNEL_DEVICEPLAYER:
             case CHANNEL_TRACKPLAYER:
-                commandRun = handleDevicePlay(command, active);
+                commandRun = handleDevicePlay(command, active, deviceId);
                 break;
             case CHANNEL_DEVICESHUFFLE:
                 if (command instanceof OnOffType) {
@@ -118,11 +116,13 @@ class SpotifyHandleCommands {
      *
      * @param command command to run
      * @param active true if the device this command is send to is the active device
+     * @param deviceId Spotify device id the command is intended for
      * @return true if the command was done or else if no channel or command matched
      */
-    private boolean handleDevicePlay(Command command, boolean active) {
+    private boolean handleDevicePlay(Command command, boolean active, String deviceId) {
         if (command instanceof PlayPauseType) {
             boolean play = command == PlayPauseType.PLAY;
+
             if (active || deviceId.isEmpty()) {
                 if (play) {
                     spotifyApi.play(deviceId);

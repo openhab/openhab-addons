@@ -14,7 +14,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.spotify.internal.api.exception.SpotifyAuthorizationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,13 +67,15 @@ public class SpotifyAccessTokenCache {
     /**
      * Returns the value - possibly from the cache, if it is still valid otherwise it calls Spotify to obtain a new
      * access token.
+     *
+     * @throws OAuthResponseException
      */
     @Nullable
-    public synchronized String getAccessToken() {
+    public synchronized String getAccessToken() throws OAuthResponseException {
         if (isExpired()) {
             logger.debug("Access token time expired, getting a new access token.");
             if (refreshToken.isEmpty()) {
-                throw new SpotifyAuthorizationException("No Spotify refresh token. Please authorize this thing first.");
+                throw new OAuthResponseException("No Spotify refresh token. Please authorize this thing first.");
             }
             updateAccessToken(authorizer.refresh(refreshToken));
         }
@@ -98,7 +99,7 @@ public class SpotifyAccessTokenCache {
         long expiresInNanos = TimeUnit.SECONDS.toNanos(credentials.getExpiresIn());
         // Guard minimal expires time so it will never be less then the value provided by Spotify
         expiresAt = System.nanoTime() + Math.min(expiresInNanos, expiresInNanos - EXPIRE_MARGIN_NANO);
-        listeners.forEach(l -> l.onTokenResponse(credentials));
+        listeners.forEach(l -> l.onAccessTokenResponse(credentials));
     }
 
     /**

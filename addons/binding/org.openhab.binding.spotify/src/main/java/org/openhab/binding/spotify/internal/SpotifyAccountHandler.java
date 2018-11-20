@@ -38,6 +38,11 @@ public interface SpotifyAccountHandler {
     public String getUser();
 
     /**
+     * @return Returns true if the Spotify Bridge is authorized.
+     */
+    boolean isAuthorized();
+
+    /**
      * @return List of Spotify devices associated with this Spotify Account Handler
      */
     public List<Device> listDevices();
