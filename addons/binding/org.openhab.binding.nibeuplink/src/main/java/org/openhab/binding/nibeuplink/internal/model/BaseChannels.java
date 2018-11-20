@@ -152,6 +152,6 @@ public class BaseChannels extends AbstractChannels {
 
     // Compressor
     public static final Channel CH_10012 = INSTANCE
-            .addChannel(new SwitchChannel("10012", "Compressor blocked", ChannelGroup.COMPRESSOR));
+            .addChannel(new SwitchChannel("10012", "Compressor blocked", ChannelGroup.BASE));
 
 }
