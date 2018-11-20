@@ -19,6 +19,8 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelRockerSwitchListenerConfig;
 import org.openhab.binding.enocean.internal.eep.EEPType;
@@ -76,7 +78,10 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
         }
 
         getLinkedChannels().forEach((id, c) -> {
-            addListener(id, c);
+            if (!addListener(id, c)) {
+                // Todo feedback for wrong channel configuration
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Wrong channel configuration");
+            }
         });
     }
 
@@ -92,7 +97,7 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
         }
     }
 
-    protected void addListener(String channelId, Channel channel) {
+    protected boolean addListener(String channelId, Channel channel) {
         if (channel != null && channel.getChannelTypeUID().getId().startsWith("rockerswitchListener")) {
             EnOceanChannelRockerSwitchListenerConfig config = channel.getConfiguration()
                     .as(EnOceanChannelRockerSwitchListenerConfig.class);
@@ -103,11 +108,14 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
                     channelConfigById.putIfAbsent(channelId, config);
                     currentEnOceanId = config.enoceanId;
                     getBridgeHandler().addPacketListener(this);
-                } catch (Exception e) {
 
+                    return true;
+                } catch (Exception e) {
                 }
             }
+            return false;
         }
+        return true;
     }
 
     protected void removeListener(String channelId) {

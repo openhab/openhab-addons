@@ -90,8 +90,7 @@ public class EnOceanBindingConstants {
     public final static String CHANNEL_ROCKERSWITCH_CHANNELA = "rockerswitchA";
     public final static String CHANNEL_ROCKERSWITCH_CHANNELB = "rockerswitchB";
 
-    public final static String CHANNEL_VIRTUALROCKERSWITCH_CHANNELA = "virtualRockerswitchA";
-    public final static String CHANNEL_VIRTUALROCKERSWITCH_CHANNELB = "virtualRockerswitchB";
+    public final static String CHANNEL_VIRTUALROCKERSWITCH = "virtualRockerswitch";
 
     public final static String CHANNEL_WINDOWHANDLESTATE = "windowHandleState";
     public final static String CHANNEL_CONTACT = "contact";
@@ -139,14 +138,14 @@ public class EnOceanBindingConstants {
                             new ChannelTypeUID(BINDING_ID, CHANNEL_ROLLERSHUTTER), CoreItemFactory.ROLLERSHUTTER));
                     put(CHANNEL_ANGLE, new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_ANGLE),
                             CoreItemFactory.NUMBER));
-                    put(CHANNEL_TEMPERATURE, new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_TEMPERATURE),
-                            CoreItemFactory.NUMBER));
-                    put(CHANNEL_HUMIDITY, new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_HUMIDITY),
-                            CoreItemFactory.NUMBER));
+                    put(CHANNEL_TEMPERATURE, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_TEMPERATURE), CoreItemFactory.NUMBER));
+                    put(CHANNEL_HUMIDITY, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_HUMIDITY), CoreItemFactory.NUMBER));
                     put(CHANNEL_FANSPEEDSTAGE, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_FANSPEEDSTAGE), CoreItemFactory.STRING));
-                    put(CHANNEL_OCCUPANCY, new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_OCCUPANCY),
-                            CoreItemFactory.SWITCH));
+                    put(CHANNEL_OCCUPANCY, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_OCCUPANCY), CoreItemFactory.SWITCH));
                     put(CHANNEL_MOTIONDETECTION, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_MOTIONDETECTION), CoreItemFactory.SWITCH));
                     put(CHANNEL_ILLUMINATION, new EnOceanChannelDescription(
@@ -155,34 +154,32 @@ public class EnOceanBindingConstants {
                             CoreItemFactory.NUMBER));
                     put(CHANNEL_CURRENTNUMBER, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_CURRENTNUMBER), CoreItemFactory.NUMBER));
-                    put(CHANNEL_SETPOINT, new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_SETPOINT),
-                            CoreItemFactory.NUMBER));
+                    put(CHANNEL_SETPOINT, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_SETPOINT), CoreItemFactory.NUMBER));
                     put(CHANNEL_CONTACT, new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_CONTACT),
                             CoreItemFactory.CONTACT));
                     put(CHANNEL_WINDOWHANDLESTATE, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_WINDOWHANDLESTATE), CoreItemFactory.STRING));
-                    put(CHANNEL_TEACHINCMD, new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_TEACHINCMD),
-                            CoreItemFactory.SWITCH));
+                    put(CHANNEL_TEACHINCMD, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_TEACHINCMD), CoreItemFactory.SWITCH));
 
                     put(CHANNEL_PUSHBUTTON, new EnOceanChannelDescription(
                             DefaultSystemChannelTypeProvider.SYSTEM_RAWBUTTON.getUID(), "", "Push button", false));
 
                     put(CHANNEL_ROCKERSWITCH_CHANNELA,
-                            new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_RAWROCKER.getUID(), "",
-                                    "Rockerswitch channel A", false));
+                            new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_RAWROCKER.getUID(),
+                                    "", "Rockerswitch channel A", false));
                     put(CHANNEL_ROCKERSWITCH_CHANNELB,
-                            new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_RAWROCKER.getUID(), "",
-                                    "Rockerswitch channel B", false));
+                            new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_RAWROCKER.getUID(),
+                                    "", "Rockerswitch channel B", false));
 
-                    put(CHANNEL_VIRTUALROCKERSWITCH_CHANNELA,
-                            new EnOceanChannelDescription(VirtualRockerSwitchChannelType, "", "Rockerswitch channel A", true));
-                    put(CHANNEL_VIRTUALROCKERSWITCH_CHANNELB,
-                            new EnOceanChannelDescription(VirtualRockerSwitchChannelType, "", "Rockerswitch channel B", true));
+                    put(CHANNEL_VIRTUALROCKERSWITCH,
+                            new EnOceanChannelDescription(VirtualRockerSwitchChannelType, CoreItemFactory.STRING));
 
                     put(CHANNEL_INSTANTPOWER, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_INSTANTPOWER), CoreItemFactory.NUMBER));
-                    put(CHANNEL_TOTALUSAGE, new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_TOTALUSAGE),
-                            CoreItemFactory.NUMBER));
+                    put(CHANNEL_TOTALUSAGE, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_TOTALUSAGE), CoreItemFactory.NUMBER));
                     put(CHANNEL_AUTOOFF, new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_AUTOOFF),
                             CoreItemFactory.NUMBER));
                     put(CHANNEL_DELAYRADIOOFF, new EnOceanChannelDescription(

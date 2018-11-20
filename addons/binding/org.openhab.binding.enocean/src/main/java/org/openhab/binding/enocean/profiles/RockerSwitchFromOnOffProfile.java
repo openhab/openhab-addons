@@ -19,12 +19,12 @@ import org.eclipse.smarthome.core.thing.profiles.ProfileTypeUID;
 import org.eclipse.smarthome.core.thing.profiles.StateProfile;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.enocean.internal.config.EnOceanChannelRockerSwitchConfigBase.SwitchMode;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelVirtualRockerSwitchConfig;
-import org.openhab.binding.enocean.internal.config.EnOceanChannelVirtualRockerSwitchConfig.SwitchMode;
 
 /**
  * Profile to convert Switch commands into EnOcean rockerswitch messages
- * 
+ *
  * @author Daniel Weber - Initial contribution
  */
 public class RockerSwitchFromOnOffProfile implements StateProfile {

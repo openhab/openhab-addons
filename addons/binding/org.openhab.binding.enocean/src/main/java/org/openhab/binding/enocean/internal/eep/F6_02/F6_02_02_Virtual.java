@@ -8,13 +8,12 @@
  */
 package org.openhab.binding.enocean.internal.eep.F6_02;
 
-import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
-
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.CommonTriggerEvents;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.enocean.internal.config.EnOceanChannelVirtualRockerSwitchConfig;
 import org.openhab.binding.enocean.internal.eep.Base._RPSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 
@@ -45,35 +44,39 @@ public class F6_02_02_Virtual extends _RPSMessage {
 
             StringType s = (StringType) command;
 
+            // Todo check this comparison!!!
             if (s.equals(CommonTriggerEvents.DIR1_RELEASED) || s.equals(CommonTriggerEvents.DIR2_RELEASED)) {
                 setStatus(_RPSMessage.T21Flag);
                 setData((byte) 0x00);
                 return;
             }
 
-            switch (channelId) {
-                case CHANNEL_VIRTUALROCKERSWITCH_CHANNELA:
-                    if (s.equals(CommonTriggerEvents.DIR2_PRESSED)) {
-                        setStatus((byte) (_RPSMessage.T21Flag | _RPSMessage.NUFlag));
-                        setData((byte) ((A0 << 5) | PRESSED));
-                    } else if (s.equals(CommonTriggerEvents.DIR1_PRESSED)) {
-                        setStatus((byte) (_RPSMessage.T21Flag | _RPSMessage.NUFlag));
-                        setData((byte) ((AI << 5) | PRESSED));
-                    }
-                    break;
+            EnOceanChannelVirtualRockerSwitchConfig c = config.as(EnOceanChannelVirtualRockerSwitchConfig.class);
+            if (c != null) {
+                switch (c.getChannel()) {
+                    case ChannelA:
+                        if (s.equals(CommonTriggerEvents.DIR2_PRESSED)) {
+                            setStatus((byte) (_RPSMessage.T21Flag | _RPSMessage.NUFlag));
+                            setData((byte) ((A0 << 5) | PRESSED));
+                        } else if (s.equals(CommonTriggerEvents.DIR1_PRESSED)) {
+                            setStatus((byte) (_RPSMessage.T21Flag | _RPSMessage.NUFlag));
+                            setData((byte) ((AI << 5) | PRESSED));
+                        }
+                        break;
 
-                case CHANNEL_VIRTUALROCKERSWITCH_CHANNELB:
-                    if (s.equals(CommonTriggerEvents.DIR2_PRESSED)) {
-                        setStatus((byte) (_RPSMessage.T21Flag | _RPSMessage.NUFlag));
-                        setData((byte) ((B0 << 5) | PRESSED));
-                    } else if (s.equals(CommonTriggerEvents.DIR1_PRESSED)) {
-                        setStatus((byte) (_RPSMessage.T21Flag | _RPSMessage.NUFlag));
-                        setData((byte) ((BI << 5) | PRESSED));
-                    }
-                    break;
-
+                    case ChannelB:
+                        if (s.equals(CommonTriggerEvents.DIR2_PRESSED)) {
+                            setStatus((byte) (_RPSMessage.T21Flag | _RPSMessage.NUFlag));
+                            setData((byte) ((B0 << 5) | PRESSED));
+                        } else if (s.equals(CommonTriggerEvents.DIR1_PRESSED)) {
+                            setStatus((byte) (_RPSMessage.T21Flag | _RPSMessage.NUFlag));
+                            setData((byte) ((BI << 5) | PRESSED));
+                        }
+                        break;
+                    default:
+                        break;
+                }
             }
         }
-
     }
 }
