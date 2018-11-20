@@ -98,7 +98,14 @@ public class KonnectedHandler extends BaseThingHandler {
                 sendActuatorCommand(Integer.toString(sendCommand), pin, channelUID);
             }
         } else if (command instanceof RefreshType) {
-            getSwitchState(pin, channelUID);
+            // check to see if handler has been initialized before attempting to get state of pin, else wait one minute
+            if (this.isInitialized()) {
+                getSwitchState(pin, channelUID);
+            } else {
+                scheduler.schedule(() -> {
+                    handleCommand(channelUID, command);
+                }, 1, TimeUnit.MINUTES);
+            }
         }
     }
 
@@ -298,7 +305,6 @@ public class KonnectedHandler extends BaseThingHandler {
         payload.setBlink(config.blink);
         payload.setDiscovery(config.discovery);
         getThing().getChannels().forEach(channel -> {
-            ChannelUID channelId = channel.getUID();
             if (isLinked(channel.getUID())) {
                 // adds linked channels to list based on last value of Channel ID
                 // which is set to a number
@@ -319,18 +325,15 @@ public class KonnectedHandler extends BaseThingHandler {
                     payload.addSensor(module);
                     logger.trace("Channel {} will be configured on the konnected alarm panel as a switch",
                             channel.toString());
-                }
-                if (channelType.equalsIgnoreCase(CHANNEL_ACTUATOR)) {
+                } else if (channelType.equalsIgnoreCase(CHANNEL_ACTUATOR)) {
                     payload.addActuators(module);
                     logger.trace("Channel {} will be configured on the konnected alarm panel as an actuator",
                             channel.toString());
-                }
-                if (channelType.equalsIgnoreCase(CHANNEL_HUMIDITY)) {
+                } else if (channelType.equalsIgnoreCase(CHANNEL_HUMIDITY)) {
                     // the humidity channels do not need to be added because the supported sensor (dht22) is added under
                     // the temp sensor
                     logger.trace("Channel {} is a humidity channel.", channel.toString());
-                }
-                if (channelType.equalsIgnoreCase(CHANNEL_TEMPERATURE)) {
+                } else if (channelType.equalsIgnoreCase(CHANNEL_TEMPERATURE)) {
                     logger.trace("Channel {} will be configured on the konnected alarm panel as a temperature sensor",
                             channel.toString());
                     Configuration configuration = channel.getConfiguration();
@@ -459,10 +462,10 @@ public class KonnectedHandler extends BaseThingHandler {
                     } catch (IOException ex) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "Unable to communicate with Konnected Alarm Panel confirm settings, and that module is online.");
-                        logger.debug("Attempting to get the state of the zone on thing {} failed: {}",
-                                this.thing.getUID().getId(), ex);
+                        logger.debug("Attempting to get the state of the zone on thing {} failed for channel: {} : {}",
+                                this.thing.getUID().getId(), channelId.getAsString(), ex);
                     }
-                }, 30, TimeUnit.SECONDS);
+                }, 2, TimeUnit.MINUTES);
             }
         } else {
             logger.debug("The channel {} returned null for channelId.getID(): {}", channelId.toString(),
