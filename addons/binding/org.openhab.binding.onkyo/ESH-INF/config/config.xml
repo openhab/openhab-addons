@@ -39,6 +39,12 @@
 			<description>Applies a scale to the volume.</description>
 			<default>1</default>
 			<advanced>true</advanced>
+			<options>
+				<option value="1">0-100</option>
+				<option value="2">0-100 in 0.5 steps</option>
+				<option value="0.8">0-80</option>
+				<option value="0.5">0-50</option>
+			</options>
 		</parameter>
 	</config-description>
 
