@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.seneye.internal;
 
-import static org.openhab.binding.seneye.SeneyeBindingConstants.THING_TYPE_SENEYE;
+import static org.openhab.binding.seneye.internal.SeneyeBindingConstants.THING_TYPE_SENEYE;
 
 import java.util.Collections;
 import java.util.Set;
@@ -18,7 +18,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.seneye.handler.SeneyeHandler;
+import org.openhab.binding.seneye.internal.handler.SeneyeHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**
