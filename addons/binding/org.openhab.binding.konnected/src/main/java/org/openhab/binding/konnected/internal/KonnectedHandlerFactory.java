@@ -12,8 +12,6 @@ import static org.openhab.binding.konnected.internal.KonnectedBindingConstants.*
 
 import java.util.Collections;
 import java.util.Dictionary;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -21,14 +19,12 @@ import org.eclipse.smarthome.core.net.HttpServiceUtil;
 import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.konnected.internal.handler.KonnectedHandler;
 import org.openhab.binding.konnected.internal.servlet.KonnectedHTTPServlet;
 import org.openhab.binding.konnected.internal.servlet.KonnectedWebHookFail;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -46,8 +42,6 @@ import org.slf4j.LoggerFactory;
 public class KonnectedHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(KonnectedHandlerFactory.class);
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_MODULE);
-    private Map<ThingUID, ServiceRegistration<?>> webHookServiceRegs = new HashMap<>();
-    private ServiceRegistration<?> webHookServiceReg;
     private HttpService httpService;
     private String callbackUrl = null;
     private NetworkAddressService networkAddressService;
@@ -70,7 +64,7 @@ public class KonnectedHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected void deactivate(ComponentContext componentContext) {
         super.deactivate(componentContext);
-        unregisterWebHookServlet();
+        servlet.deactivate();
     }
 
     @Override
@@ -98,14 +92,9 @@ public class KonnectedHandlerFactory extends BaseThingHandlerFactory {
 
     private KonnectedHTTPServlet registerWebHookServlet() {
         KonnectedHTTPServlet servlet = null;
-
         String configCallBack = '/' + BINDING_ID;
         servlet = new KonnectedHTTPServlet(httpService, configCallBack);
         return servlet;
-    }
-
-    private void unregisterWebHookServlet() {
-        webHookServiceReg.unregister();
     }
 
     @Reference
@@ -119,6 +108,7 @@ public class KonnectedHandlerFactory extends BaseThingHandlerFactory {
 
     private String createCallbackUrl() {
         if (callbackUrl != null) {
+            logger.debug("The callback ip address from the OSGI is:{}", callbackUrl);
             return callbackUrl;
         } else {
             final String ipAddress = networkAddressService.getPrimaryIpv4HostAddress();
@@ -126,6 +116,7 @@ public class KonnectedHandlerFactory extends BaseThingHandlerFactory {
                 logger.warn("No network interface could be found.");
                 return null;
             }
+            logger.debug("The callback ip address obtained from the Network Address Service was:{}", ipAddress);
             return ipAddress;
         }
     }
@@ -137,6 +128,7 @@ public class KonnectedHandlerFactory extends BaseThingHandlerFactory {
             logger.warn("Cannot find port of the http service.");
             return null;
         }
+        logger.debug("the port for the callback is: {}", port);
         return Integer.toString(port);
     }
 
