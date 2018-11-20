@@ -78,6 +78,7 @@ public class SpotifyBindingConstants {
     public static final String CHANNEL_PLAYED_ARTISTTYPE = "artistType";
 
     public static final String CHANNEL_DEVICEID = "deviceId";
+    public static final String CHANNEL_TYPE_ACTIVE_DEVICENAME = "activeDeviceName";
     public static final String CHANNEL_DEVICENAME = "deviceName";
     public static final String CHANNEL_DEVICETYPE = "deviceType";
     public static final String CHANNEL_DEVICEACTIVE = "deviceActive";

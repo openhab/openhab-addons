@@ -127,8 +127,12 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType && CHANNEL_PLAYED_ALBUMIMAGE.equals(channelUID.getId())) {
-            albumUpdater.refreshAlbumImage(channelUID);
+        if (command instanceof RefreshType) {
+            if (CHANNEL_PLAYED_ALBUMIMAGE.equals(channelUID.getId())) {
+                albumUpdater.refreshAlbumImage(channelUID);
+            } else {
+                lastTrackId = StringType.EMPTY;
+            }
         } else {
             try {
                 if (handleCommand != null
