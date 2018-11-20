@@ -53,7 +53,7 @@ public class Evo192Communicator implements IParadoxCommunicator {
         tx = new DataOutputStream(socket.getOutputStream());
         rx = new DataInputStream(socket.getInputStream());
         password = ip150Password;
-        this.pcPassword = pcPassword;
+        this.pcPassword = ParadoxUtil.stringToBCD(ip150Password);
 
         loginSequence();
         initializeMemoryMap();

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="paradoxalarm"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="paradoxCommunication">
+		<label>Paradox system</label>
+		<description>Paradox Partition status</description>
+
+		<channels>
+			<channel id="systemState" typeId="state" />
+		</channels>
+
+		<config-description>
+			<parameter name="refresh" type="integer" min="1" max="600">
+				<label>Refresh interval</label>
+				<description>Specifies the refresh interval in seconds.</description>
+				<default>5</default>
+			</parameter>
+			<parameter name="ip150Password" type="text">
+                <label>IP150 Password</label>
+                <description>Password for accessing IP150</description>
+            </parameter>
+            <parameter name="pcPassword" type="text">
+                <label>PC Password</label>
+                <description>PC Password (section 3012 of configuration)</description>
+            </parameter>
+            <parameter name="ipAddress" type="text">
+                <label>IP Address</label>
+                <description>IP address of IP150</description>
+            </parameter>
+            <parameter name="port" type="integer">
+                <label>Port</label>
+                <description>Port to connect to IP150</description>
+            </parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="state">
+		<item-type>String</item-type>
+		<label>System state</label>
+		<description>State of the system</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+</thing:thing-descriptions>
