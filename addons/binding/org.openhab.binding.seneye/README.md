@@ -17,7 +17,7 @@ You can have multiple seneye devices in your home, just make sure that your aqua
 
 ## Discovery
 
-Discovery is not supported, the seneye monitor must be configured manually
+Discovery is not supported, the seneye monitor must be configured manually.
 
 ## Thing Configuration
 
@@ -47,21 +47,25 @@ The following channels are supported:
 | kelvin                  | String       | The kelvin level of your aquarium lightning, if available        |
 | lastreading             | DateTime     | The moment when the last readings are received from the monitor  |
 | slideexpires            | DateTime     | The moment when the current slide will expire                    |
+| wrongslide              | String       | The Slide is not valid (normally expired)                        | 
+| slideserial             | String       | The serial number of the Slide                                   | 
+| outofwater              | String       | The Slide is reporting being out of the water                    | 
+| disconnected            | String       | The Seneye has not uploaded any updates recently                 | 
 
 ## Full example
 
 A manual configuration through a `things/seneye.things` file could look like this:
 
 ```
-Thing seneye:seneye:mySeneye "Seneye" @ "Living Room" [aquarium_name="MyAquarium", username="mail@example.com", password="xxx", poll_time=5]
+Thing seneye:monitor:mySeneye "Seneye" @ "Living Room" [aquarium_name="MyAquarium", username="mail@example.com", password="xxx", poll_time=5]
 ```
 
 A manual configuration through a `demo.items` file could look like this:
 
 ```
-String mySeneye_Temperature  "Temp [%s] C"        { channel="seneye:seneye:mySeneye:temperature" }
-String mySeneye_PH           "PH [%s]"            { channel="seneye:seneye:mySeneye:ph" }
-String mySeneye_NH3          "NH3 [%s]"           { channel="seneye:seneye:mySeneye:nh3" }
+String mySeneye_Temperature  "Temp [%s] C"        { channel="seneye:monitor:mySeneye:temperature" }
+String mySeneye_PH           "PH [%s]"            { channel="seneye:monitor:mySeneye:ph" }
+String mySeneye_NH3          "NH3 [%s]"           { channel="seneye:monitor:mySeneye:nh3" }
 ```
 
 The sitemap could look like this:

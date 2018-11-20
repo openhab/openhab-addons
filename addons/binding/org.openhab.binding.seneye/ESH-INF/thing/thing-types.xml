@@ -19,6 +19,10 @@
 			<channel id="kelvin" typeId="kelvin"/>
 			<channel id="lastreading" typeId="lastreading"/>
 			<channel id="slideexpires" typeId="slideexpires"/>
+			<channel id="wrongslide" typeId="wrongslide"/>
+			<channel id="slideserial" typeId="slideserial"/>
+			<channel id="outofwater" typeId="outofwater" />
+			<channel id="disconnected" typeId="disconnected" />
 		</channels>
 		<config-description>
 			<parameter name="aquarium_name" type="text" required="true">
@@ -105,6 +109,30 @@
 		<item-type>DateTime</item-type>
 		<label>Slide expiration</label>
 		<description>The time your slide expires</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="wrongslide">
+		<item-type>String</item-type>
+		<label>Wrong Slide</label>
+		<description>The Wrong Slide is in use (becomes 1 when the slide has expired)</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="slideserial">
+		<item-type>String</item-type>
+		<label>Slide Serial Number</label>
+		<description>The serial Number of the currently installed slide</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="outofwater">
+		<item-type>String</item-type>
+		<label>Out of Water</label>
+		<description>The Sensor is reporting being out of the water</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="disconnected">
+		<item-type>String</item-type>
+		<label>Disconnected</label>
+		<description>No readings have been uploaded for a while, check connection</description>
 		<state readOnly="true" />
 	</channel-type>
 </thing:thing-descriptions>
