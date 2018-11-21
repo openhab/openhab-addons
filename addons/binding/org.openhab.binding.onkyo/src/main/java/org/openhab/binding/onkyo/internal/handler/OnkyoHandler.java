@@ -359,7 +359,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                     break;
                 case ZONE2_VOLUME:
                     volumeLevelZone2 = handleReceivedVolume(
-                            convertDeviceValueToOpenHabState(data.getValue(), PercentType.class));
+                            convertDeviceValueToOpenHabState(data.getValue(), DecimalType.class));
                     updateState(CHANNEL_VOLUMEZONE2, volumeLevelZone2);
                     break;
                 case ZONE2_SOURCE:
@@ -378,7 +378,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                     break;
                 case ZONE3_VOLUME:
                     volumeLevelZone3 = handleReceivedVolume(
-                            convertDeviceValueToOpenHabState(data.getValue(), PercentType.class));
+                            convertDeviceValueToOpenHabState(data.getValue(), DecimalType.class));
                     updateState(CHANNEL_VOLUMEZONE3, volumeLevelZone3);
                     break;
                 case ZONE3_SOURCE:
