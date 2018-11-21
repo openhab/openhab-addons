@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="http"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="color">
+		<label>HTTP Color Control</label>
+		<description>HTTP request to set the color (in HSB values) of a light or other device.</description>
+
+		<channels>
+			<channel id="state" typeId="state-color"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:http:config-all"/>
+	</thing-type>
+
+	<thing-type id="contact">
+		<label>HTTP Contact State</label>
+		<description>HTTP request to fetch the state of contacts (e.g., door/window contacts).</description>
+
+		<channels>
+			<channel id="state" typeId="state-contact"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:http:config-stateonly"/>
+	</thing-type>
+
+	<thing-type id="datetime">
+		<label>HTTP Date/Time</label>
+		<description>HTTP request to fetch the date and/or time.</description>
+
+		<channels>
+			<channel id="state" typeId="state-datetime"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:http:config-stateonly"/>
+	</thing-type>
+
+	<thing-type id="dimmer">
+		<label>HTTP Dimmer</label>
+		<description>HTTP request to set the level (in percent) of a dimmer.</description>
+
+		<channels>
+			<channel id="state" typeId="state-percent"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:http:config-all"/>
+	</thing-type>
+
+	<thing-type id="image">
+		<label>HTTP Image</label>
+		<description>HTTP request to fetch an image.</description>
+
+		<channels>
+			<channel id="state" typeId="state-image"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:http:config-stateonly"/>
+	</thing-type>
+
+	<thing-type id="location">
+		<label>HTTP Location</label>
+		<description>HTTP request to fetch or set GPS coordinates.</description>
+
+		<channels>
+			<channel id="state" typeId="state-location"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:http:config-stateonly"/>
+	</thing-type>
+
+	<thing-type id="number">
+		<label>HTTP Number</label>
+		<description>HTTP request to fetch or set a decimal number.</description>
+
+		<channels>
+			<channel id="state" typeId="state-number"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:http:config-all"/>
+	</thing-type>
+
+	<thing-type id="player">
+		<label>HTTP Player</label>
+		<description>HTTP request to control a media player.</description>
+
+		<channels>
+			<channel id="state" typeId="state-player"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:http:config-all"/>
+	</thing-type>
+
+	<thing-type id="rollershutter">
+		<label>HTTP Roller Shutter</label>
+		<description>HTTP request to control a roller shutter device.</description>
+
+		<channels>
+			<channel id="state" typeId="state-rollershutter"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:http:config-all"/>
+	</thing-type>
+
+	<thing-type id="string">
+		<label>HTTP String</label>
+		<description>HTTP request to fetch or store a bare string.</description>
+
+		<channels>
+			<channel id="state" typeId="state-string"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:http:config-all"/>
+	</thing-type>
+
+	<thing-type id="switch">
+		<label>HTTP Switch</label>
+		<description>HTTP request to turn a switch on and off.</description>
+
+		<channels>
+			<channel id="state" typeId="state-onoff"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:http:config-all"/>
+	</thing-type>
+
+	<channel-type id="state-color">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<description>Current color of the device</description>
+	</channel-type>
+	<channel-type id="state-contact">
+		<item-type>Contact</item-type>
+		<label>Contact</label>
+		<description>Current contact state of the device</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="state-datetime">
+		<item-type>DateTime</item-type>
+		<label>Date/Time</label>
+		<description>Current date and/or time</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="state-percent">
+		<item-type>Dimmer</item-type>
+		<label>Dimmer</label>
+		<description>Current level of the dimmer</description>
+		<state min="0" max="100" step="1"/>
+	</channel-type>
+	<channel-type id="state-image">
+		<item-type>Image</item-type>
+		<label>Image</label>
+		<description>Current image to display</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="state-location">
+		<item-type>Location</item-type>
+		<label>Location</label>
+		<description>Current GPS coordinates as Latitude,Longitude,Altitude</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="state-number">
+		<item-type>Number</item-type>
+		<label>Number</label>
+		<description>Current decimal value</description>
+	</channel-type>
+	<channel-type id="state-player">
+		<item-type>Player</item-type>
+		<label>Controls</label>
+		<description>Player controls</description>
+	</channel-type>
+	<channel-type id="state-rollershutter">
+		<item-type>Rollershutter</item-type>
+		<label>Controls</label>
+		<description>Roller shutter controls</description>
+	</channel-type>
+	<channel-type id="state-string">
+		<item-type>String</item-type>
+		<label>String</label>
+		<description>String value</description>
+	</channel-type>
+	<channel-type id="state-onoff">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Current state of the switch</description>
+	</channel-type>
+</thing:thing-descriptions>

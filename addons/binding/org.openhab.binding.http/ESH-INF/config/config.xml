@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+    http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+    <config-description uri="thing-type:http:config-stateonly">
+        <parameter name="stateUrl" type="text" required="true">
+            <label>State URL</label>
+            <description>
+                URL to fetch to retrieve the state of the Thing. The URL should return a State value; see the README
+                for more information.
+            </description>
+        </parameter>
+        <parameter name="stateRefreshInterval" type="integer" required="true">
+            <label>State Refresh Interval (ms)</label>
+            <description>How often (in milliseconds) to refresh state by fetching the State URL.</description>
+            <default>60000</default>
+        </parameter>
+        <parameter name="stateResponseTransform" type="text">
+            <label>State Response Transformation</label>
+            <description>A transformation rule used to transform the HTTP response from the State URL.</description>
+        </parameter>
+    </config-description>
+
+    <config-description uri="thing-type:http:config-all">
+        <parameter-group name="state-config">
+            <label>State Configuration</label>
+            <description>This section allows you to configure a request to make to fetch the state of the Thing.</description>
+        </parameter-group>
+        <parameter-group name="command-config">
+            <label>Command Configuration</label>
+            <description>This setion allows you to configure a request to make to change the state of the Thing.</description>
+        </parameter-group>
+
+        <parameter name="stateUrl" type="text" groupName="state-config">
+            <label>State URL</label>
+            <description>
+                URL to fetch to retrieve the state of the Thing. The URL should return a State value; see the README for
+                more information.
+            </description>
+        </parameter>
+        <parameter name="stateRefreshInterval" type="integer" groupName="state-config">
+            <label>State Refresh Interval (ms)</label>
+            <description>How often (in milliseconds) to refresh state by fetching the State URL.</description>
+            <default>60000</default>
+        </parameter>
+        <parameter name="stateResponseTransform" type="text" groupName="state-config">
+            <label>State Response Transformation</label>
+            <description>A transformation rule used to transform the HTTP response from the State URL.</description>
+        </parameter>
+
+        <parameter name="commandMethod" type="text" groupName="command-config">
+            <label>Command HTTP Method</label>
+            <description>HTTP Method to use when sending a command to the Thing.</description>
+            <default>POST</default>
+            <options>
+                <option value="POST">POST</option>
+                <option value="GET">GET</option>
+            </options>
+        </parameter>
+        <parameter name="commandUrl" type="text" groupName="command-config">
+            <label>Command URL</label>
+            <description><![CDATA[
+                URL to request to change the state of the Thing.  See the README for possible Command values. For POST
+                requests, the request body will be by default of type <code>text/plain</code> and will simply be the
+                command.  For GET requests, the request body will be empty, but you can interpolate the command into
+                the URL by using <code>%s</code>.
+            ]]></description>
+        </parameter>
+        <parameter name="commandContentType" type="text" required="true" groupName="command-config">
+            <label>Command Content Type</label>
+            <description>The content type to use for the HTTP request.</description>
+            <default>text/plain; charset=utf-8</default>
+        </parameter>
+        <parameter name="commandRequestTransform" type="text" groupName="command-config">
+            <label>Command Request Transformation</label>
+            <description>A transformation rule used to transform the command before it is sent to the Command URL.</description>
+        </parameter>
+        <parameter name="commandResponseTransform" type="text" groupName="command-config">
+            <label>Command Response Transformation</label>
+            <description>A transformation rule used to transform the HTTP response from the Command URL.</description>
+        </parameter>
+    </config-description>
+</config-description:config-descriptions>

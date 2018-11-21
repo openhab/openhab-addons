@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+
+	<name>HTTP Binding</name>
+	<description>Fetch state and control devices by making HTTP requests.</description>
+	<author>Brian Tarricone</author>
+
+	<config-description>
+		<parameter name="connectTimeout" type="integer">
+			<label>Connect Timeout</label>
+			<description>HTTP connect timeout, in milliseconds.</description>
+			<default>3000</default>
+		</parameter>
+		<parameter name="requestTimeout" type="integer">
+			<label>Request Timeout</label>
+			<description>HTTP request timeout, in milliseconds.</description>
+			<default>5000</default>
+		</parameter>
+	</config-description>
+</binding:binding>
