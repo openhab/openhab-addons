@@ -337,7 +337,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                     break;
                 case VOLUME:
                     volumeLevelZone1 = handleReceivedVolume(
-                            convertDeviceValueToOpenHabState(data.getValue(), PercentType.class));
+                            convertDeviceValueToOpenHabState(data.getValue(), DecimalType.class));
                     updateState(CHANNEL_VOLUME, volumeLevelZone1);
                     break;
                 case SOURCE:
@@ -359,7 +359,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                     break;
                 case ZONE2_VOLUME:
                     volumeLevelZone2 = handleReceivedVolume(
-                            convertDeviceValueToOpenHabState(data.getValue(), PercentType.class));
+                            convertDeviceValueToOpenHabState(data.getValue(), DecimalType.class));
                     updateState(CHANNEL_VOLUMEZONE2, volumeLevelZone2);
                     break;
                 case ZONE2_SOURCE:
@@ -378,7 +378,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                     break;
                 case ZONE3_VOLUME:
                     volumeLevelZone3 = handleReceivedVolume(
-                            convertDeviceValueToOpenHabState(data.getValue(), PercentType.class));
+                            convertDeviceValueToOpenHabState(data.getValue(), DecimalType.class));
                     updateState(CHANNEL_VOLUMEZONE3, volumeLevelZone3);
                     break;
                 case ZONE3_SOURCE:
@@ -763,34 +763,43 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
     }
 
     private State handleReceivedVolume(State volume) {
-        if (volume instanceof PercentType) {
-            return upScaleVolume(((PercentType) volume));
+        if (volume instanceof DecimalType) {
+            return upScaleVolume(((DecimalType) volume));
         }
         return volume;
     }
 
-    private PercentType upScaleVolume(PercentType volume) {
-        PercentType newVolume = volume;
+    private PercentType upScaleVolume(DecimalType volume) {
+        PercentType newVolume = scaleVolumeFromReceiver(volume);
 
         if (configuration.volumeLimit < 100) {
             double scaleCoefficient = 100d / configuration.volumeLimit;
-            newVolume = new PercentType(((Double) (volume.doubleValue() * scaleCoefficient)).intValue());
-            logger.debug("Up scaled volume level '{}' to '{}'", volume, newVolume);
+            PercentType unLimitedVolume = newVolume;
+            newVolume = new PercentType(((Double) (newVolume.doubleValue() * scaleCoefficient)).intValue());
+            logger.debug("Up scaled volume level '{}' to '{}'", unLimitedVolume, newVolume);
         }
 
         return newVolume;
     }
 
-    private PercentType downScaleVolume(PercentType volume) {
-        PercentType newVolume = volume;
+    private DecimalType downScaleVolume(PercentType volume) {
+        PercentType limitedVolume = volume;
 
         if (configuration.volumeLimit < 100) {
             double scaleCoefficient = configuration.volumeLimit / 100d;
-            newVolume = new PercentType(((Double) (volume.doubleValue() * scaleCoefficient)).intValue());
-            logger.debug("Down scaled volume level '{}' to '{}'", volume, newVolume);
+            limitedVolume = new PercentType(((Double) (volume.doubleValue() * scaleCoefficient)).intValue());
+            logger.debug("Limited volume level '{}' to '{}'", volume, limitedVolume);
         }
 
-        return newVolume;
+        return scaleVolumeForReceiver(limitedVolume);
+    }
+
+    private DecimalType scaleVolumeForReceiver(PercentType volume) {
+        return new DecimalType(((Double) (volume.doubleValue() * configuration.volumeScale)).intValue());
+    }
+
+    private PercentType scaleVolumeFromReceiver(DecimalType volume) {
+        return new PercentType(((Double) (volume.intValue() / configuration.volumeScale)).intValue());
     }
 
     @Override
