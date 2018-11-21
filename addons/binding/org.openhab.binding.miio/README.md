@@ -65,6 +65,11 @@ The following things are available:
 | PHILIPS Zhirui Smart LED Bulb E14 Candle Lamp | miio:basic       | philips.light.candle   | Yes       |            |
 | Xiaomi Philips Downlight   | miio:basic       | philips.light.downlight | Yes       |            |
 | Xiaomi Philips ZhiRui bedside lamp | miio:basic       | philips.light.moonlight | Yes       |            |
+| philips.light.candle2      | miio:basic       | philips.light.candle2  | Yes       |            |
+| philips.light.mono1        | miio:basic       | philips.light.mono1    | Yes       |            |
+| philips.light.virtual      | miio:basic       | philips.light.virtual  | Yes       |            |
+| philips.light.zysread      | miio:basic       | philips.light.zysread  | Yes       |            |
+| philips.light.zystrip      | miio:basic       | philips.light.zystrip  | Yes       |            |
 | Mi Power-plug              | miio:basic       | chuangmi.plug.m1       | Yes       |            |
 | Mi Power-plug v1           | miio:basic       | chuangmi.plug.v1       | Yes       |            |
 | Mi Power-plug v2           | miio:basic       | chuangmi.plug.v2       | Yes       |            |
@@ -75,6 +80,7 @@ The following things are available:
 | Mi Robot Vacuum            | miio:vacuum      | rockrobo.vacuum.v1     | Yes       |            |
 | Mi Robot Vacuum v2         | miio:vacuum      | roborock.vacuum.s5     | Yes       |            |
 | Rockrobo Xiaowa Vacuum v2  | miio:unsupported | roborock.vacuum.e2     | No        |            |
+| roborock.vacuum.c1         | miio:unsupported | roborock.vacuum.c1     | No        |            |
 | Rockrobo Xiaowa Sweeper v2 | miio:unsupported | roborock.sweeper.e2v2  | No        |            |
 | Rockrobo Xiaowa Sweeper v3 | miio:unsupported | roborock.sweeper.e2v3  | No        |            |
 | Mi Water Purifier v2       | miio:basic       | yunmi.waterpuri.v2     | Yes       |            |
@@ -727,6 +733,79 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | scene            | Number  | Scene                               |
 | dv               | Number  | DV                                  |
 | gonight          | Switch  | Go Night                            |
+| delayoff         | Switch  | Delay Off                           |
+| toggle           | Switch  | Toggle                              |
+
+
+### philips.light.candle2 (philips.light.candle2 ) Channels
+
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| brightness       | Number  | Brightness                          |
+| cct              | Number  | Correlated Color Temperature        |
+| scene            | Number  | Scene                               |
+| delayoff         | Switch  | Delay Off                           |
+| toggle           | Switch  | Toggle                              |
+
+
+### philips.light.mono1 (philips.light.mono1 ) Channels
+
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| brightness       | Number  | Brightness                          |
+| cct              | Number  | Correlated Color Temperature        |
+| scene            | Number  | Scene                               |
+| dv               | Number  | DV                                  |
+| switchscene      | Switch  | Switch Scene                        |
+| delayoff         | Switch  | Delay Off                           |
+| toggle           | Switch  | Toggle                              |
+
+
+### philips.light.virtual (philips.light.virtual ) Channels
+
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| brightness       | Number  | Brightness                          |
+| cct              | Number  | Correlated Color Temperature        |
+| scene            | Number  | Scene                               |
+| dv               | Number  | DV                                  |
+| switchscene      | Switch  | Switch Scene                        |
+| delayoff         | Switch  | Delay Off                           |
+| toggle           | Switch  | Toggle                              |
+
+
+### philips.light.zysread (philips.light.zysread ) Channels
+
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| brightness       | Number  | Brightness                          |
+| cct              | Number  | Correlated Color Temperature        |
+| scene            | Number  | Scene                               |
+| dv               | Number  | DV                                  |
+| switchscene      | Switch  | Switch Scene                        |
+| delayoff         | Switch  | Delay Off                           |
+| toggle           | Switch  | Toggle                              |
+
+
+### philips.light.zystrip (philips.light.zystrip ) Channels
+
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| brightness       | Number  | Brightness                          |
+| cct              | Number  | Correlated Color Temperature        |
+| scene            | Number  | Scene                               |
+| dv               | Number  | DV                                  |
+| switchscene      | Switch  | Switch Scene                        |
 | delayoff         | Switch  | Delay Off                           |
 | toggle           | Switch  | Toggle                              |
 
@@ -1847,6 +1926,89 @@ Number cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:c
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
 Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
 Switch gonight "Go Night" (G_light) {channel="miio:basic:light:gonight"}
+Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
+Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
+```
+
+### philips.light.candle2 (philips.light.candle2) item file lines
+
+
+note: Autogenerated example. Replace the id (light) in the channel with your own.
+
+```
+Group G_light "philips.light.candle2" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
+Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
+Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
+```
+
+### philips.light.mono1 (philips.light.mono1) item file lines
+
+
+note: Autogenerated example. Replace the id (light) in the channel with your own.
+
+```
+Group G_light "philips.light.mono1" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
+Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
+Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchscene"}
+Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
+Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
+```
+
+### philips.light.virtual (philips.light.virtual) item file lines
+
+
+note: Autogenerated example. Replace the id (light) in the channel with your own.
+
+```
+Group G_light "philips.light.virtual" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
+Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
+Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchscene"}
+Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
+Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
+```
+
+### philips.light.zysread (philips.light.zysread) item file lines
+
+
+note: Autogenerated example. Replace the id (light) in the channel with your own.
+
+```
+Group G_light "philips.light.zysread" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
+Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
+Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchscene"}
+Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
+Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
+```
+
+### philips.light.zystrip (philips.light.zystrip) item file lines
+
+
+note: Autogenerated example. Replace the id (light) in the channel with your own.
+
+```
+Group G_light "philips.light.zystrip" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
+Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
+Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchscene"}
 Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
 ```

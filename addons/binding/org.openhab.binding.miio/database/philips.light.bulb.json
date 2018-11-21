@@ -2,7 +2,11 @@
 	"deviceMapping": {
 		"id": [
 			"philips.light.bulb",
-			"philips.light.downlight"
+			"philips.light.downlight",
+			"philips.light.mono1",
+			"philips.light.virtual",
+			"philips.light.zysread",
+			"philips.light.zystrip"
 		],
 		"channels": [
 			{

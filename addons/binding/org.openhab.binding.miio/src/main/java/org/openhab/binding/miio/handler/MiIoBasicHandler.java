@@ -399,7 +399,9 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     }
                     if (basicChannel.getType().equals("Switch")) {
                         updateState(basicChannel.getChannel(),
-                                val.getAsString().toLowerCase().equals("on") ? OnOffType.ON : OnOffType.OFF);
+                                val.getAsString().toLowerCase().equals("on")
+                                        || val.getAsString().toLowerCase().equals("true") ? OnOffType.ON
+                                                : OnOffType.OFF);
                     }
                     if (basicChannel.getType().equals("Color")) {
                         Color rgb = new Color(val.getAsInt());
