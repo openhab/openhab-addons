@@ -420,6 +420,10 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
                     } catch (IllegalArgumentException e) {
                         logger.debug("IllegalArgumentException when downloading image from {}", url, e);
                         return null;
+                    } catch (IllegalStateException e) {
+                        // Jetty throws this when it doesn't have enough threads
+                        logger.debug("IllegalStateException when downloading image from {}", url, e);
+                        return null;
                     }
                 });
                 if (image == null) {
