@@ -117,7 +117,7 @@ public class EnOceanBindingConstants {
     public final static String CHANNEL_GENERIC_TEACHINCMD = "genericTeachInCMD";
 
     public final static ChannelTypeUID VirtualRockerSwitchChannelType = new ChannelTypeUID(BINDING_ID,
-            "virtualRockerswitch");
+            CHANNEL_VIRTUALROCKERSWITCH);
 
     public static final Map<String, EnOceanChannelDescription> ChannelId2ChannelDescription = Collections
             .unmodifiableMap(new HashMap<String, EnOceanChannelDescription>() {

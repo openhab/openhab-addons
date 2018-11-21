@@ -197,6 +197,14 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
         }
     }
 
+    protected State getCurrentState(String channelId) {
+        return channelState.get(channelId);
+    }
+
+    protected void setCurrentState(String channelId, State state) {
+        channelState.put(channelId, state);
+    }
+
     protected synchronized EnOceanBridgeHandler getBridgeHandler() {
         if (this.gateway == null) {
             Bridge bridge = getBridge();

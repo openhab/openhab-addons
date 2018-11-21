@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.enocean.internal.handler;
 
-import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.THING_TYPE_CLASSICDEVICE;
+import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelRockerSwitchListenerConfig;
 import org.openhab.binding.enocean.internal.eep.EEPType;
 
@@ -126,4 +127,15 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
         }
     }
 
+    @Override
+    protected State getCurrentState(String channelId) {
+        // Always use the same channelId of virtualrockerswitch channel
+        return super.getCurrentState(CHANNEL_VIRTUALROCKERSWITCH);
+    }
+
+    @Override
+    protected void setCurrentState(String channelId, State state) {
+        // Always use the same channelId of virtualrockerswitch channel
+        super.setCurrentState(CHANNEL_VIRTUALROCKERSWITCH, state);
+    }
 }

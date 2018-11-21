@@ -152,13 +152,13 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
                             Configuration channelConfig = channel.getConfiguration();
                             switch (channel.getKind()) {
                                 case STATE:
-                                    State currentState = channelState.get(id);
+                                    State currentState = getCurrentState(id);
                                     State result = eep.convertToState(id, channelConfig, currentState);
 
                                     // if message can be interpreted (result != UnDefType.UNDEF) => update item state
                                     if (result != null && result != UnDefType.UNDEF) {
                                         updateState(id, result);
-                                        channelState.put(id, result); // update internal state map
+                                        setCurrentState(id, result); // update internal state map
                                     }
                                     break;
                                 case TRIGGER:

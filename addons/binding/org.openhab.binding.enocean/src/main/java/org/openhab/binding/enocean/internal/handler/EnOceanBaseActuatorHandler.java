@@ -207,7 +207,7 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
             // If we want to go to 80% we must know the current position to determine how long the rollershutter has
             // to drive up/down. However items seems to be stateless, so we have to store the state by ourself.
             // The currentState is updated by EnOceanBaseSensorHandler after receiving a response.
-            State currentState = channelState.get(channelId);
+            State currentState = getCurrentState(channelId);
 
             ESP3Packet msg = eep.setSenderId(senderId).setDestinationId(destinationId)
                     .convertFromCommand(channelId, command, currentState, channelConfig)
