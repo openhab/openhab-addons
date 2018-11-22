@@ -42,6 +42,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SonyPS4PacketHandler {
 
+    private final Logger logger = LoggerFactory.getLogger(SonyPS4PacketHandler.class);
+
     private static final String OS_VERSION = "4.4";
     private static final String DDP_VERSION = "00020020";
     private static final String PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----"
@@ -79,7 +81,6 @@ public class SonyPS4PacketHandler {
     private static final int COMMENT_VIEWER_NEW_COMMENT2 = 0x2e;
     private static final int COMMENT_VIEWER_EVENT = 0x30;
 
-    private final Logger logger = LoggerFactory.getLogger(SonyPS4PacketHandler.class);
     private final byte[] remoteSeed = new byte[16];
     private final byte[] randomSeed = new byte[16];
     @Nullable

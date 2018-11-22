@@ -31,20 +31,20 @@ public class SonyPS4BindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SONYPS4);
 
     // List of all Channel ids
-    public static final String CHANNEL_POWER = "power";
-    public static final String CHANNEL_APPLICATION_NAME = "applicationName";
-    public static final String CHANNEL_APPLICATION_TITLEID = "applicationTitleid";
-    public static final String CHANNEL_APPLICATION_IMAGE = "applicationImage";
-    public static final String CHANNEL_KEY_UP = "keyUp";
-    public static final String CHANNEL_KEY_DOWN = "keyDown";
-    public static final String CHANNEL_KEY_RIGHT = "keyRight";
-    public static final String CHANNEL_KEY_LEFT = "keyLeft";
-    public static final String CHANNEL_KEY_ENTER = "keyEnter";
-    public static final String CHANNEL_KEY_BACK = "keyBack";
-    public static final String CHANNEL_KEY_OPTION = "keyOption";
-    public static final String CHANNEL_KEY_PS = "keyPS";
+    static final String CHANNEL_POWER = "power";
+    static final String CHANNEL_APPLICATION_NAME = "applicationName";
+    static final String CHANNEL_APPLICATION_TITLEID = "applicationTitleid";
+    static final String CHANNEL_APPLICATION_IMAGE = "applicationImage";
+    static final String CHANNEL_KEY_UP = "keyUp";
+    static final String CHANNEL_KEY_DOWN = "keyDown";
+    static final String CHANNEL_KEY_RIGHT = "keyRight";
+    static final String CHANNEL_KEY_LEFT = "keyLeft";
+    static final String CHANNEL_KEY_ENTER = "keyEnter";
+    static final String CHANNEL_KEY_BACK = "keyBack";
+    static final String CHANNEL_KEY_OPTION = "keyOption";
+    static final String CHANNEL_KEY_PS = "keyPS";
 
-    public static final String CHANNEL_HOST_NAME = "hostName";
+    static final String CHANNEL_HOST_NAME = "hostName";
 
     // List of all properties in the response from the PS4
     public static final String RESPONSE_HOST_ID = "host-id";
