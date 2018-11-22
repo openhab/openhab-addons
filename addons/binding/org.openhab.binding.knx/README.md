@@ -3,7 +3,7 @@
 
 The openHAB KNX binding allows to connect to [KNX Home Automation](http://www.knx.org/) installations. Switching lights on and off, activating your roller shutters or changing room temperatures are only some examples.
 
-To access your KNX bus you either need a gateway device which is connected to the KNX bus and allows computers to access the bus communication. This can be either an Ethernet (as a Router or a Tunne type) or a serial gateway. The KNX binding then can communicate directly with this gateway. Alternatively a PC running [KNXD](https://github.com/knxd/knxd) (free open source component sofware) can be put in between which then acts as a broker allowing multiple client to connect to the same gateway. Since the protocol is identical, the KNX binding can also communicate with it transparently.
+To access your KNX bus you either need a gateway device which is connected to the KNX bus and allows computers to access the bus communication. This can be either an Ethernet (as a Router or a Tunnel type) or a serial gateway. The KNX binding then can communicate directly with this gateway. Alternatively a PC running [KNXD](https://github.com/knxd/knxd) (free open source component sofware) can be put in between which then acts as a broker allowing multiple client to connect to the same gateway. Since the protocol is identical, the KNX binding can also communicate with it transparently.
 
 ## Supported Things
 
@@ -24,10 +24,10 @@ The IP Gateway is the most commonly used way to connect to the KNX bus. At its b
 | Name                | Required     | Description                                                                                                  | Default value                                        |
 |---------------------|--------------|--------------------------------------------------------------------------------------------------------------|------------------------------------------------------|
 | type                | Yes          | The IP connection type for connecting to the KNX bus (`TUNNEL` or `ROUTER`)                                  | -                                                    |
-| ipAddress           | for `TUNNEL` | Network address of the KNX/IP gateway                                                                        | -                                                    |
+| ipAddress           | for `TUNNEL` | Network address of the KNX/IP gateway                                                                        | for `TUNNEL`: \<nothing\>, for `ROUTER`: 224.0.23.12 |
 | portNumber          | for `TUNNEL` | Port number of the KNX/IP gateway                                                                            | 3671                                                 |
 | localIp             | No           | Network address of the local host to be used to set up the connection to the KNX/IP gateway                  | the system-wide configured primary interface address |
-| localSourceAddr     | No           | The group address for identification of this KNX/IP gateway within the KNX bus                               | 0.0.0                                                |
+| localSourceAddr     | No           | The (virtual) individual address for identification of this KNX/IP gateway within the KNX bus                | 0.0.0                                                |
 | useNAT              | No           | Whether there is network address translation between the server and the gateway                              | false                                                |
 | readingPause        | No           | Time in milliseconds of how long should be paused between two read requests to the bus during initialization | 50                                                   |
 | responseTimeout     | No           | Timeout in seconds to wait for a response from the KNX bus                                                   | 10                                                   |
@@ -169,7 +169,7 @@ In contrast to the standard channels above, the control channel types are used f
 #### Group Address Notation
 
 ```
-<config>="[<dpt>:][<]<mainGA>[[+[<]<listeningGA>]+[<]<listeningGA>..]]"
+<config>="[<dpt>:][<]<mainGA>[[+[<]<listeningGA>][+[<]<listeningGA>..]]"
 ```
 
 where parts in brackets `[]` denote optional information.
