@@ -303,7 +303,7 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
     }
 
     private String createDataJsonString(String[] keys, Object[] values) {
-        return "{" + createDataString(keys, values) + ", \\\"key\\\": \\\"" + getEncryptedKey() + "\"}";
+        return "{" + createDataString(keys, values) + ", \\\"key\\\": \\\"" + getEncryptedKey() + "\\\"}";
     }
 
     private String getGatewaySid() {
