@@ -47,13 +47,13 @@ public class Evo192Communicator implements IParadoxCommunicator {
 
     MemoryMap memoryMap;
 
-    public Evo192Communicator(String ipAddress, int tcpPort, String ip150Password, byte[] pcPassword) throws Exception {
+    public Evo192Communicator(String ipAddress, int tcpPort, String ip150Password, String pcPassword) throws Exception {
         socket = new Socket(ipAddress, tcpPort);
         socket.setSoTimeout(2000);
         tx = new DataOutputStream(socket.getOutputStream());
         rx = new DataInputStream(socket.getInputStream());
         password = ip150Password;
-        this.pcPassword = ParadoxUtil.stringToBCD(ip150Password);
+        this.pcPassword = ParadoxUtil.stringToBCD(pcPassword);
 
         loginSequence();
         initializeMemoryMap();

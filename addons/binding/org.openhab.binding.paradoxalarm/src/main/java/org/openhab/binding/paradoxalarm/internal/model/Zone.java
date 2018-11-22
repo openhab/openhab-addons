@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.paradoxalarm.internal.model;
 
-import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,21 +27,6 @@ public class Zone extends Entity {
 
     public Zone(int id, String label) {
         super(id, label);
-    }
-
-    public void setFlags(ZoneStateFlags zoneStateFlags) {
-        int id = getId();
-        int index = id / 8;
-        int bitNumber = id % 8 - 1;
-
-        byte[] zonesOpened = zoneStateFlags.getZonesOpened();
-        isOpened = ParadoxUtil.isBitSet(zonesOpened[index], bitNumber);
-
-        byte[] zonesTampered = zoneStateFlags.getZonesTampered();
-        isTampered = ParadoxUtil.isBitSet(zonesTampered[index], bitNumber);
-
-        byte[] zonesLowBattery = zoneStateFlags.getZonesLowBattery();
-        hasLowBattery = ParadoxUtil.isBitSet(zonesLowBattery[index], bitNumber);
     }
 
     public boolean isOpened() {

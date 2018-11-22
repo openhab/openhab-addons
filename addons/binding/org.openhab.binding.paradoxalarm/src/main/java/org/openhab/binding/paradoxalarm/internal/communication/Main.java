@@ -14,9 +14,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openhab.binding.paradoxalarm.internal.model.ParadoxSecuritySystem;
 import org.openhab.binding.paradoxalarm.internal.model.Partition;
 import org.openhab.binding.paradoxalarm.internal.model.Zone;
-import org.openhab.binding.paradoxalarm.internal.model.ZoneStateFlags;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,26 +36,34 @@ public class Main {
     private static String ip150Password;
 
     // PC Password is the value of section 3012, i.e. if value is 0987, PC Password is two bytes 0x09, 0x87
-    private static final byte[] PC_PASSWORD = { (byte) 0x09, (byte) 0x87 };
+    private static final String PC_PASSWORD = "0987";
 
     public static void main(String[] args) {
         handleArguments(args);
 
         try {
-            IParadoxCommunicator paradoxSystem = new Evo192Communicator(IP_ADDRESS, PORT, ip150Password, PC_PASSWORD);
-
-            List<Partition> partitions = initializePartitions(paradoxSystem);
-
-            List<Zone> zones = initializeZones(paradoxSystem);
+            IParadoxCommunicator communicator = new Evo192Communicator(IP_ADDRESS, PORT, ip150Password, PC_PASSWORD);
+            ParadoxSecuritySystem paradoxSystem = new ParadoxSecuritySystem(communicator);
 
             while (true) {
-                infiniteLoop(paradoxSystem, partitions, zones);
+                infiniteLoop(paradoxSystem);
             }
             // paradoxSystem.logoutSequence();
             // paradoxSystem.close();
         } catch (Exception e) {
             logger.error("Exception: {}", e.getMessage(), e);
             System.exit(0);
+        }
+    }
+
+    private static void infiniteLoop(ParadoxSecuritySystem paradoxSystem) {
+        try {
+            Thread.sleep(5000);
+            paradoxSystem.updateEntities();
+        } catch (InterruptedException e1) {
+            logger.error(e1.getMessage(), e1);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -76,7 +84,7 @@ public class Main {
         for (int i = 0; i < partitionLabels.size(); i++) {
             Partition partition = new Partition(i + 1, partitionLabels.get(i));
             partitions.add(partition);
-            logger.debug("Partition {}:\t{}", i + 1, partition.getState().calculatedState());
+            logger.debug("Partition {}:\t{}", i + 1, partition.getState().getMainState());
         }
         return partitions;
     }
@@ -88,27 +96,6 @@ public class Main {
         } else {
             logger.info("Password retrieved successfully from CLI.");
         }
-    }
-
-    private static void infiniteLoop(IParadoxCommunicator paradoxSystem, List<Partition> partitions, List<Zone> zones)
-            throws Exception, InterruptedException {
-        paradoxSystem.refreshMemoryMap();
-        List<byte[]> currentPartitionFlags = paradoxSystem.readPartitionFlags();
-        for (int i = 0; i < partitions.size(); i++) {
-            Partition partition = partitions.get(i);
-            partition.setState(currentPartitionFlags.get(i));
-            logger.debug("Partition {}:\t{}", partition.getLabel(), partition.getState().calculatedState());
-        }
-
-        ZoneStateFlags zoneStateFlags = paradoxSystem.readZoneStateFlags();
-        for (int i = 0; i < zones.size(); i++) {
-            Zone zone = zones.get(i);
-            zone.setFlags(zoneStateFlags);
-            logger.debug("Zone {}:\tOpened: {}, Tampered: {}, LowBattery: {}",
-                    new Object[] { zone.getLabel(), zone.isOpened(), zone.isTampered(), zone.hasLowBattery() });
-        }
-        logger.debug("############################################################################");
-        Thread.sleep(5000);
     }
 
     private static String retrievePassword(String file) {

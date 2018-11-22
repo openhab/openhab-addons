@@ -27,12 +27,6 @@ public class Partition extends Entity {
         super(id, label);
     }
 
-    public Partition setState(byte[] partitionFlags) {
-        PartitionState state = this.getState();
-        state.updateStates(partitionFlags);
-        return this;
-    }
-
     public PartitionState getState() {
         return state;
     }
