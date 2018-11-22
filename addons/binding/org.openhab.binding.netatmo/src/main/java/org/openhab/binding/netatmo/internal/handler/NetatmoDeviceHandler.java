@@ -19,7 +19,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.PointType;
@@ -41,8 +40,7 @@ import retrofit.RetrofitError;
  * {@link NetatmoDeviceHandler} is the handler for a given
  * device accessed through the Netatmo Bridge
  *
- * @author Gaël L'hopital - Initial contribution OH2 version
- *
+ * @author Gaël L'hopital - Initial contribution
  */
 public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingHandler {
 
@@ -53,7 +51,7 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
     protected DEVICE device;
     protected Map<String, Object> childs = new ConcurrentHashMap<>();
 
-    public NetatmoDeviceHandler(@NonNull Thing thing) {
+    public NetatmoDeviceHandler(Thing thing) {
         super(thing);
     }
 
