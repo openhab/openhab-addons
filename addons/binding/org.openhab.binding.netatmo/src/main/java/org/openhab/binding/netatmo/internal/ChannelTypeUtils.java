@@ -87,15 +87,15 @@ public class ChannelTypeUtils {
     }
 
     public static State toQuantityType(@Nullable Float value, Unit<?> unit) {
-        return (value == null) ? UnDefType.NULL : toQuantityType(new BigDecimal(value), unit);
+        return value == null ? UnDefType.NULL : toQuantityType(new BigDecimal(value), unit);
     }
 
     public static State toQuantityType(@Nullable Integer value, Unit<?> unit) {
-        return (value == null) ? UnDefType.NULL : toQuantityType(new BigDecimal(value), unit);
+        return value == null ? UnDefType.NULL : toQuantityType(new BigDecimal(value), unit);
     }
 
     public static State toQuantityType(@Nullable Double value, Unit<?> unit) {
-        return (value == null) ? UnDefType.NULL : toQuantityType(new BigDecimal(value), unit);
+        return value == null ? UnDefType.NULL : toQuantityType(new BigDecimal(value), unit);
     }
 
     public static State toQuantityType(float value, Unit<?> unit) {
@@ -111,6 +111,6 @@ public class ChannelTypeUtils {
     }
 
     public static State toQuantityType(@Nullable BigDecimal value, Unit<?> unit) {
-        return (value == null) ? UnDefType.NULL : new QuantityType<>(value, unit);
+        return value == null ? UnDefType.NULL : new QuantityType<>(value, unit);
     }
 }
