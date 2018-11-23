@@ -24,8 +24,8 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.solaredge.internal.config.SolarEdgeConfiguration;
 import org.openhab.binding.solaredge.internal.AtomicReferenceTrait;
+import org.openhab.binding.solaredge.internal.config.SolarEdgeConfiguration;
 import org.openhab.binding.solaredge.internal.connector.WebInterface;
 import org.openhab.binding.solaredge.internal.model.Channel;
 import org.slf4j.Logger;
@@ -61,7 +61,7 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
 
     public SolarEdgeBaseHandler(Thing thing, HttpClient httpClient) {
         super(thing);
-        this.webInterface = new WebInterface(getConfiguration(), scheduler, this, httpClient);
+        this.webInterface = new WebInterface(scheduler, this, httpClient);
         this.liveDataPollingJobReference = new AtomicReference<@Nullable Future<?>>(null);
         this.aggregateDataPollingJobReference = new AtomicReference<@Nullable Future<?>>(null);
     }

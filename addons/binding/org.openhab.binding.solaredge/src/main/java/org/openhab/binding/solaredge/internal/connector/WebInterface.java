@@ -49,7 +49,7 @@ public class WebInterface implements AtomicReferenceTrait {
     /**
      * Configuration
      */
-    private final SolarEdgeConfiguration config;
+    private SolarEdgeConfiguration config;
 
     /**
      * handler for updating thing status
@@ -159,9 +159,8 @@ public class WebInterface implements AtomicReferenceTrait {
      *
      * @param config Bridge configuration
      */
-    public WebInterface(SolarEdgeConfiguration config, ScheduledExecutorService scheduler, SolarEdgeHandler handler,
-            HttpClient httpClient) {
-        this.config = config;
+    public WebInterface(ScheduledExecutorService scheduler, SolarEdgeHandler handler, HttpClient httpClient) {
+        this.config = handler.getConfiguration();
         this.handler = handler;
         this.scheduler = scheduler;
         this.httpClient = httpClient;
@@ -170,6 +169,7 @@ public class WebInterface implements AtomicReferenceTrait {
     }
 
     public void start() {
+        this.config = handler.getConfiguration();
         updateJobReference(requestExecutorJobReference, scheduler.scheduleWithFixedDelay(requestExecutor,
                 WEB_REQUEST_INITIAL_DELAY, WEB_REQUEST_INTERVAL, TimeUnit.MILLISECONDS));
     }
@@ -200,16 +200,26 @@ public class WebInterface implements AtomicReferenceTrait {
                 @Override
                 public void update(CommunicationStatus status) {
 
+                    String errorMessageCodeFound;
+                    String errorMessgaeCodeForbidden;
+                    if (config.isUsePrivateApi()) {
+                        errorMessageCodeFound = "login error with private API: invalid token";
+                        errorMessgaeCodeForbidden = "login error with private API: invalid solarId";
+                    } else {
+                        errorMessageCodeFound = "login error with public API: unknown error";
+                        errorMessgaeCodeForbidden = "login error with public API: invalid api key or solarId is not valid for this api key";
+                    }
+
                     if (status.getHttpCode().equals(Code.OK)) {
                         handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, "logged in");
                         setAuthenticated(true);
                     } else if (status.getHttpCode().equals(Code.FOUND)) {
                         handler.setStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
-                                "login error with private API: invalid token");
+                                errorMessageCodeFound);
                         setAuthenticated(false);
                     } else if (status.getHttpCode().equals(Code.FORBIDDEN)) {
                         handler.setStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
-                                "login error with public API: invalid api key or solarId is not valid for this api key");
+                                errorMessgaeCodeForbidden);
                         setAuthenticated(false);
                     } else if (status.getHttpCode().equals(Code.SERVICE_UNAVAILABLE)) {
                         handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
