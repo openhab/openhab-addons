@@ -47,7 +47,7 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
     /**
      * Configuration
      */
-    private final NibeUplinkConfiguration config;
+    private NibeUplinkConfiguration config;
 
     /**
      * handler for updating thing status
@@ -162,9 +162,8 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
      *
      * @param config the Bridge configuration
      */
-    public UplinkWebInterface(NibeUplinkConfiguration config, ScheduledExecutorService scheduler,
-            NibeUplinkHandler handler, HttpClient httpClient) {
-        this.config = config;
+    public UplinkWebInterface(ScheduledExecutorService scheduler, NibeUplinkHandler handler, HttpClient httpClient) {
+        this.config = handler.getConfiguration();
         this.uplinkHandler = handler;
         this.scheduler = scheduler;
         this.requestExecutor = new WebRequestExecutor();
@@ -175,6 +174,7 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
      * starts the periodic request executor job which handles all web requests
      */
     public void start() {
+        this.config = uplinkHandler.getConfiguration();
         updateJobReference(requestExecutorJobReference, scheduler.scheduleWithFixedDelay(requestExecutor,
                 WEB_REQUEST_INITIAL_DELAY, WEB_REQUEST_INTERVAL, TimeUnit.MILLISECONDS));
     }
