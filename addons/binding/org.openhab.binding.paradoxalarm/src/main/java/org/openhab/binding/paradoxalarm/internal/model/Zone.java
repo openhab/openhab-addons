@@ -19,38 +19,23 @@ import org.slf4j.LoggerFactory;
  * @author Konstantin_Polihronov - Initial contribution
  */
 public class Zone extends Entity {
-    private boolean isOpened;
-    private boolean isTampered;
-    private boolean hasLowBattery;
 
-    private static Logger logger = LoggerFactory.getLogger(Partition.class);
+    private static Logger logger = LoggerFactory.getLogger(Zone.class);
+
+    private ZoneState zoneState;
 
     public Zone(int id, String label) {
         super(id, label);
     }
 
-    public boolean isOpened() {
-        return isOpened;
+    public ZoneState getZoneState() {
+        return zoneState;
     }
 
-    public void setOpened(boolean isOpened) {
-        this.isOpened = isOpened;
-    }
-
-    public boolean isTampered() {
-        return isTampered;
-    }
-
-    public void setTampered(boolean isTampered) {
-        this.isTampered = isTampered;
-    }
-
-    public boolean hasLowBattery() {
-        return hasLowBattery;
-    }
-
-    public void setHasLowBattery(boolean hasLowBattery) {
-        this.hasLowBattery = hasLowBattery;
+    public void setZoneState(ZoneState zoneState) {
+        this.zoneState = zoneState;
+        logger.debug("Zone {} state updated to:\tOpened: {}, Tampered: {}, LowBattery: {}",
+                new Object[] { getLabel(), zoneState.isOpened(), zoneState.isTampered(), zoneState.hasLowBattery() });
     }
 
 }

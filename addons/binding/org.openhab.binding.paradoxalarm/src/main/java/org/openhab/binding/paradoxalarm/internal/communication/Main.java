@@ -42,7 +42,7 @@ public class Main {
         handleArguments(args);
 
         try {
-            IParadoxCommunicator communicator = new Evo192Communicator(IP_ADDRESS, PORT, ip150Password, PC_PASSWORD);
+            IParadoxCommunicator communicator = new EvoCommunicator(IP_ADDRESS, PORT, ip150Password, PC_PASSWORD);
             ParadoxSecuritySystem paradoxSystem = new ParadoxSecuritySystem(communicator);
 
             while (true) {

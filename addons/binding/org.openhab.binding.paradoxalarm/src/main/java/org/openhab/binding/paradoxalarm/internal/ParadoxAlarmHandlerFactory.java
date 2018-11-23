@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.paradoxalarm.internal;
 
-import static org.openhab.binding.paradoxalarm.internal.ParadoxAlarmBindingConstants.THING_TYPE_SAMPLE;
+import static org.openhab.binding.paradoxalarm.internal.ParadoxAlarmBindingConstants.THING_TYPE_COMMUNICATOR;
 
 import java.util.Collections;
 import java.util.Set;
@@ -32,7 +32,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.paradoxalarm", service = ThingHandlerFactory.class)
 public class ParadoxAlarmHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SAMPLE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_COMMUNICATOR);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -43,7 +43,7 @@ public class ParadoxAlarmHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_SAMPLE.equals(thingTypeUID)) {
+        if (THING_TYPE_COMMUNICATOR.equals(thingTypeUID)) {
             return new ParadoxAlarmHandler(thing);
         }
 

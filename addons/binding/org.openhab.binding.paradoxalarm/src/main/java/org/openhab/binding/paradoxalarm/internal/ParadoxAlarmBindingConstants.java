@@ -20,10 +20,14 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class ParadoxAlarmBindingConstants {
 
-    private static final String BINDING_ID = "paradoxalarm";
+    private static final String binding_id = "paradoxalarm";
+
+    private static final String communicator_id = "paradoxCommunication";
+    private static final String partition_id = "paradoxPartition";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "sample");
+    public static final ThingTypeUID THING_TYPE_COMMUNICATOR = new ThingTypeUID(communicator_id, binding_id);
+    public static final ThingTypeUID THING_TYPE_PARTITION = new ThingTypeUID(partition_id, binding_id);
 
     // List of all Channel ids
     public static final String CHANNEL_1 = "channel1";

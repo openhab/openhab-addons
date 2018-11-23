@@ -13,7 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openhab.binding.paradoxalarm.internal.communication.IParadoxCommunicator;
-import org.openhab.binding.paradoxalarm.internal.parsers.Evo192Parser;
+import org.openhab.binding.paradoxalarm.internal.parsers.EvoParser;
+import org.openhab.binding.paradoxalarm.internal.parsers.IParadoxParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,21 +30,18 @@ public class ParadoxSecuritySystem {
     private List<Partition> partitions = new ArrayList<Partition>(8);
     private List<Zone> zones = new ArrayList<Zone>(192);
     private IParadoxCommunicator communicator;
-    private Evo192Parser parser;
+    private IParadoxParser parser;
 
     public ParadoxSecuritySystem(IParadoxCommunicator communicator) throws IOException, InterruptedException {
         this.communicator = communicator;
         // TODO Maybe factory for creating parsers if more than EVO will be implemented?
-        this.parser = new Evo192Parser();
+        this.parser = new EvoParser();
 
-        initializeZones();
         initializePartitions();
+        initializeZones();
     }
 
     public void updateEntities() throws Exception {
-        // TODO maybe refresh memory map should be taken out of here and should has it's own refresh policy. To be
-        // considered
-        communicator.refreshMemoryMap();
         List<byte[]> currentPartitionFlags = communicator.readPartitionFlags();
         for (int i = 0; i < partitions.size(); i++) {
             Partition partition = partitions.get(i);
@@ -54,10 +52,7 @@ public class ParadoxSecuritySystem {
         ZoneStateFlags zoneStateFlags = communicator.readZoneStateFlags();
         for (int i = 0; i < zones.size(); i++) {
             Zone zone = zones.get(i);
-
-            parser.updateZoneState(zone, zoneStateFlags);
-            logger.debug("Zone {}:\tOpened: {}, Tampered: {}, LowBattery: {}",
-                    new Object[] { zone.getLabel(), zone.isOpened(), zone.isTampered(), zone.hasLowBattery() });
+            zone.setZoneState(parser.calculateZoneState(zone.getId(), zoneStateFlags));
         }
         logger.debug("############################################################################");
         Thread.sleep(5000);
@@ -65,7 +60,6 @@ public class ParadoxSecuritySystem {
 
     private List<Zone> initializeZones() {
         List<String> zoneLabels = communicator.readZoneLabels();
-        List<Zone> zones = new ArrayList<Zone>();
         // TODO Use the size of retrieved labels list
         for (int i = 0; i < 40; i++) {
             Zone zone = new Zone(i + 1, zoneLabels.get(i));
@@ -76,7 +70,6 @@ public class ParadoxSecuritySystem {
 
     private List<Partition> initializePartitions() {
         List<String> partitionLabels = communicator.readPartitionLabels();
-        List<Partition> partitions = new ArrayList<Partition>();
         // TODO move the range as field in communicator maybe?
         for (int i = 0; i < partitionLabels.size(); i++) {
             Partition partition = new Partition(i + 1, partitionLabels.get(i));

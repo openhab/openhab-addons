@@ -1,11 +1,11 @@
 package org.openhab.binding.paradoxalarm.internal.parsers;
 
 import org.openhab.binding.paradoxalarm.internal.model.PartitionState;
-import org.openhab.binding.paradoxalarm.internal.model.Zone;
+import org.openhab.binding.paradoxalarm.internal.model.ZoneState;
 import org.openhab.binding.paradoxalarm.internal.model.ZoneStateFlags;
 import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
 
-public class Evo192Parser implements ParadoxParser {
+public class EvoParser implements IParadoxParser {
     public PartitionState calculatePartitionState(byte[] partitionFlags) {
         byte firstByte = partitionFlags[0];
         PartitionState state = new PartitionState();
@@ -43,19 +43,21 @@ public class Evo192Parser implements ParadoxParser {
         return state;
     }
 
-    public void updateZoneState(Zone zone, ZoneStateFlags zoneStateFlags) {
-        int id = zone.getId();
+    public ZoneState calculateZoneState(int id, ZoneStateFlags zoneStateFlags) {
+
         int index = id / 8;
         int bitNumber = id % 8 - 1;
 
         byte[] zonesOpened = zoneStateFlags.getZonesOpened();
-        zone.setOpened(ParadoxUtil.isBitSet(zonesOpened[index], bitNumber));
+        boolean isOpened = ParadoxUtil.isBitSet(zonesOpened[index], bitNumber);
 
         byte[] zonesTampered = zoneStateFlags.getZonesTampered();
-        zone.setTampered(ParadoxUtil.isBitSet(zonesTampered[index], bitNumber));
+        boolean isTampered = ParadoxUtil.isBitSet(zonesTampered[index], bitNumber);
 
         byte[] zonesLowBattery = zoneStateFlags.getZonesLowBattery();
-        zone.setHasLowBattery(ParadoxUtil.isBitSet(zonesLowBattery[index], bitNumber));
+        boolean hasLowBattery = ParadoxUtil.isBitSet(zonesLowBattery[index], bitNumber);
+
+        return new ZoneState(isOpened, isTampered, hasLowBattery);
     }
 
 }
