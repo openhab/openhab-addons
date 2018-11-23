@@ -240,14 +240,17 @@ public class WebInterface implements AtomicReferenceTrait {
      */
     private boolean preCheck() {
         String preCheckStatusMessage = "";
-        if (this.config.getTokenOrApiKey() == null) {
+        String localTokenOrApiKey = this.config.getTokenOrApiKey();
+        String localSolarId = this.config.getSolarId();
+
+        if (localTokenOrApiKey == null || localTokenOrApiKey.isEmpty()) {
             preCheckStatusMessage = "please configure token/api_key first";
-        } else if (this.config.isUsePrivateApi() && this.config.getTokenOrApiKey().length() < TOKEN_THRESHOLD) {
-            preCheckStatusMessage = "you will have to use a 'token' and not an 'api key' when using private API";
-        } else if (!this.config.isUsePrivateApi() && this.config.getTokenOrApiKey().length() > API_KEY_THRESHOLD) {
-            preCheckStatusMessage = "you will have to use an 'api key' and not a 'token' when using public API";
-        } else if (this.config.getSolarId() == null || this.config.getSolarId().isEmpty()) {
+        } else if (localSolarId == null || localSolarId.isEmpty()) {
             preCheckStatusMessage = "please configure solarId first";
+        } else if (this.config.isUsePrivateApi() && localTokenOrApiKey.length() < TOKEN_THRESHOLD) {
+            preCheckStatusMessage = "you will have to use a 'token' and not an 'api key' when using private API";
+        } else if (!this.config.isUsePrivateApi() && localTokenOrApiKey.length() > API_KEY_THRESHOLD) {
+            preCheckStatusMessage = "you will have to use an 'api key' and not a 'token' when using public API";
         } else if (this.config.isUsePrivateApi() == false && calcRequestsPerDay() > WEB_REQUEST_PUBLIC_API_DAY_LIMIT) {
             preCheckStatusMessage = "daily request limit (" + WEB_REQUEST_PUBLIC_API_DAY_LIMIT + ") exceeded: "
                     + calcRequestsPerDay();
