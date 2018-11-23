@@ -11,7 +11,13 @@ package org.openhab.binding.enocean.internal.eep.F6_02;
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.CommonTriggerEvents;
+import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.enocean.internal.config.EnOceanChannelRockerSwitchConfigBase.Channel;
+import org.openhab.binding.enocean.internal.config.EnOceanChannelVirtualRockerSwitchConfig;
 import org.openhab.binding.enocean.internal.eep.Base._RPSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 
@@ -75,4 +81,62 @@ public class F6_02_02 extends _RPSMessage {
         return null;
     }
 
+    @Override
+    protected State convertToStateImpl(String channelId, State currentState, Configuration config) {
+        if (!isValid()) {
+            return UnDefType.UNDEF;
+        }
+
+        if (t21 && nu) {
+            EnOceanChannelVirtualRockerSwitchConfig c = config.as(EnOceanChannelVirtualRockerSwitchConfig.class);
+            if (c != null) {
+                byte dir1 = c.getChannel() == Channel.ChannelA ? AI : BI;
+                byte dir2 = c.getChannel() == Channel.ChannelB ? A0 : B0;
+
+                // We are just listening on the pressed event here
+                switch (c.getSwitchMode()) {
+                    case RockerSwitch:
+                        if ((bytes[0] >>> 5) == dir1) {
+                            if (((bytes[0] & PRESSED) != 0)) {
+                                return channelId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH) ? OnOffType.ON
+                                        : UpDownType.UP;
+                            }
+                        } else if ((bytes[0] >>> 5) == dir2) {
+                            if (((bytes[0] & PRESSED) != 0)) {
+                                return channelId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH) ? OnOffType.OFF
+                                        : UpDownType.DOWN;
+                            }
+                        }
+                    case ToggleDir1:
+                        if ((bytes[0] >>> 5) == dir1) {
+                            if (((bytes[0] & PRESSED) != 0)) {
+                                return channelId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH)
+                                        ? inverse((OnOffType) currentState)
+                                        : inverse((UpDownType) currentState);
+                            }
+                        }
+                    case ToggleDir2:
+                        if ((bytes[0] >>> 5) == dir2) {
+                            if (((bytes[0] & PRESSED) != 0)) {
+                                return channelId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH)
+                                        ? inverse((OnOffType) currentState)
+                                        : inverse((UpDownType) currentState);
+                            }
+                        }
+                    default:
+                        break;
+                }
+            }
+        }
+
+        return UnDefType.UNDEF;
+    }
+
+    private State inverse(OnOffType currentState) {
+        return currentState == OnOffType.ON ? OnOffType.OFF : OnOffType.ON;
+    }
+
+    private State inverse(UpDownType currentState) {
+        return currentState == UpDownType.UP ? UpDownType.DOWN : UpDownType.UP;
+    }
 }

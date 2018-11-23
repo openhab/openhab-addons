@@ -179,7 +179,7 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
 
-        // We must have a valid sendingEEPType abd sender id to send commands
+        // We must have a valid sendingEEPType and sender id to send commands
         if (sendingEEPType == null || senderId == null) {
             return;
         }

@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.enocean.profiles;
+package org.openhab.binding.enocean.internal.profiles;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
@@ -27,9 +27,6 @@ public class EnOceanProfileTypes {
     public static final ProfileTypeUID RockerSwitchToPlayPause = new ProfileTypeUID(BINDING_ID,
             "rockerswitch-to-play-pause");
 
-    public static final ProfileTypeUID RockerSwitchToRollershutter = new ProfileTypeUID(BINDING_ID,
-            "rockerswitch-to-rollershutter");
-
     public static final ProfileTypeUID RockerSwitchFromOnOff = new ProfileTypeUID(BINDING_ID,
             "rockerswitch-from-on-off");
 
@@ -39,11 +36,6 @@ public class EnOceanProfileTypes {
     public static final TriggerProfileType RockerSwitchToPlayPauseType = ProfileTypeBuilder
             .newTrigger(RockerSwitchToPlayPause, "Rocker switch to Play/Pause")
             .withSupportedItemTypes(CoreItemFactory.PLAYER)
-            .withSupportedChannelTypeUIDs(DefaultSystemChannelTypeProvider.SYSTEM_RAWROCKER.getUID()).build();
-
-    public static final TriggerProfileType RockerSwitchToRollershutterType = ProfileTypeBuilder
-            .newTrigger(RockerSwitchToRollershutter, "Rocker switch to rollershutter")
-            .withSupportedItemTypes(CoreItemFactory.ROLLERSHUTTER)
             .withSupportedChannelTypeUIDs(DefaultSystemChannelTypeProvider.SYSTEM_RAWROCKER.getUID()).build();
 
     public static final StateProfileType RockerSwitchFromOnOffType = ProfileTypeBuilder

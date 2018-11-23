@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.enocean.internal.config.EnOceanActuatorConfig;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelRockerSwitchListenerConfig;
 import org.openhab.binding.enocean.internal.eep.EEPType;
 
@@ -45,6 +46,12 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
         super(thing);
 
         channelConfigById = new Hashtable<>();
+    }
+
+    @Override
+    void initializeConfig() {
+        super.initializeConfig();
+        ((EnOceanActuatorConfig) config).broadcastMessages = true;
     }
 
     @Override

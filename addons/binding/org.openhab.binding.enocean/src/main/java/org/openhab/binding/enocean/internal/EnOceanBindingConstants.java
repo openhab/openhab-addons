@@ -21,7 +21,7 @@ import org.eclipse.smarthome.core.thing.DefaultSystemChannelTypeProvider;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.profiles.ProfileTypeUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
-import org.openhab.binding.enocean.profiles.EnOceanProfileTypes;
+import org.openhab.binding.enocean.internal.profiles.EnOceanProfileTypes;
 
 /**
  * The {@link EnOceanBinding} class defines common constants, which are
@@ -91,6 +91,8 @@ public class EnOceanBindingConstants {
     public final static String CHANNEL_ROCKERSWITCH_CHANNELB = "rockerswitchB";
 
     public final static String CHANNEL_VIRTUALROCKERSWITCH = "virtualRockerswitch";
+    public final static String CHANNEL_ROCKERSWITCHLISTENERSWITCH = "rockerswitchListenerSwitch";
+    public final static String CHANNEL_ROCKERSWITCHLISTENERROLLERSHUTTER = "rockerswitchListenerRollershutter";
 
     public final static String CHANNEL_WINDOWHANDLESTATE = "windowHandleState";
     public final static String CHANNEL_CONTACT = "contact";
@@ -261,8 +263,8 @@ public class EnOceanBindingConstants {
 
     @NonNull
     public static final Set<ProfileTypeUID> SUPPORTED_PROFILETYPES_UIDS = new HashSet<ProfileTypeUID>(
-            Arrays.asList(EnOceanProfileTypes.RockerSwitchToPlayPause, EnOceanProfileTypes.RockerSwitchToRollershutter,
-                    EnOceanProfileTypes.RockerSwitchFromOnOff, EnOceanProfileTypes.RockerSwitchFromRollershutter));
+            Arrays.asList(EnOceanProfileTypes.RockerSwitchToPlayPause, EnOceanProfileTypes.RockerSwitchFromOnOff,
+                    EnOceanProfileTypes.RockerSwitchFromRollershutter));
 
     // Manufacturer Ids - used to recognize special EEPs during auto discovery
     public static final int EltakoId = 0x00d;

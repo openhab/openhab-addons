@@ -32,11 +32,17 @@
 				<limitToOptions>true</limitToOptions>
 				<default>F6_02_01_Virtual</default>
 				<required>true</required>
-			</parameter>
-			<parameter name="broadcastMessages" type="boolean">
-				<label>Send broadcast messages</label>
-				<default>true</default>
-			</parameter>
+			</parameter>			
+			<parameter name="receivingEEPId" type="text">
+                <label>EEP</label>
+                <description>EEP which is used by rocker switch listener(s)</description>
+                <options>
+                    <option value="F6_02_01">F6-02-01 (upper rocker => DIR1)</option>
+                    <option value="F6_02_02">F6-02-02 (upper rocker => DIR2)</option>
+                </options>
+                <limitToOptions>true</limitToOptions>
+                <required>true</required>
+            </parameter>
 			<parameter name="suppressRepeating" type="boolean">
 				<label>Suppress repeating of messages</label>
 				<default>false</default>
@@ -48,7 +54,7 @@
     <channel-type id="virtualRockerswitch">
         <item-type>String</item-type>
         <label>Rocker Switch</label>
-        <description>The rocker switch channel allows to send rocker msg.</description>
+        <description>The virtual rocker switch channel allows to send rocker msg.</description>
         <config-description>
             <parameter name="duration" type="integer">
                 <label>Time in ms between Press and Release message</label>
@@ -56,7 +62,7 @@
             </parameter>
             <parameter name="channel" type="text">
                 <label>Channel</label>
-                <description>Channel of rocker switch to listen to</description>
+                <description>Channel of Virtual Rocker Switch</description>
                 <options>
                     <option value="channelA">Channel A</option>
                     <option value="channelB">Channel B</option>
@@ -66,9 +72,9 @@
             <parameter name="switchMode" type="text">
                 <label>Switch mode</label>
                 <options>
-                    <option value="rockerSwitch">Rocker switch</option>
-                    <option value="toggleButtonDir1">Toggle button (upper button)</option>
-                    <option value="toggleButtonDir2">Toggle button (lower button)</option>
+                    <option value="rockerSwitch">Rocker Switch</option>
+                    <option value="toggleButtonDir1">Toggle Button (upper button)</option>
+                    <option value="toggleButtonDir2">Toggle Button (lower button)</option>
                 </options>
                 <default>rockerSwitch</default>
             </parameter>

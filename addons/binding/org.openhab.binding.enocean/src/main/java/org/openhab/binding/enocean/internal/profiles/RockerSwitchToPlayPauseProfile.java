@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.enocean.profiles;
+package org.openhab.binding.enocean.internal.profiles;
 
-import org.eclipse.smarthome.core.library.types.UpDownType;
+import org.eclipse.smarthome.core.library.types.PlayPauseType;
 import org.eclipse.smarthome.core.thing.CommonTriggerEvents;
 import org.eclipse.smarthome.core.thing.profiles.ProfileCallback;
 import org.eclipse.smarthome.core.thing.profiles.ProfileTypeUID;
@@ -16,21 +16,21 @@ import org.eclipse.smarthome.core.thing.profiles.TriggerProfile;
 import org.eclipse.smarthome.core.types.State;
 
 /**
- * Profile to convert rockerswitch events into RollershutterItem commands (up, down)
- *
+ * Profile to convert rockerswitch events into PlayerItem commands (play, pause)
+ * 
  * @author Daniel Weber - Initial contribution
  */
-public class RockerSwitchToRollershutterProfile implements TriggerProfile {
+public class RockerSwitchToPlayPauseProfile implements TriggerProfile {
 
     private final ProfileCallback callback;
 
-    RockerSwitchToRollershutterProfile(ProfileCallback callback) {
+    RockerSwitchToPlayPauseProfile(ProfileCallback callback) {
         this.callback = callback;
     }
 
     @Override
     public ProfileTypeUID getProfileTypeUID() {
-        return EnOceanProfileTypes.RockerSwitchToRollershutter;
+        return EnOceanProfileTypes.RockerSwitchToPlayPause;
     }
 
     @Override
@@ -42,9 +42,9 @@ public class RockerSwitchToRollershutterProfile implements TriggerProfile {
     @Override
     public void onTriggerFromHandler(String event) {
         if (event.equalsIgnoreCase(CommonTriggerEvents.DIR1_PRESSED)) {
-            callback.sendUpdate(UpDownType.UP);
+            callback.sendCommand(PlayPauseType.PLAY);
         } else if (event.equalsIgnoreCase(CommonTriggerEvents.DIR2_PRESSED)) {
-            callback.sendCommand(UpDownType.DOWN);
+            callback.sendCommand(PlayPauseType.PAUSE);
         }
     }
 

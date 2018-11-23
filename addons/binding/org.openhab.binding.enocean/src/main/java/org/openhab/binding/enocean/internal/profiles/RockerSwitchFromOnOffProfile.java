@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.enocean.profiles;
+package org.openhab.binding.enocean.internal.profiles;
 
 import java.util.concurrent.TimeUnit;
 
@@ -65,36 +65,48 @@ public class RockerSwitchFromOnOffProfile implements StateProfile {
         if (command instanceof OnOffType) {
             OnOffType c = (OnOffType) command;
 
-            if (switchMode == SwitchMode.RockerSwitch) {
-                if (c == OnOffType.ON) {
+            switch (switchMode) {
+                case RockerSwitch:
+                    if (c == OnOffType.ON) {
+                        callback.handleCommand(StringType.valueOf(CommonTriggerEvents.DIR1_PRESSED));
+                        if (duration > 0) {
+                            context.getExecutorService().schedule(
+                                    () -> callback.handleCommand(StringType.valueOf(CommonTriggerEvents.DIR1_RELEASED)),
+                                    duration, TimeUnit.MILLISECONDS);
+                        }
+                    } else {
+                        callback.handleCommand(StringType.valueOf(CommonTriggerEvents.DIR2_PRESSED));
+                        if (duration > 0) {
+                            context.getExecutorService().schedule(
+                                    () -> callback.handleCommand(StringType.valueOf(CommonTriggerEvents.DIR2_RELEASED)),
+                                    duration, TimeUnit.MILLISECONDS);
+                        }
+                    }
+                    break;
+                case ToggleDir1:
                     callback.handleCommand(StringType.valueOf(CommonTriggerEvents.DIR1_PRESSED));
                     if (duration > 0) {
                         context.getExecutorService().schedule(
                                 () -> callback.handleCommand(StringType.valueOf(CommonTriggerEvents.DIR1_RELEASED)),
                                 duration, TimeUnit.MILLISECONDS);
                     }
-                } else {
+                    break;
+                case ToggleDir2:
                     callback.handleCommand(StringType.valueOf(CommonTriggerEvents.DIR2_PRESSED));
                     if (duration > 0) {
                         context.getExecutorService().schedule(
                                 () -> callback.handleCommand(StringType.valueOf(CommonTriggerEvents.DIR2_RELEASED)),
                                 duration, TimeUnit.MILLISECONDS);
                     }
-                }
+                    break;
+
+            }
+            if (switchMode == SwitchMode.RockerSwitch) {
+
             } else if (switchMode == SwitchMode.ToggleDir1) {
-                callback.handleCommand(StringType.valueOf(CommonTriggerEvents.DIR1_PRESSED));
-                if (duration > 0) {
-                    context.getExecutorService().schedule(
-                            () -> callback.handleCommand(StringType.valueOf(CommonTriggerEvents.DIR1_RELEASED)),
-                            duration, TimeUnit.MILLISECONDS);
-                }
+
             } else if (switchMode == SwitchMode.ToggleDir2) {
-                callback.handleCommand(StringType.valueOf(CommonTriggerEvents.DIR2_PRESSED));
-                if (duration > 0) {
-                    context.getExecutorService().schedule(
-                            () -> callback.handleCommand(StringType.valueOf(CommonTriggerEvents.DIR2_RELEASED)),
-                            duration, TimeUnit.MILLISECONDS);
-                }
+
             }
         }
     }

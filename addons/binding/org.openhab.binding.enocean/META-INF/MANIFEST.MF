@@ -10,7 +10,7 @@ Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
 Export-Package: 
  org.openhab.binding.enocean.internal.handler,
- org.openhab.binding.enocean.profiles
+ org.openhab.binding.enocean.internal.profiles
 Import-Package: 
  javax.measure.quantity,
  org.apache.commons.io,
@@ -34,7 +34,7 @@ Import-Package:
  org.eclipse.smarthome.core.util,
  org.eclipse.smarthome.io.transport.serial,
  org.openhab.binding.enocean.internal.handler,
- org.openhab.binding.enocean.profiles,
+ org.openhab.binding.enocean.internal.profiles,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml 

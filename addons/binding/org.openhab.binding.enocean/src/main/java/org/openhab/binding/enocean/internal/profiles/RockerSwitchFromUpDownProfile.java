@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.enocean.profiles;
+package org.openhab.binding.enocean.internal.profiles;
 
 import java.util.concurrent.TimeUnit;
 
