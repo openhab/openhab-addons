@@ -44,7 +44,7 @@ public class ValloxMVHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(ValloxMVHandler.class);
     private @Nullable ScheduledFuture<?> updateTasks;
     private @Nullable ValloxMVWebSocket valloxSendSocket;
-    private @Nullable WebSocketClient webSocketClient;
+    private WebSocketClient webSocketClient;
 
     /**
      * Refresh interval in seconds.
