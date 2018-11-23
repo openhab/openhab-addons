@@ -236,7 +236,7 @@ public class WebInterface implements AtomicReferenceTrait {
     /**
      * performs some pre cheks on configuration before attempting to login
      *
-     * @return error message or SUCCESS
+     * @return true on success, false otherwise
      */
     private boolean preCheck() {
         String preCheckStatusMessage = "";
