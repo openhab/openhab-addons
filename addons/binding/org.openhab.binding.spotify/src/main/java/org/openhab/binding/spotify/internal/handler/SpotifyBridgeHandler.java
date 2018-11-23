@@ -110,12 +110,12 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     private @NonNullByDefault({}) ExpiringCache<List<Device>> devicesCache;
 
     /**
-     * Keep track if this instance is disposed, so that now new scheduling can be started after dispose is called.
+     * Keep track if this instance is disposed. This avoids new scheduling to be started after dispose is called.
      */
     private volatile boolean active;
-    private State lastTrackId = StringType.EMPTY;
-    private String lastKnownDeviceId = "";
-    private boolean lastKnownDeviceActive;
+    private volatile State lastTrackId = StringType.EMPTY;
+    private volatile String lastKnownDeviceId = "";
+    private volatile boolean lastKnownDeviceActive;
 
     public SpotifyBridgeHandler(Bridge bridge, OAuthFactory oAuthFactory, HttpClient httpClient,
             SpotifyDynamicStateDescriptionProvider spotifyDynamicStateDescriptionProvider) {
@@ -143,22 +143,6 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
                 logger.debug("Handle Spotify command failed: ", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
             }
-        }
-    }
-
-    private void scheduledPollingRestart() {
-        try {
-            final boolean pollingNotRunning = pollingFuture == null || pollingFuture.isCancelled();
-
-            playingContextCache.invalidateValue();
-            playlistCache.invalidateValue();
-            devicesCache.invalidateValue();
-
-            if (pollStatus() && pollingNotRunning) {
-                startPolling();
-            }
-        } catch (RuntimeException e) {
-            logger.debug("Restarting polling failed: ", e);
         }
     }
 
@@ -263,16 +247,12 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void initialize() {
+        updateStatus(ThingStatus.UNKNOWN);
         active = true;
         configuration = getConfigAs(SpotifyBridgeConfiguration.class);
-        oAuthFactory.createOAuthClientService(thing.getUID().getAsString(), SPOTIFY_API_TOKEN_URL,
+        oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(), SPOTIFY_API_TOKEN_URL,
                 SPOTIFY_AUTHORIZE_URL, configuration.clientId, configuration.clientSecret, SPOTIFY_SCOPES, true,
-                this::initWithOAuthClientService, scheduler, httpClient, configuration.refreshToken);
-        updateStatus(ThingStatus.UNKNOWN);
-    }
-
-    private void initWithOAuthClientService(OAuthClientService oAuthService) {
-        this.oAuthService = oAuthService;
+                scheduler, httpClient, configuration.refreshToken);
         oAuthService.addAccessTokenRefreshListener(SpotifyBridgeHandler.this);
         spotifyApi = new SpotifyApi(oAuthService, scheduler, httpClient);
         handleCommand = new SpotifyHandleCommands(spotifyApi);
@@ -291,6 +271,25 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         List<Device> listDevices = devicesCache.getValue();
 
         return listDevices == null ? Collections.emptyList() : listDevices;
+    }
+
+    /**
+     * Scheduled method to restart polling in case polling is not running.
+     */
+    private synchronized void scheduledPollingRestart() {
+        try {
+            final boolean pollingNotRunning = pollingFuture == null || pollingFuture.isCancelled();
+
+            playingContextCache.invalidateValue();
+            playlistCache.invalidateValue();
+            devicesCache.invalidateValue();
+
+            if (pollStatus() && pollingNotRunning) {
+                startPolling();
+            }
+        } catch (RuntimeException e) {
+            logger.debug("Restarting polling failed: ", e);
+        }
     }
 
     /**
@@ -495,7 +494,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
 
     /**
      * Class that manages the current progress of a track. The actual progress is tracked with the user specified
-     * interval, This class fills the inbetween seconds so the status will show a continues updating of the progress.
+     * interval, This class fills the in between seconds so the status will show a continues updating of the progress.
      *
      * @author Hilbrand Bouwkamp - Initial contribution
      */
@@ -518,7 +517,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
             setProgress(progress);
             if (!playing || !active) {
                 cancelProgressScheduler();
-            } else if (progressFuture == null && active) {
+            } else if ((progressFuture == null || progressFuture.isCancelled()) && active) {
                 progressFuture = scheduler.scheduleWithFixedDelay(this::incrementProgress, PROGRESS_STEP_S,
                         PROGRESS_STEP_S, TimeUnit.SECONDS);
             }
