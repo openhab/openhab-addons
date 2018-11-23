@@ -40,6 +40,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class UplinkWebInterface implements AtomicReferenceTrait {
 
+    private final static int NIBE_ID_THRESHOLD = 10;
+
     private final Logger logger = LoggerFactory.getLogger(UplinkWebInterface.class);
 
     /**
@@ -133,6 +135,10 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
                         if (Code.SERVICE_UNAVAILABLE.equals(status.getHttpCode())) {
                             uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                                     status.getMessage());
+                            setAuthenticated(false);
+                        } else if (Code.FOUND.equals(status.getHttpCode())) {
+                            uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                    "most likely your NibeId is wrong. please check your NibeId.");
                             setAuthenticated(false);
                         } else if (!Code.OK.equals(status.getHttpCode())) {
                             uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -237,6 +243,8 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
             preCheckStatusMessage = "please configure user first";
         } else if (localNibeId == null || localNibeId.isEmpty()) {
             preCheckStatusMessage = "please configure nibeId first";
+        } else if (localNibeId.length() > NIBE_ID_THRESHOLD) {
+            preCheckStatusMessage = "your NibeId is too long. Please refer to the documentation on how to set this value.";
         } else {
             return true;
         }
