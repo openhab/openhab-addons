@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2010-2018 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.paradoxalarm.internal.parsers;
 
 import org.openhab.binding.paradoxalarm.internal.model.PartitionState;
@@ -5,7 +13,8 @@ import org.openhab.binding.paradoxalarm.internal.model.ZoneState;
 import org.openhab.binding.paradoxalarm.internal.model.ZoneStateFlags;
 import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
 
-public class EvoParser implements IParadoxParser {
+public class EvoParser extends AbstractParser {
+    @Override
     public PartitionState calculatePartitionState(byte[] partitionFlags) {
         byte firstByte = partitionFlags[0];
         PartitionState state = new PartitionState();
@@ -43,6 +52,7 @@ public class EvoParser implements IParadoxParser {
         return state;
     }
 
+    @Override
     public ZoneState calculateZoneState(int id, ZoneStateFlags zoneStateFlags) {
 
         int index = id / 8;

@@ -36,4 +36,6 @@ public interface IParadoxCommunicator {
     public List<String> readPartitionLabels();
 
     public List<String> readZoneLabels();
+
+    public byte[] getPanelInfoBytes();
 }

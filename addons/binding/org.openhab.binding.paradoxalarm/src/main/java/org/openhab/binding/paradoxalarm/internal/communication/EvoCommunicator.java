@@ -43,6 +43,8 @@ public class EvoCommunicator implements IParadoxCommunicator {
     private DataInputStream rx;
     private final byte[] pcPassword;
 
+    private byte[] panelInfoBytes;
+
     private String password;
 
     MemoryMap memoryMap;
@@ -124,7 +126,10 @@ public class EvoCommunicator implements IParadoxCommunicator {
         ParadoxIPPacket step4 = new ParadoxIPPacket(message4, true)
                 .setMessageType(HeaderMessageType.SERIAL_PASSTHRU_REQUEST);
         sendPacket(step4);
-        receivePacket();
+        byte[] receivedPacket = receivePacket();
+        if (receivedPacket != null && receivedPacket.length >= 53) {
+            panelInfoBytes = Arrays.copyOfRange(receivedPacket, 16, 53);
+        }
 
         logger.debug("Step5");
         // 5: Unknown request (IP150 only)
@@ -343,10 +348,10 @@ public class EvoCommunicator implements IParadoxCommunicator {
                 ParadoxUtil.printPacket("RX:", result);
                 return Arrays.copyOfRange(result, 0, result[1] + 16);
             } catch (IOException e) {
-                logger.debug("Unable to retrieve data from RX. {}", e.getMessage());
+                logger.error("Unable to retrieve data from RX. {}", e.getMessage());
                 Thread.sleep(100);
                 if (retryCounter < 2) {
-                    logger.debug("Attempting one more time");
+                    logger.info("Attempting one more time");
                 }
             }
         }
@@ -507,5 +512,9 @@ public class EvoCommunicator implements IParadoxCommunicator {
 
     private String createString(byte[] payloadResult) throws UnsupportedEncodingException {
         return new String(payloadResult, "US-ASCII");
+    }
+
+    public byte[] getPanelInfoBytes() {
+        return panelInfoBytes;
     }
 }

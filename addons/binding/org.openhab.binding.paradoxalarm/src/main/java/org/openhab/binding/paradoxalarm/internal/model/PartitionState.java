@@ -272,5 +272,4 @@ public class PartitionState {
     public void setHasAlarmInMemory(boolean hasAlarmInMemory) {
         this.hasAlarmInMemory = hasAlarmInMemory;
     }
-
 }

@@ -8,11 +8,11 @@
  */
 package org.openhab.binding.paradoxalarm.internal.model;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.openhab.binding.paradoxalarm.internal.communication.IParadoxCommunicator;
+import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxBindingException;
 import org.openhab.binding.paradoxalarm.internal.parsers.EvoParser;
 import org.openhab.binding.paradoxalarm.internal.parsers.IParadoxParser;
 import org.slf4j.Logger;
@@ -31,14 +31,25 @@ public class ParadoxSecuritySystem {
     private List<Zone> zones = new ArrayList<Zone>(192);
     private IParadoxCommunicator communicator;
     private IParadoxParser parser;
+    private ParadoxInformation panelInformation;
 
-    public ParadoxSecuritySystem(IParadoxCommunicator communicator) throws IOException, InterruptedException {
-        this.communicator = communicator;
+    public ParadoxSecuritySystem(IParadoxCommunicator communicator) throws ParadoxBindingException {
         // TODO Maybe factory for creating parsers if more than EVO will be implemented?
+        // Maybe need to extract the logon sequence and initial parsing of security type and use factory to create the
+        // proper communicator/parsers?
+        this.communicator = communicator;
         this.parser = new EvoParser();
 
-        initializePartitions();
-        initializeZones();
+        panelInformation = new ParadoxInformation(communicator.getPanelInfoBytes(), parser);
+
+        if (isPanelSupported()) {
+            logger.debug("Found supported panel - " + panelInformation);
+            // initializePartitions();
+            // initializeZones();
+        } else {
+            throw new ParadoxBindingException(
+                    "Unsupported panel type. Type: " + panelInformation.getPanelType().name());
+        }
     }
 
     public void updateEntities() throws Exception {
@@ -77,6 +88,11 @@ public class ParadoxSecuritySystem {
             logger.debug("Partition {}:\t{}", i + 1, partition.getState().getMainState());
         }
         return partitions;
+    }
+
+    private boolean isPanelSupported() {
+        PanelType panelType = panelInformation.getPanelType();
+        return panelType == PanelType.EVO48 || panelType == PanelType.EVO192 || panelType == PanelType.EVOHD;
     }
 
     public List<Partition> getPartitions() {

@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import javax.xml.bind.DatatypeConverter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +51,7 @@ public class ParadoxUtil {
 
     public static void printByteArray(String description, byte[] array, int length) {
         if (description != null && !description.isEmpty()) {
-            logger.trace(description);
+            logger.debug(description);
         }
         int countBytes = 0;
         String result = new String();
@@ -58,15 +60,16 @@ public class ParadoxUtil {
             String st = String.format("0x%02X,\t", array[index]);
             result += st;
             if (countBytes > 7) {
-                logger.trace(result);
+                logger.debug(result);
                 countBytes = 0;
                 result = new String();
                 continue;
             }
         }
         if (!result.isEmpty()) {
-            logger.trace(result);
+            logger.debug(result);
         }
+
     }
 
     public static byte setBit(byte byteValue, int i, int j) {
@@ -125,4 +128,11 @@ public class ParadoxUtil {
         return result;
     }
 
+    public static String byteArrayAsString(byte[] array) {
+        if (array == null) {
+            return new String();
+        }
+        String result = DatatypeConverter.printHexBinary(array);
+        return result;
+    }
 }

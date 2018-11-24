@@ -6,13 +6,8 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.paradoxalarm.internal.util;
+package org.openhab.binding.paradoxalarm.internal.exceptions;
 
-/**
- * The {@link ParadoxBindingException} Check at the end of development if this wrapper is needed.
- *
- * @author Konstantin_Polihronov - Initial contribution
- */
 public class ParadoxBindingException extends Exception {
 
     /**

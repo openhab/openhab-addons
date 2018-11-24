@@ -1,0 +1,90 @@
+/**
+ * Copyright (c) 2010-2018 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
+package org.openhab.binding.paradoxalarm.internal.model;
+
+import java.util.Date;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class Version {
+    private static Logger logger = LoggerFactory.getLogger(Version.class);
+
+    private Byte version;
+    private Byte revision;
+    private Byte build;
+    private Date buildTime;
+
+    public Version(Byte version, Byte revision) {
+        this(version, revision, null);
+    }
+
+    public Version(Byte version, Byte revision, Byte build) {
+        this(version, revision, build, null);
+    }
+
+    public Version(Byte version, Byte revision, Byte build, Date buildTime) {
+        this.version = version;
+        this.revision = revision;
+        this.build = build;
+        this.buildTime = buildTime;
+        logger.debug(this.toString());
+    }
+
+    public Byte getVersion() {
+        return version;
+    }
+
+    public void setVersion(Byte version) {
+        this.version = version;
+    }
+
+    public Byte getRevision() {
+        return revision;
+    }
+
+    public void setRevision(Byte revision) {
+        this.revision = revision;
+    }
+
+    public Byte getBuild() {
+        return build;
+    }
+
+    public void setBuild(Byte build) {
+        this.build = build;
+    }
+
+    public Date getBuildTime() {
+        return buildTime;
+    }
+
+    public void setBuildTime(Date buildTime) {
+        this.buildTime = buildTime;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Version: ");
+        sb.append(version);
+        sb.append(".");
+        sb.append(revision);
+        if (build != null) {
+            sb.append(".");
+            sb.append(build);
+        }
+        if (buildTime != null) {
+            sb.append("/");
+            sb.append(buildTime);
+        }
+        return sb.toString();
+    }
+
+}
