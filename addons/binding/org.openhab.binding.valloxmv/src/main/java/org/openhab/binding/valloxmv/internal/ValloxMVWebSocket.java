@@ -47,46 +47,40 @@ import org.slf4j.LoggerFactory;
  * @author Björn Brings - Initial contribution
  */
 public class ValloxMVWebSocket {
-    private final String ip;
     private final ValloxMVHandler voHandler;
-    private WebSocketClient client;
+    private final WebSocketClient client;
+    private final URI destUri;
     private ValloxMVWebSocketListener socket;
 
     private final Logger logger = LoggerFactory.getLogger(ValloxMVWebSocket.class);
 
-    public ValloxMVWebSocket(ValloxMVHandler voHandler, String ip) {
+    public ValloxMVWebSocket(WebSocketClient webSocketClient, ValloxMVHandler voHandler, String ip) {
         this.voHandler = voHandler;
-        this.ip = ip;
-        client = new WebSocketClient();
+        this.client = webSocketClient;
+        URI tempUri;
+        try {
+            tempUri = new URI("ws://" + ip + ":80");
+        } catch (URISyntaxException e) {
+            tempUri = null;
+            connectionError(e);
+        }
+        destUri = tempUri;
     }
 
     public void request(ChannelUID channelUID, String updateState) {
         try {
             socket = new ValloxMVWebSocketListener(channelUID, updateState);
-            client.start();
-
-            URI destUri = new URI("ws://" + ip + ":80");
 
             ClientUpgradeRequest request = new ClientUpgradeRequest();
             logger.debug("Connecting to: {}", destUri);
             client.connect(socket, destUri, request);
             socket.awaitClose(2, TimeUnit.SECONDS);
-        } catch (URISyntaxException | InterruptedException | IOException e) {
+        } catch (InterruptedException | IOException e) {
             connectionError(e);
         } catch (Exception e) {
             logger.debug("Unexpected error");
             connectionError(e);
         }
-    }
-
-    public void close() {
-        try {
-            client.stop();
-        } catch (Exception e) {
-            logger.debug("Error while closing connection: {}", e);
-        }
-        client.destroy();
-        client = null;
     }
 
     public void connectionError(Exception e) {
