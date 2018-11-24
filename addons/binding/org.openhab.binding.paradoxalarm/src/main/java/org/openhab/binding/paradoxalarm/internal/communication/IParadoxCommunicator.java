@@ -29,9 +29,9 @@ public interface IParadoxCommunicator {
 
     public void refreshMemoryMap() throws Exception;
 
-    public List<byte[]> readPartitionFlags() throws Exception;
+    public List<byte[]> readPartitionFlags();
 
-    public ZoneStateFlags readZoneStateFlags() throws Exception;
+    public ZoneStateFlags readZoneStateFlags();
 
     public List<String> readPartitionLabels();
 

@@ -33,6 +33,7 @@ public class Partition extends Entity {
 
     public Partition setState(PartitionState state) {
         this.state = state;
+        logger.debug("Partition {}:\t{}", getLabel(), getState().getMainState());
         return this;
     }
 }

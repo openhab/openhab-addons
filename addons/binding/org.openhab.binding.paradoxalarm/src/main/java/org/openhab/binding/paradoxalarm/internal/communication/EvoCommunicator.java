@@ -246,7 +246,7 @@ public class EvoCommunicator implements IParadoxCommunicator {
     }
 
     @Override
-    public List<byte[]> readPartitionFlags() throws Exception {
+    public List<byte[]> readPartitionFlags() {
         List<byte[]> result = new ArrayList<byte[]>();
 
         byte[] element = memoryMap.getElement(2);
@@ -263,7 +263,7 @@ public class EvoCommunicator implements IParadoxCommunicator {
     }
 
     @Override
-    public ZoneStateFlags readZoneStateFlags() throws Exception {
+    public ZoneStateFlags readZoneStateFlags() {
         ZoneStateFlags result = new ZoneStateFlags();
 
         byte[] firstPage = memoryMap.getElement(0);
@@ -514,6 +514,7 @@ public class EvoCommunicator implements IParadoxCommunicator {
         return new String(payloadResult, "US-ASCII");
     }
 
+    @Override
     public byte[] getPanelInfoBytes() {
         return panelInfoBytes;
     }

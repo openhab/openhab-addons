@@ -37,5 +37,4 @@ public class Zone extends Entity {
         logger.debug("Zone {} state updated to:\tOpened: {}, Tampered: {}, LowBattery: {}",
                 new Object[] { getLabel(), zoneState.isOpened(), zoneState.isTampered(), zoneState.hasLowBattery() });
     }
-
 }

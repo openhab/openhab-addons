@@ -14,7 +14,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openhab.binding.paradoxalarm.internal.model.ParadoxSecuritySystem;
+import org.openhab.binding.paradoxalarm.internal.model.ParadoxPanel;
 import org.openhab.binding.paradoxalarm.internal.model.Partition;
 import org.openhab.binding.paradoxalarm.internal.model.Zone;
 import org.slf4j.Logger;
@@ -39,27 +39,27 @@ public class Main {
     private static final String PC_PASSWORD = "0987";
 
     public static void main(String[] args) {
-        handleArguments(args);
-
-        try {
-            IParadoxCommunicator communicator = new EvoCommunicator(IP_ADDRESS, PORT, ip150Password, PC_PASSWORD);
-            ParadoxSecuritySystem paradoxSystem = new ParadoxSecuritySystem(communicator);
-
-            while (true) {
-                infiniteLoop(paradoxSystem);
-            }
-            // paradoxSystem.logoutSequence();
-            // paradoxSystem.close();
-        } catch (Exception e) {
-            logger.error("Exception: {}", e.getMessage(), e);
-            System.exit(0);
-        }
+        // handleArguments(args);
+        //
+        // try {
+        // IParadoxCommunicator communicator = new EvoCommunicator(IP_ADDRESS, PORT, ip150Password, PC_PASSWORD);
+        // ParadoxPanel paradoxSystem = new ParadoxPanel(communicator);
+        //
+        // while (true) {
+        // infiniteLoop(paradoxSystem);
+        // }
+        // // paradoxSystem.logoutSequence();
+        // // paradoxSystem.close();
+        // } catch (Exception e) {
+        // logger.error("Exception: {}", e.getMessage(), e);
+        // System.exit(0);
+        // }
     }
 
-    private static void infiniteLoop(ParadoxSecuritySystem paradoxSystem) {
+    private static void infiniteLoop(ParadoxPanel paradoxSystem) {
         try {
             Thread.sleep(5000);
-            paradoxSystem.updateEntities();
+            paradoxSystem.updateEntitiesStates();
         } catch (InterruptedException e1) {
             logger.error(e1.getMessage(), e1);
         } catch (Exception e) {

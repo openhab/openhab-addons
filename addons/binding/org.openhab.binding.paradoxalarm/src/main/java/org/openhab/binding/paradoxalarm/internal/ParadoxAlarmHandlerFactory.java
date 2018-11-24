@@ -8,9 +8,10 @@
  */
 package org.openhab.binding.paradoxalarm.internal;
 
-import static org.openhab.binding.paradoxalarm.internal.ParadoxAlarmBindingConstants.THING_TYPE_COMMUNICATOR;
+import static org.openhab.binding.paradoxalarm.internal.ParadoxAlarmBindingConstants.*;
 
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,7 +33,8 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.paradoxalarm", service = ThingHandlerFactory.class)
 public class ParadoxAlarmHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_COMMUNICATOR);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
+            Arrays.asList(PANEL_COMMUNICATION_THING_TYPE_UID, PARTITION_THING_TYPE_UID));
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -43,8 +45,10 @@ public class ParadoxAlarmHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_COMMUNICATOR.equals(thingTypeUID)) {
-            return new ParadoxAlarmHandler(thing);
+        if (PANEL_COMMUNICATION_THING_TYPE_UID.equals(thingTypeUID)) {
+            return new ParadoxPanelHandler(thing);
+        } else if (PARTITION_THING_TYPE_UID.equals(thingTypeUID)) {
+            return new ParadoxPartitionHandler(thing);
         }
 
         return null;
