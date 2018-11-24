@@ -32,6 +32,8 @@ public class PropertyValueDeserializer implements JsonDeserializer<PropertyValue
 
     private static final String PROPERTY_DURATION = "duration";
     private static final String PROPERTY_TYPE = "type";
+    private static final String PROPERTY_MAC = "mac";
+    private static final String PROPERTY_ISCONNECTED = "isconnected";
 
     @Override
     public PropertyValue deserialize(JsonElement element, Type type, JsonDeserializationContext ctx)
@@ -46,6 +48,9 @@ public class PropertyValueDeserializer implements JsonDeserializer<PropertyValue
                 return new PropertyValue(String.valueOf(duration));
             } else if (jsonObj.has(PROPERTY_TYPE)) {
                 return new PropertyValue(jsonObj.get(PROPERTY_TYPE).getAsString());
+            } else if (jsonObj.has(PROPERTY_MAC) && jsonObj.has(PROPERTY_ISCONNECTED)) {
+                // ignore known gateway properties
+                return new PropertyValue();
             } else {
                 logger.warn("Unsupported json value object, returning empty value");
                 return new PropertyValue();
