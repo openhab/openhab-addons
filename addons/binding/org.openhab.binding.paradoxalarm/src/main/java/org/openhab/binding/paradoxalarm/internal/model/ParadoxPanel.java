@@ -30,6 +30,11 @@ public class ParadoxPanel {
     private static ParadoxPanel paradoxPanel;
 
     private ParadoxInformation panelInformation;
+
+    public ParadoxInformation getPanelInformation() {
+        return panelInformation;
+    }
+
     private List<Partition> partitions;
     private List<Zone> zones;
     private IParadoxCommunicator communicator;

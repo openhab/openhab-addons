@@ -13,6 +13,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.paradoxalarm.internal.model.ParadoxPanel;
 
 /**
  * The {@link ParadoxPartitionHandler} Handler that updates states of paradox partitions from the cache.
@@ -27,6 +28,7 @@ public class ParadoxPartitionHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        ParadoxPanel panel = ParadoxPanel.getInstance();
 
     }
 
