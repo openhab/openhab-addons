@@ -15,6 +15,11 @@ import org.openhab.binding.paradoxalarm.internal.model.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The {@link AbstractParser} Contains parsing methods irelevant from panel type
+ *
+ * @author Konstantin_Polihronov - Initial contribution
+ */
 public abstract class AbstractParser implements IParadoxParser {
 
     private static Logger logger = LoggerFactory.getLogger(AbstractParser.class);

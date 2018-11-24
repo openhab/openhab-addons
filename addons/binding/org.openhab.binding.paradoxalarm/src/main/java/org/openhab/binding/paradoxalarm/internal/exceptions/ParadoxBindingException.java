@@ -8,6 +8,11 @@
  */
 package org.openhab.binding.paradoxalarm.internal.exceptions;
 
+/**
+ * The {@link ParadoxBindingException} Wrapper of Exception class. May not be needed.
+ *
+ * @author Konstantin_Polihronov - Initial contribution
+ */
 public class ParadoxBindingException extends Exception {
 
     /**

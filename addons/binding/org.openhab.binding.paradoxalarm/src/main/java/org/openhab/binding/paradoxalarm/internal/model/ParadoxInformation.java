@@ -1,4 +1,5 @@
-/** Copyright (c) 2010-2018 by the respective copyright holders.
+/**
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,6 +16,13 @@ import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The {@link ParadoxInformation} Class that provides the basic panel
+ * information (serial number, panel type, application, hardware and bootloader
+ * versions. It's the object representation of 37 bytes 0x72 serial response.
+ *
+ * @author Konstantin_Polihronov - Initial contribution
+ */
 public class ParadoxInformation {
 
     private static Logger logger = LoggerFactory.getLogger(EvoCommunicator.class);
