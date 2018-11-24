@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.paradoxalarm.internal.communication.messages;
 
-import org.openhab.binding.paradoxalarm.internal.util.ParadoxBindingException;
+import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxBindingException;
 import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
 
 /**

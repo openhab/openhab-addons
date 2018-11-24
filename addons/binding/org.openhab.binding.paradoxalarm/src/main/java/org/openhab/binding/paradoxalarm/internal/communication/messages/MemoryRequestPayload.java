@@ -11,7 +11,7 @@ package org.openhab.binding.paradoxalarm.internal.communication.messages;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import org.openhab.binding.paradoxalarm.internal.util.ParadoxBindingException;
+import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxBindingException;
 import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
