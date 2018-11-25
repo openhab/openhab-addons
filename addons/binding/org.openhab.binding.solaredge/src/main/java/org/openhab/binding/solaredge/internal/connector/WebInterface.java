@@ -20,7 +20,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.http.HttpStatus.Code;
 import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
@@ -133,16 +132,21 @@ public class WebInterface implements AtomicReferenceTrait {
                 StatusUpdateListener statusUpdater = new StatusUpdateListener() {
                     @Override
                     public void update(CommunicationStatus status) {
-                        if (status.getHttpCode().equals(Code.SERVICE_UNAVAILABLE)) {
-                            handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                                    status.getMessage());
-                            setAuthenticated(false);
-                        } else if (!status.getHttpCode().equals(Code.OK)) {
-                            handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    status.getMessage());
-                            setAuthenticated(false);
-                        }
+                        switch (status.getHttpCode()) {
+                            case SERVICE_UNAVAILABLE:
+                                handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                                        status.getMessage());
+                                setAuthenticated(false);
+                                break;
+                            case OK:
+                                // no action needed as the thing is already online.
+                                break;
+                            default:
+                                handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                        status.getMessage());
+                                setAuthenticated(false);
 
+                        }
                     }
                 };
 
@@ -210,27 +214,31 @@ public class WebInterface implements AtomicReferenceTrait {
                         errorMessgaeCodeForbidden = "login error with public API: invalid api key or solarId is not valid for this api key";
                     }
 
-                    if (status.getHttpCode().equals(Code.OK)) {
-                        handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, "logged in");
-                        setAuthenticated(true);
-                    } else if (status.getHttpCode().equals(Code.FOUND)) {
-                        handler.setStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
-                                errorMessageCodeFound);
-                        setAuthenticated(false);
-                    } else if (status.getHttpCode().equals(Code.FORBIDDEN)) {
-                        handler.setStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
-                                errorMessgaeCodeForbidden);
-                        setAuthenticated(false);
-                    } else if (status.getHttpCode().equals(Code.SERVICE_UNAVAILABLE)) {
-                        handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                                status.getMessage());
-                        setAuthenticated(false);
-                    } else {
-                        handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                status.getMessage());
-                        setAuthenticated(false);
+                    switch (status.getHttpCode()) {
+                        case OK:
+                            handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, "logged in");
+                            setAuthenticated(true);
+                            break;
+                        case FOUND:
+                            handler.setStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
+                                    errorMessageCodeFound);
+                            setAuthenticated(false);
+                            break;
+                        case FORBIDDEN:
+                            handler.setStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
+                                    errorMessgaeCodeForbidden);
+                            setAuthenticated(false);
+                            break;
+                        case SERVICE_UNAVAILABLE:
+                            handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                                    status.getMessage());
+                            setAuthenticated(false);
+                            break;
+                        default:
+                            handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                    status.getMessage());
+                            setAuthenticated(false);
                     }
-
                 }
             };
 
@@ -250,21 +258,21 @@ public class WebInterface implements AtomicReferenceTrait {
      */
     private boolean preCheck() {
         String preCheckStatusMessage = "";
-        String localTokenOrApiKey = this.config.getTokenOrApiKey();
-        String localSolarId = this.config.getSolarId();
+        String localTokenOrApiKey = config.getTokenOrApiKey();
+        String localSolarId = config.getSolarId();
 
         if (localTokenOrApiKey == null || localTokenOrApiKey.isEmpty()) {
             preCheckStatusMessage = "please configure token/api_key first";
         } else if (localSolarId == null || localSolarId.isEmpty()) {
             preCheckStatusMessage = "please configure solarId first";
-        } else if (this.config.isUsePrivateApi() && localTokenOrApiKey.length() < TOKEN_THRESHOLD) {
+        } else if (config.isUsePrivateApi() && localTokenOrApiKey.length() < TOKEN_THRESHOLD) {
             preCheckStatusMessage = "you will have to use a 'token' and not an 'api key' when using private API";
-        } else if (!this.config.isUsePrivateApi() && localTokenOrApiKey.length() > API_KEY_THRESHOLD) {
+        } else if (!config.isUsePrivateApi() && localTokenOrApiKey.length() > API_KEY_THRESHOLD) {
             preCheckStatusMessage = "you will have to use an 'api key' and not a 'token' when using public API";
-        } else if (this.config.isUsePrivateApi() == false && calcRequestsPerDay() > WEB_REQUEST_PUBLIC_API_DAY_LIMIT) {
+        } else if (config.isUsePrivateApi() == false && calcRequestsPerDay() > WEB_REQUEST_PUBLIC_API_DAY_LIMIT) {
             preCheckStatusMessage = "daily request limit (" + WEB_REQUEST_PUBLIC_API_DAY_LIMIT + ") exceeded: "
                     + calcRequestsPerDay();
-        } else if (this.config.isUsePrivateApi() && !this.config.isMeterInstalled()) {
+        } else if (config.isUsePrivateApi() && !config.isMeterInstalled()) {
             preCheckStatusMessage = "a meter must be present in order to use the private API";
         } else {
             return true;
