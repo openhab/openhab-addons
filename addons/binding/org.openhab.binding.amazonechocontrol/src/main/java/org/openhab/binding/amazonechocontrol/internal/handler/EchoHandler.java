@@ -97,7 +97,6 @@ public class EchoHandler extends BaseThingHandler {
     private boolean disableUpdate = false;
     private boolean updateRemind = true;
     private boolean updateTextToSpeech = true;
-    private boolean updateAnnouncement = true;
     private boolean updateAlarm = true;
     private boolean updateRoutine = true;
     private boolean updatePlayMusicVoiceCommand = true;
@@ -526,16 +525,6 @@ public class EchoHandler extends BaseThingHandler {
                         waitForUpdate = 1000;
                         updateTextToSpeech = true;
                         startTextToSpeech(connection, device, text);
-                    }
-                }
-            }
-            if (channelId.equals(CHANNEL_ANNOUNCEMENT)) {
-                if (command instanceof StringType) {
-                    String text = ((StringType) command).toFullString();
-                    if (StringUtils.isNotEmpty(text)) {
-                        waitForUpdate = 1000;
-                        updateAnnouncement = true;
-                        connection.sendAnnouncement(device, text, null);
                     }
                 }
             }
@@ -982,10 +971,6 @@ public class EchoHandler extends BaseThingHandler {
             if (updateTextToSpeech) {
                 updateTextToSpeech = false;
                 updateState(CHANNEL_TEXT_TO_SPEECH, new StringType(""));
-            }
-            if (updateAnnouncement) {
-                updateAnnouncement = false;
-                updateState(CHANNEL_ANNOUNCEMENT, new StringType(""));
             }
             if (updatePlayMusicVoiceCommand) {
                 updatePlayMusicVoiceCommand = false;
