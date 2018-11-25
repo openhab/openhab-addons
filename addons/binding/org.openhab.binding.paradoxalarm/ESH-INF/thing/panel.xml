@@ -10,7 +10,11 @@
 		<description>Paradox Partition status</description>
 
 		<channels>
-			<channel id="systemState" typeId="state" />
+			<channel id="serialNumber" typeId="serialNumber" />
+			<channel id="panelType" typeId="panelType" />
+			<channel id="hardwareVersion" typeId="hardwareVersion" />
+			<channel id="applicationVersion" typeId="applicationVersion" />
+			<channel id="bootloaderVersion" typeId="bootloaderVersion" />
 		</channels>
 
 		<config-description>
@@ -26,6 +30,7 @@
             <parameter name="pcPassword" type="text">
                 <label>PC Password</label>
                 <description>PC Password (section 3012 of configuration)</description>
+                <default>0000</default>
             </parameter>
             <parameter name="ipAddress" type="text">
                 <label>IP Address</label>
@@ -34,14 +39,39 @@
             <parameter name="port" type="integer">
                 <label>Port</label>
                 <description>Port to connect to IP150</description>
+                <default>10000</default>
             </parameter>
 		</config-description>
 	</thing-type>
 
-	<channel-type id="state">
+	<channel-type id="serialNumber">
 		<item-type>String</item-type>
-		<label>System state</label>
-		<description>State of the system</description>
+		<label>Serial number</label>
+		<description>Panel serial number</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+	<channel-type id="panelType">
+		<item-type>String</item-type>
+		<label>Panel type</label>
+		<description>Panel type (Evo, SP, etc)</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+	<channel-type id="hardwareVersion">
+		<item-type>String</item-type>
+		<label>Hardware version</label>
+		<description>Panel hardware version</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+	<channel-type id="applicationVersion">
+		<item-type>String</item-type>
+		<label>Application version</label>
+		<description>Panel application version</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+	<channel-type id="bootloaderVersion">
+		<item-type>String</item-type>
+		<label>Bootloader version</label>
+		<description>Bootloader version</description>
 		<state readOnly="true" pattern="%s" />
 	</channel-type>
 

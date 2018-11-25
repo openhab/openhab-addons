@@ -429,7 +429,12 @@
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.orvibo/${project.version}</bundle>
     </feature>
-
+	
+	<feature name="openhab-binding-paradoxalarm" description="Paradox Alarm System Binding" version="${project.version}"> 
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/paradoxalarm/${project.version}</bundle>
+    </feature> 
+	
     <feature name="openhab-binding-pentair" description="Pentair Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-serial</feature>

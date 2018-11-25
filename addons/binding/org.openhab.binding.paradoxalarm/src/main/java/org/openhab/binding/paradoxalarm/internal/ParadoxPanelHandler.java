@@ -63,15 +63,9 @@ public class ParadoxPanelHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (ParadoxAlarmBindingConstants.PANEL_COMMUNICATION_THING_TYPE_UID.equals(channelUID.getId())) {
             if (command instanceof RefreshType) {
-
+                refreshData();
+                // updateThing();
             }
-
-            // TODO: handle command
-
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information:
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
         }
     }
 
@@ -82,6 +76,7 @@ public class ParadoxPanelHandler extends BaseThingHandler {
         try {
             initializeModel();
             setupSchedule();
+            updateThing();
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -121,7 +116,7 @@ public class ParadoxPanelHandler extends BaseThingHandler {
 
     private void setupSchedule() {
         scheduleRefreshRuntimeInfo();
-        scheduleReinitialize();
+        // scheduleReinitialize();
     }
 
     // TODO think about reconecting procedure
@@ -139,13 +134,19 @@ public class ParadoxPanelHandler extends BaseThingHandler {
     private void scheduleRefreshRuntimeInfo() {
         logger.debug("Scheduling cache update. Refresh interval: " + config.getRefresh() + "s.");
         refreshMemoryMapSchedule = scheduler.scheduleWithFixedDelay(() -> {
-            try {
-                communicator.refreshMemoryMap();
-            } catch (Exception e) {
-                logger.error("Unable to retrieve memory map. {}", e);
-            }
-            updateThing();
+            refreshData();
         }, INITIAL_DELAY, config.getRefresh(), TimeUnit.SECONDS);
+    }
+
+    private void refreshData() {
+        try {
+            if (communicator != null) {
+                communicator.refreshMemoryMap();
+                ParadoxPanel.getInstance().updateEntitiesStates();
+            }
+        } catch (Exception e) {
+            logger.error("Unable to retrieve memory map. {}", e);
+        }
     }
 
     private void updateThing() {

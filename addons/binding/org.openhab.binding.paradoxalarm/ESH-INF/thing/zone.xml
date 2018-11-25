@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="paradoxalarm"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="paradoxZone">
+		<label>Paradox zone</label>
+		<description>Paradox zone</description>
+
+		<channels>
+			<channel id="label" typeId="label" />
+			<channel id="isOpened" typeId="isOpenedState" />
+			<channel id="isTampered" typeId="isTamperedState" />
+			<channel id="hasLowBattery" typeId="hasLowBatteryState" />
+		</channels>
+
+		<config-description>
+			<parameter name="id" type="integer" min="1" max="192" required="true">
+				<label>Zone Id</label>
+				<description>This is the zone ID of the Paradox zone</description>
+			</parameter>
+			<parameter name="refresh" type="integer" min="1" max="600">
+				<label>Refresh interval</label>
+				<description>Specifies the refresh interval in seconds.</description>
+				<default>30</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="label">
+		<item-type>String</item-type>
+		<label>Zone label</label>
+		<description>Label of zone</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+	<channel-type id="isOpenedState">
+		<item-type>boolean</item-type>
+		<label>Zone state</label>
+		<description>State of zone</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+	<channel-type id="isTamperedState">
+		<item-type>boolean</item-type>
+		<label>Zone state</label>
+		<description>State of zone</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+	<channel-type id="hasLowBatteryState">
+		<item-type>boolean</item-type>
+		<label>Zone state</label>
+		<description>State of zone</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+</thing:thing-descriptions>

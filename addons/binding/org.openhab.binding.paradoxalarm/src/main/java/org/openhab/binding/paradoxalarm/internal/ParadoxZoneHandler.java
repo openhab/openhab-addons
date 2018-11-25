@@ -11,38 +11,36 @@ package org.openhab.binding.paradoxalarm.internal;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.paradoxalarm.internal.model.ParadoxPanel;
-import org.openhab.binding.paradoxalarm.internal.model.Partition;
+import org.openhab.binding.paradoxalarm.internal.model.Zone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ParadoxPartitionHandler} Handler that updates states of paradox partitions from the cache.
+ * The {@link ParadoxZoneHandler} Handler that updates states of paradox zones from the cache.
  *
  * @author Konstantin_Polihronov - Initial contribution
  */
-public class ParadoxPartitionHandler extends EntityBaseHandler {
+public class ParadoxZoneHandler extends EntityBaseHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ParadoxPartitionHandler.class);
 
-    public ParadoxPartitionHandler(@NonNull Thing thing) {
+    public ParadoxZoneHandler(@NonNull Thing thing) {
         super(thing);
     }
 
     @Override
     protected void updateEntity() {
-        List<Partition> partitions = ParadoxPanel.getInstance().getPartitions();
-        int index = config.getId() - 1;
-        if (index < 0) {
-            index = 0;
-        }
-        Partition partition = partitions.get(index);
-        if (partition != null) {
-            updateState("label", new StringType(partition.getLabel()));
-            updateState("state", new StringType(partition.getState().getMainState()));
-            updateState("additionalState", new StringType(partition.getState().getAdditionalState()));
+        List<Zone> zones = ParadoxPanel.getInstance().getZones();
+        Zone zone = zones.get(config.getId());
+        if (zone != null) {
+            updateState("label", new StringType(zone.getLabel()));
+            updateState("isOpened", OnOffType.from(zone.getZoneState().isOpened()));
+            updateState("isTampered", OnOffType.from(zone.getZoneState().isTampered()));
+            updateState("hasLowBattery", OnOffType.from(zone.getZoneState().hasLowBattery()));
         }
     }
 }

@@ -47,23 +47,58 @@ public class PartitionState {
     }
 
     public String getAdditionalState() {
-        String additionalState = "";
+        StringBuilder sb = new StringBuilder();
         // TODO check if isInAlarm also includes the other three if yes -> check only the other three
         if (isInAlarm) {
-            additionalState += "\tIn alarm";
+            append(sb, "In alarm");
         } else if (isInSilentAlarm) {
-            additionalState += "\tIn Silent alarm";
+            append(sb, "Silent alarm");
         } else if (isInAudibleAlarm) {
-            additionalState += "\tIn Audible alarm";
+            append(sb, "Audible alarm");
         } else if (isInFireAlarm) {
-            additionalState += "\tIn Fire alarm";
+            append(sb, "Fire alarm");
+        }
+
+        if (hasZoneInTamperTrouble) {
+            append(sb, "Tamper trouble");
+        }
+        if (hasZoneInLowBatteryTrouble) {
+            append(sb, "Low battery trouble");
+        }
+        if (hasZoneInFireLoopTrouble) {
+            append(sb, "Fire Loop trouble");
+        }
+        if (hasZoneInSupervisionTrouble) {
+            append(sb, "Supervision trouble");
+        }
+
+        if (isStayInstantReady) {
+            append(sb, "Stay instant ready");
+        }
+        if (isForceReady) {
+            append(sb, "Force ready");
+        }
+        if (isBypassReady) {
+            append(sb, "Bypass ready");
+        }
+        if (isInhibitReady) {
+            append(sb, "Inhibit ready");
         }
 
         if (areAllZoneclosed) {
-            additionalState += "\tAll zones closed";
+            append(sb, "All zones closed");
         }
 
-        return additionalState;
+        // if (sb.substring(sb.length() - 2, sb.length() - 1).equals(";")) {
+        // sb.deleteCharAt(sb.length() - 1);
+        // }
+
+        return sb.toString();
+    }
+
+    public void append(StringBuilder sb, String value) {
+        sb.append(value);
+        sb.append("\t");
     }
 
     @Override

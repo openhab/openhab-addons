@@ -29,7 +29,7 @@ public class EpromRequestPayload extends MemoryRequestPayload implements IPPacke
     @Override
     protected byte calculateControlByte() {
         int address = getAddress();
-        logger.debug("Address: {}", String.format("0x%02X,\t", address));
+        logger.trace("Address: {}", String.format("0x%02X,\t", address));
         byte controlByte = 0x00;
         byte[] shortToByteArray = ParadoxUtil.intToByteArray(address);
         if (shortToByteArray.length > 2) {
@@ -38,7 +38,7 @@ public class EpromRequestPayload extends MemoryRequestPayload implements IPPacke
             byte bit17 = ParadoxUtil.getBit(address, 17);
             controlByte |= bit17 << 1;
         }
-        logger.debug("ControlByte value: " + controlByte);
+        logger.trace("ControlByte value: " + controlByte);
         return controlByte;
     }
 }

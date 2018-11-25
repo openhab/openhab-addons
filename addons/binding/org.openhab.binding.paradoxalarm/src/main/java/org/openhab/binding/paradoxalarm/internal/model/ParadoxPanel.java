@@ -25,6 +25,8 @@ import org.slf4j.LoggerFactory;
  */
 public class ParadoxPanel {
 
+    private static final int NUMBER_OF_ZONES = 48;
+
     private static Logger logger = LoggerFactory.getLogger(Partition.class);
 
     private static ParadoxPanel paradoxPanel;
@@ -73,7 +75,7 @@ public class ParadoxPanel {
         updateEntitiesStates();
     }
 
-    private boolean isPanelSupported() {
+    public boolean isPanelSupported() {
         PanelType panelType = panelInformation.getPanelType();
         return panelType == PanelType.EVO48 || panelType == PanelType.EVO192 || panelType == PanelType.EVOHD;
     }
@@ -96,7 +98,7 @@ public class ParadoxPanel {
         zones = new ArrayList<Zone>();
         List<String> zoneLabels = communicator.readZoneLabels();
         // TODO Use the size of retrieved labels list
-        for (int i = 0; i < 40; i++) {
+        for (int i = 0; i < NUMBER_OF_ZONES; i++) {
             Zone zone = new Zone(i + 1, zoneLabels.get(i));
             zones.add(zone);
         }

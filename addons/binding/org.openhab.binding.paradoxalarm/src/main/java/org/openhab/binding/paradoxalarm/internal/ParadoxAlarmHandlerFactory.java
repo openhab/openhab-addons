@@ -22,6 +22,8 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ParadoxAlarmHandlerFactory} is responsible for creating things and thing
@@ -32,6 +34,8 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 @Component(configurationPid = "binding.paradoxalarm", service = ThingHandlerFactory.class)
 public class ParadoxAlarmHandlerFactory extends BaseThingHandlerFactory {
+
+    private static Logger logger = LoggerFactory.getLogger(ParadoxAlarmHandlerFactory.class);
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
             Arrays.asList(PANEL_COMMUNICATION_THING_TYPE_UID, PARTITION_THING_TYPE_UID));
@@ -46,9 +50,14 @@ public class ParadoxAlarmHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (PANEL_COMMUNICATION_THING_TYPE_UID.equals(thingTypeUID)) {
+            logger.debug("createHandler(): ThingHandler created for {}", thingTypeUID);
             return new ParadoxPanelHandler(thing);
         } else if (PARTITION_THING_TYPE_UID.equals(thingTypeUID)) {
+            logger.debug("createHandler(): ThingHandler created for {}", thingTypeUID);
             return new ParadoxPartitionHandler(thing);
+        } else if (ZONE_THING_TYPE_UID.equals(thingTypeUID)) {
+            logger.debug("createHandler(): ThingHandler created for {}", thingTypeUID);
+            return new ParadoxZoneHandler(thing);
         }
 
         return null;

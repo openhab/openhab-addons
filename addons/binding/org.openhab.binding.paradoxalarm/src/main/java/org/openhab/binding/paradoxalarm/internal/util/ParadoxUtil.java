@@ -51,7 +51,7 @@ public class ParadoxUtil {
 
     public static void printByteArray(String description, byte[] array, int length) {
         if (description != null && !description.isEmpty()) {
-            logger.debug(description);
+            logger.trace(description);
         }
         int countBytes = 0;
         String result = new String();
@@ -60,14 +60,14 @@ public class ParadoxUtil {
             String st = String.format("0x%02X,\t", array[index]);
             result += st;
             if (countBytes > 7) {
-                logger.debug(result);
+                logger.trace(result);
                 countBytes = 0;
                 result = new String();
                 continue;
             }
         }
         if (!result.isEmpty()) {
-            logger.debug(result);
+            logger.trace(result);
         }
 
     }
