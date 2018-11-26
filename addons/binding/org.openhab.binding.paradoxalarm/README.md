@@ -25,6 +25,12 @@ paradoxalarm:zone:bedroomPir [id=19, refresh=10]
 
 ## Example items configuration
 <code>
+String panelType "Paradox panel type: [%s]" <lock> (Security) { channel = "paradoxalarm:communication:panel:panelType" }<br>
+String serialNumber "Paradox Serial number: [%s]" <lock> (Security) { channel = "paradoxalarm:communication:panel:serialNumber" }<br>
+String hardwareVersion "Paradox HW version: [%s]" <lock> (Security) { channel = "paradoxalarm:communication:panel:hardwareVersion" }<br>
+String applicationVersion "Paradox Application version: [%s]" <lock> (Security) { channel = "paradoxalarm:communication:panel:applicationVersion" }<br>
+String bootloaderVersion "Paradox Bootloader version: [%s]" <lock> (Security) { channel = "paradoxalarm:communication:panel:bootloaderVersion" }<br>
+
 String partition1Label "Partition1 label: [%s]" <lock> (Security) { channel = "paradoxalarm:partition:partition3:label" }<br>
 String partition1State "Partition1 state: [%s]" <lock> (Security) { channel = "paradoxalarm:partition:partition3:state" }<br>
 String partition1AdditionalStates "Partition1 additional states: [%s]" <lock> (Security) { channel = "paradoxalarm:partition:partition3:addidionalStates" }<br>
