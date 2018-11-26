@@ -10,7 +10,6 @@ Bundle-SymbolicName: org.openhab.binding.paradoxalarm;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
 Import-Package: 
- ch.qos.logback.classic;version="1.0.7",
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.library.types,
