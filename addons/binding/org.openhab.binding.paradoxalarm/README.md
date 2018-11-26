@@ -11,10 +11,10 @@
 **id** - the number how it's configured in babyware. For Evo192 it's 1-8.<br>
 **refresh** - refresh when partition polls from local cache. Not really important. Just defines regular time. Default=30sec<br>
 <code>
-paradoxalarm:paradoxPartition:partition1 [id=1, refresh=10]<br>
-paradoxalarm:paradoxPartition:partition2 [id=2, refresh=17]<br>
-paradoxalarm:paradoxPartition:partition3 [id=3, refresh=30]<br>
-paradoxalarm:paradoxPartition:partition4 [id=4, refresh=3]<br>
+paradoxalarm:partition:partition1 [id=1, refresh=10]<br>
+paradoxalarm:partition:partition2 [id=2, refresh=17]<br>
+paradoxalarm:partition:partition3 [id=3, refresh=30]<br>
+paradoxalarm:partition:partition4 [id=4, refresh=3]<br>
 </code>
 # Zone thing configuration<br>
 **id** - the number how it's configured in babyware. For Evo192 it's 1-192.<br>
@@ -25,18 +25,14 @@ paradoxalarm:zone:bedroomPir [id=19, refresh=10]
 
 ## Example items configuration
 <code>
-String panelType "Paradox panel type: [%s]" <lock> (Security) { channel = "paradoxalarm:paradoxCommunication:panel:panelType" } <br>
-String serialNumber "Paradox Serial number: [%s]" <lock> (Security) { channel = "paradoxalarm:paradoxCommunication:panel:serialNumber" }<br>
-String hardwareVersion "Paradox HW version: [%s]" <lock> (Security) { channel = "paradoxalarm:paradoxCommunication:panel:hardwareVersion" }<br>
-String applicationVersion "Paradox Application version: [%s]" <lock> (Security) { channel = "paradoxalarm:paradoxCommunication:panel:applicationVersion" }<br>
-String bootloaderVersion "Paradox Bootloader version: [%s]" <lock> (Security) { channel = "paradoxalarm:paradoxCommunication:panel:bootloaderVersion" }<br>
+String partition1Label "Partition1 label: [%s]" <lock> (Security) { channel = "paradoxalarm:partition:partition3:label" }<br>
+String partition1State "Partition1 state: [%s]" <lock> (Security) { channel = "paradoxalarm:partition:partition3:state" }<br>
+String partition1AdditionalStates "Partition1 additional states: [%s]" <lock> (Security) { channel = "paradoxalarm:partition:partition3:addidionalStates" }<br>
 
-String partition1Label "Partition1 label: [%s]" <lock> (Security) { channel = "paradoxalarm:paradoxPartition:partition1:label" }<br>
-String partition1State "Partition1 state: [%s]" <lock> (Security) { channel = "paradoxalarm:paradoxPartition:partition1:state" }<br>
-String partition1AdditionalStates "Partition1 additional states: [%s]" <lock> (Security) { channel = "paradoxalarm:paradoxPartition:partition1:addidionalStates" }<br><br>
-String  partition2Label "Partition2 label: [%s]" <lock> (Security) { channel = "paradoxalarm:paradoxPartition:partition2:label" }<br>
-String  partition2State "Partition2 state: [%s]" <lock> (Security) { channel = "paradoxalarm:paradoxPartition:partition2:state" }<br>
-String  partition2AdditionalStates "Partition2 additional state: [%s]" <lock> (Security) { channel = "paradoxalarm:paradoxPartition:partition2:addidionalStates" }<br><br>
+String partition2Label "Partition2 label: [%s]" <lock> (Security) { channel = "paradoxalarm:partition:partition2:label" }<br>
+String partition2State "Partition2 state: [%s]" <lock> (Security) { channel = "paradoxalarm:partition:partition2:state" }<br>
+String partition2AdditionalStates "Partition2 additional state: [%s]" <lock> (Security) { channel = "paradoxalarm:partition:partition2:addidionalStates" }<br>
+
 String zoneBedRoomLabel "Zone label: [%s]" <lock> (Security) { channel = "paradoxalarm:zone:bedroomBathMUC:label" }<br>
 Contact zoneBedRoomIsOpened "Zone opened: [%s]" <lock> (Security) { channel = "paradoxalarm:zone:bedroomBathMUC:isOpened" }<br>
 Contact zoneBedRoomIsTampered "Zone tampered: [%s]" <lock> (Security) { channel = "paradoxalarm:zone:bedroomBathMUC:isTampered" }<br>
