@@ -13,17 +13,27 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
+import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
+import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.util.HexUtils;
+import org.openhab.binding.enocean.internal.EnOceanChannelDescription;
 import org.openhab.binding.enocean.internal.config.EnOceanActuatorConfig;
+import org.openhab.binding.enocean.internal.config.EnOceanChannelRockerSwitchConfigBase.SwitchMode;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelRockerSwitchListenerConfig;
 import org.openhab.binding.enocean.internal.eep.EEPType;
 
@@ -52,12 +62,56 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
     void initializeConfig() {
         super.initializeConfig();
         ((EnOceanActuatorConfig) config).broadcastMessages = true;
+        ((EnOceanActuatorConfig) config).enoceanId = EmptyEnOceanId;
     }
 
     @Override
-    protected void updateChannels(EEPType eep, boolean removeUnsupportedChannels) {
-        // do remove any channels here as this thing has predefined and extended channels
-        return;
+    boolean validateConfig() {
+        if (super.validateConfig()) {
+
+            Configuration config = null;
+            List<@NonNull Channel> channelList = new LinkedList<@NonNull Channel>(this.getThing().getChannels());
+            if (!channelList.stream().anyMatch(c -> c.getUID().getId().equals(CHANNEL_VIRTUALROCKERSWITCHA))) {
+
+                // if we create a ClassicDevice in PaperUI, we have to add the CHANNEL_VIRTUALROCKERSWITCHA with default
+                // configuration
+                config = new Configuration() {
+                    {
+                        put(PARAMETER_CHANNEL_Duration, 250);
+                        put(PARAMETER_CHANNEL_SwitchMode, SwitchMode.RockerSwitch.getValue());
+                    }
+                };
+
+            } else if (channelList.stream().anyMatch(
+                    c -> c.getUID().getId().equals(CHANNEL_VIRTUALROCKERSWITCHA) && c.getAcceptedItemType() != null)) {
+
+                // if a ClassicDevice is created by thing file, we have to set the acceptedItemType to NULL to be able
+                // to use our profile
+                config = channelList.stream().filter(c -> c.getUID().getId().equals(CHANNEL_VIRTUALROCKERSWITCHA))
+                        .findFirst().get().getConfiguration();
+                channelList.removeIf(c -> c.getUID().getId().equals(CHANNEL_VIRTUALROCKERSWITCHA));
+
+            } else {
+                return true;
+            }
+
+            EnOceanChannelDescription cd = ChannelId2ChannelDescription.get(CHANNEL_VIRTUALROCKERSWITCHA);
+
+            Channel channel = ChannelBuilder
+                    .create(new ChannelUID(this.getThing().getUID(), CHANNEL_VIRTUALROCKERSWITCHA), cd.acceptedItemType)
+                    .withConfiguration(config).withType(cd.channelTypeUID)
+                    .withKind(cd.isStateChannel ? ChannelKind.STATE : ChannelKind.TRIGGER).withLabel(cd.label).build();
+
+            channelList.add(channel);
+
+            ThingBuilder thingBuilder = editThing();
+            thingBuilder.withChannels(channelList);
+            updateThing(thingBuilder.build());
+
+            return true;
+        }
+
+        return false;
     }
 
     @Override
@@ -71,8 +125,8 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
 
         // if linked channel is a listening channel => put listener
         String id = channelUID.getId();
-        Channel channel = getLinkedChannels().get(id);
-        addListener(id, channel);
+        Channel channel = getThing().getChannel(id);
+        addListener(channel);
     }
 
     @Override
@@ -82,12 +136,11 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
         // it seems that there does not exist a channel update callback
         // => remove all listeners and add them again
         while (!channelConfigById.isEmpty()) {
-            removeListener(channelConfigById.keys().nextElement());
+            removeListener(getThing().getChannel(channelConfigById.keys().nextElement()));
         }
 
-        getLinkedChannels().forEach((id, c) -> {
-            if (!addListener(id, c)) {
-                // Todo feedback for wrong channel configuration
+        getLinkedChannels().forEach(c -> {
+            if (!addListener(c)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Wrong channel configuration");
             }
         });
@@ -99,50 +152,66 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
 
         // if unlinked channel is listening channel => remove listener
         String id = channelUID.getId();
-        Channel channel = getLinkedChannels().get(id);
-        if (channel != null && channel.getChannelTypeUID().getId().startsWith("rockerswitchListener")) {
-            removeListener(id);
-        }
+        Channel channel = getThing().getChannel(id);
+        removeListener(channel);
     }
 
-    protected boolean addListener(String channelId, Channel channel) {
+    protected boolean addListener(Channel channel) {
         if (channel != null && channel.getChannelTypeUID().getId().startsWith("rockerswitchListener")) {
             EnOceanChannelRockerSwitchListenerConfig config = channel.getConfiguration()
                     .as(EnOceanChannelRockerSwitchListenerConfig.class);
 
-            if (config != null) {
-                try {
-                    Long enoceanId = Long.parseLong(config.enoceanId, 16);
-                    channelConfigById.putIfAbsent(channelId, config);
-                    currentEnOceanId = config.enoceanId;
-                    getBridgeHandler().addPacketListener(this);
+            try {
+                Long enoceanId = Long.parseLong(config.enoceanId, 16);
+                channelConfigById.put(channel.getUID().getId(), config);
+                currentEnOceanId = config.enoceanId;
+                getBridgeHandler().addPacketListener(this);
 
-                    return true;
-                } catch (Exception e) {
-                }
+                return true;
+            } catch (Exception e) {
             }
+
             return false;
         }
         return true;
     }
 
-    protected void removeListener(String channelId) {
-        if (channelConfigById.containsKey(channelId)) {
-            currentEnOceanId = channelConfigById.get(channelId).enoceanId;
-            channelConfigById.remove(channelId);
-            getBridgeHandler().removePacketListener(this);
+    protected void removeListener(Channel channel) {
+        if (channel != null && channel.getChannelTypeUID().getId().startsWith("rockerswitchListener")) {
+            String channelId = channel.getUID().getId();
+
+            if (channelConfigById.containsKey(channelId)) {
+                currentEnOceanId = channelConfigById.get(channelId).enoceanId;
+                channelConfigById.remove(channelId);
+                getBridgeHandler().removePacketListener(this);
+            }
         }
     }
 
     @Override
     protected State getCurrentState(String channelId) {
         // Always use the same channelId of virtualrockerswitch channel
-        return super.getCurrentState(CHANNEL_VIRTUALROCKERSWITCH);
+        return super.getCurrentState(CHANNEL_VIRTUALROCKERSWITCHA);
     }
 
     @Override
     protected void setCurrentState(String channelId, State state) {
         // Always use the same channelId of virtualrockerswitch channel
-        super.setCurrentState(CHANNEL_VIRTUALROCKERSWITCH, state);
+        super.setCurrentState(CHANNEL_VIRTUALROCKERSWITCHA, state);
+    }
+
+    @Override
+    protected Predicate<Channel> channelFilter(EEPType eepType, byte[] senderId) {
+        return c -> c.getChannelTypeUID().getId().startsWith("rockerswitchListener")
+                && channelConfigById.get(c.getUID().getId()).enoceanId.equalsIgnoreCase(HexUtils.bytesToHex(senderId));
+    }
+
+    @Override
+    public void handleRemoval() {
+        for (Channel channel : getLinkedChannels()) {
+            removeListener(channel);
+        }
+        currentEnOceanId = EmptyEnOceanId;
+        super.handleRemoval();
     }
 }

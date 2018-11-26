@@ -35,14 +35,14 @@ public class D2_01_09_Permundo extends D2_01 {
     }
 
     @Override
-    protected void convertFromCommandImpl(Command command, String channelId, State currentState, Configuration config) {
+    protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command, State currentState, Configuration config) {
 
         if (channelId.equals(CHANNEL_REPEATERMODE)) {
             setRepeaterMode(command);
         } else if (channelId.equals(CHANNEL_ECOMODE)) {
             setEcoMode(command);
         } else {
-            super.convertFromCommandImpl(command, channelId, currentState, config);
+            super.convertFromCommandImpl(channelId, channelTypeId, command, currentState, config);
         }
     }
 

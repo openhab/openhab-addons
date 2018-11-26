@@ -38,7 +38,7 @@ public class F6_10_01 extends _RPSMessage {
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, State currentState, Configuration config) {
+    protected State convertToStateImpl(String channelId, String channelTypeId, State currentState, Configuration config) {
 
         if (!isValid()) {
             return UnDefType.UNDEF;

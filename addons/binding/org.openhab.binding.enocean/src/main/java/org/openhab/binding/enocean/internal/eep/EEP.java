@@ -11,7 +11,6 @@ package org.openhab.binding.enocean.internal.eep;
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.Arrays;
-import java.util.Set;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -72,37 +71,41 @@ public abstract class EEP {
         setOptionalData(packet.getOptionalPayload());
     }
 
-    public EEP convertFromCommand(String channelId, Command command, State currentState, Configuration config) {
-        if (!getSupportedChannels().contains(channelId)) {
-            throw new IllegalArgumentException("Command " + command.toString() + " is not supported");
+    public EEP convertFromCommand(String channelId, String channelTypeId, Command command, State currentState,
+            Configuration config) {
+        if (!getEEPType().isChannelSupported(channelId, channelTypeId)) {
+            throw new IllegalArgumentException(String.format("Command %s of channel %s(%s) is not supported",
+                    command.toString(), channelId, channelTypeId));
         }
 
-        if (channelId.equals(CHANNEL_TEACHINCMD) && command == OnOffType.ON) {
+        if (channelTypeId.equals(CHANNEL_TEACHINCMD) && command == OnOffType.ON) {
             teachInQueryImpl(config);
         } else {
-            convertFromCommandImpl(command, channelId, currentState, config);
+            convertFromCommandImpl(channelId, channelTypeId, command, currentState, config);
         }
         return this;
     }
 
-    public State convertToState(String channelId, Configuration config, State currentState) {
-        if (!getSupportedChannels().contains(channelId)) {
-            return UnDefType.UNDEF;
+    public State convertToState(String channelId, String channelTypeId, Configuration config, State currentState) {
+        if (!getEEPType().isChannelSupported(channelId, channelTypeId)) {
+            throw new IllegalArgumentException(
+                    String.format("Channel %s(%s) is not supported", channelId, channelTypeId));
         }
 
-        if (channelId.equals(CHANNEL_RECEIVINGSTATE)) {
+        if (channelTypeId.equals(CHANNEL_RECEIVINGSTATE)) {
             return convertToReceivingState();
         }
 
-        return convertToStateImpl(channelId, currentState, config);
+        return convertToStateImpl(channelId, channelTypeId, currentState, config);
     }
 
-    public String convertToEvent(String channelId, String lastEvent, Configuration config) {
-        if (!getSupportedChannels().contains(channelId)) {
-            throw new IllegalArgumentException("Channel " + channelId + " is not supported");
+    public String convertToEvent(String channelId, String channelTypeId, String lastEvent, Configuration config) {
+        if (!getEEPType().isChannelSupported(channelId, channelTypeId)) {
+            throw new IllegalArgumentException(
+                    String.format("Channel %s(%s) is not supported", channelId, channelTypeId));
         }
 
-        return convertToEventImpl(channelId, lastEvent, config);
+        return convertToEventImpl(channelId, channelTypeId, lastEvent, config);
     }
 
     public EEP setRORG(RORG newRORG) {
@@ -202,19 +205,18 @@ public abstract class EEP {
         return 0;
     }
 
-    public Set<String> getSupportedChannels() {
-        return getEEPType().GetChannelIds();
-    }
-
-    protected void convertFromCommandImpl(Command command, String channelId, State currentState, Configuration config) {
+    protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command, State currentState,
+            Configuration config) {
 
     }
 
-    protected State convertToStateImpl(String channelId, State currentState, Configuration config) {
+    protected State convertToStateImpl(String channelId, String channelTypeId, State currentState,
+            Configuration config) {
         return UnDefType.UNDEF;
     }
 
-    protected String convertToEventImpl(String channelId, String lastEvent, Configuration config) {
+    protected String convertToEventImpl(String channelId, String channelTypeId, String lastEvent,
+            Configuration config) {
         return null;
     }
 

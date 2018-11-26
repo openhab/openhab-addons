@@ -34,7 +34,7 @@ public class A5_3F_7F_Universal extends _4BSMessage {
     }
 
     @Override
-    protected void convertFromCommandImpl(Command command, String channelId, State currentState, Configuration config) {
+    protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command, State currentState, Configuration config) {
 
         if (config != null) {
             try {

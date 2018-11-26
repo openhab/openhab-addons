@@ -115,8 +115,8 @@ public class EEPFactory {
                 byte db_2 = msg.getPayload()[2];
                 byte db_1 = msg.getPayload()[3];
 
-                int func = db_3 >>> 2;
-                int type = ((db_3 & 0b11) << 5) + (db_2 >>> 3);
+                int func = (db_3 & 0xFF) >>> 2;
+                int type = ((db_3 & 0b11) << 5) + ((db_2 & 0xFF) >>> 3);
                 int manufId = ((db_2 & 0b111) << 8) + (db_1 & 0xff);
 
                 logger.info("Received 4BS Teach In with EEP A5-{}-{} and manufacturerID {}",

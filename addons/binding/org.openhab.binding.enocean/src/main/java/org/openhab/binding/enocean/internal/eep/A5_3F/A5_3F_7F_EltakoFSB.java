@@ -41,7 +41,7 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
     }
 
     @Override
-    protected void convertFromCommandImpl(Command command, String channelId, State currentState, Configuration config) {
+    protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command, State currentState, Configuration config) {
 
         int shutTime = 0xFF;
         if (config != null) {
@@ -82,7 +82,7 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, State currentState, Configuration config) {
+    protected State convertToStateImpl(String channelId, String channelTypeId, State currentState, Configuration config) {
 
         if (currentState != null) {
             int direction = getDB_1() == MoveUp ? -1 : 1;

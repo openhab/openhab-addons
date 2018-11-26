@@ -74,10 +74,13 @@ Hence if your device supports one of the following EEPs the chances are good tha
 
 Furthermore following supporting EEP family is available too: A5-11, types 0x03 (rollershutter position status) and 0x04 (extended light status).
 
-A `rockerSwitch` is used to receive message from a physical EnOcean Rocker Switch.
+A `rockerSwitch` is used to receive messages from a physical EnOcean Rocker Switch.
 A `classicDevice` is used to for older EnOcean devices which react only on rocker switch messages (like Opus GN-A-R12V-SR-4).
-As these devices do not send their current status, you have to bind additional rockerSwitches to your items.
+As these devices do not send their current status, you have to add additional listener channels for each physical Rocker Switch to your thing.
 In this way you can still sync your item status with the physical status of your device whenever it gets modified by a physical rocker switch.
+The classic device simulates a physical Rocker Switch.
+Per default the classic device uses the channel A of the simulated rocker switch.
+If you want to use channel B you have to use virtualRockerswitchB in conjunction with rules to send commands.
 
 ## Pairing
 
@@ -108,7 +111,7 @@ If the pairing was successful, you can control the actuator and unlink the teach
 The content of this teach-in message is device specific and can be configured through the teach-in channel.
 
 To pair a classicDevice with an EnOcean device, you first have to activate the pairing mode of the actuator.
-Then switch the virtualRockerSwitch On/Off.
+Then switch the virtualRockerSwitchA On/Off.
 
 Each EnOcean gateway supports 127 unique SenderIds.
 The SenderId of a thing can be set manually or determined automatically by the binding.
@@ -166,8 +169,9 @@ If you change the SenderId of your thing, you have to pair again the thing with 
 |                                 | pollingInterval   |                             | Integer |
 |                                 | suppressRepeating |                             | true, false |
 | classicDevice                   | senderIdOffset    |                             | 1-127 |
-|                                 | sendingEEPId      |                             | F6_02_01_Virtual, F6_02_02_Virtual |
+|                                 | sendingEEPId      |                             | F6_02_01, F6_02_02 |
 |                                 | broadcastMessages |                             | true, false |
+|                                 | receivingEEPId    |                             | F6_02_01, F6_02_02 |
 |                                 | suppressRepeating |                             | true, false |
 
 ¹ multiple values possible, EEPs have to be of different EEP families.
@@ -206,10 +210,10 @@ The channels of a thing are determined automatically based on the chosen EEP.
 The rockerSwitch things use _system:rawrocker_ channel types.
 So they trigger _DIR1[/2]_\__PRESSED_ and DIR1[/2]_\__RELEASED_ events.
 These channels can be directly linked to simple items like Switch or Dimmer with the help of _profiles_.
-Furthermore this binding implements a profile (rockerswitch-to-play-pause) to link a rockerSwitch directly to a Player item and another profile (rockerswitch-to-rollershutter) to link a rockerSwitch to a Rollershutter item.
+Furthermore this binding implements a profile (rockerswitch-to-play-pause) to link a rockerSwitch directly to a Player item.
 If you want to do more advanced stuff, you have to implement rules which react to these events
 
-```
+```xtend
 rule "Advanced rocker rule"
 when
     Channel 'enocean:rockerSwitch:gtwy:AABBCC00:rockerswitchA' triggered DIR1_PRESSED
@@ -220,7 +224,7 @@ end
 
 ## Example
 
-```
+```xtend
 Bridge enocean:bridge:gtwy "EnOcean Gateway" [ path="/dev/ttyAMA0" ] {
    Thing rockerSwitch rs01 "Rocker" @ "Kitchen" [ enoceanID="aabbcc01", receivingEEPId="F6_02_01" ]
    Thing mechanicalHandle mh01 "Door handle" @ "Living room" [ enoceanID="aabbcc02", receivingEEPId="F6_10_00" ]
@@ -229,15 +233,28 @@ Bridge enocean:bridge:gtwy "EnOcean Gateway" [ path="/dev/ttyAMA0" ] {
    Thing centralCommand cc02 "Dimmer" @ "Living room" [ enoceanID="aabbcc05", senderIdOffset=2, sendingEEPId="A5_38_08_02", receivingEEPId="A5_38_08_02", broadcastMessages=true, suppressRepeating=false ]
    Thing rollershutter r01 "Rollershutter" @ "Kitchen" [ enoceanID="aabbcc06", senderIdOffset=3, sendingEEPId="A5_3F_7F_EltakoFSB", receivingEEPId="A5_3F_7F_EltakoFSB", broadcastMessages=true, suppressRepeating=false ] {Channels: Type rollershutter:rollershutter [shutTime=25]}
    Thing measurementSwitch ms01 "TV Smart Plug" @ "Living room" [ enoceanID="aabbcc07", senderIdOffset=4, sendingEEPId="D2_01_09", broadcastMessages=false, receivingEEPId="D2_01_09","A5_12_01", suppressRepeating=false, pollingInterval=300]
-   Thing classicDevice cd01 "Garage_Light" @ "Garage" [ senderIdOffset=5, sendingEEPId="F6_02_01_Virtual", broadcastMessages=true, suppressRepeating=false ] {Channels: Type virtualRockerswitch:virtualRockerswitchA [duration=300, switchMode="rockerSwitch"]}
-   Thing rockerSwitch rs02 "Garage_Rocker" @ "Garage" [ enoceanID="aabbcc08", receivingEEPId="F6_02_01" ]
+   Thing classicDevice cd01 "Garage_Light" @ "Garage" [ 
+        senderIdOffset=5, 
+        sendingEEPId="F6_02_01", 
+        broadcastMessages=true, 
+        receivingEEPId="F6_02_01",
+        suppressRepeating=false 
+   ] {
+        Type virtualRockerswitchA       : virtualRockerswitchA        [duration=300, switchMode="rockerSwitch"]
+        Type rockerswitchListenerSwitch : Listener1 "Schalter links"  [enoceanId="aabbcc08", channel="channelA", switchMode="toggleButtonDir1"]
+        Type rockerswitchListenerSwitch : Listener2 "Schalter rechts" [enoceanId="aabbcc09", channel="channelB", switchMode="toggleButtonDir2"]
+   }
 }
 ```
 
-```
+```xtend
 Player Kitchen_Sonos "Sonos" (Kitchen) {channel="sonos:PLAY1:ID:control", channel="enocean:rockerSwitch:gtwy:rs01:rockerswitchA" [profile="enocean:rockerswitch-to-play-pause"]}
 Dimmer Kitchen_Hue "Hue" <light> {channel="enocean:rockerSwitch:gtwy:rs01:rockerswitchB" [profile="system:rawrocker-to-dimmer"], channel="hue:0220:0017884f6626:9:brightness"}
-Switch Garage_Light "Switch" {channel="enocean:classicDevice:gtwy:cd01:virtualRockerswitchA" [profile="enocean:rockerswitch-from-on-off"], channel="enocean:rockerSwitch:gtwy:rs02:rockerswitchA"}
+Switch Garage_Light "Switch" {
+        channel="enocean:classicDevice:gtwy:cd01:virtualRockerswitchA" [profile="enocean:rockerswitch-from-on-off"], 
+        channel="enocean:classicDevice:gtwy:cd01:Listener1", 
+        channel="enocean:classicDevice:gtwy:cd01:Listener2"
+}
 ```
 
 ## Generic Things

@@ -106,7 +106,8 @@ public abstract class A5_12 extends _4BSMessage {
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, State currentState, Configuration config) {
+    protected State convertToStateImpl(String channelId, String channelTypeId, State currentState,
+            Configuration config) {
         switch (channelId) {
             case CHANNEL_INSTANTPOWER:
             case CHANNEL_INSTANTLITRE:

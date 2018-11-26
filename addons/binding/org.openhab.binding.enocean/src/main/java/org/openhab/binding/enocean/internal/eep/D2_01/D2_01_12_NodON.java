@@ -34,7 +34,7 @@ public class D2_01_12_NodON extends D2_01 {
     }
 
     @Override
-    protected void convertFromCommandImpl(Command command, String channelId, State currentState, Configuration config) {
+    protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command, State currentState, Configuration config) {
 
         if (channelId.equalsIgnoreCase(CHANNEL_REPEATERMODE)) {
 
@@ -53,7 +53,7 @@ public class D2_01_12_NodON extends D2_01 {
                 }
             }
         } else {
-            super.convertFromCommandImpl(command, channelId, currentState, config);
+            super.convertFromCommandImpl(channelId, channelTypeId, command, currentState, config);
         }
     }
 

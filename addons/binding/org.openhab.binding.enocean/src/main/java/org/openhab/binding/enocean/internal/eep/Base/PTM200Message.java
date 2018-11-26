@@ -41,12 +41,12 @@ public class PTM200Message extends _RPSMessage {
     }
 
     @Override
-    protected void convertFromCommandImpl(Command command, String channelId, State currentState, Configuration config) {
+    protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command, State currentState, Configuration config) {
 
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, State currentState, Configuration config) {
+    protected State convertToStateImpl(String channelId, String channelTypeId, State currentState, Configuration config) {
         if (!isValid()) {
             return UnDefType.UNDEF;
         }

@@ -16,30 +16,30 @@
 			<required>true</required>
 		</parameter>
 	</config-description>
-	
+
 	<config-description uri="enocean:listeningChannel:config">
-	   <parameter name="enoceanId" type="text">
-                <label>EnOceanId</label>
-                <description>EnOcean Id to listen to</description>
-            </parameter>
-            <parameter name="channel" type="text">
-                <label>Channel</label>
-                <description>Channel of rocker switch to listen to</description>
-                <options>
-                    <option value="channelA">Channel A</option>
-                    <option value="channelB">Channel B</option>
-                </options>
-                <default>channelA</default>
-            </parameter>
-            <parameter name="switchMode" type="text">
-                <label>Switch mode</label>
-                <options>
-                    <option value="rockerSwitch">Rocker switch</option>
-                    <option value="toggleButtonDir1">Toggle button (upper button)</option>
-                    <option value="toggleButtonDir2">Toggle button (lower button)</option>
-                </options>
-                <default>rockerSwitch</default>
-            </parameter>
+		<parameter name="enoceanId" type="text">
+			<label>EnOceanId</label>
+			<description>EnOcean Id to listen to</description>
+		</parameter>
+		<parameter name="channel" type="text">
+			<label>Channel</label>
+			<description>Channel of rocker switch to listen to</description>
+			<options>
+				<option value="channelA">Channel A</option>
+				<option value="channelB">Channel B</option>
+			</options>
+			<default>channelA</default>
+		</parameter>
+		<parameter name="switchMode" type="text">
+			<label>Switch mode</label>
+			<options>
+				<option value="rockerSwitch">Rocker switch</option>
+				<option value="toggleButtonDir1">Toggle button (upper button)</option>
+				<option value="toggleButtonDir2">Toggle button (lower button)</option>
+			</options>
+			<default>rockerSwitch</default>
+		</parameter>
 	</config-description>
 
 </config-description:config-descriptions>

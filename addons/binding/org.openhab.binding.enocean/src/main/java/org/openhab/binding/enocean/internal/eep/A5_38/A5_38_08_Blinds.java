@@ -56,8 +56,8 @@ public class A5_38_08_Blinds extends _4BSMessage {
     }
 
     @Override
-    protected void convertFromCommandImpl(Command outputCommand, String channelId, State currentState,
-            Configuration config) {
+    protected void convertFromCommandImpl(String channelId, String channelTypeId, Command outputCommand,
+            State currentState, Configuration config) {
 
         switch (channelId) {
             case CHANNEL_ROLLERSHUTTER:
@@ -142,7 +142,7 @@ public class A5_38_08_Blinds extends _4BSMessage {
     }
 
     @Override
-    public State convertToStateImpl(String channelId, State currentState, Configuration config) {
+    public State convertToStateImpl(String channelId, String channelTypeId, State currentState, Configuration config) {
         switch (channelId) {
             case CHANNEL_ROLLERSHUTTER:
                 return getPositionData();

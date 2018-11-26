@@ -90,7 +90,8 @@ public class EnOceanBindingConstants {
     public final static String CHANNEL_ROCKERSWITCH_CHANNELA = "rockerswitchA";
     public final static String CHANNEL_ROCKERSWITCH_CHANNELB = "rockerswitchB";
 
-    public final static String CHANNEL_VIRTUALROCKERSWITCH = "virtualRockerswitch";
+    public final static String CHANNEL_VIRTUALROCKERSWITCHA = "virtualRockerswitchA";
+    public final static String CHANNEL_VIRTUALROCKERSWITCHB = "virtualRockerswitchB";
     public final static String CHANNEL_ROCKERSWITCHLISTENERSWITCH = "rockerswitchListenerSwitch";
     public final static String CHANNEL_ROCKERSWITCHLISTENERROLLERSHUTTER = "rockerswitchListenerRollershutter";
 
@@ -118,8 +119,8 @@ public class EnOceanBindingConstants {
     public final static String CHANNEL_GENERIC_COLOR = "genericColor";
     public final static String CHANNEL_GENERIC_TEACHINCMD = "genericTeachInCMD";
 
-    public final static ChannelTypeUID VirtualRockerSwitchChannelType = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_VIRTUALROCKERSWITCH);
+    public final static ChannelTypeUID VirtualRockerSwitchAChannelType = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_VIRTUALROCKERSWITCHA);
 
     public static final Map<String, EnOceanChannelDescription> ChannelId2ChannelDescription = Collections
             .unmodifiableMap(new HashMap<String, EnOceanChannelDescription>() {
@@ -165,23 +166,40 @@ public class EnOceanBindingConstants {
                     put(CHANNEL_TEACHINCMD, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_TEACHINCMD), CoreItemFactory.SWITCH));
 
-                    put(CHANNEL_PUSHBUTTON, new EnOceanChannelDescription(
-                            DefaultSystemChannelTypeProvider.SYSTEM_RAWBUTTON.getUID(), "", "Push button", false));
+                    put(CHANNEL_PUSHBUTTON,
+                            new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_RAWBUTTON.getUID(),
+                                    null, "Push button", false, true));
 
                     put(CHANNEL_ROCKERSWITCH_CHANNELA,
                             new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_RAWROCKER.getUID(),
-                                    "", "Rockerswitch channel A", false));
+                                    null, "Rocker Switch - Channel A", false, false));
                     put(CHANNEL_ROCKERSWITCH_CHANNELB,
                             new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_RAWROCKER.getUID(),
-                                    "", "Rockerswitch channel B", false));
+                                    null, "Rocker Switch - Channel B", false, false));
 
-                    put(CHANNEL_VIRTUALROCKERSWITCH,
-                            new EnOceanChannelDescription(VirtualRockerSwitchChannelType, CoreItemFactory.STRING));
+                    // we set acceptedItemType to null here, to be able to receive commands from any ItemType through
+                    // our profiles (SwitchItem, RollershutterItem)
+                    put(CHANNEL_VIRTUALROCKERSWITCHA, new EnOceanChannelDescription(VirtualRockerSwitchAChannelType,
+                            null, "Rocker Switch", true, false));
+                    put(CHANNEL_VIRTUALROCKERSWITCHB,
+                            new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_VIRTUALROCKERSWITCHB),
+                                    CoreItemFactory.STRING, "Rocker Switch - Channel B", true, false));
+                    put(CHANNEL_ROCKERSWITCHLISTENERSWITCH,
+                            new EnOceanChannelDescription(
+                                    new ChannelTypeUID(BINDING_ID, CHANNEL_ROCKERSWITCHLISTENERSWITCH),
+                                    CoreItemFactory.SWITCH, "Rocker Switch Listener (Switch)", true, false));
+                    put(CHANNEL_ROCKERSWITCHLISTENERROLLERSHUTTER, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_ROCKERSWITCHLISTENERROLLERSHUTTER),
+                            CoreItemFactory.ROLLERSHUTTER, "Rocker Switch Listener (Rollershutter)", true, false));
 
                     put(CHANNEL_INSTANTPOWER, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_INSTANTPOWER), CoreItemFactory.NUMBER));
                     put(CHANNEL_TOTALUSAGE, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_TOTALUSAGE), CoreItemFactory.NUMBER));
+                    put(CHANNEL_INSTANTLITRE, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_INSTANTLITRE), CoreItemFactory.NUMBER));
+                    put(CHANNEL_TOTALCUBICMETRE, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_TOTALCUBICMETRE), CoreItemFactory.NUMBER));
                     put(CHANNEL_AUTOOFF, new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_AUTOOFF),
                             CoreItemFactory.NUMBER));
                     put(CHANNEL_DELAYRADIOOFF, new EnOceanChannelDescription(
@@ -209,9 +227,8 @@ public class EnOceanBindingConstants {
                             new ChannelTypeUID(BINDING_ID, CHANNEL_GENERIC_STRING), CoreItemFactory.STRING));
                     put(CHANNEL_GENERIC_COLOR, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_GENERIC_COLOR), CoreItemFactory.COLOR));
-                    put(CHANNEL_GENERIC_TEACHINCMD,
-                            new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_GENERIC_TEACHINCMD),
-                                    CoreItemFactory.SWITCH, "Teach in", true));
+                    put(CHANNEL_GENERIC_TEACHINCMD, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_GENERIC_TEACHINCMD), CoreItemFactory.SWITCH));
 
                     put(CHANNEL_REPEATERMODE, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_REPEATERMODE), CoreItemFactory.STRING));
@@ -260,6 +277,8 @@ public class EnOceanBindingConstants {
 
     // Channel config parameter
     public static final String PARAMETER_CHANNEL_TeachInMSG = "teachInMSG";
+    public static final String PARAMETER_CHANNEL_Duration = "duration";
+    public static final String PARAMETER_CHANNEL_SwitchMode = "switchMode";
 
     @NonNull
     public static final Set<ProfileTypeUID> SUPPORTED_PROFILETYPES_UIDS = new HashSet<ProfileTypeUID>(
@@ -270,5 +289,7 @@ public class EnOceanBindingConstants {
     public static final int EltakoId = 0x00d;
     public static final int NodONId = 0x046; // NodOn devices are designed by ID-RF hence use their ID
     public static final int PermundoId = 0x033;
+
+    public static final String EmptyEnOceanId = "00000000";
 
 }

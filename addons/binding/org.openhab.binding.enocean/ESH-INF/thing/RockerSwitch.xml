@@ -13,6 +13,15 @@
 		<label>Rocker Switch</label>
 		<description>Represents a physical Rocker Switch (EEP: F6-02)</description>
 
+		<channels>
+			<channel typeId="system.rawrocker" id="rockerswitchA">
+				<label>Rocker Switch - Channel A</label>
+			</channel>
+			<channel typeId="system.rawrocker" id="rockerswitchB">
+				<label>Rocker Switch - Channel B</label>
+			</channel>
+		</channels>
+
 		<config-description>
 			<parameter name="enoceanId" type="text">
 				<label>EnOceanId</label>

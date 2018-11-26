@@ -54,7 +54,7 @@ public abstract class A5_04 extends _4BSMessage {
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, State currentState, Configuration config) {
+    protected State convertToStateImpl(String channelId, String channelTypeId, State currentState, Configuration config) {
         if (!isValid()) {
             return UnDefType.UNDEF;
         }

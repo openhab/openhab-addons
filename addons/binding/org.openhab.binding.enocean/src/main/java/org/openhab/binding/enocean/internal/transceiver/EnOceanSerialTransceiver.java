@@ -32,7 +32,7 @@ public class EnOceanSerialTransceiver extends EnOceanTransceiver implements Seri
 
     protected String path;
     SerialPort serialPort;
-    // gnu.io.SerialPort sp;
+
     private static final int ENOCEAN_DEFAULT_BAUD = 57600;
 
     private Logger logger = LoggerFactory.getLogger(EnOceanSerialTransceiver.class);
@@ -49,29 +49,6 @@ public class EnOceanSerialTransceiver extends EnOceanTransceiver implements Seri
     public void Initialize()
             throws UnsupportedCommOperationException, PortInUseException, IOException, TooManyListenersException {
 
-        // There is currently a bug in nrjavaserial (https://github.com/NeuronRobotics/nrjavaserial/pull/121) so
-        // directly use RXTXCommDriver on windows os
-        /*
-         * if (System.getProperty("os.name").toLowerCase().indexOf("windows") != -1
-         * && path.toLowerCase().indexOf("com") != -1) {
-         * try {
-         * RXTXCommDriver RXTXDriver = new RXTXCommDriver();
-         * RXTXDriver.initialize();
-         * sp = (gnu.io.SerialPort) RXTXDriver.getCommPort(path, CommPortIdentifier.PORT_SERIAL);
-         *
-         * sp.setSerialPortParams(ENOCEAN_DEFAULT_BAUD, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
-         * SerialPort.PARITY_NONE);
-         * sp.enableReceiveThreshold(1);
-         * sp.enableReceiveTimeout(100); // In ms. Small values mean faster shutdown but more cpu usage.
-         *
-         * inputStream = sp.getInputStream();
-         * outputStream = sp.getOutputStream();
-         * } catch (gnu.io.UnsupportedCommOperationException e) {
-         * throw new UnsupportedCommOperationException(e);
-         * }
-         * } else {
-         */
-
         SerialPortIdentifier id = serialPortManager.getIdentifier(path);
         if (id == null) {
             throw new IOException("Could not find a gateway on given path '" + path + "', "
@@ -86,7 +63,7 @@ public class EnOceanSerialTransceiver extends EnOceanTransceiver implements Seri
 
         inputStream = serialPort.getInputStream();
         outputStream = serialPort.getOutputStream();
-        // }
+
         logger.info("EnOceanSerialTransceiver initialized");
     }
 
@@ -109,15 +86,6 @@ public class EnOceanSerialTransceiver extends EnOceanTransceiver implements Seri
             logger.debug("Closing serial port");
             serialPort.close();
         }
-
-        /*
-         * if (sp != null) {
-         * logger.debug("Closing serial port");
-         * sp.close();
-         * }
-         */
-
-        // sp = null;
 
         serialPort = null;
         outputStream = null;

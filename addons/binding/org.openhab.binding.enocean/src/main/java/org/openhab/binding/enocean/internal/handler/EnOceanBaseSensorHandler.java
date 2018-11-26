@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -94,7 +95,10 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
                 configurationErrorDescription = "EnOceanId is not a valid EnOceanId";
                 return false;
             }
-            getBridgeHandler().addPacketListener(this);
+
+            if (!config.enoceanId.equals(EmptyEnOceanId)) {
+                getBridgeHandler().addPacketListener(this);
+            }
         }
 
         return true;
@@ -120,6 +124,10 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
         // The only possible command would be "Refresh"
     }
 
+    protected Predicate<Channel> channelFilter(EEPType eepType, byte[] senderId) {
+        return c -> eepType.GetSupportedChannels().containsKey(c.getUID().getId());
+    }
+
     @Override
     public void espPacketReceived(ESP3Packet packet) {
 
@@ -142,31 +150,30 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
             if (eep.isValid()) {
 
                 // try to interpret received message for all linked channels
-                receivingEEPType.GetChannelIds().stream().filter(id -> getLinkedChannels().containsKey(id))
-                        .forEach(id -> {
-                            if (id == null) {
-                                return;
-                            }
-
-                            Channel channel = getLinkedChannels().get(id);
+                getLinkedChannels().stream().filter(channelFilter(receivingEEPType, msg.getSenderId()))
+                        .forEach(channel -> {
+                            String channelTypeId = channel.getChannelTypeUID().getId();
+                            String channelId = channel.getUID().getId();
                             Configuration channelConfig = channel.getConfiguration();
                             switch (channel.getKind()) {
                                 case STATE:
-                                    State currentState = getCurrentState(id);
-                                    State result = eep.convertToState(id, channelConfig, currentState);
+                                    State currentState = getCurrentState(channelId);
+                                    State result = eep.convertToState(channelId, channelTypeId, channelConfig,
+                                            currentState);
 
                                     // if message can be interpreted (result != UnDefType.UNDEF) => update item state
                                     if (result != null && result != UnDefType.UNDEF) {
-                                        updateState(id, result);
-                                        setCurrentState(id, result); // update internal state map
+                                        updateState(channelId, result);
+                                        setCurrentState(channelTypeId, result); // update internal state map
                                     }
                                     break;
                                 case TRIGGER:
-                                    String lastEvent = lastEvents.get(id);
-                                    String event = eep.convertToEvent(id, lastEvent, channelConfig);
+                                    String lastEvent = lastEvents.get(channelId);
+                                    String event = eep.convertToEvent(channelId, channelTypeId, lastEvent,
+                                            channelConfig);
                                     if (event != null) {
                                         triggerChannel(channel.getUID(), event);
-                                        lastEvents.put(id, event);
+                                        lastEvents.put(channelId, event);
                                     }
                                     break;
                             }

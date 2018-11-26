@@ -74,7 +74,7 @@ public class GenericEEP extends EEP {
     }
 
     @Override
-    protected void convertFromCommandImpl(Command command, String channelId, State currentState, Configuration config) {
+    protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command, State currentState, Configuration config) {
         if (config != null) {
             EnOceanChannelTransformationConfig transformationInfo = config
                     .as(EnOceanChannelTransformationConfig.class);
@@ -94,7 +94,7 @@ public class GenericEEP extends EEP {
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, State currentState, Configuration config) {
+    protected State convertToStateImpl(String channelId, String channelTypeId, State currentState, Configuration config) {
         if (config != null) {
 
             EnOceanChannelTransformationConfig transformationInfo = config

@@ -40,8 +40,8 @@ public class A5_38_08_Dimming extends _4BSMessage {
     }
 
     @Override
-    protected void convertFromCommandImpl(Command outputCommand, String channelId, State currentState,
-            Configuration config) {
+    protected void convertFromCommandImpl(String channelId, String channelTypeId, Command outputCommand,
+            State currentState, Configuration config) {
 
         if (outputCommand instanceof DecimalType) {
             if (((DecimalType) outputCommand).equals(DecimalType.ZERO)) {
@@ -57,7 +57,7 @@ public class A5_38_08_Dimming extends _4BSMessage {
     }
 
     @Override
-    public State convertToStateImpl(String channelId, State currentState, Configuration config) {
+    public State convertToStateImpl(String channelId, String channelTypeId, State currentState, Configuration config) {
         if (!isValid()) {
             return UnDefType.UNDEF;
         }

@@ -35,7 +35,7 @@ public class D5_00_01 extends _1BSMessage {
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, State currentState, Configuration config) {
+    protected State convertToStateImpl(String channelId, String channelTypeId, State currentState, Configuration config) {
         if (!isValid()) {
             return UnDefType.UNDEF;
         }

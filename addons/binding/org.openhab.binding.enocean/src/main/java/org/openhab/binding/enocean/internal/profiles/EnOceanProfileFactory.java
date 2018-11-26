@@ -75,14 +75,13 @@ public class EnOceanProfileFactory implements ProfileFactory, ProfileAdvisor, Pr
             if (CoreItemFactory.PLAYER.equalsIgnoreCase(itemType)) {
                 return EnOceanProfileTypes.RockerSwitchToPlayPause;
             }
-        } else if (VirtualRockerSwitchChannelType.equals(channelType.getUID())) {
+        } else if (VirtualRockerSwitchAChannelType.equals(channelType.getUID())) {
             if (CoreItemFactory.SWITCH.equalsIgnoreCase(itemType)) {
                 return EnOceanProfileTypes.RockerSwitchFromOnOff;
             } else if (CoreItemFactory.ROLLERSHUTTER.equalsIgnoreCase(itemType)) {
                 return EnOceanProfileTypes.RockerSwitchFromRollershutter;
             }
         }
-
         return null;
     }
 

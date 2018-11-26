@@ -103,55 +103,49 @@ public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService
         ThingTypeUID thingTypeUID = eep.getThingTypeUID();
         ThingUID thingUID = new ThingUID(thingTypeUID, bridgeHandler.getThing().getUID(), enoceanId);
 
-        if (discoveryServiceCallback.getExistingThing(thingUID) == null) {
+        int deviceId = 0;
+        boolean broadcastMessages = true;
 
-            int deviceId = 0;
-            boolean broadcastMessages = true;
-
-            // check for bidirectional communication => do not use broadcast in this case
-            if (msg.getRORG() == RORG.UTE && (msg.getPayload(1, 1)[0]
-                    & UTEResponse.CommunicationType_MASK) == UTEResponse.CommunicationType_MASK) {
-                broadcastMessages = false;
-            }
-
-            // if ute => send response if needed
-            if (msg.getRORG() == RORG.UTE && (msg.getPayload(1, 1)[0] & UTEResponse.ResponseNeeded_MASK) == 0) {
-
-                // get new sender Id
-                deviceId = bridgeHandler.getNextSenderId(enoceanId);
-                if (deviceId > 0) {
-                    byte[] newSenderId = bridgeHandler.getBaseId();
-                    newSenderId[3] += deviceId;
-
-                    // send response
-                    EEP response = EEPFactory.buildResponseEEPFromTeachInERP1(msg, newSenderId);
-                    response.setSuppressRepeating(true);
-                    bridgeHandler.sendMessage(response.getERP1Message(), null);
-                    logger.info("Send teach in response for {}", enoceanId);
-                }
-
-            }
-            DiscoveryResultBuilder discoveryResultBuilder = DiscoveryResultBuilder.create(thingUID)
-                    .withRepresentationProperty(enoceanId).withBridge(bridgeHandler.getThing().getUID());
-
-            eep.addConfigPropertiesTo(discoveryResultBuilder);
-            discoveryResultBuilder.withProperty(PARAMETER_BROADCASTMESSAGES, broadcastMessages);
-            discoveryResultBuilder.withProperty(PARAMETER_ENOCEANID, enoceanId);
-
-            if (deviceId > 0) {
-                // advance config with new device id
-                discoveryResultBuilder.withProperty(PARAMETER_SENDERIDOFFSET, deviceId);
-            }
-
-            thingDiscovered(discoveryResultBuilder.build());
-
-            // As we only support sensors to be teached in, we do not need to send a teach in response => 4bs
-            // bidirectional teach in proc is not supported yet
-            // this is true except for UTE teach in => we always have to send a response here
-
-        } else {
-            logger.debug("Ignoring already known Enocean thing {}", thingUID);
+        // check for bidirectional communication => do not use broadcast in this case
+        if (msg.getRORG() == RORG.UTE && (msg.getPayload(1, 1)[0]
+                & UTEResponse.CommunicationType_MASK) == UTEResponse.CommunicationType_MASK) {
+            broadcastMessages = false;
         }
+
+        // if ute => send response if needed
+        if (msg.getRORG() == RORG.UTE && (msg.getPayload(1, 1)[0] & UTEResponse.ResponseNeeded_MASK) == 0) {
+
+            // get new sender Id
+            deviceId = bridgeHandler.getNextSenderId(enoceanId);
+            if (deviceId > 0) {
+                byte[] newSenderId = bridgeHandler.getBaseId();
+                newSenderId[3] += deviceId;
+
+                // send response
+                EEP response = EEPFactory.buildResponseEEPFromTeachInERP1(msg, newSenderId);
+                response.setSuppressRepeating(true);
+                bridgeHandler.sendMessage(response.getERP1Message(), null);
+                logger.info("Send teach in response for {}", enoceanId);
+            }
+
+        }
+        DiscoveryResultBuilder discoveryResultBuilder = DiscoveryResultBuilder.create(thingUID)
+                .withRepresentationProperty(enoceanId).withBridge(bridgeHandler.getThing().getUID());
+
+        eep.addConfigPropertiesTo(discoveryResultBuilder);
+        discoveryResultBuilder.withProperty(PARAMETER_BROADCASTMESSAGES, broadcastMessages);
+        discoveryResultBuilder.withProperty(PARAMETER_ENOCEANID, enoceanId);
+
+        if (deviceId > 0) {
+            // advance config with new device id
+            discoveryResultBuilder.withProperty(PARAMETER_SENDERIDOFFSET, deviceId);
+        }
+
+        thingDiscovered(discoveryResultBuilder.build());
+
+        // As we only support sensors to be teached in, we do not need to send a teach in response => 4bs
+        // bidirectional teach in proc is not supported yet
+        // this is true except for UTE teach in => we always have to send a response here
     }
 
     @Override

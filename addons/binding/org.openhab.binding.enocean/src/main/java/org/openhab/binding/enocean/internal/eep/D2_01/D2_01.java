@@ -182,10 +182,8 @@ public abstract class D2_01 extends _VLDMessage {
     }
 
     @Override
-    protected void convertFromCommandImpl(Command command, String channelId, State currentState, Configuration config) {
-        if (!getEEPType().GetChannelIds().contains(channelId)) {
-            return;
-        }
+    protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command, State currentState,
+            Configuration config) {
 
         if (channelId.equals(CHANNEL_GENERAL_SWITCHING)) {
             if (command == RefreshType.REFRESH) {
@@ -219,7 +217,8 @@ public abstract class D2_01 extends _VLDMessage {
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, State currentState, Configuration config) {
+    protected State convertToStateImpl(String channelId, String channelTypeId, State currentState,
+            Configuration config) {
 
         switch (channelId) {
             case CHANNEL_GENERAL_SWITCHING:

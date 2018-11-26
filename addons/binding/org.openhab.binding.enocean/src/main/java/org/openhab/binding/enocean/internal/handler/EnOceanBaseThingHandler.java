@@ -8,12 +8,12 @@
  */
 package org.openhab.binding.enocean.internal.handler;
 
-import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.ChannelId2ChannelDescription;
-
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.core.status.ConfigStatusMessage;
@@ -48,7 +48,7 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
 
     protected String configurationErrorDescription;
 
-    private Hashtable<String, Channel> linkedChannels = null;
+    private HashSet<Channel> linkedChannels = null;
 
     protected Hashtable<String, State> channelState = null;
     protected Hashtable<String, String> lastEvents = null;
@@ -116,19 +116,29 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
         boolean channelListChanged = false;
 
         if (removeUnsupportedChannels) {
-            channelListChanged = channelList.removeIf(channel -> !eep.GetChannelIds().stream()
-                    .anyMatch(supportedId -> supportedId.equals(channel.getUID().getId())));
+            channelListChanged = channelList.removeIf(channel -> !eep.isChannelSupported(channel));
         }
 
-        for (String id : eep.GetChannelIds()) {
-            if (channelList.stream().anyMatch(channel -> id.equals(channel.getUID().getId()))) {
+        for (Map.Entry<String, EnOceanChannelDescription> entry : eep.GetSupportedChannels().entrySet()) {
+
+            String channelId = entry.getKey();
+            EnOceanChannelDescription cd = entry.getValue();
+
+            // if we do not need to auto create channel => skip
+            if (!cd.autoCreate) {
                 continue;
             }
 
-            EnOceanChannelDescription t = ChannelId2ChannelDescription.get(id);
-            Channel channel = ChannelBuilder.create(new ChannelUID(this.getThing().getUID(), id), t.itemType)
-                    .withConfiguration(eep.getChannelConfig(id)).withType(t.channelTypeUID)
-                    .withKind(t.isStateChannel ? ChannelKind.STATE : ChannelKind.TRIGGER).withLabel(t.label).build();
+            // if we already created a channel with the same type => skip
+            if (channelList.stream()
+                    .anyMatch(channel -> cd.channelTypeUID.getId().equals(channel.getChannelTypeUID().getId()))) {
+                continue;
+            }
+
+            Channel channel = ChannelBuilder
+                    .create(new ChannelUID(this.getThing().getUID(), channelId), cd.acceptedItemType)
+                    .withConfiguration(eep.getChannelConfig(channelId)).withType(cd.channelTypeUID)
+                    .withKind(cd.isStateChannel ? ChannelKind.STATE : ChannelKind.TRIGGER).withLabel(cd.label).build();
 
             channelList.add(channel);
             channelListChanged = true;
@@ -141,26 +151,28 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
         }
     }
 
-    protected Hashtable<String, Channel> getLinkedChannels() {
+    protected HashSet<Channel> getLinkedChannels() {
         if (linkedChannels != null) {
             return linkedChannels;
         }
 
-        linkedChannels = new Hashtable<>();
-        channelState = new Hashtable<>();
-        lastEvents = new Hashtable<>();
+        linkedChannels = new HashSet<>();
+        if (channelState == null) {
+            channelState = new Hashtable<>();
+            lastEvents = new Hashtable<>();
+        }
 
         for (Channel c : this.getThing().getChannels()) {
             String id = c.getUID().getId();
 
             if (isLinked(id)) {
                 {
-                    linkedChannels.put(id, c);
-                    channelState.put(id, UnDefType.UNDEF);
+                    linkedChannels.add(c);
+                    channelState.putIfAbsent(id, UnDefType.UNDEF);
                 }
             } else if (c.getKind() == ChannelKind.TRIGGER) {
-                linkedChannels.put(id, c);
-                lastEvents.put(id, "");
+                linkedChannels.add(c);
+                lastEvents.putIfAbsent(id, "");
             }
         }
 
@@ -176,7 +188,7 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
             return;
         }
 
-        linkedChannels.putIfAbsent(id, thing.getChannel(id));
+        linkedChannels.add(thing.getChannel(id));
         channelState.putIfAbsent(id, UnDefType.UNDEF);
         lastEvents.putIfAbsent(id, "");
     }
@@ -191,10 +203,17 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
         }
 
         if (!isLinked(id)) {
-            linkedChannels.remove(id);
+            linkedChannels.remove(thing.getChannel(id));
             channelState.remove(id);
             lastEvents.remove(id);
         }
+    }
+
+    @Override
+    public void thingUpdated(Thing thing) {
+        super.thingUpdated(thing);
+        // reset linkedChannels to get current config of channels
+        linkedChannels = null;
     }
 
     protected State getCurrentState(String channelId) {

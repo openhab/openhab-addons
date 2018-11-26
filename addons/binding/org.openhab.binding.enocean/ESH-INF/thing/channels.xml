@@ -174,7 +174,7 @@
 		<label>Receiving Status</label>
 		<state readOnly="true" />
 	</channel-type>
-	
+
 	<channel-type id="motionDetection">
 		<item-type>Switch</item-type>
 		<label>Motion Detected</label>
@@ -252,19 +252,19 @@
 		<label>Cubic metre</label>
 		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
-	
+
 	<channel-type id="counter">
-        <item-type>Number</item-type>
-        <label>Counter</label>
-        <description>Counter</description>
-        <state readOnly="true" />
-    </channel-type>
-    
-    <channel-type id="currentNumber">
-        <item-type>Number</item-type>
-        <label>Current</label>
-        <description>Current</description>
-        <state readOnly="true" />
-    </channel-type>
+		<item-type>Number</item-type>
+		<label>Counter</label>
+		<description>Counter</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="currentNumber">
+		<item-type>Number</item-type>
+		<label>Current</label>
+		<description>Current</description>
+		<state readOnly="true" />
+	</channel-type>
 
 </thing:thing-descriptions>

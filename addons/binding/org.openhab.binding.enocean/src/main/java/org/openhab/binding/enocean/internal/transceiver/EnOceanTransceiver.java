@@ -84,10 +84,12 @@ public abstract class EnOceanTransceiver {
                     if (currentRequest != null && currentRequest.RequestPacket != null) {
                         synchronized (currentRequest) {
 
-                            byte[] b = currentRequest.RequestPacket.serialize();
-                            logger.trace("<< Sending data, type {}, payload {}",
-                                    currentRequest.RequestPacket.getPacketType().name(), HexUtils.bytesToHex(b));
+                            logger.debug("Sending data, type {}, payload {}{}",
+                                    currentRequest.RequestPacket.getPacketType().name(),
+                                    HexUtils.bytesToHex(currentRequest.RequestPacket.getPayload()),
+                                    HexUtils.bytesToHex(currentRequest.RequestPacket.getOptionalPayload()));
 
+                            byte[] b = currentRequest.RequestPacket.serialize();
                             outputStream.write(b);
                             outputStream.flush();
 
@@ -290,7 +292,7 @@ public abstract class EnOceanTransceiver {
                                             byte[] d = new byte[dataLength + optionalLength];
                                             System.arraycopy(dataBuffer, 0, d, 0, d.length);
 
-                                            logger.debug("{} with RORG {} for {} payload {}",
+                                            logger.debug("{} with RORG {} for {} payload {} received",
                                                     packet.getPacketType().name(), msg.getRORG().name(),
                                                     HexUtils.bytesToHex(msg.getSenderId()), HexUtils.bytesToHex(d));
 
@@ -309,7 +311,8 @@ public abstract class EnOceanTransceiver {
                                             byte[] d = new byte[dataLength + optionalLength];
                                             System.arraycopy(dataBuffer, 0, d, 0, d.length);
 
-                                            logger.debug("{} with code {} payload {}", packet.getPacketType().name(),
+                                            logger.debug("{} with code {} payload {} received",
+                                                    packet.getPacketType().name(),
                                                     ((Response) packet).getResponseType().name(),
                                                     HexUtils.bytesToHex(d));
 

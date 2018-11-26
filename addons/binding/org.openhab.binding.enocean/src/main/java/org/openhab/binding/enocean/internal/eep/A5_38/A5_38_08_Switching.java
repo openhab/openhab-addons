@@ -34,8 +34,8 @@ public class A5_38_08_Switching extends _4BSMessage {
     }
 
     @Override
-    protected void convertFromCommandImpl(Command outputCommand, String channelId, State currentState,
-            Configuration config) {
+    protected void convertFromCommandImpl(String channelId, String channelTypeId, Command outputCommand,
+            State currentState, Configuration config) {
 
         if ((OnOffType) outputCommand == OnOffType.ON) {
             setData(CommandId, Zero, Zero, (byte) (TeachInBit | SwitchOn));

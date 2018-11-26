@@ -40,11 +40,11 @@ public class EnOceanProfileTypes {
 
     public static final StateProfileType RockerSwitchFromOnOffType = ProfileTypeBuilder
             .newState(RockerSwitchFromOnOff, "Rocker switch from On/Off item")
-            .withSupportedItemTypes(CoreItemFactory.SWITCH).withSupportedChannelTypeUIDs(VirtualRockerSwitchChannelType)
+            .withSupportedItemTypes(CoreItemFactory.SWITCH).withSupportedChannelTypeUIDs(VirtualRockerSwitchAChannelType)
             .build();
 
     public static final StateProfileType RockerSwitchFromRollershutterType = ProfileTypeBuilder
             .newState(RockerSwitchFromRollershutter, "Rocker switch from rollershutter item")
             .withSupportedItemTypes(CoreItemFactory.ROLLERSHUTTER)
-            .withSupportedChannelTypeUIDs(VirtualRockerSwitchChannelType).build();
+            .withSupportedChannelTypeUIDs(VirtualRockerSwitchAChannelType).build();
 }

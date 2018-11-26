@@ -169,11 +169,10 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
 
         logger.debug("polling channels");
         if (thing.getStatus().equals(ThingStatus.ONLINE)) {
-            for (Channel channel : getLinkedChannels().values()) {
+            for (Channel channel : getLinkedChannels()) {
                 handleCommand(channel.getUID(), RefreshType.REFRESH);
             }
         }
-
     }
 
     @Override
@@ -184,18 +183,23 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
             return;
         }
 
+        String channelId = channelUID.getId();
+        Channel channel = getThing().getChannel(channelId);
+        if (channel == null) {
+            return;
+        }
+
         // check if we do support refreshs
         if (command == RefreshType.REFRESH) {
             // receiving status cannot be refreshed
-            if (channelUID.getId().equals(CHANNEL_RECEIVINGSTATE) || !sendingEEPType.getSupportsRefresh()) {
+            if (channel.getChannelTypeUID().getId().equals(CHANNEL_RECEIVINGSTATE)
+                    || !sendingEEPType.getSupportsRefresh()) {
                 return;
             }
         }
 
         // check if the channel is linked otherwise do nothing
-        String channelId = channelUID.getId();
-        Channel channel = getLinkedChannels().get(channelId);
-        if (channel == null) {
+        if (!getLinkedChannels().contains(channel)) {
             return;
         }
 
@@ -210,7 +214,8 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
             State currentState = getCurrentState(channelId);
 
             ESP3Packet msg = eep.setSenderId(senderId).setDestinationId(destinationId)
-                    .convertFromCommand(channelId, command, currentState, channelConfig)
+                    .convertFromCommand(channelId, channel.getChannelTypeUID().getId(), command, currentState,
+                            channelConfig)
                     .setSuppressRepeating(getConfiguration().suppressRepeating).getERP1Message();
 
             getBridgeHandler().sendMessage(msg, null);

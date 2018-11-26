@@ -30,7 +30,7 @@ public class F6_01_01 extends _RPSMessage {
     }
 
     @Override
-    protected String convertToEventImpl(String channelId, String lastEvent, Configuration config) {
+    protected String convertToEventImpl(String channelId, String channelTypeId, String lastEvent, Configuration config) {
         if (!isValid()) {
             return null;
         }

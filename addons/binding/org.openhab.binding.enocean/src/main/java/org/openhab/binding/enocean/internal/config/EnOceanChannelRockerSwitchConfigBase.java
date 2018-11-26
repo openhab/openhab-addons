@@ -32,6 +32,10 @@ public class EnOceanChannelRockerSwitchConfigBase {
             this.value = value;
         }
 
+        public String getValue() {
+            return value;
+        }
+
         public static SwitchMode getSwitchMode(String value) {
             if (value == null) {
                 return SwitchMode.Unkown;

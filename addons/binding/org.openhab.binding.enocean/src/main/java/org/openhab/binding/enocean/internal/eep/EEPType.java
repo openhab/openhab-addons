@@ -12,11 +12,13 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.Collections;
 import java.util.Hashtable;
-import java.util.Set;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.openhab.binding.enocean.internal.EnOceanChannelDescription;
 import org.openhab.binding.enocean.internal.eep.A5_02.A5_02_01;
 import org.openhab.binding.enocean.internal.eep.A5_02.A5_02_02;
 import org.openhab.binding.enocean.internal.eep.A5_02.A5_02_03;
@@ -119,9 +121,7 @@ import org.openhab.binding.enocean.internal.eep.D2_05.D2_05_00;
 import org.openhab.binding.enocean.internal.eep.D5_00.D5_00_01;
 import org.openhab.binding.enocean.internal.eep.F6_01.F6_01_01;
 import org.openhab.binding.enocean.internal.eep.F6_02.F6_02_01;
-import org.openhab.binding.enocean.internal.eep.F6_02.F6_02_01_Virtual;
 import org.openhab.binding.enocean.internal.eep.F6_02.F6_02_02;
-import org.openhab.binding.enocean.internal.eep.F6_02.F6_02_02_Virtual;
 import org.openhab.binding.enocean.internal.eep.F6_10.F6_10_00;
 import org.openhab.binding.enocean.internal.eep.F6_10.F6_10_01;
 import org.openhab.binding.enocean.internal.eep.Generic.Generic4BS;
@@ -155,13 +155,13 @@ public enum EEPType {
             CHANNEL_RECEIVINGSTATE),
 
     RockerSwitch2RockerStyle1(RORG.RPS, 0x02, 0x01, false, F6_02_01.class, THING_TYPE_ROCKERSWITCH,
-            CHANNEL_ROCKERSWITCH_CHANNELA, CHANNEL_ROCKERSWITCH_CHANNELB, CHANNEL_RECEIVINGSTATE),
+            CHANNEL_ROCKERSWITCH_CHANNELA, CHANNEL_ROCKERSWITCH_CHANNELB, CHANNEL_VIRTUALROCKERSWITCHA,
+            CHANNEL_VIRTUALROCKERSWITCHB, CHANNEL_ROCKERSWITCHLISTENERSWITCH, CHANNEL_ROCKERSWITCHLISTENERROLLERSHUTTER,
+            CHANNEL_RECEIVINGSTATE),
     RockerSwitch2RockerStyle2(RORG.RPS, 0x02, 0x02, false, F6_02_02.class, THING_TYPE_ROCKERSWITCH,
-            CHANNEL_ROCKERSWITCH_CHANNELA, CHANNEL_ROCKERSWITCH_CHANNELB, CHANNEL_RECEIVINGSTATE),
-    VirtualRockerSwitchStyle1(RORG.RPS, 0x02, 0x01, false, "Virtual", 0, F6_02_01_Virtual.class,
-            THING_TYPE_CLASSICDEVICE, CHANNEL_VIRTUALROCKERSWITCH),
-    VirtualRockerSwitchStyle2(RORG.RPS, 0x02, 0x02, false, "Virtual", 0, F6_02_02_Virtual.class,
-            THING_TYPE_CLASSICDEVICE, CHANNEL_VIRTUALROCKERSWITCH),
+            CHANNEL_ROCKERSWITCH_CHANNELA, CHANNEL_ROCKERSWITCH_CHANNELB, CHANNEL_VIRTUALROCKERSWITCHA,
+            CHANNEL_VIRTUALROCKERSWITCHB, CHANNEL_ROCKERSWITCHLISTENERSWITCH, CHANNEL_ROCKERSWITCHLISTENERROLLERSHUTTER,
+            CHANNEL_RECEIVINGSTATE),
 
     MechanicalHandle00(RORG.RPS, 0x10, 0x00, false, F6_10_00.class, THING_TYPE_MECHANICALHANDLE,
             CHANNEL_WINDOWHANDLESTATE, CHANNEL_CONTACT, CHANNEL_RECEIVINGSTATE),
@@ -410,6 +410,7 @@ public enum EEPType {
     private ThingTypeUID thingTypeUID;
 
     private Hashtable<String, Configuration> channelIdsWithConfig = new Hashtable<String, Configuration>();
+    private Hashtable<String, EnOceanChannelDescription> supportedChannels = new Hashtable<String, EnOceanChannelDescription>();
 
     private boolean supportsRefresh;
 
@@ -442,22 +443,27 @@ public enum EEPType {
 
         for (String id : channelIds) {
             this.channelIdsWithConfig.put(id, new Configuration());
+            this.supportedChannels.put(id, ChannelId2ChannelDescription.get(id));
         }
     }
 
     EEPType(RORG rorg, int func, int type, boolean supportsRefresh, String manufactorSuffix, int manufId,
             Class<? extends EEP> eepClass, ThingTypeUID thingTypeUID, int command,
-            Hashtable<String, Configuration> channels) {
+            Hashtable<String, Configuration> channelConfigs) {
         this.rorg = rorg;
         this.func = func;
         this.type = type;
         this.eepClass = eepClass;
         this.thingTypeUID = thingTypeUID;
         this.command = command;
-        this.channelIdsWithConfig = channels;
+        this.channelIdsWithConfig = channelConfigs;
         this.manufactorSuffix = manufactorSuffix;
         this.manufactorId = manufId;
         this.supportsRefresh = supportsRefresh;
+
+        for (String id : channelConfigs.keySet()) {
+            this.supportedChannels.put(id, ChannelId2ChannelDescription.get(id));
+        }
     }
 
     public Class<? extends EEP> getEEPClass() {
@@ -480,8 +486,17 @@ public enum EEPType {
         return supportsRefresh;
     }
 
-    public Set<String> GetChannelIds() {
-        return Collections.unmodifiableSet(channelIdsWithConfig.keySet());
+    public Map<String, EnOceanChannelDescription> GetSupportedChannels() {
+        return Collections.unmodifiableMap(supportedChannels);
+    }
+
+    public boolean isChannelSupported(Channel channel) {
+        return isChannelSupported(channel.getUID().getId(), channel.getChannelTypeUID().getId());
+    }
+
+    public boolean isChannelSupported(String channelId, String channelTypeId) {
+        return supportedChannels.containsKey(channelId)
+                || supportedChannels.values().stream().anyMatch(c -> c.channelTypeUID.getId().equals(channelTypeId));
     }
 
     public ThingTypeUID getThingTypeUID() {

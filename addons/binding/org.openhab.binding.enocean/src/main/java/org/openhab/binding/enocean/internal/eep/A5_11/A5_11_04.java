@@ -173,7 +173,7 @@ public class A5_11_04 extends _4BSMessage {
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, State currentState, Configuration config) {
+    protected State convertToStateImpl(String channelId, String channelTypeId, State currentState, Configuration config) {
         if (isErrorState()) {
             return UnDefType.UNDEF;
         }
