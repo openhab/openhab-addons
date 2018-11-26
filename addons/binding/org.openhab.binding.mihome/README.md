@@ -90,127 +90,123 @@ __The devices don't need an Internet connection to be working after you have set
 
 ```
 Bridge mihome:bridge:f0b429XXXXXX "Xiaomi Gateway" [ serialNumber="f0b429XXXXXX", ipAddress="192.168.0.3", port=9898, key="XXXXXXXXXXXXXXXX", pollingInterval=6000 ] {
-    Thing mihome:gateway:f0b429XXXXXX "Xiaomi Mi Smart Home Gateway" [itemId="f0b429XXXXXX"]
-
-    Thing mihome:sensor_ht:158d0001XXXXXX "Xiaomi Temperature Sensor" [itemId="158d0001XXXXXX"]
-    
-    Thing mihome:sensor_weather_v1:158d0001XXXXXX "Xiaomi Aqara Temp, Hum and Press Sensor" [itemId="158d0001XXXXXX"]
-
-    Thing mihome:sensor_motion:158d0001XXXXXX "Xiaomi Motion Sensor" [itemId="158d0001XXXXXX"]
-
-    Thing mihome:sensor_plug:158d0001XXXXXX "Xiaomi Plug" [itemId="158d0001XXXXXX"]
-
-    Thing mihome:sensor_magnet:158d0001XXXXXX "Xiaomi Door Sensor" [itemId="158d0001XXXXXX"]
-
-    Thing mihome:sensor_switch:158d0001XXXXXX "Xiaomi Mi Wireless Switch" [itemId="158d0001XXXXXX"]
-
-    Thing mihome:86sw2:158d0001XXXXXX "Aqara Wireless Wall Switch" [itemId="158d0001XXXXXX"]
+  Things:
+    gateway f0b429XXXXXX "Xiaomi Mi Smart Home Gateway" [itemId="f0b429XXXXXX"]
+    sensor_ht 158d0001XXXXXX "Xiaomi Temperature Sensor" [itemId="158d0001XXXXXX"]
+    sensor_weather_v1 158d0001XXXXXX "Xiaomi Aqara Temp, Hum and Press Sensor" [itemId="158d0001XXXXXX"]
+    sensor_motion 158d0001XXXXXX "Xiaomi Motion Sensor" [itemId="158d0001XXXXXX"]
+    sensor_plug 158d0001XXXXXX "Xiaomi Plug" [itemId="158d0001XXXXXX"]
+    sensor_magnet 158d0001XXXXXX "Xiaomi Door Sensor" [itemId="158d0001XXXXXX"]
+    sensor_switch 158d0001XXXXXX "Xiaomi Mi Wireless Switch" [itemId="158d0001XXXXXX"]
+    86sw2 158d0001XXXXXX "Aqara Wireless Wall Switch" [itemId="158d0001XXXXXX"]
 }
 ```
 
 ### xiaomi.items:
 
 ```
-// Gateway
-Switch Gateway_AddDevice { channel="mihome:gateway:<ID>:joinPermission" }
-Switch Gateway_LightSwitch <light> { channel="mihome:gateway:<ID>:brightness" }
-Dimmer Gateway_Brightness <dimmablelight> { channel="mihome:gateway:<ID>:brightness" }
-Color Gateway_Color <rgb> { channel="mihome:gateway:<ID>:color" }
-Dimmer Gateway_ColorTemperature <heating> { channel="mihome:gateway:<ID>:colorTemperature" }
-Number Gateway_AmbientLight <sun> { channel="mihome:gateway:<ID>:illumination" }
-Number Gateway_Sound <soundvolume-0> { channel="mihome:gateway:<ID>:sound" }
-Switch Gateway_SoundSwitch <soundvolume_mute> { channel="mihome:gateway:<ID>:enableSound" }
-Dimmer Gateway_SoundVolume <soundvolume> { channel="mihome:gateway:<ID>:volume" }
+// Replace <GwID> with itemId of gateway from Things file
+// Replace <ID> with itemId of item from Things file
+// Gateway 
+Switch Gateway_AddDevice { channel="mihome:gateway:<GwID>:<ID>:joinPermission" }
+Switch Gateway_LightSwitch <light> { channel="mihome:gateway:<GwID>:<ID>:brightness" }
+Dimmer Gateway_Brightness <dimmablelight> { channel="mihome:gateway:<GwID>:<ID>:brightness" }
+Color Gateway_Color <rgb> { channel="mihome:gateway:<GwID>:<ID>:color" }
+Dimmer Gateway_ColorTemperature <heating> { channel="mihome:gateway:<GwID>:<ID>:colorTemperature" }
+Number Gateway_AmbientLight <sun> { channel="mihome:gateway:<GwID>:<ID>:illumination" }
+Number Gateway_Sound <soundvolume-0> { channel="mihome:gateway:<GwID>:<ID>:sound" }
+Switch Gateway_SoundSwitch <soundvolume_mute> { channel="mihome:gateway:<GwID>:<ID>:enableSound" }
+Dimmer Gateway_SoundVolume <soundvolume> { channel="mihome:gateway:<GwID>:<ID>:volume" }
 
 // Temperature and Humidity Sensor
-Number:Temperature HT_Temperature <temperature> { channel="mihome:sensor_ht:<ID>:temperature" }
-Number:Dimensionless HT_Humidity <humidity> { channel="mihome:sensor_ht:<ID>:humidity" }
-Number HT_Battery <battery> { channel="mihome:sensor_ht:<ID>:batteryLevel" }
-Switch HT_BatteryLow <energy> { channel="mihome:sensor_ht:<ID>:lowBattery" }
+Number:Temperature HT_Temperature <temperature> { channel="mihome:sensor_ht:<GwID>:<ID>:temperature" }
+Number:Dimensionless HT_Humidity <humidity> { channel="mihome:sensor_ht:<GwID>:<ID>:humidity" }
+Number HT_Battery <battery> { channel="mihome:sensor_ht:<GwID>:<ID>:batteryLevel" }
+Switch HT_BatteryLow <energy> { channel="mihome:sensor_ht:<GwID>:<ID>:lowBattery" }
 
 // Aqara Temperature, Humidity and pressure Sensor
-Number:Temperature HTP_Temperature <temperature> { channel="mihome:sensor_weather_v1:<ID>:temperature" }
-Number:Dimensionless HTP_Humidity <humidity> { channel="mihome:sensor_weather_v1:<ID>:humidity" }
-Number:Pressure HTP_Pressure <pressure> { channel="mihome:sensor_weather_v1:<ID>:pressure" }
-Number HTP_Battery <battery> { channel="mihome:sensor_weather_v1:<ID>:batteryLevel" }
-Switch HTP_BatteryLow <energy> { channel="mihome:sensor_weather_v1:<ID>:lowBattery" }
+Number:Temperature HTP_Temperature <temperature> { channel="mihome:sensor_weather_v1:<GwID>:<ID>:temperature" }
+Number:Dimensionless HTP_Humidity <humidity> { channel="mihome:sensor_weather_v1:<GwID>:<ID>:humidity" }
+Number:Pressure HTP_Pressure <pressure> { channel="mihome:sensor_weather_v1:<GwID>:<ID>:pressure" }
+Number HTP_Battery <battery> { channel="mihome:sensor_weather_v1:<GwID>:<ID>:batteryLevel" }
+Switch HTP_BatteryLow <energy> { channel="mihome:sensor_weather_v1:<GwID>:<ID>:lowBattery" }
 
 // Mijia & Aqara Door/Window Sensor
-Contact WindowSwitch_Status <window>  { channel="mihome:sensor_magnet:<ID>:isOpen" }
+Contact WindowSwitch_Status <window>  { channel="mihome:sensor_magnet:<GwID>:<ID>:isOpen" }
 // minimum 30 seconds
-Number WindowSwitch_AlarmTimer <clock> { channel="mihome:sensor_magnet:<ID>:isOpenAlarmTimer" }
-DateTime WindowSwitch_LastOpened "[%1$tY-%1$tm-%1$td  %1$tH:%1$tM]" <clock-on> { channel="mihome:sensor_magnet:<ID>:lastOpened" }
-Number WindowSwitch_Battery <battery> { channel="mihome:sensor_magnet:<ID>:batteryLevel" }
-Switch WindowSwitch_BatteryLow <energy> { channel="mihome:sensor_magnet:<ID>:lowBattery" }
+Number WindowSwitch_AlarmTimer <clock> { channel="mihome:sensor_magnet:<GwID>:<ID>:isOpenAlarmTimer" }
+DateTime WindowSwitch_LastOpened "[%1$tY-%1$tm-%1$td  %1$tH:%1$tM]" <clock-on> { channel="mihome:sensor_magnet:<GwID>:<ID>:lastOpened" }
+Number WindowSwitch_Battery <battery> { channel="mihome:sensor_magnet:<GwID>:<ID>:batteryLevel" }
+Switch WindowSwitch_BatteryLow <energy> { channel="mihome:sensor_magnet:<GwID>:<ID>:lowBattery" }
 
 // Mijia Motion Sensor
-Switch MotionSensor_MotionStatus <motion>  { channel="mihome:sensor_motion:<ID>:motion" }
+Switch MotionSensor_MotionStatus <motion>  { channel="mihome:sensor_motion:<GwID>:<ID>:motion" }
 // minimum 5 seconds - remember that the sensor only triggers every minute to save energy
-Number MotionSensor_MotionTimer <clock> { channel="mihome:sensor_motion:<ID>:motionOffTimer" }
-DateTime MotionSensor_LastMotion "[%1$tY-%1$tm-%1$td  %1$tH:%1$tM]" <clock-on> { channel="mihome:sensor_motion:<ID>:lastMotion" }
-Number MotionSensor_Battery <battery> { channel="mihome:sensor_motion:<ID>:batteryLevel" }
-Switch MotionSensor_BatteryLow <energy> { channel="mihome:sensor_motion:<ID>:lowBattery" }
+Number MotionSensor_MotionTimer <clock> { channel="mihome:sensor_motion:<GwID>:<ID>:motionOffTimer" }
+DateTime MotionSensor_LastMotion "[%1$tY-%1$tm-%1$td  %1$tH:%1$tM]" <clock-on> { channel="mihome:sensor_motion:<GwID>:<ID>:lastMotion" }
+Number MotionSensor_Battery <battery> { channel="mihome:sensor_motion:<GwID>:<ID>:batteryLevel" }
+Switch MotionSensor_BatteryLow <energy> { channel="mihome:sensor_motion:<GwID>:<ID>:lowBattery" }
 
 // Aqara Motion Sensor
-Switch MotionSensor_MotionStatus <motion>  { channel="mihome:sensor_motion_aq2:<ID>:motion" }
+Switch MotionSensor_MotionStatus <motion>  { channel="mihome:sensor_motion_aq2:<GwID>:<ID>:motion" }
 // minimum 5 seconds - the sensor only triggers once every minute to save energy
-Number MotionSensor_MotionTimer <clock> { channel="mihome:sensor_motion_aq2:<ID>:motionOffTimer" }
-DateTime MotionSensor_LastMotion "[%1$tY-%1$tm-%1$td  %1$tH:%1$tM]" <clock-on> { channel="mihome:sensor_motion_aq2:<ID>:lastMotion" }
-Number MotionSensor_Battery <battery> { channel="mihome:sensor_motion_aq2:<ID>:batteryLevel" }
-Switch MotionSensor_BatteryLow <energy> { channel="mihome:sensor_motion_aq2:<ID>:lowBattery" }
-Number MotionSensor_Lux "LUX [%.1f]" <sun> { channel="mihome:sensor_motion_aq2:<ID>:illumination" }
+Number MotionSensor_MotionTimer <clock> { channel="mihome:sensor_motion_aq2:<GwID>:<ID>:motionOffTimer" }
+DateTime MotionSensor_LastMotion "[%1$tY-%1$tm-%1$td  %1$tH:%1$tM]" <clock-on> { channel="mihome:sensor_motion_aq2:<GwID>:<ID>:lastMotion" }
+Number MotionSensor_Battery <battery> { channel="mihome:sensor_motion_aq2:<GwID>:<ID>:batteryLevel" }
+Switch MotionSensor_BatteryLow <energy> { channel="mihome:sensor_motion_aq2:<GwID>:<ID>:lowBattery" }
+Number MotionSensor_Lux "LUX [%.1f]" <sun> { channel="mihome:sensor_motion_aq2:<GwID>:<ID>:illumination" }
 
 // Smart Socket
-Switch Plug_Switch <switch> { channel="mihome:sensor_plug:<ID>:power" }
-Switch Plug_Active <switch> { channel="mihome:sensor_plug:<ID>:inUse" }
-Number Plug_Power <energy> { channel="mihome:sensor_plug:<ID>:loadPower" }
-Number Plug_Consumption <line-incline> { channel="mihome:sensor_plug:<ID>:powerConsumed" }
+Switch Plug_Switch <switch> { channel="mihome:sensor_plug:<GwID>:<ID>:power" }
+Switch Plug_Active <switch> { channel="mihome:sensor_plug:<GwID>:<ID>:inUse" }
+Number Plug_Power <energy> { channel="mihome:sensor_plug:<GwID>:<ID>:loadPower" }
+Number Plug_Consumption <line-incline> { channel="mihome:sensor_plug:<GwID>:<ID>:powerConsumed" }
 
 // Mijia & Aqara Cube Controller - see "xiaomi.rules" for action triggers
-DateTime Cube_LastAction "[%1$tY-%1$tm-%1$td  %1$tH:%1$tM]" <clock-on> { channel="mihome:sensor_cube:<ID>:lastAction" }
-Number:Angle Cube_RotationAngle { channel="mihome:sensor_cube:<ID>:rotationAngle" }
-Number:Time Cube_RotationTime { channel="mihome:sensor_cube:<ID>:rotationTime" }
-Number Cube_Battery <battery> { channel="mihome:sensor_cube:<ID>:batteryLevel" }
-Switch Cube_BatteryLow <energy> { channel="mihome:sensor_cube:<ID>:lowBattery" }
+DateTime Cube_LastAction "[%1$tY-%1$tm-%1$td  %1$tH:%1$tM]" <clock-on> { channel="mihome:sensor_cube:<GwID>:<ID>:lastAction" }
+Number:Angle Cube_RotationAngle { channel="mihome:sensor_cube:<GwID>:<ID>:rotationAngle" }
+Number:Time Cube_RotationTime { channel="mihome:sensor_cube:<GwID>:<ID>:rotationTime" }
+Number Cube_Battery <battery> { channel="mihome:sensor_cube:<GwID>:<ID>:batteryLevel" }
+Switch Cube_BatteryLow <energy> { channel="mihome:sensor_cube:<GwID>:<ID>:lowBattery" }
 
 // Aqara Smart Motion Sensor - see "xiaomi.rules" for action triggers
-DateTime Vibration_LastAction "[%1$tY-%1$tm-%1$td  %1$tH:%1$tM]" <clock-on> { channel="mihome:sensor_vibration:<ID>:lastAction" }
-Number Vibration_TiltAngle { channel="mihome:sensor_vibration:<ID>:tiltAngle" }
-Number Vibration_CoordinateX { channel="mihome:sensor_vibration:<ID>:coordinateX" }
-Number Vibration_CoordinateY { channel="mihome:sensor_vibration:<ID>:coordinateY" }
-Number Vibration_CoordinateZ { channel="mihome:sensor_vibration:<ID>:coordinateZ" }
-Number Vibration_BedActivity { channel="mihome:sensor_vibration:<ID>:bedActivity" }
-Number Vibration_Battery <battery> { channel="mihome:sensor_vibration:<ID>:batteryLevel" }
-Switch Vibration_BatteryLow <energy> { channel="mihome:sensor_vibration:<ID>:lowBattery" }
+DateTime Vibration_LastAction "[%1$tY-%1$tm-%1$td  %1$tH:%1$tM]" <clock-on> { channel="mihome:sensor_vibration:<GwID>:<ID>:lastAction" }
+Number Vibration_TiltAngle { channel="mihome:sensor_vibration:<GwID>:<ID>:tiltAngle" }
+Number Vibration_CoordinateX { channel="mihome:sensor_vibration:<GwID>:<ID>:coordinateX" }
+Number Vibration_CoordinateY { channel="mihome:sensor_vibration:<GwID>:<ID>:coordinateY" }
+Number Vibration_CoordinateZ { channel="mihome:sensor_vibration:<GwID>:<ID>:coordinateZ" }
+Number Vibration_BedActivity { channel="mihome:sensor_vibration:<GwID>:<ID>:bedActivity" }
+Number Vibration_Battery <battery> { channel="mihome:sensor_vibration:<GwID>:<ID>:batteryLevel" }
+Switch Vibration_BatteryLow <energy> { channel="mihome:sensor_vibration:<GwID>:<ID>:lowBattery" }
 
 // Mijia & Aqara Wireless Switch - see "xiaomi.rules" for action triggers
-Number Switch_Battery <battery> { channel="mihome:sensor_switch:<ID>:batteryLevel" }
-Switch Switch_BatteryLow <energy> { channel="mihome:sensor_switch:<ID>:lowBattery" }
+Number Switch_Battery <battery> { channel="mihome:sensor_switch:<GwID>:<ID>:batteryLevel" }
+Switch Switch_BatteryLow <energy> { channel="mihome:sensor_switch:<GwID>:<ID>:lowBattery" }
 
 // Aqara Wirelss Light Control (1 Button) - see "xiaomi.rules" for action triggers
-Number AqaraSwitch1_Battery <battery> { channel="mihome:86sw1:<ID>:batteryLevel" }
-Switch AqaraSwitch1_BatteryLow <energy> { channel="mihome:86sw1:<ID>:lowBattery" }
+Number AqaraSwitch1_Battery <battery> { channel="mihome:86sw1:<GwID>:<ID>:batteryLevel" }
+Switch AqaraSwitch1_BatteryLow <energy> { channel="mihome:86sw1:<GwID>:<ID>:lowBattery" }
 
 // Aqara Wirelss Light Control (2 Button) - see "xiaomi.rules" for action triggers
-Number AqaraSwitch2_Battery <battery> { channel="mihome:86sw2:<ID>:batteryLevel" }
-Switch AqaraSwitch2_BatteryLow <energy> { channel="mihome:86sw2:<ID>:lowBattery" }
+Number AqaraSwitch2_Battery <battery> { channel="mihome:86sw2:<GwID>:<ID>:batteryLevel" }
+Switch AqaraSwitch2_BatteryLow <energy> { channel="mihome:86sw2:<GwID>:<ID>:lowBattery" }
 
 // Aqara Wall Switch (1 Button)
-Switch AqaraWallSwitch <switch> { channel="mihome:ctrl_neutral1:<ID>:ch1" }
+Switch AqaraWallSwitch <switch> { channel="mihome:ctrl_neutral1:<GwID>:<ID>:ch1" }
 
 // Aqara Wall Switch (2 Button)
-Switch AqaraWallSwitch1 <switch> { channel="mihome:ctrl_neutral2:<ID>:ch1" }
-Switch AqaraWallSwitch2 <switch> { channel="mihome:ctrl_neutral2:<ID>:ch2" }
+Switch AqaraWallSwitch1 <switch> { channel="mihome:ctrl_neutral2:<GwID>:<ID>:ch1" }
+Switch AqaraWallSwitch2 <switch> { channel="mihome:ctrl_neutral2:<GwID>:<ID>:ch2" }
 
 // Aqara Wall Switch (1 Button & without neutral line)
-Switch AqaraWallSwitch <switch> { channel="mihome:ctrl_ln1:<ID>:ch1" }
+Switch AqaraWallSwitch <switch> { channel="mihome:ctrl_ln1:<GwID>:<ID>:ch1" }
 
 // Aqara Wall Switch (2 Button & without neutral line)
-Switch AqaraWallSwitch1 <switch> { channel="mihome:ctrl_ln2:<ID>:ch1" }
-Switch AqaraWallSwitch2 <switch> { channel="mihome:ctrl_ln2:<ID>:ch2" }
+Switch AqaraWallSwitch1 <switch> { channel="mihome:ctrl_ln2:<GwID>:<ID>:ch1" }
+Switch AqaraWallSwitch2 <switch> { channel="mihome:ctrl_ln2:<GwID>:<ID>:ch2" }
 
 // Aqara Curtain Motor
-Rollershutter CurtainMotorControl <blinds> { channel="curtain:<ID>:curtainControl" }
+Rollershutter CurtainMotorControl <blinds> { channel="curtain:<GwID>:<ID>:curtainControl" }
 ```
 
 ### xiaomi.rules:
@@ -218,7 +214,7 @@ Rollershutter CurtainMotorControl <blinds> { channel="curtain:<ID>:curtainContro
 ```
 rule "Mijia & Aqara Wireless Switch"
 when
-    Channel "mihome:sensor_switch:<ID>:button" triggered
+    Channel "mihome:sensor_switch:<GwID>:<ID>:button" triggered
 then
     var actionName = receivedEvent.getEvent()
     switch(actionName) {
@@ -239,7 +235,7 @@ end
 
 rule "Mijia & Aqara Cube Controller"
 when
-    Channel 'mihome:sensor_cube:<ID>:action' triggered
+    Channel 'mihome:sensor_cube:<GwID>:<ID>:action' triggered
 then
     var actionName = receivedEvent.getEvent()
     switch(actionName) {
@@ -275,7 +271,7 @@ end
 
 rule "Aqara Smart Motion Sensor"
 when
-    Channel 'mihome:sensor_vibration:<ID>:action' triggered
+    Channel 'mihome:sensor_vibration:<GwID>:<ID>:action' triggered
 then
     var actionName = receivedEvent.getEvent()
     switch(actionName) {
@@ -316,35 +312,35 @@ end
 
 rule "Mijia & Aqara Door/Window Sensor - Window is open for longer than WindowSwitch_AlarmTimer"
 when
-    Channel "mihome:sensor_magnet:<ID>:isOpenAlarm" triggered ALARM
+    Channel "mihome:sensor_magnet:<GwID>:<ID>:isOpenAlarm" triggered ALARM
 then
     <ACTION>
 end
 
 rule "Aqara Wirelss Light Control (1 Button)"
 when
-    Channel "mihome:86sw1:<ID>:ch1" triggered SHORT_PRESSED
+    Channel "mihome:86sw1:<GwID>:<ID>:ch1" triggered SHORT_PRESSED
 then
     <ACTION>
 end
 
 rule "Aqara Wirelss Light Control (2 Button)"
 when
-    Channel "mihome:86sw2:<ID>:ch1" triggered SHORT_PRESSED
+    Channel "mihome:86sw2:<GwID>:<ID>:ch1" triggered SHORT_PRESSED
 then
     <ACTION>
 end
 
 rule "Aqara Wirelss Light Control (2 Button)"
 when
-    Channel "mihome:86sw2:<ID>:ch2" triggered SHORT_PRESSED
+    Channel "mihome:86sw2:<GwID>:<ID>:ch2" triggered SHORT_PRESSED
 then
     <ACTION>
 end
 
 rule "Aqara Wirelss Light Control (2 Button)"
 when
-    Channel "mihome:86sw2:<ID>:dual_ch" triggered SHORT_PRESSED
+    Channel "mihome:86sw2:<GwID>:<ID>:dual_ch" triggered SHORT_PRESSED
 then
     <ACTION>
 end
