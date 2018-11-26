@@ -27,7 +27,9 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 /**
- * The {@link WebSocketConnection} is responsible for socket communication with the vallox ventilation unit
+ * Establishes and keeps a websocket connection to the deCONZ software.
+ *
+ * The connection is closed by deCONZ now and then and needs to be re-established.
  *
  * @author David Graeff - Initial contribution
  */
@@ -101,6 +103,10 @@ public class WebSocketConnection {
 
     @OnWebSocketClose
     public void onClose(int statusCode, String reason) {
-        logger.debug("WebSocket Closed. Code: {}; Reason: {}", statusCode, reason);
+        connectionListener.connectionLost(reason);
+    }
+
+    public boolean isRunning() {
+        return client.isRunning();
     }
 }

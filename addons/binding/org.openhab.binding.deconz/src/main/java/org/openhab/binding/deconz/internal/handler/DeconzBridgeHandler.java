@@ -38,9 +38,9 @@ import com.google.gson.Gson;
  * The bridge Thing is responsible for requesting all available sensors and switches and propagate
  * them to the discovery service.
  *
- * It also performs the authorization process if necessary.
+ * It performs the authorization process if necessary.
  *
- * It also establishes a websocket connection to the deCONZ software.
+ * A websocket connection is established to the deCONZ software and kept alive.
  *
  * @author David Graeff - Initial contribution
  */
@@ -51,6 +51,9 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
     private final WebSocketConnection websocket = new WebSocketConnection(this);
     private DeconzBridgeConfig config = new DeconzBridgeConfig();
     private @Nullable ScheduledFuture<?> scheduledFuture;
+    private int websocketport = 0;
+
+    /** The poll frequency for the API Key verification */
     private static final int POLL_FREQUENCY_SEC = 10;
 
     public DeconzBridgeHandler(ThingDiscoveryService thingDiscoveryService, Bridge thing) {
@@ -63,9 +66,9 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
     }
 
     /**
-     * Stops the API request timer
+     * Stops the API request or websocket reconnect timer
      */
-    private void stopGetAPIKeyTimer() {
+    private void stopTimer() {
         ScheduledFuture<?> future = scheduledFuture;
         if (future != null) {
             future.cancel(false);
@@ -143,7 +146,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
                         "deCONZ software too old. No websocket support!");
                 return;
             }
-            // Hand sensors to discovery
+            // Hand over sensors to discovery service
             fullState.sensors
                     .forEach((sensorID, sensor) -> thingDiscoveryService.addDevice(sensor, sensorID, thing.getUID()));
 
@@ -157,17 +160,32 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
             editProperties.put("ipaddress", fullState.config.ipaddress);
             updateProperties(editProperties);
 
-            String host = config.host;
-            if (host.indexOf(':') > 0) {
-                host = host.substring(0, host.indexOf(':'));
-            }
-
-            websocket.start(host + ":" + String.valueOf(fullState.config.websocketport));
+            websocketport = fullState.config.websocketport;
+            startWebsocket();
         }).exceptionally(e -> {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
             logger.warn("Full state parsing failed", e);
             return null;
         });
+    }
+
+    /**
+     * Starts the websocket connection.
+     * {@link #requestFullState} need to be called first to obtain the websocket port.
+     */
+    private void startWebsocket() {
+        if (websocket.isRunning() || websocketport == 0) {
+            return;
+        }
+
+        String host = config.host;
+        if (host.indexOf(':') > 0) {
+            host = host.substring(0, host.indexOf(':'));
+        }
+        scheduledFuture = scheduler.scheduleWithFixedDelay(this::startWebsocket, POLL_FREQUENCY_SEC, POLL_FREQUENCY_SEC,
+                TimeUnit.SECONDS);
+
+        websocket.start(host + ":" + String.valueOf(websocketport));
     }
 
     /**
@@ -177,7 +195,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
      */
     private CompletableFuture<?> requestApiKey() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Requesting API Key");
-        stopGetAPIKeyTimer();
+        stopTimer();
         String url = BindingConstants.url(config.host, null, null, null);
         return AsyncHttpClient.postAsync(url, "{\"devicetype\":\"openHAB\"}", scheduler)
                 .thenAccept(this::parseAPIKeyResponse).exceptionally(e -> {
@@ -200,7 +218,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
 
     @Override
     public void dispose() {
-        stopGetAPIKeyTimer();
+        stopTimer();
         websocket.close();
     }
 
@@ -215,7 +233,14 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
 
     @Override
     public void connectionEstablished() {
+        stopTimer();
         updateStatus(ThingStatus.ONLINE);
+    }
+
+    @Override
+    public void connectionLost(String reason) {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
+        startWebsocket();
     }
 
     /**
@@ -231,4 +256,5 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
     public DeconzBridgeConfig getBridgeConfig() {
         return config;
     }
+
 }

@@ -8,11 +8,14 @@
  */
 package org.openhab.binding.deconz.internal.netutils;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Informs about the websocket connection.
  *
  * @author David Graeff - Initial contribution
  */
+@NonNullByDefault
 public interface WebSocketConnectionListener {
     /**
      * An error occurred during connection or while connecting.
@@ -25,4 +28,11 @@ public interface WebSocketConnectionListener {
      * Connection successfully established.
      */
     void connectionEstablished();
+
+    /**
+     * Connection lost. A reconnect timer has been started.
+     *
+     * @param reason A reason for the disconnection
+     */
+    void connectionLost(String reason);
 }
