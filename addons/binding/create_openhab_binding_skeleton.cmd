@@ -13,9 +13,9 @@ IF %ARGC% NEQ 2 (
 SET BindingVersion="2.4.0-SNAPSHOT"
 SET ArchetypeVersion="0.10.0-SNAPSHOT"
 
-SET BindingIdInCamelCase=%1
+SET BindingIdInCamelCase=%~1
 SET BindingIdInLowerCase=%BindingIdInCamelCase%
-SET Author=%2
+SET Author=%~2
 
 call :LoCase BindingIdInLowerCase
 
