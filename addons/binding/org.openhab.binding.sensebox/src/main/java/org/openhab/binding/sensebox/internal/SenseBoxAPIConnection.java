@@ -143,7 +143,6 @@ public class SenseBoxAPIConnection {
             logger.trace("=================================");
 
             result = parsedData;
-
         } catch (IOException e) {
             logger.debug("IO problems while fetching data: {} / {}", query, e.getMessage());
             result.setStatus(ThingStatus.OFFLINE);

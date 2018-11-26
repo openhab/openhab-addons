@@ -8,8 +8,12 @@
  */
 package org.openhab.binding.sensebox.internal.handler;
 
+import static org.eclipse.smarthome.core.library.unit.MetricPrefix.CENTI;
+import static org.eclipse.smarthome.core.library.unit.MetricPrefix.GIGA;
+import static org.eclipse.smarthome.core.library.unit.MetricPrefix.HECTO;
 import static org.openhab.binding.sensebox.internal.SenseBoxBindingConstants.*;
 
+import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -18,6 +22,9 @@ import org.eclipse.smarthome.core.cache.ExpiringCacheMap;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.PointType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -42,6 +49,7 @@ import org.slf4j.LoggerFactory;
  * @author Hakan Tandogan - Initial contribution
  * @author Hakan Tandogan - Ignore incorrect data for brightness readings
  * @author Hakan Tandogan - Changed use of caching utils to ESH ExpiringCacheMap
+ * @author Hakan Tandogan - Unit of Measurement support
  */
 public class SenseBoxHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(SenseBoxHandler.class);
@@ -243,7 +251,43 @@ public class SenseBoxHandler extends BaseThingHandler {
         if (data != null) {
             if (data.getLastMeasurement() != null) {
                 if (StringUtils.isNotEmpty(data.getLastMeasurement().getValue())) {
-                    result = new DecimalType(data.getLastMeasurement().getValue());
+                    logger.debug("About to determine quantity for {} / {}", data.getLastMeasurement().getValue(), data.getUnit());
+                    BigDecimal bd = new BigDecimal(data.getLastMeasurement().getValue());
+
+                    switch (data.getUnit()) {
+                        case "%":
+                            result = new QuantityType<>(bd, SmartHomeUnits.ONE);
+                            break;
+                        case "°C":
+                            result = new QuantityType<>(bd, SIUnits.CELSIUS);
+                            break;
+                        case "Pa":
+                            result = new QuantityType<>(bd, SIUnits.PASCAL);
+                            break;
+                        case "hPa":
+                            result = new QuantityType<>(bd, HECTO(SIUnits.PASCAL));
+                            break;
+                        case "lx":
+                            result = new QuantityType<>(bd, SmartHomeUnits.LUX);
+                            break;
+                        case "µg/m³":
+                            // TODO replace this with the proper unit as soon as PR #6563 is available for use
+                            // result = new QuantityType<>(bd, SmartHomeUnits.MICROGRAM_PER_CUBICMETRE);
+                            // result = new QuantityType<>(bd, GIGA(SmartHomeUnits.KILOGRAM_PER_CUBICMETRE));
+                            result = new QuantityType<>(bd, SmartHomeUnits.KILOGRAM_PER_CUBICMETRE);
+                            break;
+                        case "μW/cm²":
+                            // TODO replace this with the proper unit as soon as PR #6575 is available for use
+                            // result = new QuantityType<>(bd, SmartHomeUnits.MICROGRAM_PER_CUBICMETRE);
+                            // result = new QuantityType<>(bd, CENTI(SmartHomeUnits.IRRADIANCE));
+                            result = new QuantityType<>(bd, SmartHomeUnits.IRRADIANCE);
+                            break;
+                        default:
+                            logger.info("    Could not determine unit for '{}', using default", data.getUnit());
+                            result = new QuantityType<>(bd, SmartHomeUnits.ONE);
+                    }
+
+                    logger.debug("    State: '{}'", result);
                 }
             }
         }
