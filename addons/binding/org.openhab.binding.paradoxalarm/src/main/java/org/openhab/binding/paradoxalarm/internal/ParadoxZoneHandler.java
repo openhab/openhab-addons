@@ -11,7 +11,6 @@ package org.openhab.binding.paradoxalarm.internal;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.paradoxalarm.internal.model.ParadoxPanel;
@@ -35,12 +34,13 @@ public class ParadoxZoneHandler extends EntityBaseHandler {
     @Override
     protected void updateEntity() {
         List<Zone> zones = ParadoxPanel.getInstance().getZones();
-        Zone zone = zones.get(config.getId());
+        int index = calculateEntityIndex();
+        Zone zone = zones.get(index);
         if (zone != null) {
             updateState("label", new StringType(zone.getLabel()));
-            updateState("isOpened", OnOffType.from(zone.getZoneState().isOpened()));
-            updateState("isTampered", OnOffType.from(zone.getZoneState().isTampered()));
-            updateState("hasLowBattery", OnOffType.from(zone.getZoneState().hasLowBattery()));
+            updateState("isOpened", OpenClosedType.from(zone.getZoneState().isOpened()));
+            updateState("isTampered", OpenClosedType.from(zone.getZoneState().isTampered()));
+            updateState("hasLowBattery", OpenClosedType.from(zone.getZoneState().hasLowBattery()));
         }
     }
 }

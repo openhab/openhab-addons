@@ -37,6 +37,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ParadoxPanelHandler extends BaseThingHandler {
 
+    private static final int UPDATE_THING_REFRESH_INTERVAL_SEC = 60;
+
     private static final int REINITIALIZE_INTERVAL_HRS = 6;
 
     private static final long INITIAL_DELAY = 0;
@@ -48,6 +50,9 @@ public class ParadoxPanelHandler extends BaseThingHandler {
 
     @Nullable
     ScheduledFuture<?> reinitializeParadoxPanelSchedule;
+
+    @Nullable
+    ScheduledFuture<?> updateThingSchedule;
 
     @Nullable
     IParadoxCommunicator communicator;
@@ -64,7 +69,6 @@ public class ParadoxPanelHandler extends BaseThingHandler {
         if (ParadoxAlarmBindingConstants.PANEL_COMMUNICATION_THING_TYPE_UID.equals(channelUID.getId())) {
             if (command instanceof RefreshType) {
                 refreshData();
-                // updateThing();
             }
         }
     }
@@ -89,6 +93,7 @@ public class ParadoxPanelHandler extends BaseThingHandler {
     public void dispose() {
         cancelSchedule(refreshMemoryMapSchedule);
         cancelSchedule(reinitializeParadoxPanelSchedule);
+        cancelSchedule(updateThingSchedule);
         super.dispose();
     }
 
@@ -116,6 +121,7 @@ public class ParadoxPanelHandler extends BaseThingHandler {
 
     private void setupSchedule() {
         scheduleRefreshRuntimeInfo();
+        scheduleUpdateThing();
         // scheduleReinitialize();
     }
 
@@ -136,6 +142,14 @@ public class ParadoxPanelHandler extends BaseThingHandler {
         refreshMemoryMapSchedule = scheduler.scheduleWithFixedDelay(() -> {
             refreshData();
         }, INITIAL_DELAY, config.getRefresh(), TimeUnit.SECONDS);
+    }
+
+    private void scheduleUpdateThing() {
+        logger.debug("Scheduling cache update. Refresh interval: " + config.getRefresh() + "s.");
+        updateThingSchedule = scheduler.scheduleWithFixedDelay(() -> {
+            updateThing();
+        }, INITIAL_DELAY, UPDATE_THING_REFRESH_INTERVAL_SEC, TimeUnit.SECONDS);
+
     }
 
     private void refreshData() {

@@ -107,4 +107,11 @@ public abstract class EntityBaseHandler extends BaseThingHandler {
 
     }
 
+    protected int calculateEntityIndex() {
+        int index = config.getId() - 1;
+        if (index < 0) {
+            index = 0;
+        }
+        return index;
+    }
 }

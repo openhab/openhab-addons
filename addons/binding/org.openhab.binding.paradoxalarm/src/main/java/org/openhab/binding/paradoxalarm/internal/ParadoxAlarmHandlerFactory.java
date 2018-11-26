@@ -38,7 +38,7 @@ public class ParadoxAlarmHandlerFactory extends BaseThingHandlerFactory {
     private static Logger logger = LoggerFactory.getLogger(ParadoxAlarmHandlerFactory.class);
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
-            Arrays.asList(PANEL_COMMUNICATION_THING_TYPE_UID, PARTITION_THING_TYPE_UID));
+            Arrays.asList(PANEL_COMMUNICATION_THING_TYPE_UID, PARTITION_THING_TYPE_UID, ZONE_THING_TYPE_UID));
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -58,8 +58,9 @@ public class ParadoxAlarmHandlerFactory extends BaseThingHandlerFactory {
         } else if (ZONE_THING_TYPE_UID.equals(thingTypeUID)) {
             logger.debug("createHandler(): ThingHandler created for {}", thingTypeUID);
             return new ParadoxZoneHandler(thing);
+        } else {
+            logger.error("Handler implementation not found for Thing: " + thing.getLabel());
         }
-
         return null;
     }
 }

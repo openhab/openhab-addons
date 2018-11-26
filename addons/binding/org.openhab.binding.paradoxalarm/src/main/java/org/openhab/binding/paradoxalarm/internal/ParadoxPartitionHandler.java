@@ -34,10 +34,7 @@ public class ParadoxPartitionHandler extends EntityBaseHandler {
     @Override
     protected void updateEntity() {
         List<Partition> partitions = ParadoxPanel.getInstance().getPartitions();
-        int index = config.getId() - 1;
-        if (index < 0) {
-            index = 0;
-        }
+        int index = calculateEntityIndex();
         Partition partition = partitions.get(index);
         if (partition != null) {
             updateState("label", new StringType(partition.getLabel()));

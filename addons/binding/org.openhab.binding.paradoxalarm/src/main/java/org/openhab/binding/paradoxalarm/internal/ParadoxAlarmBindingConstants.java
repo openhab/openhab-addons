@@ -22,11 +22,17 @@ public class ParadoxAlarmBindingConstants {
 
     private static final String BINDING_ID = "paradoxalarm";
 
+    private static final String PARADOX_COMMUNICATION_THING_TYPE_ID = "communication";
+
+    private static final String PARTITION_THING_TYPE_ID = "partition";
+
+    private static final String ZONE_THING_TYPE_ID = "zone";
+
     // List of all Thing Type UIDs
     public static final ThingTypeUID PANEL_COMMUNICATION_THING_TYPE_UID = new ThingTypeUID(BINDING_ID,
-            "paradoxCommunication");
-    public static final ThingTypeUID PARTITION_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "paradoxPartition");
-    public static final ThingTypeUID ZONE_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "paradoxZone");
+            PARADOX_COMMUNICATION_THING_TYPE_ID);
+    public static final ThingTypeUID PARTITION_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, PARTITION_THING_TYPE_ID);
+    public static final ThingTypeUID ZONE_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, ZONE_THING_TYPE_ID);
 
     // List of all Channel ids
     public static final String STATE = "state";
