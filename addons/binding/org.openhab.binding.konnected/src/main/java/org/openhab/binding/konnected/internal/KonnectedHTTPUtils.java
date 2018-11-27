@@ -92,7 +92,6 @@ public class KonnectedHTTPUtils {
      * @param payload    the json payload you want to send as part of the request, may be null.
      * @param retry      the number of retries before throwing the IOexpcetion back to the handler
      */
-
     public synchronized String doGet(String urlAddress, String payload, int retryCount)
             throws KonnectedHttpRetryExceeded {
         String response = null;
