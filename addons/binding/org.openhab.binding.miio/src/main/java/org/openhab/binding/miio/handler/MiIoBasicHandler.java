@@ -103,7 +103,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command == RefreshType.REFRESH) {
             logger.debug("Refreshing {}", channelUID);
-            // updateData();
+            updateData();
             return;
         }
         if (channelUID.getId().equals(CHANNEL_COMMAND)) {
@@ -409,8 +409,9 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                         updateState(basicChannel.getChannel(), hsb);
                     }
                 } catch (Exception e) {
-                    logger.debug("Error updating propery {} with '{}' : {}", basicChannel.getChannel(),
-                            val.getAsString(), e.getMessage());
+                    logger.debug("Error updating {} propery {} with '{}' : {}", getThing().getUID().getAsString(),
+                            basicChannel.getChannel(), val.getAsString(), e.getMessage());
+                    logger.trace("Details:",e);
                 }
             } else {
                 logger.debug("Channel not found for {}", para.get(i).getAsString());

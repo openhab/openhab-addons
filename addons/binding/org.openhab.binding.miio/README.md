@@ -7,7 +7,7 @@ This is a set of wifi devices from Xiaomi that are part of the Mi Ecosystem whic
 
 ## Supported Things
 
-The following things are available:
+The following things types are available:
 
 | ThingType        | Description                                                                                                              |
 |------------------|--------------------------------------------------------------------------------------------------------------------------|
@@ -18,104 +18,108 @@ The following things are available:
 
 ## Mi IO Devices
 
-| Device                     | ThingType        | Device Model           | Supported | Remark     |
-|----------------------------|------------------|------------------------|-----------|------------|
-| AUX Air Conditioner        | miio:unsupported | aux.aircondition.v1    | No        |            |
-| Idelan Air Conditioner     | miio:unsupported | idelan.aircondition.v1 | No        |            |
-| Midea Air Conditioner v2   | miio:unsupported | midea.aircondition.v1  | No        |            |
-| Midea Air Conditioner v2   | miio:unsupported | midea.aircondition.v2  | No        |            |
-| Midea Air Conditioner xa1  | miio:unsupported | midea.aircondition.xa1 | No        |            |
-| Mi Air Monitor v1          | miio:basic       | zhimi.airmonitor.v1    | Yes       |            |
-| Mi Air Humidifier          | miio:basic       | zhimi.humidifier.v1    | Yes       |            |
-| Mi Air Humidifier          | miio:basic       | zhimi.humidifier.ca1   | Yes       |            |
-| Mi Air Purifier v1         | miio:basic       | zhimi.airpurifier.v1   | Yes       |            |
-| Mi Air Purifier v2         | miio:basic       | zhimi.airpurifier.v2   | Yes       |            |
-| Mi Air Purifier v3         | miio:basic       | zhimi.airpurifier.v3   | Yes       |            |
-| Mi Air Purifier v5         | miio:basic       | zhimi.airpurifier.v5   | Yes       |            |
-| Mi Air Purifier Pro v6     | miio:basic       | zhimi.airpurifier.v6   | Yes       |            |
-| Mi Air Purifier Pro v7     | miio:basic       | zhimi.airpurifier.v7   | Yes       |            |
-| Mi Air Purifier 2 (mini)   | miio:basic       | zhimi.airpurifier.m1   | Yes       |            |
-| Mi Air Purifier (mini)     | miio:basic       | zhimi.airpurifier.m2   | Yes       |            |
-| Mi Air Purifier MS1        | miio:basic       | zhimi.airpurifier.ma1  | Yes       |            |
-| Mi Air Purifier MS2        | miio:basic       | zhimi.airpurifier.ma2  | Yes       |            |
-| Mi Air Purifier Super      | miio:basic       | zhimi.airpurifier.sa1  | Yes       |            |
-| Mi Air Purifier Super 2    | miio:basic       | zhimi.airpurifier.sa2  | Yes       |            |
-| Mi Remote v2               | miio:unsupported | chuangmi.ir.v2         | No        |            |
-| MiJia Rice Cooker          | miio:unsupported | chunmi.cooker.normal1  | No        |            |
-| MiJia Rice Cooker          | miio:unsupported | chunmi.cooker.normal2  | No        |            |
-| MiJia Rice Cooker          | miio:unsupported | hunmi.cooker.normal3   | No        |            |
-| MiJia Rice Cooker          | miio:unsupported | chunmi.cooker.normal4  | No        |            |
-| MiJia Heating Pressure Rice Cooker | miio:unsupported | chunmi.cooker.press1   | No        |            |
-| MiJia Heating Pressure Rice Cooker | miio:unsupported | chunmi.cooker.press2   | No        |            |
-| Mi Smart Fan               | miio:basic       | zhimi.fan.v1           | Yes       |            |
-| Mi Smart Fan               | miio:basic       | zhimi.fan.v2           | Yes       |            |
-| Mi Smart Pedestal Fan      | miio:basic       | zhimi.fan.v3           | Yes       |            |
-| Xiaomi Mi Smart Pedestal Fan | miio:basic       | zhimi.fan.sa1          | Yes       |            |
-| Xiaomi Mi Smart Pedestal Fan | miio:basic       | zhimi.fan.za1          | Yes       |            |
-| Mi Smart Home Gateway v1   | miio:unsupported | lumi.gateway.v1        | No        |            |
-| Mi Smart Home Gateway v2   | miio:unsupported | lumi.gateway.v2        | No        |            |
-| Mi Smart Home Gateway v3   | miio:unsupported | lumi.gateway.v3        | No        |            |
-| Mi Humdifier               | miio:basic       | zhimi.humidifier.v1    | Yes       |            |
-| Light Control (Wall Switch) | miio:unsupported | lumi.ctrl_neutral1.v1  | No        |            |
-| Light Control (Wall Switch) | miio:unsupported | lumi.ctrl_neutral2.v1  | No        |            |
-| Xiaomi Philips Eyecare Smart Lamp 2 | miio:basic       | philips.light.sread1   | Yes       |            |
-| Xiaomi Philips LED Ceiling Lamp | miio:basic       | philips.light.ceiling  | Yes       |            |
-| Xiaomi Philips LED Ceiling Lamp | miio:basic       | philips.light.zyceiling | Yes       |            |
-| Xiaomi Philips Bulb        | miio:basic       | philips.light.bulb     | Yes       |            |
-| PHILIPS Zhirui Smart LED Bulb E14 Candle Lamp | miio:basic       | philips.light.candle   | Yes       |            |
-| Xiaomi Philips Downlight   | miio:basic       | philips.light.downlight | Yes       |            |
-| Xiaomi Philips ZhiRui bedside lamp | miio:basic       | philips.light.moonlight | Yes       |            |
-| philips.light.candle2      | miio:basic       | philips.light.candle2  | Yes       |            |
-| philips.light.mono1        | miio:basic       | philips.light.mono1    | Yes       |            |
-| philips.light.virtual      | miio:basic       | philips.light.virtual  | Yes       |            |
-| philips.light.zysread      | miio:basic       | philips.light.zysread  | Yes       |            |
-| philips.light.zystrip      | miio:basic       | philips.light.zystrip  | Yes       |            |
-| Mi Power-plug              | miio:basic       | chuangmi.plug.m1       | Yes       |            |
-| Mi Power-plug v1           | miio:basic       | chuangmi.plug.v1       | Yes       |            |
-| Mi Power-plug v2           | miio:basic       | chuangmi.plug.v2       | Yes       |            |
-| Mi Power-plug v3           | miio:basic       | chuangmi.plug.v3       | Yes       |            |
-| Qing Mi Smart Power Strip v1 | miio:basic       | qmi.powerstrip.v1      | Yes       |            |
-| Mi Power-strip v2          | miio:basic       | zimi.powerstrip.v2     | Yes       |            |
-| Mi Toothbrush              | miio:unsupported | soocare.toothbrush.x3  | No        |            |
-| Mi Robot Vacuum            | miio:vacuum      | rockrobo.vacuum.v1     | Yes       |            |
-| Mi Robot Vacuum v2         | miio:vacuum      | roborock.vacuum.s5     | Yes       |            |
-| Rockrobo Xiaowa Vacuum v2  | miio:unsupported | roborock.vacuum.e2     | No        |            |
-| roborock.vacuum.c1         | miio:unsupported | roborock.vacuum.c1     | No        |            |
-| Rockrobo Xiaowa Sweeper v2 | miio:unsupported | roborock.sweeper.e2v2  | No        |            |
-| Rockrobo Xiaowa Sweeper v3 | miio:unsupported | roborock.sweeper.e2v3  | No        |            |
-| Mi Water Purifier v2       | miio:basic       | yunmi.waterpuri.v2     | Yes       |            |
-| Mi Water Purifier lx2      | miio:basic       | yunmi.waterpuri.lx2    | Yes       |            |
-| Mi Water Purifier lx3      | miio:basic       | yunmi.waterpuri.lx3    | Yes       |            |
-| Mi Water Purifier lx4      | miio:basic       | yunmi.waterpuri.lx4    | Yes       |            |
-| Mi Water Purifier v2       | miio:basic       | yunmi.waterpurifier.v2 | Yes       |            |
-| Mi Water Purifier v3       | miio:basic       | yunmi.waterpurifier.v3 | Yes       |            |
-| Mi Water Purifier v4       | miio:basic       | yunmi.waterpurifier.v4 | Yes       |            |
-| Xiaomi Wifi Extender       | miio:unsupported | xiaomi.repeater.v2     | No        |            |
-| Mi Internet Speaker        | miio:unsupported | xiaomi.wifispeaker.v1  | No        |            |
-| Yeelight Lamp              | miio:basic       | yeelink.light.bslamp1  | Yes       |            |
-| Yeelight Lamp              | miio:basic       | yeelink.light.bslamp2  | Yes       |            |
-| Yeelight LED Ceiling Lamp  | miio:basic       | yeelink.light.ceiling1 | Yes       |            |
-| Yeelight LED Ceiling Lamp v2 | miio:basic       | yeelink.light.ceiling2 | Yes       |            |
-| Yeelight LED Ceiling Lamp v3 | miio:basic       | yeelink.light.ceiling3 | Yes       |            |
-| Yeelight LED Ceiling Lamp v4 (JIAOYUE 650 RGB) | miio:basic       | yeelink.light.ceiling4 | Yes       |            |
-| Yeelight LED Ceiling Lamp v4 | miio:basic       | yeelink.light.ceiling4.ambi | Yes       |            |
-| Yeelight LED Ceiling Lamp v5 | miio:basic       | yeelink.light.ceiling5 | Yes       |            |
-| Yeelight LED Ceiling Lamp v6 | miio:basic       | yeelink.light.ceiling6 | Yes       |            |
-| Yeelight LED Ceiling Lamp v7 | miio:basic       | yeelink.light.ceiling7 | Yes       |            |
-| Yeelight LED Ceiling Lamp v8 | miio:basic       | yeelink.light.ceiling8 | Yes       |            |
-| Yeelight ct2               | miio:basic       | yeelink.light.ct2      | Yes       |            |
-| Yeelight White Bulb        | miio:basic       | yeelink.light.mono1    | Yes       |            |
-| Yeelight White Bulb v2     | miio:basic       | yeelink.light.mono2    | Yes       |            |
-| Yeelight Wifi Speaker      | miio:unsupported | yeelink.wifispeaker.v1 | No        |            |
-| Yeelight                   | miio:basic       | yeelink.light.lamp1    | Yes       |            |
-| Yeelight                   | miio:basic       | yeelink.light.lamp2    | Yes       |            |
-| Yeelight                   | miio:basic       | yeelink.light.lamp3    | Yes       |            |
-| Yeelight Strip             | miio:basic       | yeelink.light.strip1   | Yes       |            |
-| Yeelight Strip             | miio:basic       | yeelink.light.strip2   | Yes       |            |
-| Yeelight                   | miio:basic       | yeelink.light.virtual  | Yes       |            |
-| Yeelight Color Bulb        | miio:basic       | yeelink.light.color1   | Yes       |            |
-| Yeelight Color Bulb YLDP06YL 10W | miio:basic       | yeelink.light.color2   | Yes       |            |
-| Yeelight Color Bulb        | miio:basic       | yeelink.light.color3   | Yes       |            |
+| Device                       | ThingType        | Device Model           | Supported | Remark     |
+|------------------------------|------------------|------------------------|-----------|------------|
+| AUX Air Conditioner          | miio:unsupported | [aux.aircondition.v1](#aux-aircondition-v1) | No        |           |
+| Idelan Air Conditioner       | miio:unsupported | [idelan.aircondition.v1](#idelan-aircondition-v1) | No        |           |
+| Midea Air Conditioner v2     | miio:unsupported | [midea.aircondition.v1](#midea-aircondition-v1) | No        |           |
+| Midea Air Conditioner v2     | miio:unsupported | [midea.aircondition.v2](#midea-aircondition-v2) | No        |           |
+| Midea Air Conditioner xa1    | miio:unsupported | [midea.aircondition.xa1](#midea-aircondition-xa1) | No        |           |
+| Mi Air Monitor v1            | miio:basic       | [zhimi.airmonitor.v1](#zhimi-airmonitor-v1) | Yes       |           |
+| Mi Air Humidifier            | miio:basic       | [zhimi.humidifier.v1](#zhimi-humidifier-v1) | Yes       |           |
+| Mi Air Humidifier            | miio:basic       | [zhimi.humidifier.ca1](#zhimi-humidifier-ca1) | Yes       |           |
+| Mi Air Purifier v1           | miio:basic       | [zhimi.airpurifier.v1](#zhimi-airpurifier-v1) | Yes       |           |
+| Mi Air Purifier v2           | miio:basic       | [zhimi.airpurifier.v2](#zhimi-airpurifier-v2) | Yes       |           |
+| Mi Air Purifier v3           | miio:basic       | [zhimi.airpurifier.v3](#zhimi-airpurifier-v3) | Yes       |           |
+| Mi Air Purifier v5           | miio:basic       | [zhimi.airpurifier.v5](#zhimi-airpurifier-v5) | Yes       |           |
+| Mi Air Purifier Pro v6       | miio:basic       | [zhimi.airpurifier.v6](#zhimi-airpurifier-v6) | Yes       |           |
+| Mi Air Purifier Pro v7       | miio:basic       | [zhimi.airpurifier.v7](#zhimi-airpurifier-v7) | Yes       |           |
+| Mi Air Purifier 2 (mini)     | miio:basic       | [zhimi.airpurifier.m1](#zhimi-airpurifier-m1) | Yes       |           |
+| Mi Air Purifier (mini)       | miio:basic       | [zhimi.airpurifier.m2](#zhimi-airpurifier-m2) | Yes       |           |
+| Mi Air Purifier MS1          | miio:basic       | [zhimi.airpurifier.ma1](#zhimi-airpurifier-ma1) | Yes       |           |
+| Mi Air Purifier MS2          | miio:basic       | [zhimi.airpurifier.ma2](#zhimi-airpurifier-ma2) | Yes       |           |
+| Mi Air Purifier Super        | miio:basic       | [zhimi.airpurifier.sa1](#zhimi-airpurifier-sa1) | Yes       |           |
+| Mi Air Purifier Super 2      | miio:basic       | [zhimi.airpurifier.sa2](#zhimi-airpurifier-sa2) | Yes       |           |
+| Mi Air Purifier mb1          | miio:unsupported | [zhimi.airpurifier.mb1](#zhimi-airpurifier-mb1) | No        |           |
+| Mi Air Purifier mc1          | miio:unsupported | [zhimi.airpurifier.mc1](#zhimi-airpurifier-mc1) | No        |           |
+| Mi Air Purifier virtual      | miio:unsupported | [zhimi.airpurifier.virtual](#zhimi-airpurifier-virtual) | No        |           |
+| Mi Air Purifier vtl m1       | miio:unsupported | [zhimi.airpurifier.vtl_m1](#zhimi-airpurifier-vtl_m1) | No        |           |
+| Mi Remote v2                 | miio:unsupported | [chuangmi.ir.v2](#chuangmi-ir-v2) | No        |           |
+| MiJia Rice Cooker            | miio:unsupported | [chunmi.cooker.normal1](#chunmi-cooker-normal1) | No        |           |
+| MiJia Rice Cooker            | miio:unsupported | [chunmi.cooker.normal2](#chunmi-cooker-normal2) | No        |           |
+| MiJia Rice Cooker            | miio:unsupported | [hunmi.cooker.normal3](#hunmi-cooker-normal3) | No        |           |
+| MiJia Rice Cooker            | miio:unsupported | [chunmi.cooker.normal4](#chunmi-cooker-normal4) | No        |           |
+| MiJia Heating Pressure Rice Cooker | miio:unsupported | [chunmi.cooker.press1](#chunmi-cooker-press1) | No        |           |
+| MiJia Heating Pressure Rice Cooker | miio:unsupported | [chunmi.cooker.press2](#chunmi-cooker-press2) | No        |           |
+| Mi Smart Fan                 | miio:basic       | [zhimi.fan.v1](#zhimi-fan-v1) | Yes       |           |
+| Mi Smart Fan                 | miio:basic       | [zhimi.fan.v2](#zhimi-fan-v2) | Yes       |           |
+| Mi Smart Pedestal Fan        | miio:basic       | [zhimi.fan.v3](#zhimi-fan-v3) | Yes       |           |
+| Xiaomi Mi Smart Pedestal Fan | miio:basic       | [zhimi.fan.sa1](#zhimi-fan-sa1) | Yes       |           |
+| Xiaomi Mi Smart Pedestal Fan | miio:basic       | [zhimi.fan.za1](#zhimi-fan-za1) | Yes       |           |
+| Mi Smart Home Gateway v1     | miio:unsupported | [lumi.gateway.v1](#lumi-gateway-v1) | No        |           |
+| Mi Smart Home Gateway v2     | miio:unsupported | [lumi.gateway.v2](#lumi-gateway-v2) | No        |           |
+| Mi Smart Home Gateway v3     | miio:unsupported | [lumi.gateway.v3](#lumi-gateway-v3) | No        |           |
+| Mi Humdifier                 | miio:basic       | [zhimi.humidifier.v1](#zhimi-humidifier-v1) | Yes       |           |
+| Light Control (Wall Switch)  | miio:unsupported | [lumi.ctrl_neutral1.v1](#lumi-ctrl_neutral1-v1) | No        |           |
+| Light Control (Wall Switch)  | miio:unsupported | [lumi.ctrl_neutral2.v1](#lumi-ctrl_neutral2-v1) | No        |           |
+| Xiaomi Philips Eyecare Smart Lamp 2 | miio:basic       | [philips.light.sread1](#philips-light-sread1) | Yes       |           |
+| Xiaomi Philips LED Ceiling Lamp | miio:basic       | [philips.light.ceiling](#philips-light-ceiling) | Yes       |           |
+| Xiaomi Philips LED Ceiling Lamp | miio:basic       | [philips.light.zyceiling](#philips-light-zyceiling) | Yes       |           |
+| Xiaomi Philips Bulb          | miio:basic       | [philips.light.bulb](#philips-light-bulb) | Yes       |           |
+| PHILIPS Zhirui Smart LED Bulb E14 Candle Lamp | miio:basic       | [philips.light.candle](#philips-light-candle) | Yes       |           |
+| Xiaomi Philips Downlight     | miio:basic       | [philips.light.downlight](#philips-light-downlight) | Yes       |           |
+| Xiaomi Philips ZhiRui bedside lamp | miio:basic       | [philips.light.moonlight](#philips-light-moonlight) | Yes       |           |
+| Xiaomi PHILIPS Zhirui Smart LED Bulb E14 Candle Lamp White Crystal | miio:basic       | [philips.light.candle2](#philips-light-candle2) | Yes       |           |
+| philips.light.mono1          | miio:basic       | [philips.light.mono1](#philips-light-mono1) | Yes       |           |
+| philips.light.virtual        | miio:basic       | [philips.light.virtual](#philips-light-virtual) | Yes       |           |
+| philips.light.zysread        | miio:basic       | [philips.light.zysread](#philips-light-zysread) | Yes       |           |
+| philips.light.zystrip        | miio:basic       | [philips.light.zystrip](#philips-light-zystrip) | Yes       |           |
+| Mi Power-plug                | miio:basic       | [chuangmi.plug.m1](#chuangmi-plug-m1) | Yes       |           |
+| Mi Power-plug v1             | miio:basic       | [chuangmi.plug.v1](#chuangmi-plug-v1) | Yes       |           |
+| Mi Power-plug v2             | miio:basic       | [chuangmi.plug.v2](#chuangmi-plug-v2) | Yes       |           |
+| Mi Power-plug v3             | miio:basic       | [chuangmi.plug.v3](#chuangmi-plug-v3) | Yes       |           |
+| Qing Mi Smart Power Strip v1 | miio:basic       | [qmi.powerstrip.v1](#qmi-powerstrip-v1) | Yes       |           |
+| Mi Power-strip v2            | miio:basic       | [zimi.powerstrip.v2](#zimi-powerstrip-v2) | Yes       |           |
+| Mi Toothbrush                | miio:unsupported | [soocare.toothbrush.x3](#soocare-toothbrush-x3) | No        |           |
+| Mi Robot Vacuum              | miio:vacuum      | [rockrobo.vacuum.v1](#rockrobo-vacuum-v1) | Yes       |           |
+| Mi Robot Vacuum v2           | miio:vacuum      | [roborock.vacuum.s5](#roborock-vacuum-s5) | Yes       |           |
+| Rockrobo Xiaowa Vacuum v2    | miio:unsupported | [roborock.vacuum.e2](#roborock-vacuum-e2) | No        |           |
+| roborock.vacuum.c1           | miio:unsupported | [roborock.vacuum.c1](#roborock-vacuum-c1) | No        |           |
+| Rockrobo Xiaowa Sweeper v2   | miio:unsupported | [roborock.sweeper.e2v2](#roborock-sweeper-e2v2) | No        |           |
+| Rockrobo Xiaowa Sweeper v3   | miio:unsupported | [roborock.sweeper.e2v3](#roborock-sweeper-e2v3) | No        |           |
+| Mi Water Purifier v2         | miio:basic       | [yunmi.waterpuri.v2](#yunmi-waterpuri-v2) | Yes       |           |
+| Mi Water Purifier lx2        | miio:basic       | [yunmi.waterpuri.lx2](#yunmi-waterpuri-lx2) | Yes       |           |
+| Mi Water Purifier lx3        | miio:basic       | [yunmi.waterpuri.lx3](#yunmi-waterpuri-lx3) | Yes       |           |
+| Mi Water Purifier lx4        | miio:basic       | [yunmi.waterpuri.lx4](#yunmi-waterpuri-lx4) | Yes       |           |
+| Mi Water Purifier v2         | miio:basic       | [yunmi.waterpurifier.v2](#yunmi-waterpurifier-v2) | Yes       |           |
+| Mi Water Purifier v3         | miio:basic       | [yunmi.waterpurifier.v3](#yunmi-waterpurifier-v3) | Yes       |           |
+| Mi Water Purifier v4         | miio:basic       | [yunmi.waterpurifier.v4](#yunmi-waterpurifier-v4) | Yes       |           |
+| Xiaomi Wifi Extender         | miio:unsupported | [xiaomi.repeater.v2](#xiaomi-repeater-v2) | No        |           |
+| Mi Internet Speaker          | miio:unsupported | [xiaomi.wifispeaker.v1](#xiaomi-wifispeaker-v1) | No        |           |
+| Yeelight Lamp                | miio:basic       | [yeelink.light.bslamp1](#yeelink-light-bslamp1) | Yes       |           |
+| Yeelight Lamp                | miio:basic       | [yeelink.light.bslamp2](#yeelink-light-bslamp2) | Yes       |           |
+| Yeelight LED Ceiling Lamp    | miio:basic       | [yeelink.light.ceiling1](#yeelink-light-ceiling1) | Yes       |           |
+| Yeelight LED Ceiling Lamp v2 | miio:basic       | [yeelink.light.ceiling2](#yeelink-light-ceiling2) | Yes       |           |
+| Yeelight LED Ceiling Lamp v3 | miio:basic       | [yeelink.light.ceiling3](#yeelink-light-ceiling3) | Yes       |           |
+| Yeelight LED Ceiling Lamp v4 (JIAOYUE 650 RGB) | miio:basic       | [yeelink.light.ceiling4](#yeelink-light-ceiling4) | Yes       |           |
+| Yeelight LED Ceiling Lamp v4 | miio:basic       | [yeelink.light.ceiling4.ambi](#yeelink-light-ceiling4-ambi) | Yes       |           |
+| Yeelight LED Ceiling Lamp v5 | miio:basic       | [yeelink.light.ceiling5](#yeelink-light-ceiling5) | Yes       |           |
+| Yeelight LED Ceiling Lamp v6 | miio:basic       | [yeelink.light.ceiling6](#yeelink-light-ceiling6) | Yes       |           |
+| Yeelight LED Ceiling Lamp v7 | miio:basic       | [yeelink.light.ceiling7](#yeelink-light-ceiling7) | Yes       |           |
+| Yeelight LED Ceiling Lamp v8 | miio:basic       | [yeelink.light.ceiling8](#yeelink-light-ceiling8) | Yes       |           |
+| Yeelight ct2                 | miio:basic       | [yeelink.light.ct2](#yeelink-light-ct2) | Yes       |           |
+| Yeelight White Bulb          | miio:basic       | [yeelink.light.mono1](#yeelink-light-mono1) | Yes       |           |
+| Yeelight White Bulb v2       | miio:basic       | [yeelink.light.mono2](#yeelink-light-mono2) | Yes       |           |
+| Yeelight Wifi Speaker        | miio:unsupported | [yeelink.wifispeaker.v1](#yeelink-wifispeaker-v1) | No        |           |
+| Yeelight                     | miio:basic       | [yeelink.light.lamp1](#yeelink-light-lamp1) | Yes       |           |
+| Yeelight                     | miio:basic       | [yeelink.light.lamp2](#yeelink-light-lamp2) | Yes       |           |
+| Yeelight                     | miio:basic       | [yeelink.light.lamp3](#yeelink-light-lamp3) | Yes       |           |
+| Yeelight Strip               | miio:basic       | [yeelink.light.strip1](#yeelink-light-strip1) | Yes       |           |
+| Yeelight Strip               | miio:basic       | [yeelink.light.strip2](#yeelink-light-strip2) | Yes       |           |
+| Yeelight                     | miio:basic       | [yeelink.light.virtual](#yeelink-light-virtual) | Yes       |           |
+| Yeelight Color Bulb          | miio:basic       | [yeelink.light.color1](#yeelink-light-color1) | Yes       |           |
+| Yeelight Color Bulb YLDP06YL 10W | miio:basic       | [yeelink.light.color2](#yeelink-light-color2) | Yes       |           |
+| Yeelight Color Bulb          | miio:basic       | [yeelink.light.color3](#yeelink-light-color3) | Yes       |           |
 
 
 # Discovery
@@ -174,9 +178,9 @@ note: the ADVANCED  `actions#commands` channel can be used to send commands that
 e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would enable a pre-configured timer. See https://github.com/marcelrv/XiaomiRobotVacuumProtocol for all known available commands.
 
 
-### Mi Air Monitor v1 (zhimi.airmonitor.v1 ) Channels
+### Mi Air Monitor v1 (<a name="zhimi-airmonitor-v1">zhimi.airmonitor.v1</a>) Channels
 
-
+<img align="right" src="http://cdn.cnbj0.fds.api.mi-img.com/miio.files/commonfile_png_fe9a0219e8db1e23d6b0e30bd722ace7.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -189,9 +193,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | night_end        | Number  | USB State                           |
 
 
-### Mi Air Humidifier (zhimi.humidifier.v1 ) Channels
+### Mi Air Humidifier (<a name="zhimi-humidifier-v1">zhimi.humidifier.v1</a>) Channels
 
-
+<img align="right" src="http://awssgp0-cdn.fds.api.xiaomi.com/miio.files/commonfile_png_63df315aa8d3ab09fe150563e5e3fe52.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -210,9 +214,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | childlock        | Switch  | Child Lock                          |
 
 
-### Mi Air Humidifier (zhimi.humidifier.ca1 ) Channels
+### Mi Air Humidifier (<a name="zhimi-humidifier-ca1">zhimi.humidifier.ca1</a>) Channels
 
-
+<img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1517908099sjhrgsby.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -231,9 +235,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | childlock        | Switch  | Child Lock                          |
 
 
-### Mi Air Purifier v1 (zhimi.airpurifier.v1 ) Channels
+### Mi Air Purifier v1 (<a name="zhimi-airpurifier-v1">zhimi.airpurifier.v1</a>) Channels
 
-
+<img align="right" src="http://awssgp0-cdn.fds.api.xiaomi.com/miio.files/commonfile_png_3647794fe7ac6616f8e1f9d1adde5ba3.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -254,9 +258,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | childlock        | Switch  | Child Lock                          |
 
 
-### Mi Air Purifier v2 (zhimi.airpurifier.v2 ) Channels
+### Mi Air Purifier v2 (<a name="zhimi-airpurifier-v2">zhimi.airpurifier.v2</a>) Channels
 
-
+<img align="right" src="http://cdn.fds.api.xiaomi.com/miio_user_head/0l35j0oa_1446086740.jpg" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -277,9 +281,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | childlock        | Switch  | Child Lock                          |
 
 
-### Mi Air Purifier v3 (zhimi.airpurifier.v3 ) Channels
+### Mi Air Purifier v3 (<a name="zhimi-airpurifier-v3">zhimi.airpurifier.v3</a>) Channels
 
-
+<img align="right" src="http://awssgp0-cdn.fds.api.xiaomi.com/miio.files/commonfile_png_3647794fe7ac6616f8e1f9d1adde5ba3.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -300,9 +304,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | childlock        | Switch  | Child Lock                          |
 
 
-### Mi Air Purifier v5 (zhimi.airpurifier.v5 ) Channels
+### Mi Air Purifier v5 (<a name="zhimi-airpurifier-v5">zhimi.airpurifier.v5</a>) Channels
 
-
+<img align="right" src="http://awssgp0-cdn.fds.api.xiaomi.com/miio.files/m0u1njiv_1452063217.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -323,9 +327,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | childlock        | Switch  | Child Lock                          |
 
 
-### Mi Air Purifier Pro v6 (zhimi.airpurifier.v6 ) Channels
+### Mi Air Purifier Pro v6 (<a name="zhimi-airpurifier-v6">zhimi.airpurifier.v6</a>) Channels
 
-
+<img align="right" src="http://cdn.cnbj0.fds.api.mi-img.com/miio.files/commonfile_png_064a5121ad6de87886ce1ad9bace67ab.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -346,9 +350,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | childlock        | Switch  | Child Lock                          |
 
 
-### Mi Air Purifier Pro v7 (zhimi.airpurifier.v7 ) Channels
+### Mi Air Purifier Pro v7 (<a name="zhimi-airpurifier-v7">zhimi.airpurifier.v7</a>) Channels
 
-
+<img align="right" src="http://awssgp0-cdn.fds.api.xiaomi.com/miio.files/developer_1508485896rv7coi53.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -369,9 +373,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | childlock        | Switch  | Child Lock                          |
 
 
-### Mi Air Purifier 2 (mini) (zhimi.airpurifier.m1 ) Channels
+### Mi Air Purifier 2 (mini) (<a name="zhimi-airpurifier-m1">zhimi.airpurifier.m1</a>) Channels
 
-
+<img align="right" src="http://awssgp0-cdn.fds.api.xiaomi.com/miio.files/commonfile_png_1468d89ca759777116e1de1a793f69bc.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -392,9 +396,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | childlock        | Switch  | Child Lock                          |
 
 
-### Mi Air Purifier (mini) (zhimi.airpurifier.m2 ) Channels
+### Mi Air Purifier (mini) (<a name="zhimi-airpurifier-m2">zhimi.airpurifier.m2</a>) Channels
 
-
+<img align="right" src="http://awssgp0-cdn.fds.api.xiaomi.com/miio.files/developer_1490253124b61k6mjm.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -415,9 +419,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | childlock        | Switch  | Child Lock                          |
 
 
-### Mi Air Purifier MS1 (zhimi.airpurifier.ma1 ) Channels
+### Mi Air Purifier MS1 (<a name="zhimi-airpurifier-ma1">zhimi.airpurifier.ma1</a>) Channels
 
-
+<img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1504084745noorep1h.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -438,9 +442,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | childlock        | Switch  | Child Lock                          |
 
 
-### Mi Air Purifier MS2 (zhimi.airpurifier.ma2 ) Channels
+### Mi Air Purifier MS2 (<a name="zhimi-airpurifier-ma2">zhimi.airpurifier.ma2</a>) Channels
 
-
+<img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1504084757k912m7mp.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -461,7 +465,7 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | childlock        | Switch  | Child Lock                          |
 
 
-### Mi Air Purifier Super (zhimi.airpurifier.sa1 ) Channels
+### Mi Air Purifier Super (<a name="zhimi-airpurifier-sa1">zhimi.airpurifier.sa1</a>) Channels
 
 
 | Channel          | Type    | Description                         |
@@ -484,9 +488,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | childlock        | Switch  | Child Lock                          |
 
 
-### Mi Air Purifier Super 2 (zhimi.airpurifier.sa2 ) Channels
+### Mi Air Purifier Super 2 (<a name="zhimi-airpurifier-sa2">zhimi.airpurifier.sa2</a>) Channels
 
-
+<img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1510654009cnmr904i.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -507,7 +511,7 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | childlock        | Switch  | Child Lock                          |
 
 
-### Mi Smart Fan (zhimi.fan.v1 ) Channels
+### Mi Smart Fan (<a name="zhimi-fan-v1">zhimi.fan.v1</a>) Channels
 
 
 | Channel          | Type    | Description                         |
@@ -531,9 +535,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | move             | String  | Move Direction                      |
 
 
-### Mi Smart Fan (zhimi.fan.v2 ) Channels
+### Mi Smart Fan (<a name="zhimi-fan-v2">zhimi.fan.v2</a>) Channels
 
-
+<img align="right" src="http://awssgp0-cdn.fds.api.xiaomi.com/miio.files/commonfile_png_314b348815f4d22687d021eb51c0be4a.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -555,9 +559,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | move             | String  | Move Direction                      |
 
 
-### Mi Smart Pedestal Fan (zhimi.fan.v3 ) Channels
+### Mi Smart Pedestal Fan (<a name="zhimi-fan-v3">zhimi.fan.v3</a>) Channels
 
-
+<img align="right" src="http://awssgp0-cdn.fds.api.xiaomi.com/miio.files/developer_14902525278x9u8ox6.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -579,9 +583,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | move             | String  | Move Direction                      |
 
 
-### Xiaomi Mi Smart Pedestal Fan (zhimi.fan.sa1 ) Channels
+### Xiaomi Mi Smart Pedestal Fan (<a name="zhimi-fan-sa1">zhimi.fan.sa1</a>) Channels
 
-
+<img align="right" src="http://cdn.awssgp0.fds.api.mi-img.com/miio.files/developer_1515044979tq6un9ad.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -599,9 +603,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | move             | String  | Move Direction                      |
 
 
-### Xiaomi Mi Smart Pedestal Fan (zhimi.fan.za1 ) Channels
+### Xiaomi Mi Smart Pedestal Fan (<a name="zhimi-fan-za1">zhimi.fan.za1</a>) Channels
 
-
+<img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1515046048k315jpac.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -619,9 +623,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | move             | String  | Move Direction                      |
 
 
-### Mi Humdifier (zhimi.humidifier.v1 ) Channels
+### Mi Humdifier (<a name="zhimi-humidifier-v1">zhimi.humidifier.v1</a>) Channels
 
-
+<img align="right" src="http://awssgp0-cdn.fds.api.xiaomi.com/miio.files/commonfile_png_63df315aa8d3ab09fe150563e5e3fe52.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -640,9 +644,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | childlock        | Switch  | Child Lock                          |
 
 
-### Xiaomi Philips Eyecare Smart Lamp 2 (philips.light.sread1 ) Channels
+### Xiaomi Philips Eyecare Smart Lamp 2 (<a name="philips-light-sread1">philips.light.sread1</a>) Channels
 
-
+<img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/commonfile_png_7cdda2ef7b962532d372605cfdd8c6cf.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -653,9 +657,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | eyecare          | Switch  | Eyecare                             |
 
 
-### Xiaomi Philips LED Ceiling Lamp (philips.light.ceiling ) Channels
+### Xiaomi Philips LED Ceiling Lamp (<a name="philips-light-ceiling">philips.light.ceiling</a>) Channels
 
-
+<img align="right" src="http://cdn.fds.api.xiaomi.com/miio.files/commonfile_png_3568754428ab7e71aaa816869bf95987.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -666,9 +670,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | toggle           | Switch  | Toggle                              |
 
 
-### Xiaomi Philips LED Ceiling Lamp (philips.light.zyceiling ) Channels
+### Xiaomi Philips LED Ceiling Lamp (<a name="philips-light-zyceiling">philips.light.zyceiling</a>) Channels
 
-
+<img align="right" src="http://cdn.cnbj0.fds.api.mi-img.com/miio.files/commonfile_png_3568754428ab7e71aaa816869bf95987.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -679,9 +683,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | toggle           | Switch  | Toggle                              |
 
 
-### Xiaomi Philips Bulb (philips.light.bulb ) Channels
+### Xiaomi Philips Bulb (<a name="philips-light-bulb">philips.light.bulb</a>) Channels
 
-
+<img align="right" src="http://cdn.fds.api.xiaomi.com/miio.files/commonfile_png_475f7d736df3cdf5d850c051128bf1ad.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -694,9 +698,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | toggle           | Switch  | Toggle                              |
 
 
-### PHILIPS Zhirui Smart LED Bulb E14 Candle Lamp (philips.light.candle ) Channels
+### PHILIPS Zhirui Smart LED Bulb E14 Candle Lamp (<a name="philips-light-candle">philips.light.candle</a>) Channels
 
-
+<img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1512351483jqwjpd70.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -707,9 +711,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | toggle           | Switch  | Toggle                              |
 
 
-### Xiaomi Philips Downlight (philips.light.downlight ) Channels
+### Xiaomi Philips Downlight (<a name="philips-light-downlight">philips.light.downlight</a>) Channels
 
-
+<img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1516848116ixz0e345.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -722,9 +726,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | toggle           | Switch  | Toggle                              |
 
 
-### Xiaomi Philips ZhiRui bedside lamp (philips.light.moonlight ) Channels
+### Xiaomi Philips ZhiRui bedside lamp (<a name="philips-light-moonlight">philips.light.moonlight</a>) Channels
 
-
+<img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1521017976wskcy6vy.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -737,9 +741,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | toggle           | Switch  | Toggle                              |
 
 
-### philips.light.candle2 (philips.light.candle2 ) Channels
+### Xiaomi PHILIPS Zhirui Smart LED Bulb E14 Candle Lamp White Crystal (<a name="philips-light-candle2">philips.light.candle2</a>) Channels
 
-
+<img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1512353567w8o3cgnv.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -750,24 +754,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | toggle           | Switch  | Toggle                              |
 
 
-### philips.light.mono1 (philips.light.mono1 ) Channels
+### philips.light.mono1 (<a name="philips-light-mono1">philips.light.mono1</a>) Channels
 
-
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
-| cct              | Number  | Correlated Color Temperature        |
-| scene            | Number  | Scene                               |
-| dv               | Number  | DV                                  |
-| switchscene      | Switch  | Switch Scene                        |
-| delayoff         | Switch  | Delay Off                           |
-| toggle           | Switch  | Toggle                              |
-
-
-### philips.light.virtual (philips.light.virtual ) Channels
-
-
+<img align="right" src="http://cdn.fds.api.xiaomi.com/miio.files/commonfile_png_deb872afca4e5ea36eae93d50225db19.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -780,9 +769,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | toggle           | Switch  | Toggle                              |
 
 
-### philips.light.zysread (philips.light.zysread ) Channels
+### philips.light.virtual (<a name="philips-light-virtual">philips.light.virtual</a>) Channels
 
-
+<img align="right" src="http://cdn.fds.api.xiaomi.com/miio.files/commonfile_png_ad4d50fefe922422921ef4fe7778fe4a.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -795,9 +784,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | toggle           | Switch  | Toggle                              |
 
 
-### philips.light.zystrip (philips.light.zystrip ) Channels
+### philips.light.zysread (<a name="philips-light-zysread">philips.light.zysread</a>) Channels
 
-
+<img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1515992867mkpqmwmx.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -810,36 +799,51 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | toggle           | Switch  | Toggle                              |
 
 
-### Mi Power-plug (chuangmi.plug.m1 ) Channels
+### philips.light.zystrip (<a name="philips-light-zystrip">philips.light.zystrip</a>) Channels
+
+<img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1533624570ht4plpj4.png" />
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| brightness       | Number  | Brightness                          |
+| cct              | Number  | Correlated Color Temperature        |
+| scene            | Number  | Scene                               |
+| dv               | Number  | DV                                  |
+| switchscene      | Switch  | Switch Scene                        |
+| delayoff         | Switch  | Delay Off                           |
+| toggle           | Switch  | Toggle                              |
 
 
+### Mi Power-plug (<a name="chuangmi-plug-m1">chuangmi.plug.m1</a>) Channels
+
+<img align="right" src="http://cdn.fds.api.xiaomi.com/miio.files/commonfile_png_f83a00cee71250f746e44a9ce5cdd62e.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
 | temperature      | Number  | Temperature                         |
 
 
-### Mi Power-plug v1 (chuangmi.plug.v1 ) Channels
+### Mi Power-plug v1 (<a name="chuangmi-plug-v1">chuangmi.plug.v1</a>) Channels
 
-
+<img align="right" src="http://cdn.fds.api.xiaomi.com/miio.files/commonfile_png_5710dd5fd74695697baab01b30e35f83.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
 | usb              | Switch  | USB                                 |
 
 
-### Mi Power-plug v2 (chuangmi.plug.v2 ) Channels
+### Mi Power-plug v2 (<a name="chuangmi-plug-v2">chuangmi.plug.v2</a>) Channels
 
-
+<img align="right" src="http://cdn.fds.api.xiaomi.com/miio_user_head/e2auc8n6_1445843409.jpg" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
 | usb              | Switch  | USB                                 |
 
 
-### Mi Power-plug v3 (chuangmi.plug.v3 ) Channels
+### Mi Power-plug v3 (<a name="chuangmi-plug-v3">chuangmi.plug.v3</a>) Channels
 
-
+<img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1516587388djsexjn9.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -848,9 +852,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | led              | Switch  | Wifi led                            |
 
 
-### Qing Mi Smart Power Strip v1 (qmi.powerstrip.v1 ) Channels
+### Qing Mi Smart Power Strip v1 (<a name="qmi-powerstrip-v1">qmi.powerstrip.v1</a>) Channels
 
-
+<img align="right" src="http://cdn.cnbj0.fds.api.mi-img.com/miio.files/commonfile_png_1c82837fed232993f52db9658c0c5bfb.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -861,9 +865,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | temperature      | Number  | Temperature                         |
 
 
-### Mi Power-strip v2 (zimi.powerstrip.v2 ) Channels
+### Mi Power-strip v2 (<a name="zimi-powerstrip-v2">zimi.powerstrip.v2</a>) Channels
 
-
+<img align="right" src="http://cdn.cnbj0.fds.api.mi-img.com/miio.files/commonfile_png_47c848570745985ba031b93b93d02ac2.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -874,7 +878,7 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | temperature      | Number  | Temperature                         |
 
 
-### Mi Water Purifier v2 (yunmi.waterpuri.v2 ) Channels
+### Mi Water Purifier v2 (<a name="yunmi-waterpuri-v2">yunmi.waterpuri.v2</a>) Channels
 
 
 | Channel          | Type    | Description                         |
@@ -882,7 +886,47 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | power            | Switch  | Power                               |
 
 
-### Mi Water Purifier lx2 (yunmi.waterpuri.lx2 ) Channels
+### Mi Water Purifier lx2 (<a name="yunmi-waterpuri-lx2">yunmi.waterpuri.lx2</a>) Channels
+
+<img align="right" src="http://cdn.fds.api.xiaomi.com/miio.files/commonfile_png_c33c9af9724358984bb628dfd94a8164.png" />
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+
+
+### Mi Water Purifier lx3 (<a name="yunmi-waterpuri-lx3">yunmi.waterpuri.lx3</a>) Channels
+
+<img align="right" src="http://cdn.fds.api.xiaomi.com/miio.files/commonfile_png_c33c9af9724358984bb628dfd94a8164.png" />
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+
+
+### Mi Water Purifier lx4 (<a name="yunmi-waterpuri-lx4">yunmi.waterpuri.lx4</a>) Channels
+
+<img align="right" src="http://cdn.cnbj0.fds.api.mi-img.com/miio.files/commonfile_png_c33c9af9724358984bb628dfd94a8164.png" />
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+
+
+### Mi Water Purifier v2 (<a name="yunmi-waterpurifier-v2">yunmi.waterpurifier.v2</a>) Channels
+
+<img align="right" src="http://cdn.fds.api.xiaomi.com/miio.files/commonfile_png_c33c9af9724358984bb628dfd94a8164.png" />
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+
+
+### Mi Water Purifier v3 (<a name="yunmi-waterpurifier-v3">yunmi.waterpurifier.v3</a>) Channels
+
+<img align="right" src="http://cdn.fds.api.xiaomi.com/miio.files/commonfile_png_c33c9af9724358984bb628dfd94a8164.png" />
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+
+
+### Mi Water Purifier v4 (<a name="yunmi-waterpurifier-v4">yunmi.waterpurifier.v4</a>) Channels
 
 
 | Channel          | Type    | Description                         |
@@ -890,47 +934,22 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | power            | Switch  | Power                               |
 
 
-### Mi Water Purifier lx3 (yunmi.waterpuri.lx3 ) Channels
+### Yeelight Lamp (<a name="yeelink-light-bslamp1">yeelink.light.bslamp1</a>) Channels
 
-
+<img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/commonfile_png_81312b6c81b3934fc78999f57fe27b1c.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
+| brightness       | Number  | Brightness                          |
+| delayoff         | String  | Shutdowm Timer                      |
+| colorTemperature | Number  | Color Temperature                   |
+| colorMode        | String  | Color Mode                          |
+| toggle           | Switch  | toggle                              |
+| rgbColor         | Color   | RGB Color                           |
+| name             | String  | Name                                |
 
 
-### Mi Water Purifier lx4 (yunmi.waterpuri.lx4 ) Channels
-
-
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-
-
-### Mi Water Purifier v2 (yunmi.waterpurifier.v2 ) Channels
-
-
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-
-
-### Mi Water Purifier v3 (yunmi.waterpurifier.v3 ) Channels
-
-
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-
-
-### Mi Water Purifier v4 (yunmi.waterpurifier.v4 ) Channels
-
-
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-
-
-### Yeelight Lamp (yeelink.light.bslamp1 ) Channels
+### Yeelight Lamp (<a name="yeelink-light-bslamp2">yeelink.light.bslamp2</a>) Channels
 
 
 | Channel          | Type    | Description                         |
@@ -945,24 +964,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | name             | String  | Name                                |
 
 
-### Yeelight Lamp (yeelink.light.bslamp2 ) Channels
+### Yeelight LED Ceiling Lamp (<a name="yeelink-light-ceiling1">yeelink.light.ceiling1</a>) Channels
 
-
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
-| delayoff         | String  | Shutdowm Timer                      |
-| colorTemperature | Number  | Color Temperature                   |
-| colorMode        | String  | Color Mode                          |
-| toggle           | Switch  | toggle                              |
-| rgbColor         | Color   | RGB Color                           |
-| name             | String  | Name                                |
-
-
-### Yeelight LED Ceiling Lamp (yeelink.light.ceiling1 ) Channels
-
-
+<img align="right" src="http://awssgp0-cdn.fds.api.xiaomi.com/miio.files/commonfile_png_76a320138443dc8279275910d82855ff.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -975,9 +979,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | nightlightBrightness | Number  | Nightlight Brightness               |
 
 
-### Yeelight LED Ceiling Lamp v2 (yeelink.light.ceiling2 ) Channels
+### Yeelight LED Ceiling Lamp v2 (<a name="yeelink-light-ceiling2">yeelink.light.ceiling2</a>) Channels
 
-
+<img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1496373605i830ob3b.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -990,9 +994,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | nightlightBrightness | Number  | Nightlight Brightness               |
 
 
-### Yeelight LED Ceiling Lamp v3 (yeelink.light.ceiling3 ) Channels
+### Yeelight LED Ceiling Lamp v3 (<a name="yeelink-light-ceiling3">yeelink.light.ceiling3</a>) Channels
 
-
+<img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1500887836qfgbqwws.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -1005,7 +1009,27 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | nightlightBrightness | Number  | Nightlight Brightness               |
 
 
-### Yeelight LED Ceiling Lamp v4 (JIAOYUE 650 RGB) (yeelink.light.ceiling4 ) Channels
+### Yeelight LED Ceiling Lamp v4 (JIAOYUE 650 RGB) (<a name="yeelink-light-ceiling4">yeelink.light.ceiling4</a>) Channels
+
+<img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1500887879z263swm0.png" />
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| brightness       | Number  | Brightness                          |
+| ambientBrightness | Number  | Ambient Brightness                  |
+| delayoff         | Number  | Shutdowm Timer                      |
+| colorTemperature | Number  | Color Temperature                   |
+| colorMode        | Number  | Color Mode                          |
+| name             | String  | Name                                |
+| ambientPower     | Switch  | Ambient Power                       |
+| ambientColor     | Color   | Ambient Color                       |
+| ambientColorTemperature | Number  | Ambient Color Temperature           |
+| customScene      | String  | Set Scene                           |
+| ambientColorMode | Number  | Ambient Color Mode                  |
+| nightlightBrightness | Number  | Nightlight Brightness               |
+
+
+### Yeelight LED Ceiling Lamp v4 (<a name="yeelink-light-ceiling4-ambi">yeelink.light.ceiling4.ambi</a>) Channels
 
 
 | Channel          | Type    | Description                         |
@@ -1025,29 +1049,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | nightlightBrightness | Number  | Nightlight Brightness               |
 
 
-### Yeelight LED Ceiling Lamp v4 (yeelink.light.ceiling4.ambi ) Channels
+### Yeelight LED Ceiling Lamp v5 (<a name="yeelink-light-ceiling5">yeelink.light.ceiling5</a>) Channels
 
-
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
-| ambientBrightness | Number  | Ambient Brightness                  |
-| delayoff         | Number  | Shutdowm Timer                      |
-| colorTemperature | Number  | Color Temperature                   |
-| colorMode        | Number  | Color Mode                          |
-| name             | String  | Name                                |
-| ambientPower     | Switch  | Ambient Power                       |
-| ambientColor     | Color   | Ambient Color                       |
-| ambientColorTemperature | Number  | Ambient Color Temperature           |
-| customScene      | String  | Set Scene                           |
-| ambientColorMode | Number  | Ambient Color Mode                  |
-| nightlightBrightness | Number  | Nightlight Brightness               |
-
-
-### Yeelight LED Ceiling Lamp v5 (yeelink.light.ceiling5 ) Channels
-
-
+<img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_15096983336gkpqajs.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -1060,7 +1064,22 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | nightlightBrightness | Number  | Nightlight Brightness               |
 
 
-### Yeelight LED Ceiling Lamp v6 (yeelink.light.ceiling6 ) Channels
+### Yeelight LED Ceiling Lamp v6 (<a name="yeelink-light-ceiling6">yeelink.light.ceiling6</a>) Channels
+
+<img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_15233531497uxs6o06.png" />
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| brightness       | Number  | Brightness                          |
+| delayoff         | Number  | Shutdowm Timer                      |
+| colorTemperature | Number  | Color Temperature                   |
+| colorMode        | Number  | Color Mode                          |
+| name             | String  | Name                                |
+| customScene      | String  | Set Scene                           |
+| nightlightBrightness | Number  | Nightlight Brightness               |
+
+
+### Yeelight LED Ceiling Lamp v7 (<a name="yeelink-light-ceiling7">yeelink.light.ceiling7</a>) Channels
 
 
 | Channel          | Type    | Description                         |
@@ -1075,9 +1094,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | nightlightBrightness | Number  | Nightlight Brightness               |
 
 
-### Yeelight LED Ceiling Lamp v7 (yeelink.light.ceiling7 ) Channels
+### Yeelight LED Ceiling Lamp v8 (<a name="yeelink-light-ceiling8">yeelink.light.ceiling8</a>) Channels
 
-
+<img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1529905832jfqfvn9j.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -1090,24 +1109,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | nightlightBrightness | Number  | Nightlight Brightness               |
 
 
-### Yeelight LED Ceiling Lamp v8 (yeelink.light.ceiling8 ) Channels
+### Yeelight ct2 (<a name="yeelink-light-ct2">yeelink.light.ct2</a>) Channels
 
-
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
-| delayoff         | Number  | Shutdowm Timer                      |
-| colorTemperature | Number  | Color Temperature                   |
-| colorMode        | Number  | Color Mode                          |
-| name             | String  | Name                                |
-| customScene      | String  | Set Scene                           |
-| nightlightBrightness | Number  | Nightlight Brightness               |
-
-
-### Yeelight ct2 (yeelink.light.ct2 ) Channels
-
-
+<img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1520502234l22qf736.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -1118,9 +1122,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | name             | String  | Name                                |
 
 
-### Yeelight White Bulb (yeelink.light.mono1 ) Channels
+### Yeelight White Bulb (<a name="yeelink-light-mono1">yeelink.light.mono1</a>) Channels
 
-
+<img align="right" src="http://awssgp0-cdn.fds.api.xiaomi.com/miio.files/commonfile_png_a52416a647498ca60ae092aed879db1d.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -1131,7 +1135,7 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | name             | String  | Name                                |
 
 
-### Yeelight White Bulb v2 (yeelink.light.mono2 ) Channels
+### Yeelight White Bulb v2 (<a name="yeelink-light-mono2">yeelink.light.mono2</a>) Channels
 
 
 | Channel          | Type    | Description                         |
@@ -1144,7 +1148,20 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | name             | String  | Name                                |
 
 
-### Yeelight (yeelink.light.lamp1 ) Channels
+### Yeelight (<a name="yeelink-light-lamp1">yeelink.light.lamp1</a>) Channels
+
+<img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/commonfile_png_5f1f5c73f2ddd0da5abf434405ee2053.png" />
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| brightness       | Number  | Brightness                          |
+| delayoff         | Number  | Shutdowm Timer                      |
+| colorTemperature | Number  | Color Temperature                   |
+| colorMode        | Number  | Color Mode                          |
+| name             | String  | Name                                |
+
+
+### Yeelight (<a name="yeelink-light-lamp2">yeelink.light.lamp2</a>) Channels
 
 
 | Channel          | Type    | Description                         |
@@ -1157,9 +1174,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | name             | String  | Name                                |
 
 
-### Yeelight (yeelink.light.lamp2 ) Channels
+### Yeelight (<a name="yeelink-light-lamp3">yeelink.light.lamp3</a>) Channels
 
-
+<img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_15203258172xb90pxd.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -1170,22 +1187,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | name             | String  | Name                                |
 
 
-### Yeelight (yeelink.light.lamp3 ) Channels
+### Yeelight Strip (<a name="yeelink-light-strip1">yeelink.light.strip1</a>) Channels
 
-
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Number  | Brightness                          |
-| delayoff         | Number  | Shutdowm Timer                      |
-| colorTemperature | Number  | Color Temperature                   |
-| colorMode        | Number  | Color Mode                          |
-| name             | String  | Name                                |
-
-
-### Yeelight Strip (yeelink.light.strip1 ) Channels
-
-
+<img align="right" src="http://awssgp0-cdn.fds.api.xiaomi.com/miio.files/commonfile_png_7802ab16888a1ac53a5059b0e9fdfc2a.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -1198,9 +1202,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | name             | String  | Name                                |
 
 
-### Yeelight Strip (yeelink.light.strip2 ) Channels
+### Yeelight Strip (<a name="yeelink-light-strip2">yeelink.light.strip2</a>) Channels
 
-
+<img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1526957904qn79fgqt.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -1213,9 +1217,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | name             | String  | Name                                |
 
 
-### Yeelight (yeelink.light.virtual ) Channels
+### Yeelight (<a name="yeelink-light-virtual">yeelink.light.virtual</a>) Channels
 
-
+<img align="right" src="http://awssgp0-cdn.fds.api.xiaomi.com/miio.files/commonfile_png_e27ef4da2138665130b94b0bfc899142.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -1226,9 +1230,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | name             | String  | Name                                |
 
 
-### Yeelight Color Bulb (yeelink.light.color1 ) Channels
+### Yeelight Color Bulb (<a name="yeelink-light-color1">yeelink.light.color1</a>) Channels
 
-
+<img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/commonfile_png_555cca5a8f557f721b1e69023aabe3ce.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -1241,9 +1245,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | name             | String  | Name                                |
 
 
-### Yeelight Color Bulb YLDP06YL 10W (yeelink.light.color2 ) Channels
+### Yeelight Color Bulb YLDP06YL 10W (<a name="yeelink-light-color2">yeelink.light.color2</a>) Channels
 
-
+<img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1520497601yuzuvtbl.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -1256,9 +1260,9 @@ e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would en
 | name             | String  | Name                                |
 
 
-### Yeelight Color Bulb (yeelink.light.color3 ) Channels
+### Yeelight Color Bulb (<a name="yeelink-light-color3">yeelink.light.color3</a>) Channels
 
-
+<img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_15239567889mgx5j3j.png" />
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -1930,13 +1934,13 @@ Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
 ```
 
-### philips.light.candle2 (philips.light.candle2) item file lines
+### Xiaomi PHILIPS Zhirui Smart LED Bulb E14 Candle Lamp White Crystal (philips.light.candle2) item file lines
 
 
 note: Autogenerated example. Replace the id (light) in the channel with your own.
 
 ```
-Group G_light "philips.light.candle2" <status>
+Group G_light "Xiaomi PHILIPS Zhirui Smart LED Bulb E14 Candle Lamp White Crystal" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
