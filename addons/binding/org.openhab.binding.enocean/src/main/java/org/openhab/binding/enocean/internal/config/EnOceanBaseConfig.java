@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.enocean.internal.config;
 
-import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.EmptyEnOceanId;
+import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.EMPTYENOCEANID;
 
 import java.util.List;
 
@@ -24,7 +24,7 @@ public class EnOceanBaseConfig {
     public List<String> receivingEEPId;
 
     public EnOceanBaseConfig() {
-        enoceanId = EmptyEnOceanId;
+        enoceanId = EMPTYENOCEANID;
     }
 
     public byte[] getEnOceanId() {

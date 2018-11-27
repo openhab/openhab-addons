@@ -19,9 +19,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.CoreItemFactory;
 import org.eclipse.smarthome.core.thing.DefaultSystemChannelTypeProvider;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.profiles.ProfileTypeUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
-import org.openhab.binding.enocean.internal.profiles.EnOceanProfileTypes;
 
 /**
  * The {@link EnOceanBinding} class defines common constants, which are
@@ -90,7 +88,8 @@ public class EnOceanBindingConstants {
     public final static String CHANNEL_ROCKERSWITCH_CHANNELA = "rockerswitchA";
     public final static String CHANNEL_ROCKERSWITCH_CHANNELB = "rockerswitchB";
 
-    public final static String CHANNEL_VIRTUALROCKERSWITCHA = "virtualRockerswitchA";
+    public final static String CHANNEL_VIRTUALSWITCHA = "virtualSwitchA";
+    public final static String CHANNEL_VIRTUALROLLERSHUTTERA = "virtualRollershutterA";
     public final static String CHANNEL_VIRTUALROCKERSWITCHB = "virtualRockerswitchB";
     public final static String CHANNEL_ROCKERSWITCHLISTENERSWITCH = "rockerswitchListenerSwitch";
     public final static String CHANNEL_ROCKERSWITCHLISTENERROLLERSHUTTER = "rockerswitchListenerRollershutter";
@@ -119,10 +118,7 @@ public class EnOceanBindingConstants {
     public final static String CHANNEL_GENERIC_COLOR = "genericColor";
     public final static String CHANNEL_GENERIC_TEACHINCMD = "genericTeachInCMD";
 
-    public final static ChannelTypeUID VirtualRockerSwitchAChannelType = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_VIRTUALROCKERSWITCHA);
-
-    public static final Map<String, EnOceanChannelDescription> ChannelId2ChannelDescription = Collections
+    public static final Map<String, EnOceanChannelDescription> CHANNELID2CHANNELDESCRIPTION = Collections
             .unmodifiableMap(new HashMap<String, EnOceanChannelDescription>() {
                 private static final long serialVersionUID = 1L;
 
@@ -177,10 +173,12 @@ public class EnOceanBindingConstants {
                             new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_RAWROCKER.getUID(),
                                     null, "Rocker Switch - Channel B", false, false));
 
-                    // we set acceptedItemType to null here, to be able to receive commands from any ItemType through
-                    // our profiles (SwitchItem, RollershutterItem)
-                    put(CHANNEL_VIRTUALROCKERSWITCHA, new EnOceanChannelDescription(VirtualRockerSwitchAChannelType,
-                            null, "Rocker Switch", true, false));
+                    put(CHANNEL_VIRTUALSWITCHA,
+                            new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_VIRTUALSWITCHA),
+                                    CoreItemFactory.SWITCH, "", true, false));
+                    put(CHANNEL_VIRTUALROLLERSHUTTERA,
+                            new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_VIRTUALROLLERSHUTTERA),
+                                    CoreItemFactory.ROLLERSHUTTER, "", true, false));
                     put(CHANNEL_VIRTUALROCKERSWITCHB,
                             new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_VIRTUALROCKERSWITCHB),
                                     CoreItemFactory.STRING, "Rocker Switch - Channel B", true, false));
@@ -250,7 +248,7 @@ public class EnOceanBindingConstants {
 
     // Bridge properties
     @NonNull
-    public static final String PROPERTY_Base_ID = "Base ID";
+    public static final String PROPERTY_BASE_ID = "Base ID";
     @NonNull
     public static final String PROPERTY_REMAINING_WRITE_CYCLES_Base_ID = "Remaining Base ID Write Cycles";
     @NonNull
@@ -263,7 +261,7 @@ public class EnOceanBindingConstants {
     public static final String PROPERTY_DESCRIPTION = "Description";
 
     // Thing properties
-    public static final String PROPERTY_Enocean_ID = "enoceanId";
+    public static final String PROPERTY_ENOCEAN_ID = "enoceanId";
 
     // Thing config parameter
     public static final String PARAMETER_SENDERIDOFFSET = "senderIdOffset";
@@ -280,16 +278,11 @@ public class EnOceanBindingConstants {
     public static final String PARAMETER_CHANNEL_Duration = "duration";
     public static final String PARAMETER_CHANNEL_SwitchMode = "switchMode";
 
-    @NonNull
-    public static final Set<ProfileTypeUID> SUPPORTED_PROFILETYPES_UIDS = new HashSet<ProfileTypeUID>(
-            Arrays.asList(EnOceanProfileTypes.RockerSwitchToPlayPause, EnOceanProfileTypes.RockerSwitchFromOnOff,
-                    EnOceanProfileTypes.RockerSwitchFromRollershutter));
-
     // Manufacturer Ids - used to recognize special EEPs during auto discovery
-    public static final int EltakoId = 0x00d;
-    public static final int NodONId = 0x046; // NodOn devices are designed by ID-RF hence use their ID
-    public static final int PermundoId = 0x033;
+    public static final int ELTAKOID = 0x00d;
+    public static final int NODONID = 0x046; // NodOn devices are designed by ID-RF hence use their ID
+    public static final int PERMUNDOID = 0x033;
 
-    public static final String EmptyEnOceanId = "00000000";
+    public static final String EMPTYENOCEANID = "00000000";
 
 }

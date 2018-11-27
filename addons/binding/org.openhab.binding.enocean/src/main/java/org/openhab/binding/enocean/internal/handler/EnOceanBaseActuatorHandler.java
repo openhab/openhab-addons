@@ -159,7 +159,7 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
         baseId[3] = (byte) ((baseId[3] & 0xFF) + getConfiguration().senderIdOffset);
         this.senderId = baseId;
 
-        this.updateProperty(PROPERTY_Enocean_ID, HexUtils.bytesToHex(this.senderId));
+        this.updateProperty(PROPERTY_ENOCEAN_ID, HexUtils.bytesToHex(this.senderId));
         bridgeHandler.addSender(getConfiguration().senderIdOffset, thing);
 
         return true;

@@ -17,7 +17,7 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="enocean:listeningChannel:config">
+	<config-description uri="enocean:listeningRockerChannel:config">
 		<parameter name="enoceanId" type="text">
 			<label>EnOceanId</label>
 			<description>EnOcean Id to listen to</description>
@@ -41,5 +41,21 @@
 			<default>rockerSwitch</default>
 		</parameter>
 	</config-description>
+	
+	<config-description uri="enocean:virtualRockerChannel:config">
+        <parameter name="duration" type="integer">
+                <label>Time in ms between Press and Release message</label>
+                <default>250</default>
+            </parameter>
+        <parameter name="switchMode" type="text">
+            <label>Switch mode</label>
+            <options>
+                <option value="rockerSwitch">Rocker switch</option>
+                <option value="toggleButtonDir1">Toggle button (upper button)</option>
+                <option value="toggleButtonDir2">Toggle button (lower button)</option>
+            </options>
+            <default>rockerSwitch</default>
+        </parameter>
+    </config-description>
 
 </config-description:config-descriptions>

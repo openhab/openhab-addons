@@ -120,8 +120,8 @@ To set this SenderId to a specific one, you have to use the nextSenderId paramet
 
 ## Thing Configuration
 
-The pairing process of an openHAB thing and an EnOcean device has to be triggered within PaperUI.
-Therefore if you do not want to use PaperUI, a mixed mode configuration approach has to be done.
+The pairing process of an openHAB thing and an EnOcean device has to be triggered within Paper UI.
+Therefore if you do not want to use Paper UI, a mixed mode configuration approach has to be done.
 To determine the EEP and EnOceanId of the device and announce a SenderId to it, you first have to pair an openHAB thing with the EnOcean device.
 Afterwards you can delete this thing and manage it with its necessary parameters through a configuration file.
 If you change the SenderId of your thing, you have to pair again the thing with your device.
@@ -203,14 +203,17 @@ The channels of a thing are determined automatically based on the chosen EEP.
 | totalusage          | Number:Energy      | Used energy in Kilowatt hours |
 | receivingState      | String             | RSSI value and repeater count of last received message |
 | teachInCMD          | Switch             | Sends a teach-in msg, content can configured with parameter teachInMSG |
-| virtualRockerswitch | String             | Used to send rocker switch messages, can be linked to a Switch item.<br/>Time in ms between sending a pressed and release message can be defined with channel parameter duration.<br/>The switch mode (rocker switch: use DIR1 and DIR2, toggle: use just one DIR) can be set with channel parameter switchMode (rockerSwitch, toggleButtonDir1, toggleButtonDir2)|
+| virtualSwitchA      | Switch             | Used to convert switch item commands into rocker switch messages (channel A used)<br/>Time in ms between sending a pressed and release message can be defined with channel parameter duration.<br/>The switch mode (rocker switch: use DIR1 and DIR2, toggle: use just one DIR) can be set with channel parameter switchMode (rockerSwitch, toggleButtonDir1, toggleButtonDir2)|
+|virtualRollershutterA| Rollershutter      | Used to convert rollershutter item commands into rocker switch messages (channel A used)|
+|rockerswitchListenerSwitch| Switch        | Used to convert rocker switch messages into switch item state updates|
+|rockerswitchListenerRollershutter| Rollershutter | Used to convert rocker switch messages into rollershutter item state updates|
+|virtualRockerswitchB | String             | Used to send plain rocker switch messages (channel B used)|
 
 ## Rules and Profiles
 
 The rockerSwitch things use _system:rawrocker_ channel types.
 So they trigger _DIR1[/2]_\__PRESSED_ and DIR1[/2]_\__RELEASED_ events.
-These channels can be directly linked to simple items like Switch or Dimmer with the help of _profiles_.
-Furthermore this binding implements a profile (rockerswitch-to-play-pause) to link a rockerSwitch directly to a Player item.
+These channels can be directly linked to simple items like Switch, Dimmer or Player with the help of _profiles_.
 If you want to do more advanced stuff, you have to implement rules which react to these events
 
 ```xtend
@@ -240,7 +243,7 @@ Bridge enocean:bridge:gtwy "EnOcean Gateway" [ path="/dev/ttyAMA0" ] {
         receivingEEPId="F6_02_01",
         suppressRepeating=false 
    ] {
-        Type virtualRockerswitchA       : virtualRockerswitchA        [duration=300, switchMode="rockerSwitch"]
+        Type virtualSwitchA             : virtualSwitchA              [duration=300, switchMode="rockerSwitch"]
         Type rockerswitchListenerSwitch : Listener1 "Schalter links"  [enoceanId="aabbcc08", channel="channelA", switchMode="toggleButtonDir1"]
         Type rockerswitchListenerSwitch : Listener2 "Schalter rechts" [enoceanId="aabbcc09", channel="channelB", switchMode="toggleButtonDir2"]
    }
@@ -248,10 +251,10 @@ Bridge enocean:bridge:gtwy "EnOcean Gateway" [ path="/dev/ttyAMA0" ] {
 ```
 
 ```xtend
-Player Kitchen_Sonos "Sonos" (Kitchen) {channel="sonos:PLAY1:ID:control", channel="enocean:rockerSwitch:gtwy:rs01:rockerswitchA" [profile="enocean:rockerswitch-to-play-pause"]}
+Player Kitchen_Sonos "Sonos" (Kitchen) {channel="sonos:PLAY1:ID:control", channel="enocean:rockerSwitch:gtwy:rs01:rockerswitchA" [profile="system:rawrocker-to-play-pause"]}
 Dimmer Kitchen_Hue "Hue" <light> {channel="enocean:rockerSwitch:gtwy:rs01:rockerswitchB" [profile="system:rawrocker-to-dimmer"], channel="hue:0220:0017884f6626:9:brightness"}
 Switch Garage_Light "Switch" {
-        channel="enocean:classicDevice:gtwy:cd01:virtualRockerswitchA" [profile="enocean:rockerswitch-from-on-off"], 
+        channel="enocean:classicDevice:gtwy:cd01:virtualRockerswitchA", 
         channel="enocean:classicDevice:gtwy:cd01:Listener1", 
         channel="enocean:classicDevice:gtwy:cd01:Listener2"
 }
@@ -281,7 +284,7 @@ Your transformation function has to return the openHAB State type and value sepa
 If you want to use a mapping transformation, your mapping file has to look like this for a genericThing using EEP F6_FF_FF:
 
 ```
-ChannelId|EnoceanData(Hex)=OpenhabState|Value
+ChannelId|EnoceanData(Hex)=openHABState|Value
 genericSwitch|70=OnOffType|ON
 genericSwitch|50=OnOffType|OFF
 genericRollershutter|70=PercentType|0
@@ -294,7 +297,7 @@ You do not have to worry about CRC and header data.
 If you want to use a mapping transformation, your mapping file has to look like this for a genericThing using EEP A5_FF_FF:
 
 ```
-ChannelId|OpenhabCommand=EnoceanData(Hex)
+ChannelId|openHABCommand=EnoceanData(Hex)
 genericSwitch|ON=01000009
 genericSwitch|OFF=01000008
 ```

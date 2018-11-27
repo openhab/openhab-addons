@@ -216,7 +216,7 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
 
                                 if (response.isValid() && response.isOK()) {
                                     baseId = response.getBaseId().clone();
-                                    updateProperty(PROPERTY_Base_ID, HexUtils.bytesToHex(response.getBaseId()));
+                                    updateProperty(PROPERTY_BASE_ID, HexUtils.bytesToHex(response.getBaseId()));
                                     updateProperty(PROPERTY_REMAINING_WRITE_CYCLES_Base_ID,
                                             Integer.toString(response.getRemainingWriteCycles()));
                                     transceiver.setFilteredDeviceId(baseId);
@@ -340,11 +340,15 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
     }
 
     public void addPacketListener(ESP3PacketListener listener) {
-        transceiver.addPacketListener(listener);
+        if (transceiver != null) {
+            transceiver.addPacketListener(listener);
+        }
     }
 
     public void removePacketListener(ESP3PacketListener listener) {
-        transceiver.removePacketListener(listener);
+        if (transceiver != null) {
+            transceiver.removePacketListener(listener);
+        }
     }
 
     public void startDiscovery(ESP3PacketListener teachInListener) {

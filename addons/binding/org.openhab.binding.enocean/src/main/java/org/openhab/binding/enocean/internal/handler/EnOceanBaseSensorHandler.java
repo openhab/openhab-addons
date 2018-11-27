@@ -96,7 +96,7 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
                 return false;
             }
 
-            if (!config.enoceanId.equals(EmptyEnOceanId)) {
+            if (!config.enoceanId.equals(EMPTYENOCEANID)) {
                 getBridgeHandler().addPacketListener(this);
             }
         }

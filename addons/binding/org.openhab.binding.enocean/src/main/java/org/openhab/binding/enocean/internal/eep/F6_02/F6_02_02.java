@@ -87,8 +87,8 @@ public class F6_02_02 extends _RPSMessage {
                 return;
             }
 
-            byte dir1 = channelTypeId.equalsIgnoreCase(CHANNEL_VIRTUALROCKERSWITCHA) ? AI : BI;
-            byte dir2 = channelTypeId.equalsIgnoreCase(CHANNEL_VIRTUALROCKERSWITCHA) ? A0 : B0;
+            byte dir1 = channelTypeId.equalsIgnoreCase(CHANNEL_VIRTUALROCKERSWITCHB) ? BI : AI;
+            byte dir2 = channelTypeId.equalsIgnoreCase(CHANNEL_VIRTUALROCKERSWITCHB) ? B0 : A0;
 
             if (s.equals(CommonTriggerEvents.DIR1_PRESSED)) {
                 setStatus((byte) (_RPSMessage.T21Flag | _RPSMessage.NUFlag));
@@ -132,16 +132,20 @@ public class F6_02_02 extends _RPSMessage {
                     if ((bytes[0] >>> 5) == dir1) {
                         if (((bytes[0] & PRESSED) != 0)) {
                             return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH)
-                                    ? inverse((OnOffType) currentState)
-                                    : inverse((UpDownType) currentState);
+                                    ? (currentState == UnDefType.UNDEF ? OnOffType.ON
+                                            : inverse((OnOffType) currentState))
+                                    : (currentState == UnDefType.UNDEF ? UpDownType.UP
+                                            : inverse((UpDownType) currentState));
                         }
                     }
                 case ToggleDir2:
                     if ((bytes[0] >>> 5) == dir2) {
                         if (((bytes[0] & PRESSED) != 0)) {
                             return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH)
-                                    ? inverse((OnOffType) currentState)
-                                    : inverse((UpDownType) currentState);
+                                    ? (currentState == UnDefType.UNDEF ? OnOffType.ON
+                                            : inverse((OnOffType) currentState))
+                                    : (currentState == UnDefType.UNDEF ? UpDownType.UP
+                                            : inverse((UpDownType) currentState));
                         }
                     }
                 default:
