@@ -177,7 +177,7 @@ public class KonnectedHandler extends BaseThingHandler {
 
     private void checkConfiguration() throws ConfigValidationException {
         KonnectedConfiguration testConfig = getConfigAs(KonnectedConfiguration.class);
-        String testRetryCount = (String) testConfig.get(RETRY_COUNT);
+        String testRetryCount = testConfig.get(RETRY_COUNT).toString();
         String testRequestTimeout = testConfig.get(REQUEST_TIMEOUT).toString();
 
         try {
