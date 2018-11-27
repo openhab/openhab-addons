@@ -27,7 +27,7 @@
 			<default>2</default>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="request_timeout" type="text">
+		<parameter name="request_timeout" type="integer">
 			<label>Request Timeout</label>
 			<description>The timeout period in seconds for HTTP requests to the Konnected Alarm Panel.  The default is 30.  Adjusting this setting can help in networks situations with high latency where the binding is erroneously reporting the thing as offline.</description>
 			<default>30</default>
