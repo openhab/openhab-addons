@@ -8,183 +8,238 @@
  */
 package org.openhab.io.hueemulation.internal;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.lang.reflect.Field;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Dictionary;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.TreeMap;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.ArrayUtils;
-import org.eclipse.smarthome.config.core.ConfigConstants;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.config.core.ConfigurableService;
+import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.events.EventPublisher;
-import org.eclipse.smarthome.core.items.Item;
-import org.eclipse.smarthome.core.items.ItemNotFoundException;
 import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.items.events.ItemEventFactory;
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.HSBType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.net.NetworkAddressService;
+import org.eclipse.smarthome.core.service.ReadyMarker;
+import org.eclipse.smarthome.core.service.ReadyService;
+import org.eclipse.smarthome.core.service.ReadyService.ReadyTracker;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.TypeParser;
-import org.openhab.io.hueemulation.internal.api.HueCreateUser;
-import org.openhab.io.hueemulation.internal.api.HueDataStore;
-import org.openhab.io.hueemulation.internal.api.HueDevice;
-import org.openhab.io.hueemulation.internal.api.HueErrorResponse;
-import org.openhab.io.hueemulation.internal.api.HueGroup;
-import org.openhab.io.hueemulation.internal.api.HueState;
+import org.openhab.io.hueemulation.internal.dto.HueCreateUser;
+import org.openhab.io.hueemulation.internal.dto.HueDataStore;
+import org.openhab.io.hueemulation.internal.dto.HueDevice;
+import org.openhab.io.hueemulation.internal.dto.HueResponse;
+import org.openhab.io.hueemulation.internal.dto.HueResponse.HueErrorMessage;
+import org.openhab.io.hueemulation.internal.dto.HueStateChange;
+import org.openhab.io.hueemulation.internal.dto.HueSuccessResponseCreateUser;
+import org.openhab.io.hueemulation.internal.dto.HueSuccessResponseStateChanged;
+import org.openhab.io.hueemulation.internal.dto.HueUnauthorizedConfig;
+import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
+import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
 /**
- * Emulates A Hue compatible HTTP API server
+ * Emulates A Hue compatible HTTP API server.
+ * All original Hue bridge endpoints are emulated, but only /config, /lights, /whitelist are implemented.
  *
  * @author Dan Cunningham - Initial Contribution
  * @author Kai Kreuzer - Improved resource handling to avoid leaks
+ * @author David Graeff - Rewritten. Automatic pairing timeout, correct http method handling, endpoints added
  *
  */
 @SuppressWarnings("serial")
-public class HueEmulationServlet extends HttpServlet {
-    private Logger logger = LoggerFactory.getLogger(HueEmulationServlet.class);
-    private static final String CONFIG_PAIRING_ENABLED = "pairingEnabled";
-    private static final String CONFIG_DISCOVERY_IP = "discoveryIp";
-    private static final String CONFIG_DISCOVERY_HTTP_PORT = "discoveryHttpPort";
-    private static final String PATH = "/api";
-    private static final String METHOD_POST = "POST";
-    private static final String METHOD_PUT = "PUT";
-    private static final String APPLICATION_XML = "application/xml";
-    private static final String APPLICATION_JSON = "application/json";
-    private static final String CHARSET = "utf-8";
-    private static final String NEW_CLIENT_RESP = "[{\"success\":{\"username\": \"%s\"}}]";
-    private static final String STATE_RESP = "[{\"success\":{\"/lights/%s/state/on\":%s}}]";
-    private static final File USER_FILE = new File(
-            ConfigConstants.getUserDataFolder() + File.separator + "hueemulation" + File.separator + "usernames");
-    private static final File UDN_FILE = new File(
-            ConfigConstants.getUserDataFolder() + File.separator + "hueemulation" + File.separator + "udn");
-    private static final File ITEM_FILE = new File(
-            ConfigConstants.getUserDataFolder() + File.separator + "hueemulation" + File.separator + "items");
-    private static final String[] SUPPORTED_TAGS = new String[] { "Switchable", "Lighting" };
-    private Gson gson = new Gson();
-    private HttpService httpService;
-    private ItemRegistry itemRegistry;
-    private EventPublisher eventPublisher;
-    private HueEmulationUpnpServer disco;
-    private String udn;
-    private String xmlDoc;
-    private int webPort;
-    private boolean pairingEnabled = false;
-    // list of valid Hue API user ids
-    private List<String> userNames = new ArrayList<>();
-    // deviceMap maps a Hue numeric id to a Item Name, ordered by that id
-    private TreeMap<Integer, String> deviceMap = new TreeMap<>();
+@NonNullByDefault
+@Component(immediate = true, service = { HueEmulationServlet.class,
+        HttpServlet.class }, configurationPid = "org.openhab.hueemulation", property = {
+                org.osgi.framework.Constants.SERVICE_PID + "=org.openhab.hueemulation",
+                ConfigurableService.SERVICE_PROPERTY_DESCRIPTION_URI + "=io:hueemulation",
+                ConfigurableService.SERVICE_PROPERTY_CATEGORY + "=io",
+                ConfigurableService.SERVICE_PROPERTY_LABEL + "=Hue Emulation" })
+public class HueEmulationServlet extends HttpServlet implements ReadyTracker {
+    public static final String PATH = "/api";
+    private final Path DISCOVERY_PATH = Paths.get("/api/description.xml");
 
-    protected void activate(Map<String, Object> config) {
-        modified(config);
-        try {
-            Dictionary<String, String> servletParams = new Hashtable<String, String>();
-            httpService.registerServlet(PATH, this, servletParams, httpService.createDefaultHttpContext());
+    private final Logger logger = LoggerFactory.getLogger(HueEmulationServlet.class);
+    private final Gson gson;
 
-            // load users from disk
-            if (USER_FILE.exists()) {
-                FileInputStream fis = null;
-                try {
-                    fis = new FileInputStream(USER_FILE);
-                    userNames.addAll(IOUtils.readLines(fis));
-                } finally {
-                    IOUtils.closeQuietly(fis);
-                }
-            }
+    //// Required services ////
+    private @NonNullByDefault({}) HttpService httpService;
+    private @NonNullByDefault({}) ItemRegistry itemRegistry;
+    private @NonNullByDefault({}) EventPublisher eventPublisher;
+    private @NonNullByDefault({}) HueEmulationUpnpServer discovery;
+    private @NonNullByDefault({}) ConfigurationAdmin configAdmin;
+    private @NonNullByDefault({}) NetworkAddressService networkAddressService;
+    private @NonNullByDefault({}) ReadyService readyService;
+    //// objects, set within activate()
+    private @NonNullByDefault({}) HueEmulationConfig config;
+    private @NonNullByDefault({}) String xmlDoc;
 
-            // load item list from disk
-            if (ITEM_FILE.exists()) {
-                JsonReader reader = null;
-                try {
-                    reader = new JsonReader(new FileReader(ITEM_FILE));
-                    LinkedHashMap<Integer, String> tmpMap = gson.fromJson(reader,
-                            new TypeToken<Map<Integer, String>>() {
-                            }.getType());
-                    if (tmpMap != null) {
-                        deviceMap.putAll(tmpMap);
-                    }
-                } finally {
-                    IOUtils.closeQuietly(reader);
-                }
-            }
-            logger.info("Started Hue Emulation service at " + PATH);
-        } catch (Exception e) {
-            logger.error("Could not start Hue Emulation service: {}", e.getMessage(), e);
-        }
+    private final HueDataStore ds = new HueDataStore();
+    private final UserManagement userManagement;
+    private final LightItems lightItems;
+    private @Nullable Thread pairingTimeoutThread;
+    private boolean started = false;
+
+    public HueEmulationServlet() {
+        gson = new GsonBuilder().registerTypeAdapter(HueSuccessResponseStateChanged.class,
+                new HueSuccessResponseStateChanged.Serializer()).create();
+        userManagement = new UserManagement(ds, gson);
+        lightItems = new LightItems(ds, gson);
     }
 
-    protected void modified(Map<String, ?> config) {
-        if (disco != null) {
-            disco.shutdown();
-            disco = null;
+    @Activate
+    protected void activate(Map<String, Object> properties) {
+        InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream("discovery.xml");
+        if (resourceAsStream == null) {
+            logger.warn("Could not start Hue Emulation service: discovery.xml not found");
+            return;
         }
+        xmlDoc = new BufferedReader(new InputStreamReader(resourceAsStream, StandardCharsets.UTF_8)).lines()
+                .collect(Collectors.joining("\n"));
 
-        Object obj = config.get(CONFIG_DISCOVERY_IP);
-        String ip = obj != null ? (String) obj : null;
+        this.config = new Configuration(properties).as(HueEmulationConfig.class);
+        userManagement.loadUsersFromFile();
+        lightItems.loadMappingFromFile();
+        lightItems.setFilterTags(config.switchTags(), config.colorTags(), config.whiteTags());
 
-        obj = config.get(CONFIG_DISCOVERY_HTTP_PORT);
-        webPort = obj == null ? Integer.getInteger("org.osgi.service.http.port") : Integer.parseInt((String) obj);
-        try {
-            disco = new HueEmulationUpnpServer(PATH + "/description.xml", getUDN(), webPort, ip);
-            disco.start();
-        } catch (IOException e) {
-            logger.error("Could not start UPNP server for discovery", e);
-        }
-
-        Object pairingString = config.get(CONFIG_PAIRING_ENABLED);
-        if (pairingString == null) {
-            pairingEnabled = false;
-        } else {
-            if (pairingString instanceof Boolean) {
-                pairingEnabled = ((Boolean) pairingString).booleanValue();
-            } else {
-                pairingEnabled = "true".equalsIgnoreCase((String) pairingString);
-            }
-        }
-        logger.debug("Device pairing enabled : {}", pairingEnabled);
+        // The hue emulation need to start very late in the start up process. The
+        // ready marker service is used to make sure all items and item descriptions are loaded.
+        readyService.registerTracker(this);
     }
 
+    @Modified
+    protected void modified(Map<String, Object> properties) {
+        // Get and apply configurations
+        this.config = new Configuration(properties).as(HueEmulationConfig.class);
+        lightItems.setFilterTags(config.switchTags(), config.colorTags(), config.whiteTags());
+
+        // If started: restart all parts of this service that depend on configuration
+        if (!started) {
+            return;
+        }
+
+        restartDiscovery();
+        stopPairingTimeoutThread();
+        startPairingTimeoutThread();
+    }
+
+    @Deactivate
     protected void deactivate(ComponentContext componentContext) {
+        readyService.unregisterTracker(this);
+        stopPairingTimeoutThread();
+        lightItems.close(itemRegistry);
+        userManagement.writeToFile();
+
         try {
             httpService.unregister(PATH);
         } catch (IllegalArgumentException ignored) {
         }
-        if (disco != null) {
-            disco.shutdown();
+        if (discovery != null) {
+            discovery.shutdown();
         }
     }
 
+    @Override
+    public void onReadyMarkerRemoved(ReadyMarker readyMarker) {
+    }
+
+    @Override
+    public void onReadyMarkerAdded(ReadyMarker readyMarker) {
+        if (started || !"org.eclipse.smarthome.model.core".equals(readyMarker.getIdentifier())) {
+            return;
+        }
+
+        started = true;
+        try {
+
+            httpService.registerServlet(PATH, this, new Hashtable<String, String>(),
+                    httpService.createDefaultHttpContext());
+        } catch (ServletException | NamespaceException e) {
+            logger.warn("Could not start Hue Emulation service: {}", e.getMessage(), e);
+            return;
+        }
+
+        lightItems.fetchItemsAndWatchRegistry(itemRegistry);
+
+        restartDiscovery();
+        stopPairingTimeoutThread();
+        startPairingTimeoutThread();
+
+        // Announce that this service is ready and unregister from the tracker
+        readyService.markReady(new ReadyMarker("Online", "org.openhab.hueemulation"));
+        CompletableFuture.runAsync(() -> readyService.unregisterTracker(this));
+    }
+
+    @Reference
+    protected void setStateDescriptionService(ReadyService readyService) {
+        this.readyService = readyService;
+    }
+
+    protected void unsetStateDescriptionService(ReadyService readyService) {
+        this.readyService = null;
+    }
+
+    @Reference
+    protected void setConfigurationAdmin(ConfigurationAdmin configAdmin) {
+        this.configAdmin = configAdmin;
+    }
+
+    protected void unsetConfigurationAdmin(ConfigurationAdmin configAdmin) {
+        this.configAdmin = null;
+    }
+
+    @Reference
+    protected void setNetworkAddressService(NetworkAddressService netUtils) {
+        this.networkAddressService = netUtils;
+    }
+
+    protected void unsetNetworkAddressService(NetworkAddressService netUtils) {
+        this.networkAddressService = null;
+    }
+
+    @Reference
     protected void setItemRegistry(ItemRegistry itemRegistry) {
         this.itemRegistry = itemRegistry;
     }
@@ -193,6 +248,7 @@ public class HueEmulationServlet extends HttpServlet {
         this.itemRegistry = null;
     }
 
+    @Reference
     protected void setEventPublisher(EventPublisher eventPublisher) {
         this.eventPublisher = eventPublisher;
     }
@@ -201,6 +257,7 @@ public class HueEmulationServlet extends HttpServlet {
         this.eventPublisher = null;
     }
 
+    @Reference
     protected void setHttpService(HttpService httpService) {
         this.httpService = httpService;
     }
@@ -209,220 +266,306 @@ public class HueEmulationServlet extends HttpServlet {
         this.httpService = null;
     }
 
-    @Override
-    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String path = req.getRequestURI();
-        logger.debug("{}: {} {}", req.getRemoteAddr(), req.getMethod(), path);
-        setHeaders(resp);
+    private void startPairingTimeoutThread() {
+        if (config.pairingEnabled) {
+            logger.info("Started Hue Emulation service with pairing for {}s at {}", config.pairingTimeout, PATH);
+            Thread thread = new Thread(() -> {
+                try {
+                    Thread.sleep(config.pairingTimeout * 1000);
+                    org.osgi.service.cm.Configuration configuration = configAdmin
+                            .getConfiguration("org.openhab.hueemulation");
+                    Dictionary<String, Object> dictionary = configuration.getProperties();
+                    dictionary.put(HueEmulationConfig.CONFIG_PAIRING_ENABLED, false);
+                    dictionary.put(HueEmulationConfig.CONFIG_CREATE_NEW_USER_ON_THE_FLY, false);
+                    configuration.update(dictionary);
+                } catch (IOException | InterruptedException ignore) {
+                }
+            });
+            pairingTimeoutThread = thread;
+            thread.start();
+        } else {
+            logger.info("Started Hue Emulation service without pairing at {}", PATH);
+        }
+    }
 
-        // UPNP discovery document
-        if (path.equals(PATH + "/description.xml")) {
-            apiDiscoveryXML(req, resp);
+    private void stopPairingTimeoutThread() {
+        Thread thread = pairingTimeoutThread;
+        if (thread != null) {
+            thread.interrupt();
+            try {
+                thread.join(2000);
+            } catch (InterruptedException e) {
+            }
+        }
+    }
+
+    private void restartDiscovery() {
+        if (discovery != null) {
+            discovery.shutdown();
+            discovery = null;
+        }
+
+        if (config.discoveryHttpPort == 0) {
+            config.discoveryHttpPort = Integer.getInteger("org.osgi.service.http.port");
+        }
+
+        String discoveryIp = config.discoveryIp;
+        if (discoveryIp == null) {
+            discoveryIp = networkAddressService.getPrimaryIpv4HostAddress();
+        }
+
+        if (discoveryIp == null) {
+            logger.warn("No primary IP address configured. Discovery disabled!");
             return;
         }
 
-        // everything is JSON from here
-        resp.setContentType(APPLICATION_JSON);
+        InetAddress address;
+        try {
+            address = InetAddress.getByName(discoveryIp);
+        } catch (UnknownHostException e) {
+            logger.warn("No primary IP address configured. Discovery disabled!", e);
+            return;
+        }
+
+        try {
+            discovery = new HueEmulationUpnpServer(PATH + "/description.xml", UDN.getUDN(), address,
+                    config.discoveryHttpPort);
+            discovery.start();
+        } catch (IOException e) {
+            logger.warn("Could not start UPNP server for discovery", e);
+        }
+    }
+
+    @NonNullByDefault({})
+    @Override
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        setHeaders(resp);
+        final Path path = Paths.get(req.getRequestURI());
+
+        // Fast exit for non-api consumers
+        if (!path.startsWith(PATH) || path.getNameCount() > 5) {
+            resp.setStatus(404);
+            return;
+        }
 
         try (PrintWriter out = resp.getWriter()) {
+            // UPNP discovery document
+            if (path.equals(DISCOVERY_PATH)) {
+                resp.setContentType("application/xml");
+                String address = discovery.getAddress().getHostAddress();
+                out.write(String.format(xmlDoc, address, config.discoveryHttpPort, address, UDN.getUDN()));
+                return;
+            }
+
+            // everything is JSON from here
+            resp.setContentType("application/json");
+
             // request for API key
-            if (path.equals(PATH) || path.equals(PATH + "/")) {
-                if (pairingEnabled) {
-                    apiConfig(req, out);
+            if (path.getNameCount() == 1) {
+                if (!"POST".equals(req.getMethod())) {
+                    resp.setStatus(404);
+                    apiServerError(req, out, HueResponse.METHOD_NOT_AVAILABLE, "Only POST allowed for this resource");
+                    return;
+                }
+                if (config.pairingEnabled) {
+                    apiCreateUser(req, resp, out);
                 } else {
-                    apiServerError(req, out, HueErrorResponse.UNAUTHORIZED,
-                            "Not Authorized. Pair button must be pressed to add users.");
+                    resp.setStatus(403);
+                    apiServerError(req, out, HueResponse.LINK_BUTTON_NOT_PRESSED, "link button not pressed");
                 }
                 return;
             }
 
-            // All other API requests
-            String[] pathParts = path.replace("/api/", "").split("/");
+            updateDataStore();
 
-            if (pathParts.length > 0) {
-                String userName = pathParts[0];
+            final String userName = path.getName(1).toString();
 
-                /**
-                 * Some devices (Amazon Echo) seem to rely on the bridge to add an unknown user if pairing is on
-                 * instead of using the configApi method
-                 */
-                if (pairingEnabled) {
-                    addUser(userName);
-                } else if (!authorizeUser(userName)) {
-                    apiServerError(req, out, HueErrorResponse.UNAUTHORIZED, "Not Authorized");
+            // Reduced config
+            /** /api/config */
+            if ("config".equals(userName)) {
+                try (JsonWriter writer = new JsonWriter(out)) {
+                    gson.toJson(ds.config, new TypeToken<HueUnauthorizedConfig>() {
+                    }.getType(), writer);
+                }
+                return;
+            }
+
+            if (!userManagement.authorizeUser(userName)) {
+                if (config.pairingEnabled && config.createNewUserOnEveryEndpoint) {
+                    userManagement.addUser(userName, "Formerly authorized device");
+                } else {
+                    resp.setStatus(403);
+                    apiServerError(req, out, HueResponse.UNAUTHORIZED, "Not Authorized");
                     return;
                 }
-
-                if (pathParts.length == 1) {
-                    /**
-                     * /api/{username}
-                     */
-                    apiDataStore(req, resp);
-                } else {
-                    String function = pathParts[1];
-                    if ("lights".equals(function)) {
-                        switch (pathParts.length) {
-                            case 2:
-                                /**
-                                 * /api/{username}/lights
-                                 */
-                                apiLights(req, out);
-                                break;
-                            case 3:
-                                /**
-                                 * /api/{username}/lights/{id}
-                                 */
-                                apiLight(pathParts[2], req, out);
-                                break;
-                            case 4:
-                                /**
-                                 * /api/{username}/lights/{id}/state
-                                 */
-                                apiState(pathParts[2], req, out);
-                                break;
-                            default:
-                                break;
-                        }
-                    } else if ("groups".equals(function)) {
-                        switch (pathParts.length) {
-                            case 2:
-                                /**
-                                 * /api/{username}/group
-                                 */
-                                emptyResponse(req, out);
-                                break;
-                            case 3:
-                                /**
-                                 * /api/{username}/group/{id}
-                                 */
-                                if ("0".equals(pathParts[2])) {
-                                    apiGroupZero(req, out);
-                                }
-                                break;
-                            default:
-                                break;
-                        }
-                    } else {
-                        apiServerError(req, out, HueErrorResponse.NOT_AVAILABLE, "Hue resource not available");
-                    }
-                }
             }
+
+            if (path.getNameCount() == 2) {
+                /** /api/{username} */
+                out.write(gson.toJson(ds));
+                return;
+            }
+
+            String function = path.getName(2).toString();
+            // The following block is generic, it works for all Map fields in the datastore
+            try {
+                Field field = ds.getClass().getField(function);
+                Object object = field.get(ds);
+                switch (path.getNameCount()) {
+                    case 3:
+                        /** /api/{username}/lights */
+                        if (req.getMethod().equals("GET")) {
+                            out.write(gson.toJson(object));
+                        } else {
+                            apiServerError(req, out, HueResponse.METHOD_NOT_AVAILABLE,
+                                    req.getMethod() + " not allowed for this resource");
+                        }
+                        return;
+                    case 4:
+                        String id = path.getName(3).toString();
+                        /** /api/{username}/lights/{id} */
+                        if (req.getMethod().equals("GET")) {
+                            final @SuppressWarnings("rawtypes") Map objectMap = Map.class.cast(object);
+                            final @SuppressWarnings("rawtypes") Optional first = objectMap.keySet().stream()
+                                    .findFirst();
+                            final Object value;
+                            if (Integer.class.equals(first.get().getClass())) {
+                                value = objectMap.get(new Integer(id));
+                            } else {
+                                value = objectMap.get(id);
+                            }
+                            if (value == null) {
+                                logger.debug("Could not find {} for id {}. ", function, id);
+                                apiServerError(req, out, HueResponse.NOT_AVAILABLE,
+                                        function + " " + id + " does not exist.");
+                                return;
+                            } else {
+                                out.write(gson.toJson(value));
+                            }
+                        } else // Remove a user
+                        if (req.getMethod().equals("DELETE") && "whitelist".equals(function)) {
+                            // Only own user can be removed
+                            if (userName.equals(id)) {
+                                userManagement.removeUser(id);
+                            } else {
+                                resp.setStatus(403);
+                                apiServerError(req, out, HueResponse.UNAUTHORIZED, "Not Authorized");
+                            }
+                        } else {
+                            apiServerError(req, out, HueResponse.METHOD_NOT_AVAILABLE,
+                                    req.getMethod() + " not allowed for this resource");
+                        }
+                        return;
+                    case 5:
+                        /** /api/{username}/lights/{id}/state */
+                        // Only lights allowed for /state so far
+                        if (req.getMethod().equals("PUT") && "lights".equals(function)) {
+                            apiSetState(path, req, out);
+                        } else {
+                            apiServerError(req, out, HueResponse.METHOD_NOT_AVAILABLE,
+                                    req.getMethod() + " not allowed for this resource");
+                        }
+                        return;
+                    default:
+                        break;
+                }
+            } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException
+                    | NoSuchElementException e) {
+            }
+            resp.setStatus(404);
+            apiServerError(req, out, HueResponse.NOT_AVAILABLE, "Hue resource not available");
         }
     }
 
     /**
-     * Hue API call to set the state of a light
+     * Hue API call to set the state of a light.
+     * Enpoint: /api/{username}/lights/{id}/state
      */
-    private void apiState(String id, HttpServletRequest req, PrintWriter out) throws IOException {
-        if (!req.getMethod().equals(METHOD_PUT)) {
-            apiServerError(req, out, HueErrorResponse.METHOD_NOT_AVAILABLE, "Only PUT allowed for this resource");
+    @SuppressWarnings({ "null", "unused" })
+    private void apiSetState(Path uri, HttpServletRequest req, PrintWriter out) throws IOException {
+        /** {username}/lights/{id}/state */
+        Integer hueID = new Integer(uri.getName(3).toString());
+        HueDevice hueDevice = ds.lights.get(hueID);
+        if (hueDevice == null) {
+            apiServerError(req, out, HueResponse.NOT_AVAILABLE, "The Hue device could not be found");
             return;
         }
+
+        HueStateChange state;
         try {
-            // will throw exception if not found
-            Item item = itemRegistry.getItem(deviceMap.get(new Integer(id)));
-            HueState state = gson.fromJson(req.getReader(), HueState.class);
-            HSBType hsb = state.toHSBType();
-            logger.debug("HuState {}", state);
-            logger.debug("HSBType {}", hsb);
-            Command command = null;
-            if (hsb.getBrightness().intValue() > 0) {
-                // if state is on then send HSB, Brightness or ON
-                if (item.getAcceptedCommandTypes().contains(HSBType.class)) {
-                    command = hsb;
-                } else {
-                    // try and set the brightness level first
-                    command = TypeParser.parseCommand(item.getAcceptedCommandTypes(), hsb.getBrightness().toString());
-                    if (command == null) {
-                        // if the item does not accept a number or String type, try ON
-                        command = TypeParser.parseCommand(item.getAcceptedCommandTypes(), "ON");
-                    }
-                }
-            } else {
-                // if state is off, then send 0 or 0FF
-                command = TypeParser.parseCommand(item.getAcceptedCommandTypes(), "0");
-                if (command == null) {
-                    command = TypeParser.parseCommand(item.getAcceptedCommandTypes(), "OFF");
-                }
-            }
-
-            if (command != null) {
-                logger.debug("sending {} to {}", command, item.getName());
-                eventPublisher.post(ItemEventFactory.createCommandEvent(item.getName(), command));
-                out.write(String.format(STATE_RESP, id, String.valueOf(state.on)));
-            } else {
-                logger.error("Item {} does not accept Decimal, ON/OFF or String types", item.getName());
-                apiServerError(req, out, HueErrorResponse.INTERNAL_ERROR,
-                        "The Hue device does not respond to that command");
-            }
-        } catch (ItemNotFoundException e) {
-            logger.debug("Item not found: {}", id);
-            apiServerError(req, out, HueErrorResponse.NOT_AVAILABLE, "The Hue device could not be found");
+            state = gson.fromJson(req.getReader(), HueStateChange.class);
+        } catch (com.google.gson.JsonParseException e) {
+            state = null;
         }
-    }
-
-    /**
-     * Hue API call to get the state of a single light
-     */
-    private void apiLight(String id, HttpServletRequest req, PrintWriter out) throws IOException {
-        HueDevice device = getHueDevices().get(new Integer(id));
-
-        if (device == null) {
-            logger.error("\"Could not find light for id {}. ", id);
-            apiServerError(req, out, HueErrorResponse.NOT_AVAILABLE, "Light " + id + " does not exist.");
+        if (state == null) {
+            apiServerError(req, out, HueResponse.INTERNAL_ERROR, "Could not parse received json");
             return;
-        } else {
-            out.write(gson.toJson(device));
         }
-    }
 
-    /**
-     * Hue API call to get a listing of all lights
-     */
-    public void apiLights(HttpServletRequest req, PrintWriter out) throws IOException {
-        out.write(gson.toJson(getHueDevices()));
-    }
+        // Apply new state and collect success, error items
+        Map<String, Object> successApplied = new TreeMap<>();
+        List<String> errorApplied = new ArrayList<>();
+        Command command = hueDevice.applyState(state, successApplied, errorApplied);
 
-    /**
-     * Hue API call to get a listing of Group 0
-     */
-    public void apiGroupZero(HttpServletRequest req, PrintWriter out) throws IOException {
-        List<String> lights = new LinkedList<String>();
-        for (Integer key : deviceMap.keySet()) {
-            lights.add(key.toString());
+        // If a command could be created, post it to the framework now
+        if (command != null) {
+            logger.debug("sending {} to {}", command, hueDevice.item.getName());
+            eventPublisher.post(ItemEventFactory.createCommandEvent(hueDevice.item.getName(), command));
         }
-        HueState action = new HueState();
-        out.write(gson.toJson(new HueGroup("Group 0", lights.toArray(new String[0]), action)));
+
+        // Generate the response. The response consists of a list with an entry each for all
+        // submitted change requests. If for example "on" and "bri" was send, 2 entries in the response are
+        // expected.
+        Path contextPath = uri.subpath(2, uri.getNameCount() - 1);
+        List<HueResponse> responses = new ArrayList<>();
+        successApplied.forEach((t, v) -> {
+            responses.add(new HueResponse(new HueSuccessResponseStateChanged(contextPath.resolve(t).toString(), v)));
+        });
+        errorApplied.forEach(v -> {
+            responses.add(new HueResponse(new HueErrorMessage(HueResponse.NOT_AVAILABLE,
+                    contextPath.resolve(v).toString(), "Could not set")));
+        });
+
+        try (JsonWriter writer = new JsonWriter(out)) {
+            gson.toJson(responses, new TypeToken<List<?>>() {
+            }.getType(), writer);
+        }
     }
 
     /**
      * HUE API call to get the Data Store of the bridge (only lights supported for now)
      */
-    public void apiDataStore(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        PrintWriter out = resp.getWriter();
-        HueDataStore ds = new HueDataStore();
-        ds.lights = getHueDevices();
-        out.write(gson.toJson(ds));
+    public void updateDataStore() throws IOException {
+        ds.config.UTC = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        ds.config.localtime = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        ds.config.linkbutton = config.pairingEnabled;
+        ds.config.mac = getMAC();
+        ds.config.ipaddress = discovery.getAddress().getHostAddress();
+        ds.config.uuid = UDN.getUDN();
     }
 
     /**
-     * Hue API call to configure a user
+     * Handles POST on /api: To configure a new user
      */
-    public void apiConfig(HttpServletRequest req, PrintWriter out) throws IOException {
-        if (!req.getMethod().equals(METHOD_POST)) {
-            apiServerError(req, out, HueErrorResponse.METHOD_NOT_AVAILABLE, "Only POST allowed for this resource");
+    @SuppressWarnings("null")
+    public void apiCreateUser(HttpServletRequest req, HttpServletResponse resp, PrintWriter out) throws IOException {
+        HueCreateUser user = gson.fromJson(req.getReader(), HueCreateUser.class);
+        if (user == null || user.devicetype == null || user.devicetype.isEmpty()) {
+            resp.setStatus(400);
+            apiServerError(req, out, HueResponse.INVALID_JSON, "body contains invalid JSON");
             return;
         }
 
-        HueCreateUser user = gson.fromJson(req.getReader(), HueCreateUser.class);
-        logger.debug("Create user: {}", user.devicetype);
         if (user.username == null || user.username.length() == 0) {
             user.username = UUID.randomUUID().toString();
         }
-        addUser(user.username);
-        String response = String.format(NEW_CLIENT_RESP, user.username);
-        out.write(response);
-        out.close();
+        userManagement.addUser(user.username, user.devicetype);
+
+        try (JsonWriter writer = new JsonWriter(out)) {
+            HueSuccessResponseCreateUser h = new HueSuccessResponseCreateUser(user.username);
+            gson.toJson(Collections.singleton(h), new TypeToken<List<?>>() {
+            }.getType(), writer);
+        }
     }
 
     /**
@@ -430,200 +573,46 @@ public class HueEmulationServlet extends HttpServlet {
      */
     public void apiServerError(HttpServletRequest req, PrintWriter out, int error, String description)
             throws IOException {
-        logger.debug("apiServerError {} {}", error, description);
-        HueErrorResponse e = new HueErrorResponse(error, req.getRequestURI(), description);
-        out.write(gson.toJson(e));
-    }
-
-    /**
-     * Returns a empty ("{}") JSON response
-     */
-    public void emptyResponse(HttpServletRequest req, PrintWriter out) throws IOException {
-        out.write("{}");
-    }
-
-    /**
-     * Generates the XML Discovery document
-     *
-     * @return
-     *         XML document
-     */
-    public void apiDiscoveryXML(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        if (xmlDoc == null) {
-            xmlDoc = IOUtils.toString(getClass().getClassLoader().getResourceAsStream("discovery.xml"), "UTF-8");
-        }
-
-        InetAddress address = disco.getAddress();
-        if (address == null) {
-            return;
-        }
-
-        String formattedXML = String.format(xmlDoc, address.getHostAddress(), webPort, getUDN());
-        resp.setContentType(APPLICATION_XML);
-        try (PrintWriter out = resp.getWriter()) {
-            out.write(formattedXML);
-        }
-    }
-
-    /**
-     * Converts an Item to a HueDevice
-     */
-    private HueDevice itemToDevice(Item item, Integer key) {
-        State itemState = item.getState();
-        HueState hueState;
-        if (itemState instanceof HSBType) {
-            HSBType color = (HSBType) itemState;
-            hueState = new HueState(color);
-        } else if (itemState instanceof DecimalType) {
-            short bri = (short) ((((DecimalType) itemState).intValue() * 255) / 100);
-            hueState = new HueState(bri);
-        } else if (itemState instanceof OnOffType) {
-            short bri = (short) (((OnOffType) itemState) == OnOffType.ON ? 255 : 0);
-            hueState = new HueState(bri);
+        if (error == HueResponse.UNAUTHORIZED) {
+            logger.debug("Unauthorized access to {} from {}:{}!\n", req.getRequestURI(), req.getRemoteAddr(),
+                    req.getRemotePort());
         } else {
-            hueState = new HueState((short) 0);
+            logger.debug("'{}' for: {}\nRequest from: {}:{}\n", description, req.getRequestURI(), req.getRemoteAddr(),
+                    req.getRemotePort());
+
         }
 
-        HueDevice d = new HueDevice(hueState, item.getLabel(), key);
-        return d;
-    }
-
-    /**
-     * Gets and syncs all items tagged for voice.
-     */
-    private synchronized TreeMap<Integer, HueDevice> getHueDevices() {
-        TreeMap<Integer, HueDevice> returnMap = new TreeMap<Integer, HueDevice>();
-        HashMap<String, Item> taggedItems = new HashMap<String, Item>();
-
-        // if we modify our internal map, persist it to disk
-        boolean modified = false;
-
-        // get all tagged items
-        for (Item item : itemRegistry.getItems()) {
-            for (String tag : item.getTags()) {
-                if (ArrayUtils.contains(SUPPORTED_TAGS, tag)) {
-                    taggedItems.put(item.getName(), item);
-                    if (!deviceMap.containsValue(item.getName())) {
-                        // hue devices are assigned a numeric number starting with 1, if a device is
-                        // removed that number is not used again. Not sure how high this id can get
-                        // not worrying about it here
-                        Integer next = deviceMap.size() == 0 ? 1 : new Integer(deviceMap.lastKey().intValue() + 1);
-                        deviceMap.put(next, item.getName());
-                        modified = true;
-                    }
-                    break;
-                }
-            }
-        }
-
-        Set<Integer> keysToRemove = new HashSet<>();
-
-        // clean up removed entries
-        for (Map.Entry<Integer, String> entry : deviceMap.entrySet()) {
-            String itemName = entry.getValue();
-            if (!taggedItems.containsKey(itemName)) {
-                keysToRemove.add(entry.getKey());
-                modified = true;
-            }
-        }
-
-        for (Integer key : keysToRemove) {
-            deviceMap.remove(key);
-        }
-
-        // for each entry, lookup the item and convert it to a hue device
-        for (Integer key : deviceMap.keySet()) {
-            try {
-                returnMap.put(key, itemToDevice(itemRegistry.getItem(deviceMap.get(key)), key));
-            } catch (ItemNotFoundException e) {
-                logger.warn("Could not find item", e);
-            }
-        }
-
-        if (modified) {
-            JsonWriter writer = null;
-            try {
-                writer = new JsonWriter(new FileWriter(ITEM_FILE));
-                gson.toJson(deviceMap, new TypeToken<Map<Integer, String>>() {
-                }.getType(), writer);
-            } catch (IOException e) {
-                logger.error("Could not persist item cache", e);
-            } finally {
-                IOUtils.closeQuietly(writer);
-            }
-        }
-        return returnMap;
-    }
-
-    /**
-     * Checks if the username exists in our user list
-     */
-    private boolean authorizeUser(String userName) throws IOException {
-        return userNames.contains(userName);
-    }
-
-    /**
-     * Adds a username to the user file
-     */
-    private synchronized void addUser(String userName) throws IOException {
-        if (!userNames.contains(userName)) {
-            userNames.add(userName);
-            USER_FILE.getParentFile().mkdirs();
-            FileOutputStream fos = null;
-            try {
-                fos = new FileOutputStream(USER_FILE);
-                IOUtils.writeLines(userNames, null, fos);
-            } finally {
-                IOUtils.closeQuietly(fos);
-            }
+        try (JsonWriter writer = new JsonWriter(out)) {
+            HueResponse e = new HueResponse(
+                    new HueErrorMessage(error, req.getRequestURI().replace("/api", ""), description));
+            gson.toJson(Collections.singleton(e), new TypeToken<List<?>>() {
+            }.getType(), writer);
         }
     }
 
-    /**
-     * Gets the unique UDN for this server, will generate and persist one if not found.
-     *
-     * @throws IOException
-     */
-    private synchronized String getUDN() throws IOException {
-        if (udn == null) {
-            FileInputStream fis = null;
-            FileOutputStream fos = null;
-            try {
-                if (!UDN_FILE.exists()) {
-                    UDN_FILE.getParentFile().mkdirs();
-                } else {
-                    fis = new FileInputStream(UDN_FILE);
-                    List<String> lines = IOUtils.readLines(fis);
-                    if (lines.size() > 0) {
-                        udn = lines.get(0);
-                    }
-                }
-                if (udn == null) {
-                    udn = UUID.randomUUID().toString();
-                    fos = new FileOutputStream(UDN_FILE);
-                    IOUtils.write(udn.getBytes(), fos);
-                }
-            } finally {
-                IOUtils.closeQuietly(fis);
-                IOUtils.closeQuietly(fos);
-            }
+    private String getMAC() throws UnknownHostException, SocketException {
+        NetworkInterface networkInterface = NetworkInterface.getByInetAddress(discovery.getAddress());
+
+        byte[] mac = networkInterface.getHardwareAddress();
+        if (mac == null) {
+            return "00:00:88:00:bb:ee";
         }
-        return udn;
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < mac.length; i++) {
+            sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? ":" : ""));
+        }
+        return sb.toString();
     }
 
     /**
      * Sets Hue API Headers
      */
-    private void setHeaders(HttpServletResponse response) {
-        response.setCharacterEncoding(CHARSET);
-        response.setContentType(APPLICATION_JSON);
+    private static void setHeaders(HttpServletResponse response) {
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT");
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    }
-
-    public boolean getPairingEnabled() {
-        return pairingEnabled;
     }
 }
