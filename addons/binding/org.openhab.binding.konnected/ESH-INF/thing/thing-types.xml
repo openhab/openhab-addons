@@ -125,7 +125,7 @@
 			</parameter>
 			<parameter name="onvalue" type="text">
 				<label>On Value</label>
-				<description>The value that will be treated by the binding as an on command.  For actuators that activate with a high command set to 1 and actuators that activate with a low value set to 0.</description>
+				<description>The value that will be treated by the binding as an on command. For actuators that activate with a high command set to 1 and actuators that activate with a low value set to 0.</description>
 				<default>1</default>
 				<options>
 					<option value="0">0</option>
