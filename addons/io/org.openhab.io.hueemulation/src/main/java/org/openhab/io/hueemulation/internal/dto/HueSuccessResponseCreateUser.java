@@ -6,16 +6,17 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.io.hueemulation.internal.api;
-
-import java.util.Map;
+package org.openhab.io.hueemulation.internal.dto;
 
 /**
- * Hue API data store object
+ * Hue API error response object
  *
- * @author Dan Cunningham
- *
+ * @author David Graeff - Initial contribution
  */
-public class HueDataStore {
-    public Map<Integer, HueDevice> lights;
+public class HueSuccessResponseCreateUser implements HueSuccessResponse {
+    public String username;
+
+    public HueSuccessResponseCreateUser(String username) {
+        this.username = username;
+    }
 }

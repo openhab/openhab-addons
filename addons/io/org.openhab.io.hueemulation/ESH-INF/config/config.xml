@@ -5,14 +5,36 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
 		http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 	<config-description uri="io:hueemulation">
-		<parameter name="pairingEnabled" type="text">
-			<label>Enable Device Pairing</label>
-			<description>Pairing must be enabled to connect a new device. Once a device has been added, pairing should be disabled.</description>
-			<options>
-				<option value="true">Pairing Enabled</option>
-				<option value="false">Pairing Disabled</option>
-			</options>
+		<parameter name="pairingEnabled" type="boolean">
+			<label>Device Pairing</label>
+			<description>Pairing must be enabled to connect a new device. Pairing is automatically disabled after the configured pairing time (usually 60 seconds).</description>
 			<default>false</default>
+		</parameter>
+		<parameter name="pairingTimeout" type="integer" required="false">
+			<label>Pairing timeout</label>
+			<description>Pairing is automatically disabled after the given time in seconds.</description>
+			<default>60</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="createNewUserOnEveryEndpoint" type="boolean">
+			<label>Amazon Echo device discovery fix</label>
+			<description>The Amazon echos have no means to recreate a new api key and they don't care about the 403-forbidden http status code. If the addon has pruned its known users (reinstall etc), echos will not be able to discover new devices. Set this option to just create new users on the fly on the next pairing mode period.</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="restrictToTagsSwitches" type="text" required="false">
+			<label>Switch item tags</label>
+			<description>The HUE emulation can either publish Switch items if this is set to an empty string or filter items by tags. You can supply multiple tags by separating them with a comma.</description>
+			<default>Switchable</default>
+		</parameter>
+		<parameter name="restrictToTagsColorLights" type="text" required="false">
+			<label>Color item tags</label>
+			<description>The HUE emulation can either publish all Color items if this is set to an empty string or filter items by tags. You can supply multiple tags by separating them with a comma.</description>
+			<default>ColorLighting</default>
+		</parameter>
+		<parameter name="restrictToTagsWhiteLights" type="text" required="false">
+			<label>White item tags</label>
+			<description>The HUE emulation can either publish all Dimmer items if this is set to an empty string or filter items by tags. You can supply multiple tags by separating them with a comma.</description>
+			<default>Lighting</default>
 		</parameter>
 		<parameter name="discoveryIp" type="text" required="false">
 			<label>Optional discovery address</label>

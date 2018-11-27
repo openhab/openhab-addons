@@ -6,24 +6,25 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.io.hueemulation.internal.api;
+package org.openhab.io.hueemulation.internal.dto;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Hue API group object
  *
- * @author Dan Cunningham
- *
+ * @author Dan Cunningham - Initial contribution
  */
 public class HueGroup {
-    public HueState state;
+    public AbstractHueState state;
     public String type = "LightGroup";
     public String name;
-    public String[] lights;
-    public HueState action;
+    public List<String> lights = Collections.emptyList();
+    public AbstractHueState action;
 
-    public HueGroup(String name, String[] lights, HueState action) {
+    public HueGroup(String name, AbstractHueState action) {
         this.name = name;
-        this.lights = lights;
         this.action = action;
     }
 }

@@ -6,15 +6,14 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.io.hueemulation.internal.api;
+package org.openhab.io.hueemulation.internal.dto;
 
 /**
- * Hue API create user object
- * 
- * @author Dan Cunningham
+ * Hue API state object
+ *
+ * @author David Graeff - Initial contribution
  *
  */
-public class HueCreateUser {
-    public String devicetype;
-    public String username;
+public class AbstractHueState {
+    public boolean reachable = true;
 }
