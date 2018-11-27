@@ -23,7 +23,7 @@
 		</parameter>
 		<parameter name="retry_count" type="text">
 			<label>Retry Count</label>
-			<description> The number of times the binding will attempt to send http requests to the Konnected Alarm Panel.  Increase this setting if you are experiencing situations where the module is reporting as offline but you can access the website of the Alarm Panel to confirm that the Alarm Panel is Konnected to the Netork.  This will allow the binding to attempt more retries before it considers the connection and failure and sets the thing as offline.</description>
+			<description>The number of times the binding attempts to send http requests to the Konnected Alarm Panel.  Increase this setting if you are experiencing situations where the module is reporting as offline but you can access the website of the Alarm Panel to confirm that the Alarm Panel is Konnected to the Network.  This will allow the binding to attempt more retries before it considers the connection a failure and marks the thing as offline.</description>
 			<default>2</default>
 			<advanced>true</advanced>
 		</parameter>
