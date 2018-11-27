@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,9 +10,8 @@ package org.openhab.binding.rfxcom.internal.connector;
 
 import java.io.IOException;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.apache.commons.io.IOUtils;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.rfxcom.internal.config.RFXComBridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,17 +26,12 @@ import jd2xx.JD2XXOutputStream;
  * @author Pauli Anttila - Initial contribution
  */
 public class RFXComJD2XXConnector extends RFXComBaseConnector {
+    private final Logger logger = LoggerFactory.getLogger(RFXComJD2XXConnector.class);
 
-    private static final Logger logger = LoggerFactory.getLogger(RFXComJD2XXConnector.class);
+    private JD2XX serialPort;
+    private JD2XXOutputStream out;
 
-    JD2XX serialPort = null;
-    JD2XXInputStream in = null;
-    JD2XXOutputStream out = null;
-
-    Thread readerThread = null;
-
-    public RFXComJD2XXConnector() {
-    }
+    private Thread readerThread;
 
     @Override
     public void connect(RFXComBridgeConfiguration device) throws IOException {
@@ -60,7 +54,7 @@ public class RFXComJD2XXConnector extends RFXComBaseConnector {
             in.reset();
         }
 
-        readerThread = new RFXComStreamReader(this, in);
+        readerThread = new RFXComStreamReader(this);
         readerThread.start();
     }
 
@@ -71,6 +65,10 @@ public class RFXComJD2XXConnector extends RFXComBaseConnector {
         if (readerThread != null) {
             logger.debug("Interrupt serial listener");
             readerThread.interrupt();
+            try {
+                readerThread.join();
+            } catch (InterruptedException e) {
+            }
         }
 
         if (out != null) {
@@ -86,23 +84,25 @@ public class RFXComJD2XXConnector extends RFXComBaseConnector {
             logger.debug("Close serial port");
             try {
                 serialPort.close();
-
-                readerThread = null;
-                serialPort = null;
-                out = null;
-                in = null;
-
-                logger.debug("Closed");
-
             } catch (IOException e) {
                 logger.warn("Serial port closing error", e);
             }
         }
+
+        readerThread = null;
+        serialPort = null;
+        out = null;
+        in = null;
+
+        logger.debug("Closed");
+
     }
 
     @Override
     public void sendMessage(byte[] data) throws IOException {
-        logger.trace("Send data (len={}): {}", data.length, DatatypeConverter.printHexBinary(data));
+        if (logger.isTraceEnabled()) {
+            logger.trace("Send data (len={}): {}", data.length, HexUtils.bytesToHex(data));
+        }
         out.write(data);
     }
 }

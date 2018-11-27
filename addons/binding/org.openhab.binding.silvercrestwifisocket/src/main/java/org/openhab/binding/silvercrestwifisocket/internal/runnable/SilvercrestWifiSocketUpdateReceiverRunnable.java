@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -14,9 +14,9 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 
-import org.openhab.binding.silvercrestwifisocket.handler.SilvercrestWifiSocketMediator;
 import org.openhab.binding.silvercrestwifisocket.internal.exceptions.NotOneResponsePacketException;
 import org.openhab.binding.silvercrestwifisocket.internal.exceptions.PacketIntegrityErrorException;
+import org.openhab.binding.silvercrestwifisocket.internal.handler.SilvercrestWifiSocketMediator;
 import org.openhab.binding.silvercrestwifisocket.internal.utils.WifiSocketPacketConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +67,6 @@ public class SilvercrestWifiSocketUpdateReceiverRunnable implements Runnable {
     public void run() {
         // Now loop forever, waiting to receive packets and redirect them to mediator.
         while (!this.shutdown) {
-
             datagramSocketHealthRoutine();
             // Create a buffer to read datagrams into. If a
             // packet is larger than this buffer, the
@@ -87,7 +86,6 @@ public class SilvercrestWifiSocketUpdateReceiverRunnable implements Runnable {
                 this.mediator.processReceivedPacket(this.packetConverter.decryptResponsePacket(packet));
 
                 logger.debug("Message delivered with success to mediator.");
-
             } catch (SocketTimeoutException e) {
                 logger.trace("Socket Timeout receiving packet.");
             } catch (IOException e) {

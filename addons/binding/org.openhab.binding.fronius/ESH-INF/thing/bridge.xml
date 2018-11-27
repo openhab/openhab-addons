@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="fronius" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="bridge">
+		<label>Fronius bridge</label>
+		<description>A bridge to connect Fronius devices</description>
+		<config-description>
+			<parameter name="hostname" type="text" required="true" groupName="network">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>The hostname or IP address of the Fronius gateway/device</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="2">
+				<label>Refresh interval</label>
+				<description>Specifies the refresh interval in seconds.</description>
+				<default>10</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>

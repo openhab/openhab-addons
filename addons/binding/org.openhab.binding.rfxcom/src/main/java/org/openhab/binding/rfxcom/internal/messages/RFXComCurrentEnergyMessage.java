@@ -1,6 +1,6 @@
 /**
- * Copyright (c) 2010-2016 by the respective copyright holders.
- * <p>
+ * Copyright (c) 2010-2018 by the respective copyright holders.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,29 +8,26 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import org.eclipse.smarthome.core.library.items.NumberItem;
+import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
+import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
+
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-import org.openhab.binding.rfxcom.RFXComValueSelector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-
-import java.util.Arrays;
-import java.util.List;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 
 /**
  * RFXCOM data class for Current and Energy message.
  *
  * @author Damien Servant
- * @since 1.9.0
  */
-public class RFXComCurrentEnergyMessage extends RFXComBaseMessage {
-    private static float TOTAL_USAGE_CONVERSION_FACTOR = 223.666F;
+public class RFXComCurrentEnergyMessage extends RFXComBatteryDeviceMessage<RFXComCurrentEnergyMessage.SubType> {
+    private static final float TOTAL_USAGE_CONVERSION_FACTOR = 223.666F;
 
-    public enum SubType {
-        ELEC4(1), // OWL - CM180i
-
-        UNKNOWN(255);
+    public enum SubType implements ByteEnumWrapper {
+        ELEC4(1); // OWL - CM180i
 
         private final int subType;
 
@@ -38,42 +35,25 @@ public class RFXComCurrentEnergyMessage extends RFXComBaseMessage {
             this.subType = subType;
         }
 
+        @Override
         public byte toByte() {
             return (byte) subType;
         }
-
-        public static SubType fromByte(int input) {
-            for (SubType c : SubType.values()) {
-                if (c.subType == input) {
-                    return c;
-                }
-            }
-
-            return SubType.UNKNOWN;
-        }
     }
 
-    private final static List<RFXComValueSelector> supportedInputValueSelectors = Arrays.asList(
-            RFXComValueSelector.SIGNAL_LEVEL, RFXComValueSelector.BATTERY_LEVEL, RFXComValueSelector.CHANNEL1_AMPS,
-            RFXComValueSelector.CHANNEL2_AMPS, RFXComValueSelector.CHANNEL3_AMPS, RFXComValueSelector.TOTAL_USAGE);
-
-    private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays.asList();
-
-    public SubType subType = SubType.UNKNOWN;
-    public int sensorId = 0;
-    public byte count = 0;
-    public double channel1Amps = 0.0;
-    public double channel2Amps = 0.0;
-    public double channel3Amps = 0.0;
-    public double totalUsage = 0.0;
-    public byte signalLevel = 0;
-    public byte batteryLevel = 0;
+    public SubType subType;
+    public int sensorId;
+    public byte count;
+    public double channel1Amps;
+    public double channel2Amps;
+    public double channel3Amps;
+    public double totalUsage;
 
     public RFXComCurrentEnergyMessage() {
-        packetType = PacketType.CURRENT_ENERGY;
+        super(PacketType.CURRENT_ENERGY);
     }
 
-    public RFXComCurrentEnergyMessage(byte[] data) {
+    public RFXComCurrentEnergyMessage(byte[] data) throws RFXComException {
         encodeMessage(data);
     }
 
@@ -96,11 +76,10 @@ public class RFXComCurrentEnergyMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public void encodeMessage(byte[] data) {
-
+    public void encodeMessage(byte[] data) throws RFXComException {
         super.encodeMessage(data);
 
-        subType = SubType.fromByte(super.subType);
+        subType = fromByte(SubType.class, super.subType);
         sensorId = (data[4] & 0xFF) << 8 | (data[5] & 0xFF);
         count = data[6];
 
@@ -152,28 +131,23 @@ public class RFXComCurrentEnergyMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public State convertToState(RFXComValueSelector valueSelector) throws RFXComException {
-        State state;
-        if (valueSelector.getItemClass() == NumberItem.class) {
-            if (valueSelector == RFXComValueSelector.SIGNAL_LEVEL) {
-                state = new DecimalType(signalLevel);
-            } else if (valueSelector == RFXComValueSelector.BATTERY_LEVEL) {
-                state = new DecimalType(batteryLevel);
-            } else if (valueSelector == RFXComValueSelector.CHANNEL1_AMPS) {
-                state = new DecimalType(channel1Amps);
-            } else if (valueSelector == RFXComValueSelector.CHANNEL2_AMPS) {
-                state = new DecimalType(channel2Amps);
-            } else if (valueSelector == RFXComValueSelector.CHANNEL3_AMPS) {
-                state = new DecimalType(channel3Amps);
-            } else if (valueSelector == RFXComValueSelector.TOTAL_USAGE) {
-                state = new DecimalType(totalUsage);
-            } else {
-                throw new RFXComException("Can't convert " + valueSelector + " to NumberItem");
-            }
-        } else {
-            throw new RFXComException("Can't convert " + valueSelector + " to " + valueSelector.getItemClass());
+    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
+        switch (channelId) {
+            case CHANNEL_CHANNEL1_AMPS:
+                return new DecimalType(channel1Amps);
+
+            case CHANNEL_CHANNEL2_AMPS:
+                return new DecimalType(channel2Amps);
+
+            case CHANNEL_CHANNEL3_AMPS:
+                return new DecimalType(channel3Amps);
+
+            case CHANNEL_TOTAL_USAGE:
+                return new DecimalType(totalUsage);
+
+            default:
+                return super.convertToState(channelId);
         }
-        return state;
     }
 
     @Override
@@ -182,44 +156,22 @@ public class RFXComCurrentEnergyMessage extends RFXComBaseMessage {
     }
 
     @Override
-    public void setDeviceId(String deviceId) throws RFXComException {
-        throw new RFXComException("Not supported");
+    public void setDeviceId(String deviceId) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<RFXComValueSelector> getSupportedInputValueSelectors() throws RFXComException {
-        return supportedInputValueSelectors;
+    public void convertFromState(String channelId, Type type) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<RFXComValueSelector> getSupportedOutputValueSelectors() throws RFXComException {
-        return supportedOutputValueSelectors;
+    public SubType convertSubType(String subType) throws RFXComUnsupportedValueException {
+        return ByteEnumUtil.convertSubType(SubType.class, subType);
     }
 
     @Override
-    public void convertFromState(RFXComValueSelector valueSelector, Type type) throws RFXComException {
-        throw new RFXComException("Not supported");
-    }
-
-    @Override
-    public Object convertSubType(String subType) throws RFXComException {
-
-        for (RFXComBlinds1Message.SubType s : RFXComBlinds1Message.SubType.values()) {
-            if (s.toString().equals(subType)) {
-                return s;
-            }
-        }
-
-        // try to find sub type by number
-        try {
-            return RFXComBlinds1Message.SubType.fromByte(Integer.parseInt(subType));
-        } catch (NumberFormatException e) {
-            throw new RFXComException("Unknown sub type " + subType);
-        }
-    }
-
-    @Override
-    public void setSubType(Object subType) throws RFXComException {
-        this.subType = (SubType) subType;
+    public void setSubType(SubType subType) {
+        this.subType = subType;
     }
 }

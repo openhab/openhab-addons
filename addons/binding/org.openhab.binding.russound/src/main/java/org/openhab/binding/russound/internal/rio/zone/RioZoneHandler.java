@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,6 +8,11 @@
  */
 package org.openhab.binding.russound.internal.rio.zone;
 
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -15,6 +20,7 @@ import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
@@ -23,8 +29,14 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.russound.internal.net.SocketSession;
 import org.openhab.binding.russound.internal.rio.AbstractBridgeHandler;
+import org.openhab.binding.russound.internal.rio.AbstractRioHandlerCallback;
+import org.openhab.binding.russound.internal.rio.AbstractThingHandler;
+import org.openhab.binding.russound.internal.rio.RioCallbackHandler;
 import org.openhab.binding.russound.internal.rio.RioConstants;
 import org.openhab.binding.russound.internal.rio.RioHandlerCallback;
+import org.openhab.binding.russound.internal.rio.RioNamedHandler;
+import org.openhab.binding.russound.internal.rio.RioPresetsProtocol;
+import org.openhab.binding.russound.internal.rio.RioSystemFavoritesProtocol;
 import org.openhab.binding.russound.internal.rio.StatefulHandlerCallback;
 import org.openhab.binding.russound.internal.rio.controller.RioControllerHandler;
 import org.slf4j.Logger;
@@ -34,29 +46,35 @@ import org.slf4j.LoggerFactory;
  * The bridge handler for a Russound Zone. A zone is the main receiving area for music. This implementation must be
  * attached to a {@link RioControllerHandler} bridge.
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  */
-public class RioZoneHandler extends AbstractBridgeHandler<RioZoneProtocol> {
+public class RioZoneHandler extends AbstractThingHandler<RioZoneProtocol>
+        implements RioNamedHandler, RioCallbackHandler {
     // Logger
-    private Logger logger = LoggerFactory.getLogger(RioZoneHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(RioZoneHandler.class);
 
     /**
      * The controller identifier we are attached to
      */
-    private int _controller;
+    private final AtomicInteger controller = new AtomicInteger(0);
 
     /**
      * The zone identifier for this instance
      */
-    private int _zone;
+    private final AtomicInteger zone = new AtomicInteger(0);
 
     /**
-     * Constructs the handler from the {@link Bridge}
-     *
-     * @param bridge a non-null {@link Bridge} the handler is for
+     * The zone name for this instance
      */
-    public RioZoneHandler(Bridge bridge) {
-        super(bridge);
+    private final AtomicReference<String> zoneName = new AtomicReference<String>(null);
+
+    /**
+     * Constructs the handler from the {@link Thing}
+     *
+     * @param thing a non-null {@link Thing} the handler is for
+     */
+    public RioZoneHandler(Thing thing) {
+        super(thing);
     }
 
     /**
@@ -65,7 +83,7 @@ public class RioZoneHandler extends AbstractBridgeHandler<RioZoneProtocol> {
      * @return the controller identifier
      */
     public int getController() {
-        return _controller;
+        return controller.get();
     }
 
     /**
@@ -73,8 +91,20 @@ public class RioZoneHandler extends AbstractBridgeHandler<RioZoneProtocol> {
      *
      * @return the zone identifier
      */
-    public int getZone() {
-        return _zone;
+    @Override
+    public int getId() {
+        return zone.get();
+    }
+
+    /**
+     * Returns the zone name
+     *
+     * @return the zone name
+     */
+    @Override
+    public String getName() {
+        final String name = zoneName.get();
+        return StringUtils.isEmpty(name) ? ("Zone " + getId()) : name;
     }
 
     /**
@@ -88,7 +118,6 @@ public class RioZoneHandler extends AbstractBridgeHandler<RioZoneProtocol> {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         if (command instanceof RefreshType) {
             handleRefresh(channelUID.getId());
             return;
@@ -128,10 +157,13 @@ public class RioZoneHandler extends AbstractBridgeHandler<RioZoneProtocol> {
             }
 
         } else if (id.equals(RioConstants.CHANNEL_ZONETURNONVOLUME)) {
-            if (command instanceof DecimalType) {
-                getProtocolHandler().setZoneTurnOnVolume(((DecimalType) command).intValue());
+            if (command instanceof PercentType) {
+                getProtocolHandler().setZoneTurnOnVolume(((PercentType) command).intValue() / 100d);
+            } else if (command instanceof DecimalType) {
+                getProtocolHandler().setZoneTurnOnVolume(((DecimalType) command).doubleValue());
             } else {
-                logger.debug("Received a ZONE TURN ON VOLUME channel command with a non DecimalType: {}", command);
+                logger.debug("Received a ZONE TURN ON VOLUME channel command with a non PercentType/DecimalType: {}",
+                        command);
             }
 
         } else if (id.equals(RioConstants.CHANNEL_ZONELOUDNESS)) {
@@ -202,10 +234,12 @@ public class RioZoneHandler extends AbstractBridgeHandler<RioZoneProtocol> {
             } else if (command instanceof IncreaseDecreaseType) {
                 getProtocolHandler().setZoneVolume(command == IncreaseDecreaseType.INCREASE);
             } else if (command instanceof PercentType) {
-                getProtocolHandler().setZoneVolume(((PercentType) command).intValue() / 2); // only support 0-50
+                getProtocolHandler().setZoneVolume(((PercentType) command).intValue() / 100d);
+            } else if (command instanceof DecimalType) {
+                getProtocolHandler().setZoneVolume(((DecimalType) command).doubleValue());
             } else {
                 logger.debug(
-                        "Received a ZONE VOLUME channel command with a non OnOffType/IncreaseDecreaseType/PercentType: {}",
+                        "Received a ZONE VOLUME channel command with a non OnOffType/IncreaseDecreaseType/PercentType/DecimalTye: {}",
                         command);
             }
 
@@ -251,6 +285,48 @@ public class RioZoneHandler extends AbstractBridgeHandler<RioZoneProtocol> {
                 logger.debug("Received a ZONE EVENT channel command with a non StringType: {}", command);
             }
 
+        } else if (id.equals(RioConstants.CHANNEL_ZONEMMINIT)) {
+            getProtocolHandler().sendMMInit();
+
+        } else if (id.equals(RioConstants.CHANNEL_ZONEMMCONTEXTMENU)) {
+            getProtocolHandler().sendMMContextMenu();
+
+        } else if (id.equals(RioConstants.CHANNEL_ZONESYSFAVORITES)) {
+            if (command instanceof StringType) {
+                // Remove any state for this channel to ensure it's recreated/sent again
+                // (clears any bad or deleted favorites information from the channel)
+                ((StatefulHandlerCallback) getProtocolHandler().getCallback())
+                        .removeState(RioConstants.CHANNEL_ZONESYSFAVORITES);
+
+                getProtocolHandler().setSystemFavorites(command.toString());
+            } else {
+                logger.debug("Received a SYSTEM FAVORITES channel command with a non StringType: {}", command);
+            }
+
+        } else if (id.equals(RioConstants.CHANNEL_ZONEFAVORITES)) {
+            if (command instanceof StringType) {
+                // Remove any state for this channel to ensure it's recreated/sent again
+                // (clears any bad or deleted favorites information from the channel)
+                ((StatefulHandlerCallback) getProtocolHandler().getCallback())
+                        .removeState(RioConstants.CHANNEL_ZONEFAVORITES);
+
+                // schedule the returned callback in the future (to allow the channel to process and to allow russound
+                // to process (before re-retrieving information)
+                scheduler.schedule(getProtocolHandler().setZoneFavorites(command.toString()), 250,
+                        TimeUnit.MILLISECONDS);
+
+            } else {
+                logger.debug("Received a ZONE FAVORITES channel command with a non StringType: {}", command);
+            }
+        } else if (id.equals(RioConstants.CHANNEL_ZONEPRESETS)) {
+            if (command instanceof StringType) {
+                ((StatefulHandlerCallback) getProtocolHandler().getCallback())
+                        .removeState(RioConstants.CHANNEL_ZONEPRESETS);
+
+                getProtocolHandler().setZonePresets(command.toString());
+            } else {
+                logger.debug("Received a ZONE FAVORITES channel command with a non StringType: {}", command);
+            }
         } else {
             logger.debug("Unknown/Unsupported Channel id: {}", id);
         }
@@ -306,9 +382,14 @@ public class RioZoneHandler extends AbstractBridgeHandler<RioZoneProtocol> {
             getProtocolHandler().refreshZoneSleepTimeRemaining();
         } else if (id.startsWith(RioConstants.CHANNEL_ZONELASTERROR)) {
             getProtocolHandler().refreshZoneLastError();
-        } else {
-            // Can't refresh any others...
+        } else if (id.equals(RioConstants.CHANNEL_ZONESYSFAVORITES)) {
+            getProtocolHandler().refreshSystemFavorites();
+        } else if (id.equals(RioConstants.CHANNEL_ZONEFAVORITES)) {
+            getProtocolHandler().refreshZoneFavorites();
+        } else if (id.equals(RioConstants.CHANNEL_ZONEPRESETS)) {
+            getProtocolHandler().refreshZonePresets();
         }
+        // Can't refresh any others...
     }
 
     /**
@@ -348,14 +429,16 @@ public class RioZoneHandler extends AbstractBridgeHandler<RioZoneProtocol> {
             return;
         }
 
-        _zone = config.getZone();
-        if (_zone < 1 || _zone > 6) {
+        final int configZone = config.getZone();
+        if (configZone < 1 || configZone > 8) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Source must be between 1 and 8: " + _zone);
+                    "Source must be between 1 and 8: " + configZone);
             return;
         }
+        zone.set(configZone);
 
-        _controller = ((RioControllerHandler) handler).getController();
+        final int handlerController = ((RioControllerHandler) handler).getId();
+        controller.set(handlerController);
 
         // Get the socket session from the
         final SocketSession socketSession = getSocketSession();
@@ -364,8 +447,8 @@ public class RioZoneHandler extends AbstractBridgeHandler<RioZoneProtocol> {
             return;
         }
 
-        setProtocolHandler(new RioZoneProtocol(_zone, _controller, socketSession,
-                new StatefulHandlerCallback(new RioHandlerCallback() {
+        setProtocolHandler(new RioZoneProtocol(configZone, handlerController, getSystemFavoritesHandler(),
+                getPresetsProtocol(), socketSession, new StatefulHandlerCallback(new AbstractRioHandlerCallback() {
                     @Override
                     public void statusChanged(ThingStatus status, ThingStatusDetail detail, String msg) {
                         updateStatus(status, detail, msg);
@@ -373,7 +456,11 @@ public class RioZoneHandler extends AbstractBridgeHandler<RioZoneProtocol> {
 
                     @Override
                     public void stateChanged(String channelId, State state) {
+                        if (channelId.equals(RioConstants.CHANNEL_ZONENAME)) {
+                            zoneName.set(state.toString());
+                        }
                         updateState(channelId, state);
+                        fireStateUpdated(channelId, state);
                     }
 
                     @Override
@@ -381,9 +468,49 @@ public class RioZoneHandler extends AbstractBridgeHandler<RioZoneProtocol> {
                         getThing().setProperty(propertyName, propertyValue);
                     }
                 })));
+
         updateStatus(ThingStatus.ONLINE);
-        getProtocolHandler().watchZone(true);
-        getProtocolHandler().refreshZoneEnabled();
+        getProtocolHandler().postOnline();
     }
 
+    /**
+     * Returns the {@link RioHandlerCallback} related to the zone
+     *
+     * @return a possibly null {@link RioHandlerCallback}
+     */
+    @Override
+    public RioHandlerCallback getRioHandlerCallback() {
+        final RioZoneProtocol protocolHandler = getProtocolHandler();
+        return protocolHandler == null ? null : protocolHandler.getCallback();
+    }
+
+    /**
+     * Returns the {@link RioPresetsProtocol} related to the system. This simply queries the parent bridge for the
+     * protocol
+     *
+     * @return a possibly null {@link RioPresetsProtocol}
+     */
+    @SuppressWarnings("rawtypes")
+    RioPresetsProtocol getPresetsProtocol() {
+        final Bridge bridge = getBridge();
+        if (bridge != null && bridge.getHandler() instanceof AbstractBridgeHandler) {
+            return ((AbstractBridgeHandler) bridge.getHandler()).getPresetsProtocol();
+        }
+        return null;
+    }
+
+    /**
+     * Returns the {@link RioSystemFavoritesProtocol} related to the system. This simply queries the parent bridge for
+     * the protocol
+     *
+     * @return a possibly null {@link RioSystemFavoritesProtocol}
+     */
+    @SuppressWarnings("rawtypes")
+    RioSystemFavoritesProtocol getSystemFavoritesHandler() {
+        final Bridge bridge = getBridge();
+        if (bridge != null && bridge.getHandler() instanceof AbstractBridgeHandler) {
+            return ((AbstractBridgeHandler) bridge.getHandler()).getSystemFavoritesHandler();
+        }
+        return null;
+    }
 }

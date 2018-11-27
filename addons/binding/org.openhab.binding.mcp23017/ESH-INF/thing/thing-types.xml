@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mcp23017" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="mcp23017">
+		<label>mcp23017</label>
+		<description>Thing for mcp23017 integrated circuit</description>
+		<channel-groups>
+			<channel-group id="input" typeId="inputgroup"/>
+			<channel-group id="output" typeId="outputgroup"/>
+		</channel-groups>
+		<config-description>
+			<parameter name="address" type="integer" required="true">
+				<label>I2C Device Address</label>
+				<description>I2C Bus mcp2317 device Address in HEX</description>
+				<default>20</default>
+			</parameter>
+			<parameter name="bus_number" type="integer" required="true">
+				<label>I2C BUS Number</label>
+				<description>I2C Bus number (0,1)</description>
+				<options>
+					<option value="0">0</option>
+					<option value="1">1</option>
+				</options>
+				<default>1</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

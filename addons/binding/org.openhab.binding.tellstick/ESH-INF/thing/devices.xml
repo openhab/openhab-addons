@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="tellstick" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="tellstick"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
@@ -30,7 +31,7 @@
 				<description>The name of the device</description>
 				<required>false</required>
 			</parameter>
-			<parameter name="deviceId" type="integer">
+			<parameter name="deviceId" type="text">
 				<label>DeviceID</label>
 				<description>This is the unique id of a device.</description>
 				<required>true</required>
@@ -72,14 +73,14 @@
 				<description>The name of the device</description>
 				<required>false</required>
 			</parameter>
-			<parameter name="deviceId" type="integer">
+			<parameter name="deviceId" type="text">
 				<label>DeviceID</label>
 				<description>This is the unique id of a device.</description>
 				<required>true</required>
 			</parameter>
 
-			<parameter name="resend" type="integer">
-				<label>Resend</label>
+			<parameter name="repeat" type="integer">
+				<label>Repeat</label>
 				<description>The number of times to resend.</description>
 				<required>false</required>
 				<default>2</default>

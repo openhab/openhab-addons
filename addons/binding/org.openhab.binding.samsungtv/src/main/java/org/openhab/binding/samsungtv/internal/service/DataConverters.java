@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,7 +17,7 @@ import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.types.Command;
 
 /**
- * The {@link DataConverters} provides utils for converting openhab commands to
+ * The {@link DataConverters} provides utils for converting openHAB commands to
  * Samsung TV specific values.
  *
  * @author Pauli Anttila - Initial contribution
@@ -25,7 +25,7 @@ import org.eclipse.smarthome.core.types.Command;
 public class DataConverters {
 
     /**
-     * Convert openhab command to int.
+     * Convert openHAB command to int.
      * 
      * @param command
      * @param min
@@ -34,9 +34,7 @@ public class DataConverters {
      * @return
      */
     public static int convertCommandToIntValue(Command command, int min, int max, int currentValue) {
-        if (command instanceof IncreaseDecreaseType || command instanceof DecimalType
-                || command instanceof PercentType) {
-
+        if (command instanceof IncreaseDecreaseType || command instanceof DecimalType) {
             int value;
             if (command instanceof IncreaseDecreaseType && command == IncreaseDecreaseType.INCREASE) {
                 value = Math.min(max, currentValue + 1);
@@ -56,7 +54,7 @@ public class DataConverters {
     }
 
     /**
-     * Convert openhab command to boolean.
+     * Convert openHAB command to boolean.
      * 
      * @param command
      * @return

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:bigassfan:device">
+		<parameter name="label" type="text" required="true">
+			<label>Name of Device</label>
+			<description>Enter the name you've given to the device</description>
+		</parameter>
+		<parameter name="ipAddress" type="text" required="true">
+			<label>Network Address</label>
+			<description>Enter the IP address of the device</description>
+			<context>network-address</context>
+		</parameter>
+		<parameter name="macAddress" type="text" required="true">
+			<label>MAC Address</label>
+			<description>Enter the MAC address of the device</description>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

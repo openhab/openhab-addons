@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="neato"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="neatoaccount">
+		<label>Neato Account</label>
+		<description>Access to Neato Account.  Used to discover robots tied to account.</description>
+
+		<config-description>
+			<parameter name="email" type="text">
+				<label>E-mail address</label>
+				<description>E-mail address for your Neato Cloud account.</description>
+				<required>true</required>
+				<context>email</context>
+			</parameter>
+			<parameter name="password" type="text">
+				<label>Password</label>
+				<description>Password for your Neato Cloud account.</description>
+				<required>true</required>
+				<context>password</context>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+
+	<thing-type id="vacuumcleaner">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="neatoaccount" />
+		</supported-bridge-type-refs>
+
+		<label>Neato Vacuum Cleaner</label>
+		<description>Provides communication with Neato Vacuum cleaner.</description>
+
+		<channels>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="state" typeId="state" />
+			<channel id="action" typeId="action" />
+			<channel id="dock-has-been-seen" typeId="dock-has-been-seen" />
+			<channel id="is-docked" typeId="is-docked" />
+			<channel id="is-scheduled" typeId="is-scheduled" />
+			<channel id="is-charging" typeId="is-charging" />
+			<channel id="error" typeId="error" />
+			<channel id="command" typeId="command" />
+			<channel id="cleaning-category" typeId="cleaning-category" />
+			<channel id="cleaning-mode" typeId="cleaning-mode" />
+			<channel id="cleaning-modifier" typeId="cleaning-modifier" />
+			<channel id="cleaning-spotwidth" typeId="cleaning-spotwidth" />
+			<channel id="cleaning-spotheight" typeId="cleaning-spotheight" />
+		</channels>
+
+		<config-description>
+			<parameter name="serial" type="text" required="true">
+				<label>Neato Vacuum Serial</label>
+				<description>Serial number of the vacuum cleaner</description>
+			</parameter>
+
+			<parameter name="secret" type="text" required="true">
+				<label>Neato Vacuum Secret</label>
+				<description>Secret for accessing Neato web services.</description>
+			</parameter>
+
+			<parameter name="refresh" type="integer">
+				<label>Refresh time interval</label>
+				<description>Refresh time interval in seconds for updates from the Neato Web Service.</description>
+				<default>60</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="state">
+		<item-type>String</item-type>
+		<label>Current State</label>
+		<description>Current state of the vacuum cleaner.</description>
+		<state readOnly="true" pattern="%s">
+			<options>
+				<option value="INVALID">Invalid</option>
+				<option value="IDLE">Idle</option>
+				<option value="BUSY">Busy</option>
+				<option value="PAUSED">Paused</option>
+				<option value="ERROR">Error</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="action">
+		<item-type>String</item-type>
+		<label>Current Action</label>
+		<description>Current action of the vacuum cleaner.</description>
+		<state readOnly="true" pattern="%s">
+			<options>
+				<option value="INVALID">Invalid</option>
+				<option value="HOUSE_CLEANING">House Cleaning</option>
+				<option value="SPOT_CLEANING">Spot Cleaning</option>
+				<option value="MANUAL_CLEANING">Manual Cleaning</option>
+				<option value="DOCKING">Docking</option>
+				<option value="USER_MENU_ACTIVE">User Menu Active</option>
+				<option value="SUSPENDED_CLEANING">Suspended Cleaning</option>
+				<option value="UPDATING">Updating</option>
+				<option value="COPYING_LOGS">Copying Logs</option>
+				<option value="RECOVERING_LOCATION">Recovering Location</option>
+				<option value="IEC_TEST">Iec Test</option>
+				<option value="MAP_CLEANING">Map Cleaning</option>
+				<option value="EXPLORING_MAP">Exploring map (creating a persistent map)</option>
+				<option value="AQUIRING_MAP_IDS">Acquiring Persistent Map IDs</option>
+				<option value="CREATING_MAP">Creating &amp; Uploading Map</option>
+				<option value="SUSPENDED_EXPLORATION">Suspended Exploration</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="dock-has-been-seen">
+		<item-type>Switch</item-type>
+		<label>Dock has been seen</label>
+		<description>True or False value if the dock has been seen</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="is-docked">
+		<item-type>Switch</item-type>
+		<label>Is docked</label>
+		<description>Is the vacuum cleaner in the docking station?</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="is-scheduled">
+		<item-type>Switch</item-type>
+		<label>Is scheduled enabled</label>
+		<description>True or False value if the vacuum cleaner is scheduled for cleaning.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="is-charging">
+		<item-type>Switch</item-type>
+		<label>Is Charging</label>
+		<description>Is the vacuum cleaner currently charging?</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="error">
+		<item-type>String</item-type>
+		<label>Error</label>
+		<description>Last error message in system.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="command">
+		<item-type>String</item-type>
+		<label>Send Command</label>
+		<description>Send Commands to Vacuum Cleaner. (clean, pause, resume, stop, dock)</description>
+		<state readOnly="false" pattern="%s">
+			<options>
+				<option value="clean">Clean</option>
+				<option value="pause">Pause</option>
+				<option value="resume">Resume</option>
+				<option value="stop">Stop</option>
+				<option value="dock">Go to Dock</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="cleaning-category">
+		<item-type>String</item-type>
+		<label>Cleaning Category</label>
+		<description>Current or Last category of the cleaning. Manual, Normal House Cleaning or Spot Cleaning.</description>
+		<state readOnly="true" pattern="%s">
+			<options>
+				<option value="MANUAL">Manual Cleaning</option>
+				<option value="SPOT">Spot Cleaning</option>
+				<option value="HOUSE">House Cleaning</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="cleaning-mode">
+		<item-type>String</item-type>
+		<label>Cleaning Mode</label>
+		<description>Current or Last cleaning mode. Eco or Turbo.</description>
+		<state readOnly="true" pattern="%s">
+			<options>
+				<option value="ECO">Eco</option>
+				<option value="TURBO">Turbo</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="cleaning-modifier">
+		<item-type>String</item-type>
+		<label>Cleaning Modifier</label>
+		<description>Modifier of current or last cleaning. Normal or Double.</description>
+		<state readOnly="true" pattern="%s">
+			<options>
+				<option value="NORMAL">Normal</option>
+				<option value="DOUBLE">Double</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="cleaning-spotwidth">
+		<item-type>Number</item-type>
+		<label>Spot Width</label>
+		<description>Current or Last cleaning, width of spot. 100-400cm.</description>
+		<state readOnly="true" pattern="%d" />
+	</channel-type>
+
+	<channel-type id="cleaning-spotheight">
+		<item-type>Number</item-type>
+		<label>Spot Height</label>
+		<description>Current or Last cleaning, height of spot. 100-400cm.</description>
+		<state readOnly="true" pattern="%d" />
+	</channel-type>
+</thing:thing-descriptions>

@@ -41,6 +41,7 @@
 					<option value="ENERGENIE">Energenie ENER010</option>
 					<option value="ENERGENIE_5">Energenie 5-gang</option>
 					<option value="COCO">COCO GDR2-2000R</option>
+					<option value="HQ_COCO20">HQ COCO-20</option>
 				</options>
 			</parameter>
 		</config-description>

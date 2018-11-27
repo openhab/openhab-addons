@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,28 +9,45 @@
 package org.openhab.binding.kodi.internal;
 
 import java.util.EventListener;
+import java.util.List;
 
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.RawType;
+import org.openhab.binding.kodi.internal.model.KodiSystemProperties;
 import org.openhab.binding.kodi.internal.protocol.KodiConnection;
 
 /**
- * Interface which has to be implemented by a class in order to get status updates from a {@link KodiConnection}
+ * Interface which has to be implemented by a class in order to get status
+ * updates from a {@link KodiConnection}
  *
- * @author Paul Frank
- *
+ * @author Paul Frank - Initial contribution
+ * @author Christoph Weitkamp - Added channels for opening PVR TV or Radio streams
+ * @author Christoph Weitkamp - Improvements for playing audio notifications
  */
 public interface KodiEventListener extends EventListener {
     public enum KodiState {
-        Play,
-        Pause,
-        End,
-        Stop,
-        Rewind,
-        FastForward
+        PLAY,
+        PAUSE,
+        END,
+        STOP,
+        REWIND,
+        FASTFORWARD
+    }
+
+    public enum KodiPlaylistState {
+        ADD,
+        ADDED,
+        INSERT,
+        REMOVE,
+        REMOVED,
+        CLEAR
     }
 
     void updateConnectionState(boolean connected);
 
     void updateScreenSaverState(boolean screenSaveActive);
+
+    void updatePlaylistState(KodiPlaylistState playlistState);
 
     void updateVolume(int volume);
 
@@ -44,7 +61,27 @@ public interface KodiEventListener extends EventListener {
 
     void updateAlbum(String album);
 
-    void updateArtist(String artist);
+    void updateArtistList(List<String> artistList);
 
     void updateMediaType(String mediaType);
+
+    void updateGenreList(List<String> genreList);
+
+    void updatePVRChannel(String channel);
+
+    void updateThumbnail(@Nullable RawType thumbnail);
+
+    void updateFanart(@Nullable RawType fanart);
+
+    void updateAudioCodec(String codec);
+
+    void updateVideoCodec(String codec);
+
+    void updateCurrentTime(long currentTime);
+
+    void updateCurrentTimePercentage(double currentTimePercentage);
+
+    void updateDuration(long duration);
+
+    void updateSystemProperties(@Nullable KodiSystemProperties systemProperties);
 }

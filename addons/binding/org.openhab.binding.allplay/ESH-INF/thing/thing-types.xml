@@ -8,6 +8,7 @@
 		<label>AllPlay Speaker</label>
 
 		<channels>
+			<channel id="clearzone" typeId="clearzone" />
 			<channel id="control" typeId="control" />
 			<channel id="coverart" typeId="coverart" />
 			<channel id="coverarturl" typeId="coverarturl" />
@@ -18,6 +19,7 @@
 			<channel id="currenttitle" typeId="currenttitle" />
 			<channel id="currenturl" typeId="currenturl" />
 			<channel id="currentuserdata" typeId="currentuserdata" />
+			<channel id="input" typeId="input" />
 			<channel id="loopmode" typeId="loopmode" />
 			<channel id="mute" typeId="mute" />
 			<channel id="playstate" typeId="playstate" />
@@ -27,6 +29,7 @@
 			<channel id="volume" typeId="volume" />
 			<channel id="volumecontrol" typeId="volumecontrol" />
 			<channel id="zoneid" typeId="zoneid" />
+			<channel id="zonemembers" typeId="zonemembers" />
 		</channels>
 
 		<config-description>
@@ -50,6 +53,11 @@
 	</thing-type>
 
 	<!-- Channel Type -->
+	<channel-type id="clearzone" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Clear Zone</label>
+		<description>Remove the current speaker from the zone</description>
+	</channel-type>
 	<channel-type id="control">
 		<item-type>Player</item-type>
 		<label>Control</label>
@@ -110,6 +118,11 @@
 		<description>URL of the track or radio station currently playing</description>
 		<state readOnly="true"></state>
 	</channel-type>
+	<channel-type id="input" advanced="true">
+		<item-type>String</item-type>
+		<label>Input</label>
+		<description>Current input of the speaker</description>
+	</channel-type>
 	<channel-type id="loopmode" advanced="true">
 		<item-type>String</item-type>
 		<label>Loop Mode</label>
@@ -166,6 +179,11 @@
 		<label>Zone ID</label>
 		<description>Id of the Zone the speaker belongs to</description>
 		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="zonemembers" advanced="true">
+		<item-type>String</item-type>
+		<label>Zone Members</label>
+		<description>Comma-separated list of zone members of this (lead) speaker</description>
 	</channel-type>
 
 </thing:thing-descriptions>

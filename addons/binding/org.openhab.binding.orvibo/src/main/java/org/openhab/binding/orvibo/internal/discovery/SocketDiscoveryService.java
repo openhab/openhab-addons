@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,9 +17,11 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.orvibo.OrviboBindingConstants;
+import org.openhab.binding.orvibo.internal.OrviboBindingConstants;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,10 +35,11 @@ import com.github.tavalin.s20.Socket;
  *
  * @author Daniel Walters - Initial contribution
  */
+@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.orvibo")
 public class SocketDiscoveryService extends AbstractDiscoveryService implements SocketDiscoveryListener {
 
     private final Logger logger = LoggerFactory.getLogger(SocketDiscoveryService.class);
-    private final static int SEARCH_TIME = 60;
+    private static final int SEARCH_TIME = 60;
     private S20Client s20Client;
 
     public SocketDiscoveryService() throws SocketException {
@@ -53,7 +56,7 @@ public class SocketDiscoveryService extends AbstractDiscoveryService implements 
             s20Client = S20Client.getInstance();
             super.activate(configProperties);
         } catch (SocketException ex) {
-            logger.error("Error occurred while activating S20 discovery service: " + ex.getMessage(), ex);
+            logger.error("Error occurred while activating S20 discovery service: {}", ex.getMessage(), ex);
         }
     }
 

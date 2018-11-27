@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+	http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+	<config-description uri="thing-type:konnected:module">
+		<parameter-group name="actions">
+			<label>Actions</label>
+			<description />
+		</parameter-group>
+		<parameter name="blink" type="boolean">
+			<label>blink</label>
+			<description> When set to false the Led on the device won't blink during transmission.</description>
+			<default>true</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="discovery" type="boolean">
+			<label>discovery</label>
+			<description>If set to false the device will not respond to discovery requests via UPnP.  Make sure you have statically assigned an IP address to the module before turning this setting off. See https://help.konnected.io/support/solutions/articles/32000023968-disabling-device-discovery</description>
+			<default>true</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="controller_softreset" type="boolean" groupName="actions">
+			<label>Soft Reset Module</label>
+			<description>Send A Restart Command to the Module.</description>
+			<advanced>true</advanced>
+			<default>false</default>
+		</parameter>
+		<parameter name="controller_removewifi" type="boolean" groupName="actions">
+			<label>Factory Reset</label>
+			<description>Resets the module to Factory Conditions.</description>
+			<advanced>true</advanced>
+			<default>false</default>
+		</parameter>
+		<parameter name="controller_sendConfig" type="boolean" groupName="actions">
+			<label>Update Settings</label>
+			<description>Manually sends the settings to the module.  The binding will send settings on every restart and if there are any configuration changes but this can be used to manually update the settings as needed.</description>
+			<advanced>true</advanced>
+			<default>false</default>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

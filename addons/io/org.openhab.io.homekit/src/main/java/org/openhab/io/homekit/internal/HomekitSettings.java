@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,6 +13,8 @@ import java.net.UnknownHostException;
 import java.util.Dictionary;
 
 import org.osgi.framework.FrameworkUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides the configured and static settings for the Homekit addon
@@ -21,10 +23,12 @@ import org.osgi.framework.FrameworkUtil;
  */
 public class HomekitSettings {
 
-    private final static String NAME = "openHAB";
-    private final static String MANUFACTURER = "openHAB";
-    private final static String SERIAL_NUMBER = "none";
+    private static final String NAME = "openHAB";
+    private static final String MANUFACTURER = "openHAB";
+    private static final String SERIAL_NUMBER = "none";
 
+    /* Name under which openHAB announces itself as HomeKit bridge (#1946) */
+    private String name = NAME;
     private int port = 9123;
     private String pin = "031-45-154";
     private boolean useFahrenheitTemperature = false;
@@ -36,7 +40,13 @@ public class HomekitSettings {
     private String thermostatOffMode = "Off";
     private InetAddress networkInterface;
 
+    private final Logger logger = LoggerFactory.getLogger(HomekitSettings.class);
+
     public void fill(Dictionary<String, ?> properties) throws UnknownHostException {
+        Object name = properties.get("name");
+        if (name instanceof String && ((String) name).length() > 0) {
+            this.name = (String) name;
+        }
         Object port = properties.get("port");
         if (port instanceof Integer) {
             this.port = (Integer) port;
@@ -58,11 +68,11 @@ public class HomekitSettings {
         }
         Object minimumTemperature = properties.get("minimumTemperature");
         if (minimumTemperature != null) {
-            this.minimumTemperature = (double) minimumTemperature;
+            this.minimumTemperature = Double.parseDouble(minimumTemperature.toString());
         }
         Object maximumTemperature = properties.get("maximumTemperature");
         if (maximumTemperature != null) {
-            this.maximumTemperature = (double) maximumTemperature;
+            this.maximumTemperature = Double.parseDouble(maximumTemperature.toString());
         }
         this.thermostatHeatMode = (String) properties.get("thermostatHeatMode");
         this.thermostatCoolMode = (String) properties.get("thermostatCoolMode");
@@ -78,14 +88,12 @@ public class HomekitSettings {
     }
 
     private static String getOrDefault(Object value, String defaultValue) {
-        if (value == null) {
-            return defaultValue;
-        }
         return value != null ? (String) value : defaultValue;
     }
 
     public String getName() {
-        return NAME;
+        logger.debug("Using homekit name '{}'", name);
+        return name;
     }
 
     public String getManufacturer() {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,8 +15,7 @@ import org.openhab.binding.pioneeravr.protocol.event.AvrUpdateListener;
 /**
  * Represent a connection to a remote Pioneer AVR.
  *
- * @author Antoine Besnard
- *
+ * @author Antoine Besnard - Initial contribution
  */
 public interface AvrConnection {
 
@@ -85,7 +84,7 @@ public interface AvrConnection {
     public boolean sendSourceInputQuery(int zone);
 
     /**
-     * Send a power command ot the AVR based on the OpenHAB command
+     * Send a power command ot the AVR based on the openHAB command
      *
      * @param command
      * @param zone
@@ -94,7 +93,7 @@ public interface AvrConnection {
     public boolean sendPowerCommand(Command command, int zone) throws CommandTypeNotSupportedException;
 
     /**
-     * Send a volume command to the AVR based on the OpenHAB command
+     * Send a volume command to the AVR based on the openHAB command
      *
      * @param command
      * @param zone
@@ -103,7 +102,7 @@ public interface AvrConnection {
     public boolean sendVolumeCommand(Command command, int zone) throws CommandTypeNotSupportedException;
 
     /**
-     * Send a source input selection command to the AVR based on the OpenHAB command
+     * Send a source input selection command to the AVR based on the openHAB command
      *
      * @param command
      * @param zone
@@ -112,7 +111,7 @@ public interface AvrConnection {
     public boolean sendInputSourceCommand(Command command, int zone) throws CommandTypeNotSupportedException;
 
     /**
-     * Send a mute command to the AVR based on the OpenHAB command
+     * Send a mute command to the AVR based on the openHAB command
      *
      * @param command
      * @param zone

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,146 +8,110 @@
  */
 package org.openhab.binding.avmfritz.internal.ahamodel;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
- * See {@link DevicelistModel}.
- * 
- * In the functionbitmask element value the following bits are used:
- * 
- * <ol>
- * <li>Bit 7: Energie Messgerät</li>
- * <li>Bit 8: Temperatursensor</li>
- * <li>Bit 9: Schaltsteckdose</li>
- * <li>Bit 10: AVM DECT Repeater</li>
- * </ol>
- * 
- * @author Robert Bausdorf
- * 
- * 
+ * See {@link AVMFritzBaseModel}.
+ *
+ * @author Robert Bausdorf - Initial contribution
+ * @author Christoph Weitkamp - Added support for groups
  */
-@XmlRootElement(name = "device")
-public class DeviceModel {
-	public static final int POWERMETER_BIT = 128;
-	public static final int TEMPSENSOR_BIT = 256;
-	public static final int SWITCH_BIT = 512;
-	public static final int DECT_REPEATER_BIT = 1024;
+@XmlType(name = "device")
+public class DeviceModel extends AVMFritzBaseModel {
 
-	@XmlAttribute(name = "identifier")
-	private String ident;
+    private TemperatureModel temperature;
+    private AlertModel alert;
+    private ButtonModel button;
+    private ETSUnitInfo etsiunitinfo;
 
-	@XmlAttribute(name = "id")
-	private String deviceId;
+    public TemperatureModel getTemperature() {
+        return temperature;
+    }
 
-	@XmlAttribute(name = "functionbitmask")
-	private int bitmask;
+    public void setTemperature(TemperatureModel temperatureModel) {
+        this.temperature = temperatureModel;
+    }
 
-	@XmlAttribute(name = "fwversion")
-	private String firmwareVersion;
+    public AlertModel getAlert() {
+        return alert;
+    }
 
-	@XmlAttribute(name = "manufacturer")
-	private String deviceManufacturer;
+    public void setAlert(AlertModel alertModel) {
+        this.alert = alertModel;
+    }
 
-	@XmlAttribute(name = "productname")
-	private String productName;
+    public ButtonModel getButton() {
+        return button;
+    }
 
-	@XmlElement(name = "present")
-	private Integer present;
-	
-	@XmlElement(name = "name")
-	private String name;
-	
-	private SwitchModel switchModel;
-	
-	private PowerMeterModel powermeterModel;
+    public void setButton(ButtonModel buttonModel) {
+        this.button = buttonModel;
+    }
 
-	private TemperatureModel temperatureModel;
+    public ETSUnitInfo getEtsiunitinfo() {
+        return etsiunitinfo;
+    }
 
-	public PowerMeterModel getPowermeter() {
-		return powermeterModel;
-	}
+    public void setEtsiunitinfo(ETSUnitInfo etsiunitinfo) {
+        this.etsiunitinfo = etsiunitinfo;
+    }
 
-	public void setPowermeter(PowerMeterModel powermeter) {
-		this.powermeterModel = powermeter;
-	}
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this).append(super.toString()).append(getTemperature()).append(getAlert())
+                .append(getButton()).append(getEtsiunitinfo()).toString();
+    }
 
-	public TemperatureModel getTemperature() {
-		return temperatureModel;
-	}
+    @XmlType(propOrder = { "etsideviceid", "unittype", "interfaces" })
+    public static class ETSUnitInfo {
+        public static final String HAN_FUN_UNITTYPE_SIMPLE_BUTTON = "273";
+        public static final String HAN_FUN_UNITTYPE_SIMPLE_DETECTOR = "512";
+        public static final String HAN_FUN_UNITTYPE_MAGNETIC_CONTACT = "513";
+        public static final String HAN_FUN_UNITTYPE_OPTICAL_CONTACT = "514";
+        public static final String HAN_FUN_UNITTYPE_MOTION_DETECTOR = "515";
+        public static final String HAN_FUN_UNITTYPE_SMOKE_DETECTOR = "516";
+        public static final String HAN_FUN_UNITTYPE_FLOOD_DETECTOR = "518";
+        public static final String HAN_FUN_UNITTYPE_GLAS_BREAK_DETECTOR = "519";
+        public static final String HAN_FUN_UNITTYPE_VIBRATION_DETECTOR = "520";
 
-	public void setTemperature(TemperatureModel temperature) {
-		this.temperatureModel = temperature;
-	}
+        public static final String HAN_FUN_INTERFACE_ALERT = "256";
+        public static final String HAN_FUN_INTERFACE_KEEP_ALIVE = "277";
+        public static final String HAN_FUN_INTERFACE_SIMPLE_BUTTON = "772";
 
-	public SwitchModel getSwitch() {
-		return switchModel;
-	}
+        private String etsideviceid;
+        private String unittype;
+        private String interfaces;
 
-	public void setSwitch(SwitchModel switchModel) {
-		this.switchModel = switchModel;
-	}
+        public String getEtsideviceid() {
+            return etsideviceid;
+        }
 
-	public String getIdentifier() {
-		return ident != null ? ident.replace(" ", "") : null;
-	}
+        public void setEtsideviceid(String etsideviceid) {
+            this.etsideviceid = etsideviceid;
+        }
 
-	public void setIdentifier(String identifier) {
-		this.ident = identifier;
-	}
+        public String getUnittype() {
+            return unittype;
+        }
 
-	public boolean isSwitchableOutlet() {
-		return (bitmask & DeviceModel.SWITCH_BIT) > 0;
-	}
+        public void setUnittype(String unittype) {
+            this.unittype = unittype;
+        }
 
-	public boolean isTempSensor() {
-		return (bitmask & DeviceModel.TEMPSENSOR_BIT) > 0;
-	}
+        public String getInterfaces() {
+            return interfaces;
+        }
 
-	public boolean isPowermeter() {
-		return (bitmask & DeviceModel.POWERMETER_BIT) > 0;
-	}
+        public void setInterfaces(String interfaces) {
+            this.interfaces = interfaces;
+        }
 
-	public boolean isDectRepeater() {
-		return (bitmask & DeviceModel.DECT_REPEATER_BIT) > 0;
-	}
-
-	public String getFirmwareVersion() {
-		return firmwareVersion;
-	}
-
-	public String getProductName() {
-		return productName;
-	}
-
-	public int getPresent() {
-		return present;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public String toString() {
-		return new ToStringBuilder(this)
-				.append("ain", this.getIdentifier())
-				.append("bitmask", this.bitmask)
-				.append("isDectRepeater", this.isDectRepeater())
-				.append("isPowermeter", this.isPowermeter())
-				.append("isTempSensor", this.isTempSensor())
-				.append("isSwitchableOutlet", this.isSwitchableOutlet())
-				.append("id", this.deviceId)
-				.append("manufacturer", this.deviceManufacturer)
-				.append("productname", this.getProductName())
-				.append("fwversion", this.getFirmwareVersion())
-				.append("present", this.present)
-				.append("name", this.name)
-				.append(this.getSwitch())
-				.append(this.getPowermeter())
-				.append(this.getTemperature())
-				.toString();
-	}
+        @Override
+        public String toString() {
+            return new ToStringBuilder(this).append("etsideviceid", getEtsideviceid()).append("unittype", getUnittype())
+                    .append("interfaces", getInterfaces()).toString();
+        }
+    }
 }

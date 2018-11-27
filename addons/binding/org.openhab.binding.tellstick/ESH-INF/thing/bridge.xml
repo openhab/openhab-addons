@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="tellstick" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="tellstick"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
@@ -50,7 +51,7 @@
 			<parameter name="refreshInterval" type="integer" required="false">
 				<label>Refresh Interval</label>
 				<description>The refresh interval in ms which is used to poll Telldus Live.
-                </description>
+				</description>
 				<default>60000</default>
 			</parameter>
 		</config-description>

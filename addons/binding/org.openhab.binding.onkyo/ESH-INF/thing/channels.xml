@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="onkyo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Commands -->
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Power on/off your device</description>
+	</channel-type>
+	<channel-type id="input">
+		<item-type>Number</item-type>
+		<label>Input Source</label>
+		<description>Select the input source of the AVR</description>
+		<state>
+			<options>
+				<option value="0">DVR/VCR</option>
+				<option value="1">SATELLITE/CABLE</option>
+				<option value="2">GAME</option>
+				<option value="3">AUX</option>
+				<option value="4">GAME2</option>
+				<option value="5">PC</option>
+				<option value="16">BLURAY/DVD</option>
+				<option value="17">STRM BOX</option>
+				<option value="18">TV</option>
+				<option value="32">TAPE1</option>
+				<option value="33">TAPE2</option>
+				<option value="34">PHONO</option>
+				<option value="35">CD/TV</option>
+				<option value="36">TUNER FM</option>
+				<option value="37">TUNER AM</option>
+				<option value="38">TUNER</option>
+				<option value="39">MUSICSERVER</option>
+				<option value="40">INTERNETRADIO</option>
+				<option value="41">USB</option>
+				<option value="42">USB_BACK</option>
+				<option value="43">NETWORK</option>
+				<option value="44">USB_TOGGLE</option>
+				<option value="45">AIRPLAY</option>
+				<option value="46">BLUETOOTH</option>
+				<option value="48">MULTICH</option>
+				<option value="50">SIRIUS</option>
+				<option value="128">SOURCE</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="mute">
+		<item-type>Switch</item-type>
+		<label>Mute</label>
+		<description>Mute/unmute your device</description>
+	</channel-type>
+	<channel-type id="volume">
+		<item-type>Dimmer</item-type>
+		<label>Volume</label>
+		<description>Volume of your device</description>
+		<state min="0" max="100" step="1" pattern="%d %%">
+		</state>
+	</channel-type>
+	<channel-type id="control" advanced="true">
+		<item-type>Player</item-type>
+		<label>Control</label>
+		<description>Control the Zone Player, e.g. start/stop/next/previous/ffward/rewind</description>
+		<category>Player</category>
+	</channel-type>
+	<channel-type id="listenmode" advanced="true">
+		<item-type>Number</item-type>
+		<label>Listen Mode</label>
+		<description>Listen mode</description>
+		<state>
+			<options>
+				<option value="0">Stereo</option>
+				<option value="1">Direct</option>
+				<option value="3">Game RPG</option>
+				<option value="5">Game Action</option>
+				<option value="6">Game Rock</option>
+				<option value="8">Orchestra</option>
+				<option value="9">unplugged</option>
+				<option value="10">Studio Mix</option>
+				<option value="11">TV Logic</option>
+				<option value="12">All Channel Stereo</option>
+				<option value="13">Theater Dimensional</option>
+				<option value="14">Game-Sports</option>
+				<option value="15">Mono</option>
+				<option value="17">Pure Audio</option>
+				<option value="19">Full Mono</option>
+				<option value="22">Audyssey DSX</option>
+				<option value="64">5.1ch Surround</option>
+				<option value="128">PLII/PLIIx Movie</option>
+				<option value="129">PLII/PLIIx Music</option>
+				<option value="130">Neo 6/Neo:X Cinema + DTS:X/Neural:X</option>
+				<option value="131">Neo 6/Neo:X Music</option>
+				<option value="134">PLII/PLIIx Game</option>
+				<option value="160">PLIIx/PLII Movie + Audyssey DSX</option>
+				<option value="161">PLIIx/PLII Music + Audyssey DSX</option>
+				<option value="162">PLIIx/PLII Game + Audyssey DSX</option>
+				<option value="163">Neo Cinema DSX</option>
+				<option value="164">Neo Music DSX</option>
+				<option value="165">Neural Surround DSX</option>
+				<option value="166">Neural Digital DSX</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="playuri" advanced="true">
+		<item-type>String</item-type>
+		<label>Play URI</label>
+		<description>Plays a given URI</description>
+	</channel-type>
+	<channel-type id="netControl" advanced="true">
+		<item-type>String</item-type>
+		<label>Control</label>
+		<description>Control the USB/Net Menu, e.g. Up/Down/Select/Back/PageUp/PageDown/Select[0-9]</description>
+		<state>
+			<options>
+				<option value="Up">Selection Up</option>
+				<option value="Down">Selection Down</option>
+				<option value="Select">Select Entry</option>
+				<option value="Back">Go Back</option>
+				<option value="PageUp">Scroll Page Up</option>
+				<option value="PageDown">Scroll Page Down</option>
+				<option value="Select0">Select Entry 0</option>
+				<option value="Select1">Select Entry 1</option>
+				<option value="Select2">Select Entry 2</option>
+				<option value="Select3">Select Entry 3</option>
+				<option value="Select4">Select Entry 4</option>
+				<option value="Select5">Select Entry 5</option>
+				<option value="Select6">Select Entry 6</option>
+				<option value="Select7">Select Entry 7</option>
+				<option value="Select8">Select Entry 8</option>
+				<option value="Select9">Select Entry 9</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<!-- Onkyo variables -->
+
+	<channel-type id="currentPlayingTime" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing Time</label>
+		<description>Current Playing Time</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="title" advanced="true">
+		<item-type>String</item-type>
+		<label>Title</label>
+		<description>Title of the current song</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="album" advanced="true">
+		<item-type>String</item-type>
+		<label>Album</label>
+		<description>Album name of the current song</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="albumArt" advanced="true">
+		<item-type>Image</item-type>
+		<label>Album Art</label>
+		<description>Image of cover art of the current song</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="albumArtUrl" advanced="true">
+		<item-type>String</item-type>
+		<label>Album Art Url</label>
+		<description>Url to the image of cover art of the current song</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="artist" advanced="true">
+		<item-type>String</item-type>
+		<label>Artist</label>
+		<description>Artist name of the current song</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="menuItem" advanced="true">
+		<item-type>String</item-type>
+		<label>Menu item</label>
+		<description>Net/USB menu item</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="menuSelection" advanced="true">
+		<item-type>Number</item-type>
+		<label>Selected Item</label>
+		<description>Position of the currently selected menu item</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+
+</thing:thing-descriptions>

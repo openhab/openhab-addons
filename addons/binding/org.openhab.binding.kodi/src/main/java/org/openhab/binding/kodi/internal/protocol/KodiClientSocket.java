@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.kodi.internal.protocol;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledExecutorService;
@@ -29,14 +30,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- * KodiClientSocket implements the low level communication to kodi through websocket. Usually this communication is done
- * through port 9090
+ * KodiClientSocket implements the low level communication to Kodi through
+ * websocket. Usually this communication is done through port 9090
  *
- * @author Paul Frank
- *
+ * @author Paul Frank - Initial contribution
  */
 public class KodiClientSocket {
-    private static final Logger logger = LoggerFactory.getLogger(KodiClientSocket.class);
+
+    private final Logger logger = LoggerFactory.getLogger(KodiClientSocket.class);
 
     private final ScheduledExecutorService scheduler;
     private static final int REQUEST_TIMEOUT_MS = 60000;
@@ -49,31 +50,28 @@ public class KodiClientSocket {
 
     private final JsonParser parser = new JsonParser();
     private final Gson mapper = new Gson();
-    private URI uri;
+    private final URI uri;
+    private final WebSocketClient client;
     private Session session;
-    private WebSocketClient client;
 
     private final KodiClientSocketEventListener eventHandler;
 
-    public KodiClientSocket(KodiClientSocketEventListener eventHandler, URI uri, ScheduledExecutorService scheduler) {
+    public KodiClientSocket(KodiClientSocketEventListener eventHandler, URI uri, ScheduledExecutorService scheduler,
+            WebSocketClient webSocketClient) {
         this.eventHandler = eventHandler;
         this.uri = uri;
-        client = new WebSocketClient();
         this.scheduler = scheduler;
+        this.client = webSocketClient;
     }
 
     /**
-     * Attempts to create a connection to the kodi host and begin listening
-     * for updates over the async http web socket
+     * Attempts to create a connection to the Kodi host and begin listening for updates over the async http web socket
      *
-     * @throws Exception
+     * @throws IOException
      */
-    public synchronized void open() throws Exception {
+    public synchronized void open() throws IOException {
         if (isConnected()) {
             logger.warn("connect: connection is already open");
-        }
-        if (!client.isStarted()) {
-            client.start();
         }
         KodiWebSocketListener socket = new KodiWebSocketListener();
         ClientUpgradeRequest request = new ClientUpgradeRequest();
@@ -82,22 +80,13 @@ public class KodiClientSocket {
     }
 
     /***
-     * Close this connection to the kodi instance
+     * Close this connection to the Kodi instance
      */
     public void close() {
         // if there is an old web socket then clean up and destroy
         if (session != null) {
-            try {
-                session.close();
-            } catch (Exception e) {
-                logger.error("Exception during closing the websocket {}", e.getMessage(), e);
-            }
+            session.close();
             session = null;
-        }
-        try {
-            client.stop();
-        } catch (Exception e) {
-            logger.error("Exception during closing the websocket {}", e.getMessage(), e);
         }
     }
 
@@ -105,7 +94,6 @@ public class KodiClientSocket {
         if (session == null || !session.isOpen()) {
             return false;
         }
-
         return connected;
     }
 
@@ -118,19 +106,13 @@ public class KodiClientSocket {
             session = wssession;
             connected = true;
             if (eventHandler != null) {
-                scheduler.submit(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        try {
-                            eventHandler.onConnectionOpened();
-                        } catch (Exception e) {
-                            logger.error("Error handling onConnectionOpened() {}", e.getMessage(), e);
-                        }
-
+                scheduler.submit(() -> {
+                    try {
+                        eventHandler.onConnectionOpened();
+                    } catch (Exception e) {
+                        logger.debug("Error handling onConnectionOpened(): {}", e.getMessage(), e);
                     }
                 });
-
             }
         }
 
@@ -139,62 +121,49 @@ public class KodiClientSocket {
             logger.debug("Message received from server: {}", message);
             final JsonObject json = parser.parse(message).getAsJsonObject();
             if (json.has("id")) {
-                logger.debug("Response received from server:" + json.toString());
                 int messageId = json.get("id").getAsInt();
                 if (messageId == nextMessageId - 1) {
                     commandResponse = json;
                     commandLatch.countDown();
                 }
             } else {
-                logger.debug("Event received from server: {}", json.toString());
-                try {
-                    if (eventHandler != null) {
-                        scheduler.submit(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                try {
-                                    eventHandler.handleEvent(json);
-                                } catch (Exception e) {
-                                    logger.error("Error handling event {} player state change message: {}", json,
-                                            e.getMessage(), e);
-                                }
-
-                            }
-                        });
-
-                    }
-                } catch (Exception e) {
-                    logger.error("Error handling player state change message", e);
+                logger.debug("Event received from server: {}", json);
+                if (eventHandler != null) {
+                    scheduler.submit(() -> {
+                        try {
+                            eventHandler.handleEvent(json);
+                        } catch (Exception e) {
+                            logger.debug("Error handling event {} player state change message: {}", json,
+                                    e.getMessage(), e);
+                        }
+                    });
                 }
             }
         }
 
         @OnWebSocketClose
         public void onClose(int statusCode, String reason) {
+            logger.debug("Closing a WebSocket due to {}", reason);
             session = null;
             connected = false;
-            logger.debug("Closing a WebSocket due to {}", reason);
-            scheduler.submit(new Runnable() {
-
-                @Override
-                public void run() {
+            if (eventHandler != null) {
+                scheduler.submit(() -> {
                     try {
                         eventHandler.onConnectionClosed();
                     } catch (Exception e) {
-                        logger.error("Error handling onConnectionClosed()", e);
+                        logger.debug("Error handling onConnectionClosed(): {}", e.getMessage(), e);
                     }
-                }
-            });
+                });
+            }
         }
     }
 
-    private void sendMessage(String str) throws Exception {
+    private void sendMessage(String str) throws IOException {
         if (isConnected()) {
             logger.debug("send message: {}", str);
             session.getRemote().sendString(str);
         } else {
-            throw new Exception("socket not initialized");
+            throw new IOException("socket not initialized");
         }
     }
 
@@ -221,14 +190,20 @@ public class KodiClientSocket {
 
             sendMessage(message);
             if (commandLatch.await(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)) {
-                logger.debug("callMethod returns {}", commandResponse.toString());
-                return commandResponse.get("result");
+                logger.debug("callMethod returns {}", commandResponse);
+                if (commandResponse.has("result")) {
+                    return commandResponse.get("result");
+                } else {
+                    JsonElement error = commandResponse.get("error");
+                    logger.debug("Error received from server: {}", error);
+                    return null;
+                }
             } else {
-                logger.error("Timeout during callMethod({}, {})", methodName, params != null ? params.toString() : "");
+                logger.debug("Timeout during callMethod({}, {})", methodName, params);
                 return null;
             }
         } catch (Exception e) {
-            logger.error("Error during callMethod", e);
+            logger.debug("Error during callMethod({}): {}", methodName, e.getMessage(), e);
             return null;
         }
     }

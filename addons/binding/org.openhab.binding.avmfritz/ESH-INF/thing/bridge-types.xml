@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="avmfritz"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 org.eclipse.smarthome.thing-description.xsd">
+
+	<!-- Supported FRITZ!Box and FRITZ!Powerline -->
+	<bridge-type id="fritzbox">
+		<label>FRITZ!Box</label>
+		<description>This bridge represents a FRITZ!Box.</description>
+
+		<config-description-ref uri="bridge-type:avmfritz:fritzbox" />
+	</bridge-type>
+
+	<bridge-type id="FRITZ_Powerline_546E_Solo">
+		<label>FRITZ!Powerline 546E</label>
+		<description>FRITZ!Powerline 546E with switchable outlet in stand-alone mode.</description>
+
+		<channels>
+			<channel id="mode" typeId="mode" />
+			<channel id="locked" typeId="locked" />
+			<channel id="device_locked" typeId="device_locked" />
+			<channel id="energy" typeId="energy" />
+			<channel id="power" typeId="power" />
+			<channel id="outlet" typeId="outlet" />
+		</channels>
+
+		<config-description-ref uri="bridge-type:avmfritz:fritzpowerline" />
+	</bridge-type>
+</thing:thing-descriptions>

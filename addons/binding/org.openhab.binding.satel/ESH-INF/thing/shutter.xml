@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="satel" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="shutter">
+
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ethm-1" />
+			<bridge-type-ref id="int-rs" />
+		</supported-bridge-type-refs>
+
+		<label>Roller shutter</label>
+		<description>A roller shutter connected to two subsequent outputs.</description>
+
+		<channels>
+			<channel typeId="shutter_state" id="shutter_state" />
+		</channels>
+
+		<config-description>
+			<parameter name="upId" type="integer" min="1" max="256" required="true">
+				<label>Up output</label>
+				<description>Output number for "up" direction.</description>
+			</parameter>
+			<parameter name="downId" type="integer" min="1" max="256" required="true">
+				<label>Down output</label>
+				<description>Output number for "down" direction.</description>
+			</parameter>
+			<parameter name="commandOnly" type="boolean" required="false">
+				<label>Command only</label>
+				<description>Accepts commands only, does not update thing's state</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="shutter_state">
+		<item-type>Rollershutter</item-type>
+		<label>Shutter state</label>
+		<description>Represents state of the roller shutter</description>
+	</channel-type>
+
+</thing:thing-descriptions>

@@ -1,20 +1,30 @@
 #!/bin/bash
 
+[ $# -lt 2 ] && { echo "Usage: $0 <BindingIdInCamelCase> <Author>"; exit 1; }
+
+bindingVersion=2.4.0-SNAPSHOT
+archetypeVersion=0.10.0-SNAPSHOT
+
 camelcaseId=$1
-[ $# -eq 0 ] && { echo "Usage: $0 <BindingIdInCamelCase>"; exit 1; }
+id=`echo $camelcaseId | tr '[:upper:]' '[:lower:]'`
 
-id=`echo $camelcaseId | tr '[:upper:]' '[:lower:]'` 
+author=$2
 
-mvn archetype:generate -N \
+mvn -s ../archetype-settings.xml archetype:generate -N \
   -DarchetypeGroupId=org.eclipse.smarthome.archetype \
   -DarchetypeArtifactId=org.eclipse.smarthome.archetype.binding \
-  -DarchetypeVersion=0.9.0-SNAPSHOT \
+  -DarchetypeVersion=$archetypeVersion \
   -DgroupId=org.openhab.binding \
   -DartifactId=org.openhab.binding.$id \
   -Dpackage=org.openhab.binding.$id \
-  -DarchetypeCatalog='file://../archetype-catalog.xml' \
-  -Dversion=2.0.0-SNAPSHOT \
+  -Dversion=$bindingVersion \
   -DbindingId=$id \
   -DbindingIdCamelCase=$camelcaseId \
   -DvendorName=openHAB \
-  -Dnamespace=org.openhab
+  -Dnamespace=org.openhab \
+  -Dauthor="$author"
+
+directory="org.openhab.binding.$id/"
+
+cp ../../src/etc/about.html "$directory"
+

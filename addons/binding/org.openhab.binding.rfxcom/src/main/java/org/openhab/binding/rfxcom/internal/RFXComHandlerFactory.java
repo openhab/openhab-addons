@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -25,8 +25,6 @@ import org.openhab.binding.rfxcom.handler.RFXComBridgeHandler;
 import org.openhab.binding.rfxcom.handler.RFXComHandler;
 import org.openhab.binding.rfxcom.internal.discovery.RFXComDeviceDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
 
@@ -37,16 +35,12 @@ import com.google.common.collect.Sets;
  * @author Pauli Anttila - Initial contribution
  */
 public class RFXComHandlerFactory extends BaseThingHandlerFactory {
-
-    @SuppressWarnings("unused")
-    private Logger logger = LoggerFactory.getLogger(RFXComHandlerFactory.class);
-
     /**
      * Service registration map
      */
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.union(
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.union(
             RFXComBindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS,
             RFXComBindingConstants.SUPPORTED_BRIDGE_THING_TYPES_UIDS);
 
@@ -73,19 +67,27 @@ public class RFXComHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected void removeHandler(ThingHandler thingHandler) {
-        if (this.discoveryServiceRegs != null) {
-            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
-            if (serviceReg != null) {
-                serviceReg.unregister();
-                discoveryServiceRegs.remove(thingHandler.getThing().getUID());
-            }
+        if (thingHandler instanceof RFXComBridgeHandler) {
+            unregisterDeviceDiscoveryService(thingHandler.getThing());
         }
     }
 
-    private void registerDeviceDiscoveryService(RFXComBridgeHandler handler) {
+    private synchronized void registerDeviceDiscoveryService(RFXComBridgeHandler handler) {
         RFXComDeviceDiscoveryService discoveryService = new RFXComDeviceDiscoveryService(handler);
         discoveryService.activate();
         this.discoveryServiceRegs.put(handler.getThing().getUID(), bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+    }
+
+    private synchronized void unregisterDeviceDiscoveryService(Thing thing) {
+        ServiceRegistration<?> serviceReg = discoveryServiceRegs.remove(thing.getUID());
+        if (serviceReg != null) {
+            RFXComDeviceDiscoveryService service = (RFXComDeviceDiscoveryService) bundleContext
+                    .getService(serviceReg.getReference());
+            serviceReg.unregister();
+            if (service != null) {
+                service.deactivate();
+            }
+        }
     }
 }

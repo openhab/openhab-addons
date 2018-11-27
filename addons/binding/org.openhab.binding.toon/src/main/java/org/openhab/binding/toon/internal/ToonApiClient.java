@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,10 +21,11 @@ import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.openhab.binding.toon.config.ToonBridgeConfiguration;
+import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.toon.internal.api.Agreement;
 import org.openhab.binding.toon.internal.api.ToonConnectionException;
 import org.openhab.binding.toon.internal.api.ToonState;
+import org.openhab.binding.toon.internal.config.ToonBridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,14 +45,14 @@ import com.google.gson.JsonParser;
 public class ToonApiClient {
     private Logger logger = LoggerFactory.getLogger(ToonApiClient.class);
 
-    private static String TOON_HOST = "https://toonopafstand.eneco.nl";
-    private static String TOON_LOGIN_PATH = "/toonMobileBackendWeb/client/login";
-    private static String TOON_LOGOUT_PATH = "/toonMobileBackendWeb/client/auth/logout";
-    private static String TOON_START_PATH = "/toonMobileBackendWeb/client/auth/start";
-    private static String TOON_UPDATE_PATH = "/toonMobileBackendWeb/client/auth/retrieveToonState";
-    private static String TOON_TEMPSET_PATH = "/toonMobileBackendWeb/client/auth/setPoint";
-    private static String TOON_CHANGE_SCHEME_PATH = "/toonMobileBackendWeb/client/auth/schemeState";
-    private static String TOON_SWITCH_PLUG_PATH = "/toonMobileBackendWeb/client/auth/smartplug/setTarget";
+    private static final String TOON_HOST = "https://toonopafstand.eneco.nl";
+    private static final String TOON_LOGIN_PATH = "/toonMobileBackendWeb/client/login";
+    private static final String TOON_LOGOUT_PATH = "/toonMobileBackendWeb/client/auth/logout";
+    private static final String TOON_START_PATH = "/toonMobileBackendWeb/client/auth/start";
+    private static final String TOON_UPDATE_PATH = "/toonMobileBackendWeb/client/auth/retrieveToonState";
+    private static final String TOON_TEMPSET_PATH = "/toonMobileBackendWeb/client/auth/setPoint";
+    private static final String TOON_CHANGE_SCHEME_PATH = "/toonMobileBackendWeb/client/auth/schemeState";
+    private static final String TOON_SWITCH_PLUG_PATH = "/toonMobileBackendWeb/client/auth/smartplug/setTarget";
 
     protected Client client = ClientBuilder.newClient();
     protected WebTarget toonTarget = client.target(TOON_HOST);
@@ -73,10 +74,10 @@ public class ToonApiClient {
     public void login() throws ToonConnectionException {
         logger.debug("login start");
 
-        if (configuration == null || configuration.username == null || configuration.username.length() == 0) {
+        if (configuration == null || StringUtils.isEmpty(configuration.username)) {
             throw new ToonConnectionException("Username not provided");
         }
-        if (configuration == null || configuration.password == null || configuration.password.length() == 0) {
+        if (StringUtils.isEmpty(configuration.password)) {
             throw new ToonConnectionException("Password not provided");
         }
 
@@ -112,10 +113,11 @@ public class ToonApiClient {
     public List<Agreement> getAgreements() throws ToonConnectionException {
         logger.debug("getAgreements start");
 
-        if (configuration == null || configuration.username == null || configuration.username.length() == 0) {
+        if (configuration == null) {
+            throw new ToonConnectionException("Configuration is missing or corrupted");
+        } else if (StringUtils.isEmpty(configuration.username)) {
             throw new ToonConnectionException("Username not provided");
-        }
-        if (configuration == null || configuration.password == null || configuration.password.length() == 0) {
+        } else if (StringUtils.isEmpty(configuration.password)) {
             throw new ToonConnectionException("Password not provided");
         }
 
@@ -190,7 +192,6 @@ public class ToonApiClient {
 
         toonTarget.path(TOON_LOGOUT_PATH).request(MediaType.APPLICATION_JSON_TYPE)
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
-
     }
 
     public void setSetpoint(int value) throws ToonConnectionException {

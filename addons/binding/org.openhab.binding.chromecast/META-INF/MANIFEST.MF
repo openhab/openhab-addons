@@ -1,23 +1,25 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.chromecast
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: 
+ .,
+ lib/protobuf-java-2.6.0.jar,
+ lib/api-v2-0.10.4.jar,
+ lib/jackson-core-asl-1.9.2.jar,
+ lib/jackson-mapper-asl-1.9.2.jar
 Bundle-ManifestVersion: 2
 Bundle-Name: Chromecast Binding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.chromecast;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.0.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: .,
- lib/protobuf-java-2.6.0.jar,
- lib/api-v2-0.9.4-SNAPSHOT.jar
+Bundle-Version: 2.4.0.qualifier
 Import-Package: 
- com.fasterxml.jackson.annotation,
  javax.jmdns,
  org.apache.commons.lang,
- org.codehaus.jackson,
- org.codehaus.jackson.annotate,
- org.codehaus.jackson.map,
- org.codehaus.jackson.map.annotate,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.config.discovery.mdns,
  org.eclipse.smarthome.core.audio,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.net,
@@ -26,15 +28,8 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.eclipse.smarthome.io.transport.mdns.discovery,
- org.jupnp.model.meta,
- org.jupnp.model.types,
- org.openhab.binding.chromecast,
- org.openhab.binding.chromecast.handler,
+ org.eclipse.smarthome.io.net.http,
  org.osgi.framework,
  org.osgi.service.component,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.chromecast,
- org.openhab.binding.chromecast.handler
-Bundle-ActivationPolicy: lazy

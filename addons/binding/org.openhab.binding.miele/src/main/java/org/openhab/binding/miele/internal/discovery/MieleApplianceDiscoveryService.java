@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.miele.internal.discovery;
 
-import static org.openhab.binding.miele.MieleBindingConstants.*;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -22,12 +22,12 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.miele.handler.ApplianceStatusListener;
-import org.openhab.binding.miele.handler.MieleApplianceHandler;
-import org.openhab.binding.miele.handler.MieleBridgeHandler;
-import org.openhab.binding.miele.handler.MieleBridgeHandler.DeviceClassObject;
-import org.openhab.binding.miele.handler.MieleBridgeHandler.DeviceProperty;
-import org.openhab.binding.miele.handler.MieleBridgeHandler.HomeDevice;
+import org.openhab.binding.miele.internal.handler.ApplianceStatusListener;
+import org.openhab.binding.miele.internal.handler.MieleApplianceHandler;
+import org.openhab.binding.miele.internal.handler.MieleBridgeHandler;
+import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceClassObject;
+import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceProperty;
+import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.HomeDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +43,7 @@ public class MieleApplianceDiscoveryService extends AbstractDiscoveryService imp
 
     private final Logger logger = LoggerFactory.getLogger(MieleApplianceDiscoveryService.class);
 
-    private final static int SEARCH_TIME = 60;
+    private static final int SEARCH_TIME = 60;
 
     private MieleBridgeHandler mieleBridgeHandler;
 

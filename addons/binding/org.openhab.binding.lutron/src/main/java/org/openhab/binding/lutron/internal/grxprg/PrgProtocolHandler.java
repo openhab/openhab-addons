@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * the TCP/IP session (either in response to our own commands or in response to external events [other TCP/IP sessions,
  * web GUI, etc]).
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  *
  */
 class PrgProtocolHandler {
@@ -53,63 +53,63 @@ class PrgProtocolHandler {
     // ------------------------------------------------------------------------------------------------
     // The following are the various command formats specified by the
     // http://www.lutron.com/TechnicalDocumentLibrary/RS232ProtocolCommandSet.040196d.pdf
-    private final static String CMD_SCENE = "A";
-    private final static String CMD_SCENELOCK = "SL";
-    private final static String CMD_SCENESTATUS = "G";
-    private final static String CMD_SCENESEQ = "SQ";
-    private final static String CMD_ZONELOCK = "ZL";
-    private final static String CMD_ZONELOWER = "D";
-    private final static String CMD_ZONELOWERSTOP = "E";
-    private final static String CMD_ZONERAISE = "B";
-    private final static String CMD_ZONERAISESTOP = "C";
-    private final static String CMD_ZONEINTENSITY = "szi";
-    private final static String CMD_ZONEINTENSITYSTATUS = "rzi";
-    private final static String CMD_SETTIME = "ST";
-    private final static String CMD_READTIME = "RT";
-    private final static String CMD_SELECTSCHEDULE = "SS";
-    private final static String CMD_REPORTSCHEDULE = "RS";
-    private final static String CMD_SUNRISESUNSET = "RA";
-    private final static String CMD_SUPERSEQUENCESTART = "QS";
-    private final static String CMD_SUPERSEQUENCEPAUSE = "QP";
-    private final static String CMD_SUPERSEQUENCERESUME = "QC";
-    private final static String CMD_SUPERSEQUENCESTATUS = "Q?";
+    private static final String CMD_SCENE = "A";
+    private static final String CMD_SCENELOCK = "SL";
+    private static final String CMD_SCENESTATUS = "G";
+    private static final String CMD_SCENESEQ = "SQ";
+    private static final String CMD_ZONELOCK = "ZL";
+    private static final String CMD_ZONELOWER = "D";
+    private static final String CMD_ZONELOWERSTOP = "E";
+    private static final String CMD_ZONERAISE = "B";
+    private static final String CMD_ZONERAISESTOP = "C";
+    private static final String CMD_ZONEINTENSITY = "szi";
+    private static final String CMD_ZONEINTENSITYSTATUS = "rzi";
+    private static final String CMD_SETTIME = "ST";
+    private static final String CMD_READTIME = "RT";
+    private static final String CMD_SELECTSCHEDULE = "SS";
+    private static final String CMD_REPORTSCHEDULE = "RS";
+    private static final String CMD_SUNRISESUNSET = "RA";
+    private static final String CMD_SUPERSEQUENCESTART = "QS";
+    private static final String CMD_SUPERSEQUENCEPAUSE = "QP";
+    private static final String CMD_SUPERSEQUENCERESUME = "QC";
+    private static final String CMD_SUPERSEQUENCESTATUS = "Q?";
 
     // ------------------------------------------------------------------------------------------------
     // The following are the various responses specified by the
     // http://www.lutron.com/TechnicalDocumentLibrary/RS232ProtocolCommandSet.040196d.pdf
-    private final static Pattern RSP_FAILED = Pattern.compile("^~ERROR # (\\d+) (\\d+) OK");
-    private final static Pattern RSP_OK = Pattern.compile("^~(\\d+) OK");
-    private final static Pattern RSP_RESETTING = Pattern.compile("^~:Reseting Device... (\\d+) OK");
-    private final static Pattern RSP_RMU = Pattern
+    private static final Pattern RSP_FAILED = Pattern.compile("^~ERROR # (\\d+) (\\d+) OK");
+    private static final Pattern RSP_OK = Pattern.compile("^~(\\d+) OK");
+    private static final Pattern RSP_RESETTING = Pattern.compile("^~:Reseting Device... (\\d+) OK");
+    private static final Pattern RSP_RMU = Pattern
             .compile("^~:mu (\\d) (\\d+) (\\w+) (\\w+) (\\w+) (\\w+) (\\w+) (\\w+) (\\w+)");
-    private final static Pattern RSP_SCENESTATUS = Pattern.compile("^~?:ss (\\w{8,8})( (\\d+) OK)?");
-    private final static Pattern RSP_ZONEINTENSITY = Pattern.compile(
+    private static final Pattern RSP_SCENESTATUS = Pattern.compile("^~?:ss (\\w{8,8})( (\\d+) OK)?");
+    private static final Pattern RSP_ZONEINTENSITY = Pattern.compile(
             "^~:zi (\\d) (\\w{1,3}) (\\w{1,3}) (\\w{1,3}) (\\w{1,3}) (\\w{1,3}) (\\w{1,3}) (\\w{1,3}) (\\w{1,3}) (\\d+) OK");
-    private final static Pattern RSP_REPORTIME = Pattern
+    private static final Pattern RSP_REPORTIME = Pattern
             .compile("^~:rt (\\d{1,2}) (\\d{1,2}) (\\d{1,2}) (\\d{1,2}) (\\d{1,2}) (\\d) (\\d+) OK");
-    private final static Pattern RSP_REPORTSCHEDULE = Pattern.compile("^~:rs (\\d) (\\d+) OK");
-    private final static Pattern RSP_SUNRISESUNSET = Pattern
+    private static final Pattern RSP_REPORTSCHEDULE = Pattern.compile("^~:rs (\\d) (\\d+) OK");
+    private static final Pattern RSP_SUNRISESUNSET = Pattern
             .compile("^~:ra (\\d{1,3}) (\\d{1,3}) (\\d{1,3}) (\\d{1,3}) (\\d+) OK");
-    private final static Pattern RSP_SUPERSEQUENCESTATUS = Pattern
+    private static final Pattern RSP_SUPERSEQUENCESTATUS = Pattern
             .compile("^~:s\\? (\\w) (\\d+) (\\d{1,2}) (\\d{1,2}) (\\d+) OK");
-    private final static Pattern RSP_BUTTON = Pattern.compile("^[^~:].*");
-    private final static String RSP_CONNECTION_ESTABLISHED = "connection established";
+    private static final Pattern RSP_BUTTON = Pattern.compile("^[^~:].*");
+    private static final String RSP_CONNECTION_ESTABLISHED = "connection established";
 
     /**
      * A lookup between a 0-100 percentage and corresponding hex value. Note: this specifically matches the liason
      * software setup
      */
-    private final static HashMap<Integer, String> intensityMap = new HashMap<Integer, String>();
+    private static final HashMap<Integer, String> intensityMap = new HashMap<Integer, String>();
 
     /**
      * The reverse lookup for the {{@link #intensityMap}
      */
-    private final static HashMap<String, Integer> reverseIntensityMap = new HashMap<String, Integer>();
+    private static final HashMap<String, Integer> reverseIntensityMap = new HashMap<String, Integer>();
 
     /**
      * A lookup between returned shade hex intensity to corresponding shade values
      */
-    private final static HashMap<String, Integer> shadeIntensityMap = new HashMap<String, Integer>();
+    private static final HashMap<String, Integer> shadeIntensityMap = new HashMap<String, Integer>();
 
     /**
      * Cache of current zone intensities
@@ -244,16 +244,15 @@ class PrgProtocolHandler {
     /**
      * Lookup of valid scene numbers (H is also sometimes returned - no idea what it is however)
      */
-    private final static String VALID_SCENES = "0123456789ABCDEFG";
+    private static final String VALID_SCENES = "0123456789ABCDEFG";
 
     /**
      * Constructs the protocol handler from given parameters
      *
      * @param session a non-null {@link SocketSession} (may be connected or disconnected)
-     * @param config a non-null {@link PrgHandlerCallback}
+     * @param config  a non-null {@link PrgHandlerCallback}
      */
     PrgProtocolHandler(SocketSession session, PrgHandlerCallback callback) {
-
         if (session == null) {
             throw new IllegalArgumentException("session cannot be null");
         }
@@ -273,7 +272,6 @@ class PrgProtocolHandler {
      * @throws IOException an IO exception occurred during login
      */
     String login(String username) throws Exception {
-
         logger.info("Logging into the PRG interface");
         final NoDispatchingCallback callback = new NoDispatchingCallback();
         _session.setCallback(callback);
@@ -318,7 +316,7 @@ class PrgProtocolHandler {
      * @param controlUnit the control unit to refresh
      */
     void refreshState(int controlUnit) {
-        logger.debug("Refreshing control unit (" + controlUnit + ") state");
+        logger.debug("Refreshing control unit ({}) state", controlUnit);
         refreshScene();
         refreshTime();
         refreshSchedule();
@@ -398,8 +396,8 @@ class PrgProtocolHandler {
      * Validates a zone intensity and returns the hex corresponding value (handles shade intensity zones as well)
      *
      * @param controlUnit the control unit
-     * @param zone the zone
-     * @param intensity the new intensity level
+     * @param zone        the zone
+     * @param intensity   the new intensity level
      * @return a valid hex representation
      * @throws IllegalArgumentException if controlUnit, zone or intensity are invalid
      */
@@ -420,7 +418,7 @@ class PrgProtocolHandler {
         } else {
             final String hexNbr = intensityMap.get(intensity);
             if (hexNbr == null) { // this should be impossible as all 100 values are in table
-                logger.warn("Unknown zone intensity (" + intensity + ")");
+                logger.warn("Unknown zone intensity ({})", intensity);
                 return Integer.toHexString(intensity).toUpperCase();
             }
             return hexNbr;
@@ -431,8 +429,8 @@ class PrgProtocolHandler {
      * Converts a hex zone intensity back to a integer - handles shade zones as well
      *
      * @param controlUnit the control unit
-     * @param zone the zone
-     * @param intensity the hex intensity value
+     * @param zone        the zone
+     * @param intensity   the hex intensity value
      * @return the new intensity (between 0-100)
      * @throws IllegalArgumentException if controlUnit, zone or intensity are invalid
      */
@@ -445,14 +443,14 @@ class PrgProtocolHandler {
         if (isShade) {
             final Integer intNbr = shadeIntensityMap.get(intensity);
             if (intNbr == null) {
-                logger.warn("Unknown shade intensity (" + intensity + ")");
+                logger.warn("Unknown shade intensity ({})", intensity);
                 return Integer.parseInt(intensity, 16);
             }
             return intNbr;
         } else {
             final Integer intNbr = reverseIntensityMap.get(intensity);
             if (intNbr == null) {
-                logger.warn("Unknown zone intensity (" + intensity + ")");
+                logger.warn("Unknown zone intensity ({})", intensity);
                 return Integer.parseInt(intensity, 16);
             }
             zoneIntensities[zone] = intNbr;
@@ -464,7 +462,7 @@ class PrgProtocolHandler {
      * Selects a specific scene on a control unit
      *
      * @param controlUnit the control unit
-     * @param scene the new scene
+     * @param scene       the new scene
      * @throws IllegalArgumentException if controlUnit or scene are invalid
      */
     void selectScene(int controlUnit, int scene) {
@@ -483,7 +481,7 @@ class PrgProtocolHandler {
      * Sets the scene locked/unlocked for the specific control unit
      *
      * @param controlUnit the control unit
-     * @param locked true for locked, false otherwise
+     * @param locked      true for locked, false otherwise
      * @throws IllegalArgumentException if controlUnit is invalid
      */
     void setSceneLock(int controlUnit, boolean locked) {
@@ -495,7 +493,7 @@ class PrgProtocolHandler {
      * Sets the scene sequence on/off for the specific control unit
      *
      * @param controlUnit the control unit
-     * @param on true for sequencing on, false otherwise
+     * @param on          true for sequencing on, false otherwise
      * @throws IllegalArgumentException if controlUnit is invalid
      */
     void setSceneSequence(int controlUnit, boolean on) {
@@ -507,7 +505,7 @@ class PrgProtocolHandler {
      * Sets the zone locked/unlocked for the specific control unit
      *
      * @param controlUnit the control unit
-     * @param locked true for locked, false otherwise
+     * @param locked      true for locked, false otherwise
      * @throws IllegalArgumentException if controlUnit is invalid
      */
     void setZoneLock(int controlUnit, boolean locked) {
@@ -519,7 +517,7 @@ class PrgProtocolHandler {
      * Sets the zone to lowering for the specific control unit
      *
      * @param controlUnit the control unit
-     * @param zone the zone to lower
+     * @param zone        the zone to lower
      * @throws IllegalArgumentException if controlUnit or zone is invalid
      */
     void setZoneLower(int controlUnit, int zone) {
@@ -539,7 +537,7 @@ class PrgProtocolHandler {
      * Sets the zone to raising for the specific control unit
      *
      * @param controlUnit the control unit
-     * @param zone the zone to raise
+     * @param zone        the zone to raise
      * @throws IllegalArgumentException if controlUnit or zone is invalid
      */
     void setZoneRaise(int controlUnit, int zone) {
@@ -560,9 +558,9 @@ class PrgProtocolHandler {
      * nothing if already at floor or ceiling. If the specified zone is a shade, does nothing.
      *
      * @param controlUnit the control unit
-     * @param zone the zone
-     * @param fade the fade time (0-59 seconds, 60-3600 seconds converted to minutes)
-     * @param increase true to increase by 1, false otherwise
+     * @param zone        the zone
+     * @param fade        the fade time (0-59 seconds, 60-3600 seconds converted to minutes)
+     * @param increase    true to increase by 1, false otherwise
      * @throws IllegalArgumentException if controlUnit, zone or fade is invalid
      */
     void setZoneIntensity(int controlUnit, int zone, int fade, boolean increase) {
@@ -589,9 +587,9 @@ class PrgProtocolHandler {
      * If a shade, only deals with intensities from 0 to 5 (stop, open close, preset 1, preset 2, preset 3).
      *
      * @param controlUnit the control unit
-     * @param zone the zone
-     * @param fade the fade time (0-59 seconds, 60-3600 seconds converted to minutes)
-     * @param increase true to increase by 1, false otherwise
+     * @param zone        the zone
+     * @param fade        the fade time (0-59 seconds, 60-3600 seconds converted to minutes)
+     * @param increase    true to increase by 1, false otherwise
      * @throws IllegalArgumentException if controlUnit, zone, fade or intensity is invalid
      */
     void setZoneIntensity(int controlUnit, int zone, int fade, int intensity) {
@@ -601,7 +599,7 @@ class PrgProtocolHandler {
         final String hexFade = convertFade(fade);
         final String hexIntensity = convertIntensity(controlUnit, zone, intensity);
 
-        final StringBuffer sb = new StringBuffer(16);
+        final StringBuilder sb = new StringBuilder(16);
         for (int z = 1; z <= 8; z++) {
             sb.append(' ');
             sb.append(zone == z ? hexIntensity : "*");
@@ -713,7 +711,7 @@ class PrgProtocolHandler {
             throw new IllegalArgumentException("command cannot be empty");
         }
         try {
-            logger.debug("SendCommand: " + command);
+            logger.debug("SendCommand: {}", command);
             _session.sendCommand(command);
         } catch (IOException e) {
             _callback.statusChanged(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -743,100 +741,81 @@ class PrgProtocolHandler {
                     case 2: {
                         errorMsg = "Invalid scene selected";
                         break;
-
                     }
                     case 6: {
                         errorMsg = "Bad command was sent";
                         break;
-
                     }
                     case 13: {
                         errorMsg = "Not a timeclock unit (GRX-ATC or GRX-PRG)";
                         break;
-
                     }
                     case 14: {
                         errorMsg = "Illegal time was entered";
                         break;
-
                     }
                     case 15: {
                         errorMsg = "Invalid schedule";
                         break;
-
                     }
                     case 16: {
                         errorMsg = "No Super Sequence has been loaded";
                         break;
-
                     }
                     case 20: {
                         errorMsg = "Command was missing Control Units";
                         break;
-
                     }
                     case 21: {
                         errorMsg = "Command was missing data";
                         break;
-
                     }
                     case 22: {
                         errorMsg = "Error in command argument (improper hex value)";
                         break;
-
                     }
                     case 24: {
                         errorMsg = "Invalid Control Unit";
                         break;
-
                     }
                     case 25: {
                         errorMsg = "Invalid value, outside range of acceptable values";
                         break;
-
                     }
                     case 26: {
                         errorMsg = "Invalid Accessory Control";
                         break;
-
                     }
                     case 31: {
                         errorMsg = "Network address illegally formatted; 4 octets required (xxx.xxx.xxx.xxx)";
                         break;
-
                     }
                     case 80: {
                         errorMsg = "Time-out error, no response received";
                         break;
-
                     }
                     case 100: {
                         errorMsg = "Invalid Telnet login number";
                         break;
-
                     }
                     case 101: {
                         errorMsg = "Invalid Telnet login";
                         break;
-
                     }
                     case 102: {
                         errorMsg = "Telnet login name exceeds 8 characters";
                         break;
-
                     }
                     case 103: {
                         errorMsg = "INvalid number of arguments";
                         break;
-
                     }
                     case 255: {
                         errorMsg = "GRX-PRG must be in programming mode for specific commands";
                         break;
-
                     }
                 }
-                logger.error("Error response: " + errorMsg + " (" + errorNbr + ")");
+                logger.error("Error response: {} ({})", errorMsg, errorNbr);
             } catch (NumberFormatException e) {
                 logger.error("Invalid failure response (can't parse error number): '{}'", resp);
             }
@@ -848,7 +827,7 @@ class PrgProtocolHandler {
     /**
      * Handles the scene status response
      *
-     * @param m the non-null {@link Matcher} that matched the response
+     * @param m    the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleSceneStatus(Matcher m, String resp) {
@@ -866,7 +845,7 @@ class PrgProtocolHandler {
 
                     int scene = VALID_SCENES.indexOf(status);
                     if (scene < 0) {
-                        logger.warn("Unknown scene status returned for zone " + i + ": " + status);
+                        logger.warn("Unknown scene status returned for zone {}: {}", i, status);
                     } else {
                         _callback.stateChanged(i, PrgConstants.CHANNEL_SCENE, new DecimalType(scene));
                         refreshZoneIntensity(i); // request to get new zone intensities
@@ -883,7 +862,7 @@ class PrgProtocolHandler {
     /**
      * Handles the report time response
      *
-     * @param m the non-null {@link Matcher} that matched the response
+     * @param m    the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleReportTime(Matcher m, String resp) {
@@ -902,7 +881,6 @@ class PrgProtocolHandler {
                 c.set(Calendar.YEAR, yr + (yr < 50 ? 1900 : 2000));
 
                 _callback.stateChanged(PrgConstants.CHANNEL_TIMECLOCK, new DateTimeType(c));
-
             } catch (NumberFormatException e) {
                 logger.error("Invalid time response (can't parse number): '{}'", resp);
             }
@@ -914,7 +892,7 @@ class PrgProtocolHandler {
     /**
      * Handles the report schedule response
      *
-     * @param m the non-null {@link Matcher} that matched the response
+     * @param m    the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleReportSchedule(Matcher m, String resp) {
@@ -936,7 +914,7 @@ class PrgProtocolHandler {
     /**
      * Handles the sunrise/sunset response
      *
-     * @param m the non-null {@link Matcher} that matched the response
+     * @param m    the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleSunriseSunset(Matcher m, String resp) {
@@ -958,7 +936,6 @@ class PrgProtocolHandler {
                 sunset.set(Calendar.HOUR_OF_DAY, Integer.parseInt(m.group(3)));
                 sunset.set(Calendar.MINUTE, Integer.parseInt(m.group(4)));
                 _callback.stateChanged(PrgConstants.CHANNEL_SUNSET, new DateTimeType(sunset));
-
             } catch (NumberFormatException e) {
                 logger.error("Invalid sunrise/sunset response (can't parse number): '{}'", resp);
             }
@@ -970,7 +947,7 @@ class PrgProtocolHandler {
     /**
      * Handles the super sequence response
      *
-     * @param m the non-null {@link Matcher} that matched the response
+     * @param m    the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleSuperSequenceStatus(Matcher m, String resp) {
@@ -997,7 +974,7 @@ class PrgProtocolHandler {
     /**
      * Handles the zone intensity response
      *
-     * @param m the non-null {@link Matcher} that matched the response
+     * @param m    the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleZoneIntensity(Matcher m, String resp) {
@@ -1028,7 +1005,7 @@ class PrgProtocolHandler {
     /**
      * Handles the controller information response (currently not used).
      *
-     * @param m the non-null {@link Matcher} that matched the response
+     * @param m    the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleControlInfo(Matcher m, String resp) {
@@ -1041,7 +1018,7 @@ class PrgProtocolHandler {
                 controlUnit = Integer.parseInt(m.group(1));
 
                 final String q4 = m.group(8);
-                final String q4bits = new StringBuffer(Integer.toBinaryString(Integer.parseInt(q4, 16))).reverse()
+                final String q4bits = new StringBuilder(Integer.toBinaryString(Integer.parseInt(q4, 16))).reverse()
                         .toString();
                 // final boolean seqType = (q4bits.length() > 0 ? q4bits.charAt(0) : '0') == '1';
                 final boolean seqMode = (q4bits.length() > 1 ? q4bits.charAt(1) : '0') == '1';
@@ -1065,7 +1042,7 @@ class PrgProtocolHandler {
     /**
      * Handles the interface being reset
      *
-     * @param m the non-null {@link Matcher} that matched the response
+     * @param m    the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleResetting(Matcher m, String resp) {
@@ -1075,7 +1052,7 @@ class PrgProtocolHandler {
     /**
      * Handles the button press response
      *
-     * @param m the non-null {@link Matcher} that matched the response
+     * @param m    the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleButton(Matcher m, String resp) {
@@ -1088,7 +1065,7 @@ class PrgProtocolHandler {
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleUnknownCommand(String response) {
-        logger.info("Unhandled response: " + response);
+        logger.info("Unhandled response: {}", response);
     }
 
     /**
@@ -1237,7 +1214,6 @@ class PrgProtocolHandler {
                 _responses.put(e);
             } catch (InterruptedException e1) {
             }
-
         }
 
     }

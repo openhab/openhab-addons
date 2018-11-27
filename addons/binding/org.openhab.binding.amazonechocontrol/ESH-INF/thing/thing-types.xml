@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bindingId="amazonechocontrol"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<bridge-type id="account">
+		<label>Amazon Account</label>
+		<description>Amazon Account where the amazon echo devices are registered.</description>
+		<config-description>
+			<parameter name="amazonSite" type="text" required="true">
+				<default />
+				<label>Amazon site</label>
+				<limitToOptions>false</limitToOptions>
+				<options>
+					<option value="amazon.de">amazon.de</option>
+					<option value="amazon.com">amazon.com</option>
+					<option value="amazon.ca">amazon.ca</option>
+					<option value="amazon.it">amazon.it</option>
+					<option value="amazon.in">amazon.in</option>
+					<option value="amazon.fr">amazon.fr</option>
+					<option value="amazon.co.uk">amazon.co.uk</option>
+				</options>
+				<description>Site where the amazon account is created.</description>
+			</parameter>
+			<parameter name="email" type="text" required="true">
+				<label>Email</label>
+				<description>Email address of the amazon account which is used for the amazon echo devices. Hint: 2 factor authentication is not supported!</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password of the amazon account which is used for the amazon echo devices. IMPORTANT: If the account thing does not go online and reports and login error, open the url YOUR_OPENHAP/amazonechocontrol/ID_OF_THIS_THING in your browser (e.g. http://openhab:8080/amazonechocontrol/account) and try to login.</description>
+			</parameter>
+			<parameter name="pollingIntervalInSeconds" type="integer" min="10" max="65535" unit="s">
+				<default>30</default>
+				<label>Refresh state interval</label>
+				<description>Refresh state interval in seconds. Lower time causes more network traffic.</description>
+				<unitLabel>Seconds</unitLabel>
+			</parameter>
+		</config-description>
+	</bridge-type>
+	<thing-type id="echo">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account" />
+		</supported-bridge-type-refs>
+		<label>Amazon Echo</label>
+		<description>Amazon Echo device (Amazon Echo, Amazon Echo Dot, Amazon Echo Plus...)</description>
+		<channels>
+			<channel id="player" typeId="player" />
+			<channel id="volume" typeId="volume" />
+			<channel id="shuffle" typeId="shuffle" />
+			<channel id="imageUrl" typeId="imageUrl" />
+			<channel id="title" typeId="title" />
+			<channel id="subtitle1" typeId="subtitle1" />
+			<channel id="subtitle2" typeId="subtitle2" />
+			<channel id="providerDisplayName" typeId="providerDisplayName" />
+			<channel id="musicProviderId" typeId="musicProviderId" />
+			<channel id="playMusicVoiceCommand" typeId="playMusicVoiceCommand" />
+			<channel id="startCommand" typeId="startCommand" />
+			<channel id="radioStationId" typeId="radioStationId" />
+			<channel id="radio" typeId="radio" />
+			<channel id="amazonMusicTrackId" typeId="amazonMusicTrackId" />
+			<channel id="amazonMusicPlayListId" typeId="amazonMusicPlayListId" />
+			<channel id="amazonMusic" typeId="amazonMusic" />
+			<channel id="textToSpeech" typeId="textToSpeech" />
+			<channel id="remind" typeId="remind" />
+			<channel id="playAlarmSound" typeId="playAlarmSound" />
+			<channel id="startRoutine" typeId="startRoutine" />
+			<channel id="bluetoothMAC" typeId="bluetoothMAC" />
+			<channel id="bluetooth" typeId="bluetooth" />
+			<channel id="bluetoothDeviceName" typeId="bluetoothDeviceName" />
+		</channels>
+		<representation-property>serialNumber</representation-property>
+		<config-description>
+			<parameter name="serialNumber" type="text" required="true">
+				<label>Serial Number</label>
+				<description>The serial number of the device from the Alexa app</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="echospot">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account" />
+		</supported-bridge-type-refs>
+		<label>Amazon Echo Spot</label>
+		<description>Amazon Echo Spot device</description>
+		<channels>
+			<channel id="player" typeId="player" />
+			<channel id="volume" typeId="volume" />
+			<channel id="shuffle" typeId="shuffle" />
+			<channel id="imageUrl" typeId="imageUrl" />
+			<channel id="title" typeId="title" />
+			<channel id="subtitle1" typeId="subtitle1" />
+			<channel id="subtitle2" typeId="subtitle2" />
+			<channel id="providerDisplayName" typeId="providerDisplayName" />
+			<channel id="musicProviderId" typeId="musicProviderId" />
+			<channel id="playMusicVoiceCommand" typeId="playMusicVoiceCommand" />
+			<channel id="startCommand" typeId="startCommand" />
+			<channel id="radioStationId" typeId="radioStationId" />
+			<channel id="radio" typeId="radio" />
+			<channel id="amazonMusicTrackId" typeId="amazonMusicTrackId" />
+			<channel id="amazonMusicPlayListId" typeId="amazonMusicPlayListId" />
+			<channel id="amazonMusic" typeId="amazonMusic" />
+			<channel id="textToSpeech" typeId="textToSpeech" />
+			<channel id="remind" typeId="remind" />
+			<channel id="playAlarmSound" typeId="playAlarmSound" />
+			<channel id="startRoutine" typeId="startRoutine" />
+			<channel id="bluetoothMAC" typeId="bluetoothMAC" />
+			<channel id="bluetooth" typeId="bluetooth" />
+			<channel id="bluetoothDeviceName" typeId="bluetoothDeviceName" />
+		</channels>
+		<representation-property>serialNumber</representation-property>
+		<config-description>
+			<parameter name="serialNumber" type="text" required="true">
+				<label>Serial Number</label>
+				<description>The serial number of the device from the Alexa app</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="echoshow">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account" />
+		</supported-bridge-type-refs>
+		<label>Amazon Echo Show</label>
+		<description>Amazon Echo Show device</description>
+		<channels>
+			<channel id="player" typeId="player" />
+			<channel id="volume" typeId="volume" />
+			<channel id="shuffle" typeId="shuffle" />
+			<channel id="imageUrl" typeId="imageUrl" />
+			<channel id="title" typeId="title" />
+			<channel id="subtitle1" typeId="subtitle1" />
+			<channel id="subtitle2" typeId="subtitle2" />
+			<channel id="providerDisplayName" typeId="providerDisplayName" />
+			<channel id="musicProviderId" typeId="musicProviderId" />
+			<channel id="playMusicVoiceCommand" typeId="playMusicVoiceCommand" />
+			<channel id="startCommand" typeId="startCommand" />
+			<channel id="radioStationId" typeId="radioStationId" />
+			<channel id="radio" typeId="radio" />
+			<channel id="amazonMusicTrackId" typeId="amazonMusicTrackId" />
+			<channel id="amazonMusicPlayListId" typeId="amazonMusicPlayListId" />
+			<channel id="amazonMusic" typeId="amazonMusic" />
+			<channel id="textToSpeech" typeId="textToSpeech" />
+			<channel id="remind" typeId="remind" />
+			<channel id="playAlarmSound" typeId="playAlarmSound" />
+			<channel id="startRoutine" typeId="startRoutine" />
+			<channel id="bluetoothMAC" typeId="bluetoothMAC" />
+			<channel id="bluetooth" typeId="bluetooth" />
+			<channel id="bluetoothDeviceName" typeId="bluetoothDeviceName" />
+		</channels>
+		<representation-property>serialNumber</representation-property>
+		<config-description>
+			<parameter name="serialNumber" type="text" required="true">
+				<label>Serial Number</label>
+				<description>The serial number of the device from the Alexa app</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="wha">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account" />
+		</supported-bridge-type-refs>
+		<label>Amazon Echo Whole House Audio Control</label>
+		<description>Amazon Multiroom Music</description>
+		<channels>
+			<channel id="player" typeId="player" />
+			<channel id="shuffle" typeId="shuffle" />
+			<channel id="imageUrl" typeId="imageUrl" />
+			<channel id="title" typeId="title" />
+			<channel id="subtitle1" typeId="subtitle1" />
+			<channel id="subtitle2" typeId="subtitle2" />
+			<channel id="providerDisplayName" typeId="providerDisplayName" />
+			<channel id="radioStationId" typeId="radioStationId" />
+			<channel id="radio" typeId="radio" />
+			<channel id="amazonMusicTrackId" typeId="amazonMusicTrackId" />
+			<channel id="amazonMusicPlayListId" typeId="amazonMusicPlayListId" />
+			<channel id="amazonMusic" typeId="amazonMusic" />
+		</channels>
+		<representation-property>serialNumber</representation-property>
+		<config-description>
+			<parameter name="serialNumber" type="text" required="true">
+				<label>Serial Number</label>
+				<description>The serial number of the device from the Alexa app</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="flashbriefingprofile">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account" />
+		</supported-bridge-type-refs>
+		<label>Flash Briefing Profile</label>
+		<description>Store and load a flash briefing configuration</description>
+		<channels>
+			<channel id="save" typeId="save" />
+			<channel id="active" typeId="active" />
+			<channel id="playOnDevice" typeId="playOnDevice" />
+		</channels>
+	</thing-type>
+	<channel-type id="save">
+		<item-type>Switch</item-type>
+		<label>Save</label>
+		<description>Save the current flash briefing configuration (Write only)</description>
+	</channel-type>
+	<channel-type id="active">
+		<item-type>Switch</item-type>
+		<label>Active</label>
+		<description>Activate this flash briefing configuration</description>
+	</channel-type>
+	<channel-type id="playOnDevice" advanced="true">
+		<item-type>String</item-type>
+		<label>Play On Device</label>
+		<description>Plays the briefing on the device (serial number or name, write only)</description>
+	</channel-type>
+	<channel-type id="bluetoothDeviceName" advanced="true">
+		<item-type>String</item-type>
+		<label>Bluetooth device</label>
+		<description>Connected bluetooth device</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="radioStationId" advanced="true">
+		<item-type>String</item-type>
+		<label>TuneIn Radio station id</label>
+		<description>Id of the radio station</description>
+	</channel-type>
+	<channel-type id="remind" advanced="true">
+		<item-type>String</item-type>
+		<label>Remind</label>
+		<description>Speak the reminder and send a notification to the Alexa app</description>
+	</channel-type>
+	<channel-type id="startRoutine" advanced="true">
+		<item-type>String</item-type>
+		<label>Start a routine</label>
+		<description>The command which must be spoken to active the routing without the preceding "Alexa," (Write Only)</description>
+	</channel-type>
+	<channel-type id="playAlarmSound" advanced="true">
+		<item-type>String</item-type>
+		<label>Alarm Sound</label>
+		<description>Plays an alarm sound</description>
+	</channel-type>
+	<channel-type id="amazonMusicTrackId" advanced="true">
+		<item-type>String</item-type>
+		<label>Amazon music track id</label>
+		<description>Id of the amazon music track</description>
+	</channel-type>
+	<channel-type id="amazonMusic" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Amazon music</label>
+		<description>Amazon Music turned on</description>
+	</channel-type>
+	<channel-type id="amazonMusicPlayListId" advanced="true">
+		<item-type>String</item-type>
+		<label>Amazon music play list id</label>
+		<description>Amazon Music play list id (Write only, no current state)</description>
+	</channel-type>
+	<channel-type id="amazonMusicPlayListIdLastUsed" advanced="true">
+		<item-type>String</item-type>
+		<label>Amazon music last selected playlist id</label>
+		<description>Id of the playlist which was started with openHAB</description>
+	</channel-type>
+	<channel-type id="providerDisplayName" advanced="true">
+		<item-type>String</item-type>
+		<label>Provider Name</label>
+		<description>Name of music provider</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="bluetoothMAC">
+		<item-type>String</item-type>
+		<label>Bluetooth connection</label>
+		<description>MAC-Address of the bluetooth connected device</description>
+	</channel-type>
+	<channel-type id="imageUrl" advanced="true">
+		<item-type>String</item-type>
+		<label>Image url</label>
+		<description>Url of the album image or radio station logo</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="title">
+		<item-type>String</item-type>
+		<label>Title</label>
+		<description>Title</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="subtitle1" advanced="true">
+		<item-type>String</item-type>
+		<label>Subtitle 1</label>
+		<description>Subtitle 1</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="subtitle2" advanced="true">
+		<item-type>String</item-type>
+		<label>Subtitle 2</label>
+		<description>Subtitle 2</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="radio" advanced="true">
+		<item-type>Switch</item-type>
+		<label>TuneIn radio</label>
+		<description>Radio turned on</description>
+	</channel-type>
+	<channel-type id="bluetooth" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Bluetooth Connection</label>
+		<description>Connect to last used device</description>
+	</channel-type>
+	<channel-type id="loop">
+		<item-type>Switch</item-type>
+		<label>Loop</label>
+		<description>Loop</description>
+	</channel-type>
+	<channel-type id="shuffle">
+		<item-type>Switch</item-type>
+		<label>Shuffle</label>
+		<description>Shuffle play</description>
+	</channel-type>
+	<channel-type id="player">
+		<item-type>Player</item-type>
+		<label>Player</label>
+		<description>Music Player</description>
+	</channel-type>
+	<channel-type id="volume">
+		<item-type>Dimmer</item-type>
+		<label>Volume</label>
+		<description>Volume of the sound</description>
+	</channel-type>
+	<channel-type id="musicProviderId">
+		<item-type>String</item-type>
+		<label>Music provider</label>
+		<description>Music provider</description>
+	</channel-type>
+	<channel-type id="playMusicVoiceCommand">
+		<item-type>String</item-type>
+		<label>Music voice command</label>
+		<description>Voice command as text. E.g. 'Yesterday from the Beatles' (Write only)</description>
+	</channel-type>
+	<channel-type id="textToSpeech" advanced="true">
+		<item-type>String</item-type>
+		<label>Speak</label>
+		<description>Speak the text (Write only)</description>
+	</channel-type>
+	<channel-type id="startCommand">
+		<item-type>String</item-type>
+		<label>Start</label>
+		<description>Start information (Write only)</description>
+		<state pattern="String" readOnly="false">
+			<options>
+				<option value="Weather">Weather</option>
+				<option value="Traffic">Traffic</option>
+				<option value="GoodMorning">Good morning</option>
+				<option value="SingASong">Song</option>
+				<option value="TellStory">Story</option>
+				<option value="FlashBriefing">Flash briefing</option>
+			</options>
+		</state>
+	</channel-type>
+</thing:thing-descriptions>

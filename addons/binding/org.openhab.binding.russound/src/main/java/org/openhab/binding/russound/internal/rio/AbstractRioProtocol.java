@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,19 +21,18 @@ import org.openhab.binding.russound.internal.rio.system.RioSystemHandler;
  * Defines the abstract base for a protocol handler. This base provides managment of the {@link SocketSession} and
  * provides helper methods that will callback {@link RioHandlerCallback}
  *
- * @author Tim Roberts
- *
+ * @author Tim Roberts - Initial contribution
  */
 public abstract class AbstractRioProtocol implements SocketSessionListener {
     /**
      * The {@link SocketSession} used by this protocol handler
      */
-    private final SocketSession _session;
+    private final SocketSession session;
 
     /**
      * The {@link RioSystemHandler} to call back to update status and state
      */
-    private final RioHandlerCallback _callback;
+    private final RioHandlerCallback callback;
 
     /**
      * Constructs the protocol handler from given parameters and will add this handler as a
@@ -44,7 +43,6 @@ public abstract class AbstractRioProtocol implements SocketSessionListener {
      * @param callback a non-null {@link RioHandlerCallback} to update state and status
      */
     protected AbstractRioProtocol(SocketSession session, RioHandlerCallback callback) {
-
         if (session == null) {
             throw new IllegalArgumentException("session cannot be null");
         }
@@ -53,9 +51,9 @@ public abstract class AbstractRioProtocol implements SocketSessionListener {
             throw new IllegalArgumentException("callback cannot be null");
         }
 
-        _session = session;
-        _session.addListener(this);
-        _callback = callback;
+        this.session = session;
+        this.session.addListener(this);
+        this.callback = callback;
     }
 
     /**
@@ -68,7 +66,7 @@ public abstract class AbstractRioProtocol implements SocketSessionListener {
             throw new IllegalArgumentException("command cannot be null");
         }
         try {
-            _session.sendCommand(command);
+            session.sendCommand(command);
         } catch (IOException e) {
             getCallback().statusChanged(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Exception occurred sending command: " + e);
@@ -111,7 +109,7 @@ public abstract class AbstractRioProtocol implements SocketSessionListener {
      * {@link SocketSession#removeListener(SocketSessionListener)}
      */
     public void dispose() {
-        _session.removeListener(this);
+        session.removeListener(this);
     }
 
     /**
@@ -121,7 +119,7 @@ public abstract class AbstractRioProtocol implements SocketSessionListener {
      * @param e the exception
      */
     @Override
-    public void responseException(Exception e) {
+    public void responseException(IOException e) {
         getCallback().statusChanged(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                 "Exception occurred reading from the socket: " + e);
     }
@@ -132,6 +130,6 @@ public abstract class AbstractRioProtocol implements SocketSessionListener {
      * @return a non-null {@link RioHandlerCallback}
      */
     public RioHandlerCallback getCallback() {
-        return _callback;
+        return callback;
     }
 }

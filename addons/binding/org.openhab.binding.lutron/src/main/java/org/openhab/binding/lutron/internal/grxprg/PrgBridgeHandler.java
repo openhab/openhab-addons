@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * The {@link PrgBridgeHandler} is responsible for handling all bridge interactions. This includes management of the
  * connection and processing of any commands (thru the {@link PrgProtocolHandler}).
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  */
 public class PrgBridgeHandler extends BaseBridgeHandler {
 
@@ -120,11 +120,11 @@ public class PrgBridgeHandler extends BaseBridgeHandler {
                     return handler;
                 }
             } else {
-                logger.warn("Should not be a non-GrafikEyeHandler as a thing to this bridge - ignoring: " + thing);
+                logger.warn("Should not be a non-GrafikEyeHandler as a thing to this bridge - ignoring: {}", thing);
             }
         }
 
-        throw new IllegalArgumentException("Could not find a GrafikEyeHandler for control unit: " + controlUnit);
+        throw new IllegalArgumentException("Could not find a GrafikEyeHandler for control unit : " + controlUnit);
     }
 
     /**
@@ -138,7 +138,6 @@ public class PrgBridgeHandler extends BaseBridgeHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         if (command instanceof RefreshType) {
             handleRefresh(channelUID.getId());
             return;
@@ -167,14 +166,14 @@ public class PrgBridgeHandler extends BaseBridgeHandler {
                 final Calendar c = ((DateTimeType) command).getCalendar();
                 _protocolHandler.setTime(c);
             } else {
-                logger.error("Received a TIMECLOCK channel command with a non DateTimeType: " + command);
+                logger.error("Received a TIMECLOCK channel command with a non DateTimeType: {}", command);
             }
         } else if (id.startsWith(PrgConstants.CHANNEL_SCHEDULE)) {
             if (command instanceof DecimalType) {
                 final int schedule = ((DecimalType) command).intValue();
                 _protocolHandler.selectSchedule(schedule);
             } else {
-                logger.error("Received a SCHEDULE channel command with a non DecimalType: " + command);
+                logger.error("Received a SCHEDULE channel command with a non DecimalType: {}", command);
             }
 
         } else if (id.startsWith(PrgConstants.CHANNEL_SUPERSEQUENCESTART)) {
@@ -186,7 +185,7 @@ public class PrgBridgeHandler extends BaseBridgeHandler {
             _protocolHandler.resumeSuperSequence();
 
         } else {
-            logger.error("Unknown/Unsupported Channel id: " + id);
+            logger.error("Unknown/Unsupported Channel id: {}", id);
         }
     }
 
@@ -221,9 +220,6 @@ public class PrgBridgeHandler extends BaseBridgeHandler {
             _protocolHandler.reportSuperSequenceStatus();
         } else if (id.equals(PrgConstants.CHANNEL_SUPERSEQUENCENEXTSEC)) {
             _protocolHandler.reportSuperSequenceStatus();
-
-        } else {
-            // Can't refresh any others...
         }
     }
 
@@ -263,7 +259,6 @@ public class PrgBridgeHandler extends BaseBridgeHandler {
      * be retried later (via {@link #retryConnect()})
      */
     private void connect() {
-
         final PrgBridgeConfig config = getPrgBridgeConfig();
 
         String response = "Server is offline - will try to reconnect later";
@@ -312,7 +307,6 @@ public class PrgBridgeHandler extends BaseBridgeHandler {
         if (_retryConnection == null) {
             final PrgBridgeConfig config = getPrgBridgeConfig();
             if (config != null) {
-
                 logger.info("Will try to reconnect in {} seconds", config.getRetryPolling());
                 _retryConnection = this.scheduler.schedule(new Runnable() {
                     @Override

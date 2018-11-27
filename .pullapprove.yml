@@ -1,0 +1,23 @@
+version: 2
+
+requirements:
+  signed_off_by:
+    required: true
+
+always_pending:
+  title_regex: 'WIP'
+  explanation: 'Work in progress...'
+
+# Group settings to apply to all groups by default, optionally being overridden later
+group_defaults:
+  approve_by_comment:
+    enabled: true
+    approve_regex: '^(Approved|:shipit:|:\+1:|LGTM)'
+  reset_on_push:
+    enabled: true
+
+groups:
+  code-review:
+    required: 1
+    teams:
+    - 2-x-add-ons-maintainers
