@@ -10,7 +10,6 @@ package org.openhab.binding.konnected.internal.handler;
 
 import static org.openhab.binding.konnected.internal.KonnectedBindingConstants.*;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Map;
@@ -36,6 +35,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.konnected.internal.KonnectedConfiguration;
 import org.openhab.binding.konnected.internal.KonnectedHTTPUtils;
+import org.openhab.binding.konnected.internal.KonnectedHttpRetryExceeded;
 import org.openhab.binding.konnected.internal.gson.KonnectedModuleGson;
 import org.openhab.binding.konnected.internal.gson.KonnectedModulePayload;
 import org.slf4j.Logger;
@@ -55,10 +55,11 @@ public class KonnectedHandler extends BaseThingHandler {
     private KonnectedConfiguration config;
 
     private final String konnectedServletPath;
-    private final KonnectedHTTPUtils http = new KonnectedHTTPUtils();
+    private final KonnectedHTTPUtils http = new KonnectedHTTPUtils(30);
     private String callbackIpAddress = null;
     private String moduleIpAddress;
     private Gson gson = new GsonBuilder().create();
+    private int retryCount;
 
     /**
      * This is the constructor of the Konnected Handler.
@@ -75,6 +76,7 @@ public class KonnectedHandler extends BaseThingHandler {
         this.konnectedServletPath = path;
         callbackIpAddress = hostAddress + ":" + port;
         logger.debug("The callback ip address is: {}", callbackIpAddress);
+        retryCount = 2;
     }
 
     @Override
@@ -121,6 +123,8 @@ public class KonnectedHandler extends BaseThingHandler {
         // get the zone number based off of the index location of the pin value
         String sentZone = Integer.toString(Arrays.asList(PIN_TO_ZONE).indexOf(event.getPin()));
         // check that the zone number is in one of the channelUID definitions
+        logger.debug("Looping Through all channels on thing: {} to find a match for {}", thing.getUID().getAsString(),
+                event.getAuthToken());
         getThing().getChannels().forEach(channel -> {
             ChannelUID channelId = channel.getUID();
             String zoneNumber = (String) channel.getConfiguration().get(CHANNEL_ZONE);
@@ -135,7 +139,8 @@ public class KonnectedHandler extends BaseThingHandler {
                 // check if the itemType has been defined for the zone received
                 // check the itemType of the Zone, if Contact, send the State if Temp send Temp, etc.
                 if (channelType.equalsIgnoreCase(CHANNEL_SWITCH) || channelType.equalsIgnoreCase(CHANNEL_ACTUATOR)) {
-                    OnOffType onOffType = event.getState().equalsIgnoreCase("1") ? OnOffType.ON : OnOffType.OFF;
+                    OnOffType onOffType = event.getState().equalsIgnoreCase(getOnState(channel)) ? OnOffType.ON
+                            : OnOffType.OFF;
                     updateState(channelId, onOffType);
                 } else if (channelType.equalsIgnoreCase(CHANNEL_HUMIDITY)) {
                     // if the state is of type number then this means it is the humidity channel of the dht22
@@ -171,6 +176,24 @@ public class KonnectedHandler extends BaseThingHandler {
 
     private void checkConfiguration() throws ConfigValidationException {
         KonnectedConfiguration testConfig = getConfigAs(KonnectedConfiguration.class);
+        String testRetryCount = testConfig.get(RETRY_COUNT).toString();
+        String testRequestTimeout = testConfig.get(REQUEST_TIMEOUT).toString();
+
+        try {
+            this.retryCount = Integer.parseInt(testRetryCount);
+        } catch (NumberFormatException e) {
+            logger.debug(
+                    "Please check your configuration of the Retry Count as it is not an Integer. It is configured as: {}, will contintue to configure the binding with the default of 2",
+                    testRetryCount);
+            this.retryCount = 2;
+        }
+        try {
+            this.http.setRequestTimeout(Integer.parseInt(testRequestTimeout));
+        } catch (NumberFormatException e) {
+            logger.debug(
+                    "Please check your configuration of the Request Timeout as it is not an Integer. It is configured as: {}, will contintue to configure the binding with the default of 30",
+                    testRequestTimeout);
+        }
 
         if ((callbackIpAddress == null)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -201,8 +224,8 @@ public class KonnectedHandler extends BaseThingHandler {
                 if (cfg[1].equals("softreset") && value instanceof Boolean && ((Boolean) value) == true) {
                     scheduler.execute(() -> {
                         try {
-                            http.doGet(moduleIpAddress + "/settings?restart=true");
-                        } catch (IOException e) {
+                            http.doGet(moduleIpAddress + "/settings?restart=true", null, retryCount);
+                        } catch (KonnectedHttpRetryExceeded e) {
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                         }
                     });
@@ -210,8 +233,8 @@ public class KonnectedHandler extends BaseThingHandler {
                 } else if (cfg[1].equals("removewifi") && value instanceof Boolean && ((Boolean) value) == true) {
                     scheduler.execute(() -> {
                         try {
-                            http.doGet(moduleIpAddress + "/settings?restore=true");
-                        } catch (IOException e) {
+                            http.doGet(moduleIpAddress + "/settings?restore=true", null, retryCount);
+                        } catch (KonnectedHttpRetryExceeded e) {
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                         }
                     });
@@ -228,10 +251,9 @@ public class KonnectedHandler extends BaseThingHandler {
                             } else {
                                 updateStatus(ThingStatus.ONLINE);
                             }
-                        } catch (IOException e) {
+                        } catch (KonnectedHttpRetryExceeded e) {
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                         }
-
                     });
                     value = false;
                 }
@@ -251,8 +273,8 @@ public class KonnectedHandler extends BaseThingHandler {
             } else {
                 updateStatus(ThingStatus.ONLINE);
             }
-        } catch (IOException e) {
-            logger.trace("There was an IOExcption Error thrown during HandleConfigurationUpdate()");
+        } catch (KonnectedHttpRetryExceeded e) {
+            logger.trace("The number of retries was exceeeded during the HandleConfigurationUpdate():", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -275,7 +297,7 @@ public class KonnectedHandler extends BaseThingHandler {
                 } else {
                     updateStatus(ThingStatus.ONLINE);
                 }
-            } catch (IOException e) {
+            } catch (KonnectedHttpRetryExceeded e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         });
@@ -299,12 +321,13 @@ public class KonnectedHandler extends BaseThingHandler {
     private String constructSettingsPayload() {
         String hostPath = "";
         hostPath = callbackIpAddress + this.konnectedServletPath;
-        String authToken = this.getThing().getUID().getAsString();
+        String authToken = getThing().getUID().getAsString();
         logger.debug("The Auth_Token is: {}", authToken);
         KonnectedModulePayload payload = new KonnectedModulePayload(authToken, "http://" + hostPath);
         payload.setBlink(config.blink);
         payload.setDiscovery(config.discovery);
-        getThing().getChannels().forEach(channel -> {
+        this.getThing().getChannels().forEach(channel -> {
+            // ChannelUID channelId = channel.getUID();
             if (isLinked(channel.getUID())) {
                 // adds linked channels to list based on last value of Channel ID
                 // which is set to a number
@@ -372,15 +395,15 @@ public class KonnectedHandler extends BaseThingHandler {
         return payloadString;
     }
 
-    /**
+    /*
      * Prepares and sends the {@link KonnectedModulePayload} via the {@link KonnectedHttpUtils}
      *
      * @return response obtained from sending the settings payload to Konnected module defined by the thing
-     * @throws IOException if unable to communicate with the Konnected module defined by the Thing
+     * @throws KonnectedHttpRetryExceeded if unable to communicate with the Konnected module defined by the Thing
      */
-    private String updateKonnectedModule() throws IOException {
+    private String updateKonnectedModule() throws KonnectedHttpRetryExceeded {
         String payload = constructSettingsPayload();
-        String response = http.doPut(moduleIpAddress + "/settings", payload);
+        String response = http.doPut(moduleIpAddress + "/settings", payload, retryCount);
         logger.debug("The response of the put request was: {}", response);
         return response;
     }
@@ -401,40 +424,45 @@ public class KonnectedHandler extends BaseThingHandler {
                 KonnectedModuleGson payload = new KonnectedModuleGson();
                 payload.setState(scommand);
                 payload.setPin(pin);
-
-                if (configuration.get(CHANNEL_ACTUATOR_TIMES) == null) {
-                    logger.debug("The times configuration was not set for channelID: {}, not adding it to the payload.",
-                            channelId.toString());
-                } else {
-                    payload.setTimes(configuration.get(CHANNEL_ACTUATOR_TIMES).toString());
-                    logger.debug("The times configuration was set to: {} for channelID: {}.",
-                            configuration.get(CHANNEL_ACTUATOR_TIMES).toString(), channelId.toString());
-                }
-                if (configuration.get(CHANNEL_ACTUATOR_MOMENTARY) == null) {
-                    logger.debug(
-                            "The momentary configuration was not set for channelID: {}, not adding it to the payload.",
-                            channelId.toString());
-                } else {
-                    payload.setMomentary(configuration.get(CHANNEL_ACTUATOR_MOMENTARY).toString());
-                    logger.debug("The momentary configuration set to: {} channelID: {}.",
-                            configuration.get(CHANNEL_ACTUATOR_MOMENTARY).toString(), channelId.toString());
-                }
-                if (configuration.get(CHANNEL_ACTUATOR_PAUSE) == null) {
-                    logger.debug("The pause configuration was not set for channelID: {}, not adding it to the payload.",
-                            channelId.toString());
-                } else {
-                    payload.setPause(configuration.get(CHANNEL_ACTUATOR_PAUSE).toString());
-                    logger.debug("The pause configuration was set to: {} for channelID: {}.",
-                            configuration.get(CHANNEL_ACTUATOR_PAUSE).toString(), channelId.toString());
+                // check to see if this is an On Command type, if so add the momentary, pause, times to the payload if
+                // they exist on the configuration.
+                if (scommand.equals(getOnState(channel))) {
+                    if (configuration.get(CHANNEL_ACTUATOR_TIMES) == null) {
+                        logger.debug(
+                                "The times configuration was not set for channelID: {}, not adding it to the payload.",
+                                channelId.toString());
+                    } else {
+                        payload.setTimes(configuration.get(CHANNEL_ACTUATOR_TIMES).toString());
+                        logger.debug("The times configuration was set to: {} for channelID: {}.",
+                                configuration.get(CHANNEL_ACTUATOR_TIMES).toString(), channelId.toString());
+                    }
+                    if (configuration.get(CHANNEL_ACTUATOR_MOMENTARY) == null) {
+                        logger.debug(
+                                "The momentary configuration was not set for channelID: {}, not adding it to the payload.",
+                                channelId.toString());
+                    } else {
+                        payload.setMomentary(configuration.get(CHANNEL_ACTUATOR_MOMENTARY).toString());
+                        logger.debug("The momentary configuration set to: {} channelID: {}.",
+                                configuration.get(CHANNEL_ACTUATOR_MOMENTARY).toString(), channelId.toString());
+                    }
+                    if (configuration.get(CHANNEL_ACTUATOR_PAUSE) == null) {
+                        logger.debug(
+                                "The pause configuration was not set for channelID: {}, not adding it to the payload.",
+                                channelId.toString());
+                    } else {
+                        payload.setPause(configuration.get(CHANNEL_ACTUATOR_PAUSE).toString());
+                        logger.debug("The pause configuration was set to: {} for channelID: {}.",
+                                configuration.get(CHANNEL_ACTUATOR_PAUSE).toString(), channelId.toString());
+                    }
                 }
                 String payloadString = gson.toJson(payload);
                 logger.debug("The command payload  is: {}", payloadString);
-                http.doPut(moduleIpAddress + "/device", payloadString);
+                http.doPut(moduleIpAddress + "/device", payloadString, retryCount);
             } else {
                 logger.debug("The channel {} returned null for channelId.getID(): {}", channelId.toString(),
                         channelId.getId());
             }
-        } catch (IOException e) {
+        } catch (KonnectedHttpRetryExceeded e) {
             logger.debug("Attempting to set the state of the actuator on thing {} failed: {}",
                     this.thing.getUID().getId(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -453,13 +481,13 @@ public class KonnectedHandler extends BaseThingHandler {
             logger.debug("The command payload  is: {}", payloadString);
             try {
                 sendSetSwitchState(payloadString);
-            } catch (IOException e) {
+            } catch (KonnectedHttpRetryExceeded e) {
                 // try to get the state of the device one more time 30 seconds later. This way it can be confirmed if
                 // the device was simply in a reboot loop when device state was attempted the first time
                 scheduler.schedule(() -> {
                     try {
                         sendSetSwitchState(payloadString);
-                    } catch (IOException ex) {
+                    } catch (KonnectedHttpRetryExceeded ex) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "Unable to communicate with Konnected Alarm Panel confirm settings, and that module is online.");
                         logger.debug("Attempting to get the state of the zone on thing {} failed for channel: {} : {}",
@@ -471,13 +499,21 @@ public class KonnectedHandler extends BaseThingHandler {
             logger.debug("The channel {} returned null for channelId.getID(): {}", channelId.toString(),
                     channelId.getId());
         }
-
     }
 
-    private void sendSetSwitchState(String payloadString) throws IOException {
-        String response = http.doGet(moduleIpAddress + "/device", payloadString);
+    private void sendSetSwitchState(String payloadString) throws KonnectedHttpRetryExceeded {
+        String response = http.doGet(moduleIpAddress + "/device", payloadString, retryCount);
         KonnectedModuleGson event = gson.fromJson(response, KonnectedModuleGson.class);
         this.handleWebHookEvent(event);
+    }
+
+    private String getOnState(Channel channel) {
+        String config = (String) channel.getConfiguration().get(CHANNEL_ONVALUE);
+        if (config == null) {
+            return "1";
+        } else {
+            return config;
+        }
     }
 
 }

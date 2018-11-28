@@ -25,8 +25,16 @@ import org.slf4j.LoggerFactory;
  */
 public class KonnectedHTTPUtils {
     private final Logger logger = LoggerFactory.getLogger(KonnectedHTTPUtils.class);
-    private static final int REQUEST_TIMEOUT = (int) TimeUnit.SECONDS.toMillis(30);
+    private int requestTimeout;
     private String logTest = "";
+
+    public KonnectedHTTPUtils(int requestTimeout) {
+        this.requestTimeout = (int) TimeUnit.SECONDS.toMillis(requestTimeout);
+    }
+
+    public void setRequestTimeout(int requestTimeout) {
+        this.requestTimeout = (int) TimeUnit.SECONDS.toMillis(requestTimeout);
+    }
 
     /**
      * Sends a {@link doPut} request with a timeout of 30 seconds
@@ -34,12 +42,11 @@ public class KonnectedHTTPUtils {
      * @param urlAddress the address to send the request
      * @param payload    the json payload to include with the request
      */
-    public String doPut(String urlAddress, String payload) throws IOException {
+    private String doPut(String urlAddress, String payload) throws IOException {
         logger.debug("The String url we want to put is : {}", urlAddress);
         logger.debug("The payload we want to put is: {}", payload);
         ByteArrayInputStream input = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8));
-        logTest = HttpUtil.executeUrl("PUT", urlAddress, getHttpHeaders(), input, "application/json",
-                KonnectedHTTPUtils.REQUEST_TIMEOUT);
+        logTest = HttpUtil.executeUrl("PUT", urlAddress, getHttpHeaders(), input, "application/json", requestTimeout);
         logger.debug(logTest);
         return logTest;
     }
@@ -56,9 +63,9 @@ public class KonnectedHTTPUtils {
      * @param urlAddress the address to send the request
      */
 
-    public synchronized String doGet(String urlAddress) throws IOException {
+    private synchronized String doGet(String urlAddress) throws IOException {
         logger.debug("The String url we want to get is : {}", urlAddress);
-        logTest = HttpUtil.executeUrl("GET", urlAddress, KonnectedHTTPUtils.REQUEST_TIMEOUT);
+        logTest = HttpUtil.executeUrl("GET", urlAddress, requestTimeout);
         logger.debug(logTest);
         return logTest;
     }
@@ -70,12 +77,67 @@ public class KonnectedHTTPUtils {
      * @param payload    the json payload you want to send as part of the request
      */
 
-    public synchronized String doGet(String urlAddress, String payload) throws IOException {
+    private synchronized String doGet(String urlAddress, String payload) throws IOException {
         logger.debug("The String url we want to get is : {}", urlAddress);
         ByteArrayInputStream input = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8));
-        logTest = HttpUtil.executeUrl("GET", urlAddress, getHttpHeaders(), input, "application/json",
-                KonnectedHTTPUtils.REQUEST_TIMEOUT);
+        logTest = HttpUtil.executeUrl("GET", urlAddress, getHttpHeaders(), input, "application/json", requestTimeout);
         logger.debug(logTest);
         return logTest;
+    }
+
+    /**
+     * Sends a {@link doGet} request with a timeout of 30 seconds
+     *
+     * @param urlAddress the address to send the request
+     * @param payload    the json payload you want to send as part of the request, may be null.
+     * @param retry      the number of retries before throwing the IOexpcetion back to the handler
+     */
+    public synchronized String doGet(String urlAddress, String payload, int retryCount)
+            throws KonnectedHttpRetryExceeded {
+        String response = null;
+        int x = 0;
+        Boolean loop = true;
+        while (loop) {
+            try {
+                if (payload == null) {
+                    response = doGet(urlAddress, payload);
+                } else {
+                    response = doGet(urlAddress);
+                }
+                loop = false;
+            } catch (IOException e) {
+                x++;
+                if (x > retryCount) {
+                    throw new KonnectedHttpRetryExceeded("The number of retry attempts was exceeded", e.getCause());
+                }
+            }
+        }
+        return response;
+    }
+
+    /**
+     * Sends a {@link doPut} request with a timeout of 30 seconds
+     *
+     * @param urlAddress the address to send the request
+     * @param payload    the json payload you want to send as part of the request
+     * @param retry      the number of retries before throwing the IOexpcetion back to the handler
+     */
+    public synchronized String doPut(String urlAddress, String payload, int retryCount)
+            throws KonnectedHttpRetryExceeded {
+        String response = null;
+        int x = 0;
+        Boolean loop = true;
+        while (loop) {
+            try {
+                response = doPut(urlAddress, payload);
+                loop = false;
+            } catch (IOException e) {
+                x++;
+                if (x > retryCount) {
+                    throw new KonnectedHttpRetryExceeded("The number of retry attempts was exceeded", e.getCause());
+                }
+            }
+        }
+        return response;
     }
 }

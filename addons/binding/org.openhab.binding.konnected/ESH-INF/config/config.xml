@@ -21,6 +21,18 @@
 			<default>true</default>
 			<advanced>true</advanced>
 		</parameter>
+		<parameter name="retry_count" type="integer">
+			<label>Retry Count</label>
+			<description>The number of times the binding attempts to send http requests to the Konnected Alarm Panel.  Increase this setting if you are experiencing situations where the module is reporting as offline but you can access the website of the Alarm Panel to confirm that the Alarm Panel is Konnected to the Network.  This will allow the binding to attempt more retries before it considers the connection a failure and marks the thing as offline.</description>
+			<default>2</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="request_timeout" type="integer">
+			<label>Request Timeout</label>
+			<description>The timeout period in seconds for HTTP requests to the Konnected Alarm Panel.  The default is 30.  Adjusting this setting can help in networks situations with high latency where the binding is erroneously reporting the thing as offline.</description>
+			<default>30</default>
+			<advanced>true</advanced>
+		</parameter>
 		<parameter name="controller_softreset" type="boolean" groupName="actions">
 			<label>Soft Reset Module</label>
 			<description>Send A Restart Command to the Module.</description>

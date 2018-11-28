@@ -39,6 +39,15 @@
 					<option value="7">Out</option>
 				</options>
 			</parameter>
+			<parameter name="onvalue" type="text">
+				<label>On Value</label>
+				<description>The value that will be treated by the binding as the on value. For sensors that activate with a high value leave at the default of 1 and sensors that activate with a low value set to 0.</description>
+				<default>1</default>
+				<options>
+					<option value="0">0</option>
+					<option value="1">1</option>
+				</options>
+			</parameter>
 		</config-description>
 	</channel-type>
 	<channel-type id="temperature">
@@ -112,6 +121,15 @@
 					<option value="5">5</option>
 					<option value="6">6</option>
 					<option value="7">Out</option>
+				</options>
+			</parameter>
+			<parameter name="onvalue" type="text">
+				<label>On Value</label>
+				<description>The value that will be treated by the binding as an on command. For actuators that activate with a high command set to 1 and actuators that activate with a low value set to 0.</description>
+				<default>1</default>
+				<options>
+					<option value="0">0</option>
+					<option value="1">1</option>
 				</options>
 			</parameter>
 			<parameter name="momentary" type="integer">
