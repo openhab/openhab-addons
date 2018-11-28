@@ -96,7 +96,7 @@ sitemap demo label="Main Menu"
         Text item=LG_TV0_Volume
         Switch item=LG_TV0_VolDummy icon="soundvolume" label="Volume" mappings=[1="▲", 0="▼"]
         Text item=LG_TV0_ChannelNo
-        Switch item=LG_TV0_ChannelDummy icon="television" label="Kanal" mappings=[1="▲", 0="▼"]
+        Switch item=LG_TV0_ChannelDummy icon="television" label="Channel" mappings=[1="▲", 0="▼"]
         Text item=LG_TV0_Channel
         Default item=LG_TV0_Player
         Text item=LG_TV0_Application
@@ -144,9 +144,10 @@ end
 rule "ChannelUpDown"
 when Item LG_TV0_ChannelDummy received command
 then
+    var currentChannel = LG_TV0_ChannelNo.state as DecimalType
     switch receivedCommand{
-        case 0: LG_TV0_ChannelNo.sendCommand(DECREASE)
-        case 1: LG_TV0_ChannelNo.sendCommand(INCREASE)
+        case 0: LG_TV0_ChannelNo.sendCommand(currentChannel - 1)
+        case 1: LG_TV0_ChannelNo.sendCommand(currentChannel + 1)
     }
 end
 ```

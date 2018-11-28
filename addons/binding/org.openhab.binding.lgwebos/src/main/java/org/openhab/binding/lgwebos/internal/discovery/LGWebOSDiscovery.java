@@ -118,8 +118,8 @@ public class LGWebOSDiscovery extends AbstractDiscoveryService implements Discov
     @Override
     public void onDeviceUpdated(DiscoveryManager manager, ConnectableDevice device) {
         logger.debug("Device updated: {}", device);
-        thingRemoved(createThingUID(device));
-        thingDiscovered(createDiscoveryResult(device));
+        // thingRemoved(createThingUID(device));
+        // thingDiscovered(createDiscoveryResult(device));
     }
 
     @Override
