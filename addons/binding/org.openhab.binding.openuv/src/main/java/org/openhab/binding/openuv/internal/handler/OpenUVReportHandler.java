@@ -230,12 +230,7 @@ public class OpenUVReportHandler extends BaseThingHandler {
      */
     private OpenUVJsonResult getOpenUVData() throws IOException {
         OpenUVConfiguration config = getConfigAs(OpenUVConfiguration.class);
-        if (config.getAltitude() == null) {
-            return bridgeHandler.getUVData(config.getLatitude(), config.getLongitude()).getResult();
-        } else {
-            return bridgeHandler.getUVData(config.getLatitude(), config.getLongitude(), config.getAltitude())
-                    .getResult();
-        }
+        return bridgeHandler.getUVData(config.getLatitude(), config.getLongitude(), config.getAltitude()).getResult();
     }
 
 }
