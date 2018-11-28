@@ -27,7 +27,7 @@
         <label>HomePilot Rohrmotor</label>
         <description>HomePilot Rohrmotor</description>
         <channels>
-            <channel id="position" typeId="position"/>
+            <channel id="rollershutter" typeId="rollershutter"/>
         </channels>
     </thing-type>
 
@@ -43,5 +43,11 @@
         <description>Position channel for HomePilot Binding</description>
         <state min="0" max="100" step="1" readOnly="false" pattern="%d"></state>
     </channel-type>
-
+    
+	<channel-type id="rollershutter">
+		<item-type>Rollershutter</item-type>
+		<label>Rollershutter</label>
+		<description>Rollershutter control for rollershutter action</description>
+		<category>Blinds</category>
+	</channel-type>
 </thing:thing-descriptions>

@@ -29,8 +29,9 @@ public class HomePilotBindingConstants {
 
     // List of all Channel ids
     public final static String CHANNEL_POSITION = "position";
+    public final static String CHANNEL_ROLLERSHUTTER = "rollershutter";
     public final static String CHANNEL_STATE = "state";
 
-    public final static String PROPERTY_POSITION = CHANNEL_POSITION;
+    //public final static String PROPERTY_POSITION = CHANNEL_POSITION;
 
 }

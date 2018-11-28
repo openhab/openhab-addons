@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: HomePilot Binding
 Bundle-SymbolicName: org.openhab.binding.homepilot;singleton:=true
 Bundle-Vendor: openHAB.org
-Bundle-Version: 2.0.0.SNAPSHOT
+Bundle-Version: 2.3.0.SNAPSHOT
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: 
  com.google.common.cache,
