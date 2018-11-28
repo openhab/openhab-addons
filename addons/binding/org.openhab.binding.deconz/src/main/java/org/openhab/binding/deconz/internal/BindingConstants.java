@@ -17,7 +17,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author David Graeff - Initial contribution
  */
-
 public class BindingConstants {
 
     private static final String BINDING_ID = "deconz";
@@ -28,12 +27,16 @@ public class BindingConstants {
     public static final ThingTypeUID THING_TYPE_POWER_SENSOR = new ThingTypeUID(BINDING_ID, "powersensor");
     public static final ThingTypeUID THING_TYPE_DAYLIGHT_SENSOR = new ThingTypeUID(BINDING_ID, "daylightsensor");
     public static final ThingTypeUID THING_TYPE_SWITCH = new ThingTypeUID(BINDING_ID, "switch");
+    public static final ThingTypeUID THING_TYPE_LIGHT_SENSOR = new ThingTypeUID(BINDING_ID, "lightsensor");
+    public static final ThingTypeUID THING_TYPE_TEMPERATURE_SENSOR = new ThingTypeUID(BINDING_ID, "temperaturesensor");
 
     // List of all Channel ids
     public static final String CHANNEL_PRESENCE = "presence";
     public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_VALUE = "value";
-    public static final String CHANNEL_LIGHT = "light";
+    public static final String CHANNEL_TEMPERATURE = "temperature";
+    public static final String CHANNEL_DAYLIGHT = "light";
+    public static final String CHANNEL_LIGHT_LUX = "lightlux";
     public static final String CHANNEL_BUTTONEVENT = "buttonevent";
 
     // Thing configuration

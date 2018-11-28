@@ -9,21 +9,23 @@
 package org.openhab.binding.deconz.internal.discovery;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.openhab.binding.deconz.internal.BindingConstants;
 import org.openhab.binding.deconz.internal.dto.SensorMessage;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
+import org.openhab.binding.deconz.internal.handler.DeconzBridgeHandler;
 
 /**
  * Every bridge will add its discovered sensors to this discovery service to make them
@@ -31,10 +33,10 @@ import org.osgi.framework.ServiceRegistration;
  *
  * @author David Graeff - Initial contribution
  */
-public class ThingDiscoveryService extends AbstractDiscoveryService {
-
-    private ServiceRegistration<?> reg = null;
+@NonNullByDefault
+public class ThingDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
     private final List<DiscoveryResult> results = new ArrayList<>();
+    private @NonNullByDefault({}) DeconzBridgeHandler handler;
 
     public ThingDiscoveryService() {
         super(Stream
@@ -43,20 +45,12 @@ public class ThingDiscoveryService extends AbstractDiscoveryService {
                 .collect(Collectors.toSet()), 0, true);
     }
 
-    public void stop() {
-        if (reg != null) {
-            reg.unregister();
-        }
-        reg = null;
-    }
-
     /**
-     * Just re-add all sensor things to the discovery inbox.
+     * Perform a new bridge full state request.
      */
     @Override
     protected void startScan() {
-        results.forEach(discoveryResult -> thingDiscovered(discoveryResult));
-        super.stopScan();
+        handler.requestFullState();
     }
 
     /**
@@ -65,7 +59,7 @@ public class ThingDiscoveryService extends AbstractDiscoveryService {
      * @param sensor The sensor description
      * @param bridgeUID The bridge UID
      */
-    public void addDevice(SensorMessage sensor, String sensorID, ThingUID bridgeUID) {
+    private void addDevice(String sensorID, SensorMessage sensor) {
         ThingTypeUID thingTypeUID;
         if (sensor.type.contains("Daylight")) { // Deconz specific: Software simulated daylight sensor
             thingTypeUID = BindingConstants.THING_TYPE_DAYLIGHT_SENSOR;
@@ -75,23 +69,52 @@ public class ThingDiscoveryService extends AbstractDiscoveryService {
             thingTypeUID = BindingConstants.THING_TYPE_PRESENCE_SENSOR;
         } else if (sensor.type.contains("Switch")) { // ZHASwitch
             thingTypeUID = BindingConstants.THING_TYPE_SWITCH;
+        } else if (sensor.type.contains("LightLevel")) { // ZHALightLevel
+            thingTypeUID = BindingConstants.THING_TYPE_LIGHT_SENSOR;
+        } else if (sensor.type.contains("ZHATemperature")) { // ZHATemperature
+            thingTypeUID = BindingConstants.THING_TYPE_TEMPERATURE_SENSOR;
         } else {
             return;
         }
 
-        ThingUID uid = new ThingUID(thingTypeUID, bridgeUID, sensor.uniqueid.replaceAll("[^a-z0-9\\[\\]]", ""));
+        ThingUID uid = new ThingUID(thingTypeUID, handler.getThing().getUID(),
+                sensor.uniqueid.replaceAll("[^a-z0-9\\[\\]]", ""));
 
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
+        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withBridge(handler.getThing().getUID())
                 .withLabel(sensor.name + " (" + sensor.manufacturername + ")").withProperty("id", sensorID)
                 .withProperty("uid", sensor.uniqueid).withRepresentationProperty("uid").build();
         results.add(discoveryResult);
         thingDiscovered(discoveryResult);
     }
 
-    public void start(BundleContext bundleContext) {
-        if (reg != null) {
-            return;
+    @Override
+    public void setThingHandler(@Nullable ThingHandler handler) {
+        this.handler = (DeconzBridgeHandler) handler;
+        this.handler.setDiscoveryService(this);
+    }
+
+    @Override
+    public ThingHandler getThingHandler() {
+        return handler;
+    }
+
+    @Override
+    public void deactivate() {
+        removeOlderResults(getTimestampOfLastScan());
+        super.deactivate();
+    }
+
+    /**
+     * Call this method when a full bridge state request has been performed and either the sensors
+     * are known or a failure happened.
+     *
+     * @param sensors The sensors or null.
+     */
+    public void stateRequestFinished(@Nullable Map<String, SensorMessage> sensors) {
+        stopScan();
+        removeOlderResults(getTimestampOfLastScan());
+        if (sensors != null) {
+            sensors.forEach(this::addDevice);
         }
-        reg = bundleContext.registerService(DiscoveryService.class.getName(), this, new Hashtable<String, Object>());
     }
 }

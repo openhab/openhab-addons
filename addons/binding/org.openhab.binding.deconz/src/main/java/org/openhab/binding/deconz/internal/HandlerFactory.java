@@ -22,30 +22,44 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.deconz.internal.discovery.ThingDiscoveryService;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
+import org.eclipse.smarthome.io.net.http.WebSocketFactory;
 import org.openhab.binding.deconz.internal.handler.DeconzBridgeHandler;
 import org.openhab.binding.deconz.internal.handler.SensorThingHandler;
-import org.osgi.service.component.ComponentContext;
+import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link HandlerFactory} is responsible for creating things and thing
- * handlers. It also contains the sensor Think discovery service.
+ * handlers.
  *
  * @author David Graeff - Initial contribution
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.deconz")
 @NonNullByDefault
 public class HandlerFactory extends BaseThingHandlerFactory {
-    ThingDiscoveryService thingDiscoveryService = new ThingDiscoveryService();
-
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
-            .of(BRIDGE_TYPE, THING_TYPE_PRESENCE_SENSOR, THING_TYPE_DAYLIGHT_SENSOR, THING_TYPE_POWER_SENSOR)
+            .of(BRIDGE_TYPE, THING_TYPE_PRESENCE_SENSOR, THING_TYPE_DAYLIGHT_SENSOR, THING_TYPE_POWER_SENSOR,
+                    THING_TYPE_LIGHT_SENSOR, THING_TYPE_TEMPERATURE_SENSOR)
             .collect(Collectors.toSet());
+
+    private @NonNullByDefault({}) WebSocketFactory webSocketFactory;
+    private @NonNullByDefault({}) HttpClientFactory httpClientFactory;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+    }
+
+    @Reference
+    public void setWebSocketFactory(WebSocketFactory factory) {
+        webSocketFactory = factory;
+    }
+
+    @Reference
+    public void setHttpClientFactory(HttpClientFactory factory) {
+        httpClientFactory = factory;
     }
 
     @Override
@@ -53,27 +67,10 @@ public class HandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (BRIDGE_TYPE.equals(thingTypeUID)) {
-            return new DeconzBridgeHandler(thingDiscoveryService, (Bridge) thing);
-        } else if (THING_TYPE_PRESENCE_SENSOR.equals(thingTypeUID)) {
-            return new SensorThingHandler(thing);
-        } else if (THING_TYPE_DAYLIGHT_SENSOR.equals(thingTypeUID)) {
-            return new SensorThingHandler(thing);
-        } else if (THING_TYPE_POWER_SENSOR.equals(thingTypeUID)) {
+            return new DeconzBridgeHandler((Bridge) thing, webSocketFactory,
+                    new AsyncHttpClient(httpClientFactory.getCommonHttpClient()));
+        } else {
             return new SensorThingHandler(thing);
         }
-
-        return null;
-    }
-
-    @Override
-    protected void activate(ComponentContext componentContext) {
-        super.activate(componentContext);
-        thingDiscoveryService.start(bundleContext);
-    }
-
-    @Override
-    protected void deactivate(ComponentContext componentContext) {
-        thingDiscoveryService.stop();
-        super.deactivate(componentContext);
     }
 }

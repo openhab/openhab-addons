@@ -38,12 +38,15 @@ import com.google.gson.Gson;
 public class WebSocketConnection {
     private final Logger logger = LoggerFactory.getLogger(WebSocketConnection.class);
 
-    private WebSocketClient client = new WebSocketClient();
+    private final WebSocketClient client;
     private final WebSocketConnectionListener connectionListener;
     private final Map<String, ValueUpdateListener> valueListener = new HashMap<>();
+    private final Gson gson = new Gson();
+    private boolean connected = false;
 
-    public WebSocketConnection(WebSocketConnectionListener listener) {
+    public WebSocketConnection(WebSocketConnectionListener listener, WebSocketClient client) {
         this.connectionListener = listener;
+        this.client = client;
     }
 
     public void start(String ip) {
@@ -51,10 +54,9 @@ public class WebSocketConnection {
             return;
         }
         try {
-            client = new WebSocketClient();
-            client.start();
-
             URI destUri = URI.create("ws://" + ip);
+
+            client.start();
 
             logger.debug("Connecting to: {}", destUri);
             client.connect(this, destUri).get();
@@ -82,6 +84,7 @@ public class WebSocketConnection {
 
     @OnWebSocketConnect
     public void onConnect(Session session) {
+        connected = true;
         logger.debug("Connect: {}", session.getRemoteAddress().getAddress());
         connectionListener.connectionEstablished();
     }
@@ -89,7 +92,7 @@ public class WebSocketConnection {
     @SuppressWarnings("null")
     @OnWebSocketMessage
     public void onMessage(String message) {
-        SensorMessage changedMessage = new Gson().fromJson(message, SensorMessage.class);
+        SensorMessage changedMessage = gson.fromJson(message, SensorMessage.class);
         ValueUpdateListener listener = valueListener.get(changedMessage.id);
         if (listener != null) {
             listener.valueUpdated(changedMessage.id, changedMessage.state);
@@ -98,15 +101,17 @@ public class WebSocketConnection {
 
     @OnWebSocketError
     public void onError(Throwable cause) {
+        connected = false;
         connectionListener.connectionError(cause);
     }
 
     @OnWebSocketClose
     public void onClose(int statusCode, String reason) {
+        connected = false;
         connectionListener.connectionLost(reason);
     }
 
-    public boolean isRunning() {
-        return client.isRunning();
+    public boolean isConnected() {
+        return connected;
     }
 }

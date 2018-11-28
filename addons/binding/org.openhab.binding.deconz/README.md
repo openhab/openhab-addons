@@ -18,7 +18,9 @@ These things are supported:
 | `presencesensor`    | Any presence sensor             | `presence`                 |
 | `powersensor`       | Any power sensor                | `power`                    |
 | `switch`             | Any switch                      | `buttonevent`             |
-| `daylightsensor`    | The deCONZ artificial daylight sensor | `value`,`light`      |
+| `lightsensor`       | A light sensor                  | `lightlux`                 |
+| `temperaturesensor`| A temperature sensor            | `temperature`              |
+| `daylightsensor`    | The deCONZ artificial daylight sensor | `value`,`light`     |
 
 ## Discovery
 
@@ -43,21 +45,39 @@ These configuration values need to be provided:
 Overview of provided channels for `presencesensor`:
 
 | Channel ID                |  Description                       | Read/Write | Values               |
-| :------------------------- | :-----------------------------------|:-:|:----------------------:|
-| presence                     | Contact type                     |r| OPEN/CLOSE for presence/no-presence              |
+| :------------------------ | :----------------------------------|:----------:|:--------------------:|
+| presence                  | Contact type                       |r           | OPEN/CLOSE for presence/no-presence |
 
 Overview of provided channels for `powersensor`:
 
 | Channel ID                |  Description                       | Read/Write | Values               |
-| :------------------------- | :-----------------------------------|:-:|:----------------------:|
-| power                     | Current power usage in Watts    |r| Number value             |
+| :------------------------ | :----------------------------------|:----------:|:--------------------:|
+| power                     | Current power usage in Watts       |r           | Number value         |
+
+Overview of provided channels for `switch`:
+
+| Channel ID                |  Description                       | Payload | Values               |
+| :------------------------ | :----------------------------------|:----------:|:--------------------:|
+| buttonevent | This channel is triggered on a button event. | The button event number | Number value         |
+
+Overview of provided channels for `lightsensor`:
+
+| Channel ID                |  Description                       | Read/Write | Values               |
+| :------------------------ | :----------------------------------|:----------:|:--------------------:|
+| lightlux                  | Current light illuminance in Lux   |r           | Number value         |
+
+Overview of provided channels for `temperaturesensor`:
+
+| Channel ID                |  Description                       | Read/Write | Values               |
+| :------------------------ | :----------------------------------|:----------:|:--------------------:|
+| temperature               | Current temperature                |r           | Number value         |
 
 Overview of provided channels for `daylightsensor`:
 
 | Channel ID                |  Description                       | Read/Write | Values               |
-| :------------------------- | :-----------------------------------|:-:|:----------------------:|
+| :------------------------ | :----------------------------------|:----------:|:--------------------:|
 | value                     |A number that represents the sun position: Dawn is around 130, sunrise at 140, sunset at 190, and dusk at 210   |r| Number value             |
-| light                     |A light level   |r| Daylight,Sunset,Dark           |
+| light                     |A light level                       |r           | Daylight,Sunset,Dark |
 
 ## Full Example
 

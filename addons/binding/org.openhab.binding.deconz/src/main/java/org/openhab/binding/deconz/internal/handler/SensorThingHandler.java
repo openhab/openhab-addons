@@ -8,12 +8,21 @@
  */
 package org.openhab.binding.deconz.internal.handler;
 
+import java.util.Map;
+
+import javax.measure.quantity.Energy;
+import javax.measure.quantity.Illuminance;
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -51,11 +60,14 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class SensorThingHandler extends BaseThingHandler implements ValueUpdateListener {
     private final Logger logger = LoggerFactory.getLogger(SensorThingHandler.class);
-    private SensorConfig config = new SensorConfig();
+    private SensorThingConfig config = new SensorThingConfig();
     private DeconzBridgeConfig bridgeConfig = new DeconzBridgeConfig();
+    private final Gson gson = new Gson();
     private @Nullable WebSocketConnection connection;
     /** The sensor state. Contains all possible fields for all supported sensors and switches */
     private SensorState state = new SensorState();
+    /** Prevent a dispose/init cycle while this flag is set. Use for property updates */
+    private boolean ignoreConfigurationUpdate;
 
     public SensorThingHandler(Thing thing) {
         super(thing);
@@ -67,29 +79,14 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
             return;
         }
 
-        Integer status = state.status;
-        Boolean presence = state.presence;
-        Integer power = state.power;
+        state.buttonevent = null;
+        valueUpdated(channelUID.getId(), state);
+    }
 
-        switch (channelUID.getId()) {
-            case BindingConstants.CHANNEL_LIGHT:
-                updateLightChannel();
-                break;
-            case BindingConstants.CHANNEL_POWER:
-                if (power != null) {
-                    updateState(BindingConstants.CHANNEL_POWER, new DecimalType(power));
-                }
-                break;
-            case BindingConstants.CHANNEL_PRESENCE:
-                if (presence != null) {
-                    updateState(BindingConstants.CHANNEL_PRESENCE, OnOffType.from(presence));
-                }
-                break;
-            case BindingConstants.CHANNEL_VALUE:
-                if (status != null) {
-                    updateState(BindingConstants.CHANNEL_VALUE, new DecimalType(status));
-                }
-                break;
+    @Override
+    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
+        if (!ignoreConfigurationUpdate) {
+            super.handleConfigurationUpdate(configurationParameters);
         }
     }
 
@@ -97,7 +94,7 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
         if (r.getResponseCode() == 403) {
             return null;
         } else if (r.getResponseCode() == 200) {
-            return new Gson().fromJson(r.getBody(), SensorMessage.class);
+            return gson.fromJson(r.getBody(), SensorMessage.class);
         } else {
             throw new IllegalStateException("Unknown status code for full state request");
         }
@@ -144,7 +141,7 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
         String url = BindingConstants.url(bridgeConfig.host, bridgeConfig.apikey, "sensors", config.id);
 
         // Get initial data
-        AsyncHttpClient.getAsync(url.toString(), scheduler).thenApply(this::parseStateResponse) //
+        handler.getHttp().get(url.toString(), bridgeConfig.timeout).thenApply(this::parseStateResponse) //
                 .exceptionally(e -> {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                     logger.debug("Get state failed", e);
@@ -153,6 +150,24 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
                     // Auth failed
                     if (newState == null) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Auth failed");
+                        return;
+                    }
+
+                    // Add some information about the bridge
+
+                    if (newState.config.battery != null) {
+                        ignoreConfigurationUpdate = true;
+                        updateProperty("battery", String.valueOf(newState.config.battery));
+                        ignoreConfigurationUpdate = false;
+                    }
+
+                    if (!newState.config.reachable) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Not reachable");
+                        return;
+                    }
+
+                    if (!newState.config.on) {
+                        updateStatus(ThingStatus.OFFLINE);
                         return;
                     }
 
@@ -177,7 +192,7 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
 
     @Override
     public void initialize() {
-        config = getConfigAs(SensorConfig.class);
+        config = getConfigAs(SensorThingConfig.class);
 
         Bridge bridge = getBridge();
         if (bridge != null) {
@@ -185,46 +200,60 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
         }
     }
 
-    private void updateLightChannel() {
-        if (state.dark != null) {
-            boolean dark = state.dark;
-            if (dark) { // if it's dark, it's dark ;)
-                updateState(BindingConstants.CHANNEL_LIGHT, new StringType("Dark"));
-            } else if (state.daylight != null) { // if its not dark, it might be between darkness and daylight
-                boolean daylight = state.daylight;
-                if (daylight) {
-                    updateState(BindingConstants.CHANNEL_LIGHT, new StringType("Daylight"));
-                } else if (!daylight) {
-                    updateState(BindingConstants.CHANNEL_LIGHT, new StringType("Sunset"));
-                }
-            } else { // if no daylight value is known, we assume !dark means daylight
-                updateState(BindingConstants.CHANNEL_LIGHT, new StringType("Daylight"));
-            }
-        }
-    }
-
     @Override
     public void valueUpdated(String id, SensorState state) {
         this.state = state;
-        // Daylight sensor
-        updateLightChannel();
 
+        Integer buttonevent = state.buttonevent;
         Integer status = state.status;
         Boolean presence = state.presence;
         Integer power = state.power;
-        Integer buttonevent = state.buttonevent;
+        Integer lux = state.lux;
+        Float temperature = state.temperature;
 
-        // Daylight sensor of deCONZ
-        if (state.daylight != null && status != null) {
-            updateState(BindingConstants.CHANNEL_VALUE, new DecimalType(status));
-        }
-
-        if (presence != null) {
-            updateState(BindingConstants.CHANNEL_PRESENCE, OnOffType.from(presence));
-        }
-
-        if (power != null) {
-            updateState(BindingConstants.CHANNEL_POWER, new DecimalType(power));
+        switch (id) {
+            case BindingConstants.CHANNEL_DAYLIGHT:
+                if (state.dark != null) {
+                    boolean dark = state.dark;
+                    if (dark) { // if it's dark, it's dark ;)
+                        updateState(BindingConstants.CHANNEL_DAYLIGHT, new StringType("Dark"));
+                    } else if (state.daylight != null) { // if its not dark, it might be between darkness and daylight
+                        boolean daylight = state.daylight;
+                        if (daylight) {
+                            updateState(BindingConstants.CHANNEL_DAYLIGHT, new StringType("Daylight"));
+                        } else if (!daylight) {
+                            updateState(BindingConstants.CHANNEL_DAYLIGHT, new StringType("Sunset"));
+                        }
+                    } else { // if no daylight value is known, we assume !dark means daylight
+                        updateState(BindingConstants.CHANNEL_DAYLIGHT, new StringType("Daylight"));
+                    }
+                }
+                break;
+            case BindingConstants.CHANNEL_POWER:
+                if (power != null) {
+                    updateState(id, new QuantityType<Energy>(power, SmartHomeUnits.WATT_HOUR));
+                }
+                break;
+            case BindingConstants.CHANNEL_LIGHT_LUX:
+                if (lux != null) {
+                    updateState(id, new QuantityType<Illuminance>(lux, SmartHomeUnits.LUX));
+                }
+                break;
+            case BindingConstants.CHANNEL_TEMPERATURE:
+                if (temperature != null) {
+                    updateState(id, new QuantityType<Temperature>(temperature, SIUnits.CELSIUS));
+                }
+                break;
+            case BindingConstants.CHANNEL_PRESENCE:
+                if (presence != null) {
+                    updateState(id, OnOffType.from(presence));
+                }
+                break;
+            case BindingConstants.CHANNEL_VALUE:
+                if (status != null) {
+                    updateState(id, new DecimalType(status));
+                }
+                break;
         }
 
         if (buttonevent != null) {

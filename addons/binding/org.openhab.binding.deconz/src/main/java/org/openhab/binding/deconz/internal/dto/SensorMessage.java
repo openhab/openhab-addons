@@ -8,12 +8,15 @@
  */
 package org.openhab.binding.deconz.internal.dto;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The REST interface and websocket connection are using the same fields.
  * The REST data contains more descriptive info like the manufacturer and name.
  *
  * @author David Graeff - Initial contribution
  */
+@NonNullByDefault
 public class SensorMessage {
     // For websocket change events
     public String e = ""; // "changed"
@@ -29,6 +32,7 @@ public class SensorMessage {
     public String type = "";
     /** the API endpoint **/
     public String ep = "";
+    public SensorConfig config = new SensorConfig();
 
     // websocket and rest api
     public String uniqueid = ""; // "00:0b:57:ff:fe:94:6b:dd-01-1000"

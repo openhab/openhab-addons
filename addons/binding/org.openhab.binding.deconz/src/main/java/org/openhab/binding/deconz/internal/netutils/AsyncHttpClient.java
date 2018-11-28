@@ -8,27 +8,60 @@
  */
 package org.openhab.binding.deconz.internal.netutils;
 
-import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.net.URI;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.stream.Collectors;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.HttpResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.BufferingResponseListener;
+import org.eclipse.jetty.client.util.InputStreamContentProvider;
+import org.eclipse.jetty.http.HttpMethod;;
 
 /**
- * An asynchronous API for HTTP interaction. Uses Javas {@link HttpURLConnection} internally.
+ * An asynchronous API for HTTP interactions.
  *
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
 public class AsyncHttpClient {
+    private final HttpClient client;
+
+    public AsyncHttpClient(HttpClient client) {
+        this.client = client;
+    }
+
+    /**
+     * Perform a POST request
+     *
+     * @param address The address
+     * @param jsonString The message body
+     * @param timeout A timeout
+     * @return The result
+     * @throws IOException Any IO exception in an error case.
+     */
+    public CompletableFuture<Result> post(String address, String jsonString, int timeout) {
+        return doNetwork(HttpMethod.POST, address, jsonString, timeout);
+    }
+
+    /**
+     * Perform a PUT request
+     *
+     * @param address The address
+     * @param jsonString The message body
+     * @param timeout A timeout
+     * @return The result
+     * @throws IOException Any IO exception in an error case.
+     */
+    public CompletableFuture<Result> put(String address, String jsonString, int timeout) {
+        return doNetwork(HttpMethod.PUT, address, jsonString, timeout);
+    }
+
     /**
      * Perform a GET request
      *
@@ -37,115 +70,49 @@ public class AsyncHttpClient {
      * @return The result
      * @throws IOException Any IO exception in an error case.
      */
-    public static Result get(String address, int timeout) throws IOException {
-        return doNetwork(new Parameters(address, "GET", "", timeout));
+    public CompletableFuture<Result> get(String address, int timeout) {
+        return doNetwork(HttpMethod.GET, address, null, timeout);
     }
 
     /**
-     * Perform a POST request
+     * Perform a DELETE request
      *
      * @param address The address
-     * @param body The message body
      * @param timeout A timeout
      * @return The result
      * @throws IOException Any IO exception in an error case.
      */
-    public static Result post(String address, String body, int timeout) throws IOException {
-        return doNetwork(new Parameters(address, "POST", body, timeout));
+    public CompletableFuture<Result> delete(String address, int timeout) {
+        return doNetwork(HttpMethod.DELETE, address, null, timeout);
     }
 
-    /**
-     * Perform a PUT request
-     *
-     * @param address The address
-     * @param body The message body
-     * @param timeout A timeout
-     * @return The result
-     * @throws IOException Any IO exception in an error case.
-     */
-    public static Result put(String address, String body, int timeout) throws IOException {
-        return doNetwork(new Parameters(address, "PUT", body, timeout));
-    }
-
-    /**
-     * Perform an asynchronous PUT request
-     *
-     * @param address The address
-     * @param body The message body
-     * @param scheduler A scheduler for the thread creation
-     * @return The result
-     * @throws IOException Any IO exception in an error case.
-     */
-    public static CompletableFuture<Result> putAsync(String address, String body, ScheduledExecutorService scheduler) {
-        return CompletableFuture.supplyAsync(() -> new Parameters(address, "PUT", body, 1000), scheduler)
-                .thenApply(AsyncHttpClient::doNetwork);
-    }
-
-    /**
-     * Perform an asynchronous POST request
-     *
-     * @param address The address
-     * @param body The message body
-     * @param scheduler A scheduler for the thread creation
-     * @return The result
-     * @throws IOException Any IO exception in an error case.
-     */
-    public static CompletableFuture<Result> postAsync(String address, String body, ScheduledExecutorService scheduler) {
-        return CompletableFuture.supplyAsync(() -> new Parameters(address, "POST", body, 1000), scheduler)
-                .thenApply(AsyncHttpClient::doNetwork);
-    }
-
-    /**
-     * Perform an asynchronous GET request
-     *
-     * @param address The address
-     * @param scheduler A scheduler for the thread creation
-     * @return The result
-     * @throws IOException Any IO exception in an error case.
-     */
-    public static CompletableFuture<Result> getAsync(String address, ScheduledExecutorService scheduler) {
-        return CompletableFuture.supplyAsync(() -> new Parameters(address, "GET", "", 1000), scheduler)
-                .thenApply(AsyncHttpClient::doNetwork);
-    }
-
-    public static Result delete(String address, int timeout) throws IOException {
-        return doNetwork(new Parameters(address, "DELETE", "", timeout));
-    }
-
-    private static Result doNetwork(Parameters p) {
-        HttpURLConnection conn;
-        try {
-            conn = (HttpURLConnection) new URL(p.address).openConnection();
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
+    private CompletableFuture<Result> doNetwork(HttpMethod method, String address, @Nullable String body, int timeout) {
+        final CompletableFuture<Result> f = new CompletableFuture<Result>();
+        Request request = client.newRequest(URI.create(address));
+        if (body != null) {
+            try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(body.getBytes());
+                    final InputStreamContentProvider inputStreamContentProvider = new InputStreamContentProvider(
+                            byteArrayInputStream)) {
+                request.content(inputStreamContentProvider, "application/json");
+            } catch (Exception e) {
+                f.completeExceptionally(e);
+                return f;
+            }
         }
 
-        try (AutoCloseable conc = () -> conn.disconnect()) {
-            conn.setRequestMethod(p.requestMethod);
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setConnectTimeout(p.timeout);
-            conn.setReadTimeout(p.timeout);
-
-            String body = p.body;
-            if (body != null && !body.equals("")) {
-                conn.setDoOutput(true);
-                OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
-                out.write(body);
-                out.close();
+        request.method(method).timeout(timeout, TimeUnit.MILLISECONDS).send(new BufferingResponseListener() {
+            @NonNullByDefault({})
+            @Override
+            public void onComplete(org.eclipse.jetty.client.api.Result result) {
+                final HttpResponse response = (HttpResponse) result.getResponse();
+                if (result.getFailure() != null) {
+                    f.completeExceptionally(result.getFailure());
+                    return;
+                }
+                f.complete(new Result(getContentAsString(), response.getStatus()));
             }
-
-            if (conn.getResponseCode() / 100 == 2) {
-                String output = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))
-                        .lines().collect(Collectors.joining("\n"));
-                return new Result(output, conn.getResponseCode());
-            } else {
-                String output = new BufferedReader(new InputStreamReader(conn.getErrorStream(), StandardCharsets.UTF_8))
-                        .lines().collect(Collectors.joining("\n"));
-                return new Result(output, conn.getResponseCode());
-            }
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
+        });
+        return f;
     }
 
     public static class Result {
@@ -163,22 +130,6 @@ public class AsyncHttpClient {
 
         public int getResponseCode() {
             return responseCode;
-        }
-    }
-
-    public static final class Parameters {
-        public final String requestMethod;
-        public final String address;
-        public final @Nullable String body;
-        public final CompletableFuture<Result> future;
-        public final Integer timeout;
-
-        public Parameters(String address, String requestMethod, @Nullable String body, Integer timeout) {
-            this.address = address;
-            this.requestMethod = requestMethod;
-            this.body = body;
-            this.future = new CompletableFuture<Result>();
-            this.timeout = timeout;
         }
     }
 }
