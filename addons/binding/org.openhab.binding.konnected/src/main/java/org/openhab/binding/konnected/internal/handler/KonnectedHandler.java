@@ -10,7 +10,6 @@ package org.openhab.binding.konnected.internal.handler;
 
 import static org.openhab.binding.konnected.internal.KonnectedBindingConstants.*;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Map;
@@ -396,11 +395,11 @@ public class KonnectedHandler extends BaseThingHandler {
         return payloadString;
     }
 
-    /**
+    /*
      * Prepares and sends the {@link KonnectedModulePayload} via the {@link KonnectedHttpUtils}
      *
      * @return response obtained from sending the settings payload to Konnected module defined by the thing
-     * @throws IOException if unable to communicate with the Konnected module defined by the Thing
+     * @throws KonnectedHttpRetryExceeded if unable to communicate with the Konnected module defined by the Thing
      */
     private String updateKonnectedModule() throws KonnectedHttpRetryExceeded {
         String payload = constructSettingsPayload();
