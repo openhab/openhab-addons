@@ -22,6 +22,8 @@ class CosemHexString extends CosemValueDescriptor<StringType> {
 
     public static final CosemHexString INSTANCE = new CosemHexString();
 
+    private static final String NO_VALUE = "00";
+
     /**
      * Parses a String representing the hex value to a {@link StringType}.
      *
@@ -31,15 +33,19 @@ class CosemHexString extends CosemValueDescriptor<StringType> {
      */
     @Override
     protected StringType getStateValue(String cosemValue) throws ParseException {
-        String cosemHexValue = cosemValue.replaceAll("\\r\\n", "");
+        final String cosemHexValue = cosemValue.replaceAll("\\r\\n", "");
 
         if (cosemHexValue.length() % 2 != 0) {
             throw new ParseException(cosemHexValue + " is not a valid hexadecimal string", 0);
         } else {
-            StringBuilder sb = new StringBuilder();
+            final StringBuilder sb = new StringBuilder();
 
             for (int i = 0; i < cosemHexValue.length(); i += 2) {
-                sb.append((char) Integer.parseInt(cosemHexValue.substring(i, i + 2), 16));
+                final String hexValue = cosemHexValue.substring(i, i + 2);
+
+                if (!NO_VALUE.equals(hexValue)) {
+                    sb.append((char) Integer.parseInt(hexValue, 16));
+                }
             }
             return new StringType(sb.toString());
         }

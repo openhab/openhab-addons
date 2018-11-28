@@ -73,8 +73,14 @@ public class DSMRMeter {
                 .filter(cosemObject -> supportedIdentifiers
                         .contains(cosemObject.getObisIdentifier().getReducedOBISIdentifier()))
                 .collect(Collectors.toList());
-        cosemObjects.removeAll(filteredValues);
         return filteredValues;
+    }
+
+    /**
+     * @return Returns the {@link DSMRMeterDescriptor} this object is configured with
+     */
+    public DSMRMeterDescriptor getMeterDescriptor() {
+        return meterDescriptor;
     }
 
     @Override

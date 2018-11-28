@@ -179,7 +179,7 @@ public class DSMRBridgeDiscoveryService extends DSMRDiscoveryService implements 
         logger.debug("[{}] discovery result:{}", currentScannedPortName, discoveryResult);
 
         thingDiscovered(discoveryResult);
-        meterDetector.detectMeters(telegram).forEach(m -> meterDiscovered(m, thingUID));
+        meterDetector.detectMeters(telegram).getKey().forEach(m -> meterDiscovered(m, thingUID));
         return true;
     }
 
