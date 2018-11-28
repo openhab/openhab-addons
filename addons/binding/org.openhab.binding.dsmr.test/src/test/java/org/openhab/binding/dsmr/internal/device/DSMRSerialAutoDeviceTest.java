@@ -157,7 +157,6 @@ public class DSMRSerialAutoDeviceTest {
      * Mock class implementing {@link SerialPortEvent}.
      */
     private static class MockSerialPortEvent implements SerialPortEvent {
-
         private final int eventType;
         private final boolean newValue;
 

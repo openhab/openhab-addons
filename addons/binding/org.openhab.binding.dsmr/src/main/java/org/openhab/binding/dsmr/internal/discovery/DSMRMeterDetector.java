@@ -8,9 +8,11 @@
  */
 package org.openhab.binding.dsmr.internal.discovery;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.dsmr.internal.device.cosem.CosemObject;
@@ -40,10 +42,10 @@ class DSMRMeterDetector {
      * @param telegram The received telegram
      * @return collection of detected {@link DSMRMeterDescriptor}
      */
-    public Collection<DSMRMeterDescriptor> detectMeters(P1Telegram telegram) {
-        Map<DSMRMeterKind, DSMRMeterDescriptor> detectedMeters = new HashMap<>();
-        Map<CosemObjectType, CosemObject> availableCosemObjects = new HashMap<>();
-        Map<CosemObjectType, CosemObject> undetectedCosemObjects = new HashMap<>();
+    public Entry<Collection<DSMRMeterDescriptor>, Map<CosemObjectType, CosemObject>> detectMeters(P1Telegram telegram) {
+        final Map<DSMRMeterKind, DSMRMeterDescriptor> detectedMeters = new HashMap<>();
+        final Map<CosemObjectType, CosemObject> availableCosemObjects = new HashMap<>();
+        final Map<CosemObjectType, CosemObject> undetectedCosemObjects = new HashMap<>();
 
         // Fill hashmap for fast comparing the set of received Cosem objects to the required set of Cosem Objects
         telegram.getCosemObjects().forEach(msg -> availableCosemObjects.put(msg.getType(), msg));
@@ -52,14 +54,14 @@ class DSMRMeterDetector {
         // Find compatible meters
         for (DSMRMeterType meterType : DSMRMeterType.values()) {
             logger.trace("Trying if meter type {} is compatible", meterType);
-            DSMRMeterDescriptor meterDescriptor = meterType.isCompatible(availableCosemObjects);
+            final DSMRMeterDescriptor meterDescriptor = meterType.isCompatible(availableCosemObjects);
 
             if (meterDescriptor == null) {
                 logger.trace("Meter type {} is not compatible", meterType);
             } else {
                 logger.debug("Meter type {} is compatible", meterType);
 
-                DSMRMeterDescriptor prevDetectedMeter = detectedMeters.get(meterType.meterKind);
+                final DSMRMeterDescriptor prevDetectedMeter = detectedMeters.get(meterType.meterKind);
 
                 if (prevDetectedMeter == null // First meter of this kind, add it
                         || (prevDetectedMeter.getChannel() == meterDescriptor.getChannel())
@@ -74,13 +76,7 @@ class DSMRMeterDetector {
             }
         }
         logger.trace("Telegram as received from the device:\n{}\n", telegram.getRawTelegram());
-        if (!undetectedCosemObjects.isEmpty()) {
-            undetectedCosemObjects
-                    .forEach((k, v) -> logger.debug("Unrecognized cosem object '{}' found in the data: {}", k, v));
-            logger.info(
-                    "There are some unrecognized values, which means some meters might not be detected. Not all  are recognized. Please report your raw data as example:",
-                    telegram.getRawTelegram());
-        }
-        return detectedMeters.values();
+        return new SimpleEntry<Collection<DSMRMeterDescriptor>, Map<CosemObjectType, CosemObject>>(
+                detectedMeters.values(), undetectedCosemObjects);
     }
 }

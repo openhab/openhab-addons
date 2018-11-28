@@ -60,14 +60,13 @@ public class DSMRMeterDetectorTest {
     @Test
     public void testDetectMeters() {
         P1Telegram telegram = TelegramReaderUtil.readTelegram(telegramName, TelegramState.OK);
-
         DSMRMeterDetector detector = new DSMRMeterDetector();
-        Collection<DSMRMeterDescriptor> detectMeters = detector.detectMeters(telegram);
+        Collection<DSMRMeterDescriptor> detectMeters = detector.detectMeters(telegram).getKey();
         assertEquals("Should detect correct number of meters", expectedMeters.size(), detectMeters.size());
         for (DSMRMeterType meter : expectedMeters) {
             assertEquals(
-                    "Meter '" + meter + " not found: "
-                            + Arrays.toString(detectMeters.toArray(new DSMRMeterDescriptor[0])),
+                    String.format("Meter '%s' not found: %s", meter,
+                            Arrays.toString(detectMeters.toArray(new DSMRMeterDescriptor[0]))),
                     1, detectMeters.stream().filter(e -> e.getMeterType() == meter).count());
         }
     }

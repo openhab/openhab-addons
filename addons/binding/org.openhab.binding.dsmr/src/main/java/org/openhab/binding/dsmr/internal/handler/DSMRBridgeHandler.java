@@ -92,7 +92,7 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
     /**
      * Timestamp in nanoseconds of last P1 telegram received
      */
-    private long telegramReceivedTimeNanos;
+    private volatile long telegramReceivedTimeNanos;
 
     /**
      * Constructor
@@ -263,9 +263,6 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
         meterListeners.forEach(m -> m.telegramReceived(telegram));
     }
 
-    /**
-     * On dispose the DSMR device is removed.
-     */
     @Override
     public void dispose() {
         if (watchdog != null) {

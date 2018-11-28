@@ -48,9 +48,9 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
     private final Logger logger = LoggerFactory.getLogger(DSMRMeterHandler.class);
 
     /**
-     * The DSMRMeter instance
+     * The DSMRMeter instance.
      */
-    private @Nullable DSMRMeter meter;
+    private @NonNullByDefault({}) DSMRMeter meter;
 
     /**
      * Last received cosem objects.
@@ -58,12 +58,12 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
     private List<CosemObject> lastReceivedValues = Collections.emptyList();
 
     /**
-     * Reference to the meter watchdog
+     * Reference to the meter watchdog.
      */
-    private @Nullable ScheduledFuture<?> meterWatchdog;
+    private @NonNullByDefault({}) ScheduledFuture<?> meterWatchdog;
 
     /**
-     * Creates a new MeterHandler for the given Thing
+     * Creates a new MeterHandler for the given Thing.
      *
      * @param thing {@link Thing} to create the MeterHandler for
      */
@@ -104,7 +104,6 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
         DSMRMeterConfiguration meterConfig = getConfigAs(DSMRMeterConfiguration.class);
         DSMRMeterDescriptor meterDescriptor = new DSMRMeterDescriptor(meterType, meterConfig.channel);
         meter = new DSMRMeter(meterDescriptor);
-
         meterWatchdog = scheduler.scheduleWithFixedDelay(this::updateState, meterConfig.refresh, meterConfig.refresh,
                 TimeUnit.SECONDS);
         updateStatus(ThingStatus.UNKNOWN);
@@ -186,6 +185,13 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
         } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
             setDeviceOffline(ThingStatusDetail.BRIDGE_OFFLINE, null);
         }
+    }
+
+    /**
+     * @return Returns the {@link DSMRMeterDescriptor} this object is configured with
+     */
+    public @Nullable DSMRMeterDescriptor getMeterDescriptor() {
+        return meter == null ? null : meter.getMeterDescriptor();
     }
 
     /**
