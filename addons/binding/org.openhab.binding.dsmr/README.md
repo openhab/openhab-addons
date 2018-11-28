@@ -10,6 +10,10 @@ Although DSMR v4.2 is not an official specification, the binding has support for
 If you are not living in the Netherlands but do want to read a meter please have look at the [IEC-62056-21 Meter Binding](https://github.com/openhab/openhab1-addons/wiki/IEC-62056---21-Meter-Binding).
 Because the Dutch Meter standard is based on the IEC-62056-21 standard it might be desirable to build support for other country metering systems based on that standard in this binding.
 
+## Serial Port Configuration
+
+The P1-port is a serial port. To configure the serial port within openHAB see the general documentation about serial port configuration: [/docs/administration/serial.html](/docs/administration/serial.html)
+
 ## Supported Things
 
 `dsmrBridge`: This is the device that communicated between the binding (serial) and its internal meters.
@@ -19,13 +23,12 @@ A generic meter and the electricity meter. Each meter is bound to the DSMR proto
 For each meter it is possible to set a refresh rate at which the status is updated.
 The physical meter might update with a high frequency per second, while it's desired to have only values per minute.
 
-### Discovery
+## Discovery
 
 Both bridges and meters can be discovered via the discovery process.
 If a bridge is manually configured it is possible to auto detect available meters.
 
-
-#### Configuration
+### Configuration
 
 The configuration for the Bridge consists of the following parameters:
 
@@ -40,8 +43,14 @@ The configuration for the Bridge consists of the following parameters:
 
 **Note:** *The manual configuration is only needed if the DSMR-device requires non DSMR-standard Serial Port parameters (i.e. something different then `115200 8N1` or `9600 7E1`)*
 
+### Troubleshooting
 
-### Meters
+If there are unexpected configuration issues.
+For example a meter could not be found or not all channels expected are available.
+Than run the discovery process and look into the log file.
+There are extra checks that can give more information about what might be wrong.
+
+## Meters
 
 The information in this paragraph in necessary if you choose to configure the meters manually in a `.things` file.
 
