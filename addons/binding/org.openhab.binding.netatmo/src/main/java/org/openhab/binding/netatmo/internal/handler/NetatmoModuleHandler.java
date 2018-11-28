@@ -16,7 +16,6 @@ import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -30,8 +29,7 @@ import org.slf4j.LoggerFactory;
  * {@link NetatmoModuleHandler} is the handler for a given
  * module device accessed through the Netatmo Device
  *
- * @author Gaël L'hopital - Initial contribution OH2 version
- *
+ * @author Gaël L'hopital - Initial contribution
  */
 public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
     private Logger logger = LoggerFactory.getLogger(NetatmoModuleHandler.class);
@@ -40,7 +38,7 @@ public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
     protected MODULE module;
     private boolean refreshRequired;
 
-    protected NetatmoModuleHandler(@NonNull Thing thing) {
+    protected NetatmoModuleHandler(Thing thing) {
         super(thing);
     }
 
