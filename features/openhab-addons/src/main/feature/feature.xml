@@ -90,6 +90,13 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.denonmarantz/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-deconz" description="Dresden Elektronik Deconz Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-http</feature>
+        <feature>openhab-transport-upnp</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.deconz/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-dlinksmarthome" description="D-Link Smart Home Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mdns</feature>
