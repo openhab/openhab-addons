@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="enocean"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- RockerSwitch -->
+	<thing-type id="classicDevice" extensible="rockerswitchListenerSwitch, rockerswitchListenerRollershutter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>Classic Device</label>
+		<description>This thing lets you control classic EnOcean devices by rocker switch messages (EEP: F6-02)</description>
+
+		<channels>
+			<channel typeId="virtualSwitchA" id="virtualSwitchA" />
+			<channel typeId="virtualRollershutterA" id="virtualRollershutterA" />
+			<channel typeId="virtualRockerswitchB" id="virtualRockerswitchB" />
+		</channels>
+
+		<config-description>
+			<parameter name="senderIdOffset" type="integer">
+				<label>Sender Id</label>
+				<description>Id is used to generate the EnOcean Id (Int between [1-127]). If not specified the next free Id will be determined by bridge</description>
+			</parameter>
+			<parameter name="sendingEEPId" type="text">
+				<label>EEP for sending commands</label>
+				<description>EEP which is used to control the device</description>
+				<options>
+					<option value="F6_02_01">F6-02-01 (upper rocker => DIR1)</option>
+					<option value="F6_02_02">F6-02-02 (upper rocker => DIR2)</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<default>F6_02_01</default>
+				<required>true</required>
+			</parameter>
+			<parameter name="receivingEEPId" type="text">
+				<label>EEP for receiving states</label>
+				<description>EEP which is used by rocker switch listener(s)</description>
+				<options>
+					<option value="F6_02_01">F6-02-01 (upper rocker => DIR1)</option>
+					<option value="F6_02_02">F6-02-02 (upper rocker => DIR2)</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<default>F6_02_01</default>
+				<required>true</required>
+			</parameter>
+			<parameter name="suppressRepeating" type="boolean">
+				<label>Suppress repeating of messages</label>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- virtual rocker switch channel -->
+	<channel-type id="virtualSwitchA">
+		<item-type>Switch</item-type>
+		<label>Rocker Switch</label>
+		<description>The virtual rocker switch channel allows to send rocker msg.</description>
+		<config-description-ref uri="enocean:virtualRockerChannel:config" />
+	</channel-type>
+	
+	<!-- virtual rocker switch channel -->
+    <channel-type id="virtualRollershutterA">
+        <item-type>Rollershutter</item-type>
+        <label>Rollershutter</label>
+        <description>This channels allows to control a rollershutter through rocker msg.</description>
+        <config-description-ref uri="enocean:virtualRockerChannel:config" />
+    </channel-type>
+
+	<!-- virtual rocker switch channel -->
+	<channel-type id="virtualRockerswitchB" advanced="true">
+		<item-type>String</item-type>
+		<label>Rocker Switch - Channel B</label>
+		<description>The virtual rocker switch channel allows to send rocker msg with channel B.</description>
+		<config-description>
+			<parameter name="switchMode" type="text">
+				<label>Switch mode</label>
+				<options>
+					<option value="rockerSwitch">Rocker Switch</option>
+					<option value="toggleButtonDir1">Toggle Button (upper button)</option>
+					<option value="toggleButtonDir2">Toggle Button (lower button)</option>
+				</options>
+				<default>rockerSwitch</default>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<!-- rocker switch listener channel -->
+	<channel-type id="rockerswitchListenerSwitch">
+		<item-type>Switch</item-type>
+		<label>Rocker Switch Listener (Switch)</label>
+		<config-description-ref uri="enocean:listeningRockerChannel:config" />
+	</channel-type>
+
+	<!-- rocker switch listener channel -->
+	<channel-type id="rockerswitchListenerRollershutter">
+		<item-type>Rollershutter</item-type>
+		<label>Rocker Switch Listener (Rollershutter)</label>
+		<config-description-ref uri="enocean:listeningRockerChannel:config" />
+	</channel-type>
+
+</thing:thing-descriptions>
