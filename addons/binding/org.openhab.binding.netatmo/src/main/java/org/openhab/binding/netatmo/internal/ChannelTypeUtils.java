@@ -86,31 +86,31 @@ public class ChannelTypeUtils {
         return value != null ? (value == 1 ? OnOffType.ON : OnOffType.OFF) : UnDefType.NULL;
     }
 
-    public static State toQuantityType(@Nullable Float value, @Nullable Unit<?> unit) {
-        return (value == null || unit == null) ? UnDefType.NULL : toQuantityType(new BigDecimal(value), unit);
+    public static State toQuantityType(@Nullable Float value, Unit<?> unit) {
+        return value == null ? UnDefType.NULL : toQuantityType(new BigDecimal(value), unit);
     }
 
-    public static State toQuantityType(@Nullable Integer value, @Nullable Unit<?> unit) {
-        return (value == null || unit == null) ? UnDefType.NULL : toQuantityType(new BigDecimal(value), unit);
+    public static State toQuantityType(@Nullable Integer value, Unit<?> unit) {
+        return value == null ? UnDefType.NULL : toQuantityType(new BigDecimal(value), unit);
     }
 
-    public static State toQuantityType(@Nullable Double value, @Nullable Unit<?> unit) {
-        return (value == null || unit == null) ? UnDefType.NULL : toQuantityType(new BigDecimal(value), unit);
+    public static State toQuantityType(@Nullable Double value, Unit<?> unit) {
+        return value == null ? UnDefType.NULL : toQuantityType(new BigDecimal(value), unit);
     }
 
-    public static State toQuantityType(float value, @Nullable Unit<?> unit) {
-        return (unit == null) ? UnDefType.NULL : toQuantityType(new BigDecimal(value), unit);
+    public static State toQuantityType(float value, Unit<?> unit) {
+        return toQuantityType(new BigDecimal(value), unit);
     }
 
-    public static State toQuantityType(int value, @Nullable Unit<?> unit) {
-        return (unit == null) ? UnDefType.NULL : toQuantityType(new BigDecimal(value), unit);
+    public static State toQuantityType(int value, Unit<?> unit) {
+        return toQuantityType(new BigDecimal(value), unit);
     }
 
-    public static State toQuantityType(double value, @Nullable Unit<?> unit) {
-        return (unit == null) ? UnDefType.NULL : toQuantityType(new BigDecimal(value), unit);
+    public static State toQuantityType(double value, Unit<?> unit) {
+        return toQuantityType(new BigDecimal(value), unit);
     }
 
-    public static State toQuantityType(@Nullable BigDecimal value, @Nullable Unit<?> unit) {
-        return (value == null || unit == null) ? UnDefType.NULL : new QuantityType<>(value, unit);
+    public static State toQuantityType(@Nullable BigDecimal value, Unit<?> unit) {
+        return value == null ? UnDefType.NULL : new QuantityType<>(value, unit);
     }
 }
