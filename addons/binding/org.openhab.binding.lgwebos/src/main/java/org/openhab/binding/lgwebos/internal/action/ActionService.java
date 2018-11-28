@@ -107,7 +107,6 @@ public class ActionService implements AnnotatedActionThingHandlerService {
         getControl(Launcher.class).ifPresent(control -> control.launchBrowser(url, createResponseListener()));
     }
 
-    /** Opens the application with given appId. */
     @RuleAction(label = "@text/actionLaunchApplicationLabel", description = "@text/actionLaunchApplicationDesc")
     public void launchApplication(
             @ActionInput(name = "appId", label = "@text/actionLaunchApplicationInputAppIDLabel", description = "@text/actionLaunchApplicationInputAppIDDesc") String appId) {
@@ -142,7 +141,6 @@ public class ActionService implements AnnotatedActionThingHandlerService {
         getControl(TextInputControl.class).ifPresent(control -> control.sendText(text));
     }
 
-    /** Sends the button press event to a WebOS device. */
     @RuleAction(label = "@text/actionSendButtonLabel", description = "@text/actionSendButtonDesc")
     public void sendButton(
             @ActionInput(name = "text", label = "@text/actionSendButtonInputButtonLabel", description = "@text/actionSendButtonInputButtonDesc") String button) {
