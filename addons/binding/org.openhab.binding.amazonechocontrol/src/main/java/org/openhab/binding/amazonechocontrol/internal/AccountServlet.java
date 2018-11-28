@@ -632,8 +632,12 @@ public class AccountServlet extends HttpServlet {
     }
 
     private void returnHtml(Connection connection, HttpServletResponse resp, String html, String amazonSite) {
-        String resultHtml = html.replace("https://www." + amazonSite + "/", servletUrl + "/")
-                .replace("https:&#x2F;&#x2F;www." + amazonSite + "&#x2F;", servletUrl + "/");
+        String resultHtml = html.replace("action=\"/", "action=\"" + servletUrl + "/")
+                .replace("action=\"&#x2F;", "action=\"" + servletUrl + "/")
+                .replace("https://www." + amazonSite + "/", servletUrl + "/")
+                .replace("https:&#x2F;&#x2F;www." + amazonSite + "&#x2F;", servletUrl + "/")
+                .replace("http://www." + amazonSite + "/", servletUrl + "/")
+                .replace("http:&#x2F;&#x2F;www." + amazonSite + "&#x2F;", servletUrl + "/");
 
         resp.addHeader("content-type", "text/html;charset=UTF-8");
         try {

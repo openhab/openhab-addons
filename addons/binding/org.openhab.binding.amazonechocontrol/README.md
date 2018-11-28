@@ -127,7 +127,6 @@ It will be configured at runtime by using the save channel to store the current 
 | mediaLength           | Number:Time | R           | echo, echoshow, echospot      | ONLY IN BETA 2.4 (3) AND NEWER! Media length
 | notificationVolume    | Dimmer      | R           | echo, echoshow, echospot      | ONLY IN BETA 2.4 (3) AND NEWER! Notification volume
 | ascendingAlarm        | Switch      | R/W         | echo, echoshow, echospot      | ONLY IN BETA 2.4 (3) AND NEWER! Ascending alarm up to the configured volume
-| announcement          | String      | W         | echo, echoshow, echospot      | ONLY IN BETA 2.4 (7) AND NEWER! Write Only! Not supported in all amazon domains! Push announcement notification
 | save                  | Switch      | W         | flashbriefingprofile     | Write Only! Stores the current configuration of flash briefings within the thing
 | active                | Switch      | R/W       | flashbriefingprofile     | Active the profile
 | playOnDevice          | String      | W         | flashbriefingprofile     | Specify the echo serial number or name to start the flash briefing. 
@@ -220,10 +219,6 @@ Switch Echo_Living_Room_AscendingAlarm    "Ascending alarm"                     
 
 // BETA 2.4 (4) channels:
 Dimmer Echo_Living_Room_TTS_Volume            "Text to Speech Volume"                 (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:textToSpeechVolume"}
-
-// BETA 2.4 (7) channels:
-String Echo_Announcement                    "Announcement"                            (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:announcement"}
-
 
 // Flashbriefings
 Switch FlashBriefing_Technical_Save   "Save (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:save"} 
