@@ -9,15 +9,17 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.imageio.ImageIO;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.automation.annotation.ActionInput;
 import org.eclipse.smarthome.automation.annotation.ActionScope;
+import org.eclipse.smarthome.automation.annotation.RuleAction;
 import org.eclipse.smarthome.core.thing.binding.AnnotatedActionThingHandlerService;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.lgwebos.LGWebOS;
 import org.openhab.binding.lgwebos.handler.LGWebOSHandler;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -41,7 +43,7 @@ import com.connectsdk.service.command.ServiceCommandError;
  */
 @ActionScope(name = "binding.lgwebos")
 @Component(immediate = false, service = { AnnotatedActionThingHandlerService.class })
-@NonNullByDefault
+
 public class ActionService implements AnnotatedActionThingHandlerService {
     private final Logger logger = LoggerFactory.getLogger(ActionService.class);
     private @Nullable LGWebOSHandler handler;
@@ -56,10 +58,8 @@ public class ActionService implements AnnotatedActionThingHandlerService {
         return this.handler;
     }
 
-    @RuleAction(label = "@text/actionLabel", description = "@text/actionDesc")
-    void publishMQTT(
-            @ActionInput(name = "topic", label = "@text/actionInputTopicLabel", description = "@text/actionInputTopicDesc") String topic,
-            @ActionInput(name = "value", label = "@text/actionInputValueLabel", description = "@text/actionInputValueDesc") String value) {
+    void publishMQTT(String topic,
+            @ActionInput(name = "value", label = "@text/actionShowToastInputValueLabel", description = "@text/actionShowToastInputValueDesc") String value) {
 
         if (handler == null) {
             logger.warn("LGWebOS Action service ThingHandler is null!");
@@ -80,14 +80,18 @@ public class ActionService implements AnnotatedActionThingHandlerService {
         OK
     }
 
-    /** Sends a toast message to a WebOS device with openhab icon. */
-    public void showToast(String text) {
-        showToast(LGWebOS.class.getResource("/openhab-logo-square.png").toString(), text);
+    @RuleAction(label = "@text/actionShowToastLabel", description = "@text/actionShowToastDesc")
+    public void showToast(
+            @ActionInput(name = "text", label = "@text/actionShowToastInputTextLabel", description = "@text/actionShowToastInputTextDesc") String text)
+            throws IOException {
+        showToast(ActionService.class.getResource("/openhab-logo-square.png").toString(), text);
     }
 
-    /** Sends a toast message to a WebOS device with custom icon. */
-    public void showToast(String icon, String text) throws IOException {
-
+    @RuleAction(label = "@text/actionShowToastWithIconLabel", description = "@text/actionShowToastWithIconLabel")
+    public void showToast(
+            @ActionInput(name = "icon", label = "@text/actionShowToastInputIconLabel", description = "@text/actionShowToastInputIconDesc") String icon,
+            @ActionInput(name = "text", label = "@text/actionShowToastInputTextLabel", description = "@text/actionShowToastInputTextDesc") String text)
+            throws IOException {
         BufferedImage bi = ImageIO.read(new URL(icon));
         try (ByteArrayOutputStream os = new ByteArrayOutputStream(); OutputStream b64 = Base64.getEncoder().wrap(os);) {
             ImageIO.write(bi, "png", b64);
@@ -97,26 +101,31 @@ public class ActionService implements AnnotatedActionThingHandlerService {
         }
     }
 
-    /** Opens the given URL in the TV's browser application. */
-    public void launchBrowser(String url) {
+    @RuleAction(label = "@text/actionLaunchBrowserLabel", description = "@text/actionLaunchBrowserDesc")
+    public void launchBrowser(
+            @ActionInput(name = "url", label = "@text/actionLaunchBrowserInputUrlLabel", description = "@text/actionLaunchBrowserInputUrlDesc") String url) {
         getControl(Launcher.class).ifPresent(control -> control.launchBrowser(url, createResponseListener()));
     }
 
     /** Opens the application with given appId. */
-    public void launchApplication(String appId) {
+    @RuleAction(label = "@text/actionLaunchApplicationLabel", description = "@text/actionLaunchApplicationDesc")
+    public void launchApplication(
+            @ActionInput(name = "appId", label = "@text/actionLaunchApplicationInputAppIDLabel", description = "@text/actionLaunchApplicationInputAppIDDesc") String appId) {
         getControl(Launcher.class).ifPresent(control -> control.launchApp(appId, createResponseListener()));
     }
 
-    /** Opens the application with given appId and passes additional parameters. */
-    public void launchApplicationWithParam(String appId, Object param) {
+    @RuleAction(label = "@text/actionLaunchApplicationWithParamLabel", description = "@text/actionLaunchApplicationWithParamDesc")
+    public void launchApplicationWithParam(
+            @ActionInput(name = "appId", label = "@text/actionLaunchApplicationInputAppIDLabel", description = "@text/actionLaunchApplicationInputAppIDDesc") String appId,
+            @ActionInput(name = "param", label = "@text/actionLaunchApplicationInputParamLabel", description = "@text/actionLaunchApplicationInputParamDesc") Object param) {
         getControl(Launcher.class).ifPresent(control -> control.getAppList(new Launcher.AppListListener() {
             @Override
-            public void onError(@Nullable ServiceCommandError error) {
+            public void onError(ServiceCommandError error) {
                 logger.warn("error requesting application list: {}.", error == null ? "" : error.getMessage());
             }
 
             @Override
-            public void onSuccess(@Nullable List<AppInfo> appInfos) {
+            public void onSuccess(List<AppInfo> appInfos) {
                 Optional<AppInfo> appInfo = appInfos.stream().filter(a -> a.getId().equals(appId)).findFirst();
                 if (appInfo.isPresent()) {
                     control.launchAppWithInfo(appInfo.get(), param, createResponseListener());
@@ -127,41 +136,49 @@ public class ActionService implements AnnotatedActionThingHandlerService {
         }));
     }
 
-    /** Sends a text input to a WebOS device. */
-    public void sendText(String thingId, String text) {
+    @RuleAction(label = "@text/actionSendTextLabel", description = "@text/actionSendTextDesc")
+    public void sendText(
+            @ActionInput(name = "text", label = "@text/actionSendTextInputTextLabel", description = "@text/actionSendTextInputTextDesc") String text) {
         getControl(TextInputControl.class).ifPresent(control -> control.sendText(text));
     }
 
     /** Sends the button press event to a WebOS device. */
-    public void sendButton(String thingId, Button button) {
-        switch (button) {
-            case UP:
-                getControl(KeyControl.class).ifPresent(control -> control.up(createResponseListener()));
-                break;
-            case DOWN:
-                getControl(KeyControl.class).ifPresent(control -> control.down(createResponseListener()));
-                break;
-            case LEFT:
-                getControl(KeyControl.class).ifPresent(control -> control.left(createResponseListener()));
-                break;
-            case RIGHT:
-                getControl(KeyControl.class).ifPresent(control -> control.right(createResponseListener()));
-                break;
-            case BACK:
-                getControl(KeyControl.class).ifPresent(control -> control.back(createResponseListener()));
-                break;
-            case DELETE:
-                getControl(TextInputControl.class).ifPresent(control -> control.sendDelete());
-                break;
-            case ENTER:
-                getControl(TextInputControl.class).ifPresent(control -> control.sendEnter());
-                break;
-            case HOME:
-                getControl(KeyControl.class).ifPresent(control -> control.home(createResponseListener()));
-                break;
-            case OK:
-                getControl(KeyControl.class).ifPresent(control -> control.ok(createResponseListener()));
-                break;
+    @RuleAction(label = "@text/actionSendButtonLabel", description = "@text/actionSendButtonDesc")
+    public void sendButton(
+            @ActionInput(name = "text", label = "@text/actionSendButtonInputButtonLabel", description = "@text/actionSendButtonInputButtonDesc") String button) {
+        try {
+            switch (Button.valueOf(button)) {
+                case UP:
+                    getControl(KeyControl.class).ifPresent(control -> control.up(createResponseListener()));
+                    break;
+                case DOWN:
+                    getControl(KeyControl.class).ifPresent(control -> control.down(createResponseListener()));
+                    break;
+                case LEFT:
+                    getControl(KeyControl.class).ifPresent(control -> control.left(createResponseListener()));
+                    break;
+                case RIGHT:
+                    getControl(KeyControl.class).ifPresent(control -> control.right(createResponseListener()));
+                    break;
+                case BACK:
+                    getControl(KeyControl.class).ifPresent(control -> control.back(createResponseListener()));
+                    break;
+                case DELETE:
+                    getControl(TextInputControl.class).ifPresent(control -> control.sendDelete());
+                    break;
+                case ENTER:
+                    getControl(TextInputControl.class).ifPresent(control -> control.sendEnter());
+                    break;
+                case HOME:
+                    getControl(KeyControl.class).ifPresent(control -> control.home(createResponseListener()));
+                    break;
+                case OK:
+                    getControl(KeyControl.class).ifPresent(control -> control.ok(createResponseListener()));
+                    break;
+            }
+        } catch (IllegalArgumentException ex) {
+            logger.warn("{} is not a valid value for button - available are: {}", button,
+                    Stream.of(Button.values()).map(b -> b.name()).collect(Collectors.joining(", ")));
         }
     }
 
@@ -184,7 +201,7 @@ public class ActionService implements AnnotatedActionThingHandlerService {
         return new ResponseListener<O>() {
 
             @Override
-            public void onError(@Nullable ServiceCommandError error) {
+            public void onError(ServiceCommandError error) {
                 logger.warn("Response: {}", error == null ? "" : error.getMessage());
             }
 
