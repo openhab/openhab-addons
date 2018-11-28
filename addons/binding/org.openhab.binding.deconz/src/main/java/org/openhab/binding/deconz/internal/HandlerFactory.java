@@ -62,6 +62,14 @@ public class HandlerFactory extends BaseThingHandlerFactory {
         httpClientFactory = factory;
     }
 
+    public void unsetWebSocketFactory(WebSocketFactory factory) {
+        webSocketFactory = null;
+    }
+
+    public void unsetHttpClientFactory(HttpClientFactory factory) {
+        httpClientFactory = null;
+    }
+
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
