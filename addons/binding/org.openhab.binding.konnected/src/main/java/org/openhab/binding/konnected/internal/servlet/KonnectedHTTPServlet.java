@@ -97,6 +97,7 @@ public class KonnectedHTTPServlet extends HttpServlet {
     protected void service(HttpServletRequest req, HttpServletResponse resp) {
         try {
             String data = inputStreamToString(req);
+
             logger.debug("The raw json data is: {}", data);
             if (data != null && !(konnectedThingHandlers.size() == 0)) {
                 KonnectedModuleGson event = gson.fromJson(data, KonnectedModuleGson.class);

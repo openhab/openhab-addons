@@ -25,10 +25,12 @@ public class KonnectedBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_MODULE = new ThingTypeUID(BINDING_ID, "module");
 
-    // Bridge config properties
+    // Thing config properties
     public static final String HOST = "ipAddress";
     public static final String MAC_ADDR = "macAddress";
     public static final String CALLBACK_PATH = "callBackPath";
+    public static final String REQUEST_TIMEOUT = "request_timeout";
+    public static final String RETRY_COUNT = "retry_count";
 
     // PIN_TO_ZONE array, this array maps an index location as a zone to the corresponding
     // pin location
@@ -36,7 +38,7 @@ public class KonnectedBindingConstants {
 
     public static final String WEBHOOK_APP = "app_security";
 
-    public static final String CHANNEL_ZONE = "channel_zone";
+    public static final String CHANNEL_ZONE = "zone";
 
     // channeltypeids
     public static final String CHANNEL_SWITCH = "konnected:switch";
@@ -51,5 +53,7 @@ public class KonnectedBindingConstants {
     public static final String CHANNEL_ACTUATOR_TIMES = "times";
     public static final String CHANNEL_ACTUATOR_MOMENTARY = "momentary";
     public static final String CHANNEL_ACTUATOR_PAUSE = "pause";
+
+    public static final String CHANNEL_ONVALUE = "onvalue";
 
 }
