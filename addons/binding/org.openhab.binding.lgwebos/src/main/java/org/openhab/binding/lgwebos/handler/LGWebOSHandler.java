@@ -8,8 +8,9 @@
  */
 package org.openhab.binding.lgwebos.handler;
 
-import static org.openhab.binding.lgwebos.LGWebOSBindingConstants.*;
+import static org.openhab.binding.lgwebos.internal.LGWebOSBindingConstants.*;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +35,7 @@ import org.openhab.binding.lgwebos.internal.TVControlChannelName;
 import org.openhab.binding.lgwebos.internal.ToastControlToast;
 import org.openhab.binding.lgwebos.internal.VolumeControlMute;
 import org.openhab.binding.lgwebos.internal.VolumeControlVolume;
+import org.openhab.binding.lgwebos.internal.action.ActionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,7 +96,7 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
         handler.onReceiveCommand(device.orElse(null), channelUID.getId(), this, command);
     }
 
-    private Optional<ConnectableDevice> getDevice() {
+    public Optional<ConnectableDevice> getDevice() {
         return discoveryManager.getCompatibleDevices().values().stream()
                 .filter(device -> deviceId.equals(device.getId())).findFirst();
     }
@@ -240,5 +242,10 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
     @Override
     public void onDiscoveryFailed(DiscoveryManager manager, ServiceCommandError error) {
         // NOP
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(ActionService.class);
     }
 }
