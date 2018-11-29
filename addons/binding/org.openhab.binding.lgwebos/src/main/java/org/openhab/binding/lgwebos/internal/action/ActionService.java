@@ -171,7 +171,10 @@ public class ActionService implements AnnotatedActionThingHandlerService {
     }
 
     private <C extends CapabilityMethods> Optional<C> getControl(Class<C> clazz) {
-
+        if (this.handler == null) {
+            logger.warn("LGWebOS ThingHandler is null.");
+            return Optional.empty();
+        }
         final Optional<ConnectableDevice> connectableDevice = this.handler.getDevice();
         if (!connectableDevice.isPresent()) {
             logger.warn("Device not online.");
