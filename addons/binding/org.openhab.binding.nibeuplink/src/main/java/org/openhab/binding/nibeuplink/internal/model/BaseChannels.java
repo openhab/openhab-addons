@@ -105,6 +105,8 @@ public class BaseChannels extends AbstractChannels {
             "EB100-EP14-BT3 Return temp", ChannelGroup.BASE, ScaleFactor.DIV_10, SIUnits.CELSIUS));
     public static final Channel CH_40072 = INSTANCE.addChannel(new QuantityChannel("40072", "BF1 EP14 Flow",
             ChannelGroup.BASE, ScaleFactor.DIV_10, SIUnits.LITRE.divide(SIUnits.METRE)));
+    public static final Channel CH_43437 = INSTANCE.addChannel(
+            new QuantityChannel("43437", "Supply Pump Speed EP14", ChannelGroup.BASE, SmartHomeUnits.PERCENT));
     public static final Channel CH_40079 = INSTANCE.addChannel(new QuantityChannel("40079", "EB100-BE3 Current",
             ChannelGroup.BASE, ScaleFactor.DIV_10, SmartHomeUnits.AMPERE));
     public static final Channel CH_40081 = INSTANCE.addChannel(new QuantityChannel("40081", "EB100-BE2 Current",

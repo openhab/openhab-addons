@@ -183,7 +183,7 @@
 	<channel-type id="base-type-47043">
 		<item-type>Number:Temperature</item-type>
 		<label>Start temperature HW Luxury</label>
-		<description>Start temperature for heating water in Luxory mode</description>
+		<description>Start temperature for heating water in Luxury mode</description>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
@@ -260,6 +260,13 @@
 		<label>Max int add. power, SG Ready</label>
 		<description></description>
 		<state min="0" max="4500" step="1" pattern="%.2f %unit%" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="base-type-43437">
+		<item-type>Number</item-type>
+		<label>Supply Pump Speed EP14</label>
+		<description>Supply Pump Speed, EP14 (GP6)</description>
+		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 </thing:thing-descriptions>
