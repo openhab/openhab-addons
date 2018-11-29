@@ -58,16 +58,6 @@ public class ActionService implements AnnotatedActionThingHandlerService {
         return this.handler;
     }
 
-    void publishMQTT(String topic,
-            @ActionInput(name = "value", label = "@text/actionShowToastInputValueLabel", description = "@text/actionShowToastInputValueDesc") String value) {
-
-        if (handler == null) {
-            logger.warn("LGWebOS Action service ThingHandler is null!");
-            return;
-        }
-
-    }
-
     public enum Button {
         UP,
         DOWN,
