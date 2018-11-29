@@ -16,10 +16,6 @@ package org.openhab.binding.paradoxalarm.internal;
 public class ParadoxPanelConfiguration {
 
     private int refresh;
-    private String ip150Password;
-    private String pcPassword;
-    private String ipAddress;
-    private int port;
 
     public int getRefresh() {
         return refresh;
@@ -28,37 +24,4 @@ public class ParadoxPanelConfiguration {
     public void setRefresh(int refresh) {
         this.refresh = refresh;
     }
-
-    public String getIp150Password() {
-        return ip150Password;
-    }
-
-    public void setIp150Password(String ip150Password) {
-        this.ip150Password = ip150Password;
-    }
-
-    public String getPcPassword() {
-        return pcPassword;
-    }
-
-    public void setPcPassword(String pcPassword) {
-        this.pcPassword = pcPassword;
-    }
-
-    public String getIpAddress() {
-        return ipAddress;
-    }
-
-    public void setIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
-    }
-
 }

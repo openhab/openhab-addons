@@ -11,7 +11,6 @@ package org.openhab.binding.paradoxalarm.internal.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openhab.binding.paradoxalarm.internal.communication.IParadoxCommunicator;
 import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxBindingException;
 import org.openhab.binding.paradoxalarm.internal.parsers.EvoParser;
 import org.openhab.binding.paradoxalarm.internal.parsers.IParadoxParser;
@@ -27,7 +26,7 @@ public class ParadoxPanel {
 
     private static final int NUMBER_OF_ZONES = 48;
 
-    private static Logger logger = LoggerFactory.getLogger(Partition.class);
+    private static Logger logger = LoggerFactory.getLogger(ParadoxPanel.class);
 
     private static ParadoxPanel paradoxPanel;
 
@@ -39,14 +38,14 @@ public class ParadoxPanel {
 
     private List<Partition> partitions;
     private List<Zone> zones;
-    private IParadoxCommunicator communicator;
     private IParadoxParser parser;
 
-    private ParadoxPanel() {
+    private ParadoxPanel() throws ParadoxBindingException {
         this.parser = new EvoParser();
+        init();
     }
 
-    public static ParadoxPanel getInstance() {
+    public static ParadoxPanel getInstance() throws ParadoxBindingException {
         synchronized (ParadoxPanel.class) {
             if (paradoxPanel == null) {
                 paradoxPanel = new ParadoxPanel();
@@ -56,13 +55,10 @@ public class ParadoxPanel {
     }
 
     // Mandatory to call this method after getting the instance for the first time :(
-    public void init(IParadoxCommunicator communicator) throws ParadoxBindingException {
+    public void init() throws ParadoxBindingException {
         // TODO Maybe factory for creating parsers if more than EVO will be implemented?
-        // Maybe need to extract the logon sequence and initial parsing of security type and use factory to create the
-        // proper communicator/parsers?
-        this.communicator = communicator;
-
-        panelInformation = new ParadoxInformation(communicator.getPanelInfoBytes(), parser);
+        byte[] panelInfoBytes = RawStructuredDataCache.getInstance().getPanelInfoBytes();
+        panelInformation = new ParadoxInformation(panelInfoBytes, parser);
 
         if (isPanelSupported()) {
             logger.debug("Found supported panel - " + panelInformation);
@@ -81,13 +77,13 @@ public class ParadoxPanel {
     }
 
     public void updateEntitiesStates() {
-        List<byte[]> currentPartitionFlags = communicator.readPartitionFlags();
+        List<byte[]> currentPartitionFlags = RawStructuredDataCache.getInstance().getPartitionStateFlags();
         for (int i = 0; i < partitions.size(); i++) {
             Partition partition = partitions.get(i);
             partition.setState(parser.calculatePartitionState(currentPartitionFlags.get(i)));
         }
 
-        ZoneStateFlags zoneStateFlags = communicator.readZoneStateFlags();
+        ZoneStateFlags zoneStateFlags = RawStructuredDataCache.getInstance().getZoneStateFlags();
         for (int i = 0; i < zones.size(); i++) {
             Zone zone = zones.get(i);
             zone.setZoneState(parser.calculateZoneState(zone.getId(), zoneStateFlags));
@@ -96,8 +92,8 @@ public class ParadoxPanel {
 
     private List<Zone> initializeZones() {
         zones = new ArrayList<Zone>();
-        List<String> zoneLabels = communicator.readZoneLabels();
         // TODO Use the size of retrieved labels list
+        List<String> zoneLabels = RawStructuredDataCache.getInstance().getZoneLabels();
         for (int i = 0; i < NUMBER_OF_ZONES; i++) {
             Zone zone = new Zone(i + 1, zoneLabels.get(i));
             zones.add(zone);
@@ -107,7 +103,7 @@ public class ParadoxPanel {
 
     private List<Partition> initializePartitions() {
         partitions = new ArrayList<Partition>();
-        List<String> partitionLabels = communicator.readPartitionLabels();
+        List<String> partitionLabels = RawStructuredDataCache.getInstance().getPartitionLabels();
         // TODO move the range as field in communicator maybe?
         for (int i = 0; i < partitionLabels.size(); i++) {
             Partition partition = new Partition(i + 1, partitionLabels.get(i));
@@ -131,9 +127,5 @@ public class ParadoxPanel {
 
     public void setZones(List<Zone> zones) {
         this.zones = zones;
-    }
-
-    public IParadoxCommunicator getCommunicator() {
-        return communicator;
     }
 }

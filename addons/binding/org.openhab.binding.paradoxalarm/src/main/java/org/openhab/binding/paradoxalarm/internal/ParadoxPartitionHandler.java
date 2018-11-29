@@ -13,6 +13,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxBindingException;
 import org.openhab.binding.paradoxalarm.internal.model.ParadoxPanel;
 import org.openhab.binding.paradoxalarm.internal.model.Partition;
 import org.slf4j.Logger;
@@ -33,13 +34,18 @@ public class ParadoxPartitionHandler extends EntityBaseHandler {
 
     @Override
     protected void updateEntity() {
-        List<Partition> partitions = ParadoxPanel.getInstance().getPartitions();
         int index = calculateEntityIndex();
-        Partition partition = partitions.get(index);
-        if (partition != null) {
-            updateState("label", new StringType(partition.getLabel()));
-            updateState("state", new StringType(partition.getState().getMainState()));
-            updateState("additionalState", new StringType(partition.getState().getAdditionalState()));
+        try {
+            List<Partition> partitions = ParadoxPanel.getInstance().getPartitions();
+            Partition partition = partitions.get(index);
+            if (partition != null) {
+                updateState("label", new StringType(partition.getLabel()));
+                updateState("state", new StringType(partition.getState().getMainState()));
+                updateState("additionalState", new StringType(partition.getState().getAdditionalState()));
+            }
+        } catch (ParadoxBindingException e) {
+            logger.error("Unable to update partition with Id {} due to missing ParadoxPanel. Exception: {}",
+                    String.valueOf(index + 1), e);
         }
     }
 }

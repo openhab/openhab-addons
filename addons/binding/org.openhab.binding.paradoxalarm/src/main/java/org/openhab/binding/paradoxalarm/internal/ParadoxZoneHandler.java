@@ -13,6 +13,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxBindingException;
 import org.openhab.binding.paradoxalarm.internal.model.ParadoxPanel;
 import org.openhab.binding.paradoxalarm.internal.model.Zone;
 import org.slf4j.Logger;
@@ -25,7 +26,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ParadoxZoneHandler extends EntityBaseHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(ParadoxPartitionHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ParadoxZoneHandler.class);
 
     public ParadoxZoneHandler(@NonNull Thing thing) {
         super(thing);
@@ -33,14 +34,19 @@ public class ParadoxZoneHandler extends EntityBaseHandler {
 
     @Override
     protected void updateEntity() {
-        List<Zone> zones = ParadoxPanel.getInstance().getZones();
         int index = calculateEntityIndex();
-        Zone zone = zones.get(index);
-        if (zone != null) {
-            updateState("label", new StringType(zone.getLabel()));
-            updateState("isOpened", OpenClosedType.from(zone.getZoneState().isOpened()));
-            updateState("isTampered", OpenClosedType.from(zone.getZoneState().isTampered()));
-            updateState("hasLowBattery", OpenClosedType.from(zone.getZoneState().hasLowBattery()));
+        try {
+            List<Zone> zones = ParadoxPanel.getInstance().getZones();
+            Zone zone = zones.get(index);
+            if (zone != null) {
+                updateState("label", new StringType(zone.getLabel()));
+                updateState("isOpened", OpenClosedType.from(zone.getZoneState().isOpened()));
+                updateState("isTampered", OpenClosedType.from(zone.getZoneState().isTampered()));
+                updateState("hasLowBattery", OpenClosedType.from(zone.getZoneState().hasLowBattery()));
+            }
+        } catch (ParadoxBindingException e) {
+            logger.error("Unable to update zone {} due to missing ParadoxPanel. Exception: {}",
+                    String.valueOf(index + 1), e);
         }
     }
 }

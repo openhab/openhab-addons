@@ -8,6 +8,10 @@
  */
 package org.openhab.binding.paradoxalarm.internal.model;
 
+import java.util.Arrays;
+
+import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
+
 /**
  * The {@link PanelType} Enum of all panel types
  *
@@ -29,5 +33,23 @@ public enum PanelType {
     @Override
     public String toString() {
         return this.name();
+    }
+
+    public static PanelType parsePanelType(byte[] infoPacket) {
+        if (infoPacket == null || infoPacket.length != 37) {
+            return PanelType.UNKNOWN;
+        }
+        byte[] panelTypeBytes = Arrays.copyOfRange(infoPacket, 6, 8);
+        String key = "0x" + ParadoxUtil.byteArrayAsString(panelTypeBytes);
+
+        return ParadoxInformationConstants.panelTypes.getOrDefault(key, PanelType.UNKNOWN);
+    }
+
+    public static PanelType from(String panelTypeStr) {
+        try {
+            return PanelType.valueOf(panelTypeStr);
+        } catch (Exception e) {
+            return PanelType.UNKNOWN;
+        }
     }
 }

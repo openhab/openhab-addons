@@ -5,6 +5,9 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="zone">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ip150" />
+		</supported-bridge-type-refs>
 		<label>Paradox zone</label>
 		<description>Paradox zone</description>
 

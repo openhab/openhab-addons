@@ -8,9 +8,6 @@
  */
 package org.openhab.binding.paradoxalarm.internal.parsers;
 
-import java.util.Date;
-import java.util.GregorianCalendar;
-
 import org.openhab.binding.paradoxalarm.internal.model.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,8 +33,6 @@ public abstract class AbstractParser implements IParadoxParser {
 
     @Override
     public Version parseBootloaderVersion(byte[] panelInfoBytes) {
-        Date date = new GregorianCalendar(panelInfoBytes[24], panelInfoBytes[22], panelInfoBytes[21]).getTime();
-        ;
-        return new Version(panelInfoBytes[18], panelInfoBytes[19], panelInfoBytes[20], date);
+        return new Version(panelInfoBytes[18], panelInfoBytes[19], panelInfoBytes[20]);
     }
 }

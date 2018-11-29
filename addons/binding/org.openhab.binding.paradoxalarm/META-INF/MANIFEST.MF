@@ -1,8 +1,7 @@
 Manifest-Version: 1.0
 Automatic-Module-Name: org.openhab.binding.paradoxalarm
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: .,
- lib/logback-classic-1.2.3.jar
+Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
 Bundle-Name: ParadoxAlarm Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

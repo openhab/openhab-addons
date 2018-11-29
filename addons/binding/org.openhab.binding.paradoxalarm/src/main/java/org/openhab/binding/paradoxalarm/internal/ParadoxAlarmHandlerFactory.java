@@ -16,6 +16,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -37,8 +38,8 @@ public class ParadoxAlarmHandlerFactory extends BaseThingHandlerFactory {
 
     private static Logger logger = LoggerFactory.getLogger(ParadoxAlarmHandlerFactory.class);
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
-            Arrays.asList(PANEL_COMMUNICATION_THING_TYPE_UID, PARTITION_THING_TYPE_UID, ZONE_THING_TYPE_UID));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(Arrays
+            .asList(COMMUNICATOR_THING_TYPE_UID, PANEL_THING_TYPE_UID, PARTITION_THING_TYPE_UID, ZONE_THING_TYPE_UID));
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -49,7 +50,14 @@ public class ParadoxAlarmHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (PANEL_COMMUNICATION_THING_TYPE_UID.equals(thingTypeUID)) {
+        if (COMMUNICATOR_THING_TYPE_UID.equals(thingTypeUID)) {
+            try {
+                logger.debug("createHandler(): ThingHandler created for {}", thingTypeUID);
+                return new ParadoxIP150BridgeHandler((Bridge) thing);
+            } catch (Exception e) {
+                logger.error("Unable to create IP150 Bridge handler. Exception: {}", e);
+            }
+        } else if (PANEL_THING_TYPE_UID.equals(thingTypeUID)) {
             logger.debug("createHandler(): ThingHandler created for {}", thingTypeUID);
             return new ParadoxPanelHandler(thing);
         } else if (PARTITION_THING_TYPE_UID.equals(thingTypeUID)) {

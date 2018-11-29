@@ -10,7 +10,6 @@ package org.openhab.binding.paradoxalarm.internal.model;
 
 import java.util.Arrays;
 
-import org.openhab.binding.paradoxalarm.internal.communication.EvoCommunicator;
 import org.openhab.binding.paradoxalarm.internal.parsers.IParadoxParser;
 import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
 import org.slf4j.Logger;
@@ -25,7 +24,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ParadoxInformation {
 
-    private static Logger logger = LoggerFactory.getLogger(EvoCommunicator.class);
+    private static Logger logger = LoggerFactory.getLogger(ParadoxInformation.class);
 
     private PanelType panelType;
     private String serialNumber;
@@ -34,7 +33,7 @@ public class ParadoxInformation {
     private Version bootloaderVersion;
 
     public ParadoxInformation(byte[] panelInfoBytes, IParadoxParser parser) {
-        panelType = parsePanelType(panelInfoBytes);
+        panelType = PanelType.parsePanelType(panelInfoBytes);
 
         applicationVersion = parser.parseApplicationVersion(panelInfoBytes);
         hardwareVersion = parser.parseHardwareVersion(panelInfoBytes);
@@ -62,16 +61,6 @@ public class ParadoxInformation {
 
     public String getSerialNumber() {
         return serialNumber;
-    }
-
-    private PanelType parsePanelType(byte[] infoPacket) {
-        if (infoPacket == null || infoPacket.length != 37) {
-            return PanelType.UNKNOWN;
-        }
-        byte[] panelTypeBytes = Arrays.copyOfRange(infoPacket, 6, 8);
-        String key = "0x" + ParadoxUtil.byteArrayAsString(panelTypeBytes);
-
-        return ParadoxInformationConstants.panelTypes.getOrDefault(key, PanelType.UNKNOWN);
     }
 
     @Override

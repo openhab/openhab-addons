@@ -8,24 +8,17 @@
  */
 package org.openhab.binding.paradoxalarm.internal.communication;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.openhab.binding.paradoxalarm.internal.model.ZoneStateFlags;
 
 /**
- * The {@link IParadoxCommunicator} is representing the functionality of communication binding.
+ * The {@link IParadoxCommunicator} is representing the functionality of communication implementation.
  * If another Paradox alarm system is used this interface must be implemented.
  *
  * @author Konstantin_Polihronov - Initial contribution
  */
-public interface IParadoxCommunicator {
-
-    void close() throws IOException;
-
-    void logoutSequence() throws IOException;
-
-    void loginSequence() throws IOException, InterruptedException;
+public interface IParadoxCommunicator extends IParadoxGenericCommunicator {
 
     public void refreshMemoryMap() throws Exception;
 
@@ -37,5 +30,4 @@ public interface IParadoxCommunicator {
 
     public List<String> readZoneLabels();
 
-    public byte[] getPanelInfoBytes();
 }

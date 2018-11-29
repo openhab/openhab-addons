@@ -21,8 +21,6 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.paradoxalarm.internal.communication.EvoCommunicator;
-import org.openhab.binding.paradoxalarm.internal.communication.IParadoxCommunicator;
 import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxBindingException;
 import org.openhab.binding.paradoxalarm.internal.model.ParadoxInformation;
 import org.openhab.binding.paradoxalarm.internal.model.ParadoxPanel;
@@ -30,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ParadoxPanelHandler} This is the handler that takes care of communication to/from Paradox alarm system.
+ * The {@link ParadoxPanelHandler} This is the handler that takes care of the panel related stuff.
  *
  * @author Konstantin_Polihronov - Initial contribution
  */
@@ -55,9 +53,6 @@ public class ParadoxPanelHandler extends BaseThingHandler {
     ScheduledFuture<?> updateThingSchedule;
 
     @Nullable
-    IParadoxCommunicator communicator;
-
-    @Nullable
     private ParadoxPanelConfiguration config;
 
     public ParadoxPanelHandler(Thing thing) {
@@ -66,7 +61,7 @@ public class ParadoxPanelHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (ParadoxAlarmBindingConstants.PANEL_COMMUNICATION_THING_TYPE_UID.equals(channelUID.getId())) {
+        if (ParadoxAlarmBindingConstants.PANEL_THING_TYPE_UID.equals(channelUID.getId())) {
             if (command instanceof RefreshType) {
                 refreshData();
             }
@@ -91,32 +86,15 @@ public class ParadoxPanelHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        cancelSchedule(refreshMemoryMapSchedule);
-        cancelSchedule(reinitializeParadoxPanelSchedule);
-        cancelSchedule(updateThingSchedule);
+        HandlersUtil.cancelSchedule(refreshMemoryMapSchedule);
+        HandlersUtil.cancelSchedule(reinitializeParadoxPanelSchedule);
+        HandlersUtil.cancelSchedule(updateThingSchedule);
         super.dispose();
-    }
-
-    private void cancelSchedule(@Nullable ScheduledFuture<?> schedule) {
-        if (schedule != null) {
-            boolean cancelingResult = schedule.cancel(true);
-            String cancelingSuccessful = cancelingResult ? "successful" : "failed";
-            logger.debug("Canceling schedule of " + schedule.toString() + " in class " + getClass().getName()
-                    + cancelingSuccessful);
-        }
     }
 
     private void initializeModel() throws Exception, ParadoxBindingException {
         config = getConfigAs(ParadoxPanelConfiguration.class);
-
-        String ipAddress = config.getIpAddress();
-        int port = config.getPort();
-        String ip150Password = config.getIp150Password();
-        String pcPassword = config.getPcPassword();
-        communicator = new EvoCommunicator(ipAddress, port, ip150Password, pcPassword);
-
         ParadoxPanel panel = ParadoxPanel.getInstance();
-        panel.init(communicator);
     }
 
     private void setupSchedule() {
@@ -130,7 +108,7 @@ public class ParadoxPanelHandler extends BaseThingHandler {
         reinitializeParadoxPanelSchedule = scheduler.scheduleWithFixedDelay(() -> {
             try {
                 ParadoxPanel panel = ParadoxPanel.getInstance();
-                panel.init(communicator);
+                panel.init();
             } catch (Exception e) {
                 logger.error("Unable to retrieve memory map. {}", e);
             }
@@ -145,25 +123,26 @@ public class ParadoxPanelHandler extends BaseThingHandler {
     }
 
     private void scheduleUpdateThing() {
-        logger.debug("Scheduling cache update. Refresh interval: " + config.getRefresh() + "s.");
+        logger.debug("Scheduling update thing. Refresh interval: " + config.getRefresh() + "s.");
         updateThingSchedule = scheduler.scheduleWithFixedDelay(() -> {
-            updateThing();
+            try {
+                updateThing();
+            } catch (ParadoxBindingException e) {
+                logger.error("Unable to update thing {} due to exception {}", getThing().getLabel(), e);
+            }
         }, INITIAL_DELAY, UPDATE_THING_REFRESH_INTERVAL_SEC, TimeUnit.SECONDS);
 
     }
 
     private void refreshData() {
         try {
-            if (communicator != null) {
-                communicator.refreshMemoryMap();
-                ParadoxPanel.getInstance().updateEntitiesStates();
-            }
+            ParadoxPanel.getInstance().updateEntitiesStates();
         } catch (Exception e) {
             logger.error("Unable to retrieve memory map. {}", e);
         }
     }
 
-    private void updateThing() {
+    private void updateThing() throws ParadoxBindingException {
         // TODO think how to identify connected/disconnected state
         updateState("state", new StringType("connected"));
         ParadoxInformation panelInformation = ParadoxPanel.getInstance().getPanelInformation();
