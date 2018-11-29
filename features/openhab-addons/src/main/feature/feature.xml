@@ -10,7 +10,6 @@
 
 -->
 <features name="${project.artifactId}-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
-
     
     <!-- binding -->
 
