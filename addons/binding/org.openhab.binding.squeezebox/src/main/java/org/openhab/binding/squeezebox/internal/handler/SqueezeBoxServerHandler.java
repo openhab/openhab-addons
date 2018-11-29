@@ -987,8 +987,10 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
      */
     private void updatePlayer(PlayerUpdateEvent event) {
         // update listeners like disco services
-        for (SqueezeBoxPlayerEventListener listener : squeezeBoxPlayerListeners) {
-            event.updateListener(listener);
+        synchronized (squeezeBoxPlayerListeners) {
+            for (SqueezeBoxPlayerEventListener listener : squeezeBoxPlayerListeners) {
+                event.updateListener(listener);
+            }
         }
         // update our children
         Bridge bridge = getThing();
