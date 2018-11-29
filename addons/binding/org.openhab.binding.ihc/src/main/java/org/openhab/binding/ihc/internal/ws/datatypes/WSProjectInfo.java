@@ -237,4 +237,12 @@ public class WSProjectInfo extends WSBaseDataType {
 
         return this;
     }
+
+    @Override
+    public String toString() {
+        return String.format(
+                "[ visualMinorVersion=%d, visualMajorVersion=%d, projectMajorRevision=%d, projectMinorRevision=%d, lastmodified=%s, projectNumber=%s, customerName=%s, installerName=%s ]",
+                visualMinorVersion, visualMajorVersion, projectMajorRevision, projectMinorRevision,
+                lastmodified.getAsLocalDateTime(), projectNumber, customerName, installerName);
+    }
 }

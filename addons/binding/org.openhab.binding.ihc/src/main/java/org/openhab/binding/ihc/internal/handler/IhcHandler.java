@@ -52,6 +52,7 @@ import org.openhab.binding.ihc.internal.ws.IhcClient;
 import org.openhab.binding.ihc.internal.ws.IhcClient.ConnectionState;
 import org.openhab.binding.ihc.internal.ws.IhcEventListener;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSControllerState;
+import org.openhab.binding.ihc.internal.ws.datatypes.WSProjectInfo;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSRFDevice;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSSystemInfo;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
@@ -205,8 +206,6 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
 
             case CHANNEL_CONTROLLER_UPTIME:
             case CHANNEL_CONTROLLER_TIME:
-            case CHANNEL_CONTROLLER_SW_VERSION:
-            case CHANNEL_CONTROLLER_HW_VERSION:
                 if (command.equals(RefreshType.REFRESH)) {
                     updateControllerInformationChannels();
                 }
@@ -262,15 +261,36 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
         }
     }
 
+    private void updateControllerProperties() {
+        try {
+            WSSystemInfo systemInfo = ihc.getSystemInfo();
+            logger.debug("Controller information: {}", systemInfo);
+            WSProjectInfo projectInfo = ihc.getProjectInfo();
+            logger.debug("Project information: {}", projectInfo);
+
+            Map<String, String> properties = editProperties();
+            properties.put(PROPERTY_MANUFACTURER, systemInfo.getBrand());
+            properties.put(PROPERTY_SERIALNUMBER, systemInfo.getSerialNumber());
+            properties.put(PROPERTY_SW_VERSION, systemInfo.getVersion());
+            properties.put(PROPERTY_FW_VERSION, systemInfo.getHwRevision());
+            properties.put(PROPERTY_APP_WITHOUT_VIEWER, Boolean.toString(systemInfo.getApplicationIsWithoutViewer()));
+            properties.put(PROPERTY_SW_DATE, systemInfo.getSwDate().atZone(ZoneId.systemDefault()).toString());
+            properties.put(PROPERTY_PRODUCTION_DATE,
+                    systemInfo.getProductionDate().atZone(ZoneId.systemDefault()).toString());
+            properties.put(PROPERTY_PROJECT_DATE,
+                    projectInfo.getLastmodified().getAsLocalDateTime().atZone(ZoneId.systemDefault()).toString());
+            properties.put(PROPERTY_PROJECT_NUMBER, projectInfo.getProjectNumber());
+            updateProperties(properties);
+        } catch (IhcExecption e) {
+            logger.warn("Controller information fetch failed, reason {}", e.getMessage());
+        }
+    }
+
     private void updateControllerInformationChannels() {
         try {
             WSSystemInfo systemInfo = ihc.getSystemInfo();
             logger.debug("Controller information: {}", systemInfo);
 
-            updateState(new ChannelUID(getThing().getUID(), CHANNEL_CONTROLLER_SW_VERSION),
-                    new StringType(systemInfo.getVersion()));
-            updateState(new ChannelUID(getThing().getUID(), CHANNEL_CONTROLLER_HW_VERSION),
-                    new StringType(systemInfo.getHwRevision()));
             updateState(new ChannelUID(getThing().getUID(), CHANNEL_CONTROLLER_UPTIME),
                     new DecimalType((double) systemInfo.getUptime() / 1000));
             updateState(new ChannelUID(getThing().getUID(), CHANNEL_CONTROLLER_TIME),
@@ -404,8 +424,6 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 updateControllerStateChannel();
                 break;
 
-            case CHANNEL_CONTROLLER_SW_VERSION:
-            case CHANNEL_CONTROLLER_HW_VERSION:
             case CHANNEL_CONTROLLER_UPTIME:
             case CHANNEL_CONTROLLER_TIME:
                 updateControllerInformationChannels();
@@ -430,8 +448,6 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
 
         switch (channelUID.getId()) {
             case CHANNEL_CONTROLLER_STATE:
-            case CHANNEL_CONTROLLER_SW_VERSION:
-            case CHANNEL_CONTROLLER_HW_VERSION:
             case CHANNEL_CONTROLLER_UPTIME:
             case CHANNEL_CONTROLLER_TIME:
                 break;
@@ -463,6 +479,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                     "Initializing communication to the IHC / ELKO controller");
             loadProject();
             createChannels();
+            updateControllerProperties();
             updateControllerStateChannel();
             updateControllerInformationChannels();
             ihc.addEventListener(this);
@@ -507,11 +524,6 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
             List<Channel> thingChannels = new ArrayList<>();
             thingChannels.addAll(getThing().getChannels());
             ChannelUtils.addControllerChannels(getThing(), thingChannels);
-            try {
-                ChannelUtils.addRFDeviceChannels(getThing(), ihc.getDetectedRFDevices(), thingChannels);
-            } catch (IhcExecption e) {
-                logger.debug("Error occured when fetching RF device information, reason: {} ", e.getMessage());
-            }
             ChannelUtils.addChannelsFromProjectFile(getThing(), projectFile, thingChannels);
             printChannels(thingChannels);
             updateThing(editThing().withChannels(thingChannels).build());
@@ -532,8 +544,11 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                     resourceId = "";
                 }
 
-                logger.debug("Channel: {}",
-                        String.format("%-50s | %-10s | %s", channel.getUID(), resourceId, channel.getLabel()));
+                String channelType = channel.getAcceptedItemType() != null ? channel.getAcceptedItemType() : "";
+                String channelLabel = channel.getLabel() != null ? channel.getLabel() : "";
+
+                logger.debug("Channel: {}", String.format("%-50s | %-10s | %-10s | %s", channel.getUID(), resourceId,
+                        channelType, channelLabel));
             });
         }
     }

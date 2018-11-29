@@ -25,12 +25,20 @@ public class IhcBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_CONTROLLER = new ThingTypeUID(BINDING_ID, "controller");
 
+    public static final String PROPERTY_MANUFACTURER = "controllerManufacturer";
+    public static final String PROPERTY_SERIALNUMBER = "controllerSerialNumber";
+    public static final String PROPERTY_SW_VERSION = "controllerSwVersion";
+    public static final String PROPERTY_FW_VERSION = "controllerHwVersion";
+    public static final String PROPERTY_APP_WITHOUT_VIEWER = "controllerIsWithoutViewer";
+    public static final String PROPERTY_SW_DATE = "controllerSwDate";
+    public static final String PROPERTY_PRODUCTION_DATE = "controllerProductionDate";
+    public static final String PROPERTY_PROJECT_DATE = "projectDate";
+    public static final String PROPERTY_PROJECT_NUMBER = "projectNumber";
+
     // List of all Channel ids
     public static final String CHANNEL_CONTROLLER_STATE = "controllerState";
     public static final String CHANNEL_CONTROLLER_UPTIME = "controllerUptime";
     public static final String CHANNEL_CONTROLLER_TIME = "controllerTime";
-    public static final String CHANNEL_CONTROLLER_HW_VERSION = "controllerHwVersion";
-    public static final String CHANNEL_CONTROLLER_SW_VERSION = "controllerSwVersion";
 
     // List of all Channel type ids
     public final static String CHANNEL_TYPE_CONTROLLER_STATE = "controller-state";

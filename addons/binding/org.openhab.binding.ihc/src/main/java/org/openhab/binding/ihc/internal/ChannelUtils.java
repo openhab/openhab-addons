@@ -24,7 +24,6 @@ import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.openhab.binding.ihc.internal.config.ChannelParams;
 import org.openhab.binding.ihc.internal.handler.IhcHandler;
-import org.openhab.binding.ihc.internal.ws.datatypes.WSRFDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -79,14 +78,14 @@ public class ChannelUtils {
 
                 for (int i = 0; i < nodes.getLength(); i++) {
                     Element node = (Element) nodes.item(i);
-                    ChannelUtils.addChannelsFromProjectFile(thing, node.getElementsByTagName("dataline_input"),
-                            "Switch", "input", CHANNEL_TYPE_SWITCH, thingChannels);
-                    ChannelUtils.addChannelsFromProjectFile(thing, node.getElementsByTagName("dataline_output"),
-                            "Switch", "output", CHANNEL_TYPE_SWITCH, thingChannels);
-                    ChannelUtils.addChannelsFromProjectFile(thing, node.getElementsByTagName("resource_temperature"),
-                            "Number", "temperature", CHANNEL_TYPE_NUMBER, thingChannels);
-                    ChannelUtils.addChannelsFromProjectFile(thing, node.getElementsByTagName("resource_humidity_level"),
-                            "Number", "humidity", CHANNEL_TYPE_NUMBER, thingChannels);
+                    addChannelsFromProjectFile(thing, node.getElementsByTagName("dataline_input"), "Switch", "input",
+                            CHANNEL_TYPE_SWITCH, thingChannels);
+                    addChannelsFromProjectFile(thing, node.getElementsByTagName("dataline_output"), "Switch", "output",
+                            CHANNEL_TYPE_SWITCH, thingChannels);
+                    addChannelsFromProjectFile(thing, node.getElementsByTagName("resource_temperature"), "Number",
+                            "temperature", CHANNEL_TYPE_NUMBER, thingChannels);
+                    addChannelsFromProjectFile(thing, node.getElementsByTagName("resource_humidity_level"), "Number",
+                            "humidity", CHANNEL_TYPE_NUMBER, thingChannels);
                 }
             } catch (Exception e) {
                 LOGGER.warn("Error occured when adding channels, reason: {}", e.getMessage(), e);
@@ -94,17 +93,18 @@ public class ChannelUtils {
 
             try {
                 NodeList nodes = projectFile.getElementsByTagName("product_airlink");
+                addRFDeviceChannels(thing, nodes, thingChannels);
 
                 for (int i = 0; i < nodes.getLength(); i++) {
                     Element node = (Element) nodes.item(i);
-                    ChannelUtils.addChannelsFromProjectFile(thing, node.getElementsByTagName("airlink_input"), "Switch",
-                            "input", CHANNEL_TYPE_SWITCH, thingChannels);
-                    ChannelUtils.addChannelsFromProjectFile(thing, node.getElementsByTagName("airlink_output"),
-                            "Switch", "output", CHANNEL_TYPE_SWITCH, thingChannels);
-                    ChannelUtils.addChannelsFromProjectFile(thing, node.getElementsByTagName("airlink_relay"), "Switch",
-                            "output", CHANNEL_TYPE_SWITCH, thingChannels);
-                    ChannelUtils.addChannelsFromProjectFile(thing, node.getElementsByTagName("airlink_dimming"),
-                            "Dimmer", "output", CHANNEL_TYPE_SWITCH, thingChannels);
+                    addChannelsFromProjectFile(thing, node.getElementsByTagName("airlink_input"), "Switch", "input",
+                            CHANNEL_TYPE_SWITCH, thingChannels);
+                    addChannelsFromProjectFile(thing, node.getElementsByTagName("airlink_output"), "Switch", "output",
+                            CHANNEL_TYPE_SWITCH, thingChannels);
+                    addChannelsFromProjectFile(thing, node.getElementsByTagName("airlink_relay"), "Switch", "output",
+                            CHANNEL_TYPE_SWITCH, thingChannels);
+                    addChannelsFromProjectFile(thing, node.getElementsByTagName("airlink_dimming"), "Dimmer", "output",
+                            CHANNEL_TYPE_SWITCH, thingChannels);
                 }
             } catch (Exception e) {
                 LOGGER.warn("Error occured when adding channels, reason: {}", e.getMessage(), e);
@@ -120,14 +120,6 @@ public class ChannelUtils {
                     .withType(new ChannelTypeUID(BINDING_ID, CHANNEL_TYPE_CONTROLLER_STATE)).build();
             addOrUpdateChannel(channel, thingChannels);
 
-            channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), CHANNEL_CONTROLLER_SW_VERSION), "String")
-                    .withType(new ChannelTypeUID(BINDING_ID, CHANNEL_TYPE_CONTROLLER_SW_VER)).build();
-            addOrUpdateChannel(channel, thingChannels);
-
-            channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), CHANNEL_CONTROLLER_HW_VERSION), "String")
-                    .withType(new ChannelTypeUID(BINDING_ID, CHANNEL_TYPE_CONTROLLER_HW_VER)).build();
-            addOrUpdateChannel(channel, thingChannels);
-
             channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), CHANNEL_CONTROLLER_UPTIME), "Number")
                     .withType(new ChannelTypeUID(BINDING_ID, CHANNEL_TYPE_CONTROLLER_UPTIME)).build();
             addOrUpdateChannel(channel, thingChannels);
@@ -138,41 +130,57 @@ public class ChannelUtils {
         }
     }
 
-    public static void addRFDeviceChannels(Thing thing, List<WSRFDevice> devs, List<Channel> thingChannels) {
-        if (thing != null && devs != null && thingChannels != null) {
-            devs.forEach(d -> {
-                String serialNumberHex = Long.toHexString(d.getSerialNumber());
-                Configuration configuration = new Configuration();
-                configuration.put("serialNumber", new Long(d.getSerialNumber()));
+    private static void addRFDeviceChannels(Thing thing, NodeList nodes, List<Channel> thingChannels) {
+        try {
+            for (int i = 0; i < nodes.getLength(); i++) {
+                Element element = (Element) nodes.item(i);
+                Long serialNumber = Long.parseLong(element.getAttribute("serialnumber").replace("_0x", ""), 16);
+                if (serialNumber != 0) {
+                    String name = element.getAttribute("name");
+                    String position = element.getAttribute("position");
 
-                // low battery
-                String channelId = String.format("%s-lowBattery", serialNumberHex);
-                String label = String.format("Low Battery - %s", serialNumberHex);
+                    String serialNumberHex = Long.toHexString(serialNumber);
+                    Configuration configuration = new Configuration();
+                    configuration.put("serialNumber", serialNumber);
 
-                Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), channelId), "Switch")
-                        .withType(new ChannelTypeUID(BINDING_ID, CHANNEL_TYPE_RF_LOW_BATTERY))
-                        .withConfiguration(configuration).withLabel(label).build();
-                addOrUpdateChannel(channel, thingChannels);
+                    // low battery
+                    String channelId = String.format("%s-lowBattery", serialNumberHex);
+                    String label = createDescription(position, name, serialNumberHex, "Low Battery");
 
-                // signal level
-                channelId = String.format("%s-signalStrength", serialNumberHex);
-                label = String.format("Signal Strength - %s", serialNumberHex);
+                    Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), channelId), "Switch")
+                            .withType(new ChannelTypeUID(BINDING_ID, CHANNEL_TYPE_RF_LOW_BATTERY))
+                            .withConfiguration(configuration).withLabel(label).build();
+                    addOrUpdateChannel(channel, thingChannels);
 
-                channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), channelId), "String")
-                        .withType(new ChannelTypeUID(BINDING_ID, CHANNEL_TYPE_RF_SIGNAL_STRENGTH))
-                        .withConfiguration(configuration).withLabel(label).build();
-                addOrUpdateChannel(channel, thingChannels);
-            });
+                    // signal level
+                    channelId = String.format("%s-signalStrength", serialNumberHex);
+                    label = createDescription(position, name, serialNumberHex, "Signal Strength");
+
+                    channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), channelId), "String")
+                            .withType(new ChannelTypeUID(BINDING_ID, CHANNEL_TYPE_RF_SIGNAL_STRENGTH))
+                            .withConfiguration(configuration).withLabel(label).build();
+                    addOrUpdateChannel(channel, thingChannels);
+                }
+            }
+
+        } catch (Exception e) {
+            LOGGER.warn("Error occured when adding RF channels, reason: {}", e.getMessage(), e);
         }
     }
 
-    public static void addChannelsFromProjectFile(Thing thing, NodeList nodes, String acceptedItemType, String group,
+    private static void addChannelsFromProjectFile(Thing thing, NodeList nodes, String acceptedItemType, String group,
             String channelType, List<Channel> thingChannels) {
         if (thing != null && nodes != null && thingChannels != null) {
             for (int i = 0; i < nodes.getLength(); i++) {
                 Element element = (Element) nodes.item(i);
-                Element parent = (Element) nodes.item(i).getParentNode();
-                Element parentParent = (Element) nodes.item(i).getParentNode().getParentNode();
+                Element parent = (Element) element.getParentNode();
+
+                if ("settings".equals(parent.getNodeName())) {
+                    // get settings element parent
+                    parent = (Element) parent.getParentNode();
+                }
+
+                Element parentParent = (Element) parent.getParentNode();
 
                 String parentName = parent.getAttribute("name");
                 String parentPosition = parent.getAttribute("position");
@@ -181,7 +189,7 @@ public class ChannelUtils {
                 String resourceName = element.getAttribute("name");
                 int resourceId = Integer.parseInt(element.getAttribute("id").replace("_0x", ""), 16);
 
-                String description = createDescription(parentName, parentPosition, parentParentName, resourceName);
+                String description = createDescription(parentParentName, parentPosition, parentName, resourceName);
                 ChannelUID channelUID = new ChannelUID(thing.getUID(), group + resourceId);
                 ChannelTypeUID type = new ChannelTypeUID(BINDING_ID, channelType);
                 Configuration configuration = new Configuration();
@@ -194,20 +202,19 @@ public class ChannelUtils {
         }
     }
 
-    private static String createDescription(String parentName, String parentPosition, String parentParentName,
-            String resourceName) {
+    private static String createDescription(String name1, String name2, String name3, String name4) {
         String description = "";
-        if (StringUtils.isNotEmpty(parentParentName)) {
-            description = parentParentName;
+        if (StringUtils.isNotEmpty(name1)) {
+            description = name1;
         }
-        if (StringUtils.isNotEmpty(parentPosition)) {
-            description += String.format(" - %s", parentPosition);
+        if (StringUtils.isNotEmpty(name2)) {
+            description += String.format(" - %s", name2);
         }
-        if (StringUtils.isNotEmpty(parentName)) {
-            description += String.format(" - %s", parentName);
+        if (StringUtils.isNotEmpty(name3)) {
+            description += String.format(" - %s", name3);
         }
-        if (StringUtils.isNotEmpty(resourceName)) {
-            description += String.format(" - %s", resourceName);
+        if (StringUtils.isNotEmpty(name4)) {
+            description += String.format(" - %s", name4);
         }
         return description;
     }

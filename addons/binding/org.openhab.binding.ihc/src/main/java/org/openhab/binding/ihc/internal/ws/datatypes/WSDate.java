@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.ihc.internal.ws.datatypes;
 
+import java.time.LocalDateTime;
+
 /**
  * Class for WSDate complex type.
  *
@@ -139,5 +141,14 @@ public class WSDate {
      */
     public void setMonthWithJanuaryAsOne(int monthWithJanuaryAsOne) {
         this.monthWithJanuaryAsOne = monthWithJanuaryAsOne;
+    }
+
+    /**
+     * Gets WSDate as LocalDateTime.
+     *
+     * @return LocalDateTime
+     */
+    public LocalDateTime getAsLocalDateTime() {
+        return LocalDateTime.of(year, monthWithJanuaryAsOne, day, hours, minutes);
     }
 }

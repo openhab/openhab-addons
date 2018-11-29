@@ -11,11 +11,21 @@
 
 		<channels>
 			<channel typeId="controller-state" id="controllerState" />
-			<channel typeId="controller-sw-version" id="controllerSwVersion" />
-			<channel typeId="controller-hw-version" id="controllerHwVersion" />
 			<channel typeId="controller-uptime" id="controllerUptime" />
 			<channel typeId="controller-time" id="controllerTime" />
 		</channels>
+
+		<properties>
+			<property name="controllerManufacturer" />
+			<property name="controllerSerialNumber" />
+			<property name="controllerSwVersion" />
+			<property name="controllerHwVersion" />
+			<property name="controllerIsWithoutViewer" />
+			<property name="controllerSwDate" />
+			<property name="controllerProductionDate" />
+			<property name="projectDate" />
+			<property name="projectNumber" />
+		</properties>
 
 		<config-description>
 			<parameter name="ip" type="text" required="true">

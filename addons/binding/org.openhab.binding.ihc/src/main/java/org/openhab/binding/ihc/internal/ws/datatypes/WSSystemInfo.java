@@ -28,12 +28,13 @@ public class WSSystemInfo extends WSBaseDataType {
     private String hwRevision;
     private LocalDateTime swDate;
     private boolean applicationIsWithoutViewer;
+    private LocalDateTime productionDate;
 
     public WSSystemInfo() {
     }
 
     public WSSystemInfo(long uptime, LocalDateTime realtimeclock, String serialNumber, String brand, String version,
-            String hwRevision, LocalDateTime swDate, boolean applicationIsWithoutViewer) {
+            String hwRevision, LocalDateTime swDate, boolean applicationIsWithoutViewer, LocalDateTime productionDate) {
 
         this.uptime = uptime;
         this.realtimeclock = realtimeclock;
@@ -43,6 +44,7 @@ public class WSSystemInfo extends WSBaseDataType {
         this.hwRevision = hwRevision;
         this.swDate = swDate;
         this.applicationIsWithoutViewer = applicationIsWithoutViewer;
+        this.productionDate = productionDate;
     }
 
     /**
@@ -189,6 +191,24 @@ public class WSSystemInfo extends WSBaseDataType {
         this.applicationIsWithoutViewer = applicationIsWithoutViewer;
     }
 
+    /**
+     * Gets the productionDate value for this WSSystemInfo.
+     *
+     * @return productionDate
+     */
+    public LocalDateTime getProductionDate() {
+        return productionDate;
+    }
+
+    /**
+     * Sets the productionDate value for this WSSystemInfo.
+     *
+     * @param productionDate
+     */
+    public void setProductionDate(LocalDateTime productionDate) {
+        this.productionDate = productionDate;
+    }
+
     public WSSystemInfo parseXMLData(String data) throws IhcExecption {
         String value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:uptime");
         setUptime(Long.parseLong(value));
@@ -215,13 +235,17 @@ public class WSSystemInfo extends WSBaseDataType {
                 "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:applicationIsWithoutViewer");
         setApplicationIsWithoutViewer(Boolean.parseBoolean(value));
 
+        value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:productionDate");
+        setProductionDate(ZonedDateTime.parse(value).toLocalDateTime());
+
         return this;
     }
 
     @Override
     public String toString() {
         return String.format(
-                "[ uptime=%d, realtimeclock=%s, serialNumber=%s, brand=%s, version=%s, hwRevision=%s, swDate=%s, applicationIsWithoutViewer=%b ]",
-                uptime, realtimeclock, serialNumber, brand, version, hwRevision, swDate, applicationIsWithoutViewer);
+                "[ uptime=%d, realtimeclock=%s, serialNumber=%s, brand=%s, version=%s, hwRevision=%s, swDate=%s, applicationIsWithoutViewer=%b, productionDate=%s ]",
+                uptime, realtimeclock, serialNumber, brand, version, hwRevision, swDate, applicationIsWithoutViewer,
+                productionDate);
     }
 }
