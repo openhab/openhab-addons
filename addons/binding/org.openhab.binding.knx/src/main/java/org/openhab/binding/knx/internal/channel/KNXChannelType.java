@@ -64,7 +64,7 @@ public abstract class KNXChannelType {
         if (fancy == null) {
             return null;
         }
-        Matcher matcher = PATTERN.matcher(fancy);
+        Matcher matcher = PATTERN.matcher(fancy.replace(" ", ""));
 
         if (matcher.matches()) {
 
