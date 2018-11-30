@@ -24,6 +24,7 @@ import javax.measure.quantity.Pressure;
 import javax.measure.quantity.Temperature;
 import javax.measure.quantity.Time;
 
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -55,16 +56,16 @@ import com.google.gson.JsonSyntaxException;
  *         switches
  * @author Daniel Walters - Added Aqara Door/Window sensor and Aqara temperature, humidity and pressure sensor
  */
-public abstract class XiaomiDeviceBaseHandler extends BaseThingHandler implements XiaomiItemUpdateListener {
+public class XiaomiDeviceBaseHandler extends BaseThingHandler implements XiaomiItemUpdateListener {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
-            Arrays.asList(THING_TYPE_GATEWAY, THING_TYPE_SENSOR_HT, THING_TYPE_SENSOR_AQARA_WEATHER_V1,
-                    THING_TYPE_SENSOR_MOTION, THING_TYPE_SENSOR_AQARA_MOTION, THING_TYPE_SENSOR_SWITCH,
-                    THING_TYPE_SENSOR_AQARA_SWITCH, THING_TYPE_SENSOR_MAGNET, THING_TYPE_SENSOR_AQARA_LOCK,
-                    THING_TYPE_SENSOR_AQARA_MAGNET, THING_TYPE_SENSOR_CUBE, THING_TYPE_SENSOR_AQARA_VIBRATION,
-                    THING_TYPE_SENSOR_AQARA1, THING_TYPE_SENSOR_AQARA2, THING_TYPE_SENSOR_GAS, THING_TYPE_SENSOR_SMOKE,
-                    THING_TYPE_SENSOR_WATER, THING_TYPE_ACTOR_AQARA1, THING_TYPE_ACTOR_AQARA2, THING_TYPE_ACTOR_PLUG,
-                    THING_TYPE_ACTOR_AQARA_ZERO1, THING_TYPE_ACTOR_AQARA_ZERO2, THING_TYPE_ACTOR_CURTAIN));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_GATEWAY,
+            THING_TYPE_SENSOR_HT, THING_TYPE_SENSOR_AQARA_WEATHER_V1, THING_TYPE_SENSOR_MOTION,
+            THING_TYPE_SENSOR_AQARA_MOTION, THING_TYPE_SENSOR_SWITCH, THING_TYPE_SENSOR_AQARA_SWITCH,
+            THING_TYPE_SENSOR_MAGNET, THING_TYPE_SENSOR_AQARA_LOCK, THING_TYPE_SENSOR_AQARA_MAGNET,
+            THING_TYPE_SENSOR_CUBE, THING_TYPE_SENSOR_AQARA_VIBRATION, THING_TYPE_SENSOR_AQARA1,
+            THING_TYPE_SENSOR_AQARA2, THING_TYPE_SENSOR_GAS, THING_TYPE_SENSOR_SMOKE, THING_TYPE_SENSOR_WATER,
+            THING_TYPE_ACTOR_AQARA1, THING_TYPE_ACTOR_AQARA2, THING_TYPE_ACTOR_PLUG, THING_TYPE_ACTOR_AQARA_ZERO1,
+            THING_TYPE_ACTOR_AQARA_ZERO2, THING_TYPE_ACTOR_CURTAIN, THING_TYPE_BASIC));
 
     protected static final Unit<Temperature> TEMPERATURE_UNIT = SIUnits.CELSIUS;
     protected static final Unit<Pressure> PRESSURE_UNIT = KILO(SIUnits.PASCAL);
@@ -139,6 +140,9 @@ public abstract class XiaomiDeviceBaseHandler extends BaseThingHandler implement
             try {
                 JsonObject data = parser.parse(message.get("data").getAsString()).getAsJsonObject();
                 parseCommand(command, data);
+                if (THING_TYPE_BASIC.equals(getThing().getThingTypeUID())) {
+                    parseDefault(message);
+                }
             } catch (JsonSyntaxException e) {
                 logger.warn("Unable to parse message as valid JSON: {}", message);
             }
@@ -170,24 +174,36 @@ public abstract class XiaomiDeviceBaseHandler extends BaseThingHandler implement
     }
 
     void parseReport(JsonObject data) {
-        logger.debug("The binding does not parse this message yet, contact authors if you want it to");
+        updateState(CHANNEL_REPORT_MSG, StringType.valueOf(data.toString()));
     }
 
     void parseHeartbeat(JsonObject data) {
-        logger.debug("The binding does not parse this message yet, contact authors if you want it to");
+        updateState(CHANNEL_HEARTBEAT_MSG, StringType.valueOf(data.toString()));
     }
 
     void parseReadAck(JsonObject data) {
-        logger.debug("The binding does not parse this message yet, contact authors if you want it to");
+        updateState(CHANNEL_READ_ACK_MSG, StringType.valueOf(data.toString()));
     }
 
     void parseWriteAck(JsonObject data) {
-        logger.debug("The binding does not parse this message yet, contact authors if you want it to");
+        updateState(CHANNEL_WRITE_ACK_MSG, StringType.valueOf(data.toString()));
     }
 
-    abstract void parseDefault(JsonObject data);
+    void parseDefault(JsonObject data) {
+        updateState(CHANNEL_LAST_MSG, StringType.valueOf(data.toString()));
+    }
 
-    abstract void execute(ChannelUID channelUID, Command command);
+    void execute(ChannelUID channelUID, Command command) {
+        if (CHANNEL_WRITE_MSG.equals(channelUID.getId())) {
+            if (command instanceof StringType) {
+                getXiaomiBridgeHandler().writeToDevice(itemId, ((StringType) command).toFullString());
+            } else {
+                logger.debug("Command \"{}\" has to be of StringType", command);
+            }
+        } else {
+            logger.debug("Received command on read-only channel, thus ignoring it.");
+        }
+    }
 
     private void updateThingStatus() {
         if (getItemId() != null) {

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mihome"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="basic">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>Basic Xiaomi MiHome Device</label>
+		<description>This device is not supported by the binding but you can still add it to your OpenHAB configuration. All messages from the device are available as channels providing values to String Items. Please open an issue on the openhab-addons2 github page to get this device added to the binding in the future. Meanwhile you can parse the messages with rules and/or JSONPATH transformations.</description>
+		<channels>
+			<channel id="reportMessage" typeId="rawMessage">
+				<label>Last report message</label>
+				<description>Report state or sensor values</description>
+			</channel>
+			<channel id="heartbeatMessage" typeId="rawMessage">
+				<label>Last heartbeat message</label>
+				<description>Alive signal (up to every 60 minutes)</description>
+			</channel>
+			<channel id="readAckMessage" typeId="rawMessage">
+				<label>Last read acknowledgement message</label>
+				<description>Answer to an active read request</description>
+			</channel>
+			<channel id="writeAckMessage" typeId="rawMessage">
+				<label>Last write acknowledgement message</label>
+				<description>Answer to a command</description>
+			</channel>
+			<channel id="lastMessage" typeId="rawMessage">
+				<label>Last raw message</label>
+				<description>Last raw message from the device</description>
+			</channel>
+			<channel id="writeMessage" typeId="rawMessage">
+				<label>Last command parameters</label>
+				<description>Channel to write command parameters - Example: \"join_permission\":\"yes\"</description>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:mihome:device" />
+	</thing-type>
+</thing:thing-descriptions>

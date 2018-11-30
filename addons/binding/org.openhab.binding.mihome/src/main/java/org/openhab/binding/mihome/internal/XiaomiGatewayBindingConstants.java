@@ -27,6 +27,7 @@ public class XiaomiGatewayBindingConstants {
 
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
     public static final ThingTypeUID THING_TYPE_GATEWAY = new ThingTypeUID(BINDING_ID, "gateway");
+    public static final ThingTypeUID THING_TYPE_BASIC = new ThingTypeUID(BINDING_ID, "basic");
     // sensors
     public static final ThingTypeUID THING_TYPE_SENSOR_HT = new ThingTypeUID(BINDING_ID, "sensor_ht");
     public static final ThingTypeUID THING_TYPE_SENSOR_AQARA_WEATHER_V1 = new ThingTypeUID(BINDING_ID,
@@ -124,4 +125,12 @@ public class XiaomiGatewayBindingConstants {
 
     // Item config properties
     public static final String ITEM_ID = "itemId";
+
+    // Basic Device channels
+    public static final String CHANNEL_REPORT_MSG = "reportMessage";
+    public static final String CHANNEL_HEARTBEAT_MSG = "heartbeatMessage";
+    public static final String CHANNEL_READ_ACK_MSG = "readAckMessage";
+    public static final String CHANNEL_WRITE_ACK_MSG = "writeAckMessage";
+    public static final String CHANNEL_LAST_MSG = "lastMessage";
+    public static final String CHANNEL_WRITE_MSG = "writeMessage";
 }
