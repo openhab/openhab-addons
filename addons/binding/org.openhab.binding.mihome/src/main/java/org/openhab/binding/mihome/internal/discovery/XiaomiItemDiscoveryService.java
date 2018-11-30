@@ -9,7 +9,7 @@
 package org.openhab.binding.mihome.internal.discovery;
 
 import static org.openhab.binding.mihome.internal.ModelMapper.*;
-import static org.openhab.binding.mihome.internal.XiaomiGatewayBindingConstants.ITEM_ID;
+import static org.openhab.binding.mihome.internal.XiaomiGatewayBindingConstants.*;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -87,9 +87,11 @@ public class XiaomiItemDiscoveryService extends AbstractDiscoveryService
             String model = data.get("model").getAsString();
 
             ThingTypeUID thingType = getThingTypeForModel(model);
+            String modelLabel = getLabelForModel(model);
             if (thingType == null) {
-                logger.debug("Unknown discovered model: {}", model);
-                return;
+                logger.warn("Discovered unsupported device with id \"{}\" -> Creating Basic Device Thing", model);
+                thingType = THING_TYPE_BASIC;
+                modelLabel = String.format("Unsupported Xiaomi MiHome Device \"%s\"", model);
             }
 
             Map<String, Object> properties = new HashMap<>(1);
@@ -99,10 +101,9 @@ public class XiaomiItemDiscoveryService extends AbstractDiscoveryService
 
             if (discoveryServiceCallback.getExistingThing(thingUID) == null) {
                 logger.debug("Detected Xiaomi smart device - sid: {} model: {}", sid, model);
-                thingDiscovered(
-                        DiscoveryResultBuilder.create(thingUID).withThingType(thingType).withProperties(properties)
-                                .withRepresentationProperty(ITEM_ID).withLabel(getLabelForModel(model))
-                                .withBridge(xiaomiBridgeHandler.getThing().getUID()).build());
+                thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(thingType)
+                        .withProperties(properties).withRepresentationProperty(ITEM_ID).withLabel(modelLabel)
+                        .withBridge(xiaomiBridgeHandler.getThing().getUID()).build());
             }
         }
     }

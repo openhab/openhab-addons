@@ -158,6 +158,8 @@ public class XiaomiHandlerFactory extends BaseThingHandlerFactory {
             return new XiaomiSensorVibrationHandler(thing);
         } else if (THING_TYPE_SENSOR_AQARA_LOCK.equals(thingTypeUID)) {
             return new XiaomiSensorLockHandler(thing);
+        } else if (THING_TYPE_BASIC.equals(thingTypeUID)) {
+            return new XiaomiDeviceBaseHandler(thing);
         } else {
             return null;
         }
