@@ -31,13 +31,11 @@ public class RawStructuredDataCache {
 
     }
 
-    public static RawStructuredDataCache getInstance() {
-        synchronized (RawStructuredDataCache.class) {
-            if (instance == null) {
-                instance = new RawStructuredDataCache();
-            }
-            return instance;
+    public static synchronized RawStructuredDataCache getInstance() {
+        if (instance == null) {
+            instance = new RawStructuredDataCache();
         }
+        return instance;
     }
 
     public List<byte[]> getPartitionStateFlags() {

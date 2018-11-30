@@ -21,7 +21,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.paradoxalarm.internal.communication.IParadoxCommunicator;
 import org.openhab.binding.paradoxalarm.internal.communication.ParadoxCommunicatorFactory;
-import org.openhab.binding.paradoxalarm.internal.model.PanelType;
 import org.openhab.binding.paradoxalarm.internal.model.RawStructuredDataCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +62,6 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
             String ip150Password = config.getIp150Password();
             String pcPassword = config.getPcPassword();
             String panelTypeStr = config.getPanelType();
-            PanelType panelType = PanelType.from(panelTypeStr);
             // IParadoxGenericCommunicator initialCommunicator = new GenericCommunicator(ipAddress, tcpPort,
             // ip150Password,
             // pcPassword);
@@ -75,7 +73,7 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
 
             ParadoxCommunicatorFactory factory = new ParadoxCommunicatorFactory(ipAddress, tcpPort, ip150Password,
                     pcPassword);
-            IParadoxCommunicator communicator = factory.createCommunicator(panelType);
+            IParadoxCommunicator communicator = factory.createCommunicator(panelTypeStr);
             return communicator;
         }
     }

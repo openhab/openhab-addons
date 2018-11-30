@@ -45,13 +45,11 @@ public class ParadoxPanel {
         init();
     }
 
-    public static ParadoxPanel getInstance() throws ParadoxBindingException {
-        synchronized (ParadoxPanel.class) {
-            if (paradoxPanel == null) {
-                paradoxPanel = new ParadoxPanel();
-            }
-            return paradoxPanel;
+    public static synchronized ParadoxPanel getInstance() throws ParadoxBindingException {
+        if (paradoxPanel == null) {
+            paradoxPanel = new ParadoxPanel();
         }
+        return paradoxPanel;
     }
 
     // Mandatory to call this method after getting the instance for the first time :(
