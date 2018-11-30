@@ -44,9 +44,6 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals(THING_TYPE_VACUUM)) {
             return new MiIoVacuumHandler(thing);
         }
-        if (thingTypeUID.equals(THING_TYPE_UNSUPPORTED)) {
-            return new MiIoUnsupportedHandler(thing);
-        }
-        return null;
+        return new MiIoUnsupportedHandler(thing);
     }
 }

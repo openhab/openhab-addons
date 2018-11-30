@@ -34,7 +34,7 @@
 		<parameter name="timeout" type="integer" min="1000" max="60000" required="false">
 			<label>Time out</label>
 			<description>Timeout time in milliseconds</description>
-			<default>10000</default>
+			<default>15000</default>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>

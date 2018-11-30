@@ -18,8 +18,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -67,6 +69,11 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     private final Logger logger = LoggerFactory.getLogger(MiIoBasicHandler.class);
     private boolean hasChannelStructure;
 
+    private final ExpiringCache<Boolean> updateDataCache = new ExpiringCache<>(CACHE_EXPIRY, () -> {
+        scheduler.schedule(this::updateData, 0, TimeUnit.SECONDS);
+        return true;
+    });
+
     List<MiIoBasicChannel> refreshList = new ArrayList<MiIoBasicChannel>();
 
     MiIoBasicDevice miioDevice;
@@ -102,8 +109,12 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command == RefreshType.REFRESH) {
-            logger.debug("Refreshing {}", channelUID);
-            updateData();
+            if (updateDataCache.isExpired()) {
+                logger.debug("Refreshing {}", channelUID);
+                updateDataCache.getValue();
+            } else {
+                logger.debug("Refresh {} skipped. Already refreshing", channelUID);
+            }
             return;
         }
         if (channelUID.getId().equals(CHANNEL_COMMAND)) {
@@ -192,14 +203,14 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             }
             if (miioDevice != null) {
                 refreshProperties(miioDevice);
+                refreshNetwork();
             }
         } catch (Exception e) {
-            logger.debug("Error while updating '{}'", getThing().getUID().toString(), e);
+            logger.debug("Error while updating '{}': ", getThing().getUID().toString(), e);
         }
     }
 
     private boolean refreshProperties(MiIoBasicDevice device) {
-        // TODO: do not refresh for unlinked channels or channels that have refresh no
         JsonArray getPropString = new JsonArray();
         for (MiIoBasicChannel miChannel : refreshList) {
             getPropString.add(miChannel.getProperty());
@@ -409,9 +420,9 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                         updateState(basicChannel.getChannel(), hsb);
                     }
                 } catch (Exception e) {
-                    logger.debug("Error updating {} propery {} with '{}' : {}", getThing().getUID().getAsString(),
+                    logger.debug("Error updating {} property {} with '{}' : {}", getThing().getUID().getAsString(),
                             basicChannel.getChannel(), val.getAsString(), e.getMessage());
-                    logger.trace("Details:",e);
+                    logger.trace("Property update error detail:", e);
                 }
             } else {
                 logger.debug("Channel not found for {}", para.get(i).getAsString());

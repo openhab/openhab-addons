@@ -174,8 +174,17 @@ However, for devices that are unsupported, you may override the value and try to
 
 Depending on the device, different channels are available.
 
+All devices have available the following channels (marked as advanced) besides the device specific channels
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| network#ssid     | String  | Network SSID                        |
+| network#bssid    | String  | Network BSSID                       |
+| network#rssi     | Number  | Network RSSI                        |
+| network#life     | Number  | Network Life                        |
+| actions#commands | String  | send commands. see below            |
+
 note: the ADVANCED  `actions#commands` channel can be used to send commands that are not automated via the binding. This is available for all devices
-e.g. `smarthome:send actionCommand  "upd_timer['1498595904821', 'on']"` would enable a pre-configured timer. See https://github.com/marcelrv/XiaomiRobotVacuumProtocol for all known available commands.
+e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would enable a pre-configured timer. See https://github.com/marcelrv/XiaomiRobotVacuumProtocol for all known available commands.
 
 
 ### Mi Air Monitor v1 (<a name="zhimi-airmonitor-v1">zhimi.airmonitor.v1</a>) Channels

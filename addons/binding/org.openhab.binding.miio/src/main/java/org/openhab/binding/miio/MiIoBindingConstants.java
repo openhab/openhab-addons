@@ -8,11 +8,12 @@
  */
 package org.openhab.binding.miio;
 
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * The {@link MiIoBindingConstants} class defines common constants, which are
@@ -30,11 +31,12 @@ public final class MiIoBindingConstants {
     public static final ThingTypeUID THING_TYPE_VACUUM = new ThingTypeUID(BINDING_ID, "vacuum");
     public static final ThingTypeUID THING_TYPE_UNSUPPORTED = new ThingTypeUID(BINDING_ID, "unsupported");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_MIIO,
-            THING_TYPE_BASIC, THING_TYPE_VACUUM, THING_TYPE_UNSUPPORTED);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(THING_TYPE_MIIO, THING_TYPE_BASIC, THING_TYPE_VACUUM, THING_TYPE_UNSUPPORTED)
+                    .collect(Collectors.toSet()));
 
-    public static final Set<ThingTypeUID> NONGENERIC_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_BASIC,
-            THING_TYPE_VACUUM, THING_TYPE_UNSUPPORTED);
+    public static final Set<ThingTypeUID> NONGENERIC_THING_TYPES_UIDS = Collections.unmodifiableSet(
+            Stream.of(THING_TYPE_BASIC, THING_TYPE_VACUUM, THING_TYPE_UNSUPPORTED).collect(Collectors.toSet()));
 
     // List of all Channel IDs
     public static final String CHANNEL_BATTERY = "status#battery";
@@ -95,8 +97,9 @@ public final class MiIoBindingConstants {
     public static final byte[] DISCOVER_STRING = org.openhab.binding.miio.internal.Utils
             .hexStringToByteArray("21310020ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
     public static final int PORT = 54321;
-    public static final Set<String> IGNORED_TOLKENS = ImmutableSet.of("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
-            "00000000000000000000000000000000");
+    public static final Set<String> IGNORED_TOLKENS = Collections.unmodifiableSet(Stream
+            .of("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF", "00000000000000000000000000000000").collect(Collectors.toSet()));
+
     public static final String DATABASE_PATH = "database/";
 
 }

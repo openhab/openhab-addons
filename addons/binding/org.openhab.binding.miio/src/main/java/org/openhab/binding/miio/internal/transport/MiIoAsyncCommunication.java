@@ -61,7 +61,7 @@ public class MiIoAsyncCommunication {
 
     private List<MiIoMessageListener> listeners = new CopyOnWriteArrayList<>();
 
-    private AtomicInteger id = new AtomicInteger();
+    private AtomicInteger id = new AtomicInteger(-1);
     private int timeDelta;
     private int timeStamp;
     private final JsonParser parser;
@@ -72,6 +72,7 @@ public class MiIoAsyncCommunication {
     private int timeout;
     private boolean needPing = true;
     private static final int MAX_ERRORS = 3;
+    private static final int MAX_ID = 1000;
 
     private ConcurrentLinkedQueue<MiIoSendCommand> concurrentLinkedQueue = new ConcurrentLinkedQueue<MiIoSendCommand>();
 
@@ -91,10 +92,10 @@ public class MiIoAsyncCommunication {
     }
 
     /**
-     * Registers a {@link XiaomiSocketListener} to be called back, when data is received.
-     * If no {@link XiaomiSocket} exists, when the method is called, it is being set up.
+     * Registers a {@link MiIoMessageListener} to be called back, when data is received.
+     * If no {@link MessageSenderThread} exists, when the method is called, it is being set up.
      *
-     * @param listener - {@link XiaomiSocketListener} to be called back
+     * @param listener - {@link MiIoMessageListener} to be called back
      */
     public synchronized void registerListener(MiIoMessageListener listener) {
         needPing = true;
@@ -106,13 +107,17 @@ public class MiIoAsyncCommunication {
     }
 
     /**
-     * Unregisters a {@link XiaomiSocketListener}. If there are no listeners left,
-     * the {@link XiaomiSocket} is being closed.
+     * Unregisters a {@link MiIoMessageListener}. If there are no listeners left,
+     * the {@link MessageSenderThread} is being closed.
      *
-     * @param listener - {@link XiaomiSocketListener} to be unregistered
+     * @param listener - {@link MiIoMessageListener} to be unregistered
      */
     public synchronized void unregisterListener(MiIoMessageListener listener) {
         getListeners().remove(listener);
+        if (getListeners().isEmpty()) {
+            concurrentLinkedQueue.clear();
+            close();
+        }
     }
 
     public int queueCommand(MiIoCommand command) throws MiIoCryptoException, IOException {
@@ -128,6 +133,9 @@ public class MiIoAsyncCommunication {
         try {
             JsonObject fullCommand = new JsonObject();
             int cmdId = id.incrementAndGet();
+            if (cmdId > MAX_ID) {
+                id.set(-1);
+            }
             fullCommand.addProperty("id", cmdId);
             fullCommand.addProperty("method", command);
             fullCommand.add("params", parser.parse(params));
@@ -165,7 +173,7 @@ public class MiIoAsyncCommunication {
                 logger.debug("{}: {}", errorMsg, decryptedResponse);
             }
         } catch (MiIoCryptoException | IOException e) {
-            logger.warn("Send command '{}'  -> {} (Device: {}) gave error {}", miIoSendCommand.getCommandString(), ip,
+            logger.debug("Send command '{}'  -> {} (Device: {}) gave error {}", miIoSendCommand.getCommandString(), ip,
                     Utils.getHex(deviceId), e.getMessage());
             errorMsg = e.getMessage();
         } catch (JsonSyntaxException e) {
@@ -188,6 +196,11 @@ public class MiIoAsyncCommunication {
         }
     }
 
+    /**
+     * The {@link MessageSenderThread} is responsible for consuming messages from the queue and sending these to the
+     * device
+     *
+     */
     private class MessageSenderThread extends Thread {
         public MessageSenderThread() {
             super("Mi IO MessageSenderThread");
@@ -358,10 +371,14 @@ public class MiIoAsyncCommunication {
     }
 
     public void close() {
-        if (socket != null) {
-            socket.close();
+        try {
+            if (socket != null) {
+                socket.close();
+            }
+            senderThread.interrupt();
+        } catch (Exception e) {
+            logger.debug("Error while closing ", e.getMessage());
         }
-        senderThread.interrupt();
     }
 
     /**
