@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="evohome" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0" xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<!-- evohome Gateway Bridge -->
+	<bridge-type id="account">
+		<label>evohome Account</label>
+		<description>The evohome account is used to connect to your Total Connect Comfort (TCC) using your TCC username and password.</description>
+		<config-description>
+			<parameter-group name="auth">
+				<label>Authentication</label>
+				<description>Contains the settings needed to authenticate against the TCC service.</description>
+			</parameter-group>
+			<parameter name="username" type="text" required="true" groupName="auth">
+				<label>Username</label>
+				<description>Your TCC Username</description>
+			</parameter>
+			<parameter name="password" type="text" required="true" groupName="auth">
+				<label>Password</label>
+				<description>Your TCC Password</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" required="false" min="15" max="3000">
+				<label>Refresh Interval</label>
+				<description>The refresh interval to poll TCC (in seconds).</description>
+				<default>15</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>
