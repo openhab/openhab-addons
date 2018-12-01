@@ -65,6 +65,7 @@ public class WebSocketConnection {
             IWebSocketCommandHandler webSocketCommandHandler) throws IOException {
         this.webSocketCommandHandler = webSocketCommandHandler;
         listener = new Listener();
+
         SslContextFactory sslContextFactory = new SslContextFactory();
         webSocketClient = new WebSocketClient(sslContextFactory);
 
@@ -96,7 +97,7 @@ public class WebSocketConnection {
             try {
                 webSocketClient.start();
             } catch (Exception e) {
-                logger.info("Web socket start failed: {}", e);
+                logger.warn("Web socket start failed: {}", e);
                 throw new IOException("Web socket start failed");
             }
 
@@ -112,7 +113,7 @@ public class WebSocketConnection {
             webSocketClient.connect(listener, uri, request);
 
         } catch (URISyntaxException e) {
-            logger.info("Initialize web socket failed: {}", e);
+            logger.debug("Initialize web socket failed: {}", e);
         }
     }
 
@@ -194,7 +195,7 @@ public class WebSocketConnection {
                     session.getRemote().sendBytes(ByteBuffer.wrap(buffer));
                 }
             } catch (IOException e) {
-                logger.info("Send message failed", e);
+                logger.debug("Send message failed", e);
                 WebSocketConnection.this.close();
             }
         }
@@ -352,7 +353,7 @@ public class WebSocketConnection {
                 setSession(session);
                 sendMessage("0x99d4f71a 0x0000001d A:HTUNE");
             } else {
-                logger.info("Web Socket connect without session");
+                logger.debug("Web Socket connect without session");
             }
         }
 
@@ -392,7 +393,7 @@ public class WebSocketConnection {
                         return;
                     }
                 } catch (Exception e) {
-                    logger.info("Handling of push notification failed {}", e);
+                    logger.debug("Handling of push notification failed {}", e);
                 }
             }
 

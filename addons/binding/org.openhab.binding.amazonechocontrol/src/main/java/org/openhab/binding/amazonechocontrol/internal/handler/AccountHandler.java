@@ -338,7 +338,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                     this.webSocketConnection = new WebSocketConnection(connection.getAmazonSite(),
                             connection.getSessionCookies(), this);
                 } catch (IOException e) {
-                    logger.info("Web socket connection starting failed: {}", e);
+                    logger.warn("Web socket connection starting failed: {}", e);
                 }
             }
             return false;
@@ -607,15 +607,12 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
 
     @Override
     public void webSocketCommandReceived(JsonPushCommand pushCommand) {
-        // scheduler.execute(() -> {
         try {
             handleWebsocketCommand(pushCommand);
         } catch (Exception e) {
             // should never happen, but if the exception is going out of this function, the binding stop working.
-            logger.error("handling of websockets fails: {}", e);
+            logger.warn("handling of websockets fails: {}", e);
         }
-        // });
-
     }
 
     void handleWebsocketCommand(JsonPushCommand pushCommand) {
@@ -698,7 +695,6 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                     if (echoHandler != null) {
                         echoHandler.handlePushActivity(currentActivity);
                     }
-
                 }
             }
         }
