@@ -54,6 +54,7 @@ public class ModelMapper {
         THING_MAP.put("sensor_switch.aq3", THING_TYPE_SENSOR_AQARA_SWITCH);
         THING_MAP.put("remote.b1acn01", THING_TYPE_SENSOR_AQARA_SWITCH);
         THING_MAP.put("remote.b186acn01", THING_TYPE_SENSOR_AQARA1);
+        THING_MAP.put("remote.b286acn01", THING_TYPE_SENSOR_AQARA2);
         THING_MAP.put("smoke", THING_TYPE_SENSOR_SMOKE);
         THING_MAP.put("switch", THING_TYPE_SENSOR_SWITCH);
         THING_MAP.put("vibration", THING_TYPE_SENSOR_AQARA_VIBRATION);
@@ -83,7 +84,8 @@ public class ModelMapper {
         LABEL_MAP.put("sensor_switch.aq2", "Xiaomi Aqara Wireless Switch");
         LABEL_MAP.put("sensor_switch.aq3", "Xiaomi Aqara Wireless Switch with Accelerometer");
         LABEL_MAP.put("remote.b1acn01", "Xiaomi Aqara Wireless Switch");
-        LABEL_MAP.put("remote.b186acn01", "Xiaomi Aqara Wireless Switch");
+        LABEL_MAP.put("remote.b186acn01", "Xiaomi Aqara Smart Switch 1 Button");
+        LABEL_MAP.put("remote.b286acn01", "Xiaomi Aqara Smart Switch 2 Button");
         LABEL_MAP.put("smoke", "Xiaomi Mijia Honeywell Fire Alarm Detector");
         LABEL_MAP.put("switch", "Xiaomi Mi Wireless Switch");
         LABEL_MAP.put("vibration", "Xiaomi Aqara Smart Motion Sensor");
