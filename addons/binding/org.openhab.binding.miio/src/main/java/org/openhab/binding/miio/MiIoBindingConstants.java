@@ -97,7 +97,7 @@ public final class MiIoBindingConstants {
     public static final byte[] DISCOVER_STRING = org.openhab.binding.miio.internal.Utils
             .hexStringToByteArray("21310020ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
     public static final int PORT = 54321;
-    public static final Set<String> IGNORED_TOLKENS = Collections.unmodifiableSet(Stream
+    public static final Set<String> IGNORED_TOKENS = Collections.unmodifiableSet(Stream
             .of("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF", "00000000000000000000000000000000").collect(Collectors.toSet()));
 
     public static final String DATABASE_PATH = "database/";

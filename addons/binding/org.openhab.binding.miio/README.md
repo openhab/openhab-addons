@@ -40,8 +40,8 @@ The following things types are available:
 | Mi Air Purifier MS2          | miio:basic       | [zhimi.airpurifier.ma2](#zhimi-airpurifier-ma2) | Yes       |           |
 | Mi Air Purifier Super        | miio:basic       | [zhimi.airpurifier.sa1](#zhimi-airpurifier-sa1) | Yes       |           |
 | Mi Air Purifier Super 2      | miio:basic       | [zhimi.airpurifier.sa2](#zhimi-airpurifier-sa2) | Yes       |           |
-| Mi Air Purifier mb1          | miio:unsupported | [zhimi.airpurifier.mb1](#zhimi-airpurifier-mb1) | No        |           |
-| Mi Air Purifier mc1          | miio:unsupported | [zhimi.airpurifier.mc1](#zhimi-airpurifier-mc1) | No        |           |
+| Mi Air Purifier mb1          | miio:basic       | [zhimi.airpurifier.mb1](#zhimi-airpurifier-mb1) | Yes       |           |
+| Mi Air Purifier mc1          | miio:basic       | [zhimi.airpurifier.mc1](#zhimi-airpurifier-mc1) | Yes       |           |
 | Mi Air Purifier virtual      | miio:unsupported | [zhimi.airpurifier.virtual](#zhimi-airpurifier-virtual) | No        |           |
 | Mi Air Purifier vtl m1       | miio:unsupported | [zhimi.airpurifier.vtl_m1](#zhimi-airpurifier-vtl_m1) | No        |           |
 | Mi Remote v2                 | miio:unsupported | [chuangmi.ir.v2](#chuangmi-ir-v2) | No        |           |
@@ -188,8 +188,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Mi Air Monitor v1 (<a name="zhimi-airmonitor-v1">zhimi.airmonitor.v1</a>) Channels
-
 <img align="right" src="http://cdn.cnbj0.fds.api.mi-img.com/miio.files/commonfile_png_fe9a0219e8db1e23d6b0e30bd722ace7.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -203,8 +203,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Mi Air Humidifier (<a name="zhimi-humidifier-v1">zhimi.humidifier.v1</a>) Channels
-
 <img align="right" src="http://awssgp0-cdn.fds.api.xiaomi.com/miio.files/commonfile_png_63df315aa8d3ab09fe150563e5e3fe52.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -224,8 +224,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Mi Air Humidifier (<a name="zhimi-humidifier-ca1">zhimi.humidifier.ca1</a>) Channels
-
 <img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1517908099sjhrgsby.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -245,8 +245,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Mi Air Purifier v1 (<a name="zhimi-airpurifier-v1">zhimi.airpurifier.v1</a>) Channels
-
 <img align="right" src="http://awssgp0-cdn.fds.api.xiaomi.com/miio.files/commonfile_png_3647794fe7ac6616f8e1f9d1adde5ba3.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -268,8 +268,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Mi Air Purifier v2 (<a name="zhimi-airpurifier-v2">zhimi.airpurifier.v2</a>) Channels
-
 <img align="right" src="http://cdn.fds.api.xiaomi.com/miio_user_head/0l35j0oa_1446086740.jpg" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -291,8 +291,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Mi Air Purifier v3 (<a name="zhimi-airpurifier-v3">zhimi.airpurifier.v3</a>) Channels
-
 <img align="right" src="http://awssgp0-cdn.fds.api.xiaomi.com/miio.files/commonfile_png_3647794fe7ac6616f8e1f9d1adde5ba3.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -314,8 +314,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Mi Air Purifier v5 (<a name="zhimi-airpurifier-v5">zhimi.airpurifier.v5</a>) Channels
-
 <img align="right" src="http://awssgp0-cdn.fds.api.xiaomi.com/miio.files/m0u1njiv_1452063217.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -337,8 +337,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Mi Air Purifier Pro v6 (<a name="zhimi-airpurifier-v6">zhimi.airpurifier.v6</a>) Channels
-
 <img align="right" src="http://cdn.cnbj0.fds.api.mi-img.com/miio.files/commonfile_png_064a5121ad6de87886ce1ad9bace67ab.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -360,8 +360,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Mi Air Purifier Pro v7 (<a name="zhimi-airpurifier-v7">zhimi.airpurifier.v7</a>) Channels
-
 <img align="right" src="http://awssgp0-cdn.fds.api.xiaomi.com/miio.files/developer_1508485896rv7coi53.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -383,8 +383,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Mi Air Purifier 2 (mini) (<a name="zhimi-airpurifier-m1">zhimi.airpurifier.m1</a>) Channels
-
 <img align="right" src="http://awssgp0-cdn.fds.api.xiaomi.com/miio.files/commonfile_png_1468d89ca759777116e1de1a793f69bc.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -406,8 +406,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Mi Air Purifier (mini) (<a name="zhimi-airpurifier-m2">zhimi.airpurifier.m2</a>) Channels
-
 <img align="right" src="http://awssgp0-cdn.fds.api.xiaomi.com/miio.files/developer_1490253124b61k6mjm.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -429,8 +429,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Mi Air Purifier MS1 (<a name="zhimi-airpurifier-ma1">zhimi.airpurifier.ma1</a>) Channels
-
 <img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1504084745noorep1h.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -452,8 +452,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Mi Air Purifier MS2 (<a name="zhimi-airpurifier-ma2">zhimi.airpurifier.ma2</a>) Channels
-
 <img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1504084757k912m7mp.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -498,8 +498,54 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Mi Air Purifier Super 2 (<a name="zhimi-airpurifier-sa2">zhimi.airpurifier.sa2</a>) Channels
-
 <img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1510654009cnmr904i.png" />
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| mode             | String  | Mode                                |
+| humidity         | Number  | Humidity                            |
+| aqi              | Number  | Air Quality Index                   |
+| averageaqi       | Number  | Average Air Quality Index           |
+| led              | Switch  | Led Status                          |
+| buzzer           | Switch  | Buzzer Status                       |
+| filtermaxlife    | Number  | Filter Max Life                     |
+| filterhours      | Number  | Filter Hours used                   |
+| usedhours        | Number  | Run Time                            |
+| motorspeed       | Number  | Motor Speed                         |
+| filterlife       | Number  | Filter  Life                        |
+| favoritelevel    | Number  | Favorite Level                      |
+| temperature      | Number  | Temperature                         |
+| purifyvolume     | Number  | Purivied Volume                     |
+| childlock        | Switch  | Child Lock                          |
+
+
+### Mi Air Purifier mb1 (<a name="zhimi-airpurifier-mb1">zhimi.airpurifier.mb1</a>) Channels
+<img align="right" src="http://awssgp0-cdn.fds.api.xiaomi.com/miio.files/developer_1507704382lp1kc66j.png" />
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| mode             | String  | Mode                                |
+| humidity         | Number  | Humidity                            |
+| aqi              | Number  | Air Quality Index                   |
+| averageaqi       | Number  | Average Air Quality Index           |
+| led              | Switch  | Led Status                          |
+| buzzer           | Switch  | Buzzer Status                       |
+| filtermaxlife    | Number  | Filter Max Life                     |
+| filterhours      | Number  | Filter Hours used                   |
+| usedhours        | Number  | Run Time                            |
+| motorspeed       | Number  | Motor Speed                         |
+| filterlife       | Number  | Filter  Life                        |
+| favoritelevel    | Number  | Favorite Level                      |
+| temperature      | Number  | Temperature                         |
+| purifyvolume     | Number  | Purivied Volume                     |
+| childlock        | Switch  | Child Lock                          |
+
+
+### Mi Air Purifier mc1 (<a name="zhimi-airpurifier-mc1">zhimi.airpurifier.mc1</a>) Channels
+<img align="right" src="http://awssgp0-cdn.fds.api.xiaomi.com/miio.files/developer_1507704428wlsv7n2r.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -545,8 +591,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Mi Smart Fan (<a name="zhimi-fan-v2">zhimi.fan.v2</a>) Channels
-
 <img align="right" src="http://awssgp0-cdn.fds.api.xiaomi.com/miio.files/commonfile_png_314b348815f4d22687d021eb51c0be4a.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -569,8 +615,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Mi Smart Pedestal Fan (<a name="zhimi-fan-v3">zhimi.fan.v3</a>) Channels
-
 <img align="right" src="http://awssgp0-cdn.fds.api.xiaomi.com/miio.files/developer_14902525278x9u8ox6.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -593,8 +639,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Xiaomi Mi Smart Pedestal Fan (<a name="zhimi-fan-sa1">zhimi.fan.sa1</a>) Channels
-
 <img align="right" src="http://cdn.awssgp0.fds.api.mi-img.com/miio.files/developer_1515044979tq6un9ad.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -613,8 +659,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Xiaomi Mi Smart Pedestal Fan (<a name="zhimi-fan-za1">zhimi.fan.za1</a>) Channels
-
 <img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1515046048k315jpac.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -633,8 +679,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Mi Humdifier (<a name="zhimi-humidifier-v1">zhimi.humidifier.v1</a>) Channels
-
 <img align="right" src="http://awssgp0-cdn.fds.api.xiaomi.com/miio.files/commonfile_png_63df315aa8d3ab09fe150563e5e3fe52.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -654,8 +700,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Xiaomi Philips Eyecare Smart Lamp 2 (<a name="philips-light-sread1">philips.light.sread1</a>) Channels
-
 <img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/commonfile_png_7cdda2ef7b962532d372605cfdd8c6cf.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -667,8 +713,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Xiaomi Philips LED Ceiling Lamp (<a name="philips-light-ceiling">philips.light.ceiling</a>) Channels
-
 <img align="right" src="http://cdn.fds.api.xiaomi.com/miio.files/commonfile_png_3568754428ab7e71aaa816869bf95987.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -680,8 +726,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Xiaomi Philips LED Ceiling Lamp (<a name="philips-light-zyceiling">philips.light.zyceiling</a>) Channels
-
 <img align="right" src="http://cdn.cnbj0.fds.api.mi-img.com/miio.files/commonfile_png_3568754428ab7e71aaa816869bf95987.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -693,8 +739,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Xiaomi Philips Bulb (<a name="philips-light-bulb">philips.light.bulb</a>) Channels
-
 <img align="right" src="http://cdn.fds.api.xiaomi.com/miio.files/commonfile_png_475f7d736df3cdf5d850c051128bf1ad.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -708,8 +754,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### PHILIPS Zhirui Smart LED Bulb E14 Candle Lamp (<a name="philips-light-candle">philips.light.candle</a>) Channels
-
 <img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1512351483jqwjpd70.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -721,8 +767,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Xiaomi Philips Downlight (<a name="philips-light-downlight">philips.light.downlight</a>) Channels
-
 <img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1516848116ixz0e345.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -736,8 +782,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Xiaomi Philips ZhiRui bedside lamp (<a name="philips-light-moonlight">philips.light.moonlight</a>) Channels
-
 <img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1521017976wskcy6vy.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -751,8 +797,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Xiaomi PHILIPS Zhirui Smart LED Bulb E14 Candle Lamp White Crystal (<a name="philips-light-candle2">philips.light.candle2</a>) Channels
-
 <img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1512353567w8o3cgnv.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -764,8 +810,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### philips.light.mono1 (<a name="philips-light-mono1">philips.light.mono1</a>) Channels
-
 <img align="right" src="http://cdn.fds.api.xiaomi.com/miio.files/commonfile_png_deb872afca4e5ea36eae93d50225db19.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -779,8 +825,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### philips.light.virtual (<a name="philips-light-virtual">philips.light.virtual</a>) Channels
-
 <img align="right" src="http://cdn.fds.api.xiaomi.com/miio.files/commonfile_png_ad4d50fefe922422921ef4fe7778fe4a.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -794,8 +840,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### philips.light.zysread (<a name="philips-light-zysread">philips.light.zysread</a>) Channels
-
 <img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1515992867mkpqmwmx.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -809,8 +855,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### philips.light.zystrip (<a name="philips-light-zystrip">philips.light.zystrip</a>) Channels
-
 <img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1533624570ht4plpj4.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -824,8 +870,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Mi Power-plug (<a name="chuangmi-plug-m1">chuangmi.plug.m1</a>) Channels
-
 <img align="right" src="http://cdn.fds.api.xiaomi.com/miio.files/commonfile_png_f83a00cee71250f746e44a9ce5cdd62e.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -833,8 +879,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Mi Power-plug v1 (<a name="chuangmi-plug-v1">chuangmi.plug.v1</a>) Channels
-
 <img align="right" src="http://cdn.fds.api.xiaomi.com/miio.files/commonfile_png_5710dd5fd74695697baab01b30e35f83.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -842,8 +888,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Mi Power-plug v2 (<a name="chuangmi-plug-v2">chuangmi.plug.v2</a>) Channels
-
 <img align="right" src="http://cdn.fds.api.xiaomi.com/miio_user_head/e2auc8n6_1445843409.jpg" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -851,8 +897,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Mi Power-plug v3 (<a name="chuangmi-plug-v3">chuangmi.plug.v3</a>) Channels
-
 <img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1516587388djsexjn9.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -862,8 +908,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Qing Mi Smart Power Strip v1 (<a name="qmi-powerstrip-v1">qmi.powerstrip.v1</a>) Channels
-
 <img align="right" src="http://cdn.cnbj0.fds.api.mi-img.com/miio.files/commonfile_png_1c82837fed232993f52db9658c0c5bfb.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -875,8 +921,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Mi Power-strip v2 (<a name="zimi-powerstrip-v2">zimi.powerstrip.v2</a>) Channels
-
 <img align="right" src="http://cdn.cnbj0.fds.api.mi-img.com/miio.files/commonfile_png_47c848570745985ba031b93b93d02ac2.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -896,40 +942,40 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Mi Water Purifier lx2 (<a name="yunmi-waterpuri-lx2">yunmi.waterpuri.lx2</a>) Channels
-
 <img align="right" src="http://cdn.fds.api.xiaomi.com/miio.files/commonfile_png_c33c9af9724358984bb628dfd94a8164.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
 
 
 ### Mi Water Purifier lx3 (<a name="yunmi-waterpuri-lx3">yunmi.waterpuri.lx3</a>) Channels
-
 <img align="right" src="http://cdn.fds.api.xiaomi.com/miio.files/commonfile_png_c33c9af9724358984bb628dfd94a8164.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
 
 
 ### Mi Water Purifier lx4 (<a name="yunmi-waterpuri-lx4">yunmi.waterpuri.lx4</a>) Channels
-
 <img align="right" src="http://cdn.cnbj0.fds.api.mi-img.com/miio.files/commonfile_png_c33c9af9724358984bb628dfd94a8164.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
 
 
 ### Mi Water Purifier v2 (<a name="yunmi-waterpurifier-v2">yunmi.waterpurifier.v2</a>) Channels
-
 <img align="right" src="http://cdn.fds.api.xiaomi.com/miio.files/commonfile_png_c33c9af9724358984bb628dfd94a8164.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
 
 
 ### Mi Water Purifier v3 (<a name="yunmi-waterpurifier-v3">yunmi.waterpurifier.v3</a>) Channels
-
 <img align="right" src="http://cdn.fds.api.xiaomi.com/miio.files/commonfile_png_c33c9af9724358984bb628dfd94a8164.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -944,8 +990,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Yeelight Lamp (<a name="yeelink-light-bslamp1">yeelink.light.bslamp1</a>) Channels
-
 <img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/commonfile_png_81312b6c81b3934fc78999f57fe27b1c.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -974,8 +1020,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Yeelight LED Ceiling Lamp (<a name="yeelink-light-ceiling1">yeelink.light.ceiling1</a>) Channels
-
 <img align="right" src="http://awssgp0-cdn.fds.api.xiaomi.com/miio.files/commonfile_png_76a320138443dc8279275910d82855ff.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -989,8 +1035,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Yeelight LED Ceiling Lamp v2 (<a name="yeelink-light-ceiling2">yeelink.light.ceiling2</a>) Channels
-
 <img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1496373605i830ob3b.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -1004,8 +1050,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Yeelight LED Ceiling Lamp v3 (<a name="yeelink-light-ceiling3">yeelink.light.ceiling3</a>) Channels
-
 <img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1500887836qfgbqwws.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -1019,8 +1065,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Yeelight LED Ceiling Lamp v4 (JIAOYUE 650 RGB) (<a name="yeelink-light-ceiling4">yeelink.light.ceiling4</a>) Channels
-
 <img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1500887879z263swm0.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -1059,8 +1105,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Yeelight LED Ceiling Lamp v5 (<a name="yeelink-light-ceiling5">yeelink.light.ceiling5</a>) Channels
-
 <img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_15096983336gkpqajs.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -1074,8 +1120,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Yeelight LED Ceiling Lamp v6 (<a name="yeelink-light-ceiling6">yeelink.light.ceiling6</a>) Channels
-
 <img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_15233531497uxs6o06.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -1104,8 +1150,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Yeelight LED Ceiling Lamp v8 (<a name="yeelink-light-ceiling8">yeelink.light.ceiling8</a>) Channels
-
 <img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1529905832jfqfvn9j.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -1119,8 +1165,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Yeelight ct2 (<a name="yeelink-light-ct2">yeelink.light.ct2</a>) Channels
-
 <img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1520502234l22qf736.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -1132,8 +1178,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Yeelight White Bulb (<a name="yeelink-light-mono1">yeelink.light.mono1</a>) Channels
-
 <img align="right" src="http://awssgp0-cdn.fds.api.xiaomi.com/miio.files/commonfile_png_a52416a647498ca60ae092aed879db1d.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -1158,8 +1204,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Yeelight (<a name="yeelink-light-lamp1">yeelink.light.lamp1</a>) Channels
-
 <img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/commonfile_png_5f1f5c73f2ddd0da5abf434405ee2053.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -1184,8 +1230,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Yeelight (<a name="yeelink-light-lamp3">yeelink.light.lamp3</a>) Channels
-
 <img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_15203258172xb90pxd.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -1197,8 +1243,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Yeelight Strip (<a name="yeelink-light-strip1">yeelink.light.strip1</a>) Channels
-
 <img align="right" src="http://awssgp0-cdn.fds.api.xiaomi.com/miio.files/commonfile_png_7802ab16888a1ac53a5059b0e9fdfc2a.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -1212,8 +1258,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Yeelight Strip (<a name="yeelink-light-strip2">yeelink.light.strip2</a>) Channels
-
 <img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1526957904qn79fgqt.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -1227,8 +1273,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Yeelight (<a name="yeelink-light-virtual">yeelink.light.virtual</a>) Channels
-
 <img align="right" src="http://awssgp0-cdn.fds.api.xiaomi.com/miio.files/commonfile_png_e27ef4da2138665130b94b0bfc899142.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -1240,8 +1286,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Yeelight Color Bulb (<a name="yeelink-light-color1">yeelink.light.color1</a>) Channels
-
 <img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/commonfile_png_555cca5a8f557f721b1e69023aabe3ce.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -1255,8 +1301,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Yeelight Color Bulb YLDP06YL 10W (<a name="yeelink-light-color2">yeelink.light.color2</a>) Channels
-
 <img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_1520497601yuzuvtbl.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -1270,8 +1316,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 
 ### Yeelight Color Bulb (<a name="yeelink-light-color3">yeelink.light.color3</a>) Channels
-
 <img align="right" src="http://awsusor0-cdn.fds.api.xiaomi.com/miio.files/developer_15239567889mgx5j3j.png" />
+
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
@@ -1669,6 +1715,56 @@ note: Autogenerated example. Replace the id (airpurifier) in the channel with yo
 
 ```
 Group G_airpurifier "Mi Air Purifier Super 2" <status>
+Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
+String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
+Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
+Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
+Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
+Switch led "Led Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
+Switch buzzer "Buzzer Status" (G_airpurifier) {channel="miio:basic:airpurifier:buzzer"}
+Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airpurifier:filtermaxlife"}
+Number filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
+Number usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
+Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
+Number filterlife "Filter  Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
+Number temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
+Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
+Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:childlock"}
+```
+
+### Mi Air Purifier mb1 (zhimi.airpurifier.mb1) item file lines
+
+
+note: Autogenerated example. Replace the id (airpurifier) in the channel with your own.
+
+```
+Group G_airpurifier "Mi Air Purifier mb1" <status>
+Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
+String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
+Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
+Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
+Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
+Switch led "Led Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
+Switch buzzer "Buzzer Status" (G_airpurifier) {channel="miio:basic:airpurifier:buzzer"}
+Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airpurifier:filtermaxlife"}
+Number filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
+Number usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
+Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
+Number filterlife "Filter  Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
+Number temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
+Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
+Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:childlock"}
+```
+
+### Mi Air Purifier mc1 (zhimi.airpurifier.mc1) item file lines
+
+
+note: Autogenerated example. Replace the id (airpurifier) in the channel with your own.
+
+```
+Group G_airpurifier "Mi Air Purifier mc1" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
 Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}

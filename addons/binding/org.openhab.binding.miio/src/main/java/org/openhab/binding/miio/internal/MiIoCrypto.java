@@ -85,7 +85,7 @@ public class MiIoCrypto {
         return decrypt(cipherText, md5(token), iv(token));
     }
 
-    public static String decryptTolken(byte[] cipherText) throws MiIoCryptoException {
+    public static String decryptToken(byte[] cipherText) throws MiIoCryptoException {
         try {
             Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
 

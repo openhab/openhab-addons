@@ -275,11 +275,6 @@
 		<label>AC Power</label>
 		<state readOnly="true" />
 	</channel-type>
-	<channel-type id="battery">
-		<item-type>Number</item-type>
-		<label>battery</label>
-		<state pattern="%.0f" readOnly="true" />
-	</channel-type>
 	<channel-type id="bat_state">
 		<item-type>String</item-type>
 		<label>Battery State</label>

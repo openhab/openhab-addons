@@ -143,7 +143,7 @@ public class MiIoDiscovery extends AbstractDiscoveryService implements ExtendedD
             }
         }
         logger.debug("Discovered Mi IO Device {} ({}) at {} as {}", id, Long.parseUnsignedLong(id, 16), ip, uid);
-        if (IGNORED_TOLKENS.contains(token)) {
+        if (IGNORED_TOKENS.contains(token)) {
             logger.debug(
                     "No token discovered for device {}. For options how to get the token, check the binding readme.",
                     id);

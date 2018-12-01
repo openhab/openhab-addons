@@ -410,7 +410,7 @@ public class MiIoAsyncCommunication {
         this.deviceId = deviceId;
     }
 
-    public int getQueueLenght() {
+    public int getQueueLength() {
         return concurrentLinkedQueue.size();
     }
 }

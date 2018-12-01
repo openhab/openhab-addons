@@ -272,9 +272,9 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             refreshNetwork();
             return true;
         }
-        if (miioCom.getQueueLenght() > MAX_QUEUE) {
+        if (miioCom.getQueueLength() > MAX_QUEUE) {
             logger.debug("Skipping periodic update for '{}'. {} elements in queue.", getThing().getUID().toString(),
-                    miioCom.getQueueLenght());
+                    miioCom.getQueueLength());
             return true;
         }
         return false;

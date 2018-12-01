@@ -68,6 +68,8 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     protected Map<Integer, String> cmds = new ConcurrentHashMap<Integer, String>();
     protected ExpiringCache<String> network;
     protected static final long CACHE_EXPIRY = TimeUnit.SECONDS.toMillis(5);
+    protected static final long CACHE_EXPIRY_NETWORK = TimeUnit.SECONDS.toMillis(60);
+
     private final Logger logger = LoggerFactory.getLogger(MiIoAbstractHandler.class);
 
     @NonNullByDefault
@@ -84,7 +86,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         logger.debug("Initializing Mi IO device handler '{}' with thingType {}", getThing().getUID(),
                 getThing().getThingTypeUID());
         configuration = getConfigAs(MiIoBindingConfiguration.class);
-        if (!tolkenCheckPass(configuration.token)) {
+        if (!tokenCheckPass(configuration.token)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Token required. Configure token");
             return;
         }
@@ -107,21 +109,20 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         updateStatus(ThingStatus.OFFLINE);
     }
 
-    private boolean tolkenCheckPass(String tokenSting) {
+    private boolean tokenCheckPass(String tokenSting) {
         switch (tokenSting.length()) {
             case 16:
                 token = tokenSting.getBytes();
                 return true;
             case 32:
-                if (!IGNORED_TOLKENS.contains(tokenSting)) {
+                if (!IGNORED_TOKENS.contains(tokenSting)) {
                     token = Utils.hexStringToByteArray(tokenSting);
                     return true;
                 }
                 return false;
             case 96:
                 try {
-                    token = Utils
-                            .hexStringToByteArray(MiIoCrypto.decryptTolken(Utils.hexStringToByteArray(tokenSting)));
+                    token = Utils.hexStringToByteArray(MiIoCrypto.decryptToken(Utils.hexStringToByteArray(tokenSting)));
                     logger.debug("IOS token decrypted to {}", Utils.getHex(token));
                 } catch (MiIoCryptoException e) {
                     logger.warn("Could not decrypt token {}{}", tokenSting, e.getMessage());
@@ -209,9 +210,9 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             }
             return true;
         }
-        if (miioCom.getQueueLenght() > MAX_QUEUE) {
+        if (miioCom.getQueueLength() > MAX_QUEUE) {
             logger.debug("Skipping periodic update for '{}'. {} elements in queue.", getThing().getUID().toString(),
-                    miioCom.getQueueLenght());
+                    miioCom.getQueueLength());
             return true;
         }
         return false;
@@ -264,7 +265,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         }
         String deviceId = configuration.deviceId;
         try {
-            if (deviceId != null && deviceId.length() == 8 && tolkenCheckPass(configuration.token)) {
+            if (deviceId != null && deviceId.length() == 8 && tokenCheckPass(configuration.token)) {
                 logger.debug("Ping Mi IO device {} at {}", deviceId, configuration.host);
                 miioCom = new MiIoAsyncCommunication(configuration.host, token, Utils.hexStringToByteArray(deviceId),
                         lastId, configuration.timeout);
@@ -330,7 +331,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
      * Prepares the ExpiringCache for network data
      */
     protected void initalizeNetworkCache() {
-        network = new ExpiringCache<String>(CACHE_EXPIRY * 120, () -> {
+        network = new ExpiringCache<String>(CACHE_EXPIRY_NETWORK, () -> {
             try {
                 int ret = sendCommand(MiIoCommand.MIIO_INFO);
                 if (ret != 0) {

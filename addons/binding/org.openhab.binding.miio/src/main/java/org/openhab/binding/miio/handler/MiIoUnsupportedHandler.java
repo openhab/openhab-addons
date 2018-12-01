@@ -10,7 +10,10 @@ package org.openhab.binding.miio.handler;
 
 import static org.openhab.binding.miio.MiIoBindingConstants.*;
 
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -28,6 +31,11 @@ import org.slf4j.LoggerFactory;
 public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
     private final Logger logger = LoggerFactory.getLogger(MiIoUnsupportedHandler.class);
 
+    private final ExpiringCache<Boolean> updateDataCache = new ExpiringCache<>(CACHE_EXPIRY, () -> {
+        scheduler.schedule(this::updateData, 0, TimeUnit.SECONDS);
+        return true;
+    });
+
     @NonNullByDefault
     public MiIoUnsupportedHandler(Thing thing) {
         super(thing);
@@ -36,8 +44,12 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command == RefreshType.REFRESH) {
-            logger.debug("Refreshing {}", channelUID);
-            updateData();
+            if (updateDataCache.isExpired()) {
+                logger.debug("Refreshing {}", channelUID);
+                updateDataCache.getValue();
+            } else {
+                logger.debug("Refresh {} skipped. Already refreshing", channelUID);
+            }
             return;
         }
         if (channelUID.getId().equals(CHANNEL_POWER)) {

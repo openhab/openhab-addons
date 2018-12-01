@@ -9,7 +9,9 @@
 			"zhimi.airpurifier.v5",
 			"zhimi.airpurifier.ma1",
 			"zhimi.airpurifier.sa1",
-			"zhimi.airpurifier.sa2"
+			"zhimi.airpurifier.sa2",
+			"zhimi.airpurifier.mb1",
+			"zhimi.airpurifier.mc1"
 		],
 		"channels": [
 			{
@@ -162,7 +164,7 @@
 				"channel": "temperature",
 				"type": "Number",
 				"refresh": true,
-                "transformation": "/10",
+				"transformation": "/10",
 				"ChannelGroup": "Status",
 				"actions": []
 			},
