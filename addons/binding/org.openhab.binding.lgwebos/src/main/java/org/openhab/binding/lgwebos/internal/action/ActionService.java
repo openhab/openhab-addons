@@ -30,6 +30,7 @@ import com.connectsdk.device.ConnectableDevice;
 import com.connectsdk.service.capability.CapabilityMethods;
 import com.connectsdk.service.capability.KeyControl;
 import com.connectsdk.service.capability.Launcher;
+import com.connectsdk.service.capability.TVControl;
 import com.connectsdk.service.capability.TextInputControl;
 import com.connectsdk.service.capability.ToastControl;
 import com.connectsdk.service.capability.listeners.ResponseListener;
@@ -168,6 +169,16 @@ public class ActionService implements AnnotatedActionThingHandlerService {
             logger.warn("{} is not a valid value for button - available are: {}", button,
                     Stream.of(Button.values()).map(b -> b.name()).collect(Collectors.joining(", ")));
         }
+    }
+
+    @RuleAction(label = "@text/actionIncreaseChannelLabel", description = "@text/actionIncreaseChannelDesc")
+    public void increaseChannel() {
+        getControl(TVControl.class).ifPresent(control -> control.channelUp(createResponseListener()));
+    }
+
+    @RuleAction(label = "@text/actionDecreaseChannelLabel", description = "@text/actionDecreaseChannelDesc")
+    public void decreaseChannel() {
+        getControl(TVControl.class).ifPresent(control -> control.channelDown(createResponseListener()));
     }
 
     private <C extends CapabilityMethods> Optional<C> getControl(Class<C> clazz) {
