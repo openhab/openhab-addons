@@ -8,11 +8,13 @@
  */
 package org.openhab.binding.paradoxalarm.internal;
 
+import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -41,9 +43,11 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
 
     public ParadoxIP150BridgeHandler(Bridge bridge) throws Exception {
         super(bridge);
+        logger.info("Starting creation of communicator handler");
         config = getConfigAs(ParadoxIP150BridgeConfiguration.class);
         getCommunicator();
         updateDataCache(true);
+        logger.info("Communicator handler created successfully");
     }
 
     public static IParadoxCommunicator getCommunicator() throws Exception {
@@ -96,6 +100,18 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         HandlersUtil.cancelSchedule(refreshCacheUpdateSchedule);
+        try {
+            communicator.close();
+            // This is very ugly but Paradox supports only one connection at a time and if not closed properly if
+            // handler gots destroyed/recreated before the full socket closure. The new handler cannot establish proper
+            // communication.
+            Thread.sleep(10000);
+        } catch (IOException e) {
+            logger.error("Unable to close communicator socket and logout from paradox system");
+        } catch (InterruptedException e) {
+            logger.error("Unable to pause thread for 10 sec");
+        }
+
         super.dispose();
     }
 
@@ -143,6 +159,26 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug("Received command {}", command.toFullString());
+        if (ParadoxAlarmBindingConstants.IP150_COMMAND_CHANNEL_UID.equals(channelUID.getId())) {
+            logger.debug("Command is instance of {}", command.getClass());
+            if (command instanceof StringType) {
+                String commandAsString = command.toFullString();
+                switch (commandAsString) {
+                    case "LOGIN":
+                        logger.debug("Identified command LOGIN");
+                        break;
+                    case "LOGOUT":
+                        logger.debug("Identified command LOGOUT");
+                        break;
+                    case "RESET":
+                        logger.debug("Identified command RESET");
+                        break;
+                    default:
+                        logger.debug("Unknown command");
+                }
+            }
+        }
     }
 
 }

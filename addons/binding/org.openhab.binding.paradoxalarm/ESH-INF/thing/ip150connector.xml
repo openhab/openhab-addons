@@ -45,16 +45,8 @@
 	</bridge-type>
 
 	<channel-type id="command">
-        <item-type>Number</item-type>
+        <item-type>String</item-type>
         <label>Communicator Command</label>
         <description>Send Command</description>
-        <state pattern="%d">
-            <options>
-                <option value="0">None</option>
-                <option value="10">Logout</option>
-                <option value="100">Login</option>
-                <option value="200">Reset</option>
-            </options>
-        </state>
 	</channel-type>
 </thing:thing-descriptions>

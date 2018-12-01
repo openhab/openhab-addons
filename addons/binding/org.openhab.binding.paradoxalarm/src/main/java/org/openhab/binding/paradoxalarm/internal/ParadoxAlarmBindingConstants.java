@@ -36,6 +36,7 @@ public class ParadoxAlarmBindingConstants {
     public static final ThingTypeUID PANEL_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, PARADOX_PANEL_THING_TYPE_ID);
     public static final ThingTypeUID PARTITION_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, PARTITION_THING_TYPE_ID);
     public static final ThingTypeUID ZONE_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, ZONE_THING_TYPE_ID);
+    public static final String IP150_COMMAND_CHANNEL_UID = "command";
 
     // List of all Channel ids
     public static final String STATE = "state";
