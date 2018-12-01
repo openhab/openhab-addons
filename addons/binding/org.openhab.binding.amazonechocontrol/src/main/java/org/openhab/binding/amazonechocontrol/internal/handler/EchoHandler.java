@@ -722,7 +722,7 @@ public class EchoHandler extends BaseThingHandler {
             Provider provider = null;
             InfoText infoText = null;
             MainArt mainArt = null;
-            String providerName = null;
+            String musicProviderId = null;
             Progress progress = null;
             try {
                 JsonPlayerState playerState = connection.getPlayer(device);
@@ -735,7 +735,21 @@ public class EchoHandler extends BaseThingHandler {
                     mainArt = playerInfo.mainArt;
                     provider = playerInfo.provider;
                     if (provider != null) {
-                        providerName = provider.providerName;
+                        musicProviderId = provider.providerName;
+                        // Map the music provider id to the one used for starting music with voice command
+                        if (musicProviderId != null) {
+                            musicProviderId = musicProviderId.toUpperCase();
+
+                            if (StringUtils.equals(musicProviderId, "AMAZON MUSIC")) {
+                                musicProviderId = "AMAZON_MUSIC";
+                            }
+                            if (StringUtils.equals(musicProviderId, "CLOUD_PLAYER")) {
+                                musicProviderId = "AMAZON_MUSIC";
+                            }
+                            if (StringUtils.startsWith(musicProviderId, "TUNEIN")) {
+                                musicProviderId = "TUNEIN";
+                            }
+                        }
                     }
                     progress = playerInfo.progress;
                 }
@@ -788,8 +802,8 @@ public class EchoHandler extends BaseThingHandler {
             JsonMediaState mediaState = null;
             try {
 
-                if (StringUtils.equalsIgnoreCase(providerName, "CLOUD_PLAYER")
-                        || StringUtils.equalsIgnoreCase(providerName, "AMAZON MUSIC")) {
+                if (StringUtils.equalsIgnoreCase(musicProviderId, "AMAZON_MUSIC")
+                        || StringUtils.equalsIgnoreCase(musicProviderId, "TUNEIN")) {
                     mediaState = connection.getMediaState(device);
                 }
 
@@ -808,21 +822,6 @@ public class EchoHandler extends BaseThingHandler {
             // handle music provider id
 
             if (provider != null && isPlaying) {
-                String musicProviderId = provider.providerName;
-
-                // Map the music provider id to the one used for starting music with voice command
-                if (musicProviderId != null) {
-                    musicProviderId = musicProviderId.toUpperCase();
-                }
-                if (StringUtils.equals(musicProviderId, "AMAZON MUSIC")) {
-                    musicProviderId = "AMAZON_MUSIC";
-                }
-                if (StringUtils.equals(musicProviderId, "CLOUD_PLAYER")) {
-                    musicProviderId = "AMAZON_MUSIC";
-                }
-                if (StringUtils.startsWith(musicProviderId, "TUNEIN")) {
-                    musicProviderId = "TUNEIN";
-                }
                 if (musicProviderId != null) {
                     this.musicProviderId = musicProviderId;
                 }
@@ -871,7 +870,7 @@ public class EchoHandler extends BaseThingHandler {
             boolean isRadio = false;
             if (mediaState != null && StringUtils.isNotEmpty(mediaState.radioStationId)) {
                 lastKnownRadioStationId = mediaState.radioStationId;
-                if (provider != null && StringUtils.equalsIgnoreCase(provider.providerName, "TuneIn Live-Radio")) {
+                if (StringUtils.equalsIgnoreCase(musicProviderId, "TUNEIN")) {
                     isRadio = true;
                 }
             }
