@@ -415,7 +415,7 @@ public class Connection {
                                      // all response headers must be catched
         {
             int code;
-            HttpsURLConnection connection;
+            HttpsURLConnection connection = null;
             try {
                 logger.debug("Make request to {}", url);
                 connection = (HttpsURLConnection) new URL(currentUrl).openConnection();
@@ -533,7 +533,16 @@ public class Connection {
                     return connection;
                 }
             } catch (IOException e) {
+
+                if (connection != null) {
+                    connection.disconnect();
+                }
                 logger.warn("Request to url '{}' fails with unkown error", url, e);
+                throw e;
+            } catch (Exception e) {
+                if (connection != null) {
+                    connection.disconnect();
+                }
                 throw e;
             }
             if (code != 200) {
