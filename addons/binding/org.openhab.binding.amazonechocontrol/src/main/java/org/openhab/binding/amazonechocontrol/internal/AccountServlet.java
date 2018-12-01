@@ -102,7 +102,11 @@ public class AccountServlet extends HttpServlet {
     }
 
     private Connection reCreateConnection() {
-        return new Connection();
+        Connection oldConnection = connectionToInitialize;
+        if (oldConnection == null) {
+            oldConnection = account.findConnection();
+        }
+        return new Connection(oldConnection);
     }
 
     public void dispose() {
@@ -147,7 +151,7 @@ public class AccountServlet extends HttpServlet {
             Map<String, String[]> map = req.getParameterMap();
             String domain = map.get("domain")[0];
             String loginData = connection.serializeLoginData();
-            Connection newConnection = new Connection();
+            Connection newConnection = new Connection(null);
             if (newConnection.tryRestoreLogin(loginData, domain)) {
                 account.setConnection(newConnection);
             }
@@ -260,6 +264,14 @@ public class AccountServlet extends HttpServlet {
 
                 // handle commands
                 if (baseUrl.equals("/logout") || baseUrl.equals("/logout/")) {
+                    this.connectionToInitialize = reCreateConnection();
+                    this.account.setConnection(null);
+                    resp.sendRedirect(this.servletUrl);
+                    return;
+                }
+                // handle commands
+                if (baseUrl.equals("/newdevice") || baseUrl.equals("/newdevice/")) {
+                    this.connectionToInitialize = new Connection(null);
                     this.account.setConnection(null);
                     resp.sendRedirect(this.servletUrl);
                     return;
@@ -346,6 +358,10 @@ public class AccountServlet extends HttpServlet {
         // logout link
         html.append(" <a href='" + servletUrl + "/logout' >");
         html.append(StringEscapeUtils.escapeHtml("Logout"));
+        html.append("</a>");
+        // newdevice link
+        html.append(" | <a href='" + servletUrl + "/newdevice' >");
+        html.append(StringEscapeUtils.escapeHtml("Logout and create new device id"));
         html.append("</a>");
         // device name
         html.append("<br>App name: ");

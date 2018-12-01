@@ -127,25 +127,44 @@ public class Connection {
     private final Gson gson = new Gson();
     private final Gson gsonWithNullSerialization;
 
-    public Connection() {
-        // generate frc
-        byte[] frcBinary = new byte[313];
-        Random rand = new Random();
-        rand.nextBytes(frcBinary);
-        frc = Base64.getEncoder().encodeToString(frcBinary);
+    public Connection(@Nullable Connection oldConnection) {
+        String frc = null;
+        String serial = null;
+        String deviceId = null;
+        if (oldConnection != null) {
+            frc = oldConnection.getFrc();
+            serial = oldConnection.getSerial();
+            deviceId = oldConnection.getDeviceId();
 
-        // generate serial
-        byte[] serialBinary = new byte[16];
-        rand.nextBytes(serialBinary);
-        serial = DatatypeConverter.printHexBinary(serialBinary);
-
-        // generate device id
-        StringBuilder deviceIdBuilder = new StringBuilder();
-        for (int i = 0; i < 64; i++) {
-            deviceIdBuilder.append(rand.nextInt(9));
         }
-        deviceIdBuilder.append("23413249564c5635564d32573831");
-        this.deviceId = deviceIdBuilder.toString();
+        Random rand = new Random();
+        if (frc != null) {
+            this.frc = frc;
+        } else {
+            // generate frc
+            byte[] frcBinary = new byte[313];
+            rand.nextBytes(frcBinary);
+            this.frc = Base64.getEncoder().encodeToString(frcBinary);
+        }
+        if (serial != null) {
+            this.serial = serial;
+        } else {
+            // generate serial
+            byte[] serialBinary = new byte[16];
+            rand.nextBytes(serialBinary);
+            this.serial = DatatypeConverter.printHexBinary(serialBinary);
+        }
+        if (deviceId != null) {
+            this.deviceId = deviceId;
+        } else {
+            // generate device id
+            StringBuilder deviceIdBuilder = new StringBuilder();
+            for (int i = 0; i < 64; i++) {
+                deviceIdBuilder.append(rand.nextInt(9));
+            }
+            deviceIdBuilder.append("23413249564c5635564d32573831");
+            this.deviceId = deviceIdBuilder.toString();
+        }
 
         // build user agent
         this.userAgent = "AmazonWebView/Amazon Alexa/2.2.223830.0/iOS/11.4.1/iPhone";
@@ -664,9 +683,10 @@ public class Connection {
             String renewTokenPostData = "app_name=Amazon%20Alexa&app_version=2.2.223830.0&di.sdk.version=6.10.0&source_token="
                     + URLEncoder.encode(refreshToken, "UTF-8")
                     + "&package_name=com.amazon.echo&di.hw.version=iPhone&platform=iOS&requested_token_type=access_token&source_token_type=refresh_token&di.os.name=iOS&di.os.version=11.4.1&current_version=6.10.0";
-            String renewTokenRepsonseJson = makeRequestAndReturnString("POST", "https://www.amazon.com/auth/token",
+            String renewTokenRepsonseJson = makeRequestAndReturnString("POST", "https://api.amazon.com/auth/token",
                     renewTokenPostData, false, null);
             parseJson(renewTokenRepsonseJson, JsonRenewTokenResponse.class);
+
             exhangeToken();
             return true;
         }
