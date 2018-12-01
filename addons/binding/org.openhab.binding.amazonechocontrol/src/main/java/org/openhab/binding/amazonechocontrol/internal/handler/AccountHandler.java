@@ -101,7 +101,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         synchronized (synchronizeConnection) {
             Connection connection = this.connection;
             if (connection == null) {
-                this.connection = new Connection();
+                this.connection = new Connection(null);
             }
         }
         if (this.accountServlet == null) {
@@ -504,6 +504,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                 if (serialNumber != null) {
                     newJsonSerialDeviceMapping.put(serialNumber, device);
                 }
+
             }
             jsonSerialNumberDeviceMapping = newJsonSerialDeviceMapping;
         }
