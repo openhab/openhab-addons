@@ -696,7 +696,10 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                     error.getMessage(), error);
         }
         Map<@NonNull ChannelUID, @NonNull State> states = new HashMap<>();
-        states.put(getChannelUID(ModbusBindingConstantsInternal.CHANNEL_LAST_READ_ERROR), new DateTimeType());
+        ChannelUID lastReadErrorUID = getChannelUID(ModbusBindingConstantsInternal.CHANNEL_LAST_READ_ERROR);
+        if (isLinked(lastReadErrorUID)) {
+            states.put(lastReadErrorUID, new DateTimeType());
+        }
 
         synchronized (this) {
             // Update channels
@@ -730,7 +733,10 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                     error.getMessage(), error);
         }
         Map<@NonNull ChannelUID, @NonNull State> states = new HashMap<>();
-        states.put(getChannelUID(ModbusBindingConstantsInternal.CHANNEL_LAST_WRITE_ERROR), new DateTimeType());
+        ChannelUID lastWriteErrorUID = getChannelUID(ModbusBindingConstantsInternal.CHANNEL_LAST_WRITE_ERROR);
+        if (isLinked(lastWriteErrorUID)) {
+            states.put(lastWriteErrorUID, new DateTimeType());
+        }
 
         synchronized (this) {
             // Update channels
@@ -752,11 +758,13 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             return;
         }
         logger.debug("Successful write, matching request {}", request);
-        DateTimeType now = new DateTimeType();
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
         }
-        updateState(ModbusBindingConstantsInternal.CHANNEL_LAST_WRITE_SUCCESS, now);
+        ChannelUID lastWriteSuccessUID = getChannelUID(ModbusBindingConstantsInternal.CHANNEL_LAST_WRITE_SUCCESS);
+        if (isLinked(lastWriteSuccessUID)) {
+            updateState(lastWriteSuccessUID, new DateTimeType());
+        }
     }
 
     /**
@@ -819,8 +827,10 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                         readTransformation.isIdentityTransform() ? "<identity>" : readTransformation);
             }
         });
-
-        states.put(getChannelUID(ModbusBindingConstantsInternal.CHANNEL_LAST_READ_SUCCESS), new DateTimeType());
+        ChannelUID lastReadSuccessUID = getChannelUID(ModbusBindingConstantsInternal.CHANNEL_LAST_READ_SUCCESS);
+        if (isLinked(lastReadSuccessUID)) {
+            states.put(lastReadSuccessUID, new DateTimeType());
+        }
 
         synchronized (this) {
             if (getThing().getStatus() != ThingStatus.ONLINE) {
