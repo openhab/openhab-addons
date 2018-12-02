@@ -43,7 +43,7 @@ The binding supports the following things: ip150 bridge, panel thing, partition 
 ### Example items configuration
 
 ```java
-    String sendCommand "Send command to IP150" {channel="paradoxalarm:ip150:communicator:command"}
+    String paradoxSendCommand "Send command to IP150" {channel="paradoxalarm:ip150:communicator:command"}
 
     String panelType "Paradox panel type: [%s]" <lock> (Security) { channel = "paradoxalarm:panel:ip150:panel:panelType" }
     String serialNumber "Paradox Serial number: [%s]" <lock> (Security) { channel = "paradoxalarm:panel:ip150:panel:serialNumber" }
