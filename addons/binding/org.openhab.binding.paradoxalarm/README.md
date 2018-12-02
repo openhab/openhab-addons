@@ -1,19 +1,19 @@
 ##Supported things and items
 
-####IP150 bridge configuration<br>
-#####Arguments:
+###IP150 bridge configuration
+####Arguments:
 **refresh** - value is in seconds. Defines the refresh interval when the binding polls from paradox system.<br>
 **ip150Password** - pretty obvious. The password to your IP150 (not your panel PIN).<br>
 **pcPassword** - The code 3012 setting. Default value is 0000 for Paradox<br>
 **ipAddress** - pretty obvious. IP address of your IP150<br>
 **port** - the port used for data communication. Default is 10000 for Paradox<br>
-#####Commands:<br>
-**command** - Possible values [LOGOUT, LOGIN, RESET]<br>
+####Commands:<br>
+**communicationCommand** - Possible values [LOGOUT, LOGIN, RESET]<br>
 &nbsp;&nbsp;&nbsp;&nbsp;LOGOUT: logs out and disconnects from Paradox alarm system.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;LOGIN: creates socket if necessary, connects to paradox system and uses the logon data from the thing parameters to connect.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;RESET: does logout and then login with recreation of communicator objects inside the code.<br>
 
-#### Entities configuration arguments:
+### Entities configuration arguments:
 **id** - the numeric ID of the zone/partition<br>
 **refresh** - Interval on which the things poll from the cache (Probably would be wise to be implemented with something like a callback in the future)<br>
 
