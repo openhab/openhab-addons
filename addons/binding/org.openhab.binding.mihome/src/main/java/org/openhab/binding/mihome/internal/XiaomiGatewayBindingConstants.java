@@ -90,8 +90,6 @@ public class XiaomiGatewayBindingConstants {
     public static final String CHANNEL_ORIENTATION_Y = "orientationY";
     public static final String CHANNEL_ORIENTATION_Z = "orientationZ";
     public static final String CHANNEL_BED_ACTIVITY = "bedActivity";
-    // gateway general
-    public static final String CHANNEL_GATEWAY_JOIN_PERMISSION = "joinPermission";
     // gateway sound
     public static final String CHANNEL_GATEWAY_SOUND_SWITCH = "enableSound";
     public static final String CHANNEL_GATEWAY_SOUND = "sound";
