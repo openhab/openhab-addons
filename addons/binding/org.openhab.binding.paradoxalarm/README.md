@@ -3,9 +3,9 @@
 ## Supported things and items
 The binding supports the following things: ip150 bridge, panel thing, partition thing, zone thing. Examples can be seen bellow.
 
-#### IP150 bridge configuration
+### IP150 bridge configuration
 
-##### Arguments:
+#### Arguments:
 
 **refresh** - value is in seconds. Defines the refresh interval when the binding polls from paradox system.<br>
 **panelType** - Identifier of panel type.<br>
@@ -15,19 +15,19 @@ The binding supports the following things: ip150 bridge, panel thing, partition 
 **pcPassword** - The code 3012 setting. Default value is 0000 for Paradox<br>
 **ipAddress** - pretty obvious. IP address of your IP150<br>
 **port** - the port used for data communication. Default is 10000 for Paradox<br>
-##### Channels:
+#### Channels:
 
 **communicationCommand** - Possible values [LOGOUT, LOGIN, RESET]<br>
 &nbsp;&nbsp;&nbsp;&nbsp;LOGOUT: logs out and disconnects from Paradox alarm system.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;LOGIN: creates socket if necessary, connects to paradox system and uses the logon data from the thing parameters to connect.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;RESET: does logout and then login with recreation of communicator objects inside the code.<br>
 
-#### Entities configuration arguments:
+### Entities configuration arguments:
 
 **id** - the numeric ID of the zone/partition<br>
 **refresh** - Interval on which the things poll from the cache (Probably would be wise to be implemented with something like a callback in the future)<br>
 
-##### Example things configuration
+### Example things configuration
 
 ```java
     paradoxalarm:paradoxCommunication:panel [refresh=5, panelType="EVO192", ip150Password="<YOUR IP150 PASSWORD>", pcPassword="0000", ipAddress="10.10.10.10", port=10000 ] {
@@ -40,7 +40,7 @@ The binding supports the following things: ip150 bridge, panel thing, partition 
     }
 ```
 
-##### Example items configuration
+### Example items configuration
 
 ```java
     String sendCommand "Send command to IP150" {channel="paradoxalarm:ip150:communicator:command"}
@@ -65,7 +65,7 @@ The binding supports the following things: ip150 bridge, panel thing, partition 
     Contact zoneBedRoomHasLowBattery "Zone low battery: [%s]" <lock> (Security) { channel = "paradoxalarm:zone:ip150:bedroomBathMUC:hasLowBattery" }
 ```
 
-##### Example sitemap configuration
+### Example sitemap configuration
 
 ```java
     Frame {
