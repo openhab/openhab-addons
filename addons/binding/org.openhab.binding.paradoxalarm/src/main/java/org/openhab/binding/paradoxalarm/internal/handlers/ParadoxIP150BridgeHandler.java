@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.paradoxalarm.internal.handlers;
 
-import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -100,18 +99,7 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         HandlersUtil.cancelSchedule(refreshCacheUpdateSchedule);
-        try {
-            communicator.close();
-            // This is very ugly but Paradox supports only one connection at a time and if not closed properly if
-            // handler gots destroyed/recreated before the full socket closure. The new handler cannot establish proper
-            // communication.
-            Thread.sleep(10000);
-        } catch (IOException e) {
-            logger.error("Unable to close communicator socket and logout from paradox system");
-        } catch (InterruptedException e) {
-            logger.error("Unable to pause thread for 10 sec");
-        }
-
+        communicator.close();
         super.dispose();
     }
 
@@ -164,20 +152,25 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
             logger.debug("Command is instance of {}", command.getClass());
             if (command instanceof StringType) {
                 String commandAsString = command.toFullString();
-                switch (commandAsString) {
-                    case "LOGIN":
-                        logger.debug("Identified command LOGIN");
-                        break;
-                    case "LOGOUT":
-                        logger.debug("Identified command LOGOUT");
-                        break;
-                    case "RESET":
-                        logger.debug("Identified command RESET");
-                        break;
-                    default:
-                        logger.debug("Unknown command");
+                if (commandAsString.equals("RESET")) {
+                    try {
+                        reinitializeCommunicator();
+                    } catch (Exception e) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Error reinitializing communicator. Exception: " + e);
+                    }
+                } else {
+                    communicator.executeCommand(commandAsString);
                 }
             }
+        }
+
+        if (communicator == null || !communicator.isOnline()) {
+            logger.debug("Communicator is null or not online");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Device is offline");
+        } else {
+            logger.debug("Communicator is online");
+            updateStatus(ThingStatus.ONLINE);
         }
     }
 

@@ -170,9 +170,11 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
 
     @Override
     public void refreshMemoryMap() throws Exception {
-        for (int i = 1, j = 0; i <= 16; i++, j++) {
-            logger.trace("Reading memory page number: {}", i);
-            memoryMap.updateElement(j, readRAMBlock(i));
+        if (isOnline()) {
+            for (int i = 1, j = 0; i <= 16; i++, j++) {
+                logger.trace("Reading memory page number: {}", i);
+                memoryMap.updateElement(j, readRAMBlock(i));
+            }
         }
     }
 
@@ -295,5 +297,28 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
 
     private String createString(byte[] payloadResult) throws UnsupportedEncodingException {
         return new String(payloadResult, "US-ASCII");
+    }
+
+    @Override
+    public void executeCommand(String command) {
+        try {
+            IP150Command ip150Command = IP150Command.valueOf(command);
+            switch (ip150Command) {
+                case LOGIN:
+                    loginSequence();
+                    return;
+                case LOGOUT:
+                    logoutSequence();
+                    return;
+                case RESET:
+                    close();
+                    loginSequence();
+                    return;
+                default:
+                    logger.error("Command {} not implemented.", command);
+            }
+        } catch (IOException | InterruptedException e) {
+            logger.error("Error while executing command {}. Exception:{}", command, e);
+        }
     }
 }

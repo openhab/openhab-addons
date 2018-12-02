@@ -35,31 +35,58 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
     protected Socket socket;
     protected DataOutputStream tx;
     protected DataInputStream rx;
-    protected final byte[] pcPassword;
+    protected final byte[] pcPasswordBytes;
     protected byte[] panelInfoBytes;
-    protected String password;
+    protected boolean isOnline;
+
+    private String ipAddress;
+    private int tcpPort;
+    private String password;
 
     public GenericCommunicator(String ipAddress, int tcpPort, String ip150Password, String pcPassword)
             throws UnknownHostException, IOException, InterruptedException {
+        this.ipAddress = ipAddress;
+        this.tcpPort = tcpPort;
+        this.password = ip150Password;
+
+        reinitializeSocket();
+
+        this.pcPasswordBytes = ParadoxUtil.stringToBCD(pcPassword);
+        loginSequence();
+    }
+
+    private void reinitializeSocket() throws UnknownHostException, IOException {
         socket = new Socket(ipAddress, tcpPort);
         socket.setSoTimeout(4000);
         tx = new DataOutputStream(socket.getOutputStream());
         rx = new DataInputStream(socket.getInputStream());
-        password = ip150Password;
-        this.pcPassword = ParadoxUtil.stringToBCD(pcPassword);
-        loginSequence();
     }
 
     @Override
-    public void close() throws IOException {
-        logoutSequence();
-        tx.close();
-        rx.close();
-        socket.close();
+    public void close() {
+        try {
+            tx.close();
+            rx.close();
+            socket.close();
+            // This is very ugly but Paradox supports only one connection at a time and if not closed properly if
+            // handler gots destroyed/recreated before the full socket closure. The new handler cannot establish proper
+            // communication.
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            logger.error(
+                    "Unable to sleep thread during socket close phase. Could lead to issues if reconnect occurs. {}",
+                    e);
+        } catch (IOException e) {
+            logger.error("IO exception during socket/stream close operation. {}", e);
+        }
     }
 
     @Override
     public void loginSequence() throws IOException, InterruptedException {
+        if (socket.isClosed()) {
+            reinitializeSocket();
+        }
+
         logger.debug("Login sequence started");
         logger.debug("Step1");
         // 1: Login to module request (IP150 only)
@@ -120,18 +147,20 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
         logger.debug("Step7");
         // 7: Initialization request (in response to the initialization from the panel)
         // (IP150 and direct serial)
-        byte[] message7 = generateInitializationRequest(initializationMessage, pcPassword);
+        byte[] message7 = generateInitializationRequest(initializationMessage, pcPasswordBytes);
         ParadoxIPPacket step7 = new ParadoxIPPacket(message7, true)
                 .setMessageType(HeaderMessageType.SERIAL_PASSTHRU_REQUEST).setUnknown0((byte) 0x14);
         sendPacket(step7);
         byte[] finalResponse = receivePacket();
         if ((finalResponse[16] & 0xF0) == 0x10) {
             logger.debug("SUCCESSFUL LOGON");
+            isOnline = true;
         } else {
             logger.debug("LOGON FAILURE");
+            logoutSequence();
         }
         Thread.sleep(300);
-        // TODO check why after a short sleep a 37 bytes packet is received after logon
+        // TODO check why after a short sleep, a 37 bytes packet is received after logon
         // ! ! !
         receivePacket();
     }
@@ -143,6 +172,8 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
         ParadoxIPPacket logoutPacket = new ParadoxIPPacket(logoutMessage, true)
                 .setMessageType(HeaderMessageType.SERIAL_PASSTHRU_REQUEST).setUnknown0((byte) 0x14);
         sendPacket(logoutPacket);
+        close();
+        isOnline = false;
     }
 
     protected void sendPacket(ParadoxIPPacket packet) throws IOException {
@@ -236,6 +267,11 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
     @Override
     public byte[] getPanelInfoBytes() {
         return panelInfoBytes;
+    }
+
+    @Override
+    public boolean isOnline() {
+        return isOnline;
     }
 
 }

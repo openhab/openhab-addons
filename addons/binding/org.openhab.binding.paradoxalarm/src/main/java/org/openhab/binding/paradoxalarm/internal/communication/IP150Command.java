@@ -8,28 +8,15 @@
  */
 package org.openhab.binding.paradoxalarm.internal.communication;
 
-import java.util.List;
-
-import org.openhab.binding.paradoxalarm.internal.model.ZoneStateFlags;
-
 /**
  * The {@link IParadoxCommunicator} is representing the functionality of communication implementation.
  * If another Paradox alarm system is used this interface must be implemented.
  *
  * @author Konstantin_Polihronov - Initial contribution
  */
-public interface IParadoxCommunicator extends IParadoxGenericCommunicator {
-
-    public void refreshMemoryMap() throws Exception;
-
-    public List<byte[]> readPartitionFlags();
-
-    public ZoneStateFlags readZoneStateFlags();
-
-    public List<String> readPartitionLabels();
-
-    public List<String> readZoneLabels();
-
-    public void executeCommand(String commandAsString);
-
+public enum IP150Command {
+    LOGOUT,
+    LOGIN,
+    RESET,
+    UNIMPLEMENTED
 }

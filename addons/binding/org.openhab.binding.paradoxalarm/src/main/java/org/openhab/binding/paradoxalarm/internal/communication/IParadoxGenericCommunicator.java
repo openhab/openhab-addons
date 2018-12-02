@@ -17,12 +17,14 @@ import java.io.IOException;
  * @author Konstantin_Polihronov - Initial contribution
  */
 public interface IParadoxGenericCommunicator {
-    void close() throws IOException;
+    void close();
 
     void logoutSequence() throws IOException;
 
     void loginSequence() throws IOException, InterruptedException;
 
     public byte[] getPanelInfoBytes();
+
+    public boolean isOnline();
 
 }
