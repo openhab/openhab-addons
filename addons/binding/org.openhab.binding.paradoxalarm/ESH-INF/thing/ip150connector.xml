@@ -10,7 +10,7 @@
 		<description>Paradox Partition status</description>
 
 		<channels>
-			<channel id="command" typeId="command" />
+			<channel id="communicationCommand" typeId="command" />
 		</channels>
 
 		<config-description>

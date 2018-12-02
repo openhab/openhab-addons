@@ -156,7 +156,7 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command {}", command.toFullString());
-        if (ParadoxAlarmBindingConstants.IP150_COMMAND_CHANNEL_UID.equals(channelUID.getId())) {
+        if (ParadoxAlarmBindingConstants.IP150_COMMUNICATION_COMMAND_CHANNEL_UID.equals(channelUID.getId())) {
             logger.debug("Command is instance of {}", command.getClass());
             if (command instanceof StringType) {
                 String commandAsString = command.toFullString();
