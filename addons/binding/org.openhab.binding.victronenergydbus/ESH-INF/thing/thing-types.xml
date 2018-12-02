@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="victronenergydbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="sc">
+		<label>VictronEnergyDBus SolarCharger</label>
+		<description>Read Data from VictronEnergy Solar Charger via DBus</description>
+
+		<channels>
+		    <channel id="state" typeId="state" />
+			<channel id="stateStr" typeId="stateStr" />
+			<channel id="DcV" typeId="DcV" />
+			<channel id="DcI" typeId="DcI" />
+			<channel id="PvV" typeId="PvV" />
+			<channel id="PvI" typeId="PvI" />
+			<channel id="YP" typeId="YP" />
+			<channel id="YU" typeId="YU" />
+			<channel id="YS" typeId="YS" />
+			<channel id="YT" typeId="YT" />
+			<channel id="MPT" typeId="MPT" />
+			<channel id="TIFT" typeId="TIFT" />
+			<channel id="TIAT" typeId="TIAT" />
+			<channel id="TIBT" typeId="TIBT" />
+			<channel id="MPVT" typeId="MPVT" />
+			<channel id="MBCT" typeId="MBCT" />
+			<channel id="MinBVT" typeId="MinBVT" />
+			<channel id="MaxBVT" typeId="MaxBVT" />
+			<channel id="YY" typeId="YY" />
+			<channel id="MPY" typeId="MPY" />
+            <channel id="TIFY" typeId="TIFY" />
+            <channel id="TIAY" typeId="TIAY" />
+            <channel id="TIBY" typeId="TIBY" />
+            <channel id="MPVY" typeId="MPVY" />
+            <channel id="MBCY" typeId="MBCY" />
+            <channel id="MinBVY" typeId="MinBVY" />
+            <channel id="MaxBVY" typeId="MaxBVY" />
+			<channel id="Serial" typeId="Serial" />
+			<channel id="FwV" typeId="FwV" />
+			<channel id="PId" typeId="PId" />
+			<channel id="DI" typeId="DI" />
+			<channel id="Pn" typeId="Pn" />
+			<channel id="Err" typeId="Err" />
+			<channel id="ErrStr" typeId="ErrStr" />
+		</channels>
+
+        <config-description-ref uri="thing-type:dbussc:set" />
+		
+		<!--
+		<config-description>
+			<parameter name="port" type="text" required="true">
+				<label>Connected Port</label>
+				<description>Which Port is the device connected?</description>
+			</parameter>
+		</config-description>
+         -->
+         
+	</thing-type>
+	
+	<channel-type id="state">
+        <item-type>Number</item-type>
+        <label>State Number</label>
+        <description>Actual State of your Device as Number</description>
+        <state readOnly="true" pattern="%d"></state>
+    </channel-type>
+    
+    <channel-type id="stateStr">
+        <item-type>String</item-type>
+        <label>State String</label>
+        <description>Actual State of your Device as String</description>
+        <state readOnly="true"></state>
+    </channel-type>
+
+	<channel-type id="DcV">
+        <item-type>Number</item-type>
+        <label>Solarcharger Voltage</label>
+        <description>Solarcharger Battery Voltage</description>
+        <state readOnly="true" pattern="%.2f V"></state>
+	</channel-type>
+	
+	   <channel-type id="DcI">
+        <item-type>Number</item-type>
+        <label>Solarcharger Current</label>
+        <description>Solarcharger Current to Battery</description>
+        <state readOnly="true" pattern="%.2f A"></state>
+    </channel-type>
+    
+    <channel-type id="PvV">
+        <item-type>Number</item-type>
+        <label>Photo Photovoltaics Voltage</label>
+        <description>Photovoltaics Voltage</description>
+        <state readOnly="true" pattern="%.2f V"></state>
+    </channel-type>
+    
+    <channel-type id="PvI">
+        <item-type>Number</item-type>
+        <label>Photo Photovoltaics Current</label>
+        <description>Photovoltaics Current</description>
+        <state readOnly="true" pattern="%.2f V"></state>
+    </channel-type>
+    
+    <channel-type id="YP">
+        <item-type>Number</item-type>
+        <label>Yield Power</label>
+        <description>Yield Power in W</description>
+        <state readOnly="true" pattern="%d W"></state>
+    </channel-type>
+    
+    <channel-type id="YU">
+        <item-type>Number</item-type>
+        <label>Yield User</label>
+        <description>Yield User in kWh</description>
+        <state readOnly="true" pattern="%.2f kWh"></state>
+    </channel-type>
+    
+    <channel-type id="YS">
+        <item-type>Number</item-type>
+        <label>Yield System</label>
+        <description>Yield System in kWh</description>
+        <state readOnly="true" pattern="%.2f kWh"></state>
+    </channel-type>
+    
+    <channel-type id="YT">
+        <item-type>Number</item-type>
+        <label>Yield Today</label>
+        <description>Yield Today in kWh</description>
+        <state readOnly="true" pattern="%.2f kWh"></state>
+    </channel-type>
+    
+    <channel-type id="MPT">
+        <item-type>Number</item-type>
+        <label>Maximum Power Today</label>
+        <description>Maximum Power Today in W</description>
+        <state readOnly="true" pattern="%d W"></state>
+    </channel-type>
+    
+    <channel-type id="TIFT">
+        <item-type>Number</item-type>
+        <label>Time in Float Today</label>
+        <description>Time in Float Today in Min</description>
+        <state readOnly="true" pattern="%d min"></state>
+    </channel-type>
+    
+    <channel-type id="TIAT">
+        <item-type>Number</item-type>
+        <label>Time in Absorption Today</label>
+        <description>Time in Absorption Today in Min</description>
+        <state readOnly="true" pattern="%d min"></state>
+    </channel-type>
+    
+    <channel-type id="TIBT">
+        <item-type>Number</item-type>
+        <label>Time in Bulk Today</label>
+        <description>Time in Bulk Today in Min</description>
+        <state readOnly="true" pattern="%d min"></state>
+    </channel-type>
+    
+    <channel-type id="MPVT">
+        <item-type>Number</item-type>
+        <label>Maximum Pv Voltage Today</label>
+        <description>Maximum Photovoltaik Voltage Today in Volt</description>
+        <state readOnly="true" pattern="%.2f V"></state>
+    </channel-type>
+    
+    <channel-type id="MBCT">
+        <item-type>Number</item-type>
+        <label>Maximum Battery Current Today</label>
+        <description>Maximum Battery Current Today in Ampere</description>
+        <state readOnly="true" pattern="%.2f A"></state>
+    </channel-type>
+
+    <channel-type id="MinBVT">
+        <item-type>Number</item-type>
+        <label>Minimum Battery Voltage Today</label>
+        <description>Minimum Battery Voltage Today in Volt</description>
+        <state readOnly="true" pattern="%.2f A"></state>
+    </channel-type>
+    
+    <channel-type id="MaxBVT">
+        <item-type>Number</item-type>
+        <label>Maximum Battery Voltage Today</label>
+        <description>Maximum Battery Voltage Today in Volt</description>
+        <state readOnly="true" pattern="%.2f A"></state>
+    </channel-type>
+    
+    <channel-type id="YY">
+        <item-type>Number</item-type>
+        <label>Yield Yesterday</label>
+        <description>Yield Yesterday in kWh</description>
+        <state readOnly="true" pattern="%.2f kWh"></state>
+    </channel-type>
+    
+    <channel-type id="MPY">
+        <item-type>Number</item-type>
+        <label>Maximum Power Yesterday</label>
+        <description>Maximum Power Yesterday in W</description>
+        <state readOnly="true" pattern="%d W"></state>
+    </channel-type>
+    
+    <channel-type id="TIFY">
+        <item-type>Number</item-type>
+        <label>Time in Float Yesterday</label>
+        <description>Time in Float Yesterday in Min</description>
+        <state readOnly="true" pattern="%d min"></state>
+    </channel-type>
+    
+    <channel-type id="TIAY">
+        <item-type>Number</item-type>
+        <label>Time in Absorption Yesterday</label>
+        <description>Time in Absorption Yesterday in Min</description>
+        <state readOnly="true" pattern="%d min"></state>
+    </channel-type>
+    
+    <channel-type id="TIBY">
+        <item-type>Number</item-type>
+        <label>Time in Bluk Yesterday</label>
+        <description>Time in Bulk Yesterday in Min</description>
+        <state readOnly="true" pattern="%d min"></state>
+    </channel-type>
+    
+    <channel-type id="MPVY">
+        <item-type>Number</item-type>
+        <label>Maximum Pv Voltage Yesterday</label>
+        <description>Maximum Photovoltaik Voltage Yesterday in Volt</description>
+        <state readOnly="true" pattern="%.2f V"></state>
+    </channel-type>
+    
+    <channel-type id="MBCY">
+        <item-type>Number</item-type>
+        <label>Maximum Battery Current Yesterday</label>
+        <description>Maximum Battery Current Yesterday in Ampere</description>
+        <state readOnly="true" pattern="%.2f A"></state>
+    </channel-type>
+
+    <channel-type id="MinBVY">
+        <item-type>Number</item-type>
+        <label>Minimum Battery Voltage Yesterday</label>
+        <description>Minimum Battery Voltage Yesterday in Volt</description>
+        <state readOnly="true" pattern="%.2f A"></state>
+    </channel-type>
+    
+    <channel-type id="MaxBVY">
+        <item-type>Number</item-type>
+        <label>Maximum Battery Voltage Yesterday</label>
+        <description>Maximum Battery Voltage Yesterday in Volt</description>
+        <state readOnly="true" pattern="%.2f A"></state>
+    </channel-type>
+    
+    <channel-type id="Serial">
+        <item-type>String</item-type>
+        <label>Serial</label>
+        <description>The Serial of your Device</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    
+    <channel-type id="FwV">
+        <item-type>Number</item-type>
+        <label>Firmware Version</label>
+        <description>Firmware Version</description>
+        <state readOnly="true" pattern="%d"></state>
+    </channel-type>
+    
+    <channel-type id="PId">
+        <item-type>Number</item-type>
+        <label>Product Id</label>
+        <description>Product Id</description>
+        <state readOnly="true" pattern="%d"></state>
+    </channel-type>
+
+    <channel-type id="DI">
+        <item-type>Number</item-type>
+        <label>Device Instance</label>
+        <description>Device Instance</description>
+        <state readOnly="true" pattern="%d"></state>
+    </channel-type>
+    
+    <channel-type id="Pn">
+        <item-type>String</item-type>
+        <label>Product Name</label>
+        <description>Product Name</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    
+    <channel-type id="Err">
+        <item-type>Number</item-type>
+        <label>Error Code</label>
+        <description>Error Code as Number</description>
+        <state readOnly="true" pattern="%d"></state>
+    </channel-type>
+    
+    <channel-type id="ErrStr">
+        <item-type>String</item-type>
+        <label>Error String</label>
+        <description>Error of the Device as String</description>
+        <state readOnly="true"></state>
+    </channel-type>
+
+</thing:thing-descriptions>

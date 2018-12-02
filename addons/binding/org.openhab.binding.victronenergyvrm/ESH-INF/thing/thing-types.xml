@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="victronenergyvrm"
+						  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+						  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+						  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="sc">
+		<label>VictronEnergyVRM SolarCharger</label>
+		<description>Your SolarCharger in VRM</description>
+
+		<channels>
+			<channel id="ScV" typeId="ScV"/>
+			<channel id="ScS" typeId="ScS"/>
+			<channel id="YT" typeId="YT"/>
+			<channel id="YY" typeId="YY"/>
+			<channel id="ScW" typeId="ScW"/>
+			<channel id="secondsAgo" typeId="secondsAgo"/>
+		</channels>
+		<config-description-ref uri="thing-type:sc:set" />
+	</thing-type>
+	<!-- 
+	<thing-type id="alarm">
+        <label>VictronEnergyVRM Alarm</label>
+        <description>Alarm in VRM</description>
+
+        <channels>
+            <channel id="alarmcount" typeId="alarmcount"/>
+        </channels>
+        <config-description-ref uri="thing-type:alarm:set" />
+    </thing-type>
+     -->
+    <channel-type id="ScV">
+        <item-type>Number</item-type>
+        <label>Solarcharger Battery Voltage</label>
+        <description>Solarcharger Battery Voltage</description>
+        <state readOnly="true" pattern="%.2f V"></state>
+    </channel-type>
+    
+    <channel-type id="ScS">
+        <item-type>String</item-type>
+        <label>Solarcharger Charge state</label>
+        <description>Solarcharger Charge state</description>
+        <state readOnly="true"></state>
+    </channel-type>
+    
+    <channel-type id="YT">
+        <item-type>Number</item-type>
+        <label>Solarcharger Yield Today</label>
+        <description>Solarcharger Yield Today</description>
+        <state readOnly="true" pattern="%.2f kWh"></state>
+    </channel-type>
+    
+    <channel-type id="YY">
+        <item-type>Number</item-type>
+        <label>Solarcharger Yield Yesterday</label>
+        <description>Solarcharger Yield Yesterday</description>
+        <state readOnly="true" pattern="%.2f kWh"></state>
+    </channel-type>
+
+    <channel-type id="ScW">
+        <item-type>Number</item-type>
+        <label>Solarcharger Battery Watts</label>
+        <description>Solarcharger Battery Watts</description>
+        <state readOnly="true" pattern="%d W"></state>
+    </channel-type>
+    
+    <channel-type id="alarmcount">
+        <item-type>Number</item-type>
+        <label>Alarmcount</label>
+        <description>Count of active Alarms</description>
+        <state readOnly="true" pattern="%d"></state>
+    </channel-type>
+    
+    <channel-type id="secondsAgo">
+        <item-type>Number</item-type>
+        <label>Seconds Ago</label>
+        <description>Time in Seconds how long the last update was ago.</description>
+        <state readOnly="true" pattern="%d s"></state>
+    </channel-type>
+
+</thing:thing-descriptions>

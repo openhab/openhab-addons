@@ -1,0 +1,52 @@
+ToDo:
+
+Supported Things: ALARMS
+
+FF vielleicht sogar als weiteres "supported Thing"!?!?
+Damit Time in "State" für einen Zeitraum ermittelt werden kann, muss (z.B. für "Today") folgendes API-Widget ausgelesen werden.
+https://vrmapi.victronenergy.com/v2/installations/15375/widgets/MPPTState?instance=288
+
+Hier kommt ein Ergebnis wie:
+{
+  "success": true,
+  "records": {
+    "data": {
+      "85": {
+        "1533746739": "5",
+        "1533748906": "3",
+        "1533754766": "0",
+        "1533789716": "3",
+        "1533800027": "4",
+        "1533800207": "5",
+        "1533818888": "3",
+        "1533819012": "4",
+        "1533819070": "5",
+        "1533819363": "3",
+        "1533820344": "0",
+        "1533825216": "3"
+      }
+    },
+    "enums": {
+      "85": {
+        "0": "Off",
+        "2": "Fault",
+        "3": "Bulk",
+        "4": "Absorption",
+        "5": "Float",
+        "6": "Storage",
+        "7": "Equalize",
+        "252": "ESS"
+      }
+    },
+    "meta": {
+      "85": {
+        "code": "ScS",
+        "description": "Charge state",
+        "formatValueOnly": "%s",
+        "formatWithUnit": "%s"
+      }
+    }
+  }
+} raus.
+
+Die Zeitdifferenz für die eizelnen Zeitpunkte der Statusänderungen muss dann errechnet werden.
