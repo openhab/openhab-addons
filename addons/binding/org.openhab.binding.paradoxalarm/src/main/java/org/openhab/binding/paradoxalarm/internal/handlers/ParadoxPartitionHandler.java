@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.paradoxalarm.internal;
+package org.openhab.binding.paradoxalarm.internal.handlers;
 
 import java.util.List;
 
@@ -15,20 +15,20 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxBindingException;
 import org.openhab.binding.paradoxalarm.internal.model.ParadoxPanel;
-import org.openhab.binding.paradoxalarm.internal.model.Zone;
+import org.openhab.binding.paradoxalarm.internal.model.Partition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ParadoxZoneHandler} Handler that updates states of paradox zones from the cache.
+ * The {@link ParadoxPartitionHandler} Handler that updates states of paradox partitions from the cache.
  *
  * @author Konstantin_Polihronov - Initial contribution
  */
-public class ParadoxZoneHandler extends EntityBaseHandler {
+public class ParadoxPartitionHandler extends EntityBaseHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(ParadoxZoneHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ParadoxPartitionHandler.class);
 
-    public ParadoxZoneHandler(@NonNull Thing thing) {
+    public ParadoxPartitionHandler(@NonNull Thing thing) {
         super(thing);
     }
 
@@ -36,16 +36,15 @@ public class ParadoxZoneHandler extends EntityBaseHandler {
     protected void updateEntity() {
         int index = calculateEntityIndex();
         try {
-            List<Zone> zones = ParadoxPanel.getInstance().getZones();
-            Zone zone = zones.get(index);
-            if (zone != null) {
-                updateState("label", new StringType(zone.getLabel()));
-                updateState("isOpened", OpenClosedType.from(zone.getZoneState().isOpened()));
-                updateState("isTampered", OpenClosedType.from(zone.getZoneState().isTampered()));
-                updateState("hasLowBattery", OpenClosedType.from(zone.getZoneState().hasLowBattery()));
+            List<Partition> partitions = ParadoxPanel.getInstance().getPartitions();
+            Partition partition = partitions.get(index);
+            if (partition != null) {
+                updateState("label", new StringType(partition.getLabel()));
+                updateState("state", new StringType(partition.getState().getMainState()));
+                updateState("additionalState", new StringType(partition.getState().getAdditionalState()));
             }
         } catch (ParadoxBindingException e) {
-            logger.error("Unable to update zone {} due to missing ParadoxPanel. Exception: {}",
+            logger.error("Unable to update partition with Id {} due to missing ParadoxPanel. Exception: {}",
                     String.valueOf(index + 1), e);
         }
     }

@@ -6,22 +6,22 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.paradoxalarm.internal;
+package org.openhab.binding.paradoxalarm.internal.handlers;
 
 /**
- * The {@link ParadoxPanelConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link EntityConfiguration} Common configuration class used by all entities at the moment.
  *
  * @author Konstantin_Polihronov - Initial contribution
  */
-public class ParadoxPanelConfiguration {
-
+public class EntityConfiguration {
+    private int id;
     private int refresh;
+
+    public int getId() {
+        return id;
+    }
 
     public int getRefresh() {
         return refresh;
-    }
-
-    public void setRefresh(int refresh) {
-        this.refresh = refresh;
     }
 }

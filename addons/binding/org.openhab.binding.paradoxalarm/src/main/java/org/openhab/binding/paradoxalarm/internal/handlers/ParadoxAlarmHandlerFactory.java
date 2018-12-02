@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.paradoxalarm.internal;
+package org.openhab.binding.paradoxalarm.internal.handlers;
 
-import static org.openhab.binding.paradoxalarm.internal.ParadoxAlarmBindingConstants.*;
+import static org.openhab.binding.paradoxalarm.internal.handlers.ParadoxAlarmBindingConstants.*;
 
 import java.util.Arrays;
 import java.util.HashSet;

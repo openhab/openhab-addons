@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.paradoxalarm.internal;
+package org.openhab.binding.paradoxalarm.internal.handlers;
 
 /**
  * The {@link ParadoxIP150BridgeConfiguration} class contains fields mapping thing configuration parameters.
