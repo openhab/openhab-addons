@@ -145,9 +145,7 @@ public class ModbusManagerImpl implements ModbusManager {
             ModbusReadRequestBlueprint request = task.getRequest();
             ModbusReadCallback callback = task.getCallback();
 
-            Optional<ModbusSlaveConnection> optionalConnection = Optional.of(connection);
-            ModbusTransaction transaction = ModbusLibraryWrapper.createTransactionForEndpoint(endpoint,
-                    optionalConnection);
+            ModbusTransaction transaction = ModbusLibraryWrapper.createTransactionForEndpoint(endpoint, connection);
             ModbusRequest libRequest = ModbusLibraryWrapper.createRequest(request);
             transaction.setRequest(libRequest);
 
@@ -180,9 +178,7 @@ public class ModbusManagerImpl implements ModbusManager {
             ModbusWriteRequestBlueprint request = task.getRequest();
             ModbusWriteCallback callback = task.getCallback();
 
-            Optional<ModbusSlaveConnection> optionalConnection = Optional.of(connection);
-            ModbusTransaction transaction = ModbusLibraryWrapper.createTransactionForEndpoint(endpoint,
-                    optionalConnection);
+            ModbusTransaction transaction = ModbusLibraryWrapper.createTransactionForEndpoint(endpoint, connection);
             ModbusRequest libRequest = ModbusLibraryWrapper.createRequest(request);
             transaction.setRequest(libRequest);
 
