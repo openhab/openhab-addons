@@ -1,14 +1,16 @@
-## Example things configuration
-# Example things configuration
-####For the ip150 bridge configuration arguments are as follows
+##Supported things and items
+
+####IP150 bridge configuration arguments:
 **refresh** - value is in seconds. Defines the refresh interval when the binding polls from paradox system.<br>
 **ip150Password** - pretty obvious. The password to your IP150 (not your panel PIN).<br>
 **pcPassword** - The code 3012 setting. Default value is 0000 for Paradox<br>
 **ipAddress** - pretty obvious. IP address of your IP150<br>
 **port** - the port used for data communication. Default is 10000 for Paradox<br>
-#### For the entities configuration arguments are:
+#### Entities configuration arguments:
 **id** - the numeric ID of the zone/partition<br>
 **refresh** - Interval on which the things poll from the cache (Probably would be wise to be implemented with something like a callback in the future)<br>
+
+###Example things configuration<br>
 <code>paradoxalarm:paradoxCommunication:panel [refresh=5, panelType="EVO192", ip150Password="<YOUR IP150 PASSWORD>", pcPassword="0000", ipAddress="10.10.10.10", port=10000 ] { <br><br>
 Thing panel panel [refresh=10]<br><br>
 Thing partition partition1 [id=1, refresh=10] <br>
@@ -17,9 +19,8 @@ Thing paradoxalarm:partition:partition3 [id=3, refresh=10] <br>
 Thing paradoxalarm:partition:partition4 [id=4, refresh=10] <br><br>
 Thing paradoxalarm:zone:bedroomBathMUC [id=20, refresh=10] <br>
 }<br>
-</code><br><br>
-## Example items configuration
-
+</code><br>
+###Example items configuration<br>
 <code>
 String sendCommand "Send command to IP150" {channel="paradoxalarm:ip150:communicator:command"}
 

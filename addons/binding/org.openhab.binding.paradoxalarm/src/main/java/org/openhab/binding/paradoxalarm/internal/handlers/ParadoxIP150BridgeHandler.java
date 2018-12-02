@@ -138,7 +138,7 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
                 cache.setZoneLabels(communicator.readZoneLabels());
             }
         } catch (Exception e) {
-            logger.error("Communicator cannot refresh cached memory map. Exception: ", e);
+            logger.error("Communicator cannot refresh cached memory map. Exception: {}", e);
         }
     }
 

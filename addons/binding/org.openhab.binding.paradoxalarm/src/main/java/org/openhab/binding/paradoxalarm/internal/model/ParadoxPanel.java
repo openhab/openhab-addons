@@ -24,8 +24,6 @@ import org.slf4j.LoggerFactory;
  */
 public class ParadoxPanel {
 
-    private static final int NUMBER_OF_ZONES = 48;
-
     private static Logger logger = LoggerFactory.getLogger(ParadoxPanel.class);
 
     private static ParadoxPanel paradoxPanel;
@@ -90,9 +88,8 @@ public class ParadoxPanel {
 
     private List<Zone> initializeZones() {
         zones = new ArrayList<Zone>();
-        // TODO Use the size of retrieved labels list
         List<String> zoneLabels = RawStructuredDataCache.getInstance().getZoneLabels();
-        for (int i = 0; i < NUMBER_OF_ZONES; i++) {
+        for (int i = 0; i < zoneLabels.size(); i++) {
             Zone zone = new Zone(i + 1, zoneLabels.get(i));
             zones.add(zone);
         }
@@ -102,7 +99,6 @@ public class ParadoxPanel {
     private List<Partition> initializePartitions() {
         partitions = new ArrayList<Partition>();
         List<String> partitionLabels = RawStructuredDataCache.getInstance().getPartitionLabels();
-        // TODO move the range as field in communicator maybe?
         for (int i = 0; i < partitionLabels.size(); i++) {
             Partition partition = new Partition(i + 1, partitionLabels.get(i));
             partitions.add(partition);
