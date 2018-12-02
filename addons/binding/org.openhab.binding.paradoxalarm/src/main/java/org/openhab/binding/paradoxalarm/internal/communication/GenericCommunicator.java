@@ -64,6 +64,7 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
 
     @Override
     public void close() {
+        logger.info("Closing communication to Paradox system");
         try {
             tx.close();
             rx.close();
@@ -74,6 +75,7 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
 
             logger.info("Waiting the socket to close...");
             Thread.sleep(1000);
+
         } catch (InterruptedException e) {
             logger.error(
                     "Unable to sleep thread during socket close phase. Could lead to issues if reconnect occurs. {}",
@@ -81,6 +83,7 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
         } catch (IOException e) {
             logger.error("IO exception during socket/stream close operation. {}", e);
         }
+        logger.info("Communicator closed successfully.");
     }
 
     @Override
@@ -155,10 +158,10 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
         sendPacket(step7);
         byte[] finalResponse = receivePacket();
         if ((finalResponse[16] & 0xF0) == 0x10) {
-            logger.debug("SUCCESSFUL LOGON");
+            logger.info("SUCCESSFUL LOGON");
             isOnline = true;
         } else {
-            logger.debug("LOGON FAILURE");
+            logger.error("LOGON FAILURE");
             logoutSequence();
         }
         Thread.sleep(300);
@@ -169,7 +172,7 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
 
     @Override
     public void logoutSequence() throws IOException {
-        logger.debug("Logout sequence started");
+        logger.info("Logout packet sent to IP150.");
         byte[] logoutMessage = new byte[] { 0x00, 0x07, 0x05, 0x00, 0x00, 0x00, 0x00 };
         ParadoxIPPacket logoutPacket = new ParadoxIPPacket(logoutMessage, true)
                 .setMessageType(HeaderMessageType.SERIAL_PASSTHRU_REQUEST).setUnknown0((byte) 0x14);
