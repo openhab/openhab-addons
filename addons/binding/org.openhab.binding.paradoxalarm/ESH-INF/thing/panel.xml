@@ -6,9 +6,9 @@
 
 	<!-- Sample Thing Type -->
 	<thing-type id="panel">
-		 <supported-bridge-type-refs>
-            <bridge-type-ref id="ip150" />
-        </supported-bridge-type-refs>
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ip150" />
+		</supported-bridge-type-refs>
 
 		<label>Paradox system</label>
 		<description>Paradox Partition status</description>
@@ -28,23 +28,23 @@
 				<default>5</default>
 			</parameter>
 			<parameter name="ip150Password" type="text">
-                <label>IP150 Password</label>
-                <description>Password for accessing IP150</description>
-            </parameter>
-            <parameter name="pcPassword" type="text">
-                <label>PC Password</label>
-                <description>PC Password (section 3012 of configuration)</description>
-                <default>0000</default>
-            </parameter>
-            <parameter name="ipAddress" type="text">
-                <label>IP Address</label>
-                <description>IP address of IP150</description>
-            </parameter>
-            <parameter name="port" type="integer">
-                <label>Port</label>
-                <description>Port to connect to IP150</description>
-                <default>10000</default>
-            </parameter>
+				<label>IP150 Password</label>
+				<description>Password for accessing IP150</description>
+			</parameter>
+			<parameter name="pcPassword" type="text">
+				<label>PC Password</label>
+				<description>PC Password (section 3012 of configuration)</description>
+				<default>0000</default>
+			</parameter>
+			<parameter name="ipAddress" type="text">
+				<label>IP Address</label>
+				<description>IP address of IP150</description>
+			</parameter>
+			<parameter name="port" type="integer">
+				<label>Port</label>
+				<description>Port to connect to IP150</description>
+				<default>10000</default>
+			</parameter>
 		</config-description>
 	</thing-type>
 

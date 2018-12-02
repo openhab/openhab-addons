@@ -20,33 +20,33 @@
 				<default>5</default>
 			</parameter>
 			<parameter name="panelType" type="text" required="true">
-                <label>PanelType</label>
-                <description>PanelType</description>
-            </parameter>
+				<label>PanelType</label>
+				<description>PanelType</description>
+			</parameter>
 			<parameter name="ip150Password" type="text" required="true">
-                <label>IP150 Password</label>
-                <description>Password for accessing IP150</description>
-            </parameter>
-            <parameter name="pcPassword" type="text" required="true">
-                <label>PC Password</label>
-                <description>PC Password (section 3012 of configuration)</description>
-                <default>0000</default>
-            </parameter>
-            <parameter name="ipAddress" type="text" required="true">
-                <label>IP Address</label>
-                <description>IP address of IP150</description>
-            </parameter>
-            <parameter name="port" type="integer" required="true">
-                <label>Port</label>
-                <description>Port to connect to IP150</description>
-                <default>10000</default>
-            </parameter>
+				<label>IP150 Password</label>
+				<description>Password for accessing IP150</description>
+			</parameter>
+			<parameter name="pcPassword" type="text" required="true">
+				<label>PC Password</label>
+				<description>PC Password (section 3012 of configuration)</description>
+				<default>0000</default>
+			</parameter>
+			<parameter name="ipAddress" type="text" required="true">
+				<label>IP Address</label>
+				<description>IP address of IP150</description>
+			</parameter>
+			<parameter name="port" type="integer" required="true">
+				<label>Port</label>
+				<description>Port to connect to IP150</description>
+				<default>10000</default>
+			</parameter>
 		</config-description>
 	</bridge-type>
 
 	<channel-type id="command">
-        <item-type>String</item-type>
-        <label>Communicator Command</label>
-        <description>Send Command</description>
+		<item-type>String</item-type>
+		<label>Communicator Command</label>
+		<description>Send Command</description>
 	</channel-type>
 </thing:thing-descriptions>

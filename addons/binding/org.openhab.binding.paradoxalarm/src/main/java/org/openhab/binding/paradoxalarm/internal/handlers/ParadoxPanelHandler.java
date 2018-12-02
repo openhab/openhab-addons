@@ -37,8 +37,6 @@ public class ParadoxPanelHandler extends BaseThingHandler {
 
     private static final int UPDATE_THING_REFRESH_INTERVAL_SEC = 60;
 
-    private static final int REINITIALIZE_INTERVAL_HRS = 6;
-
     private static final long INITIAL_DELAY = 0;
 
     private final Logger logger = LoggerFactory.getLogger(ParadoxPanelHandler.class);
@@ -94,27 +92,15 @@ public class ParadoxPanelHandler extends BaseThingHandler {
 
     private void initializeModel() throws Exception, ParadoxBindingException {
         config = getConfigAs(ParadoxPanelConfiguration.class);
-        ParadoxPanel panel = ParadoxPanel.getInstance();
+        ParadoxPanel.getInstance();
     }
 
     private void setupSchedule() {
         scheduleRefreshRuntimeInfo();
         scheduleUpdateThing();
-        // scheduleReinitialize();
     }
 
-    // TODO think about reconecting procedure
-    private void scheduleReinitialize() {
-        reinitializeParadoxPanelSchedule = scheduler.scheduleWithFixedDelay(() -> {
-            try {
-                ParadoxPanel panel = ParadoxPanel.getInstance();
-                panel.init();
-            } catch (Exception e) {
-                logger.error("Unable to retrieve memory map. {}", e);
-            }
-        }, INITIAL_DELAY, REINITIALIZE_INTERVAL_HRS, TimeUnit.HOURS);
-    }
-
+    @SuppressWarnings("null")
     private void scheduleRefreshRuntimeInfo() {
         logger.debug("Scheduling cache update. Refresh interval: " + config.getRefresh() + "s.");
         refreshMemoryMapSchedule = scheduler.scheduleWithFixedDelay(() -> {
@@ -122,6 +108,7 @@ public class ParadoxPanelHandler extends BaseThingHandler {
         }, INITIAL_DELAY, config.getRefresh(), TimeUnit.SECONDS);
     }
 
+    @SuppressWarnings("null")
     private void scheduleUpdateThing() {
         logger.debug("Scheduling update thing. Refresh interval: " + config.getRefresh() + "s.");
         updateThingSchedule = scheduler.scheduleWithFixedDelay(() -> {
@@ -143,7 +130,6 @@ public class ParadoxPanelHandler extends BaseThingHandler {
     }
 
     private void updateThing() throws ParadoxBindingException {
-        // TODO think how to identify connected/disconnected state
         updateState("state", new StringType("connected"));
         ParadoxInformation panelInformation = ParadoxPanel.getInstance().getPanelInformation();
         if (panelInformation != null) {
