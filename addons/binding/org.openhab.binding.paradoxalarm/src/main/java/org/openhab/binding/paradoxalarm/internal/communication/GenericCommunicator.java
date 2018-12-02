@@ -71,7 +71,9 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
             // This is very ugly but Paradox supports only one connection at a time and if not closed properly if
             // handler gots destroyed/recreated before the full socket closure. The new handler cannot establish proper
             // communication.
-            Thread.sleep(5000);
+
+            logger.info("Waiting the socket to close...");
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             logger.error(
                     "Unable to sleep thread during socket close phase. Could lead to issues if reconnect occurs. {}",

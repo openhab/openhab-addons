@@ -20,8 +20,11 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.paradoxalarm.internal.communication.GenericCommunicator;
 import org.openhab.binding.paradoxalarm.internal.communication.IParadoxCommunicator;
+import org.openhab.binding.paradoxalarm.internal.communication.IParadoxGenericCommunicator;
 import org.openhab.binding.paradoxalarm.internal.communication.ParadoxCommunicatorFactory;
+import org.openhab.binding.paradoxalarm.internal.model.PanelType;
 import org.openhab.binding.paradoxalarm.internal.model.RawStructuredDataCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,15 +67,20 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
             int tcpPort = config.getPort();
             String ip150Password = config.getIp150Password();
             String pcPassword = config.getPcPassword();
-            String panelTypeStr = config.getPanelType();
-            // IParadoxGenericCommunicator initialCommunicator = new GenericCommunicator(ipAddress, tcpPort,
-            // ip150Password,
-            // pcPassword);
-            // byte[] panelInfoBytes = initialCommunicator.getPanelInfoBytes();
-            // PanelType panelType = PanelType.parsePanelType(panelInfoBytes);
-            // logger.info("Found {} panel type.", panelType);
-            // initialCommunicator.close();
-            // Thread.sleep(500);
+            IParadoxGenericCommunicator initialCommunicator = new GenericCommunicator(ipAddress, tcpPort, ip150Password,
+                    pcPassword);
+            byte[] panelInfoBytes = initialCommunicator.getPanelInfoBytes();
+            PanelType panelType = PanelType.parsePanelType(panelInfoBytes);
+            logger.info("Found {} panel type.", panelType);
+            initialCommunicator.close();
+
+            // If not detected properly, use the value from config
+            String panelTypeStr;
+            if (panelType != PanelType.UNKNOWN) {
+                panelTypeStr = panelType.name();
+            } else {
+                panelTypeStr = config.getPanelType();
+            }
 
             ParadoxCommunicatorFactory factory = new ParadoxCommunicatorFactory(ipAddress, tcpPort, ip150Password,
                     pcPassword);
