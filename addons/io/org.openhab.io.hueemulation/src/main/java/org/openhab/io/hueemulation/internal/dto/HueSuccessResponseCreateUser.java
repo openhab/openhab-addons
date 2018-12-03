@@ -9,7 +9,16 @@
 package org.openhab.io.hueemulation.internal.dto;
 
 /**
- * Hue API error response object
+ * This object describes the right hand side of "success".
+ * The response looks like this:
+ *
+ * <pre>
+ * {
+ *   "success":{
+ *      "username": "-the-username-"
+ *   }
+ * }
+ * </pre>
  *
  * @author David Graeff - Initial contribution
  */
