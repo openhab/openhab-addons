@@ -46,7 +46,6 @@
     <module>org.openhab.binding.fronius</module>
     <module>org.openhab.binding.ftpupload</module>
     <module>org.openhab.binding.gardena</module>
-    <module>org.openhab.binding.gmailparadoxparser</module>
     <module>org.openhab.binding.gpstracker</module>
     <module>org.openhab.binding.groheondus</module>
     <module>org.openhab.binding.harmonyhub</module>
@@ -77,7 +76,7 @@
     <module>org.openhab.binding.max.test</module>
     <module>org.openhab.binding.mcp23017</module>
     <module>org.openhab.binding.meteostick</module>
-    <module>org.openhab.binding.miele</module>
++    <module>org.openhab.binding.miele</module>
     <module>org.openhab.binding.mihome</module>
     <module>org.openhab.binding.milight</module>
     <module>org.openhab.binding.minecraft</module>
