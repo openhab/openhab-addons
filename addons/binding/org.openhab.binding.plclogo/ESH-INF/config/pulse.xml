@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:plclogo:pulse">
+		<parameter name="block" type="text" pattern="VB(\d|[1-9]\d|[1-7]\d{2}|8[0-4]\d|850)\.[0-7]">
+			<label>LOGO! Memory Address</label>
+			<description>LOGO! memory address</description>
+			<required>true</required>
+		</parameter>
+		<parameter name="observe" type="text" pattern="I([1-9]|1\d|2[0-4])|NI([1-9]|[1-5]\d|6[0-4])|Q([1-9]|1\d|20)|NQ([1-9]|[1-5]\d|6[0-4])|M([1-9]|[1-5]\d|6[0-4])|VB(\d|[1-9]\d|[1-7]\d{2}|8[0-4]\d|850)\.[0-7]">
+			<label>LOGO! Block/Memory Address</label>
+			<description>LOGO! block or memory address to observe</description>
+			<required>false</required>
+		</parameter>
+		<parameter name="pulse" type="integer">
+			<label>Pulse Length</label>
+			<description>Time to wait before state reset</description>
+			<default>150</default>
+			<required>false</required>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
