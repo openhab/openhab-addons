@@ -563,7 +563,7 @@ public class HueEmulationServlet extends HttpServlet implements ReadyTracker {
 
         try (JsonWriter writer = new JsonWriter(out)) {
             HueSuccessResponseCreateUser h = new HueSuccessResponseCreateUser(user.username);
-            gson.toJson(Collections.singleton(h), new TypeToken<List<?>>() {
+            gson.toJson(Collections.singleton(new HueResponse(h)), new TypeToken<List<?>>() {
             }.getType(), writer);
         }
     }
