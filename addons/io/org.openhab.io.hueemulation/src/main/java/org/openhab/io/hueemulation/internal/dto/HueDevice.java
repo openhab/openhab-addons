@@ -34,18 +34,40 @@ public class HueDevice {
     public final String modelid;
     public final String uniqueid;
     public final String manufacturername;
+    public String productname = null;
     public final String swversion;
     public final @Nullable String luminaireuniqueid = null;
     public final @Nullable String swconfigid;
     public final @Nullable String productid;
-    public final boolean friendsOfHue = true;
+    public Boolean friendsOfHue = true;
     public final @Nullable String colorGamut;
-    public final boolean hascolor;
-
+    public Boolean hascolor;
+    
     public String name;
     /** Associated item UID */
     public transient Item item;
     public transient DeviceType deviceType;
+    
+    public static class Config {
+        public final String archetype = "classicbulb";
+        public final String function = "functional";
+        public final String direction = "omnidirectional";
+    };
+    
+    public Config config = new Config();
+    
+    public static class Streaming {
+        public boolean renderer = false;
+        public boolean proxy = false;
+    };
+    
+    public static class Capabilities {
+        public boolean certified = false;
+        public final Streaming streaming = new Streaming();
+        public final Object control = new Object();
+    };
+    
+    public Capabilities capabilities = new Capabilities();
 
     /**
      * Create a hue device.
@@ -72,6 +94,7 @@ public class HueDevice {
                 this.swversion = "1.15.2_r19181";
                 this.productid = "Philips-LCT010-1-A19ECLv4";
                 this.hascolor = true;
+                this.capabilities.certified = true;
                 break;
             case WhiteType:
                 /** Hue White A19 - 3nd gen - white, 2700K only */
@@ -84,6 +107,7 @@ public class HueDevice {
                 this.swversion = "66012040";
                 this.productid = null;
                 this.hascolor = false;
+                this.capabilities.certified = true;
                 break;
             case WhiteTemperatureType:
                 this.name = label != null ? label : "";
@@ -95,6 +119,7 @@ public class HueDevice {
                 this.swversion = "66012040";
                 this.productid = null;
                 this.hascolor = false;
+                this.capabilities.certified = true;
                 break;
             default:
             case SwitchType:
@@ -107,10 +132,11 @@ public class HueDevice {
                 this.modelid = "Plug 01";
                 this.colorGamut = null;
                 this.manufacturername = "OSRAM";
+                this.productname = "On/Off plug";
                 this.swconfigid = null;
-                this.swversion = "66012040";
+                this.swversion = "V1.04.12";
                 this.productid = null;
-                this.hascolor = false;
+                this.hascolor = null;
                 break;
         }
 
