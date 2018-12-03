@@ -16,4 +16,6 @@ package org.openhab.io.hueemulation.internal.dto;
  */
 public class AbstractHueState {
     public boolean reachable = true;
+    public String mode = "homeautomation";
+    public String alert = "none";
 }
