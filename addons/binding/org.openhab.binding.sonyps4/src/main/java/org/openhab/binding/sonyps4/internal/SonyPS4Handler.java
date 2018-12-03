@@ -427,6 +427,8 @@ public class SonyPS4Handler extends BaseThingHandler {
     private void parsePacket(DatagramPacket packet) {
         byte[] data = packet.getData();
         String message = new String(data, StandardCharsets.UTF_8);
+        String applicationName = "";
+        String applicationId = "";
 
         String[] ss = message.trim().split("\n");
         for (String row : ss) {
@@ -457,17 +459,10 @@ public class SonyPS4Handler extends BaseThingHandler {
             String value = row.substring(index + 1);
             switch (key) {
                 case RESPONSE_RUNNING_APP_NAME:
-                    if (!currentApplication.equals(value)) {
-                        currentApplication = value;
-                        ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_APPLICATION_NAME);
-                        updateState(channel, StringType.valueOf(value));
-                        logger.debug("PS4 current application: {}", value);
-                    }
+                    applicationName = value;
                     break;
                 case RESPONSE_RUNNING_APP_TITLEID:
-                    if (!currentApplicationId.equals(value)) {
-                        updateApplicationTitleid(value);
-                    }
+                    applicationId = value;
                     break;
                 case RESPONSE_HOST_REQUEST_PORT:
                     Integer port = Integer.valueOf(value);
@@ -480,6 +475,15 @@ public class SonyPS4Handler extends BaseThingHandler {
                 default:
                     break;
             }
+        }
+        if (!currentApplication.equals(applicationName)) {
+            currentApplication = applicationName;
+            ChannelUID channel = new ChannelUID(getThing().getUID(), CHANNEL_APPLICATION_NAME);
+            updateState(channel, StringType.valueOf(applicationName));
+            logger.debug("PS4 current application: {}", applicationName);
+        }
+        if (!currentApplicationId.equals(applicationId)) {
+            updateApplicationTitleid(applicationId);
         }
     }
 
