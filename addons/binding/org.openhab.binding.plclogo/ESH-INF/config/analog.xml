@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:plclogo:analog">
+		<parameter name="kind" type="text" pattern="AI|AM|AQ|NAI|NAQ">
+			<label>LOGO! Analog Block Kind</label>
+			<description>LOGO! analog block kind</description>
+			<required>true</required>
+		</parameter>
+		<parameter name="force" type="boolean">
+			<label>Force Channels Update</label>
+			<description>Propagate channels update to openHAB whether value changed or not</description>
+			<default>false</default>
+			<required>false</required>
+		</parameter>
+		<parameter name="threshold" type="integer" min="0">
+			<label>Smallest Value Change to Sent</label>
+			<description>Smallest value change will be sent to openHAB</description>
+			<default>0</default>
+			<required>false</required>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

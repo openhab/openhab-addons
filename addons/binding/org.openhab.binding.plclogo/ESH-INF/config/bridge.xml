@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:plclogo:bridge">
+		<parameter name="address" type="text">
+			<context>network-address</context>
+			<label>Network Address</label>
+			<description>Network address of the PLC.</description>
+			<required>true</required>
+		</parameter>
+		<parameter name="family" type="text">
+			<label>LOGO! Family</label>
+			<description>LOGO! PLC hardware family version</description>
+			<options>
+				<option value="0BA7">0BA7</option>
+				<option value="0BA8">0BA8</option>
+			</options>
+			<required>true</required>
+		</parameter>
+		<parameter name="localTSAP" type="text" pattern="(0x[0-9]{4})">
+			<label>Local TSAP</label>
+			<description>Local TSAP of the client as hex string</description>
+			<required>true</required>
+			<default>0x3000</default>
+		</parameter>
+		<parameter name="remoteTSAP" type="text" pattern="(0x[0-9]{4})">
+			<label>Remote TSAP</label>
+			<description>Remote TSAP of the client as hex string</description>
+			<required>true</required>
+			<default>0x2000</default>
+		</parameter>
+		<parameter name="refresh" type="integer" min="100" step="50">
+			<label>Refresh Interval</label>
+			<description>Milliseconds between reread data from PLC.</description>
+			<required>true</required>
+			<default>100</default>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
