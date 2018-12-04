@@ -44,7 +44,6 @@ import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link MiIoAsyncCommunication} is responsible for communications with the Mi IO devices
- * *
  *
  * @author Marcel Verpaalen - Initial contribution
  */
@@ -95,7 +94,7 @@ public class MiIoAsyncCommunication {
      * Registers a {@link MiIoMessageListener} to be called back, when data is received.
      * If no {@link MessageSenderThread} exists, when the method is called, it is being set up.
      *
-     * @param listener - {@link MiIoMessageListener} to be called back
+     * @param listener {@link MiIoMessageListener} to be called back
      */
     public synchronized void registerListener(MiIoMessageListener listener) {
         needPing = true;
@@ -110,7 +109,7 @@ public class MiIoAsyncCommunication {
      * Unregisters a {@link MiIoMessageListener}. If there are no listeners left,
      * the {@link MessageSenderThread} is being closed.
      *
-     * @param listener - {@link MiIoMessageListener} to be unregistered
+     * @param listener {@link MiIoMessageListener} to be unregistered
      */
     public synchronized void unregisterListener(MiIoMessageListener listener) {
         getListeners().remove(listener);
@@ -354,7 +353,7 @@ public class MiIoAsyncCommunication {
                     receivePacket.getOffset() + receivePacket.getLength());
             return response;
         } catch (SocketTimeoutException e) {
-            logger.debug("Communication error for Mi IO device at {}: {}", ip, e.getMessage());
+            logger.debug("Communication error for Mi device at {}: {}", ip, e.getMessage());
             needPing = true;
             return new byte[0];
         }
@@ -396,7 +395,9 @@ public class MiIoAsyncCommunication {
     }
 
     /**
-     * Time delta between device time & server time
+     * Time delta between device time and server time
+     * 
+     * @return delta
      */
     public int getTimeDelta() {
         return timeDelta;

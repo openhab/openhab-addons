@@ -14,10 +14,12 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.miio.handler.MiIoBasicHandler;
 import org.openhab.binding.miio.handler.MiIoGenericHandler;
 import org.openhab.binding.miio.handler.MiIoUnsupportedHandler;
 import org.openhab.binding.miio.handler.MiIoVacuumHandler;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * The {@link MiIoHandlerFactory} is responsible for creating things and thing
@@ -25,6 +27,7 @@ import org.openhab.binding.miio.handler.MiIoVacuumHandler;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.miio")
 public class MiIoHandlerFactory extends BaseThingHandlerFactory {
 
     @Override

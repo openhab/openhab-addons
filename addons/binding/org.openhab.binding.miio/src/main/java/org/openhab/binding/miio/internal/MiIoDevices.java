@@ -13,7 +13,7 @@ import static org.openhab.binding.miio.MiIoBindingConstants.*;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * MiIO Devices
+ * Mi IO Devices
  *
  * @author Marcel Verpaalen - Initial contribution
  */

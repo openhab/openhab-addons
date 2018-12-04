@@ -12,7 +12,6 @@
 		<parameter name="token" type="text" pattern="^([A-Fa-f0-9]{96}|[A-Fa-f0-9]{32}|.{16})$" required="true">
 			<label>Token</label>
 			<description>Token for communication (in Hex)</description>
-			<default>FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF</default>
 		</parameter>
 		<parameter name="deviceId" type="text" required="false">
 			<label>Device ID</label>
@@ -22,7 +21,6 @@
 		<parameter name="model" type="text" required="false">
 			<label>Device Model String</label>
 			<description>Device model string, used to determine the subtype.</description>
-			<default></default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="refreshInterval" type="integer" min="0" max="9999" required="false">
@@ -32,7 +30,7 @@
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="timeout" type="integer" min="1000" max="60000" required="false">
-			<label>Time out</label>
+			<label>Timeout</label>
 			<description>Timeout time in milliseconds</description>
 			<default>15000</default>
 			<advanced>true</advanced>

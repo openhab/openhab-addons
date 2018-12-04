@@ -84,7 +84,7 @@ public final class MiIoBindingConstants {
     public static final String CHANNEL_HISTORY_AREA = "cleaning#last_clean_area";
     public static final String CHANNEL_HISTORY_DURATION = "cleaning#last_clean_duration";
     public static final String CHANNEL_HISTORY_ERROR = "cleaning#last_clean_error";
-    public static final String CHANNEL_HISTORY_FINISH = "cleaning#ast_clean_finish";
+    public static final String CHANNEL_HISTORY_FINISH = "cleaning#last_clean_finish";
     public static final String CHANNEL_HISTORY_RECORD = "cleaning#last_clean_record";
 
     public static final String PROPERTY_HOST_IP = "host";

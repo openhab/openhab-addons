@@ -9,7 +9,8 @@
 package org.openhab.binding.miio.internal;
 
 /**
- * The {@link MiIoCommand} contains all known commands for the Xiaomi vacuum & various Mi IO commands
+ * The {@link MiIoCommand} contains all known commands for the Xiaomi vacuum and various Mi IO commands for basic
+ * devices
  *
  * @author Marcel Verpaalen - Initial contribution
  */

@@ -10,9 +10,10 @@ package org.openhab.binding.miio.internal;
 
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.openhab.binding.miio.internal.transport.MiIoAsyncCommunication;
 
 /**
- * Interface for a listener on the {@link MiIoCommunication}.
+ * Interface for a listener on the {@link MiIoAsyncCommunication}.
  * Informs when a message is received.
  *
  * @author Marcel Verpaalen - Initial contribution
@@ -21,14 +22,15 @@ public interface MiIoMessageListener {
     /**
      * Callback method for the {@link MiIoMessageListener}
      *
-     * @param response - The received message in JSON format
+     * @param cmd The received message in JSON format
      */
     void onMessageReceived(MiIoSendCommand cmd);
 
     /**
      * Callback method for the {@link MiIoMessageListener}
      *
-     * @param status - Status online/offline
+     * @param status Status online/offline
+     * @param statusDetail Status details text
      */
     void onStatusUpdated(ThingStatus status, ThingStatusDetail statusDetail);
 

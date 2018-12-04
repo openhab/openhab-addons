@@ -136,7 +136,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                 if (paramType == CommandParameterType.EMPTY) {
                     cmd = cmd + "[]";
                 } else if (paramType == CommandParameterType.NONE) {
-                    // ignore other
+                    logger.trace("NONE command type");
                 } else if (paramType == CommandParameterType.COLOR) {
                     if (command instanceof HSBType) {
                         HSBType hsb = (HSBType) command;

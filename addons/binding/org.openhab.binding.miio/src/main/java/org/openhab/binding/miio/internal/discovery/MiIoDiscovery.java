@@ -14,26 +14,22 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.InterfaceAddress;
-import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
-import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
-import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
-import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.net.NetUtil;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.miio.internal.Message;
 import org.openhab.binding.miio.internal.Utils;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,13 +40,13 @@ import org.slf4j.LoggerFactory;
  * @author Marcel Verpaalen - Initial contribution
  *
  */
-public class MiIoDiscovery extends AbstractDiscoveryService implements ExtendedDiscoveryService {
+@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.miio")
+public class MiIoDiscovery extends AbstractDiscoveryService {
 
     /** The refresh interval for background discovery */
     private static final long SEARCH_INTERVAL = 600;
     private static final int BUFFER_LENGTH = 1024;
     private static final int DISCOVERY_TIME = 10;
-    private DiscoveryServiceCallback discoveryServiceCallback;
 
     private ScheduledFuture<?> miIoDiscoveryJob;
     protected DatagramSocket clientSocket;
@@ -61,11 +57,6 @@ public class MiIoDiscovery extends AbstractDiscoveryService implements ExtendedD
 
     public MiIoDiscovery() throws IllegalArgumentException {
         super(DISCOVERY_TIME);
-    }
-
-    @Override
-    public void setDiscoveryServiceCallback(DiscoveryServiceCallback discoveryServiceCallback) {
-        this.discoveryServiceCallback = discoveryServiceCallback;
     }
 
     @Override
@@ -111,7 +102,11 @@ public class MiIoDiscovery extends AbstractDiscoveryService implements ExtendedD
     private void discover() {
         startReceiverThreat();
         responseIps = new HashSet<String>();
-        for (String broadcastAdress : getBroadcastAddresses()) {
+        HashSet<String> broadcastAddresses = new HashSet<String>();
+        broadcastAddresses.add("224.0.0.1");
+        broadcastAddresses.add("224.0.0.50");
+        broadcastAddresses.addAll(NetUtil.getAllBroadcastAddresses());
+        for (String broadcastAdress : broadcastAddresses) {
             sendDiscoveryRequest(broadcastAdress);
         }
     }
@@ -121,28 +116,9 @@ public class MiIoDiscovery extends AbstractDiscoveryService implements ExtendedD
         Message msg = new Message(response);
         String token = Utils.getHex(msg.getChecksum());
         String id = Utils.getHex(msg.getDeviceId());
-        String label = "Xiaomi Mi IO Device " + id + " (" + Long.parseUnsignedLong(id, 16) + ")";
+        String label = "Xiaomi Mi Device " + id + " (" + Long.parseUnsignedLong(id, 16) + ")";
         ThingUID uid = new ThingUID(THING_TYPE_MIIO, id);
-        // Test if the device is already known by specific ThingTypes. In that case don't use the generic thingType
-        for (ThingTypeUID typeU : NONGENERIC_THING_TYPES_UIDS) {
-            ThingUID thingUID = new ThingUID(typeU, id);
-            Thing existingThing = discoveryServiceCallback.getExistingThing(thingUID);
-            if (existingThing != null) {
-                logger.trace("Mi IO device {} already exist as thing {}: {}.", id, thingUID.toString(),
-                        existingThing.getLabel());
-                uid = thingUID;
-                break;
-            }
-            DiscoveryResult dr = discoveryServiceCallback.getExistingDiscoveryResult(thingUID);
-            if (dr != null) {
-                logger.debug("Mi IO device {} already discovered as type '{}': {}", id, dr.getThingTypeUID(),
-                        dr.getLabel());
-                uid = thingUID;
-                label = dr.getLabel();
-                break;
-            }
-        }
-        logger.debug("Discovered Mi IO Device {} ({}) at {} as {}", id, Long.parseUnsignedLong(id, 16), ip, uid);
+        logger.debug("Discovered Mi Device {} ({}) at {} as {}", id, Long.parseUnsignedLong(id, 16), ip, uid);
         if (IGNORED_TOKENS.contains(token)) {
             logger.debug(
                     "No token discovered for device {}. For options how to get the token, check the binding readme.",
@@ -180,37 +156,6 @@ public class MiIoDiscovery extends AbstractDiscoveryService implements ExtendedD
         }
         clientSocket.close();
         clientSocket = null;
-    }
-
-    /**
-     * @return broadcast addresses for all interfaces
-     */
-    private Set<String> getBroadcastAddresses() {
-        HashSet<String> broadcastAddresses = new HashSet<String>();
-        try {
-            broadcastAddresses.add("224.0.0.1");
-            broadcastAddresses.add("224.0.0.50");
-            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-            while (interfaces.hasMoreElements()) {
-                try {
-                    NetworkInterface networkInterface = interfaces.nextElement();
-                    if (networkInterface.isLoopback() || !networkInterface.isUp()) {
-                        continue;
-                    }
-                    for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses()) {
-                        String address = interfaceAddress.getBroadcast().getHostAddress();
-                        if (address != null) {
-                            broadcastAddresses.add(address);
-                        }
-                    }
-                } catch (Exception e) {
-                    // ignore
-                }
-            }
-        } catch (Exception e) {
-            logger.trace("Error collecting broadcast addresses: {}", e.getMessage(), e);
-        }
-        return broadcastAddresses;
     }
 
     private void sendDiscoveryRequest(String ipAddress) {
@@ -285,7 +230,7 @@ public class MiIoDiscovery extends AbstractDiscoveryService implements ExtendedD
                             try {
                                 discovered(hostAddress, messageBuf);
                             } catch (Exception e) {
-                                logger.debug("Error submitting discovered Mi Io device at {}", hostAddress, e);
+                                logger.debug("Error submitting discovered Mi IO device at {}", hostAddress, e);
                             }
                         }, 0, TimeUnit.SECONDS);
                     }

@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
+import org.eclipse.smarthome.core.thing.type.ThingType;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.miio.MiIoBindingConfiguration;
 import org.openhab.binding.miio.internal.Message;
@@ -172,7 +173,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
      * [] brackets. This to allow for unimplemented commands to be executed (e.g. get detailed historical cleaning
      * records)
      *
-     * @param command to be executed
+     * @param commandString command to be executed
      * @return vacuum response
      */
     protected int sendCommand(String commandString) {
@@ -266,7 +267,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         String deviceId = configuration.deviceId;
         try {
             if (deviceId != null && deviceId.length() == 8 && tokenCheckPass(configuration.token)) {
-                logger.debug("Ping Mi IO device {} at {}", deviceId, configuration.host);
+                logger.debug("Ping Mi device {} at {}", deviceId, configuration.host);
                 miioCom = new MiIoAsyncCommunication(configuration.host, token, Utils.hexStringToByteArray(deviceId),
                         lastId, configuration.timeout);
                 Message miIoResponse = miioCom.sendPing(configuration.host);
@@ -279,7 +280,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                     return miioCom;
                 }
             } else {
-                logger.debug("No device ID defined. Retrieving MiIO device ID");
+                logger.debug("No device ID defined. Retrieving Mi device ID");
                 MiIoAsyncCommunication miioCom = new MiIoAsyncCommunication(configuration.host, token, new byte[0],
                         lastId, configuration.timeout);
                 Message miIoResponse = miioCom.sendPing(configuration.host);
@@ -292,7 +293,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                             configuration.host, miIoResponse.getTimestamp(), LocalDateTime.now(),
                             miioCom.getTimeDelta());
                     miioCom.setDeviceId(miIoResponse.getDeviceId());
-                    logger.debug("Using retrieved MiIO device ID: {}", deviceId);
+                    logger.debug("Using retrieved Mi device ID: {}", deviceId);
                     updateDeviceIdConfig(deviceId);
                     miioCom.registerListener(this);
                     return miioCom;
@@ -380,11 +381,11 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             configuration = getConfigAs(MiIoBindingConfiguration.class);
         }
         if (!configuration.model.equals(model)) {
-            logger.info("Mi IO Device model {} has model config: {}. Unexpected unless manual override", model,
+            logger.info("Mi Device model {} has model config: {}. Unexpected unless manual override", model,
                     configuration.model);
         }
         if (miDevice.getThingType().equals(getThing().getThingTypeUID())) {
-            logger.info("Mi IO model {} identified as: {}. Matches thingtype {}", model, miDevice.toString(),
+            logger.info("Mi Device model {} identified as: {}. Matches thingtype {}", model, miDevice.toString(),
                     miDevice.getThingType().toString());
             return true;
         } else {
@@ -393,7 +394,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                 changeType(model);
             } else {
                 logger.warn(
-                        "Mi IO Device model {} identified as: {}, thingtype {}. Does not matches thingtype {}. Unexpected, unless unless manual override.",
+                        "Mi Device model {} identified as: {}, thingtype {}. Does not matches thingtype {}. Unexpected, unless unless manual override.",
                         miDevice.toString(), miDevice.getThingType(), getThing().getThingTypeUID().toString(),
                         miDevice.getThingType().toString());
                 return true;
@@ -403,7 +404,9 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     }
 
     /**
-     * @param model
+     * Changes the {@link ThingType} to the right type once it is retrieved from the device.
+     *
+     * @param modelId String with the model id
      */
     private void changeType(final String modelId) {
         if (pollingJob != null) {
@@ -414,8 +417,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             ThingBuilder thingBuilder = editThing();
             thingBuilder.withLabel(miDevice.getDescription());
             updateThing(thingBuilder.build());
-            logger.info(
-                    "Mi IO Device model {} identified as: {}. Does not matches thingtype {}. Changing thingtype to {}",
+            logger.info("Mi Device model {} identified as: {}. Does not match thingtype {}. Changing thingtype to {}",
                     modelId, miDevice.toString(), getThing().getThingTypeUID().toString(),
                     miDevice.getThingType().toString());
             changeThingType(MiIoDevices.getType(modelId).getThingType(), getConfig());

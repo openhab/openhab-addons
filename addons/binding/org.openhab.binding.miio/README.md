@@ -128,6 +128,7 @@ The binding has 2 methods for discovering devices. Depending on your network set
 
 The MDNS discovery method will discover your device type, but won't discover a (required) token.
 The basic discovery will not discovery the type, but will discover a token for models that support it.
+Accept only one of the 2 discovery results, the alternate one can further be ignored.
 
 ## Tokens
 

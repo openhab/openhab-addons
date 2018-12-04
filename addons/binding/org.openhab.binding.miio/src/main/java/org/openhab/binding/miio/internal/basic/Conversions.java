@@ -22,7 +22,7 @@ import com.google.gson.JsonPrimitive;
  * @author Marcel Verpaalen - Initial contribution
  */
 public class Conversions {
-    private static final Logger logger = LoggerFactory.getLogger(Conversions.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Conversions.class);
 
     public static JsonElement secondsToHours(JsonElement seconds) {
         long hours = TimeUnit.SECONDS.toHours(seconds.getAsInt());
@@ -62,7 +62,7 @@ public class Conversions {
             case "/10":
                 return divideTen(value);
             default:
-                logger.debug("Transformation {} not found. Returning '{}'", transfortmation, value.toString());
+                LOGGER.debug("Transformation {} not found. Returning '{}'", transfortmation, value.toString());
                 return value;
         }
     }

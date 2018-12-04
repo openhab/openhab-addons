@@ -156,7 +156,7 @@ public class Message {
     }
 
     /**
-     * @param deviceId
+     * @param serialByte - Device Id
      */
     public void setDeviceId(byte[] serialByte) {
         this.deviceId = serialByte;
@@ -184,7 +184,9 @@ public class Message {
     }
 
     /**
-     * @param bytearray message
+     * Set the message content
+     * 
+     * @param raw byte array containing the message
      */
     public void setRaw(byte[] raw) {
         this.raw = raw;

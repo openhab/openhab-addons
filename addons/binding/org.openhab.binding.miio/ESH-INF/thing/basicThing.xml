@@ -5,7 +5,7 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="basic">
-		<label>Xiaomi Mi IO Basic device</label>
+		<label>Xiaomi Mi Basic Device</label>
 
 		<channel-groups>
 			<channel-group id="network" typeId="network" />

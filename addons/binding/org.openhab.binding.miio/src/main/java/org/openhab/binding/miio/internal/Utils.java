@@ -33,7 +33,7 @@ public final class Utils {
      *
      * For example: String s = "00010203" returned byte array is {0x00, 0x01, 0x03}
      *
-     * @param s
+     * @param hex hex input string
      * @return byte array equivalent to hex string
      **/
     public static byte[] hexStringToByteArray(String hex) {
@@ -46,17 +46,17 @@ public final class Utils {
         return data;
     }
 
+    private static final String HEXES = "0123456789ABCDEF";
+
     /**
      * Convert a byte array to a string representation of hexadecimals.
      *
      * For example: byte array is {0x00, 0x01, 0x03} returned String s =
      * "00 01 02 03"
      *
-     * @param byte array
+     * @param raw byte array
      * @return String equivalent to hex string
      **/
-    private static final String HEXES = "0123456789ABCDEF";
-
     public static String getSpacedHex(byte[] raw) {
         if (raw == null) {
             return "";
