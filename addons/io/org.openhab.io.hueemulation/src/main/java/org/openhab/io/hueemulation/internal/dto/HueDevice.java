@@ -34,39 +34,39 @@ public class HueDevice {
     public final String modelid;
     public final String uniqueid;
     public final String manufacturername;
-    public String productname = null;
+    public @Nullable String productname = null;
     public final String swversion;
     public final @Nullable String luminaireuniqueid = null;
     public final @Nullable String swconfigid;
     public final @Nullable String productid;
     public Boolean friendsOfHue = true;
     public final @Nullable String colorGamut;
-    public Boolean hascolor;
-    
+    public @Nullable Boolean hascolor;
+
     public String name;
     /** Associated item UID */
     public transient Item item;
     public transient DeviceType deviceType;
-    
+
     public static class Config {
         public final String archetype = "classicbulb";
         public final String function = "functional";
         public final String direction = "omnidirectional";
     };
-    
+
     public Config config = new Config();
-    
+
     public static class Streaming {
         public boolean renderer = false;
         public boolean proxy = false;
     };
-    
+
     public static class Capabilities {
         public boolean certified = false;
         public final Streaming streaming = new Streaming();
         public final Object control = new Object();
     };
-    
+
     public Capabilities capabilities = new Capabilities();
 
     /**
@@ -190,9 +190,9 @@ public class HueDevice {
     /**
      * Apply the new received state from the REST PUT request.
      *
-     * @param newState New state
+     * @param newState       New state
      * @param successApplied Output map "state-name"->value: All successfully applied items are added in here
-     * @param errorApplied Output: All erroneous items are added in here
+     * @param errorApplied   Output: All erroneous items are added in here
      * @return Return a command computed via the incoming state object.
      */
     public @Nullable Command applyState(HueStateChange newState, Map<String, Object> successApplied,
