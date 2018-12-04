@@ -20,7 +20,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.http.HttpStatus.Code;
 import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
@@ -40,12 +39,14 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class UplinkWebInterface implements AtomicReferenceTrait {
 
+    private final static int NIBE_ID_THRESHOLD = 10;
+
     private final Logger logger = LoggerFactory.getLogger(UplinkWebInterface.class);
 
     /**
      * Configuration
      */
-    private final NibeUplinkConfiguration config;
+    private NibeUplinkConfiguration config;
 
     /**
      * handler for updating thing status
@@ -130,16 +131,26 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
                 StatusUpdateListener statusUpdater = new StatusUpdateListener() {
                     @Override
                     public void update(CommunicationStatus status) {
-                        if (Code.SERVICE_UNAVAILABLE.equals(status.getHttpCode())) {
-                            uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                                    status.getMessage());
-                            setAuthenticated(false);
-                        } else if (!Code.OK.equals(status.getHttpCode())) {
-                            uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    status.getMessage());
-                            setAuthenticated(false);
-                        }
+                        switch (status.getHttpCode()) {
+                            case SERVICE_UNAVAILABLE:
+                                uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                                        status.getMessage());
+                                setAuthenticated(false);
+                                break;
+                            case FOUND:
+                                uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                        "most likely your NibeId is wrong. please check your NibeId.");
+                                setAuthenticated(false);
+                                break;
+                            case OK:
+                                // no action needed as the thing is already online.
+                                break;
+                            default:
+                                uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                        status.getMessage());
+                                setAuthenticated(false);
 
+                        }
                     }
                 };
 
@@ -156,9 +167,8 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
      *
      * @param config the Bridge configuration
      */
-    public UplinkWebInterface(NibeUplinkConfiguration config, ScheduledExecutorService scheduler,
-            NibeUplinkHandler handler, HttpClient httpClient) {
-        this.config = config;
+    public UplinkWebInterface(ScheduledExecutorService scheduler, NibeUplinkHandler handler, HttpClient httpClient) {
+        this.config = handler.getConfiguration();
         this.uplinkHandler = handler;
         this.scheduler = scheduler;
         this.requestExecutor = new WebRequestExecutor();
@@ -169,6 +179,7 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
      * starts the periodic request executor job which handles all web requests
      */
     public void start() {
+        this.config = uplinkHandler.getConfiguration();
         updateJobReference(requestExecutorJobReference, scheduler.scheduleWithFixedDelay(requestExecutor,
                 WEB_REQUEST_INITIAL_DELAY, WEB_REQUEST_INTERVAL, TimeUnit.MILLISECONDS));
     }
@@ -196,23 +207,26 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
 
                 @Override
                 public void update(CommunicationStatus status) {
-                    if (Code.FOUND.equals(status.getHttpCode())) {
-                        uplinkHandler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, "logged in");
-                        setAuthenticated(true);
-                    } else if (Code.OK.equals(status.getHttpCode())) {
-                        uplinkHandler.setStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
-                                "invalid username or password");
-                        setAuthenticated(false);
-                    } else if (Code.SERVICE_UNAVAILABLE.equals(status.getHttpCode())) {
-                        uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                                status.getMessage());
-                        setAuthenticated(false);
-                    } else {
-                        uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                status.getMessage());
-                        setAuthenticated(false);
+                    switch (status.getHttpCode()) {
+                        case FOUND:
+                            uplinkHandler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, "logged in");
+                            setAuthenticated(true);
+                            break;
+                        case OK:
+                            uplinkHandler.setStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
+                                    "invalid username or password");
+                            setAuthenticated(false);
+                            break;
+                        case SERVICE_UNAVAILABLE:
+                            uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                                    status.getMessage());
+                            setAuthenticated(false);
+                            break;
+                        default:
+                            uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                    status.getMessage());
+                            setAuthenticated(false);
                     }
-
                 }
             };
 
@@ -227,9 +241,9 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
      */
     private boolean preCheck() {
         String preCheckStatusMessage = "";
-        String localPassword = this.config.getPassword();
-        String localUser = this.config.getUser();
-        String localNibeId = this.config.getNibeId();
+        String localPassword = config.getPassword();
+        String localUser = config.getUser();
+        String localNibeId = config.getNibeId();
 
         if (localPassword == null || localPassword.isEmpty()) {
             preCheckStatusMessage = "please configure password first";
@@ -237,6 +251,8 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
             preCheckStatusMessage = "please configure user first";
         } else if (localNibeId == null || localNibeId.isEmpty()) {
             preCheckStatusMessage = "please configure nibeId first";
+        } else if (localNibeId.length() > NIBE_ID_THRESHOLD) {
+            preCheckStatusMessage = "your NibeId is too long. Please refer to the documentation on how to set this value.";
         } else {
             return true;
         }

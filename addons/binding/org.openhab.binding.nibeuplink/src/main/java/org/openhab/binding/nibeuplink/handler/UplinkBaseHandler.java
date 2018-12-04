@@ -51,16 +51,6 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
     private Set<Channel> deadChannels = new HashSet<>(100);
 
     /**
-     * Refresh interval which is used to poll values from the NibeUplink web interface (optional, defaults to 60 s)
-     */
-    private int refreshInterval;
-
-    /**
-     * Refresh interval which is used clean the dead channel list (optional, defaults to 1 h)
-     */
-    private int houseKeepingInterval = 1;
-
-    /**
      * Interface object for querying the NibeUplink web interface
      */
     private UplinkWebInterface webInterface;
@@ -77,7 +67,7 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
 
     public UplinkBaseHandler(Thing thing, HttpClient httpClient) {
         super(thing);
-        this.webInterface = new UplinkWebInterface(getConfiguration(), scheduler, this, httpClient);
+        this.webInterface = new UplinkWebInterface(scheduler, this, httpClient);
         this.pollingJobReference = new AtomicReference<@Nullable Future<?>>(null);
         this.deadChannelHouseKeepingReference = new AtomicReference<@Nullable Future<?>>(null);
     }
@@ -101,8 +91,6 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
         logger.debug("NibeUplink initialized with configuration: {}", config);
 
         setupCustomChannels(config);
-        this.refreshInterval = config.getPollingInterval();
-        this.houseKeepingInterval = config.getHouseKeepingInterval();
 
         startPolling();
         webInterface.start();
@@ -130,9 +118,9 @@ public abstract class UplinkBaseHandler extends BaseThingHandler implements Nibe
      */
     private void startPolling() {
         updateJobReference(pollingJobReference, scheduler.scheduleWithFixedDelay(new UplinkPolling(this),
-                POLLING_INITIAL_DELAY, refreshInterval, TimeUnit.SECONDS));
+                POLLING_INITIAL_DELAY, getConfiguration().getPollingInterval(), TimeUnit.SECONDS));
         updateJobReference(deadChannelHouseKeepingReference, scheduler.scheduleWithFixedDelay(deadChannels::clear,
-                HOUSE_KEEPING_INITIAL_DELAY, houseKeepingInterval, TimeUnit.SECONDS));
+                HOUSE_KEEPING_INITIAL_DELAY, getConfiguration().getHouseKeepingInterval(), TimeUnit.SECONDS));
     }
 
     /**
