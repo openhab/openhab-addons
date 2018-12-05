@@ -133,6 +133,13 @@
 		<description></description>
 		<state readOnly="true"></state>
 	</channel-type>
+	<channel-type id="base-type-43437">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Supply Pump Speed EP14</label>
+		<description>Supply Pump Speed, EP14 (GP6)</description>
+		<state pattern="%d %%" readOnly="true">
+		</state>
+	</channel-type>
 	<channel-type id="base-type-44298">
 		<item-type>Number:Energy</item-type>
 		<label>Heat Meter - HW Cpr and Add EP14</label>
@@ -260,13 +267,6 @@
 		<label>Max int add. power, SG Ready</label>
 		<description></description>
 		<state min="0" max="4500" step="1" pattern="%.2f %unit%" readOnly="false">
-		</state>
-	</channel-type>
-	<channel-type id="base-type-43437">
-		<item-type>Number</item-type>
-		<label>Supply Pump Speed EP14</label>
-		<description>Supply Pump Speed, EP14 (GP6)</description>
-		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 </thing:thing-descriptions>
