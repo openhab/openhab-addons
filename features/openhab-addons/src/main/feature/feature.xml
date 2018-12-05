@@ -353,6 +353,12 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.mihome/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-miio" description="Xiaomi Mi IO Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-mdns</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.miio/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-milight" description="Milight Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.milight/${project.version}</bundle>
