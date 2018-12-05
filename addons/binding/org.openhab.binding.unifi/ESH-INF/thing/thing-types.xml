@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="unifi" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0" xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+<thing:thing-descriptions bindingId="unifi"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="controller">
 
@@ -35,12 +38,8 @@
 		</config-description>
 
 	</bridge-type>
-	 
-<!--
- 	<thing-type id="wiredClient">
-	   .. coming soon ..
-	</thing-type>
- -->	
+
+	<!-- <thing-type id="wiredClient"> .. coming soon .. </thing-type> -->
 
 	<thing-type id="wirelessClient">
 
@@ -51,14 +50,14 @@
 		<description>A wireless client connected to a UniFi wireless network</description>
 
 		<channels>
-		    <!--  common wired + wireless client channels  -->
+			<!-- common wired + wireless client channels -->
 			<channel id="online" typeId="online" />
 			<channel id="site" typeId="site" />
 			<channel id="macAddress" typeId="macAddress" />
 			<channel id="ipAddress" typeId="ipAddress" />
 			<channel id="uptime" typeId="uptime" />
 			<channel id="lastSeen" typeId="lastSeen" />
-			<!--  additional wireless client channels -->
+			<!-- additional wireless client channels -->
 			<channel id="ap" typeId="ap" />
 			<channel id="essid" typeId="essid" />
 			<channel id="rssi" typeId="rssi" />
@@ -90,41 +89,41 @@
 		<description>Online status of the wireless client</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	
-    <channel-type id="site">
-        <item-type>String</item-type>
-        <label>Site Name</label>
-        <description>UniFi Site the client is associated with</description>
-        <state readOnly="true"></state>
-    </channel-type>
-	
-    <channel-type id="macAddress">
-       <item-type>String</item-type>
-       <label>MAC Address</label>
-       <description>MAC address of the client</description>
-       <state readOnly="true"></state>
-    </channel-type>
-    
-    <channel-type id="ipAddress">
-       <item-type>String</item-type>
-       <label>IP Address</label>
-       <description>IP address of the client</description>
-       <state readOnly="true"></state>
-    </channel-type>
-    
-    <channel-type id="uptime">
-        <item-type>Number</item-type>
-        <label>Uptime</label>
-        <description>Uptime of the client (in seconds)</description>
-        <state readOnly="true"></state>
-    </channel-type>
 
-    <channel-type id="lastSeen">
-        <item-type>DateTime</item-type>
-        <label>Last Seen</label>
-        <description>Timestamp of when the client was last seen</description>
-        <state readOnly="true"></state>
-    </channel-type>
+	<channel-type id="site">
+		<item-type>String</item-type>
+		<label>Site Name</label>
+		<description>UniFi Site the client is associated with</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="macAddress">
+		<item-type>String</item-type>
+		<label>MAC Address</label>
+		<description>MAC address of the client</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="ipAddress">
+		<item-type>String</item-type>
+		<label>IP Address</label>
+		<description>IP address of the client</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="uptime">
+		<item-type>Number</item-type>
+		<label>Uptime</label>
+		<description>Uptime of the client (in seconds)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="lastSeen">
+		<item-type>DateTime</item-type>
+		<label>Last Seen</label>
+		<description>Timestamp of when the client was last seen</description>
+		<state readOnly="true"></state>
+	</channel-type>
 
 	<channel-type id="ap">
 		<item-type>String</item-type>
