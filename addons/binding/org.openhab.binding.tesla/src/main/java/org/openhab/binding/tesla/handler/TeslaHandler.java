@@ -100,6 +100,8 @@ public class TeslaHandler extends BaseThingHandler {
     private static final int API_ERROR_INTERVAL_SECONDS = 15;
     private static final int EVENT_MAXIMUM_ERRORS_IN_INTERVAL = 10;
     private static final int EVENT_ERROR_INTERVAL_SECONDS = 15;
+    private static final int API_SLEEP_INTERVAL_MINUTES = 15;
+    private static final int MOVE_THRESHOLD_INTERVAL_MINUTES = 5;
 
     private final Logger logger = LoggerFactory.getLogger(TeslaHandler.class);
 
@@ -121,6 +123,7 @@ public class TeslaHandler extends BaseThingHandler {
     public final WebTarget vehicleTarget = vehiclesTarget.path(PATH_VEHICLE_ID);
     public final WebTarget dataRequestTarget = vehicleTarget.path(PATH_DATA_REQUEST);
     public final WebTarget commandTarget = vehicleTarget.path(PATH_COMMAND);
+    public final WebTarget wakeUpTarget = vehicleTarget.path(PATH_WAKE_UP);
     protected WebTarget eventTarget;
 
     // Threading and Job related variables
@@ -130,13 +133,21 @@ public class TeslaHandler extends BaseThingHandler {
     protected ScheduledFuture<?> slowStateJob;
     protected QueueChannelThrottler stateThrottler;
 
-    protected boolean allowWakeUp = true;
+    protected boolean allowWakeUp = false;
     protected long lastTimeStamp;
     protected long apiIntervalTimestamp;
     protected int apiIntervalErrors;
     protected long eventIntervalTimestamp;
     protected int eventIntervalErrors;
     protected ReentrantLock lock;
+
+    protected double lastLongitude;
+    protected double lastLatitude;
+    protected long lastLocationChangeTimestamp;
+
+    protected long lastStateTimestamp = System.currentTimeMillis();
+    protected String lastState = "";
+    protected boolean isInactive = false;
 
     private StorageService storageService;
     protected Gson gson = new Gson();
@@ -162,9 +173,6 @@ public class TeslaHandler extends BaseThingHandler {
                 connectJob = scheduler.scheduleWithFixedDelay(connectRunnable, 0, CONNECT_RETRY_INTERVAL,
                         TimeUnit.MILLISECONDS);
             }
-
-            eventThread = new Thread(eventRunnable, "ESH-Tesla-Event Stream-" + getThing().getUID());
-            eventThread.start();
 
             Map<Object, Rate> channels = new HashMap<>();
             channels.put(DATA_THROTTLE, new Rate(1, 1, TimeUnit.SECONDS));
@@ -205,7 +213,7 @@ public class TeslaHandler extends BaseThingHandler {
                 slowStateJob = null;
             }
 
-            if (!eventThread.isInterrupted()) {
+            if (eventThread != null && !eventThread.isInterrupted()) {
                 eventThread.interrupt();
                 eventThread = null;
             }
@@ -228,11 +236,7 @@ public class TeslaHandler extends BaseThingHandler {
             if (isAwake()) {
                 // Request the state of all known variables. This is sub-optimal, but the requests get scheduled and
                 // throttled so we are safe not to break the Tesla SLA
-                requestData(DRIVE_STATE);
-                requestData(VEHICLE_STATE);
-                requestData(CHARGE_STATE);
-                requestData(CLIMATE_STATE);
-                requestData(GUI_STATE);
+                requestAllData();
             }
         } else {
             if (selector != null) {
@@ -361,6 +365,18 @@ public class TeslaHandler extends BaseThingHandler {
                             }
                             break;
                         }
+                        case FORCE_REFRESH: {
+                            if (command instanceof OnOffType) {
+                                if (((OnOffType) command) == OnOffType.ON) {
+                                    if (!isOnline()) {
+                                        wakeUp();
+                                    } else {
+                                        setActive();
+                                    }
+                                }
+                            }
+                            break;
+                        }
                         case ALLOWWAKEUP: {
                             if (command instanceof OnOffType) {
                                 allowWakeUp = (((OnOffType) command) == OnOffType.ON);
@@ -479,6 +495,14 @@ public class TeslaHandler extends BaseThingHandler {
         sendCommand(parameter, null, target);
     }
 
+    public void requestAllData() {
+        requestData(DRIVE_STATE);
+        requestData(VEHICLE_STATE);
+        requestData(CHARGE_STATE);
+        requestData(CLIMATE_STATE);
+        requestData(GUI_STATE);
+    }
+
     protected String invokeAndParse(String command, String payLoad, WebTarget target) {
         logger.debug("Invoking: {}", command);
 
@@ -508,38 +532,20 @@ public class TeslaHandler extends BaseThingHandler {
 
             JsonParser parser = new JsonParser();
 
-            if (response != null && response.getStatus() == 200) {
-                try {
-                    JsonObject jsonObject = parser.parse(response.readEntity(String.class)).getAsJsonObject();
-                    logger.trace("Request : {}:{}:{} yields {}", new Object[] { command, payLoad, target.toString(),
-                            jsonObject.get("response").toString() });
-                    return jsonObject.get("response").toString();
-                } catch (Exception e) {
-                    logger.error("An exception occurred while invoking a REST request : '{}'", e.getMessage());
-                }
-            } else {
+            if (!checkResponse(response, false)) {
                 logger.error("An error occurred while communicating with the vehicle during request {} : {}:{}",
                         new Object[] { command, (response != null) ? response.getStatus() : "",
                                 (response != null) ? response.getStatusInfo() : "No Response" });
+                return null;
+            }
 
-                if (apiIntervalErrors == 0 && response != null && response.getStatus() == 401) {
-                    authenticate();
-                }
-
-                apiIntervalErrors++;
-                if (apiIntervalErrors >= API_MAXIMUM_ERRORS_IN_INTERVAL) {
-                    logger.warn("Reached the maximum number of errors ({}) for the current interval ({} seconds)",
-                            API_MAXIMUM_ERRORS_IN_INTERVAL, API_ERROR_INTERVAL_SECONDS);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                    eventClient.close();
-                    return null;
-                }
-
-                if ((System.currentTimeMillis() - apiIntervalTimestamp) > 1000 * API_ERROR_INTERVAL_SECONDS) {
-                    logger.trace("Resetting the error counter. ({} errors in the last interval)", apiIntervalErrors);
-                    apiIntervalTimestamp = System.currentTimeMillis();
-                    apiIntervalErrors = 0;
-                }
+            try {
+                JsonObject jsonObject = parser.parse(response.readEntity(String.class)).getAsJsonObject();
+                logger.trace("Request : {}:{}:{} yields {}",
+                        new Object[] { command, payLoad, target.toString(), jsonObject.get("response").toString() });
+                return jsonObject.get("response").toString();
+            } catch (Exception e) {
+                logger.error("An exception occurred while invoking a REST request : '{}'", e.getMessage());
             }
         }
 
@@ -547,6 +553,8 @@ public class TeslaHandler extends BaseThingHandler {
     }
 
     public void parseAndUpdate(String request, String payLoad, String result) {
+        final Double LOCATION_THRESHOLD = .0000001;
+
         JsonParser parser = new JsonParser();
         JsonObject jsonObject = null;
 
@@ -556,6 +564,16 @@ public class TeslaHandler extends BaseThingHandler {
                 switch (request) {
                     case DRIVE_STATE: {
                         driveState = gson.fromJson(result, DriveState.class);
+
+                        if (Math.abs(lastLatitude - driveState.latitude) > LOCATION_THRESHOLD
+                                || Math.abs(lastLongitude - driveState.longitude) > LOCATION_THRESHOLD) {
+                            logger.debug("Vehicle moved, resetting last location timestamp");
+
+                            lastLatitude = driveState.latitude;
+                            lastLongitude = driveState.longitude;
+                            lastLocationChangeTimestamp = System.currentTimeMillis();
+                        }
+
                         break;
                     }
                     case GUI_STATE: {
@@ -568,7 +586,7 @@ public class TeslaHandler extends BaseThingHandler {
                     }
                     case CHARGE_STATE: {
                         chargeState = gson.fromJson(result, ChargeState.class);
-                        if (chargeState.charging_state != null && "Charging".equals(chargeState.charging_state)) {
+                        if (isCharging()) {
                             updateState(CHANNEL_CHARGE, OnOffType.ON);
                         } else {
                             updateState(CHANNEL_CHARGE, OnOffType.OFF);
@@ -578,6 +596,37 @@ public class TeslaHandler extends BaseThingHandler {
                     }
                     case CLIMATE_STATE: {
                         climateState = gson.fromJson(result, ClimateState.class);
+                        break;
+                    }
+                    case "queryVehicle": {
+                        if (vehicle != null && !lastState.equals(vehicle.state)) {
+                            lastState = vehicle.state;
+
+                            // in case vehicle changed to online, refresh all data
+                            if (isOnline()) {
+                                logger.debug("Vehicle is now online, updating all data");
+                                lastLocationChangeTimestamp = System.currentTimeMillis();
+                                requestAllData();
+                            }
+
+                            setActive();
+                        }
+
+                        // reset timestamp if elapsed and set inactive to false
+                        if (isInactive && lastStateTimestamp + (API_SLEEP_INTERVAL_MINUTES * 60 * 1000) < System
+                                .currentTimeMillis()) {
+                            logger.debug("Vehicle did not fall asleep within sleep period, checking again");
+                            setActive();
+                        } else {
+                            boolean wasInactive = isInactive;
+                            isInactive = !isCharging() && !hasMovedInSleepInterval();
+
+                            if (!wasInactive && isInactive) {
+                                lastStateTimestamp = System.currentTimeMillis();
+                                logger.debug("Vehicle is inactive");
+                            }
+                        }
+
                         break;
                     }
                 }
@@ -682,7 +731,7 @@ public class TeslaHandler extends BaseThingHandler {
     }
 
     protected boolean isAwake() {
-        return vehicle != null && !"asleep".equals(vehicle.state) && vehicle.vehicle_id != null;
+        return vehicle != null && "online".equals(vehicle.state) && vehicle.vehicle_id != null;
     }
 
     protected boolean isOnline() {
@@ -696,6 +745,59 @@ public class TeslaHandler extends BaseThingHandler {
                         && (!"P".equals(driveState.shift_state) || !"Undefined".equals(driveState.shift_state));
             }
         }
+        return false;
+    }
+
+    protected boolean isInactive() {
+        // vehicle is inactive in case
+        // - it does not charge
+        // - it has not moved in the observation period
+        return isInactive && !isCharging() && !hasMovedInSleepInterval();
+    }
+
+    protected boolean isCharging() {
+        return chargeState != null && "Charging".equals(chargeState.charging_state);
+    }
+
+    protected boolean hasMovedInSleepInterval() {
+        return lastLocationChangeTimestamp > (System.currentTimeMillis()
+                - (MOVE_THRESHOLD_INTERVAL_MINUTES * 60 * 1000));
+    }
+
+    protected boolean allowQuery() {
+        return allowWakeUp || (isOnline() && !isInactive());
+    }
+
+    protected void setActive() {
+        isInactive = false;
+        lastLocationChangeTimestamp = System.currentTimeMillis();
+        lastLatitude = 0;
+        lastLongitude = 0;
+    }
+
+    protected boolean checkResponse(Response response, boolean immediatelyFail) {
+
+        if (response != null && response.getStatus() == 200) {
+            return true;
+        } else {
+            apiIntervalErrors++;
+            if (immediatelyFail || apiIntervalErrors >= API_MAXIMUM_ERRORS_IN_INTERVAL) {
+                if (immediatelyFail) {
+                    logger.warn("Got an unsuccessful result, setting vehicle to offline and will try again");
+                } else {
+                    logger.warn("Reached the maximum number of errors ({}) for the current interval ({} seconds)",
+                            API_MAXIMUM_ERRORS_IN_INTERVAL, API_ERROR_INTERVAL_SECONDS);
+                }
+
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                eventClient.close();
+            } else if ((System.currentTimeMillis() - apiIntervalTimestamp) > 1000 * API_ERROR_INTERVAL_SECONDS) {
+                logger.trace("Resetting the error counter. ({} errors in the last interval)", apiIntervalErrors);
+                apiIntervalTimestamp = System.currentTimeMillis();
+                apiIntervalErrors = 0;
+            }
+        }
+
         return false;
     }
 
@@ -812,7 +914,7 @@ public class TeslaHandler extends BaseThingHandler {
     }
 
     public void wakeUp() {
-        sendCommand(COMMAND_WAKE_UP);
+        sendCommand(COMMAND_WAKE_UP, wakeUpTarget);
     }
 
     protected Vehicle queryVehicle() {
@@ -821,6 +923,11 @@ public class TeslaHandler extends BaseThingHandler {
                 .header("Authorization", "Bearer " + logonToken.access_token).get();
 
         logger.debug("Querying the vehicle : Response : {}:{}", response.getStatus(), response.getStatusInfo());
+
+        if (!checkResponse(response, true)) {
+            logger.error("An error occurred while querying the vehicle");
+            return null;
+        }
 
         JsonParser parser = new JsonParser();
 
@@ -841,6 +948,11 @@ public class TeslaHandler extends BaseThingHandler {
         }
 
         return null;
+    }
+
+    protected void queryVehicleAndUpdate() {
+        vehicle = queryVehicle();
+        parseAndUpdate("queryVehicle", null, vehicleJSON);
     }
 
     private String getStorageKey() {
@@ -965,14 +1077,22 @@ public class TeslaHandler extends BaseThingHandler {
 
     protected Runnable fastStateRunnable = () -> {
         if (getThing().getStatus() == ThingStatus.ONLINE) {
-            if (isAwake()) {
+            boolean allowQuery = allowQuery();
+
+            if (allowQuery) {
                 requestData(DRIVE_STATE);
                 requestData(VEHICLE_STATE);
             } else {
-                if (vehicle != null && allowWakeUp) {
+                if (vehicle == null) {
+                    vehicle = queryVehicle();
+                } else if (allowWakeUp) {
                     wakeUp();
                 } else {
-                    vehicle = queryVehicle();
+                    queryVehicleAndUpdate();
+
+                    if (isOnline()) {
+                        logger.debug("Vehicle is neither charging nor moving, skipping updates to allow it to sleep");
+                    }
                 }
             }
         }
@@ -992,17 +1112,25 @@ public class TeslaHandler extends BaseThingHandler {
 
     protected Runnable slowStateRunnable = () -> {
         if (getThing().getStatus() == ThingStatus.ONLINE) {
-            if (isAwake()) {
+            boolean allowQuery = allowQuery();
+
+            if (allowQuery) {
                 requestData(CHARGE_STATE);
                 requestData(CLIMATE_STATE);
                 requestData(GUI_STATE);
                 queryVehicle(MOBILE_ENABLED_STATE);
                 parseAndUpdate("queryVehicle", null, vehicleJSON);
             } else {
-                if (vehicle != null && allowWakeUp) {
+                if (vehicle == null) {
+                    vehicle = queryVehicle();
+                } else if (allowWakeUp) {
                     wakeUp();
                 } else {
-                    vehicle = queryVehicle();
+                    queryVehicleAndUpdate();
+
+                    if (isOnline()) {
+                        logger.debug("Vehicle is neither charging nor moving, skipping updates to allow it to sleep");
+                    }
                 }
             }
         }
@@ -1250,8 +1378,10 @@ public class TeslaHandler extends BaseThingHandler {
             try {
                 String result = "";
 
-                if (isAwake() && getThing().getStatus() == ThingStatus.ONLINE) {
-                    result = invokeAndParse(request, payLoad, target);
+                if (getThing().getStatus() == ThingStatus.ONLINE) {
+                    if (request.equals(COMMAND_WAKE_UP) || isAwake()) {
+                        result = invokeAndParse(request, payLoad, target);
+                    }
                 }
 
                 if (result != null && !"".equals(result)) {

@@ -376,6 +376,18 @@ public class TeslaChannelSelectorProxy {
                 return super.getState(s);
             }
         },
+        FORCE_REFRESH(null, "forcerefresh", OnOffType.class, false) {
+            @Override
+            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
+                if (s.equals("true") || s.equals("1")) {
+                    return super.getState("ON");
+                }
+                if (s.equals("false") || s.equals("0")) {
+                    return super.getState("OFF");
+                }
+                return super.getState(s);
+            }
+        },
         FRONT_DEFROSTER("is_front_defroster_on", "frontdefroster", OnOffType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
