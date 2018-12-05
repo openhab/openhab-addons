@@ -59,13 +59,13 @@ public class UniFiControllerRequest<T> {
 
     private final Logger logger = LoggerFactory.getLogger(UniFiControllerRequest.class);
 
-    private Gson gson;
+    private final Gson gson;
 
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
 
-    private String host = "unifi";
+    private final String host;
 
-    private int port = 8443;
+    private final int port;
 
     private String path = "/";
 
@@ -73,7 +73,7 @@ public class UniFiControllerRequest<T> {
 
     private Map<String, String> bodyParameters = new HashMap<>();
 
-    private Class<T> resultType;
+    private final Class<T> resultType;
 
     // Public API
 
