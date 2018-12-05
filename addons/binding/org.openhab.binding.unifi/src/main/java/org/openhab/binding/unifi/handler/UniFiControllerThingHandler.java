@@ -293,7 +293,7 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
         UniFiDevice[] devices = controller.getDevices(site);
         logger.debug("Found {} UniFi Device(s):", devices.length);
         for (UniFiDevice device : devices) {
-            device.setSite(sitesCache.get(device.getSiteId()));
+            device.setSite(site);
             logger.debug("  {}", device);
             deviceMap.put(device.getMac(), device);
         }
