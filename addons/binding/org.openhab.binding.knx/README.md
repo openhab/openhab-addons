@@ -24,7 +24,7 @@ The IP Gateway is the most commonly used way to connect to the KNX bus. At its b
 | Name                | Required     | Description                                                                                                  | Default value                                        |
 |---------------------|--------------|--------------------------------------------------------------------------------------------------------------|------------------------------------------------------|
 | type                | Yes          | The IP connection type for connecting to the KNX bus (`TUNNEL` or `ROUTER`)                                  | -                                                    |
-| ipAddress           | for `TUNNEL` | Network address of the KNX/IP gateway                                                                        | for `TUNNEL`: \<nothing\>, for `ROUTER`: 224.0.23.12 |
+| ipAddress           | for `TUNNEL` | Network address of the KNX/IP gateway. If type `ROUTER` is set, the IPv4 Multicast Address can be set.  | for `TUNNEL`: \<nothing\>, for `ROUTER`: 224.0.23.12 |
 | portNumber          | for `TUNNEL` | Port number of the KNX/IP gateway                                                                            | 3671                                                 |
 | localIp             | No           | Network address of the local host to be used to set up the connection to the KNX/IP gateway                  | the system-wide configured primary interface address |
 | localSourceAddr     | No           | The (virtual) individual address for identification of this KNX/IP gateway within the KNX bus                | 0.0.0                                                |
@@ -116,7 +116,7 @@ Standard channels are used most of the time. They are used in the common case wh
 
 #### Control Channel Types
 
-In contrast to the standard channels above, the control channel types are used for cases where the KNX bus does not own the physical state of a device. This could be the case if e.g. a lamp from another binding should be controlled by a KNX wall switch.
+In contrast to the standard channels above, the control channel types are used for cases where the KNX bus does not own the physical state of a device. This could be the case if e.g. a lamp from another binding should be controlled by a KNX wall switch. If from the KNX bus a `GroupValueRead` telegram is sent to a *-control Channel, the bridge responds with a `GroupValueResponse` telegram to the KNX bus.
 
 ##### Channel Type "switch-control"
 
@@ -259,7 +259,7 @@ Bridge knx:serial:bridge [
     autoReconnectPeriod=1
 ] {
     Thing device generic {
-        Type switch-control        : controlSwitch        "Control Switch"        [ ga="3/3/10+<3/3/11" ]
+        Type switch-control        : controlSwitch        "Control Switch"        [ ga="3/3/10+<3/3/11" ]   // '<'  signs are allowed but will be ignored for control Channels
         Type dimmer-control        : controlDimmer        "Control Dimmer"        [ switch="3/3/50+3/3/48", position="3/3/46", increaseDecrease="3/3/49", frequency=300 ]
         Type rollershutter-control : controlRollershutter "Control Rollershutter" [ upDown="3/4/1+3/4/2", stopMove="3/4/3", position="3/4/4" ]
         Type number-control        : controlNumber        "Control Number"        [ ga="1/2/2" ]
