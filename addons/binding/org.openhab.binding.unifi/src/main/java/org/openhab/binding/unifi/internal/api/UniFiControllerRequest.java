@@ -9,7 +9,7 @@
 package org.openhab.binding.unifi.internal.api;
 
 import java.net.ConnectException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -50,8 +50,6 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class UniFiControllerRequest<T> {
-
-    private static final Charset CHARSET_UTF8 = Charset.forName("UTF-8");
 
     private static final String CONTENT_TYPE_APPLICATION_JSON = MimeTypes.Type.APPLICATION_JSON.asString();
 
@@ -172,7 +170,8 @@ public class UniFiControllerRequest<T> {
         }
         if (!bodyParameters.isEmpty()) {
             String jsonBody = getRequestBodyAsJson();
-            ContentProvider content = new StringContentProvider(CONTENT_TYPE_APPLICATION_JSON, jsonBody, CHARSET_UTF8);
+            ContentProvider content = new StringContentProvider(CONTENT_TYPE_APPLICATION_JSON, jsonBody,
+                    StandardCharsets.UTF_8);
             request = request.content(content);
         }
         return request;
