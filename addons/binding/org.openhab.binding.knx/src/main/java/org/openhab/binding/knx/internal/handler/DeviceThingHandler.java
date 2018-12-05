@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -66,6 +67,8 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
 
     private final KNXTypeMapper typeHelper = new KNXCoreTypeMapper();
     private final Set<GroupAddress> groupAddresses = new HashSet<>();
+    private final Set<GroupAddress> groupAddressesWriteBlockedOnce = new HashSet<>();
+    private final Set<OutboundSpec> groupAddressesRespondingSpec = new HashSet<>();
     private final Map<GroupAddress, @Nullable ScheduledFuture<?>> readFutures = new HashMap<>();
     private final Map<ChannelUID, @Nullable ScheduledFuture<?>> channelFutures = new HashMap<>();
     private @Nullable IndividualAddress address;
@@ -189,6 +192,19 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
         return groupAddresses.contains(destination);
     }
 
+    /** KNXIO remember controls, removeIf may be null */
+    @SuppressWarnings("null")
+    private void rememberRespondingSpec(OutboundSpec commandSpec, boolean add) {
+        GroupAddress ga = commandSpec.getGroupAddress();
+        groupAddressesRespondingSpec.removeIf(spec -> spec.getGroupAddress().equals(ga));
+        if (add) {
+            groupAddressesRespondingSpec.add(commandSpec);
+        }
+        logger.trace("rememberRespondingSpec handled commandSpec for '{}' size '{}' added '{}'", ga,
+                groupAddressesRespondingSpec.size(), add);
+    }
+
+    /** Handling commands triggered from openHAB */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.trace("Handling command '{}' for channel '{}'", command, channelUID);
@@ -207,8 +223,13 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
                 default:
                     withKNXType(channelUID, (selector, channelConfiguration) -> {
                         OutboundSpec commandSpec = selector.getCommandSpec(channelConfiguration, typeHelper, command);
-                        if (commandSpec != null) {
+                        // only send GroupValueWrite to KNX if GA is not blocked once
+                        if (commandSpec != null
+                                && !groupAddressesWriteBlockedOnce.remove(commandSpec.getGroupAddress())) {
                             getClient().writeToKNX(commandSpec);
+                            if (isControl(channelUID)) {
+                                rememberRespondingSpec(commandSpec, true);
+                            }
                         } else {
                             logger.debug(
                                     "None of the configured GAs on channel '{}' could handle the command '{}' of type '{}'",
@@ -234,18 +255,47 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
         return channelTypeUID;
     }
 
+    /** KNXIO */
+    private void sendGroupValueResponse(Channel channel, GroupAddress destination) {
+        Set<GroupAddress> rsa = getKNXChannelType(channel).getWriteAddresses(channel.getConfiguration());
+        if (rsa.size() > 0) {
+            logger.trace("onGroupRead size '{}'", rsa.size());
+            withKNXType(channel, (selector, configuration) -> {
+                Optional<OutboundSpec> os = groupAddressesRespondingSpec.stream().filter(spec -> {
+                    GroupAddress groupAddress = spec.getGroupAddress();
+                    if (groupAddress != null) {
+                        return groupAddress.equals(destination);
+                    }
+                    return false;
+                }).findFirst();
+                if (os.isPresent()) {
+                    logger.trace("onGroupRead respondToKNX '{}'", os.get().getGroupAddress());
+                    /** KNXIO: sending real "GroupValueResponse" to the KNX bus. */
+                    getClient().respondToKNX(os.get());
+                }
+            });
+        }
+    }
+
+    /**
+     * KNXIO, extended with the ability to respond on "GroupValueRead" telegrams with "GroupValueResponse" telegram
+     */
     @Override
     public void onGroupRead(AbstractKNXClient client, IndividualAddress source, GroupAddress destination, byte[] asdu) {
-        logger.trace("Thing '{}' received a Group Read Request telegram from '{}' for destination '{}'",
+        logger.trace("onGroupRead Thing '{}' received a GroupValueRead telegram from '{}' for destination '{}'",
                 getThing().getUID(), source, destination);
-
         for (Channel channel : getThing().getChannels()) {
             if (isControl(channel.getUID())) {
                 withKNXType(channel, (selector, configuration) -> {
                     OutboundSpec responseSpec = selector.getResponseSpec(configuration, destination,
                             RefreshType.REFRESH);
                     if (responseSpec != null) {
+                        logger.trace("onGroupRead isControl -> postCommand");
+                        // REFRESH to get event for scripting
                         postCommand(channel.getUID().getId(), RefreshType.REFRESH);
+                        sendGroupValueResponse(channel, destination);
+                    } else {
+                        logger.trace("onGroupRead isControl but no responseSpec found.");
                     }
                 });
             }
@@ -255,23 +305,58 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
     @Override
     public void onGroupReadResponse(AbstractKNXClient client, IndividualAddress source, GroupAddress destination,
             byte[] asdu) {
-        // Group Read Responses are treated the same as Group Write telegrams
+        // GroupValueResponses are treated the same as GroupValueWrite telegrams
+        logger.trace(
+                "onGroupReadResponse Thing '{}' processes a GroupValueResponse telegram for destination '{}' for channel '{}'",
+                getThing().getUID(), destination);
         onGroupWrite(client, source, destination, asdu);
     }
 
+    /**
+     * KNXIO, here value changes are set, coming from KNX OR openHAB.
+     */
     @Override
     public void onGroupWrite(AbstractKNXClient client, IndividualAddress source, GroupAddress destination,
             byte[] asdu) {
-        logger.debug("Thing '{}' received a Group Write telegram from '{}' for destination '{}'", getThing().getUID(),
-                source, destination);
+        logger.debug("onGroupWrite Thing '{}' received a GroupValueWrite telegram from '{}' for destination '{}'",
+                getThing().getUID(), source, destination);
 
         for (Channel channel : getThing().getChannels()) {
             withKNXType(channel, (selector, configuration) -> {
                 InboundSpec listenSpec = selector.getListenSpec(configuration, destination);
                 if (listenSpec != null) {
-                    logger.trace("Thing '{}' processes a Group Write telegram for destination '{}' for channel '{}'",
+                    logger.trace(
+                            "onGroupWrite Thing '{}' processes a GroupValueWrite telegram for destination '{}' for channel '{}'",
                             getThing().getUID(), destination, channel.getUID());
-                    processDataReceived(destination, asdu, listenSpec, channel.getUID());
+                    /**
+                     * Remember current KNXIO outboundSpec only if it is a control channel.
+                     */
+                    if (isControl(channel.getUID())) {
+                        logger.trace("onGroupWrite isControl");
+                        Type type = typeHelper.toType(
+                                new CommandDP(destination, getThing().getUID().toString(), 0, listenSpec.getDPT()),
+                                asdu);
+                        if (type != null) {
+                            OutboundSpec commandSpec = selector.getCommandSpec(configuration, typeHelper, type);
+                            if (commandSpec != null) {
+                                GroupAddress mainGa = getKNXChannelMainGA(channel);
+                                // only process if value has changed
+                                if (getRespondingSpecValue(mainGa) != commandSpec.getType()) {
+                                    // if destination is mainGA AND changed value, for mainGA expose next expected
+                                    // GroupValueWrite from openHAB to KNX
+                                    if (destination.equals(mainGa)) {
+                                        logger.trace("onGroupWrite mainGA groupAddressesWriteExposeOnce: '{}'",
+                                                destination);
+                                        groupAddressesWriteBlockedOnce.add(destination);
+                                    }
+                                    processDataReceived(destination, asdu, listenSpec, channel.getUID());
+                                }
+                                rememberRespondingSpec(commandSpec, true);
+                            }
+                        }
+                    } else {
+                        processDataReceived(destination, asdu, listenSpec, channel.getUID());
+                    }
                 }
             });
         }
@@ -312,6 +397,7 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
                     }
                 } else {
                     if (type instanceof Command) {
+                        logger.trace("processDataReceived postCommand new value '{}' for GA '{}'", asdu, address);
                         postCommand(channelUID, (Command) type);
                     }
                 }
@@ -336,4 +422,21 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
         return KNXChannelTypes.getType(channel.getChannelTypeUID());
     }
 
+    private GroupAddress getKNXChannelMainGA(Channel channel) {
+        return getKNXChannelType(channel).getWriteAddresses(channel.getConfiguration()).stream().findFirst().get();
+    }
+
+    private @Nullable Type getRespondingSpecValue(GroupAddress destination) {
+        Optional<OutboundSpec> os = groupAddressesRespondingSpec.stream().filter(spec -> {
+            GroupAddress groupAddress = spec.getGroupAddress();
+            if (groupAddress != null) {
+                return groupAddress.equals(destination);
+            }
+            return false;
+        }).findFirst();
+        if (os.isPresent()) {
+            return os.get().getType();
+        }
+        return null;
+    }
 }
