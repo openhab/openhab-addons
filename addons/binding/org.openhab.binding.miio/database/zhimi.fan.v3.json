@@ -1,0 +1,222 @@
+{
+	"deviceMapping": {
+		"id": [
+			"zhimi.fan.v1",
+			"zhimi.fan.v2",
+			"zhimi.fan.v3"
+		],
+		"channels": [
+			{
+				"property": "power",
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"channelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "angle_enable",
+				"friendlyName": "Rotation",
+				"channel": "angleEnable",
+				"type": "Switch",
+				"refresh": true,
+				"channelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_angle_enable",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "use_time",
+				"friendlyName": "Run Time",
+				"channel": "usedhours",
+				"type": "Number",
+				"refresh": true,
+				"transformation": "SecondsToHours",
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "angle",
+				"friendlyName": "Angle",
+				"channel": "angle",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_angle",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "poweroff_time",
+				"friendlyName": "Timer",
+				"channel": "poweroffTime",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_poweroff_time",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "buzzer",
+				"friendlyName": "Buzzer",
+				"channel": "buzzer",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_buzzer",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "led_b",
+				"friendlyName": "Led",
+				"channel": "led_b",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_led_b",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "child_lock",
+				"friendlyName": "Child Lock",
+				"channel": "child_lock",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_child_lock",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "speed_level",
+				"friendlyName": "Speed Level",
+				"channel": "speedLevel",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_speed_level",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "speed",
+				"friendlyName": "Speed",
+				"channel": "speed",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_speed",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "natural_level",
+				"friendlyName": "Natural Level",
+				"channel": "naturalLevel",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_natural_level",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "temp_dec",
+				"friendlyName": "Temperature",
+				"channel": "temp_dec",
+				"type": "Number",
+				"refresh": true,
+				"transformation": "/10",
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "humidity",
+				"friendlyName": "Humidity",
+				"channel": "humidity",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "ac_power",
+				"friendlyName": "AC Power",
+				"channel": "acPower",
+				"type": "String",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "bat_charge",
+				"friendlyName": "Battery Charge",
+				"channel": "mode",
+				"type": "String",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": []
+			},
+			{
+				"property": "battery",
+				"friendlyName": "Battery",
+				"channel": "battery",
+				"channelType": "system.battery-level",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "",
+				"friendlyName": "Move Direction",
+				"channel": "move",
+				"type": "String",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_move",
+						"parameterType": "STRING"
+					}
+				]
+			}
+		]
+	}
+}

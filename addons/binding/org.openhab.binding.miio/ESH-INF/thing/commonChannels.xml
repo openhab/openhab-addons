@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="miio"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="network" advanced="true">
+		<label>Network</label>
+		<channels>
+			<channel id="ssid" typeId="ssid" />
+			<channel id="bssid" typeId="bssid" />
+			<channel id="rssi" typeId="rssi" />
+			<channel id="life" typeId="life" />
+		</channels>
+	</channel-group-type>
+
+	<!-- Network channels -->
+	<channel-type id="ssid" advanced="true">
+		<item-type>String</item-type>
+		<label>SSID</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="bssid" advanced="true">
+		<item-type>String</item-type>
+		<label>BSSID</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="rssi" advanced="true">
+		<item-type>Number</item-type>
+		<label>RSSI</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="life" advanced="true">
+		<item-type>Number</item-type>
+		<label>Life</label>
+		<state readOnly="true" />
+	</channel-type>
+
+	<!-- Common Actions channels -->
+	<channel-type id="commands" advanced="true">
+		<item-type>String</item-type>
+		<label>Execute Command</label>
+	</channel-type>
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Power On/Off</label>
+	</channel-type>
+	<channel-type id="ambientPower">
+		<item-type>Switch</item-type>
+		<label>Ambient Power On/Off</label>
+	</channel-type>
+	<channel-type id="eyecare">
+		<item-type>Switch</item-type>
+		<label>Eyecare Mode On/Off</label>
+	</channel-type>
+	<channel-type id="mode">
+		<item-type>String</item-type>
+		<label>Mode</label>
+	</channel-type>
+	<channel-type id="modeGreen">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<state>
+			<options>
+				<option value="green">Green</option>
+				<option value="normal">Normal</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="brightness">
+		<item-type>Number</item-type>
+		<label>Brightness</label>
+	</channel-type>
+	<channel-type id="ambientBrightness">
+		<item-type>Number</item-type>
+		<label>Ambient Brightness</label>
+	</channel-type>
+	<channel-type id="nightlightBrightness">
+		<item-type>Number</item-type>
+		<label>Nightlight Brightness</label>
+	</channel-type>
+	<channel-type id="illumination">
+		<item-type>Number</item-type>
+		<label>Environment Illumination</label>
+	</channel-type>
+	<channel-type id="led">
+		<item-type>Switch</item-type>
+		<label>Led</label>
+	</channel-type>
+	<channel-type id="colorMode">
+		<item-type>Number</item-type>
+		<label>Color Mode</label>
+	</channel-type>
+	<channel-type id="ambientColorMode">
+		<item-type>Number</item-type>
+		<label>Ambient Color Mode</label>
+	</channel-type>
+	<channel-type id="colorTemperature">
+		<item-type>Number</item-type>
+		<label>Color Temperature</label>
+	</channel-type>
+	<channel-type id="ambientColorTemperature">
+		<item-type>Number</item-type>
+		<label>Ambient Color Temperature</label>
+	</channel-type>
+	<channel-type id="cct">
+		<item-type>Number</item-type>
+		<label>Correlated Color Temperature</label>
+	</channel-type>
+	<channel-type id="scene">
+		<item-type>Number</item-type>
+		<label>Scene</label>
+	</channel-type>
+	<channel-type id="customScene">
+		<item-type>String</item-type>
+		<label>Custom Scene</label>
+	</channel-type>
+	<channel-type id="dv">
+		<item-type>Number</item-type>
+		<label>DV</label>
+	</channel-type>
+	<channel-type id="delayoff">
+		<item-type>Number</item-type>
+		<label>Delay off</label>
+	</channel-type>
+	<channel-type id="act_det">
+		<item-type>Switch</item-type>
+		<label>AirAutoDetect</label>
+	</channel-type>
+	<channel-type id="buzzer">
+		<item-type>Switch</item-type>
+		<label>Buzzer</label>
+	</channel-type>
+	<channel-type id="childlock">
+		<item-type>Switch</item-type>
+		<label>Child Lock</label>
+	</channel-type>
+	<channel-type id="color">
+		<item-type>Color</item-type>
+		<label>Color</label>
+	</channel-type>
+	<channel-type id="ambientColor">
+		<item-type>Color</item-type>
+		<label>Ambient Color</label>
+	</channel-type>
+	<channel-type id="setHumidity">
+		<item-type>Number</item-type>
+		<label>Humidity Set</label>
+	</channel-type>
+
+	<!-- Common Properties channels -->
+	<channel-type id="temperature">
+		<item-type>Number</item-type>
+		<label>Temperature</label>
+		<state pattern="%.1f" readOnly="true" />
+	</channel-type>
+	<channel-type id="humidity">
+		<item-type>Number</item-type>
+		<label>Humidity</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="aqi">
+		<item-type>Number</item-type>
+		<label>Air Quality Index</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="averageaqi">
+		<item-type>Number</item-type>
+		<label>Air Quality Index Average</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="favoritelevel">
+		<item-type>Number</item-type>
+		<label>Favorite_level</label>
+		<state pattern="%.0f" />
+	</channel-type>
+	<channel-type id="filtermaxlife">
+		<item-type>Number</item-type>
+		<label>Filter Max Life</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="filterhours">
+		<item-type>Number</item-type>
+		<label>Filter Use Time</label>
+		<state pattern="%.0f" readOnly="true" />
+	</channel-type>
+	<channel-type id="usedhours">
+		<item-type>Number</item-type>
+		<label>Run Time</label>
+		<state pattern="%.0f" readOnly="true" />
+	</channel-type>
+	<channel-type id="motorspeed">
+		<item-type>Number</item-type>
+		<label>Motor Speed</label>
+		<state pattern="%.0f" readOnly="true" />
+	</channel-type>
+	<channel-type id="filterlive">
+		<item-type>Number</item-type>
+		<label>Filter Life</label>
+		<state pattern="%.0f%%" readOnly="true" />
+	</channel-type>
+	<channel-type id="purifyvolume">
+		<item-type>Number</item-type>
+		<label>Volume Purified</label>
+		<state pattern="%.0f m3" readOnly="true" />
+	</channel-type>
+	<channel-type id="current">
+		<item-type>Number</item-type>
+		<label>Current</label>
+		<state pattern="%.2fA" readOnly="true" />
+	</channel-type>
+	<channel-type id="powerUsage">
+		<item-type>Number</item-type>
+		<label>Power Usage</label>
+		<state pattern="%.0fW" readOnly="true" />
+	</channel-type>
+	<channel-type id="powerPrice">
+		<item-type>Number</item-type>
+		<label>Power Price</label>
+		<state pattern="%.0f kW/h" />
+	</channel-type>
+	<channel-type id="translevel">
+		<item-type>Number</item-type>
+		<label>Trans Level</label>
+	</channel-type>
+	<channel-type id="dry">
+		<item-type>Switch</item-type>
+		<label>Dry</label>
+	</channel-type>
+	<channel-type id="depth">
+		<item-type>Number</item-type>
+		<label>Depth</label>
+	</channel-type>
+	<channel-type id="angleEnable">
+		<item-type>Switch</item-type>
+		<label>Enable Angle</label>
+	</channel-type>
+	<channel-type id="angle">
+		<item-type>Number</item-type>
+		<label>Angle</label>
+		<state min="0" max="360" step="1" pattern="%.0f" readOnly="false" />
+	</channel-type>
+	<channel-type id="move">
+		<item-type>String</item-type>
+		<label>Move</label>
+		<state>
+			<options>
+				<option value="left">left</option>
+				<option value="right">right</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="poweroffTime">
+		<item-type>Number</item-type>
+		<label>Power Off Timer</label>
+		<state min="0" max="28800" step="1" pattern="%.0f" readOnly="false" />
+	</channel-type>
+	<channel-type id="speed">
+		<item-type>Number</item-type>
+		<label>Speed</label>
+		<state pattern="%.0f" readOnly="false" />
+	</channel-type>
+	<channel-type id="speedLevel">
+		<item-type>Number</item-type>
+		<label>Speed Level</label>
+		<state min="0" max="99" step="1" pattern="%.0f%%" readOnly="false" />
+	</channel-type>
+	<channel-type id="naturalLevel">
+		<item-type>Number</item-type>
+		<label>Natural Fan Level</label>
+		<state min="0" max="99" step="1" pattern="%.0f%%" readOnly="false" />
+	</channel-type>
+	<channel-type id="acPower">
+		<item-type>Switch</item-type>
+		<label>AC Power</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="bat_state">
+		<item-type>String</item-type>
+		<label>Battery State</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="gonight">
+		<item-type>Switch</item-type>
+		<label>Go Night</label>
+		<state readOnly="false" />
+	</channel-type>
+	<channel-type id="usb">
+		<item-type>Switch</item-type>
+		<label>USB Power</label>
+		<state readOnly="false" />
+	</channel-type>
+
+</thing:thing-descriptions>
