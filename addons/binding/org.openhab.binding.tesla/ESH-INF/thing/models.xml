@@ -420,9 +420,9 @@
 		<description>Flash the lights of the car (when ON is received)</description>
 	</channel-type>
 	<channel-type id="forcerefresh">
-	   <item-type>Switch</item-type>
-	   <label>Force refresh</label>
-	   <description>Forcefully refreshes all data from the car (when ON is received), possibly waking up the car in the process.</description>
+		<item-type>Switch</item-type>
+		<label>Force refresh</label>
+		<description>Forcefully refreshes all data from the car (when ON is received), possibly waking up the car in the process.</description>
 	</channel-type>
 	<channel-type id="frontdefroster" advanced="true">
 		<item-type>Switch</item-type>
