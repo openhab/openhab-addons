@@ -197,7 +197,6 @@ public class UniFiClientThingHandler extends BaseThingHandler {
             State state = getDefaultState(channelID, clientHome);
 
             switch (channelID) {
-
                 // mgb: common wired + wireless client channels
 
                 // :online
@@ -243,7 +242,6 @@ public class UniFiClientThingHandler extends BaseThingHandler {
 
                 default:
                     if (client != null) {
-
                         // mgb: additional wired client channels
                         if (client.isWired() && (client instanceof UniFiWiredClient)) {
                             state = getWiredChannelState((UniFiWiredClient) client, clientHome, channelID);
@@ -272,7 +270,6 @@ public class UniFiClientThingHandler extends BaseThingHandler {
     private State getWirelessChannelState(UniFiWirelessClient client, boolean clientHome, String channelID) {
         State state = null;
         switch (channelID) {
-
             // :ap
             case CHANNEL_AP:
                 UniFiDevice device = client.getDevice();
