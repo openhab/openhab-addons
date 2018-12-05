@@ -9,22 +9,17 @@
 package org.openhab.io.hueemulation.internal.dto;
 
 /**
- * Hue API state object
+ * Hue API scan result object.
+ * Enpoint: /api/{username}/lights/new
  *
  * @author David Graeff - Initial contribution
- *
  */
-public class AbstractHueState {
-    public boolean reachable = true;
-    public String mode = "homeautomation";
-
-    public static enum AlertEnum {
+public class HueNewLights {
+    enum ScanType {
         none,
-        /** flashes light once */
-        select,
-        /** flashes repeatedly for 10 seconds. */
-        lselect
-    }
+        active
+    };
 
-    public String alert = AlertEnum.none.name();
+    /** Either none, active or a timestamp since the last search */
+    public String lastscan = ScanType.none.name();
 }

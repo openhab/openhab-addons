@@ -6,16 +6,21 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.io.hueemulation.internal.dto;
+package org.openhab.io.hueemulation.internal.dto.changerequest;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Hue API create user object
  *
  * @author Dan Cunningham - Initial contribution
+ * @author David Graeff - Rewritten
  */
+@NonNullByDefault
 public class HueCreateUser {
-    /** The device name */
-    public String devicetype;
+    /** The device label/name */
+    public String devicetype = "";
     /** Caller suggested API key ("username"). Usually empty to generate one. Newer hue bridges always generate one. */
-    public String username;
+    public @Nullable String username;
 }

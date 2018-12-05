@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.io.hueemulation.internal.dto;
+package org.openhab.io.hueemulation.internal.dto.response;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -21,7 +21,7 @@ public class HueResponse {
     public static final int UNAUTHORIZED = 1;
     public static final int INVALID_JSON = 2;
     public static final int NOT_AVAILABLE = 3;
-    public static final int METHOD_NOT_AVAILABLE = 4;
+    public static final int METHOD_NOT_ALLOWED = 4;
     public static final int LINK_BUTTON_NOT_PRESSED = 101;
     public static final int INTERNAL_ERROR = 901;
 
