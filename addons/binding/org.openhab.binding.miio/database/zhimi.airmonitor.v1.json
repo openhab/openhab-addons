@@ -1,0 +1,92 @@
+{
+	"deviceMapping": {
+		"id": [
+			"zhimi.airmonitor.v1"
+		],
+		"channels": [
+			{
+				"property": "power",
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": [
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "aqi",
+				"friendlyName": "Air Quality Index",
+				"channel": "aqi",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "battery",
+				"friendlyName": "Battery",
+				"channel": "battery",
+				"channelType":"system.battery-level",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "usb_state",
+				"friendlyName": "USB State",
+				"channel": "usb_state",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "time_state",
+				"friendlyName": "Time State",
+				"channel": "time_state",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "night_state",
+				"friendlyName": "Night State",
+				"channel": "night_state",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": [
+					{
+						"command": "set_night_state",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "night_beg_time",
+				"friendlyName": "Night Begin Time",
+				"channel": "night_begin",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "night_end_time",
+				"friendlyName": "USB State",
+				"channel": "night_end",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			}
+		]
+	}
+}

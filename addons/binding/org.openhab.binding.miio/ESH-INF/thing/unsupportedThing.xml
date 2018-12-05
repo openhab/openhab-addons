@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="miio"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="unsupported">
+		<label>Unsupported Xiaomi Mi Device</label>
+
+		<channel-groups>
+			<channel-group id="network" typeId="network" />
+			<channel-group id="actions" typeId="miioactions" />
+		</channel-groups>
+
+		<properties>
+			<property name="vendor">Xiaomi</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:miio:config" />
+	</thing-type>
+
+	<channel-group-type id="miioactions">
+		<label>Actions</label>
+		<channels>
+			<channel id="power" typeId="power" />
+			<channel id="commands" typeId="commands" />
+			<channel id="testcommands" typeId="testcommands" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="testcommands">
+		<item-type>Switch</item-type>
+		<label>(experimental)Execute Test Commands</label>
+		<description>(experimental)Execute Test Commands to support development for your device. (NB device can switch modes)</description>
+	</channel-type>
+</thing:thing-descriptions>

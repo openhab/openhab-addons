@@ -1,0 +1,120 @@
+{
+	"deviceMapping": {
+		"id": [
+			"philips.light.moonlight"
+			],
+		"channels": [
+			{
+				"property": "pow",
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": [
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "bright",
+				"friendlyName": "Brightness",
+				"channel": "brightness",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_bright",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "cct",
+				"friendlyName": "Correlated Color Temperature",
+				"channel": "cct",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_cct",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "snm",
+				"friendlyName": "Scene",
+				"channel": "scene",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "apply_scene",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "dv",
+				"friendlyName": "DV",
+				"channel": "dv",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						
+					}
+				]
+			},
+			{
+				"property": "",
+				"friendlyName": "Go Night",
+				"channel": "gonight",
+				"type": "Switch",
+				"refresh": false,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "go_night",
+						"parameterType": "EMPTY"
+					}
+				]
+			},
+			{
+				"property": "",
+				"friendlyName": "Delay Off",
+				"channel": "delayoff",
+				"type": "Switch",
+				"refresh": false,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "delay_off",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "",
+				"friendlyName": "Toggle",
+				"channel": "toggle",
+				"type": "Switch",
+				"refresh": false,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "toggle",
+						"parameterType": "EMPTY"
+					}
+				]
+			}
+		]
+	}
+}

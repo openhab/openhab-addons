@@ -1,0 +1,83 @@
+{
+	"deviceMapping": {
+		"id": [
+			"qmi.powerstrip.v1",
+			"zimi.powerstrip.v2"
+		],
+		"channels": [
+			{
+				"property": "power",
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": [
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "power_consume_rate",
+				"friendlyName": "Power Consumption",
+				"channel": "powerUsage",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": [
+					{
+						
+					}
+				]
+			},
+			{
+				"property": "wifi_led",
+				"friendlyName": "wifi_led",
+				"channel": "led",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": [
+					{
+						"command": "set_wifi_led",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "power_price",
+				"friendlyName": "power_price",
+				"channel": "power_price",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": [
+					{
+						"command": "set_power_price",
+						"parameterType": "Number"
+					}
+				]
+			},
+			{
+				"property": "current",
+				"friendlyName": "Current",
+				"channel": "current",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": []
+			},
+			{
+				"property": "temperature",
+				"friendlyName": "Temperature",
+				"channel": "temperature",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": []
+			}
+		]
+	}
+}
