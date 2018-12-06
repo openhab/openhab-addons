@@ -45,7 +45,7 @@ public class UniFiSite {
 
     @Override
     public String toString() {
-        return String.format("Site{name: '%s', desc: '%s'}", name, desc);
+        return String.format("UniFiSite{name: '%s', desc: '%s'}", name, desc);
     }
 
 }
