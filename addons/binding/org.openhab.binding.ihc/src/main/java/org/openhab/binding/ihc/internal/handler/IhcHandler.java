@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -165,6 +166,16 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
     public void initialize() {
         conf = getConfigAs(IhcConfiguration.class);
         logger.debug("Using configuration: {}", conf);
+
+        linkedResourceIds.clear();
+        linkedResourceIds.addAll(this.getThing().getChannels().stream().filter(c -> isLinked(c.getUID())).map(c -> {
+            ChannelParams params = new ChannelParams(c);
+            logger.debug("Linked channel '{}' found, resource id '{}'", c.getUID().getAsString(),
+                    params.getResourceId());
+            return params.getResourceId();
+        }).filter(c -> c != 0).collect(Collectors.toSet()));
+
+        logger.debug("Linked resources {}: {}", linkedResourceIds.size(), linkedResourceIds);
 
         if (controlJob == null || controlJob.isCancelled()) {
             logger.debug("Start control task, interval={}sec", 1);
@@ -433,8 +444,12 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 try {
                     ChannelParams params = new ChannelParams(thing.getChannel(channelUID.getId()));
                     if (params.getResourceId() != null) {
-                        linkedResourceIds.add(params.getResourceId());
-                        updateNotificationsRequestReminder();
+                        if (!linkedResourceIds.contains(params.getResourceId())) {
+                            logger.debug("New channel '{}' found, resource id '{}'", channelUID.getAsString(),
+                                    params.getResourceId());
+                            linkedResourceIds.add(params.getResourceId());
+                            updateNotificationsRequestReminder();
+                        }
                     }
                 } catch (IllegalArgumentException e) {
                     logger.warn("Can't find resource id, reason {}", e.getMessage());
@@ -785,7 +800,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
             logger.debug("Enable runtime notfications for {} channel(s)", linkedResourceIds.size());
             resourceIds.addAll(linkedResourceIds);
             if (resourceIds.size() > 0) {
-                logger.debug("Enable runtime notfications for {} resources", resourceIds.size());
+                logger.debug("Enable runtime notfications for {} resources: {}", resourceIds.size(), resourceIds);
                 try {
                     ihc.enableRuntimeValueNotifications(resourceIds);
                 } catch (IhcExecption e) {
