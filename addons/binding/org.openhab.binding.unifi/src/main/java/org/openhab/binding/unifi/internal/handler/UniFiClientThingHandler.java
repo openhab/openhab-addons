@@ -6,13 +6,13 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.unifi.handler;
+package org.openhab.binding.unifi.internal.handler;
 
 import static org.eclipse.smarthome.core.thing.ThingStatus.OFFLINE;
 import static org.eclipse.smarthome.core.thing.ThingStatus.ONLINE;
 import static org.eclipse.smarthome.core.thing.ThingStatusDetail.*;
 import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
-import static org.openhab.binding.unifi.UniFiBindingConstants.*;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.*;
 
 import java.util.Calendar;
 import java.util.Set;
@@ -34,7 +34,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.unifi.UniFiBindingConstants;
+import org.openhab.binding.unifi.internal.UniFiBindingConstants;
 import org.openhab.binding.unifi.internal.UniFiClientThingConfig;
 import org.openhab.binding.unifi.internal.api.model.UniFiClient;
 import org.openhab.binding.unifi.internal.api.model.UniFiDevice;
