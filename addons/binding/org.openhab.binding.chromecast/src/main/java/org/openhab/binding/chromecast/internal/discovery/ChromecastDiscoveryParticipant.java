@@ -6,7 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.chromecast.internal;
+package org.openhab.binding.chromecast.internal.discovery;
+
+import static org.openhab.binding.chromecast.internal.ChromecastBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +30,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author Kai Kreuzer - Initial contribution
  * @author Daniel Walters - Change discovery protocol to mDNS
- *
  */
 @Component(immediate = true)
 public class ChromecastDiscoveryParticipant implements MDNSDiscoveryParticipant {
@@ -37,7 +38,7 @@ public class ChromecastDiscoveryParticipant implements MDNSDiscoveryParticipant 
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return ChromecastBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+        return SUPPORTED_THING_TYPES_UIDS;
     }
 
     @Override
@@ -54,14 +55,14 @@ public class ChromecastDiscoveryParticipant implements MDNSDiscoveryParticipant 
 
         final Map<String, Object> properties = new HashMap<>(2);
         String host = service.getHostAddresses()[0];
-        properties.put(ChromecastBindingConstants.HOST, host);
+        properties.put(HOST, host);
         int port = service.getPort();
-        properties.put(ChromecastBindingConstants.PORT, port);
+        properties.put(PORT, port);
         logger.debug("Chromecast Found: {} {}", host, port);
         String friendlyName = service.getPropertyString("fn"); // friendly name;
 
         final DiscoveryResult result = DiscoveryResultBuilder.create(uid).withThingType(getThingType(service))
-                .withProperties(properties).withLabel(friendlyName).build();
+                .withProperties(properties).withRepresentationProperty(HOST).withLabel(friendlyName).build();
 
         return result;
     }
@@ -73,11 +74,11 @@ public class ChromecastDiscoveryParticipant implements MDNSDiscoveryParticipant 
             return null;
         }
         if (model.equals("Chromecast Audio")) {
-            return ChromecastBindingConstants.THING_TYPE_AUDIO;
+            return THING_TYPE_AUDIO;
         } else if (model.equals("Google Cast Group")) {
-            return ChromecastBindingConstants.THING_TYPE_AUDIOGROUP;
+            return THING_TYPE_AUDIOGROUP;
         } else {
-            return ChromecastBindingConstants.THING_TYPE_CHROMECAST;
+            return THING_TYPE_CHROMECAST;
         }
     }
 

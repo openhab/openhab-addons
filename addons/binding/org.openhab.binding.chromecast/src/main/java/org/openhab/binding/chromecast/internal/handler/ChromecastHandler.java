@@ -147,8 +147,13 @@ public class ChromecastHandler extends BaseThingHandler implements AudioSink {
     }
 
     @Override // Just exposing this for ChromecastStatusUpdater.
-    public void updateState(String channelID, State state) {
-        super.updateState(channelID, state);
+    public void updateState(String channelId, State state) {
+        super.updateState(channelId, state);
+    }
+
+    @Override // Just exposing this for ChromecastStatusUpdater.
+    public void updateState(ChannelUID channelUID, State state) {
+        super.updateState(channelUID, state);
     }
 
     @Override // Just exposing this for ChromecastStatusUpdater.
@@ -159,6 +164,11 @@ public class ChromecastHandler extends BaseThingHandler implements AudioSink {
     @Override // Just exposing this for ChromecastStatusUpdater.
     public boolean isLinked(String channelId) {
         return super.isLinked(channelId);
+    }
+
+    @Override // Just exposing this for ChromecastStatusUpdater.
+    public boolean isLinked(ChannelUID channelUID) {
+        return super.isLinked(channelUID);
     }
 
     @Override
