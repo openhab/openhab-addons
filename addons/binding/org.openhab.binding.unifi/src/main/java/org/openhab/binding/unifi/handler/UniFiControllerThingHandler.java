@@ -66,7 +66,16 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
 
     private static final String STATUS_DESCRIPTION_INVALID_CREDENTIALS = "Invalid username and/or password - please double-check your configuration";
 
-    private static final List<String> CACHE_KEY_PREFIXES = Arrays.asList("mac", "ip", "hostname", "alias");
+    private static final String CACHE_KEY_PREFIX_MAC = "mac";
+
+    private static final String CACHE_KEY_PREFIX_IP = "ip";
+
+    private static final String CACHE_KEY_PREFIX_HOSTNAME = "hostname";
+
+    private static final String CACHE_KEY_PREFIX_ALIAS = "alias";
+
+    private static final List<String> CACHE_KEY_PREFIXES = Arrays.asList(CACHE_KEY_PREFIX_MAC, CACHE_KEY_PREFIX_IP,
+            CACHE_KEY_PREFIX_HOSTNAME, CACHE_KEY_PREFIX_ALIAS);
 
     private static final String CACHE_KEY_SEPARATOR = ":";
 
@@ -152,16 +161,16 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
             for (String prefix : CACHE_KEY_PREFIXES) {
                 String suffix = null;
                 switch (prefix) {
-                    case "mac":
+                    case CACHE_KEY_PREFIX_MAC:
                         suffix = client.getMac();
                         break;
-                    case "ip":
+                    case CACHE_KEY_PREFIX_IP:
                         suffix = client.getIp();
                         break;
-                    case "hostname":
+                    case CACHE_KEY_PREFIX_HOSTNAME:
                         suffix = client.getHostname();
                         break;
-                    case "alias":
+                    case CACHE_KEY_PREFIX_ALIAS:
                         suffix = client.getAlias();
                         break;
                 }
