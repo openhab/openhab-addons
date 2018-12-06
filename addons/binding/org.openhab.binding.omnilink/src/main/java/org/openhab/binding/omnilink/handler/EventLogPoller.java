@@ -75,6 +75,8 @@ public class EventLogPoller {
 
             } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
                 logger.warn("Exception Polling Event Log", e);
+            } catch (NullPointerException e) {
+                logger.debug("NPE.  Omni connection probably not set up.", e);
             }
 
         }

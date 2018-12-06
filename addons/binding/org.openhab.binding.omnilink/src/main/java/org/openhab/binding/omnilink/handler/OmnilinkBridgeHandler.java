@@ -14,7 +14,10 @@ import java.net.UnknownHostException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Optional;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -68,6 +71,8 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
     private Logger logger = LoggerFactory.getLogger(OmnilinkBridgeHandler.class);
     private Connection omniConnection;
+    private @Nullable ScheduledFuture<?> connectJob;
+    private final int autoReconnectPeriod = 60;
     private TemperatureFormat temperatureFormat;
     private Optional<AudioPlayer> audioPlayer = Optional.empty();
     private Optional<EventLogPoller> eventLogPoller = Optional.empty();
@@ -78,8 +83,9 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         retryingDisconnectListener = new DisconnectListener() {
             @Override
             public void notConnectedEvent(Exception e) {
+                logger.debug("Received omnilink not connected event: {}", e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                makeOmnilinkConnection();
+                scheduleReconnectJob();
             }
         };
     }
@@ -198,12 +204,11 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         }
     }
 
-    @Override
-    public void initialize() {
-        makeOmnilinkConnection();
-    }
-
     private void makeOmnilinkConnection() {
+
+        if (this.omniConnection != null && this.omniConnection.connected()) {
+            return;
+        }
 
         logger.debug("Attempting to connect to omnilink");
         try {
@@ -230,6 +235,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             omniConnection.enableNotifications();
 
             updateStatus(ThingStatus.ONLINE);
+            cancelReconnectJob(false);
         } catch (UnknownHostException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             logger.debug("{}", e.toString());
@@ -240,8 +246,10 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                         "IP Address probably incorrect, timed out creating connection");
             } else if (e.getCause() != null && e.getCause() instanceof SocketException) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getCause().getMessage());
-            } else {
+            } else if (e.getCause() != null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getCause().getMessage());
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
             logger.debug("{}", e.toString());
             // throw e;
@@ -512,6 +520,31 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         logger.debug("Receieved event log message: {}", json);
         updateState(OmnilinkBindingConstants.CHANNEL_EVENT_LOG, new StringType(json));
 
+    }
+
+    @Override
+    public void initialize() {
+        if (!scheduleReconnectJob()) {
+            makeOmnilinkConnection();
+        }
+    }
+
+    private boolean scheduleReconnectJob() {
+        if (autoReconnectPeriod > 0) {
+            connectJob = super.scheduler.scheduleWithFixedDelay(() -> makeOmnilinkConnection(), 0, autoReconnectPeriod,
+                    TimeUnit.SECONDS);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void cancelReconnectJob(boolean kill) {
+        ScheduledFuture<?> currentReconnectJob = connectJob;
+        if (currentReconnectJob != null) {
+            currentReconnectJob.cancel(kill);
+            connectJob = null;
+        }
     }
 
 }
