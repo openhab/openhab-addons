@@ -14,23 +14,9 @@
 				<context>network-address</context>
 				<description>IP4 Address of the KMXXX device</description>
 			</parameter>
-			<parameter name="privateKey" type="text" required="false">
+			<parameter name="privateKey" type="text" required="true">
 				<label>Private Key</label>
-				<description>Option 1:Private en-/decryption key built from MD5Salt, GatewayPassword and PrivatePassword</description>
-			</parameter>
-			<parameter name="md5Salt" type="text" required="false">
-				<label>MD5 Salt</label>
-				<description>Option 2: MD5Salt for the building of the private key</description>
-			</parameter>
-			<parameter name="gatewayPassword" type="text" required="false">
-				<label>Gateway Password</label>
-				<context>password</context>
-				<description>Option 2: GatewayPassword for the building of the private key (Sticker on the device without '-')</description>
-			</parameter>
-			<parameter name="privatePassword" type="text" required="false">
-				<label>Private Password</label>
-				<context>password</context>
-				<description>Option 2: Private Password for the building of the private key (Set in the App)</description>
+				<description>Private en-/decryption key built from MD5Salt, GatewayPassword and PrivatePassword</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" required="true">
 				<label>Auto Refresh Interval</label>

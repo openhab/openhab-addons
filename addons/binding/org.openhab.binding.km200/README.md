@@ -25,16 +25,13 @@ The binding doesn't have any configuration parameter.
 
 The *kmdevice* bridge thing requires the following configuration parameters:
 
-| Parameter Label         | Parameter ID    | Description                                                                 | Required | Default              | Example                                                          |
-|-------------------------|-----------------|-----------------------------------------------------------------------------|----------|----------------------|------------------------------------------------------------------|
-| IP address              | ip4_address     | The IP address of the KMXXX device                                          | true     |                      | 192.168.1.10                                                     |
-| Refresh Interval        | RefreshInterval | The refresh interval in seconds which is used to poll the device.           | false    |    30                | 30                                                               |
-|-------------------------|----Option 1-----|-----------------------------------------------------------------------------|----------|----------------------|------------------------------------------------------------------|
-| Private Key             | PrivKey         | Take a look to the internet. Maybe you will find a way for generation.      | true     |                      | 0000FFFFEEEEDDDDCCCCBBBBAAAA999988887777666655554444333322221111 |
-|-------------------------|----Option 2-----|-----------------------------------------------------------------------------|----OR----|----------------------|------------------------------------------------------------------|
-| MD5 Salt                | MD5Salt         | The MD5-Salt (Take a look to the internet, maybe you will find it).         | true     |                      | 111122223333444455556666777788889999aaaabbbbccccddddeeeeffff0000 |
-| Gateway Password        | GatewayPassword | The gateway password.                                                       | true     |                      | AAAABBBBCCCCDDDD                                                 |
-| Private Password        | PrivatePassword | The private password.                                                       | true     |                      | MYPASSWORD                                                       |
+| Parameter Label           | Parameter ID    | Description                                                                       | Required | Default              | Example                                                          |
+|---------------------------|-----------------|-----------------------------------------------------------------------------------|----------|----------------------|------------------------------------------------------------------|
+| IP address                | ip4_address     | The IP address of the KMXXX device                                                | true     |                      | 192.168.1.10                                                     |
+| Refresh Interval          | refreshInterval | The refresh interval in seconds which is used to poll the device.                 | true     |    30                | 30                                                               |
+| Private Key               | privKey         | Take a look to the internet. Maybe you will find a way for generation.            | true     |                      | 0000FFFFEEEEDDDDCCCCBBBBAAAA999988887777666655554444333322221111 |
+| Read Delay                | readDelay       | Delay between two read attempts in ms.                                            | true     |    100               | 100                                                              |
+| Maximum Number Of Repeats | maxNbrRepeats   | Maximum number of repeats in case of a communication error (like HTTP 500 error). | true     |    10                | 10                                                               |
 
 ### Other Things
 
