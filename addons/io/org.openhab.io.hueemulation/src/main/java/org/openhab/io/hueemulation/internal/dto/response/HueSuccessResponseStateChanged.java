@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.io.hueemulation.internal.dto;
+package org.openhab.io.hueemulation.internal.dto.response;
 
 import java.lang.reflect.Type;
 
