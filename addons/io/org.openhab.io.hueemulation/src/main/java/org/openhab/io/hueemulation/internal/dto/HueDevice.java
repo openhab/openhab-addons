@@ -34,14 +34,14 @@ public class HueDevice {
     public final String modelid;
     public final String uniqueid;
     public final String manufacturername;
-    public @Nullable String productname = null;
+    public final @Nullable String productname;
     public final String swversion;
     public final @Nullable String luminaireuniqueid = null;
     public final @Nullable String swconfigid;
     public final @Nullable String productid;
     public Boolean friendsOfHue = true;
     public final @Nullable String colorGamut;
-    public @Nullable Boolean hascolor;
+    public @Nullable Boolean hascolor = null;
 
     public String name;
     /** Associated item UID */
@@ -93,6 +93,7 @@ public class HueDevice {
                 this.swconfigid = "F921C859";
                 this.swversion = "1.15.2_r19181";
                 this.productid = "Philips-LCT010-1-A19ECLv4";
+                this.productname = null;
                 this.hascolor = true;
                 this.capabilities.certified = true;
                 break;
@@ -107,6 +108,7 @@ public class HueDevice {
                 this.swversion = "66012040";
                 this.productid = null;
                 this.hascolor = false;
+                this.productname = null;
                 this.capabilities.certified = true;
                 break;
             case WhiteTemperatureType:
@@ -119,6 +121,7 @@ public class HueDevice {
                 this.swversion = "66012040";
                 this.productid = null;
                 this.hascolor = false;
+                this.productname = null;
                 this.capabilities.certified = true;
                 break;
             default:
@@ -136,7 +139,6 @@ public class HueDevice {
                 this.swconfigid = null;
                 this.swversion = "V1.04.12";
                 this.productid = null;
-                this.hascolor = null;
                 break;
         }
 

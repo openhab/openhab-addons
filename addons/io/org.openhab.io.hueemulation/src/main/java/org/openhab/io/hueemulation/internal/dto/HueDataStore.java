@@ -32,13 +32,12 @@ public class HueDataStore {
     public Map<Integer, Dummy> scenes = new TreeMap<>();
     public Map<Integer, Dummy> rules = new TreeMap<>();
     public Map<Integer, Dummy> sensors = new TreeMap<>();
+    public Map<Integer, Dummy> schedules = new TreeMap<>();
     public Map<Integer, Dummy> resourcelinks = Collections.emptyMap();
-
-    public final Map<String, UserAuth> whitelist = new TreeMap<>();
 
     public HueDataStore() {
         // There must be a group 0 all the time!
-        groups.put(0, new HueGroup("All lights", new HueStatePlug(false)));
+        groups.put(0, new HueGroup("All lights", null, Collections.emptyMap()));
     }
 
     public static class Dummy {
