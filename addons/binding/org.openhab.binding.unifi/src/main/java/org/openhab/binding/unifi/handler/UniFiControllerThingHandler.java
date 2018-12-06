@@ -28,6 +28,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -95,8 +96,11 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
 
     private Map<String, UniFiClient> insightsCache = Collections.emptyMap();
 
-    public UniFiControllerThingHandler(Bridge bridge) {
+    private final HttpClient httpClient;
+
+    public UniFiControllerThingHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
+        this.httpClient = httpClient;
     }
 
     // Public API
@@ -108,7 +112,7 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
         config = getConfig().as(UniFiControllerThingConfig.class);
         logger.debug("Initializing the UniFi Controller Handler with config = {}", config);
         try {
-            controller = new UniFiController(config.getHost(), config.getPort(), config.getUsername(),
+            controller = new UniFiController(httpClient, config.getHost(), config.getPort(), config.getUsername(),
                     config.getPassword());
             controller.start();
             updateStatus(ONLINE);
@@ -141,7 +145,11 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
     public void dispose() {
         cancelRefreshJob();
         if (controller != null) {
-            controller.stop();
+            try {
+                controller.stop();
+            } catch (UniFiException e) {
+                // mgb: nop as we're in dispose
+            }
             controller = null;
         }
     }

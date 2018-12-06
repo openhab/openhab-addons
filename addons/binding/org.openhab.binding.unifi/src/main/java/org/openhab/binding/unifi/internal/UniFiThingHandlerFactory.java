@@ -12,16 +12,19 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.unifi.handler.UniFiClientThingHandler;
 import org.openhab.binding.unifi.handler.UniFiControllerThingHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link UniFiThingHandlerFactory} is responsible for creating things and thing
@@ -37,6 +40,8 @@ public class UniFiThingHandlerFactory extends BaseThingHandlerFactory {
                     UniFiClientThingHandler.SUPPORTED_THING_TYPES_UIDS.stream())
             .collect(Collectors.toSet());
 
+    private HttpClient httpClient;
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -46,11 +51,16 @@ public class UniFiThingHandlerFactory extends BaseThingHandlerFactory {
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (UniFiControllerThingHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new UniFiControllerThingHandler((Bridge) thing);
+            return new UniFiControllerThingHandler((Bridge) thing, httpClient);
         } else if (UniFiClientThingHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new UniFiClientThingHandler(thing);
         }
         return null;
+    }
+
+    @Reference
+    public void setHttpClientFactory(HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
 }

@@ -10,7 +10,6 @@ package org.openhab.binding.unifi.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.unifi.internal.api.model.UniFiClient;
 import org.openhab.binding.unifi.internal.api.model.UniFiDevice;
 import org.openhab.binding.unifi.internal.api.model.UniFiSite;
@@ -29,25 +28,24 @@ import com.google.gson.GsonBuilder;
 @NonNullByDefault
 public class UniFiController {
 
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
 
-    private String host;
+    private final String host;
 
-    private int port;
+    private final int port;
 
-    private String username;
+    private final String username;
 
-    private String password;
+    private final String password;
 
-    private Gson gson;
+    private final Gson gson;
 
-    public UniFiController(String host, int port, String username, String password) {
+    public UniFiController(HttpClient httpClient, String host, int port, String username, String password) {
+        this.httpClient = httpClient;
         this.host = host;
         this.port = port;
         this.username = username;
         this.password = password;
-        this.httpClient = new HttpClient(new SslContextFactory(true)); // mgb: true = trust all
-        this.httpClient.setFollowRedirects(false);
         this.gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .registerTypeAdapter(UniFiClient.class, new UniFiClientDeserializer()).create();
     }
@@ -55,25 +53,11 @@ public class UniFiController {
     // Public API
 
     public void start() throws UniFiException {
-        if (!httpClient.isStarted()) {
-            try {
-                httpClient.start();
-            } catch (Exception e) {
-                throw new UniFiException(e);
-            }
-            login();
-        }
+        login();
     }
 
-    public void stop() {
-        if (httpClient.isStarted()) {
-            try {
-                logout();
-                httpClient.stop();
-            } catch (Exception e) {
-                // mgb: nop - we're stopping
-            }
-        }
+    public void stop() throws UniFiException {
+        logout();
     }
 
     public void login() throws UniFiException {
