@@ -63,4 +63,8 @@ public class UniFiThingHandlerFactory extends BaseThingHandlerFactory {
         this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
+    public void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
+        // nop
+    }
+
 }
