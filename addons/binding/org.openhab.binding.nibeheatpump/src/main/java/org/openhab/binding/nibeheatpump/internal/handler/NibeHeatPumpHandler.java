@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -194,7 +195,10 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
         // Add channel to polling loop
         int coilAddress = parseCoilAddressFromChannelUID(channelUID);
         synchronized (itemsToPoll) {
-            itemsToPoll.add(coilAddress);
+            if (!itemsToPoll.contains(coilAddress)) {
+                logger.debug("New channel '{}' found, register '{}'", channelUID.getAsString(), coilAddress);
+                itemsToPoll.add(coilAddress);
+            }
         }
         clearCache(coilAddress);
     }
@@ -233,6 +237,15 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, description);
             return;
         }
+
+        itemsToPoll.clear();
+        itemsToPoll.addAll(this.getThing().getChannels().stream().filter(c -> isLinked(c.getUID())).map(c -> {
+            int coilAddress = parseCoilAddressFromChannelUID(c.getUID());
+            logger.debug("Linked channel '{}' found, register '{}'", c.getUID().getAsString(), coilAddress);
+            return coilAddress;
+        }).filter(c -> c != 0).collect(Collectors.toSet()));
+
+        logger.debug("Linked registers {}: {}", itemsToPoll.size(), itemsToPoll);
 
         clearCache();
 
