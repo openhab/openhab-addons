@@ -284,9 +284,8 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
     private Map<String, UniFiSite> getSites() throws UniFiException {
         Map<String, UniFiSite> siteMap = new HashMap<>();
         UniFiSite[] sites = controller.getSites();
-        logger.debug("Found {} UniFi Site(s):", sites.length);
+        logger.debug("Found {} UniFi Site(s): {}", sites.length, lazyFormatAsList(sites));
         for (UniFiSite site : sites) {
-            logger.debug("  {}", site);
             siteMap.put(site.getId(), site);
         }
         return siteMap;
@@ -305,10 +304,9 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
     private Map<String, UniFiDevice> getDevices(UniFiSite site) throws UniFiException {
         Map<String, UniFiDevice> deviceMap = new HashMap<>();
         UniFiDevice[] devices = controller.getDevices(site);
-        logger.debug("Found {} UniFi Device(s):", devices.length);
+        logger.debug("Found {} UniFi Device(s): {}", devices.length, lazyFormatAsList(devices));
         for (UniFiDevice device : devices) {
             device.setSite(site);
-            logger.debug("  {}", device);
             deviceMap.put(device.getMac(), device);
         }
         return deviceMap;
@@ -327,10 +325,9 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
     private Map<String, UniFiClient> getClients(UniFiSite site) throws UniFiException {
         Map<String, UniFiClient> clientMap = new HashMap<>();
         UniFiClient[] clients = controller.getClients(site);
-        logger.debug("Found {} UniFi Client(s):", clients.length);
+        logger.debug("Found {} UniFi Client(s): {}", clients.length, lazyFormatAsList(clients));
         for (UniFiClient client : clients) {
             client.setDevice(devicesCache.get(client.getDeviceMac()));
-            logger.debug("  {}", client);
             cachePut(clientMap, client);
         }
         return clientMap;
@@ -349,9 +346,8 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
     private Map<String, UniFiClient> getInsights(UniFiSite site) throws UniFiException {
         Map<String, UniFiClient> insightsMap = new HashMap<>();
         UniFiClient[] clients = controller.getInsights(site);
-        logger.debug("Found {} UniFi Insights(s):", clients.length);
+        logger.debug("Found {} UniFi Insights(s): {}", clients.length, lazyFormatAsList(clients));
         for (UniFiClient client : clients) {
-            logger.debug("  {}", client);
             cachePut(insightsMap, client);
         }
         return insightsMap;
@@ -368,6 +364,21 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
             }
         }
         return result;
+    }
+
+    private static Object lazyFormatAsList(Object[] arr) {
+        return new Object() {
+
+            @Override
+            public String toString() {
+                String value = "";
+                for (Object o : arr) {
+                    value += "\n - " + o.toString();
+                }
+                return value;
+            }
+
+        };
     }
 
 }
