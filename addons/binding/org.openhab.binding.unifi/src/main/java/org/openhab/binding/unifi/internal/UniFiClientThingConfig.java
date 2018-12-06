@@ -9,9 +9,11 @@
 package org.openhab.binding.unifi.internal;
 
 import org.apache.commons.lang.StringUtils;
+import org.openhab.binding.unifi.internal.handler.UniFiClientThingHandler;
 
 /**
- * The {@link UniFiClientThingConfig} represents the
+ * The {@link UniFiClientThingConfig} encapsulates all the configuration options for an instance of the
+ * {@link UniFiClientThingHandler}.
  *
  * @author Matthew Bowman - Initial contribution
  */
