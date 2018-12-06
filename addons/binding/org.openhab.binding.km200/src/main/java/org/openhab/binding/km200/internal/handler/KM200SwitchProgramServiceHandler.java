@@ -29,7 +29,6 @@ import com.google.gson.JsonObject;
  * The KM200SwitchProgramService representing a switch program service with its all capabilities
  *
  * @author Markus Eckhardt - Initial contribution
- *
  */
 public class KM200SwitchProgramServiceHandler {
     private final Logger logger = LoggerFactory.getLogger(KM200SwitchProgramServiceHandler.class);
@@ -86,7 +85,6 @@ public class KM200SwitchProgramServiceHandler {
 
     /**
      * This function inits the week list
-     *
      */
     void initWeeklist(String setpoint) {
         HashMap<String, ArrayList<Integer>> weekMap = switchMap.get(setpoint);
@@ -101,7 +99,6 @@ public class KM200SwitchProgramServiceHandler {
 
     /**
      * This function adds a switch to the switchmap
-     *
      */
     void addSwitch(String day, String setpoint, int time) {
         logger.debug("Adding day: {} setpoint: {} time: {}", day, setpoint, time);
@@ -166,7 +163,6 @@ public class KM200SwitchProgramServiceHandler {
 
     /**
      * This function sets the day
-     *
      */
     public void setActiveDay(String day) {
         if (!days.contains(day)) {
@@ -178,7 +174,6 @@ public class KM200SwitchProgramServiceHandler {
 
     /**
      * This function sets the cycle
-     *
      */
     public void setActiveCycle(Integer cycle) {
         if (cycle > this.getMaxNbOfSwitchPoints() / 2 || cycle > this.getMaxNbOfSwitchPointsPerDay() / 2 || cycle < 1) {
@@ -195,7 +190,6 @@ public class KM200SwitchProgramServiceHandler {
 
     /**
      * This function sets the positive switch to the selected day and cycle
-     *
      */
     public void setActivePositiveSwitch(Integer time) {
         Integer actTime;
@@ -253,7 +247,6 @@ public class KM200SwitchProgramServiceHandler {
 
     /**
      * This function sets the negative switch to the selected day and cycle
-     *
      */
     public void setActiveNegativeSwitch(Integer time) {
         Integer actTime;
@@ -309,7 +302,6 @@ public class KM200SwitchProgramServiceHandler {
 
     /**
      * This function checks whether the actual cycle have to be removed (Both times set to MAX_TIME)
-     *
      */
     void checkRemovement() {
         if (getActiveNegativeSwitch().equals(MAX_TIME) && getActivePositiveSwitch().equals(MAX_TIME)
@@ -339,7 +331,6 @@ public class KM200SwitchProgramServiceHandler {
 
     /**
      * This function updates objects the switching points
-     *
      */
     public void updateSwitches(JsonObject nodeRoot, KM200Device device) {
         synchronized (switchMap) {
@@ -411,7 +402,6 @@ public class KM200SwitchProgramServiceHandler {
 
     /**
      * This function updates objects JSONData on the actual set switch points.
-     *
      */
     public JsonObject getUpdatedJSONData(KM200ServiceObject parObject) {
         synchronized (switchMap) {
@@ -494,7 +484,6 @@ public class KM200SwitchProgramServiceHandler {
 
     /**
      * This function returns the number of cycles
-     *
      */
     public Integer getNbrCycles() {
         synchronized (switchMap) {
@@ -514,7 +503,6 @@ public class KM200SwitchProgramServiceHandler {
 
     /**
      * This function returns the selected day
-     *
      */
     public String getActiveDay() {
         return activeDay;
@@ -522,7 +510,6 @@ public class KM200SwitchProgramServiceHandler {
 
     /**
      * This function returns the selected cycle
-     *
      */
     public Integer getActiveCycle() {
         return activeCycle;
@@ -530,7 +517,6 @@ public class KM200SwitchProgramServiceHandler {
 
     /**
      * This function returns the positive switch to the selected day and cycle
-     *
      */
     public Integer getActivePositiveSwitch() {
         synchronized (switchMap) {
@@ -550,7 +536,6 @@ public class KM200SwitchProgramServiceHandler {
 
     /**
      * This function returns the negative switch to the selected day and cycle
-     *
      */
     public Integer getActiveNegativeSwitch() {
         synchronized (switchMap) {

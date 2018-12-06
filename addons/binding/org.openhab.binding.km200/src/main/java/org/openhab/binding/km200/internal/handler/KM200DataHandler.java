@@ -34,7 +34,6 @@ import com.google.gson.JsonParser;
  * The KM200DataHandler is managing the data handling between the device and items
  *
  * @author Markus Eckhardt - Initial contribution
- *
  */
 public class KM200DataHandler {
     private final Logger logger = LoggerFactory.getLogger(KM200DataHandler.class);
@@ -48,7 +47,6 @@ public class KM200DataHandler {
 
     /**
      * This function checks the state of a service on the device
-     *
      */
     public State getProvidersState(String service, String itemType, Map<String, String> itemPara) {
         synchronized (remoteDevice) {
@@ -112,7 +110,6 @@ public class KM200DataHandler {
 
     /**
      * This function parses the receviced JSON Data and return the right state
-     *
      */
     public State parseJSONData(JsonObject nodeRoot, String type, String service, String itemType,
             Map<String, String> itemPara) {
@@ -289,7 +286,6 @@ public class KM200DataHandler {
 
     /**
      * This function checks the virtual state of a service
-     *
      */
     private State getVirtualState(KM200ServiceObject object, String itemType, String service) {
         State state = null;
@@ -425,7 +421,6 @@ public class KM200DataHandler {
 
     /**
      * This function sets the state of a service on the device
-     *
      */
     public JsonObject sendProvidersState(String service, Command command, String itemType, Object itemPara) {
         synchronized (remoteDevice) {
@@ -577,7 +572,6 @@ public class KM200DataHandler {
 
     /**
      * This function sets the state of a virtual service
-     *
      */
     public JsonObject sendVirtualState(KM200ServiceObject object, String service, Command command, String itemType) {
         JsonObject newObject = null;

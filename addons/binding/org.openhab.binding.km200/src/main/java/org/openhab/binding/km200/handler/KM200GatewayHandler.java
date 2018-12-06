@@ -152,7 +152,6 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
 
     /**
      * Gets bridges configuration
-     *
      */
     private void getConfiguration() {
         Configuration configuration = getConfig();
@@ -215,7 +214,6 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
 
     /**
      * Checks bridges configuration
-     *
      */
     private boolean checkConfiguration() {
         /* Get HTTP Data from device */
@@ -242,7 +240,6 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
 
     /**
      * Reads the devices capabilities and sets the data structures
-     *
      */
     private void readCapabilities() {
         logger.debug("read Capabilities..");
@@ -274,7 +271,6 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
 
     /**
      * Adds a GatewayConnectedListener
-     *
      */
     public void addGatewayStatusListener(KM200GatewayStatusListener listener) {
         listeners.add(listener);
@@ -283,7 +279,6 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
 
     /**
      * Removes a GatewayConnectedListener
-     *
      */
     public void removeHubStatusListener(KM200GatewayStatusListener listener) {
         listeners.remove(listener);
@@ -291,7 +286,6 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
 
     /**
      * Refreshes a channel
-     *
      */
     public void refreshChannel(Channel channel) {
         GetSingleKM200Runnable runnable = new GetSingleKM200Runnable(sendMap, this, getDevice(), channel);
@@ -301,7 +295,6 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
 
     /**
      * Updates bridges properties
-     *
      */
     private void updateBridgeProperties() {
         List<String> propertyServices = new ArrayList<String>();
@@ -337,7 +330,6 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
 
     /**
      * Prepares a message for sending
-     *
      */
     public void prepareMessage(Thing thing, Channel channel, Command command) {
         if (getDevice() != null && getDevice().getInited() && channel != null) {
@@ -383,7 +375,6 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
 
     /**
      * Update the children
-     *
      */
     // Every thing has here a handler
     private void updateChildren(Map<Channel, JsonObject> sendMap, KM200GatewayHandler gatewayHandler,
@@ -439,7 +430,6 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
 
     /**
      * Return the device instance.
-     *
      */
     public KM200Device getDevice() {
         return remoteDevice;
@@ -447,7 +437,6 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
 
     /**
      * The GetKM200Runnable class get the data from device to all items.
-     *
      */
     private class GetKM200Runnable implements Runnable {
 
@@ -477,7 +466,6 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
 
     /**
      * The GetKM200Runnable class get the data from device for one channel.
-     *
      */
     private class GetSingleKM200Runnable implements Runnable {
 
@@ -541,7 +529,6 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
 
     /**
      * The sendKM200Thread class sends the data to the device.
-     *
      */
     private class SendKM200Runnable implements Runnable {
 

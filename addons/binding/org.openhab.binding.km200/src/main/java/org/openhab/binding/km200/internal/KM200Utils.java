@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
  * The KM200Utils is a class with common utilities.
  *
  * @author Markus Eckhardt - Initial contribution
- *
  */
 public class KM200Utils {
     private static final Logger LOGGER = LoggerFactory.getLogger(KM200Utils.class);

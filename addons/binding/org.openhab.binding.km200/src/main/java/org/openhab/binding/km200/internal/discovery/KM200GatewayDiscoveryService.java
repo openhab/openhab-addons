@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
  * The {@link KM200GatewayDiscoveryService} class discovers things through a gateway
  *
  * @author Markus Eckhardt - Initial contribution
- *
  */
 public class KM200GatewayDiscoveryService extends AbstractDiscoveryService implements KM200GatewayStatusListener {
 

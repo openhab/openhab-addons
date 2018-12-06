@@ -21,7 +21,6 @@ import com.google.gson.JsonParseException;
  * The KM200DataHandler is representing the virtual services inside this binding
  *
  * @author Markus Eckhardt - Initial contribution
- *
  */
 public class KM200VirtualServiceHandler {
     private final Logger logger = LoggerFactory.getLogger(KM200VirtualServiceHandler.class);
@@ -34,7 +33,6 @@ public class KM200VirtualServiceHandler {
 
     /**
      * This function creates the virtual services
-     *
      */
     public void initVirtualObjects() {
         KM200ServiceObject newObject = null;

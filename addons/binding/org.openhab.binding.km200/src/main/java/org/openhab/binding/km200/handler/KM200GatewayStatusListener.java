@@ -15,7 +15,6 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
  * to be called back when a gateway status changes
  *
  * @author Markus Eckhardt - Initial contribution
- *
  */
 public interface KM200GatewayStatusListener {
     public void gatewayStatusChanged(ThingStatus status);

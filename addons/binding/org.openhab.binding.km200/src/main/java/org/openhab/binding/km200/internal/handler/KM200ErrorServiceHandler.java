@@ -26,7 +26,6 @@ import com.google.gson.JsonObject;
  * The KM200ErrorService representing a error service with its all capabilities
  *
  * @author Markus Eckhardt - Initial contribution
- *
  */
 public class KM200ErrorServiceHandler {
 
@@ -43,7 +42,6 @@ public class KM200ErrorServiceHandler {
 
     /**
      * This function removes all errors from the list
-     *
      */
     void removeAllErrors() {
         synchronized (errorMap) {
@@ -55,7 +53,6 @@ public class KM200ErrorServiceHandler {
 
     /**
      * This function updates the errors
-     *
      */
     public void updateErrors(JsonObject nodeRoot) {
         synchronized (errorMap) {
@@ -77,7 +74,6 @@ public class KM200ErrorServiceHandler {
 
     /**
      * This function returns the number of errors
-     *
      */
     public int getNbrErrors() {
         synchronized (errorMap) {
@@ -87,7 +83,6 @@ public class KM200ErrorServiceHandler {
 
     /**
      * This function sets the actual errors
-     *
      */
     public void setActiveError(int error) {
         int actError;
@@ -105,7 +100,6 @@ public class KM200ErrorServiceHandler {
 
     /**
      * This function returns the selected error
-     *
      */
     public int getActiveError() {
         synchronized (activeError) {
@@ -119,7 +113,6 @@ public class KM200ErrorServiceHandler {
 
     /**
      * This function returns a error string with all parameters
-     *
      */
     public String getErrorString() {
         String value = "";

@@ -11,6 +11,7 @@ package org.openhab.binding.km200.internal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -26,9 +27,7 @@ import com.google.gson.JsonParser;
  * The KM200Device representing the device with its all capabilities
  *
  * @author Markus Eckhardt - Initial contribution
- *
  */
-
 public class KM200Device {
 
     private final Logger logger = LoggerFactory.getLogger(KM200Device.class);
@@ -56,7 +55,7 @@ public class KM200Device {
     protected byte[] md5Salt;
 
     /* Device services */
-    public HashMap<String, KM200ServiceObject> serviceTreeMap;
+    public Map<String, KM200ServiceObject> serviceTreeMap;
 
     /* Device services blacklist */
     private List<String> blacklistMap;
@@ -182,7 +181,7 @@ public class KM200Device {
      *
      * @param actTreeMap
      */
-    public void printAllServices(HashMap<String, KM200ServiceObject> actTreeMap) {
+    public void printAllServices(Map<String, KM200ServiceObject> actTreeMap) {
         if (actTreeMap != null) {
             for (KM200ServiceObject object : actTreeMap.values()) {
                 if (object != null) {
@@ -241,7 +240,7 @@ public class KM200Device {
      *
      * @param actTreeMap
      */
-    public void resetAllUpdates(HashMap<String, KM200ServiceObject> actTreeMap) {
+    public void resetAllUpdates(Map<String, KM200ServiceObject> actTreeMap) {
         if (actTreeMap != null) {
             for (KM200ServiceObject stmObject : actTreeMap.values()) {
                 if (stmObject != null) {

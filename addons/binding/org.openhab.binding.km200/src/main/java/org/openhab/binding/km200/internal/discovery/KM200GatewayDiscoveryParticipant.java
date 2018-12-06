@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
  * The {@link KM200GatewayDiscoveryParticipant} class discovers gateways and adds the results to the inbox.
  *
  * @author Markus Eckhardt - Initial contribution
- *
  */
 @Component(immediate = true, configurationPid = "binding.km200")
 public class KM200GatewayDiscoveryParticipant implements MDNSDiscoveryParticipant {

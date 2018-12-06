@@ -17,9 +17,7 @@ import com.google.gson.JsonObject;
  * The KM200CommObject representing a service on a device with its all capabilities
  *
  * @author Markus Eckhardt - Initial contribution
- *
  */
-
 public class KM200ServiceObject {
     private int readable;
     private int writeable;

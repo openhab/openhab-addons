@@ -28,9 +28,7 @@ import com.google.common.io.ByteStreams;
  * The KM200Comm class does the communication to the device and does any encryption/decryption/converting jobs
  *
  * @author Markus Eckhardt - Initial contribution
- *
  */
-
 public class KM200Comm<KM200BindingProvider> {
 
     private final Logger logger = LoggerFactory.getLogger(KM200Comm.class);

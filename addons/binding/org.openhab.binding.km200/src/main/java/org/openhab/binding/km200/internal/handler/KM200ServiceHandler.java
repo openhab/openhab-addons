@@ -24,7 +24,6 @@ import com.google.gson.JsonObject;
  * The KM200DataHandler is representing one service on the device
  *
  * @author Markus Eckhardt - Initial contribution
- *
  */
 public class KM200ServiceHandler {
 
@@ -45,7 +44,6 @@ public class KM200ServiceHandler {
 
     /**
      * This function starts the object's initialization
-     *
      */
     public void initObject() {
         if (remoteDevice.getBlacklistMap().contains(service)) {
@@ -63,7 +61,6 @@ public class KM200ServiceHandler {
 
     /**
      * This function checks the flags of a service on the device and creates a KM200CommObject
-     *
      */
     public void createServiceObject() {
         String id = null, type = null;
@@ -97,7 +94,6 @@ public class KM200ServiceHandler {
 
     /**
      * This function determines the service's capabilities
-     *
      */
     public void determineServiceObject() {
         /* Check the service features and set the flags */

@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
  * The KM200Cryption is managing the en- and decription of the communication to the device
  *
  * @author Markus Eckhardt - Initial contribution
- *
  */
 public class KM200Cryption {
 

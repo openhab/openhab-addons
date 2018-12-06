@@ -105,7 +105,6 @@ public class KM200ThingHandler extends BaseThingHandler {
 
     /**
      * Choose a tag for a channel
-     *
      */
     Set<String> checkTag(String unitOfMeasure, boolean readOnly) {
         Set<String> tags = new HashSet<String>();
@@ -121,7 +120,6 @@ public class KM200ThingHandler extends BaseThingHandler {
 
     /**
      * Choose a category for a channel
-     *
      */
     String checkCategory(String unitOfMeasure, String topCategory, boolean readOnly) {
         String category = null;
@@ -155,7 +153,6 @@ public class KM200ThingHandler extends BaseThingHandler {
 
     /**
      * Creates a new channel
-     *
      */
     Channel createChannel(ChannelTypeUID channelTypeUID, ChannelUID channelUID, String root, String type,
             String currentPathName, String description, String label, boolean addProperties, boolean switchProgram,
@@ -273,7 +270,6 @@ public class KM200ThingHandler extends BaseThingHandler {
 
     /**
      * Checks whether a channel is linked to an item
-     *
      */
     public boolean checkLinked(Channel channel) {
         return isLinked(channel.getUID().getId());
@@ -281,7 +277,6 @@ public class KM200ThingHandler extends BaseThingHandler {
 
     /**
      * Search for services and add them to a list
-     *
      */
     private void addChannels(KM200ServiceObject serObj, Thing thing, List<Channel> subChannels, String subNameAddon) {
         String service = serObj.getFullServiceName();
