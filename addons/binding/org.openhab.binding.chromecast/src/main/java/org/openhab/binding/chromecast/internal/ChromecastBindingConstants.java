@@ -8,8 +8,11 @@
  */
 package org.openhab.binding.chromecast.internal;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -82,10 +85,13 @@ public class ChromecastBindingConstants {
      * These are channels that map directly. Images and location are unique channels that
      * don't fit this description.
      */
-    public static final String[] METADATA_SIMPLE_CHANNELS = { CHANNEL_ALBUM_ARTIST, CHANNEL_ALBUM_NAME, CHANNEL_ARTIST,
-            CHANNEL_BROADCAST_DATE, CHANNEL_COMPOSER, CHANNEL_CREATION_DATE, CHANNEL_DISC_NUMBER,
-            CHANNEL_EPISODE_NUMBER, CHANNEL_LOCATION_NAME, CHANNEL_RELEASE_DATE, CHANNEL_SEASON_NUMBER,
-            CHANNEL_SERIES_TITLE, CHANNEL_STUDIO, CHANNEL_SUBTITLE, CHANNEL_TITLE, CHANNEL_TRACK_NUMBER, };
+    public static final Set<String> METADATA_SIMPLE_CHANNELS = Collections
+            .unmodifiableSet(Stream
+                    .of(CHANNEL_ALBUM_ARTIST, CHANNEL_ALBUM_NAME, CHANNEL_ARTIST, CHANNEL_BROADCAST_DATE,
+                            CHANNEL_COMPOSER, CHANNEL_CREATION_DATE, CHANNEL_DISC_NUMBER, CHANNEL_EPISODE_NUMBER,
+                            CHANNEL_LOCATION_NAME, CHANNEL_RELEASE_DATE, CHANNEL_SEASON_NUMBER, CHANNEL_SERIES_TITLE,
+                            CHANNEL_STUDIO, CHANNEL_SUBTITLE, CHANNEL_TITLE, CHANNEL_TRACK_NUMBER)
+                    .collect(Collectors.toSet()));
 
     // We don't key these metadata keys directly to a channel, they get linked together
     // into a Location channel.
