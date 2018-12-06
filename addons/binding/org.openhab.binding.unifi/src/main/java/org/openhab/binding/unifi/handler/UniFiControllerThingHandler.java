@@ -12,7 +12,6 @@ import static org.eclipse.smarthome.core.thing.ThingStatus.OFFLINE;
 import static org.eclipse.smarthome.core.thing.ThingStatus.ONLINE;
 import static org.eclipse.smarthome.core.thing.ThingStatusDetail.*;
 
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -148,26 +147,24 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
         return config.getRefresh();
     }
 
-    private @Nullable String invokeMethod(Object obj, String name) {
-        String value = null;
-        try {
-            Method method = obj.getClass().getMethod(name);
-            Object object = method.invoke(obj);
-            value = String.valueOf(object);
-        } catch (ReflectiveOperationException e) {
-            logger.warn("Could not invoke method '{}' on object '{}'", name, obj);
-        }
-        return value;
-    }
-
     private void cachePut(Map<String, UniFiClient> cache, UniFiClient client) {
         synchronized (cache) {
             for (String prefix : CACHE_KEY_PREFIXES) {
-                // mgb: call getFoo() for the prefix 'foo'
-                // - mac -> getMac()
-                // - ip -> getIp()
-                // ...etc...
-                String suffix = invokeMethod(client, "get" + StringUtils.capitalize(prefix));
+                String suffix = null;
+                switch (prefix) {
+                    case "mac":
+                        suffix = client.getMac();
+                        break;
+                    case "ip":
+                        suffix = client.getIp();
+                        break;
+                    case "hostname":
+                        suffix = client.getHostname();
+                        break;
+                    case "alias":
+                        suffix = client.getAlias();
+                        break;
+                }
                 if (StringUtils.isNotBlank(suffix)) {
                     String key = prefix + CACHE_KEY_SEPARATOR + suffix;
                     cache.put(key, client);
