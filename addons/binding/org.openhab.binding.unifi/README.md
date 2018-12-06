@@ -5,8 +5,8 @@ This binding integrates with [Ubiquiti UniFi Networks](https://www.ubnt.com/prod
 
 ## Supported Things
 
-* UniFi Controller 
-* UniFi Wireless Client (any wireless client connected to a UniFi wireless network)
+* `controller` - An instance of the UniFi controller software 
+* `wirelessClient` - Any wireless client connected to a UniFi wireless network
 
 
 ## Discovery
@@ -32,6 +32,7 @@ The following table describes the Bridge configuration parameters:
 | username                 | The username to access the UniFi Controller    | Required | -       |
 | password                 | The password to access the UniFi Controller    | Required | -       |
 | refresh                  | Refresh interval in seconds                    | Optional | 10      |
+
 
 ## Thing Configuration
 
@@ -70,6 +71,7 @@ Additionally, you may use friendly site names as they appear in the controller U
 
 The `considerHome` parameter allows you to control how quickly the binding marks a client as away. For example, using the default of `180` (seconds), the binding will report a client away as soon as `lastSeen` + `180` (seconds) < `now`
 
+
 ## Channels
 
 The Wireless Client information that is retrieved is available as these channels:
@@ -87,6 +89,7 @@ The Wireless Client information that is retrieved is available as these channels
 | lastSeen   | DateTime  | Date and Time the wireless client was last seen                      |
 
 *Note: All channels are read-only*
+
 
 ## Full Example
 
