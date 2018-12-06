@@ -14,7 +14,7 @@
 		<modelName>Philips hue bridge 2015</modelName>
 		<modelNumber>BSB002</modelNumber>
 		<modelURL>http://www.meethue.com</modelURL>
-		<serialNumber>0017880ae670</serialNumber>
+		<serialNumber>%s</serialNumber>
 		<UDN>uuid:%s</UDN>
 		<presentationURL>index.html</presentationURL>
 		<iconList>

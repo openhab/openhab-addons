@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The configuration for {@link HueEmulationServlet}.
+ * The configuration for {@link HueEmulationService}.
  *
  * @author David Graeff - Initial Contribution
  */

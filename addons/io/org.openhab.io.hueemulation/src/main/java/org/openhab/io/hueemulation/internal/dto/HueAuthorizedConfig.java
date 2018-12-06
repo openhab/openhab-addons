@@ -9,12 +9,18 @@
 package org.openhab.io.hueemulation.internal.dto;
 
 import java.time.ZonedDateTime;
+import java.util.Map;
+import java.util.TreeMap;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.io.hueemulation.internal.dto.HueDataStore.UserAuth;
 
 /**
  * Hue API config object
  *
  * @author David Graeff - Initial contribution
  */
+@NonNullByDefault
 public class HueAuthorizedConfig extends HueUnauthorizedConfig {
     public String uuid = "5673dfa7-272c-4315-9955-252cdd86131c";
 
@@ -30,6 +36,7 @@ public class HueAuthorizedConfig extends HueUnauthorizedConfig {
     public boolean rfconnected = true;
     public int zigbeechannel = 15;
     public boolean linkbutton = false;
+    public transient boolean createNewUserOnEveryEndpoint = false;
     public int panid = 19367;
 
     public boolean dhcp = true;
@@ -40,4 +47,6 @@ public class HueAuthorizedConfig extends HueUnauthorizedConfig {
 
     public String proxyaddress = "none";
     public int proxyport = 0;
+
+    public final Map<String, UserAuth> whitelist = new TreeMap<>();
 }

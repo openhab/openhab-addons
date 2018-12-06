@@ -28,15 +28,6 @@ public class HueStateColorBulb extends HueStateBulb {
     // color as array of xy-coordinates
     public double[] xy = { 0, 0 };
 
-    public static enum Alert {
-        none,
-        /** flashes light once */
-        select,
-        /** flashes repeatedly for 10 seconds. */
-        lselect
-    }
-
-    public Alert alert = Alert.none;
     public String effect = "none";
 
     /** time for transition in centiseconds. */

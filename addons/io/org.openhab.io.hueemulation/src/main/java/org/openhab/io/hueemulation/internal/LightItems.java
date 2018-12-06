@@ -8,12 +8,7 @@
  */
 package org.openhab.io.hueemulation.internal;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -21,21 +16,18 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.eclipse.smarthome.core.common.registry.RegistryChangeListener;
+import org.eclipse.smarthome.core.items.GroupItem;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.library.CoreItemFactory;
+import org.eclipse.smarthome.core.storage.Storage;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.openhab.io.hueemulation.internal.dto.HueDataStore;
 import org.openhab.io.hueemulation.internal.dto.HueDevice;
+import org.openhab.io.hueemulation.internal.dto.HueGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
 
 /**
  * Listens to the ItemRegistry for items that fulfill the criteria
@@ -52,15 +44,12 @@ import com.google.gson.stream.JsonWriter;
  * </p>
  *
  * The HUE Rest API requires a unique integer ID for every listed device.
- * A file in userdata/hueemulation/itemUIDtoHueID is used to keep track of the used integer ids.
  *
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
 public class LightItems implements RegistryChangeListener<Item> {
     private final Logger logger = LoggerFactory.getLogger(LightItems.class);
-    private static final File ITEM_FILE = new File(
-            ConfigConstants.getUserDataFolder() + File.separator + "hueemulation" + File.separator + "itemUIDtoHueID");
     private static final Set<String> ALLOWED_ITEM_TYPES = Stream
             .of(CoreItemFactory.COLOR, CoreItemFactory.DIMMER, CoreItemFactory.SWITCH).collect(Collectors.toSet());
 
@@ -70,11 +59,10 @@ public class LightItems implements RegistryChangeListener<Item> {
     private Set<String> switchFilter = Collections.emptySet();
     private Set<String> colorFilter = Collections.emptySet();
     private Set<String> whiteFilter = Collections.emptySet();
-    private final Gson gson;
+    private @Nullable Storage<Integer> storage;
 
-    public LightItems(HueDataStore ds, Gson gson) {
+    public LightItems(HueDataStore ds) {
         dataStore = ds;
-        this.gson = gson;
     }
 
     /**
@@ -91,23 +79,21 @@ public class LightItems implements RegistryChangeListener<Item> {
     }
 
     /**
-     * Load the userdata/hueemulation/itemUIDtoHueID file into {@link #itemUIDtoHueID}.
+     * Load the {@link #itemUIDtoHueID} mapping.
      */
-    public void loadMappingFromFile() {
-        // load item list from disk
-        if (ITEM_FILE.exists()) {
-            try (JsonReader reader = new JsonReader(new FileReader(ITEM_FILE))) {
-                Map<String, Integer> tmpMap;
-                tmpMap = gson.fromJson(reader, new TypeToken<Map<String, Integer>>() {
-                }.getType());
-                if (tmpMap != null) {
-                    itemUIDtoHueID.putAll(tmpMap);
-                }
-            } catch (IOException e) {
-                logger.warn("File {} error", ITEM_FILE, e);
+    public void loadMappingFromFile(Storage<Integer> storage) {
+        boolean storageChanged = this.storage != null && this.storage != storage;
+        this.storage = storage;
+        for (String itemUID : storage.getKeys()) {
+            Integer hueID = storage.get(itemUID);
+            if (hueID == null) {
+                continue;
             }
+            itemUIDtoHueID.put(itemUID, hueID);
         }
-
+        if (storageChanged) {
+            writeToFile();
+        }
     }
 
     /**
@@ -131,15 +117,18 @@ public class LightItems implements RegistryChangeListener<Item> {
     }
 
     /**
-     * Saves the ID->Item association to file.
+     * Saves the ID->Item association to the storage.
      */
     private void writeToFile() {
-        try (JsonWriter writer = new JsonWriter(new FileWriter(ITEM_FILE))) {
-            gson.toJson(itemUIDtoHueID, new TypeToken<Map<String, Integer>>() {
-            }.getType(), writer);
-        } catch (IOException e) {
-            logger.error("Could not persist item cache", e);
+        Storage<Integer> storage = this.storage;
+        if (storage == null) {
+            return;
         }
+        itemUIDtoHueID.forEach((itemUID, hueID) -> storage.put(itemUID, hueID));
+    }
+
+    public void resetStorage() {
+        this.storage = null;
     }
 
     /**
@@ -219,6 +208,8 @@ public class LightItems implements RegistryChangeListener<Item> {
             return;
         }
 
+        logger.debug("Add item {}", element.getUID());
+
         Integer hueID = itemUIDtoHueID.get(element.getUID());
 
         boolean itemAssociationCreated = false;
@@ -227,17 +218,19 @@ public class LightItems implements RegistryChangeListener<Item> {
             itemAssociationCreated = true;
         }
 
-        try {
-            HueDevice device = new HueDevice(element, UDN.getUDN() + "-" + hueID.toString(), t);
-            device.item = element;
-            dataStore.lights.put(hueID, device);
-            updateGroup0();
-            itemUIDtoHueID.put(element.getUID(), hueID);
-            if (itemAssociationCreated) {
-                writeToFile();
-            }
-        } catch (IOException e) {
-            logger.warn("IO failed", e);
+        HueDevice device = new HueDevice(element, dataStore.config.uuid + "-" + hueID.toString(), t);
+        device.item = element;
+        dataStore.lights.put(hueID, device);
+        if (element instanceof GroupItem) {
+            GroupItem g = (GroupItem) element;
+            g.getMembers();
+            HueGroup group = new HueGroup(g.getName(), g, itemUIDtoHueID);
+            dataStore.groups.put(hueID, group);
+        }
+        updateGroup0();
+        itemUIDtoHueID.put(element.getUID(), hueID);
+        if (itemAssociationCreated) {
+            writeToFile();
         }
     }
 
@@ -256,7 +249,9 @@ public class LightItems implements RegistryChangeListener<Item> {
         if (hueID == null) {
             return;
         }
+        logger.debug("Remove item {}", element.getUID());
         dataStore.lights.remove(hueID);
+        dataStore.groups.remove(hueID);
         updateGroup0();
         itemUIDtoHueID.remove(element.getUID());
         writeToFile();
@@ -274,6 +269,16 @@ public class LightItems implements RegistryChangeListener<Item> {
             added(element);
             return;
         }
+
+        HueGroup hueGroup = dataStore.groups.get(hueID);
+        if (hueGroup != null) {
+            if (element instanceof GroupItem) {
+                hueGroup.updateItem((GroupItem) element);
+            } else {
+                dataStore.groups.remove(hueID);
+            }
+        }
+
         HueDevice hueDevice = dataStore.lights.get(hueID);
         if (hueDevice == null) {
             // If the correct tags got added -> use the logic within added()
