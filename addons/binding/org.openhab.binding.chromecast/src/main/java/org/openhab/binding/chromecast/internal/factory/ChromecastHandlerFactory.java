@@ -6,7 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.chromecast.internal;
+package org.openhab.binding.chromecast.internal.factory;
+
+import static org.openhab.binding.chromecast.internal.ChromecastBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
@@ -60,7 +62,7 @@ public class ChromecastHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return ChromecastBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Override
