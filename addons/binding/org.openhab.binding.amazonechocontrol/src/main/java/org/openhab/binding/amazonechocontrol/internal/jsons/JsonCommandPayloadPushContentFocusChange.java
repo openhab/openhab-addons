@@ -6,25 +6,19 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-
-package org.openhab.binding.amazonechocontrol.internal;
+package org.openhab.binding.amazonechocontrol.internal.jsons;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Account Thing configuration
+ * The {@link JsonCommandPayloadPushContentFocusChange} encapsulate the GSON data of automation query
  *
- * @author Michael Geramb - Initial Contribution
+ * @author Michael Geramb - Initial contribution
  */
 @NonNullByDefault
-public class AccountConfiguration {
-    @Nullable
-    public String email;
-    @Nullable
-    public String password;
-    @Nullable
-    public String amazonSite;
-    @Nullable
-    public Integer pollingIntervalInSeconds;
+public class JsonCommandPayloadPushContentFocusChange extends JsonCommandPayloadPushDevice {
+    public @Nullable String destinationUserId;
+    public @Nullable String clientId;
+    public @Nullable String deviceComponent;
 }

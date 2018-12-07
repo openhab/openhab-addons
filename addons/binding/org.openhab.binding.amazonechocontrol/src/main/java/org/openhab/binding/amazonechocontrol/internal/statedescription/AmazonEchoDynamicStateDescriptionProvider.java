@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingRegistry;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.type.DynamicStateDescriptionProvider;
 import org.eclipse.smarthome.core.types.StateDescription;
@@ -79,6 +80,19 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
         }
         Thing thing = thingRegistry.get(channel.getUID().getThingUID());
         if (thing == null) {
+            return null;
+        }
+        ThingUID accountThingId = thing.getBridgeUID();
+        Thing accountThing = thingRegistry.get(accountThingId);
+        if (accountThing == null) {
+            return null;
+        }
+        AccountHandler accountHandler = (AccountHandler) accountThing.getHandler();
+        if (accountHandler == null) {
+            return null;
+        }
+        Connection connection = accountHandler.findConnection();
+        if (connection == null || !connection.getIsLoggedIn()) {
             return null;
         }
         return thing.getHandler();
