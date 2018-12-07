@@ -279,9 +279,8 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
             properties.put(PROPERTY_SW_VERSION, systemInfo.getVersion());
             properties.put(PROPERTY_FW_VERSION, systemInfo.getHwRevision());
             properties.put(PROPERTY_APP_WITHOUT_VIEWER, Boolean.toString(systemInfo.getApplicationIsWithoutViewer()));
-            properties.put(PROPERTY_SW_DATE, systemInfo.getSwDate().atZone(ZoneId.systemDefault()).toString());
-            properties.put(PROPERTY_PRODUCTION_DATE,
-                    systemInfo.getProductionDate().atZone(ZoneId.systemDefault()).toString());
+            properties.put(PROPERTY_SW_DATE, systemInfo.getSwDate().toString());
+            properties.put(PROPERTY_PRODUCTION_DATE, systemInfo.getProductionDate().toString());
             properties.put(PROPERTY_PROJECT_DATE,
                     projectInfo.getLastmodified().getAsLocalDateTime().atZone(ZoneId.systemDefault()).toString());
             properties.put(PROPERTY_PROJECT_NUMBER, projectInfo.getProjectNumber());
@@ -299,7 +298,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
             updateState(new ChannelUID(getThing().getUID(), CHANNEL_CONTROLLER_UPTIME),
                     new DecimalType((double) systemInfo.getUptime() / 1000));
             updateState(new ChannelUID(getThing().getUID(), CHANNEL_CONTROLLER_TIME),
-                    new DateTimeType(systemInfo.getRealTimeClock().atZone(ZoneId.systemDefault())));
+                    new DateTimeType(systemInfo.getRealTimeClock()));
         } catch (IhcExecption e) {
             logger.warn("Controller uptime information fetch failed, reason {}", e.getMessage());
         }

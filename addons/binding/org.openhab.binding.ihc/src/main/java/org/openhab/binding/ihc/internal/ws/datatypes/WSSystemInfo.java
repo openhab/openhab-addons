@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.ihc.internal.ws.datatypes;
 
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
@@ -21,20 +20,20 @@ import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
 public class WSSystemInfo extends WSBaseDataType {
 
     private long uptime;
-    private LocalDateTime realtimeclock;
+    private ZonedDateTime realtimeclock;
     private String serialNumber;
     private String brand;
     private String version;
     private String hwRevision;
-    private LocalDateTime swDate;
+    private ZonedDateTime swDate;
     private boolean applicationIsWithoutViewer;
-    private LocalDateTime productionDate;
+    private ZonedDateTime productionDate;
 
     public WSSystemInfo() {
     }
 
-    public WSSystemInfo(long uptime, LocalDateTime realtimeclock, String serialNumber, String brand, String version,
-            String hwRevision, LocalDateTime swDate, boolean applicationIsWithoutViewer, LocalDateTime productionDate) {
+    public WSSystemInfo(long uptime, ZonedDateTime realtimeclock, String serialNumber, String brand, String version,
+            String hwRevision, ZonedDateTime swDate, boolean applicationIsWithoutViewer, ZonedDateTime productionDate) {
 
         this.uptime = uptime;
         this.realtimeclock = realtimeclock;
@@ -70,7 +69,7 @@ public class WSSystemInfo extends WSBaseDataType {
      *
      * @return Real Time Clock
      */
-    public LocalDateTime getRealTimeClock() {
+    public ZonedDateTime getRealTimeClock() {
         return realtimeclock;
     }
 
@@ -79,7 +78,7 @@ public class WSSystemInfo extends WSBaseDataType {
      *
      * @param RealTimeClock
      */
-    public void setRealTimeClock(LocalDateTime realtimeclock) {
+    public void setRealTimeClock(ZonedDateTime realtimeclock) {
         this.realtimeclock = realtimeclock;
     }
 
@@ -160,7 +159,7 @@ public class WSSystemInfo extends WSBaseDataType {
      *
      * @return swDate
      */
-    public LocalDateTime getSwDate() {
+    public ZonedDateTime getSwDate() {
         return swDate;
     }
 
@@ -169,7 +168,7 @@ public class WSSystemInfo extends WSBaseDataType {
      *
      * @param swDate
      */
-    public void setSwDate(LocalDateTime swDate) {
+    public void setSwDate(ZonedDateTime swDate) {
         this.swDate = swDate;
     }
 
@@ -196,7 +195,7 @@ public class WSSystemInfo extends WSBaseDataType {
      *
      * @return productionDate
      */
-    public LocalDateTime getProductionDate() {
+    public ZonedDateTime getProductionDate() {
         return productionDate;
     }
 
@@ -205,7 +204,7 @@ public class WSSystemInfo extends WSBaseDataType {
      *
      * @param productionDate
      */
-    public void setProductionDate(LocalDateTime productionDate) {
+    public void setProductionDate(ZonedDateTime productionDate) {
         this.productionDate = productionDate;
     }
 
@@ -217,7 +216,7 @@ public class WSSystemInfo extends WSBaseDataType {
         setSerialNumber(value);
 
         value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:realtimeclock");
-        setRealTimeClock(ZonedDateTime.parse(value).toLocalDateTime());
+        setRealTimeClock(ZonedDateTime.parse(value));
 
         value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:brand");
         setBrand(value);
@@ -229,14 +228,14 @@ public class WSSystemInfo extends WSBaseDataType {
         setHwRevision(value);
 
         value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:swDate");
-        setSwDate(ZonedDateTime.parse(value).toLocalDateTime());
+        setSwDate(ZonedDateTime.parse(value));
 
         value = parseXMLValue(data,
                 "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:applicationIsWithoutViewer");
         setApplicationIsWithoutViewer(Boolean.parseBoolean(value));
 
         value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:productionDate");
-        setProductionDate(ZonedDateTime.parse(value).toLocalDateTime());
+        setProductionDate(ZonedDateTime.parse(value));
 
         return this;
     }

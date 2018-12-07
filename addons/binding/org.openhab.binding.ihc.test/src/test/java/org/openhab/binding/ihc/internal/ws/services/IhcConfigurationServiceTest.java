@@ -56,11 +56,11 @@ public class IhcConfigurationServiceTest {
         assertEquals(false, result.getApplicationIsWithoutViewer());
         assertEquals("ELKOFI", result.getBrand());
         assertEquals("6.2", result.getHwRevision());
-        assertEquals(LocalDateTime.parse("2018-06-28 17:02:29", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
-                result.getRealTimeClock());
+        assertEquals(LocalDateTime.parse("2018-06-28T17:02:29", DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")),
+                result.getRealTimeClock().toLocalDateTime());
         assertEquals("1234567890", result.getSerialNumber());
-        assertEquals(LocalDateTime.parse("2011-03-04 09:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
-                result.getSwDate());
+        assertEquals(LocalDateTime.parse("2011-03-04T09:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")),
+                result.getSwDate().toLocalDateTime());
         assertEquals(3980146956L, result.getUptime());
         assertEquals("2.7.144", result.getVersion());
     }
