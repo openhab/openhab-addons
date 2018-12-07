@@ -32,6 +32,8 @@ public class JsonPlayerState {
         public @Nullable String queueId;
         public @Nullable String mediaId;
 
+        public @Nullable Progress progress;
+
         public class InfoText {
             public boolean multiLineMode;
             public @Nullable String subText1;
@@ -57,5 +59,13 @@ public class JsonPlayerState {
             public @Nullable String url;
         }
 
+        public class Progress {
+            public @Nullable Boolean allowScrubbing;
+            public @Nullable Object locationInfo;
+            public @Nullable Long mediaLength;
+            public @Nullable Long mediaProgress;
+            public @Nullable Boolean showTiming;
+            public @Nullable Boolean visible;
+        }
     }
 }
