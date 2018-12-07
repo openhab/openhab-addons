@@ -9,18 +9,6 @@
 		<description>Displays IHC / ELKO controller state</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="controller-sw-version" advanced="true">
-		<item-type>String</item-type>
-		<label>Controller Software Version</label>
-		<description>Displays IHC / ELKO controller software version</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="controller-hw-version" advanced="true">
-		<item-type>String</item-type>
-		<label>Controller Hardware Version</label>
-		<description>Displays IHC / ELKO controller hardware version</description>
-		<state readOnly="true"></state>
-	</channel-type>
 	<channel-type id="controller-uptime" advanced="true">
 		<item-type>Number</item-type>
 		<label>Controller Uptime</label>
