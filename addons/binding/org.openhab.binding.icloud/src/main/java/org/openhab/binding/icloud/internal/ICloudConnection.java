@@ -8,8 +8,9 @@
  */
 package org.openhab.binding.icloud.internal;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
@@ -20,7 +21,7 @@ import org.openhab.binding.icloud.internal.json.request.ICloudAccountDataRequest
 import org.openhab.binding.icloud.internal.json.request.ICloudFindMyDeviceRequest;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.GsonBuilder;;
 
 /**
  * Handles communication with the Apple server. Provides methods to
@@ -45,8 +46,8 @@ public class ICloudConnection {
     private final String iCloudDataRequestURL;
     private final String iCloudFindMyDeviceURL;
 
-    public ICloudConnection(String appleId, String password) throws UnsupportedEncodingException, URISyntaxException {
-        authorization = new String(Base64.getEncoder().encode((appleId + ":" + password).getBytes()), "UTF-8");
+    public ICloudConnection(String appleId, String password) throws URISyntaxException {
+        authorization = new String(Base64.getEncoder().encode((appleId + ":" + password).getBytes()), UTF_8);
         iCloudDataRequestURL = new URI(ICLOUD_API_URL + appleId + ICLOUD_API_COMMAND_REQUEST_DATA).toASCIIString();
         iCloudFindMyDeviceURL = new URI(ICLOUD_API_URL + appleId + ICLOUD_API_COMMAND_PING_DEVICE).toASCIIString();
     }
