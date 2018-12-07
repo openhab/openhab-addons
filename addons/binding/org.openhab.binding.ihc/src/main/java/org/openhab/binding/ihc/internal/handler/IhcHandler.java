@@ -82,7 +82,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
     private static final String LOCAL_IHC_PROJECT_FILE_NAME_TEMPLATE = "ihc-project-file-%s.xml";
 
     /** Holds runtime notification reorder timeout in milliseconds */
-    private static final int NOTIFICATIONS_REORDER_WAIT_TIME = 2000;
+    private static final int NOTIFICATIONS_REORDER_WAIT_TIME = 1000;
 
     /** IHC / ELKO LS Controller client */
     private IhcClient ihc;
@@ -168,13 +168,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
         logger.debug("Using configuration: {}", conf);
 
         linkedResourceIds.clear();
-        linkedResourceIds.addAll(this.getThing().getChannels().stream().filter(c -> isLinked(c.getUID())).map(c -> {
-            ChannelParams params = new ChannelParams(c);
-            logger.debug("Linked channel '{}' found, resource id '{}'", c.getUID().getAsString(),
-                    params.getResourceId());
-            return params.getResourceId();
-        }).filter(c -> c != 0).collect(Collectors.toSet()));
-
+        linkedResourceIds.addAll(getAllLinkedChannelsResourceIds());
         logger.debug("Linked resources {}: {}", linkedResourceIds.size(), linkedResourceIds);
 
         if (controlJob == null || controlJob.isCancelled()) {
@@ -490,7 +484,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
             logger.debug("Connecting to IHC / ELKO LS controller [IP='{}', username='{}'].", conf.ip, conf.username);
             ihc = new IhcClient(conf.ip, conf.username, conf.password, conf.timeout);
             ihc.openConnection();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                     "Initializing communication to the IHC / ELKO controller");
             loadProject();
             createChannels();
@@ -499,8 +493,9 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
             updateControllerInformationChannels();
             ihc.addEventListener(this);
             ihc.startControllerEventListeners();
-            setValueNotificationRequest(true);
+            updateNotificationsRequestReminder();
             startRFPolling();
+            updateStatus(ThingStatus.ONLINE);
         } finally {
             setConnectingState(false);
         }
@@ -765,7 +760,6 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                     disconnect();
                 }
                 connect();
-                updateStatus(ThingStatus.ONLINE);
                 setReconnectRequest(false);
             } catch (IhcExecption e) {
                 logger.debug("Can't open connection to controller", e.getMessage());
@@ -784,6 +778,17 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
         }
     }
 
+    private Set<Integer> getAllLinkedChannelsResourceIds() {
+        Set<Integer> resourceIds = Collections.synchronizedSet(new HashSet<>());
+        resourceIds.addAll(this.getThing().getChannels().stream().filter(c -> isLinked(c.getUID())).map(c -> {
+            ChannelParams params = new ChannelParams(c);
+            logger.debug("Linked channel '{}' found, resource id '{}'", c.getUID().getAsString(),
+                    params.getResourceId());
+            return params.getResourceId();
+        }).filter(c -> c != null && c != 0).collect(Collectors.toSet()));
+        return resourceIds;
+    }
+
     /**
      * Order resource value notifications from IHC controller.
      */
@@ -795,12 +800,14 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 logger.debug("Controller is connecting, abort subscribe");
                 return;
             }
+            setValueNotificationRequest(false);
             Set<Integer> resourceIds = ChannelUtils.getAllTriggerChannelsResourceIds(getThing());
             logger.debug("Enable runtime notfications for {} trigger(s)", resourceIds.size());
             logger.debug("Enable runtime notfications for {} channel(s)", linkedResourceIds.size());
             resourceIds.addAll(linkedResourceIds);
+            resourceIds.addAll(getAllLinkedChannelsResourceIds());
+            logger.debug("Enable runtime notfications for {} resources: {}", resourceIds.size(), resourceIds);
             if (resourceIds.size() > 0) {
-                logger.debug("Enable runtime notfications for {} resources: {}", resourceIds.size(), resourceIds);
                 try {
                     ihc.enableRuntimeValueNotifications(resourceIds);
                 } catch (IhcExecption e) {
@@ -813,8 +820,6 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
             logger.debug("Reconnection request");
             setReconnectRequest(true);
         }
-
-        setValueNotificationRequest(false);
     }
 
     private synchronized void updateNotificationsRequestReminder() {
@@ -822,6 +827,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
             notificationsRequestReminder.cancel(false);
         }
 
+        logger.debug("Rechedule resource runtime value notifications order by {}ms", NOTIFICATIONS_REORDER_WAIT_TIME);
         notificationsRequestReminder = scheduler.schedule(new Runnable() {
 
             @Override
