@@ -34,7 +34,7 @@ public class ICloudTlsCertificateProvider implements TlsCertificateProvider {
         if (resource != null) {
             return resource;
         } else {
-            throw new IllegalStateException("Certifcate resource not found or not accesible");
+            throw new IllegalStateException("Certifcate resource not found or not accessible");
         }
     }
 }
