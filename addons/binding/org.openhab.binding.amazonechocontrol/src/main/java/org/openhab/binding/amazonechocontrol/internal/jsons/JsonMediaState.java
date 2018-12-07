@@ -75,6 +75,5 @@ public class JsonMediaState {
         public @Nullable String title;
         public @Nullable String trackId;
         public @Nullable String trackStatus;
-
     }
 }
