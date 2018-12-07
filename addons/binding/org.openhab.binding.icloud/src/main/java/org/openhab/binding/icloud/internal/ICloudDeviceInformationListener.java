@@ -10,14 +10,15 @@ package org.openhab.binding.icloud.internal;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.icloud.internal.json.response.ICloudDeviceInformation;
 
 /**
  * Classes that implement this interface are interested in device information updates.
  *
- * @author Patrik Gfeller
- *
+ * @author Patrik Gfeller - Initial Contribution
  */
+@NonNullByDefault
 public interface ICloudDeviceInformationListener {
     void deviceInformationUpdate(List<ICloudDeviceInformation> deviceInformationList);
 }
