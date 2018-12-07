@@ -9,6 +9,7 @@
 package org.openhab.binding.paradoxalarm.internal.handlers;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -36,9 +37,28 @@ public class ParadoxAlarmBindingConstants {
     public static final ThingTypeUID PANEL_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, PARADOX_PANEL_THING_TYPE_ID);
     public static final ThingTypeUID PARTITION_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, PARTITION_THING_TYPE_ID);
     public static final ThingTypeUID ZONE_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, ZONE_THING_TYPE_ID);
+
+    // List of all Channel UIDs
     public static final String IP150_COMMUNICATION_COMMAND_CHANNEL_UID = "communicationCommand";
 
-    // List of all Channel ids
-    public static final String STATE = "state";
+    public static final String PANEL_STATE_CHANNEL_UID = "state";
+    public static final String PANEL_SERIAL_NUMBER_CHANNEL_UID = "serialNumber";
+    public static final String PANEL_TYPE_CHANNEL_UID = "panelType";
+    public static final String PANEL_HARDWARE_VERSION_CHANNEL_UID = "hardwareVersion";
+    public static final String PANEL_APPLICATION_VERSION_CHANNEL_UID = "applicationVersion";
+    public static final String PANEL_BOOTLOADER_VERSION_CHANNEL_UID = "bootloaderVersion";
+
+    public static final String PARTITION_ADDITIONAL_STATES_CHANNEL_UID = "additionalStates";
+    public static final String PARTITION_STATE_CHANNEL_UID = "state";
+    public static final String PARTITION_LABEL_CHANNEL_UID = "label";
+
+    public static final String ZONE_LABEL_CHANNEL_UID = "label";
+    public static final String ZONE_IS_OPENED_CHANNEL_UID = "isOpened";
+    public static final String ZONE_IS_TAMPERED_CHANNEL_UID = "isTampered";
+    public static final String ZONE_HAS_LOW_BATTERY_CHANNEL_UID = "hasLowBattery";
+
+    // Misc constants
+    public static final StringType STATE_OFFLINE = new StringType("Offline");
+    public static final StringType STATE_ONLINE = new StringType("Online");
 
 }

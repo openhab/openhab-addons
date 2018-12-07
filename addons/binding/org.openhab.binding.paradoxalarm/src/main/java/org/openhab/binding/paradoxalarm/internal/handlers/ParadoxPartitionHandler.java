@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.paradoxalarm.internal.handlers;
 
+import static org.openhab.binding.paradoxalarm.internal.handlers.ParadoxAlarmBindingConstants.*;
+
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -39,9 +41,10 @@ public class ParadoxPartitionHandler extends EntityBaseHandler {
             List<Partition> partitions = ParadoxPanel.getInstance().getPartitions();
             Partition partition = partitions.get(index);
             if (partition != null) {
-                updateState("label", new StringType(partition.getLabel()));
-                updateState("state", new StringType(partition.getState().getMainState()));
-                updateState("additionalState", new StringType(partition.getState().getAdditionalState()));
+                updateState(PARTITION_LABEL_CHANNEL_UID, new StringType(partition.getLabel()));
+                updateState(PARTITION_STATE_CHANNEL_UID, new StringType(partition.getState().getMainState()));
+                updateState(PARTITION_ADDITIONAL_STATES_CHANNEL_UID,
+                        new StringType(partition.getState().getAdditionalState()));
             }
         } catch (ParadoxBindingException e) {
             logger.error("Unable to update partition with Id {} due to missing ParadoxPanel. Exception: {}",

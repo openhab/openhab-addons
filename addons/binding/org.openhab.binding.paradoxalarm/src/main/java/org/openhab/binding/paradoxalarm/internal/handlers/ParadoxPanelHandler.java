@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.paradoxalarm.internal.handlers;
 
+import static org.openhab.binding.paradoxalarm.internal.handlers.ParadoxAlarmBindingConstants.*;
+
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -130,14 +132,21 @@ public class ParadoxPanelHandler extends BaseThingHandler {
     }
 
     private void updateThing() throws ParadoxBindingException {
-        updateState("state", new StringType("connected"));
-        ParadoxInformation panelInformation = ParadoxPanel.getInstance().getPanelInformation();
+        ParadoxPanel panel = ParadoxPanel.getInstance();
+
+        StringType panelState = panel.isOnline() ? STATE_ONLINE : STATE_OFFLINE;
+        updateState(PANEL_STATE_CHANNEL_UID, panelState);
+
+        ParadoxInformation panelInformation = panel.getPanelInformation();
         if (panelInformation != null) {
-            updateState("serialNumber", new StringType(panelInformation.getSerialNumber()));
-            updateState("panelType", new StringType(panelInformation.getPanelType().name()));
-            updateState("hardwareVersion", new StringType(panelInformation.getHardwareVersion().toString()));
-            updateState("applicationVersion", new StringType(panelInformation.getApplicationVersion().toString()));
-            updateState("bootloaderVersion", new StringType(panelInformation.getBootLoaderVersion().toString()));
+            updateState(PANEL_SERIAL_NUMBER_CHANNEL_UID, new StringType(panelInformation.getSerialNumber()));
+            updateState(PANEL_TYPE_CHANNEL_UID, new StringType(panelInformation.getPanelType().name()));
+            updateState(PANEL_HARDWARE_VERSION_CHANNEL_UID,
+                    new StringType(panelInformation.getHardwareVersion().toString()));
+            updateState(PANEL_APPLICATION_VERSION_CHANNEL_UID,
+                    new StringType(panelInformation.getApplicationVersion().toString()));
+            updateState(PANEL_BOOTLOADER_VERSION_CHANNEL_UID,
+                    new StringType(panelInformation.getBootLoaderVersion().toString()));
         }
 
     }

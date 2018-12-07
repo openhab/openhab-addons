@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.paradoxalarm.internal.handlers;
 
+import static org.openhab.binding.paradoxalarm.internal.handlers.ParadoxAlarmBindingConstants.*;
+
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -39,10 +41,10 @@ public class ParadoxZoneHandler extends EntityBaseHandler {
             List<Zone> zones = ParadoxPanel.getInstance().getZones();
             Zone zone = zones.get(index);
             if (zone != null) {
-                updateState("label", new StringType(zone.getLabel()));
-                updateState("isOpened", OpenClosedType.from(zone.getZoneState().isOpened()));
-                updateState("isTampered", OpenClosedType.from(zone.getZoneState().isTampered()));
-                updateState("hasLowBattery", OpenClosedType.from(zone.getZoneState().hasLowBattery()));
+                updateState(ZONE_LABEL_CHANNEL_UID, new StringType(zone.getLabel()));
+                updateState(ZONE_IS_OPENED_CHANNEL_UID, OpenClosedType.from(zone.getZoneState().isOpened()));
+                updateState(ZONE_IS_TAMPERED_CHANNEL_UID, OpenClosedType.from(zone.getZoneState().isTampered()));
+                updateState(ZONE_HAS_LOW_BATTERY_CHANNEL_UID, OpenClosedType.from(zone.getZoneState().hasLowBattery()));
             }
         } catch (ParadoxBindingException e) {
             logger.error("Unable to update zone {} due to missing ParadoxPanel. Exception: {}",

@@ -59,6 +59,19 @@ public class PartitionState {
             append(sb, "Fire alarm");
         }
 
+        if (isReadyToArm) {
+            append(sb, "Ready to arm");
+        }
+        if (isInTrouble) {
+            append(sb, "Trouble");
+        }
+        if (hasAlarmInMemory) {
+            append(sb, "Alarm in memory");
+        }
+        if (isInZoneBypass) {
+            append(sb, "Zone bypassed");
+        }
+
         if (hasZoneInTamperTrouble) {
             append(sb, "Tamper trouble");
         }
@@ -98,7 +111,7 @@ public class PartitionState {
 
     public void append(StringBuilder sb, String value) {
         sb.append(value);
-        sb.append("\t");
+        sb.append(";");
     }
 
     @Override

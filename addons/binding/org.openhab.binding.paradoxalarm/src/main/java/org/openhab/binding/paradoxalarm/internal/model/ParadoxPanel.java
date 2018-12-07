@@ -28,12 +28,8 @@ public class ParadoxPanel {
 
     private static ParadoxPanel paradoxPanel;
 
+    private boolean isOnline;
     private ParadoxInformation panelInformation;
-
-    public ParadoxInformation getPanelInformation() {
-        return panelInformation;
-    }
-
     private List<Partition> partitions;
     private List<Zone> zones;
     private IParadoxParser parser;
@@ -73,6 +69,7 @@ public class ParadoxPanel {
     }
 
     public void updateEntitiesStates() {
+        isOnline = RawStructuredDataCache.getInstance().isOnline();
         List<byte[]> currentPartitionFlags = RawStructuredDataCache.getInstance().getPartitionStateFlags();
         for (int i = 0; i < partitions.size(); i++) {
             Partition partition = partitions.get(i);
@@ -107,6 +104,10 @@ public class ParadoxPanel {
         return partitions;
     }
 
+    public ParadoxInformation getPanelInformation() {
+        return panelInformation;
+    }
+
     public List<Partition> getPartitions() {
         return partitions;
     }
@@ -122,4 +123,13 @@ public class ParadoxPanel {
     public void setZones(List<Zone> zones) {
         this.zones = zones;
     }
+
+    public boolean isOnline() {
+        return isOnline;
+    }
+
+    public void setOnline(boolean isOnline) {
+        this.isOnline = isOnline;
+    }
+
 }

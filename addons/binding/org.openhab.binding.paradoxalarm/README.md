@@ -1,6 +1,7 @@
 # Paradox Alarm System binding
 
 ## Supported things and items
+
 The binding supports the following things: ip150 bridge, panel thing, partition thing, zone thing. Examples can be seen bellow.
 
 ### IP150 bridge configuration
@@ -45,6 +46,7 @@ The binding supports the following things: ip150 bridge, panel thing, partition 
 ```java
     String paradoxSendCommand "Send command to IP150" {channel="paradoxalarm:ip150:communicator:command"}
 
+    String panelState "Paradox panel state: [%s]" <lock> (Security) { channel = "paradoxalarm:panel:ip150:panel:state" }
     String panelType "Paradox panel type: [%s]" <lock> (Security) { channel = "paradoxalarm:panel:ip150:panel:panelType" }
     String serialNumber "Paradox Serial number: [%s]" <lock> (Security) { channel = "paradoxalarm:panel:ip150:panel:serialNumber" }
     String hardwareVersion "Paradox HW version: [%s]" <lock> (Security) { channel = "paradoxalarm:panel:ip150:panel:hardwareVersion" }
@@ -72,6 +74,7 @@ The binding supports the following things: ip150 bridge, panel thing, partition 
         Switch item=paradoxSendCommand mappings=["LOGOUT"="Logout", "LOGIN"="Login", "RESET"="Reset"]
     }
     Frame {
+        Text item=panelState valuecolor=[panelState=="Online"="green", panelState=="Offline"="red"]
         Text item=panelType
         Text item=serialNumber
         Text item=hardwareVersion

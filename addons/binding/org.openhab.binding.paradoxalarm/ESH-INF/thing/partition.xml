@@ -15,7 +15,7 @@
 		<channels>
 			<channel id="label" typeId="label" />
 			<channel id="state" typeId="state" />
-			<channel id="addidionalStates" typeId="additionalState" />
+			<channel id="additionalStates" typeId="additionalState" />
 		</channels>
 
 		<config-description>

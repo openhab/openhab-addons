@@ -19,6 +19,7 @@ import java.util.List;
  */
 public class RawStructuredDataCache {
 
+    private boolean isOnline;
     private List<byte[]> partitionStateFlags = new ArrayList<>();
     private ZoneStateFlags zoneStateFlags = new ZoneStateFlags();
     private List<String> partitionLabels = new ArrayList<>();
@@ -76,5 +77,13 @@ public class RawStructuredDataCache {
 
     public void setPanelInfoBytes(byte[] panelInfoBytes) {
         this.panelInfoBytes = panelInfoBytes;
+    }
+
+    public boolean isOnline() {
+        return isOnline;
+    }
+
+    public void setIsOnline(boolean isOnline) {
+        this.isOnline = isOnline;
     }
 }

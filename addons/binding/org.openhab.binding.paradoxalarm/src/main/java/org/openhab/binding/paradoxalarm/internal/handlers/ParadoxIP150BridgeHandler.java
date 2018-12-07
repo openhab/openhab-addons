@@ -129,6 +129,7 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
 
             RawStructuredDataCache cache = RawStructuredDataCache.getInstance();
 
+            cache.setIsOnline(communicator.isOnline());
             cache.setPanelInfoBytes(communicator.getPanelInfoBytes());
             cache.setPartitionStateFlags(communicator.readPartitionFlags());
             cache.setZoneStateFlags(communicator.readZoneStateFlags());
