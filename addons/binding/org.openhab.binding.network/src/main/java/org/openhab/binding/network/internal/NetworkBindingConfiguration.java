@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * Contains the binding configuration and default values. The field names represent the configuration names,
  * do not rename them if you don't intend to break the configuration interface.
  *
- * @author David Graeff
+ * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
 public class NetworkBindingConfiguration {

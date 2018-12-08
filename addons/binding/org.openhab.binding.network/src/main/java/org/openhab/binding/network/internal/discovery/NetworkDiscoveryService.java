@@ -46,8 +46,8 @@ import org.slf4j.LoggerFactory;
  * the current Network. It uses every Network Interface which is connected to a network.
  * It tries common TCP ports to connect to, ICMP pings and ARP pings.
  *
- * @author David Graeff - Rewritten
  * @author Marc Mettke - Initial contribution
+ * @author David Graeff - Rewritten
  */
 @NonNullByDefault
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.network")
@@ -60,12 +60,12 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     // TCP port 548 (Apple Filing Protocol (AFP))
     // TCP port 554 (Windows share / Linux samba)
     // TCP port 1025 (Xbox / MS-RPC)
-    private Set<Integer> tcp_service_ports = Collections
+    private Set<Integer> tcpServicePorts = Collections
             .unmodifiableSet(Stream.of(80, 548, 554, 1025).collect(Collectors.toSet()));
     private Integer scannedIPcount = 0;
     private @Nullable ExecutorService executorService = null;
     private final NetworkBindingConfiguration configuration = new NetworkBindingConfiguration();
-    NetworkUtils networkUtils = new NetworkUtils();
+    private final NetworkUtils networkUtils = new NetworkUtils();
 
     public NetworkDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, (int) Math.round(
@@ -144,7 +144,7 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
             s.setUseIcmpPing(true);
             s.setUseArpPing(true, configuration.arpPingToolPath);
             // TCP devices
-            s.setServicePorts(tcp_service_ports);
+            s.setServicePorts(tcpServicePorts);
 
             service.execute(() -> {
                 Thread.currentThread().setName("Discovery thread " + ip);

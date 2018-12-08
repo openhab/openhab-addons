@@ -29,7 +29,7 @@ import org.osgi.service.component.annotations.Modified;
  * The handler factory retrieves the binding configuration and is responsible for creating
  * PING_DEVICE and SERVICE_DEVICE handlers.
  *
- * @author David Graeff
+ * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.network")
