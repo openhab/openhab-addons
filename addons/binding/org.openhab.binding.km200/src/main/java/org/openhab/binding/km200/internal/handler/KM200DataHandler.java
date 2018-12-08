@@ -172,7 +172,6 @@ public class KM200DataHandler {
                         return null;
                     }
                     return state;
-
                 case "floatValue": /* Check whether the type is a single value containing a float value */
                     logger.debug("state of type float value: {}", nodeRoot);
                     Object bdVal = null;

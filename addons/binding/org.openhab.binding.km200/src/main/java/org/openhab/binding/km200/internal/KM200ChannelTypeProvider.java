@@ -23,7 +23,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * Extends the ChannelTypeProvider to manually add a ThingType.
+ * Extends the ChannelTypeProvider for user defined channel and channel group types.
  *
  * @author Markus Eckhardt - Initial contribution
  */

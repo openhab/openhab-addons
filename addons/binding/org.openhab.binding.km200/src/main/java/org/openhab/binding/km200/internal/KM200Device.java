@@ -324,11 +324,11 @@ public class KM200Device {
         byte[] recData = deviceCommunicator.getDataFromService(service.toString());
         try {
             if (recData == null) {
-                logger.error("Communication to {} is not possible!", service);
+                logger.debug("Communication to {} is not possible!", service);
                 return null;
             }
             if (recData.length == 0) {
-                logger.error("No reply from KM200!");
+                logger.debug("No reply from KM200!");
                 return null;
             }
             /* Look whether the communication was forbidden */
@@ -378,7 +378,7 @@ public class KM200Device {
         logger.debug("Send: {}", service);
         retVal = deviceCommunicator.sendDataToService(service, encData);
         if (retVal == 0) {
-            logger.error("Send to device failed!: {}: {}", service, newObject);
+            logger.debug("Send to device failed: {}: {}", service, newObject);
         }
     }
 }

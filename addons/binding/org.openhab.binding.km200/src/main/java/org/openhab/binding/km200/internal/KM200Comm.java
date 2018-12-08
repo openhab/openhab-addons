@@ -85,7 +85,7 @@ public class KM200Comm<KM200BindingProvider> {
                         case HttpStatus.SC_INTERNAL_SERVER_ERROR:
                             /* Unknown problem with the device, wait and try again */
                             method.releaseConnection();
-                            logger.warn("HTTP GET failed: 500, internal server error, repeating.. ");
+                            logger.debug("HTTP GET failed: 500, internal server error, repeating.. ");
                             Thread.sleep(100L * i + 1);
                             continue;
                         case HttpStatus.SC_FORBIDDEN:
@@ -99,7 +99,7 @@ public class KM200Comm<KM200BindingProvider> {
                             responseBodyB64 = null;
                             break;
                         default:
-                            logger.error("HTTP GET failed: {}", method.getStatusLine());
+                            logger.debug("HTTP GET failed: {}", method.getStatusLine());
                             method.releaseConnection();
                             responseBodyB64 = null;
                             break;
@@ -149,17 +149,17 @@ public class KM200Comm<KM200BindingProvider> {
                             break;
                         case HttpStatus.SC_LOCKED:
                             /* Unknown problem with the device, wait and try again */
-                            logger.warn("HTTP POST failed: 423, locked, repeating.. ");
+                            logger.debug("HTTP POST failed: 423, locked, repeating.. ");
                             Thread.sleep(1000L * i + 1);
                             continue;
                         default:
-                            logger.error("HTTP POST failed: {}", method.getStatusLine());
+                            logger.debug("HTTP POST failed: {}", method.getStatusLine());
                             rCode = 0;
                             break;
                     }
                 }
             } catch (IOException e) {
-                logger.error("Failed to send data {}", e);
+                logger.debug("Failed to send data {}", e);
             } catch (InterruptedException e) {
                 logger.debug("Sleep was interrupted: {}", e.getMessage());
             } finally {
