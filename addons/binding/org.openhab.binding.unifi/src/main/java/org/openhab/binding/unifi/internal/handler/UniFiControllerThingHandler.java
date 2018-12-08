@@ -44,6 +44,7 @@ import org.openhab.binding.unifi.internal.api.UniFiCommunicationException;
 import org.openhab.binding.unifi.internal.api.UniFiController;
 import org.openhab.binding.unifi.internal.api.UniFiException;
 import org.openhab.binding.unifi.internal.api.UniFiInvalidCredentialsException;
+import org.openhab.binding.unifi.internal.api.UniFiSSLException;
 import org.openhab.binding.unifi.internal.api.model.UniFiClient;
 import org.openhab.binding.unifi.internal.api.model.UniFiDevice;
 import org.openhab.binding.unifi.internal.api.model.UniFiSite;
@@ -64,6 +65,8 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
             .of(UniFiBindingConstants.THING_TYPE_CONTROLLER).collect(Collectors.toSet());
 
     private static final String STATUS_DESCRIPTION_COMMUNICATION_ERROR = "Error communicating with the UniFi controller";
+
+    private static final String STATUS_DESCRIPTION_SSL_ERROR = "Error establishing an SSL connection with the UniFi controller";
 
     private static final String STATUS_DESCRIPTION_INVALID_CREDENTIALS = "Invalid username and/or password - please double-check your configuration";
 
@@ -118,6 +121,8 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
             updateStatus(ONLINE);
         } catch (UniFiCommunicationException e) {
             updateStatus(OFFLINE, COMMUNICATION_ERROR, STATUS_DESCRIPTION_COMMUNICATION_ERROR);
+        } catch (UniFiSSLException e) {
+            updateStatus(OFFLINE, CONFIGURATION_ERROR, STATUS_DESCRIPTION_SSL_ERROR);
         } catch (UniFiInvalidCredentialsException e) {
             updateStatus(OFFLINE, CONFIGURATION_ERROR, STATUS_DESCRIPTION_INVALID_CREDENTIALS);
         } catch (UniFiException e) {
@@ -197,8 +202,7 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
                 String key = prefix + CACHE_KEY_SEPARATOR + cid;
                 if (cache.containsKey(key)) {
                     client = cache.get(key);
-                    logger.debug("Found client matching '{}'", key);
-                    logger.debug("  {}", client);
+                    logger.debug("Found client '{}' = {}", key, client);
                     break;
                 }
             }

@@ -17,6 +17,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import javax.net.ssl.SSLException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -153,6 +155,8 @@ public class UniFiControllerRequest<T> {
                 // - this causes an ExceptionException to be thrown
                 // - we unwrap the response from the exception for proper handling of the 401 status code
                 response = (ContentResponse) ((HttpResponseException) cause).getResponse();
+            } else if (cause instanceof SSLException) {
+                throw new UniFiSSLException(cause);
             } else {
                 throw new UniFiException(cause);
             }
