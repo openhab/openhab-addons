@@ -12,10 +12,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.net.ssl.X509ExtendedTrustManager;
-
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -23,13 +21,11 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
-import org.eclipse.smarthome.io.net.http.TlsTrustManagerProvider;
+import org.eclipse.smarthome.io.net.http.HttpClientInitializationException;
 import org.openhab.binding.unifi.internal.handler.UniFiClientThingHandler;
 import org.openhab.binding.unifi.internal.handler.UniFiControllerThingHandler;
-import org.openhab.binding.unifi.internal.ssl.UniFiTrustManager;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link UniFiThingHandlerFactory} is responsible for creating things and thing
@@ -37,9 +33,8 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Matthew Bowman - Initial contribution
  */
-@Component(service = { ThingHandlerFactory.class,
-        TlsTrustManagerProvider.class }, immediate = true, configurationPid = "binding.unifi", configurationPolicy = ConfigurationPolicy.OPTIONAL)
-public class UniFiThingHandlerFactory extends BaseThingHandlerFactory implements TlsTrustManagerProvider {
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.unifi", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+public class UniFiThingHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
             .concat(UniFiControllerThingHandler.SUPPORTED_THING_TYPES_UIDS.stream(),
@@ -47,6 +42,16 @@ public class UniFiThingHandlerFactory extends BaseThingHandlerFactory implements
             .collect(Collectors.toSet());
 
     private HttpClient httpClient;
+
+    public UniFiThingHandlerFactory() {
+        // [wip] mgb: temporary work around until ssl issues are sorted
+        httpClient = new HttpClient(new SslContextFactory(true));
+        try {
+            httpClient.start();
+        } catch (Exception e) {
+            throw new HttpClientInitializationException("Could not start HttpClient", e);
+        }
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -64,23 +69,13 @@ public class UniFiThingHandlerFactory extends BaseThingHandlerFactory implements
         return null;
     }
 
-    @Reference
+    // @Reference // [wip] mgb: disabled due to missing common name attributes with certs
     public void setHttpClientFactory(HttpClientFactory httpClientFactory) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
     public void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
         // nop
-    }
-
-    @Override
-    public @NonNull String getHostName() {
-        return "UniFi";
-    }
-
-    @Override
-    public @NonNull X509ExtendedTrustManager getTrustManager() {
-        return UniFiTrustManager.getInstance();
     }
 
 }
