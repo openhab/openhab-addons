@@ -23,6 +23,7 @@ import org.openhab.binding.network.internal.toberemoved.cache.ExpiringCacheAsync
  * @author David Graeff - Initial contribution
  */
 public class ExpiringCacheAsyncTest {
+    @SuppressWarnings("unused")
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorWrongCacheTime() {
         // Fail if cache time is <= 0
@@ -30,6 +31,7 @@ public class ExpiringCacheAsyncTest {
         });
     }
 
+    @SuppressWarnings("unused")
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorNoRefrehCommand() {
         new ExpiringCacheAsync<Double>(2000, null);
@@ -38,7 +40,7 @@ public class ExpiringCacheAsyncTest {
     @Test
     public void testFetchValue() {
         ExpiringCacheUpdate u = mock(ExpiringCacheUpdate.class);
-        ExpiringCacheAsync<Double> t = new ExpiringCacheAsync<Double>(2000, u);
+        ExpiringCacheAsync<Double> t = new ExpiringCacheAsync<>(2000, u);
         assertTrue(t.isExpired());
         // Request a value
         @SuppressWarnings("unchecked")
@@ -62,7 +64,7 @@ public class ExpiringCacheAsyncTest {
         @SuppressWarnings("unchecked")
         Consumer<Double> consumer = mock(Consumer.class);
 
-        ExpiringCacheAsync<Double> t = new ExpiringCacheAsync<Double>(100, u);
+        ExpiringCacheAsync<Double> t = new ExpiringCacheAsync<>(100, u);
         t.setValue(10.0);
         assertFalse(t.isExpired());
 
@@ -87,7 +89,7 @@ public class ExpiringCacheAsyncTest {
     @Test
     public void testFetchExpiredValue() {
         ExpiringCacheUpdate u = mock(ExpiringCacheUpdate.class);
-        ExpiringCacheAsync<Double> t = new ExpiringCacheAsync<Double>(2000, u);
+        ExpiringCacheAsync<Double> t = new ExpiringCacheAsync<>(2000, u);
         t.setValue(10.0);
         // We should always be able to get the raw value, expired or not
         assertEquals(10.0, t.getExpiredValue(), 0);

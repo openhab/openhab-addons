@@ -37,14 +37,14 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link PresenceDetection} handles the connection to the Device
  *
- * @author David Gräff, 2017 - Rewritten
  * @author Marc Mettke - Initial contribution
+ * @author David Gräff, 2017 - Rewritten
  */
 @NonNullByDefault
 public class PresenceDetection implements IPRequestReceivedCallback {
     public static final double NOT_REACHABLE = -1;
     NetworkUtils networkUtils = new NetworkUtils();
-    private Logger logger = LoggerFactory.getLogger(PresenceDetection.class);
+    private final Logger logger = LoggerFactory.getLogger(PresenceDetection.class);
 
     /// Configuration variables
     private boolean useDHCPsniffing = false;
@@ -54,7 +54,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     private String arpPingUtilPath = "arping";
     protected @Nullable IpPingMethodEnum pingMethod = null;
     private boolean iosDevice;
-    private Set<Integer> tcpPorts = new HashSet<Integer>();
+    private Set<Integer> tcpPorts = new HashSet<>();
 
     private long refreshIntervalInMS = 60000;
     private int timeoutInMS = 5000;

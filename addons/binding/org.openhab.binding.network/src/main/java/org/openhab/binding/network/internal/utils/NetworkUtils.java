@@ -40,7 +40,7 @@ import org.eclipse.smarthome.io.net.exec.ExecUtil;
 /**
  * Network utility functions for pinging and for determining all interfaces and assigned IP addresses.
  *
- * @author David Graeff <david.graeff@web.de>
+ * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
 public class NetworkUtils {
@@ -140,7 +140,6 @@ public class NetworkUtils {
                 for (int i = 0; i < len; i++) {
                     networkIPs.add(addresses[i]);
                 }
-
             } catch (Exception ex) {
             }
         }
@@ -251,7 +250,6 @@ public class NetworkUtils {
             default:
                 // We cannot estimate the command line for any other operating system and just return false
                 return false;
-
         }
 
         // The return code is 0 for a successful ping, 1 if device didn't
