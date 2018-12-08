@@ -9,6 +9,7 @@
 package org.openhab.binding.unifi.internal.api;
 
 import java.net.ConnectException;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -146,8 +147,15 @@ public class UniFiControllerRequest<T> {
         } catch (ExecutionException e) {
             // mgb: unwrap the cause and try to cleanly handle it
             Throwable cause = e.getCause();
-            if (cause instanceof ConnectException) {
+            if (cause instanceof UnknownHostException) {
+                // invalid hostname
+                throw new UniFiInvalidHostException(cause);
+            } else if (cause instanceof ConnectException) {
+                // cannot connect
                 throw new UniFiCommunicationException(cause);
+            } else if (cause instanceof SSLException) {
+                // cannot establish ssl connection
+                throw new UniFiSSLException(cause);
             } else if (cause instanceof HttpResponseException
                     && ((HttpResponseException) cause).getResponse() instanceof ContentResponse) {
                 // the UniFi controller violates the HTTP protocol
@@ -155,9 +163,8 @@ public class UniFiControllerRequest<T> {
                 // - this causes an ExceptionException to be thrown
                 // - we unwrap the response from the exception for proper handling of the 401 status code
                 response = (ContentResponse) ((HttpResponseException) cause).getResponse();
-            } else if (cause instanceof SSLException) {
-                throw new UniFiSSLException(cause);
             } else {
+                // catch all
                 throw new UniFiException(cause);
             }
         }

@@ -44,6 +44,7 @@ import org.openhab.binding.unifi.internal.api.UniFiCommunicationException;
 import org.openhab.binding.unifi.internal.api.UniFiController;
 import org.openhab.binding.unifi.internal.api.UniFiException;
 import org.openhab.binding.unifi.internal.api.UniFiInvalidCredentialsException;
+import org.openhab.binding.unifi.internal.api.UniFiInvalidHostException;
 import org.openhab.binding.unifi.internal.api.UniFiSSLException;
 import org.openhab.binding.unifi.internal.api.model.UniFiClient;
 import org.openhab.binding.unifi.internal.api.model.UniFiDevice;
@@ -69,6 +70,8 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
     private static final String STATUS_DESCRIPTION_SSL_ERROR = "Error establishing an SSL connection with the UniFi controller";
 
     private static final String STATUS_DESCRIPTION_INVALID_CREDENTIALS = "Invalid username and/or password - please double-check your configuration";
+
+    private static final String STATUS_DESCRIPTION_INVALID_HOSTNAME = "Invalid hostname - please double-check your configuration";
 
     private static final String CACHE_KEY_PREFIX_MAC = "mac";
 
@@ -119,6 +122,8 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
                     config.getPassword());
             controller.start();
             updateStatus(ONLINE);
+        } catch (UniFiInvalidHostException e) {
+            updateStatus(OFFLINE, CONFIGURATION_ERROR, STATUS_DESCRIPTION_INVALID_HOSTNAME);
         } catch (UniFiCommunicationException e) {
             updateStatus(OFFLINE, COMMUNICATION_ERROR, STATUS_DESCRIPTION_COMMUNICATION_ERROR);
         } catch (UniFiSSLException e) {
