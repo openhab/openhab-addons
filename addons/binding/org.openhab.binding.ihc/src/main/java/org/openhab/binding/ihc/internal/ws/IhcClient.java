@@ -28,6 +28,7 @@ import org.openhab.binding.ihc.internal.ws.datatypes.WSLoginResult;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSProjectInfo;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSRFDevice;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSSystemInfo;
+import org.openhab.binding.ihc.internal.ws.datatypes.WSTimeManagerSettings;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
 import org.openhab.binding.ihc.internal.ws.http.IhcConnectionPool;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
@@ -36,6 +37,7 @@ import org.openhab.binding.ihc.internal.ws.services.IhcAuthenticationService;
 import org.openhab.binding.ihc.internal.ws.services.IhcConfigurationService;
 import org.openhab.binding.ihc.internal.ws.services.IhcControllerService;
 import org.openhab.binding.ihc.internal.ws.services.IhcResourceInteractionService;
+import org.openhab.binding.ihc.internal.ws.services.IhcTimeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,6 +72,7 @@ public class IhcClient {
     private IhcControllerService controllerService;
     private IhcConfigurationService configurationService;
     private IhcAirlinkManagementService airlinkManagementService;
+    private IhcTimeService timeService;
 
     /** Thread to handle resource value notifications from the controller */
     private IhcResourceValueNotificationListener resourceValueNotificationListener;
@@ -193,6 +196,7 @@ public class IhcClient {
         controllerService = new IhcControllerService(ip, timeout, ihcConnectionPool);
         configurationService = new IhcConfigurationService(ip, timeout, ihcConnectionPool);
         airlinkManagementService = new IhcAirlinkManagementService(ip, timeout, ihcConnectionPool);
+        timeService = new IhcTimeService(ip, timeout, ihcConnectionPool);
         setConnectionState(ConnectionState.CONNECTED);
     }
 
@@ -228,6 +232,16 @@ public class IhcClient {
      */
     public synchronized WSSystemInfo getSystemInfo() throws IhcExecption {
         return configurationService.getSystemInfo();
+    }
+
+    /**
+     * Query time settings from the controller.
+     *
+     * @return time settings.
+     * @throws IhcExecption
+     */
+    public synchronized WSTimeManagerSettings getTimeSettings() throws IhcExecption {
+        return timeService.getTimeSettings();
     }
 
     /**
