@@ -54,13 +54,18 @@ public class BridgeV6Handler extends AbstractBridgeHandler implements ISessionSt
      */
     @Override
     protected void startConnectAndKeepAlive() {
-        if (port == 0) {
-            port = MilightBindingConstants.PORT_VER6;
+        if (!config.bridgeid.matches("^([0-9A-Fa-f]{12})$")) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "bridgeID invalid!");
+            return;
+        }
+
+        if (config.port == 0) {
+            config.port = MilightBindingConstants.PORT_VER6;
         }
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Waiting for session");
         int refreshTime = Math.max(Math.min(config.refreshTime, MilightV6SessionManager.TIMEOUT_MS), 100);
-        this.session = new MilightV6SessionManager(config.bridgeid, this, address, port, refreshTime,
+        this.session = new MilightV6SessionManager(config.bridgeid, this, address, config.port, refreshTime,
                 new byte[] { (byte) config.passwordByte1, (byte) config.passwordByte2 });
         session.start().thenAccept(d -> this.socket = d);
     }
