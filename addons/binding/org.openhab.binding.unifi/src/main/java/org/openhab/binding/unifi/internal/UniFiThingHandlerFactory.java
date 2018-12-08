@@ -12,6 +12,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.net.ssl.X509ExtendedTrustManager;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -20,8 +23,10 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
+import org.eclipse.smarthome.io.net.http.TlsTrustManagerProvider;
 import org.openhab.binding.unifi.internal.handler.UniFiClientThingHandler;
 import org.openhab.binding.unifi.internal.handler.UniFiControllerThingHandler;
+import org.openhab.binding.unifi.internal.ssl.UniFiTrustManager;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Reference;
@@ -32,8 +37,9 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Matthew Bowman - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.unifi", configurationPolicy = ConfigurationPolicy.OPTIONAL)
-public class UniFiThingHandlerFactory extends BaseThingHandlerFactory {
+@Component(service = { ThingHandlerFactory.class,
+        TlsTrustManagerProvider.class }, immediate = true, configurationPid = "binding.unifi", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+public class UniFiThingHandlerFactory extends BaseThingHandlerFactory implements TlsTrustManagerProvider {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
             .concat(UniFiControllerThingHandler.SUPPORTED_THING_TYPES_UIDS.stream(),
@@ -65,6 +71,16 @@ public class UniFiThingHandlerFactory extends BaseThingHandlerFactory {
 
     public void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
         // nop
+    }
+
+    @Override
+    public @NonNull String getHostName() {
+        return "UniFi";
+    }
+
+    @Override
+    public @NonNull X509ExtendedTrustManager getTrustManager() {
+        return UniFiTrustManager.getInstance();
     }
 
 }

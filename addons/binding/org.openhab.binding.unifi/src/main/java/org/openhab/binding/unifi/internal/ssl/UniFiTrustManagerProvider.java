@@ -11,7 +11,6 @@ package org.openhab.binding.unifi.internal.ssl;
 import javax.net.ssl.X509ExtendedTrustManager;
 
 import org.eclipse.smarthome.io.net.http.TlsTrustManagerProvider;
-import org.osgi.service.component.annotations.Component;
 
 /**
  *
@@ -21,7 +20,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Matthew Bowman - Initial contribution
  */
-@Component
+// @Component // [wip] mgb: disabled due to issues with service order loading
 public class UniFiTrustManagerProvider implements TlsTrustManagerProvider {
 
     @Override
@@ -31,7 +30,7 @@ public class UniFiTrustManagerProvider implements TlsTrustManagerProvider {
 
     @Override
     public X509ExtendedTrustManager getTrustManager() {
-        return new UniFiTrustManager();
+        return UniFiTrustManager.getInstance();
     }
 
 }

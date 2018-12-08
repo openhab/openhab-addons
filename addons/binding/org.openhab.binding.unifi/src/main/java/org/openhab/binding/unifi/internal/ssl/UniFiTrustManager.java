@@ -25,6 +25,18 @@ import javax.net.ssl.X509ExtendedTrustManager;
  */
 public class UniFiTrustManager extends X509ExtendedTrustManager {
 
+    private static UniFiTrustManager instance = new UniFiTrustManager();
+
+    public static UniFiTrustManager getInstance() {
+        return instance;
+    }
+
+    /**
+     * private construction - singleton
+     */
+    private UniFiTrustManager() {
+    }
+
     @Override
     public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
     }
