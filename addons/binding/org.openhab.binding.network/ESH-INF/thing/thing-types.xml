@@ -27,7 +27,7 @@
 				<description>Hostname or IP of the device</description>
 			</parameter>
 
-			<parameter name="refresh_interval" type="integer">
+			<parameter name="refreshInterval" type="integer">
 				<label>Refresh Interval</label>
 				<description>States how long to wait after a device state update before the next refresh shall occur (in ms)</description>
 				<default>60000</default>
@@ -90,7 +90,7 @@
 				<default>5000</default>
 			</parameter>
 
-			<parameter name="refresh_interval" type="integer">
+			<parameter name="refreshInterval" type="integer">
 				<label>Refresh Interval</label>
 				<description>States how long to wait after a device state update before the next refresh shall occur (in ms)</description>
 				<default>60000</default>
