@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.nibeuplink
 Bundle-ManifestVersion: 2
 Bundle-Name: NibeUplink Binding
 Bundle-SymbolicName: org.openhab.binding.nibeuplink;singleton:=true
