@@ -231,28 +231,28 @@
 		</state>
 	</channel-type>
 	<channel-type id="vvm320-type-47374">
-		<item-type>Number:Temperature</item-type>
+		<item-type>Number</item-type>
 		<label>Start Temperature Cooling</label>
 		<description>Start Temperature Cooling in Auto mode</description>
 		<state min="10" max="40" step="1" pattern="%d °C" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="vvm320-type-47375">
-		<item-type>Number:Temperature</item-type>
+		<item-type>Number</item-type>
 		<label>Stop Temperature Heating</label>
 		<description>Stop Temperature Heating in Auto mode</description>
 		<state min="0" max="30" step="1" pattern="%d °C" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="vvm320-type-47376">
-		<item-type>Number:Temperature</item-type>
+		<item-type>Number</item-type>
 		<label>Stop Temperature Additive</label>
 		<description>Stop Temperature Additive heater in Auto mode</description>
 		<state min="-20" max="10" step="1" pattern="%d °C" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="vvm320-type-47377">
-		<item-type>Number:Time</item-type>
+		<item-type>Number</item-type>
 		<label>Outdoor Filter Time</label>
 		<description>Outdoor Filter Time in Auto mode</description>
 		<state min="1" max="48" step="1" pattern="%d h" readOnly="false">
