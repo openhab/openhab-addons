@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -56,6 +57,7 @@ import org.openhab.binding.ihc.internal.ws.datatypes.WSControllerState;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSProjectInfo;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSRFDevice;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSSystemInfo;
+import org.openhab.binding.ihc.internal.ws.datatypes.WSTimeManagerSettings;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
 import org.openhab.binding.ihc.internal.ws.projectfile.IhcEnumValue;
 import org.openhab.binding.ihc.internal.ws.projectfile.ProjectFileUtils;
@@ -210,9 +212,14 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 break;
 
             case CHANNEL_CONTROLLER_UPTIME:
-            case CHANNEL_CONTROLLER_TIME:
                 if (command.equals(RefreshType.REFRESH)) {
                     updateControllerInformationChannels();
+                }
+                break;
+
+            case CHANNEL_CONTROLLER_TIME:
+                if (command.equals(RefreshType.REFRESH)) {
+                    updateControllerTimeChannels();
                 }
                 break;
 
@@ -279,8 +286,10 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
             properties.put(PROPERTY_SW_VERSION, systemInfo.getVersion());
             properties.put(PROPERTY_FW_VERSION, systemInfo.getHwRevision());
             properties.put(PROPERTY_APP_WITHOUT_VIEWER, Boolean.toString(systemInfo.getApplicationIsWithoutViewer()));
-            properties.put(PROPERTY_SW_DATE, systemInfo.getSwDate().toString());
-            properties.put(PROPERTY_PRODUCTION_DATE, systemInfo.getProductionDate().toString());
+            properties.put(PROPERTY_SW_DATE,
+                    systemInfo.getSwDate().withZoneSameInstant(ZoneId.systemDefault()).toString());
+            properties.put(PROPERTY_PRODUCTION_DATE,
+                    systemInfo.getProductionDate().withZoneSameInstant(ZoneId.systemDefault()).toString());
             properties.put(PROPERTY_PROJECT_DATE,
                     projectInfo.getLastmodified().getAsLocalDateTime().atZone(ZoneId.systemDefault()).toString());
             properties.put(PROPERTY_PROJECT_NUMBER, projectInfo.getProjectNumber());
@@ -297,8 +306,19 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
 
             updateState(new ChannelUID(getThing().getUID(), CHANNEL_CONTROLLER_UPTIME),
                     new DecimalType((double) systemInfo.getUptime() / 1000));
-            updateState(new ChannelUID(getThing().getUID(), CHANNEL_CONTROLLER_TIME),
-                    new DateTimeType(systemInfo.getRealTimeClock()));
+        } catch (IhcExecption e) {
+            logger.warn("Controller uptime information fetch failed, reason {}", e.getMessage());
+        }
+    }
+
+    private void updateControllerTimeChannels() {
+        try {
+            WSTimeManagerSettings timeSettings = ihc.getTimeSettings();
+            logger.debug("Controller time settings: {}", timeSettings);
+
+            ZonedDateTime time = timeSettings.getTimeAndDateInUTC().getAsZonedDateTime(ZoneId.of("Z"))
+                    .withZoneSameInstant(ZoneId.systemDefault());
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_CONTROLLER_TIME), new DateTimeType(time));
         } catch (IhcExecption e) {
             logger.warn("Controller uptime information fetch failed, reason {}", e.getMessage());
         }
@@ -429,8 +449,11 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 break;
 
             case CHANNEL_CONTROLLER_UPTIME:
-            case CHANNEL_CONTROLLER_TIME:
                 updateControllerInformationChannels();
+                break;
+
+            case CHANNEL_CONTROLLER_TIME:
+                updateControllerTimeChannels();
                 break;
 
             default:
@@ -490,6 +513,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
             updateControllerProperties();
             updateControllerStateChannel();
             updateControllerInformationChannels();
+            updateControllerTimeChannels();
             ihc.addEventListener(this);
             ihc.startControllerEventListeners();
             updateNotificationsRequestReminder();
