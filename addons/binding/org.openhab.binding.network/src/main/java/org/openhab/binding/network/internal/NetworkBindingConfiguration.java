@@ -10,7 +10,7 @@ package org.openhab.binding.network.internal;
 
 import java.math.BigDecimal;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Contains the binding configuration and default values. The field names represent the configuration names,
@@ -18,13 +18,14 @@ import org.eclipse.jdt.annotation.NonNull;
  *
  * @author David Graeff
  */
+@NonNullByDefault
 public class NetworkBindingConfiguration {
     public Boolean allowSystemPings = true;
     public Boolean allowDHCPlisten = true;
     public BigDecimal cacheDeviceStateTimeInMS = BigDecimal.valueOf(2000);
     public String arpPingToolPath = "arping";
 
-    public void update(@NonNull NetworkBindingConfiguration newConfiguration) {
+    public void update(NetworkBindingConfiguration newConfiguration) {
         this.allowSystemPings = newConfiguration.allowSystemPings;
         this.allowDHCPlisten = newConfiguration.allowDHCPlisten;
         this.cacheDeviceStateTimeInMS = newConfiguration.cacheDeviceStateTimeInMS;

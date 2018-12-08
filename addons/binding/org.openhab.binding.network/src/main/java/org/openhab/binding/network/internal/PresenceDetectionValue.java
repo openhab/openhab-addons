@@ -14,11 +14,14 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Contains the result or partial result of a presence detection.
  *
  * @author David Graeff - Initial contribution
  */
+@NonNullByDefault
 public class PresenceDetectionValue {
     private double latency;
     private boolean detectionIsFinished;
