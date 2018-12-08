@@ -35,7 +35,6 @@ import org.openhab.binding.network.internal.NetworkHandlerConfiguration;
 import org.openhab.binding.network.internal.PresenceDetection;
 import org.openhab.binding.network.internal.PresenceDetectionListener;
 import org.openhab.binding.network.internal.PresenceDetectionValue;
-import org.openhab.binding.network.internal.utils.NetworkUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,14 +42,13 @@ import org.slf4j.LoggerFactory;
  * This handler is handling the CHANNEL_ONLINE (boolean) and CHANNEL_TIME (time in ms)
  * commands and is starting a {@see NetworkService} instance for the configured device.
  *
- * @author Marc Mettke
- * @author David Graeff
+ * @author Marc Mettke - Initial contribution
+ * @author David Graeff - Rewritten
  */
 @NonNullByDefault
 public class NetworkHandler extends BaseThingHandler implements PresenceDetectionListener {
     private final Logger logger = LoggerFactory.getLogger(NetworkHandler.class);
     private @NonNullByDefault({}) PresenceDetection presenceDetection;
-    NetworkUtils networkUtils = new NetworkUtils();
 
     private boolean isTCPServiceDevice;
     private NetworkBindingConfiguration configuration;

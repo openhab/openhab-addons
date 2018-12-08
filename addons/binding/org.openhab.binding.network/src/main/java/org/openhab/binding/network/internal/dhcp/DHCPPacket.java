@@ -35,7 +35,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * If used this way, beware that a <tt>BadPacketExpcetion</tt> is thrown
  * if the datagram contains invalid DHCP data.
  *
- * @author David Graeff -- Initial contribution
+ * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
 class DHCPPacket {
@@ -61,11 +61,11 @@ class DHCPPacket {
 
     static final byte DHO_END = -1;
 
-    static final int _BOOTP_ABSOLUTE_MIN_LEN = 236;
-    static final int _DHCP_MAX_MTU = 1500;
+    static final int BOOTP_ABSOLUTE_MIN_LEN = 236;
+    static final int DHCP_MAX_MTU = 1500;
 
     // Magic cookie
-    static final int _MAGIC_COOKIE = 0x63825363;
+    static final int MAGIC_COOKIE = 0x63825363;
 
     /**
      * If a DHCP datagram is malformed this Exception is thrown.
@@ -96,7 +96,7 @@ class DHCPPacket {
      */
     DHCPPacket(byte[] messageType, byte @Nullable [] requestedIP) {
         this.op = BOOTREQUEST;
-        this.options = new LinkedHashMap<Byte, byte[]>();
+        this.options = new LinkedHashMap<>();
         options.put(DHO_DHCP_MESSAGE_TYPE, messageType);
         if (requestedIP != null) {
             options.put(DHO_DHCP_REQUESTED_ADDRESS, requestedIP);
@@ -108,20 +108,20 @@ class DHCPPacket {
      */
     public DHCPPacket(DatagramPacket datagram) throws BadPacketException, IOException {
         this.op = BOOTREPLY;
-        this.options = new LinkedHashMap<Byte, byte[]>();
+        this.options = new LinkedHashMap<>();
 
         byte[] buffer = datagram.getData();
         int offset = datagram.getOffset();
         int length = datagram.getLength();
 
         // absolute minimum size for a valid packet
-        if (length < _BOOTP_ABSOLUTE_MIN_LEN) {
+        if (length < BOOTP_ABSOLUTE_MIN_LEN) {
             throw new BadPacketException(
-                    "DHCP Packet too small (" + length + ") absolute minimum is " + _BOOTP_ABSOLUTE_MIN_LEN);
+                    "DHCP Packet too small (" + length + ") absolute minimum is " + BOOTP_ABSOLUTE_MIN_LEN);
         }
         // maximum size for a valid DHCP packet
-        if (length > _DHCP_MAX_MTU) {
-            throw new BadPacketException("DHCP Packet too big (" + length + ") max MTU is " + _DHCP_MAX_MTU);
+        if (length > DHCP_MAX_MTU) {
+            throw new BadPacketException("DHCP Packet too big (" + length + ") max MTU is " + DHCP_MAX_MTU);
         }
 
         // turn buffer into a readable stream
@@ -148,7 +148,7 @@ class DHCPPacket {
 
         // check for DHCP MAGIC_COOKIE
         inBStream.mark(4); // read ahead 4 bytes
-        if (inStream.readInt() != _MAGIC_COOKIE) {
+        if (inStream.readInt() != MAGIC_COOKIE) {
             throw new BadPacketException("Packet seams to be truncated");
         }
 
@@ -176,10 +176,10 @@ class DHCPPacket {
             } // EOF
 
             int len = Math.min(r, inBStream.available());
-            byte[] unit_opt = new byte[len];
-            inBStream.read(unit_opt);
+            byte[] unitOpt = new byte[len];
+            inBStream.read(unitOpt);
 
-            this.options.put((byte) type, unit_opt);
+            this.options.put((byte) type, unitOpt);
         }
         if (type != DHO_END) {
             throw new BadPacketException("Packet seams to be truncated");

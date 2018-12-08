@@ -9,7 +9,7 @@
 package org.openhab.binding.network.internal.discovery;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.mockito.Matchers.anyObject;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -59,7 +59,7 @@ public class DiscoveryTest {
         when(value.isPingReachable()).thenReturn(true);
         when(value.isTCPServiceReachable()).thenReturn(false);
         d.partialDetectionResult(value);
-        verify(listener).thingDiscovered(anyObject(), result.capture());
+        verify(listener).thingDiscovered(any(), result.capture());
         DiscoveryResult dresult = result.getValue();
         Assert.assertThat(dresult.getThingUID(), is(NetworkDiscoveryService.createPingUID(ip)));
         Assert.assertThat(dresult.getProperties().get(NetworkBindingConstants.PARAMETER_HOSTNAME), is(ip));
@@ -77,7 +77,7 @@ public class DiscoveryTest {
         when(value.isTCPServiceReachable()).thenReturn(true);
         when(value.getReachableTCPports()).thenReturn(Collections.singletonList(1010));
         d.partialDetectionResult(value);
-        verify(listener).thingDiscovered(anyObject(), result.capture());
+        verify(listener).thingDiscovered(any(), result.capture());
         DiscoveryResult dresult = result.getValue();
         Assert.assertThat(dresult.getThingUID(), is(NetworkDiscoveryService.createServiceUID(ip, 1010)));
         Assert.assertThat(dresult.getProperties().get(NetworkBindingConstants.PARAMETER_HOSTNAME), is(ip));
