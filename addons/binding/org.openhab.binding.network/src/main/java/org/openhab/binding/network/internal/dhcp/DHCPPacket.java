@@ -17,6 +17,9 @@ import java.net.UnknownHostException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Parses a dhcp packet and extracts the OP code and all DHCP Options.
  *
@@ -32,8 +35,9 @@ import java.util.Map;
  * If used this way, beware that a <tt>BadPacketExpcetion</tt> is thrown
  * if the datagram contains invalid DHCP data.
  *
- * @author David Graeff -- Inital contribution
+ * @author David Graeff -- Initial contribution
  */
+@NonNullByDefault
 class DHCPPacket {
     /** DHCP BOOTP CODES **/
     static final byte BOOTREQUEST = 1;
@@ -90,7 +94,7 @@ class DHCPPacket {
     /**
      * Package private constructor for test suite.
      */
-    DHCPPacket(byte[] messageType, byte[] requestedIP) {
+    DHCPPacket(byte[] messageType, byte @Nullable [] requestedIP) {
         this.op = BOOTREQUEST;
         this.options = new LinkedHashMap<Byte, byte[]>();
         options.put(DHO_DHCP_MESSAGE_TYPE, messageType);
@@ -200,7 +204,8 @@ class DHCPPacket {
      *
      * @return option type, of <tt>null</tt> if not present.
      */
-    public Byte getDHCPMessageType() {
+    @SuppressWarnings({ "null", "unused" })
+    public @Nullable Byte getDHCPMessageType() {
         byte[] opt = options.get(DHO_DHCP_MESSAGE_TYPE);
         if (opt == null) {
             return null;
@@ -215,7 +220,8 @@ class DHCPPacket {
     /**
      * Returns the requested IP address of a BOOTREQUEST packet.
      */
-    InetAddress getRequestedIPAddress() throws IllegalArgumentException, UnknownHostException {
+    @SuppressWarnings({ "null", "unused" })
+    public @Nullable InetAddress getRequestedIPAddress() throws IllegalArgumentException, UnknownHostException {
         byte[] opt = options.get(DHO_DHCP_REQUESTED_ADDRESS);
         if (opt == null) {
             return null;

@@ -8,7 +8,8 @@
  */
 package org.openhab.binding.network.internal;
 
-import java.math.BigDecimal;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Contains the handler configuration and default values. The field names represent the configuration names,
@@ -16,10 +17,11 @@ import java.math.BigDecimal;
  *
  * @author David Graeff
  */
+@NonNullByDefault
 public class NetworkHandlerConfiguration {
-    public String hostname;
-    public BigDecimal port;
-    public BigDecimal retry = BigDecimal.valueOf(1);
-    public BigDecimal refreshInterval = BigDecimal.valueOf(60000);
-    public BigDecimal timeout = BigDecimal.valueOf(5000);
+    public String hostname = "";
+    public @Nullable Integer port;
+    public Integer retry = 1;
+    public Integer refreshInterval = 60000;
+    public Integer timeout = 5000;
 }
