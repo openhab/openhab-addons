@@ -1,7 +1,8 @@
 {
 	"deviceMapping": {
 		"id": [
-			"zhimi.airmonitor.v1"
+			"zhimi.airmonitor.v1",
+			"cgllc.airmonitor.b1"
 		],
 		"channels": [
 			{
