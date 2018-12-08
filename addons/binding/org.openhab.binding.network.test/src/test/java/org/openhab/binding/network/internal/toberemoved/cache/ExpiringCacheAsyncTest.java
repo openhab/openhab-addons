@@ -41,6 +41,7 @@ public class ExpiringCacheAsyncTest {
         ExpiringCacheAsync<Double> t = new ExpiringCacheAsync<Double>(2000, u);
         assertTrue(t.isExpired());
         // Request a value
+        @SuppressWarnings("unchecked")
         Consumer<Double> consumer = mock(Consumer.class);
         t.getValue(consumer);
         // We expect a call to the updater object
@@ -58,6 +59,7 @@ public class ExpiringCacheAsyncTest {
     @Test
     public void testExpiring() {
         ExpiringCacheUpdate u = mock(ExpiringCacheUpdate.class);
+        @SuppressWarnings("unchecked")
         Consumer<Double> consumer = mock(Consumer.class);
 
         ExpiringCacheAsync<Double> t = new ExpiringCacheAsync<Double>(100, u);
