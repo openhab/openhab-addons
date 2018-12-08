@@ -33,6 +33,8 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.net.util.SubnetUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.net.exec.ExecUtil;
 
 /**
@@ -40,6 +42,7 @@ import org.eclipse.smarthome.io.net.exec.ExecUtil;
  *
  * @author David Graeff <david.graeff@web.de>
  */
+@NonNullByDefault
 public class NetworkUtils {
     /**
      * Gets every IPv4 Address on each Interface except the loopback
@@ -200,7 +203,7 @@ public class NetworkUtils {
     public ArpPingUtilEnum determineNativeARPpingMethod(String arpToolPath) {
         String result = ExecUtil.executeCommandLineAndWaitResponse(arpToolPath + " --help", 100);
         if (StringUtils.isBlank(result)) {
-            return null;
+            return ArpPingUtilEnum.UNKNOWN_TOOL;
         } else if (result.contains("Thomas Habets")) {
             if (result.matches("(.*)w sec(\\s*)Specify a timeout(.*)")) {
                 return ArpPingUtilEnum.THOMAS_HABERT_ARPING;
@@ -228,7 +231,7 @@ public class NetworkUtils {
      * @return Returns true if the device responded
      * @throws IOException The ping command could probably not be found
      */
-    public boolean nativePing(IpPingMethodEnum method, String hostname, int timeoutInMS)
+    public boolean nativePing(@Nullable IpPingMethodEnum method, String hostname, int timeoutInMS)
             throws IOException, InterruptedException {
         Process proc;
         // Yes, all supported operating systems have their own ping utility with a different command line
@@ -303,8 +306,8 @@ public class NetworkUtils {
      * @return Return true if the device responded
      * @throws IOException The ping command could probably not be found
      */
-    public boolean nativeARPPing(ArpPingUtilEnum arpingTool, String arpUtilPath, String interfaceName,
-            String ipV4address, int timeoutInMS) throws IOException, InterruptedException {
+    public boolean nativeARPPing(@Nullable ArpPingUtilEnum arpingTool, @Nullable String arpUtilPath,
+            String interfaceName, String ipV4address, int timeoutInMS) throws IOException, InterruptedException {
         if (arpUtilPath == null || arpingTool == null || arpingTool == ArpPingUtilEnum.UNKNOWN_TOOL) {
             return false;
         }

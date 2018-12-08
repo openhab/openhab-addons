@@ -17,7 +17,7 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.util,
  org.hamcrest;core=split,
- org.junit;version="4.0.0",
+ org.junit,
  org.junit.runner,
  org.mockito,
  org.mockito.invocation,

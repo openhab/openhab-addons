@@ -8,11 +8,14 @@
  */
 package org.openhab.binding.network.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Implement this callback to be notified of a presence detection result.
  *
  * @author David Graeff - Initial contribution
  */
+@NonNullByDefault
 public interface PresenceDetectionListener {
 
     /**

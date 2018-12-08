@@ -8,12 +8,15 @@
  */
 package org.openhab.binding.network.internal.dhcp;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Implement this interface to be notified of DHCP IP request messages
  * for a registered IP address. Register to {@see DHCPListenSingleton}.
  *
  * @author David Graeff - Initial contribution
  */
+@NonNullByDefault
 public interface IPRequestReceivedCallback {
     /**
      * The {@see ReceiveDHCPRequestPackets} object could successfully identify
