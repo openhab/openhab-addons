@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -265,12 +266,12 @@ public class UniFiClientThingHandler extends BaseThingHandler {
         }
     }
 
-    private State getWiredChannelState(UniFiWiredClient client, boolean clientHome, String channelID) {
+    private State getWiredChannelState(@NonNull UniFiWiredClient client, boolean clientHome, String channelID) {
         State state = null;
         return state;
     }
 
-    private State getWirelessChannelState(UniFiWirelessClient client, boolean clientHome, String channelID) {
+    private State getWirelessChannelState(@NonNull UniFiWirelessClient client, boolean clientHome, String channelID) {
         State state = null;
         switch (channelID) {
             // :ap
@@ -283,14 +284,14 @@ public class UniFiClientThingHandler extends BaseThingHandler {
 
             // :essid
             case CHANNEL_ESSID:
-                if (clientHome && client != null && StringUtils.isNotBlank(client.getEssid())) {
+                if (clientHome && StringUtils.isNotBlank(client.getEssid())) {
                     state = StringType.valueOf(client.getEssid());
                 }
                 break;
 
             // :rssi
             case CHANNEL_RSSI:
-                if (clientHome && client != null && client.getRssi() != null) {
+                if (clientHome && client.getRssi() != null) {
                     state = new DecimalType(client.getRssi());
                 }
                 break;
