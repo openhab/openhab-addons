@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -51,6 +51,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Matthew Bowman - Initial contribution
  */
+@NonNullByDefault
 public class UniFiClientThingHandler extends BaseThingHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
@@ -58,7 +59,7 @@ public class UniFiClientThingHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(UniFiClientThingHandler.class);
 
-    private volatile UniFiClientThingConfig config; /* mgb: volatile because accessed from multiple threads */
+    private volatile @Nullable UniFiClientThingConfig config; /* mgb: volatile because accessed from multiple threads */
 
     public UniFiClientThingHandler(Thing thing) {
         super(thing);
@@ -149,7 +150,7 @@ public class UniFiClientThingHandler extends BaseThingHandler {
     }
 
     private State getDefaultState(String channelID, boolean clientHome) {
-        State state = null;
+        State state = UnDefType.NULL;
         switch (channelID) {
             case CHANNEL_ONLINE:
             case CHANNEL_SITE:
@@ -158,21 +159,21 @@ public class UniFiClientThingHandler extends BaseThingHandler {
             case CHANNEL_RSSI:
             case CHANNEL_MAC_ADDRESS:
             case CHANNEL_IP_ADDRESS:
-                state = (clientHome ? null : UnDefType.UNDEF); // skip the update if the client is home
+                state = (clientHome ? UnDefType.NULL : UnDefType.UNDEF); // skip the update if the client is home
                 break;
             case CHANNEL_UPTIME:
                 // mgb: uptime should default to 0 seconds
-                state = (clientHome ? null : new DecimalType(0)); // skip the update if the client is home
+                state = (clientHome ? UnDefType.NULL : new DecimalType(0)); // skip the update if the client is home
                 break;
             case CHANNEL_LAST_SEEN:
                 // mgb: lastSeen should keep the last state no matter what
-                state = null;
+                state = UnDefType.NULL;
                 break;
         }
         return state;
     }
 
-    private boolean isClientHome(UniFiClient client) {
+    private boolean isClientHome(@Nullable UniFiClient client) {
         boolean online = false;
         if (client != null) {
             Calendar lastSeen = client.getLastSeen();
@@ -188,7 +189,7 @@ public class UniFiClientThingHandler extends BaseThingHandler {
         return online;
     }
 
-    private void refreshChannel(UniFiClient client, ChannelUID channelUID) {
+    private void refreshChannel(@Nullable UniFiClient client, ChannelUID channelUID) {
         // mgb: only refresh if we're ONLINE
         if (getThing().getStatus() == ONLINE) {
             logger.debug("Refreshing channel = {}", channelUID);
@@ -260,19 +261,19 @@ public class UniFiClientThingHandler extends BaseThingHandler {
             }
 
             // mgb: only non null states get updates
-            if (state != null) {
+            if (state != UnDefType.NULL) {
                 updateState(channelID, state);
             }
         }
     }
 
-    private State getWiredChannelState(@NonNull UniFiWiredClient client, boolean clientHome, String channelID) {
-        State state = null;
+    private State getWiredChannelState(UniFiWiredClient client, boolean clientHome, String channelID) {
+        State state = UnDefType.NULL;
         return state;
     }
 
-    private State getWirelessChannelState(@NonNull UniFiWirelessClient client, boolean clientHome, String channelID) {
-        State state = null;
+    private State getWirelessChannelState(UniFiWirelessClient client, boolean clientHome, String channelID) {
+        State state = UnDefType.NULL;
         switch (channelID) {
             // :ap
             case CHANNEL_AP:
