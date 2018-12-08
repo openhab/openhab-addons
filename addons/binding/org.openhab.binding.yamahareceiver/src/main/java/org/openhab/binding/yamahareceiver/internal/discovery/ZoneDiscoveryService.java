@@ -75,7 +75,7 @@ public class ZoneDiscoveryService extends AbstractDiscoveryService {
      * The available zones are within the {@link DeviceInformationState}. Will will publish those
      * as things via this discovery service instance.
      *
-     * @param state     The device information state
+     * @param state The device information state
      * @param bridgeUid The bridge UID
      */
     public void publishZones(DeviceInformationState state, ThingUID bridgeUid) {
