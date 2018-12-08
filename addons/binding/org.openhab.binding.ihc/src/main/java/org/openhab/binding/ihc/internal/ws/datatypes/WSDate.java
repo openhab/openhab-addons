@@ -9,6 +9,8 @@
 package org.openhab.binding.ihc.internal.ws.datatypes;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 /**
  * Class for WSDate complex type.
@@ -149,6 +151,16 @@ public class WSDate {
      * @return LocalDateTime
      */
     public LocalDateTime getAsLocalDateTime() {
-        return LocalDateTime.of(year, monthWithJanuaryAsOne, day, hours, minutes);
+        return LocalDateTime.of(year, monthWithJanuaryAsOne, day, hours, minutes, seconds);
     }
+
+    /**
+     * Gets WSDate as ZonedDateTime.
+     *
+     * @return LocalDateTime
+     */
+    public ZonedDateTime getAsZonedDateTime(ZoneId zoneId) {
+        return ZonedDateTime.of(getAsLocalDateTime(), zoneId);
+    }
+
 }
