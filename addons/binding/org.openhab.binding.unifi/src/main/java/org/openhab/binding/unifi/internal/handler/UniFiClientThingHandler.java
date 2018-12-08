@@ -105,12 +105,15 @@ public class UniFiClientThingHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Handling command = {} for channel = {}", command, channelUID);
-        if (command == REFRESH) {
-            refreshChannel(getClient(), channelUID);
-        } else {
-            logger.debug("Ignoring unsupported command = {} for channel = {} - the UniFi binding is read-only!",
-                    command, channelUID);
+        // mgb: only handle the command if we're ONLINE
+        if (getThing().getStatus() == ONLINE) {
+            logger.debug("Handling command = {} for channel = {}", command, channelUID);
+            if (command == REFRESH) {
+                refreshChannel(getClient(), channelUID);
+            } else {
+                logger.debug("Ignoring unsupported command = {} for channel = {} - the UniFi binding is read-only!",
+                        command, channelUID);
+            }
         }
     }
 
