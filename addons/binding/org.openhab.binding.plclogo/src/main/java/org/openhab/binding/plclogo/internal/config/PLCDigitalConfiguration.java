@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class PLCDigitalConfiguration extends PLCCommonConfiguration {
 
-    private String kind;
+    private String kind = "";
 
     @Override
     public String getBlockKind() {

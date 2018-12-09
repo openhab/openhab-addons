@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class PLCMemoryConfiguration extends PLCCommonConfiguration {
 
-    private String block;
+    private String block = "";
     private Integer threshold = 0;
 
     /**
