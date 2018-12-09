@@ -382,9 +382,6 @@ public class HueDevice {
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-        b.append(name).append(": ").append(type).append("\n\t");
-        b.append("State: ").append(state.toString());
-
-        return b.toString();
+        return b.append(name).append(": ").append(type).append("\n\t").append(state.toString()).toString();
     }
 }

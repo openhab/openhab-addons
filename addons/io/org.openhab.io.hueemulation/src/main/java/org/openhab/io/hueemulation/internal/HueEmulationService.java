@@ -63,6 +63,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonWriter;
 
@@ -127,7 +128,7 @@ public class HueEmulationService implements ReadyTracker {
         protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
             Utils.setHeaders(resp);
             final Path path = Paths.get(req.getRequestURI());
-            final boolean isDebug = req.getParameter("debug") != null;
+            final boolean isDebug = "debug=true".equals(req.getQueryString());
             String postBody;
             final HttpMethod method;
 
@@ -147,8 +148,8 @@ public class HueEmulationService implements ReadyTracker {
                 }
 
                 try {
-                    method = HttpMethod.valueOf(req.getMethod());
-                } catch (Exception e) {
+                    method = Enum.valueOf(HttpMethod.class, req.getMethod());
+                } catch (IllegalArgumentException e) {
                     resp.setStatus(405);
                     apiServerError(req, out, HueResponse.METHOD_NOT_ALLOWED,
                             req.getMethod() + " not allowed for this resource");
@@ -160,15 +161,10 @@ public class HueEmulationService implements ReadyTracker {
                     try {
                         postBody = req.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
                     } catch (IllegalStateException e) {
-                        try {
-                            postBody = new BufferedReader(new InputStreamReader(req.getInputStream())).lines()
-                                    .collect(Collectors.joining("\n"));
-                        } catch (IllegalStateException e2) {
-                            apiServerError(req, out, HueResponse.INTERNAL_ERROR,
-                                    "Could not read http body. Jetty failure.");
-                            resp.setStatus(500);
-                            return;
-                        }
+                        apiServerError(req, out, HueResponse.INTERNAL_ERROR,
+                                "Could not read http body. Jetty failure.");
+                        resp.setStatus(500);
+                        return;
                     }
                 } else {
                     postBody = "";
@@ -177,32 +173,27 @@ public class HueEmulationService implements ReadyTracker {
                 int statuscode = 0;
                 try {
                     statuscode = restAPI.handle(method, postBody, out, path, isDebug);
-                } catch (IllegalStateException e) {
-                    logger.warn("Unexpected multiple stream access", e);
-                    resp.setStatus(500);
-                    httpOut.print("Unexpected multiple stream access");
-                    return;
-                }
-                switch (statuscode) {
-                    case 400:
-                        apiServerError(req, out, HueResponse.INVALID_JSON, "body contains invalid JSON");
-                        break;
-                    case 10403: // Fake status code -> translate to real one
-                        statuscode = 403;
-                        apiServerError(req, out, HueResponse.LINK_BUTTON_NOT_PRESSED, "link button not pressed");
-                        break;
-                    case 403:
-                        logger.debug("Unauthorized access to {} from {}:{}!\n", req.getRequestURI(),
-                                req.getRemoteAddr(), req.getRemotePort());
-                        apiServerError(req, out, HueResponse.UNAUTHORIZED, "Not Authorized");
-                        break;
-                    case 404:
-                        apiServerError(req, out, HueResponse.NOT_AVAILABLE, "Hue resource not available");
-                        break;
-                    case 405:
-                        apiServerError(req, out, HueResponse.METHOD_NOT_ALLOWED,
-                                req.getMethod() + " not allowed for this resource");
-                        break;
+                    switch (statuscode) {
+                        case 10403: // Fake status code -> translate to real one
+                            statuscode = 403;
+                            apiServerError(req, out, HueResponse.LINK_BUTTON_NOT_PRESSED, "link button not pressed");
+                            break;
+                        case 403:
+                            logger.debug("Unauthorized access to {} from {}:{}!\n", req.getRequestURI(),
+                                    req.getRemoteAddr(), req.getRemotePort());
+                            apiServerError(req, out, HueResponse.UNAUTHORIZED, "Not Authorized");
+                            break;
+                        case 404:
+                            apiServerError(req, out, HueResponse.NOT_AVAILABLE, "Hue resource not available");
+                            break;
+                        case 405:
+                            apiServerError(req, out, HueResponse.METHOD_NOT_ALLOWED,
+                                    req.getMethod() + " not allowed for this resource");
+                            break;
+                    }
+                } catch (JsonParseException e) {
+                    statuscode = 400;
+                    apiServerError(req, out, HueResponse.INVALID_JSON, "Invalid request: " + e.getMessage());
                 }
 
                 resp.setStatus(statuscode);
