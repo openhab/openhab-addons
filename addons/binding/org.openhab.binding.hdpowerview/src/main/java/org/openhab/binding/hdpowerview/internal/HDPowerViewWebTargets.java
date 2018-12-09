@@ -61,11 +61,11 @@ public class HDPowerViewWebTargets {
         }
     }
 
-    public Response moveShade(String shadeId, ShadePosition position) throws IOException {
-        int intid = Integer.parseInt(shadeId);
-        WebTarget target = shadeMove.resolveTemplate("id", intid);
+    public Response moveShade(String shadeIdString, ShadePosition position) throws IOException {
+        int shadeId = Integer.parseInt(shadeIdString);
+        WebTarget target = shadeMove.resolveTemplate("id", shadeId);
 
-        String body = gson.toJson(new ShadeMove(intid, position));
+        String body = gson.toJson(new ShadeMove(shadeId, position));
         return invoke(target.request().buildPut(Entity.entity(body, MediaType.APPLICATION_JSON_TYPE)), shadeMove);
     }
 
