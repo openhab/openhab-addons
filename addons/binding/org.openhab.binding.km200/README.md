@@ -1,7 +1,7 @@
 # KM200 Binding
 
 The KM200 Binding is communicating with a [Buderus Logamatic web KM200 / KM100 / KM50](https://www.buderus.de/de/produkte/catalogue/alle-produkte/7719_gateway-logamatic-web-km200-km100-km50). 
-It's an unofficial binding. It is possible to receive and send parameters like string or float values.
+It is possible to receive and send parameters like string or float values.
 
 **Important**: If the communication is not working and you see in the logfile errors like "illegal key size" then you have to change the [Java Cryptography Extension to the Unlimited Strength Jurisdiction](http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html). 
 
@@ -29,7 +29,7 @@ This Binding is tested on a KM200 but it should work on KM50 and KM100, too.
 
 ### Discovery
 
-This binding is discovers the kmdevice with a mDNS search method in the local network.
+This binding discovers KM devices through mDNS in the local network.
 
 ## Thing Configuration
 
@@ -47,25 +47,14 @@ The *kmdevice* bridge requires the following configuration parameters:
 
 ### Channels
 
-This binding is creating the channels depending on the connected heating system fully automatically. 
-Every thing has a lot of channels. 
+This binding creates the channels depending on the connected heating system fully automatically. 
 These channels depend on the connected heating system. 
-You can see the complete list of supported channels in the PaperUI after the creation of a thing. 
-There is no official documentation for the parameters available so the names of the channels are all what we have. 
-
-### Items
-
-In the items file it's possible to map the services. 
-You can take the correct names from the channels in the Paper UI.
-There is nothing specific in the sitemap configuration.
+You can see the complete list of supported channels of the thing in the Paper UI. 
+There is no official documentation for the parameters available from Buderus, so the names of the channels is all that reflects their purpose.
 
 ## Full Examples
 
-Things can be configured via the Paper UI, or using a `things` file like here.
-
-### Basic Example
-
-This example reads different values of items from a KMXXX Device..
+This example reads different values of items from a KMXXX Device.
 
 `things/kmxxx.things`:
 
