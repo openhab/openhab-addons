@@ -778,7 +778,7 @@ public class ModbusDataHandlerTest extends JavaTest {
                 // Not linking items and channels
                 false);
 
-        assertSingleStateUpdate(dataHandler, CHANNEL_LAST_READ_SUCCESS, is(notNullValue(State.class)));
+        assertSingleStateUpdate(dataHandler, CHANNEL_LAST_READ_SUCCESS, is(nullValue(State.class)));
         assertSingleStateUpdate(dataHandler, CHANNEL_LAST_READ_ERROR, is(nullValue(State.class)));
 
         // Since channles are not linked, they are not updated (are null)
