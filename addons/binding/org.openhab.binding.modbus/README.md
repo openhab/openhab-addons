@@ -765,8 +765,6 @@ See [transformation example](#transformation-example-scaling) for the `divide10.
 
 ### Dimmer Example
 
-_(thanks to [rossko57](https://community.openhab.org/t/modbus-openhab2-binding-available-for-alpha-testing/27657/560?u=ssalonen)!)_
-
 Dimmer type Items are not a straightforward match to Modbus registers, as they feature a numeric value which is limited to 0-100 Percent, as well as handling ON/OFF commands.
 
 Transforms can be used to match and scale both reading and writing.
