@@ -87,7 +87,6 @@ public class ByteArrayFileCache {
     public byte[] putIfAbsentAndGet(String key, byte[] content) {
         putIfAbsent(key, content);
 
-        // return get(key);
         return content;
     }
 
@@ -217,9 +216,9 @@ public class ByteArrayFileCache {
      */
     private String getUniqueFileName(String key) {
         try {
-            byte[] bytesOfFileName = key.getBytes(StandardCharsets.UTF_8);
+            byte[] bytesOfKey = key.getBytes(StandardCharsets.UTF_8);
             MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] md5Hash = md.digest(bytesOfFileName);
+            byte[] md5Hash = md.digest(bytesOfKey);
             BigInteger bigInt = new BigInteger(1, md5Hash);
             StringBuilder fileNameHash = new StringBuilder(bigInt.toString(16));
             // Now we need to zero pad it if you actually want the full 32 chars

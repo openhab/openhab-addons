@@ -13,6 +13,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -531,18 +532,12 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
                 RawType thumbnail = null;
                 if (item.has(PROPERTY_THUMBNAIL)) {
-                    String thumbnailURL = convertToImageUrl(item.get(PROPERTY_THUMBNAIL));
-                    if (thumbnailURL != null) {
-                        thumbnail = downloadImageFromCache(thumbnailURL);
-                    }
+                    thumbnail = getImageForElement(item.get(PROPERTY_THUMBNAIL));
                 }
 
                 RawType fanart = null;
                 if (item.has(PROPERTY_FANART)) {
-                    String fanartURL = convertToImageUrl(item.get(PROPERTY_FANART));
-                    if (fanartURL != null) {
-                        fanart = downloadImageFromCache(fanartURL);
-                    }
+                    fanart = getImageForElement(item.get(PROPERTY_FANART));
                 }
 
                 listener.updateAlbum(album);
@@ -645,21 +640,28 @@ public class KodiConnection implements KodiClientSocketEventListener {
         return list;
     }
 
-    private @Nullable String convertToImageUrl(JsonElement element) {
+    private @Nullable RawType getImageForElement(JsonElement element) {
         String text = element.getAsString();
         if (!text.isEmpty()) {
-            try {
-                // we have to strip ending "/" here because Kodi returns a not valid path and filename
-                // "fanart":"image://http%3a%2f%2fthetvdb.com%2fbanners%2ffanart%2foriginal%2f263365-31.jpg/"
-                // "thumbnail":"image://http%3a%2f%2fthetvdb.com%2fbanners%2fepisodes%2f263365%2f5640869.jpg/"
-                String encodedURL = URLEncoder.encode(StringUtils.stripEnd(text, "/"), "UTF-8");
-                return imageUri.resolve(encodedURL).toString();
-            } catch (UnsupportedEncodingException e) {
-                logger.debug("exception during encoding {}", text, e);
-                return null;
+            String url = stripImageUrl(text);
+            if (url != null) {
+                return downloadImageFromCache(url);
             }
         }
         return null;
+    }
+
+    private @Nullable String stripImageUrl(String url) {
+        try {
+            // we have to strip ending "/" here because Kodi returns a not valid path and filename
+            // "fanart":"image://http%3a%2f%2fthetvdb.com%2fbanners%2ffanart%2foriginal%2f263365-31.jpg/"
+            // "thumbnail":"image://http%3a%2f%2fthetvdb.com%2fbanners%2fepisodes%2f263365%2f5640869.jpg/"
+            String encodedURL = URLEncoder.encode(StringUtils.stripEnd(url, "/"), StandardCharsets.UTF_8.name());
+            return imageUri.resolve(encodedURL).toString();
+        } catch (UnsupportedEncodingException e) {
+            logger.debug("exception during encoding {}", url, e);
+            return null;
+        }
     }
 
     private @Nullable RawType downloadImage(String url) {
