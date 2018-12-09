@@ -9,6 +9,7 @@
 package org.openhab.io.transport.modbus;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
@@ -46,12 +47,12 @@ public class ModbusBitUtilities {
      * - index 2 refers to low byte of the second register, 3 high byte of second register, etc.
      * - it is assumed that each high and low byte is encoded in most significant bit first order
      * UINT8:
-     * - same as INT8 except values are interpreted as unsigned integers
+     * - same as INT8 except value is interpreted as unsigned integer
      * INT16:
      * - register with index (counting from zero) is interpreted as 16 bit signed integer.
      * - it is assumed that each register is encoded in most significant bit first order
      * UINT16:
-     * - same as INT16 except values are interpreted as unsigned integers
+     * - same as INT16 except value is interpreted as unsigned integer
      * INT32:
      * - registers (index) and (index + 1) are interpreted as signed 32bit integer.
      * - it assumed that the first register contains the most significant 16 bits
@@ -59,15 +60,26 @@ public class ModbusBitUtilities {
      * INT32_SWAP:
      * - Same as INT32 but registers swapped
      * UINT32:
-     * - same as UINT32 except values are interpreted as unsigned integers
+     * - same as INT32 except value is interpreted as unsigned integer
      * UINT32_SWAP:
-     * - Same as UINT32 but registers swapped
+     * - same as INT32_SWAP except value is interpreted as unsigned integer
      * FLOAT32:
      * - registers (index) and (index + 1) are interpreted as signed 32bit floating point number.
      * - it assumed that the first register contains the most significant 16 bits
      * - it is assumed that each register is encoded in most significant bit first order
      * FLOAT32_SWAP:
      * - Same as FLOAT32 but registers swapped
+     * INT64:
+     * - registers (index), (index + 1), (index + 2), (index + 3) are interpreted as signed 64bit integer.
+     * - it assumed that the first register contains the most significant 16 bits
+     * - it is assumed that each register is encoded in most significant bit first order
+     * INT64_SWAP:
+     * - same as INT64 but registers swapped, that is, registers (index + 3), (index + 2), (index + 1), (index + 1) are
+     * interpreted as signed 64bit integer
+     * UINT64:
+     * - same as INT64 except value is interpreted as unsigned integer
+     * UINT64_SWAP:
+     * - same as INT64_SWAP except value is interpreted as unsigned integer
      *
      * @param registers list of registers, each register represent 16bit of data
      * @param index zero based item index. Interpretation of this depends on type, see examples above.
@@ -124,6 +136,22 @@ public class ModbusBitUtilities {
                 buff.put(registers.getRegister(index + 1).getBytes());
                 return new DecimalType(buff.order(ByteOrder.BIG_ENDIAN).getFloat(0));
             }
+            case INT64: {
+                ByteBuffer buff = ByteBuffer.allocate(8);
+                buff.put(registers.getRegister(index).getBytes());
+                buff.put(registers.getRegister(index + 1).getBytes());
+                buff.put(registers.getRegister(index + 2).getBytes());
+                buff.put(registers.getRegister(index + 3).getBytes());
+                return new DecimalType(buff.order(ByteOrder.BIG_ENDIAN).getLong(0));
+            }
+            case UINT64: {
+                ByteBuffer buff = ByteBuffer.allocate(8);
+                buff.put(registers.getRegister(index).getBytes());
+                buff.put(registers.getRegister(index + 1).getBytes());
+                buff.put(registers.getRegister(index + 2).getBytes());
+                buff.put(registers.getRegister(index + 3).getBytes());
+                return new DecimalType(new BigDecimal(new BigInteger(1, buff.order(ByteOrder.BIG_ENDIAN).array())));
+            }
             case INT32_SWAP: {
                 ByteBuffer buff = ByteBuffer.allocate(4);
                 buff.put(registers.getRegister(index + 1).getBytes());
@@ -142,6 +170,22 @@ public class ModbusBitUtilities {
                 buff.put(registers.getRegister(index + 1).getBytes());
                 buff.put(registers.getRegister(index).getBytes());
                 return new DecimalType(buff.order(ByteOrder.BIG_ENDIAN).getFloat(0));
+            }
+            case INT64_SWAP: {
+                ByteBuffer buff = ByteBuffer.allocate(8);
+                buff.put(registers.getRegister(index + 3).getBytes());
+                buff.put(registers.getRegister(index + 2).getBytes());
+                buff.put(registers.getRegister(index + 1).getBytes());
+                buff.put(registers.getRegister(index).getBytes());
+                return new DecimalType(buff.order(ByteOrder.BIG_ENDIAN).getLong(0));
+            }
+            case UINT64_SWAP: {
+                ByteBuffer buff = ByteBuffer.allocate(8);
+                buff.put(registers.getRegister(index + 3).getBytes());
+                buff.put(registers.getRegister(index + 2).getBytes());
+                buff.put(registers.getRegister(index + 1).getBytes());
+                buff.put(registers.getRegister(index).getBytes());
+                return new DecimalType(new BigDecimal(new BigInteger(1, buff.order(ByteOrder.BIG_ENDIAN).array())));
             }
             default:
                 throw new IllegalArgumentException(type.getConfigValue());
@@ -219,7 +263,7 @@ public class ModbusBitUtilities {
                     "Command '%s' of class '%s' cannot be converted to registers. Please use OnOffType, OpenClosedType, or DecimalType commands.",
                     command, command.getClass().getName()));
         }
-        if (type.getBits() != 16 && type.getBits() != 32) {
+        if (type.getBits() != 16 && type.getBits() != 32 && type.getBits() != 64) {
             throw new IllegalArgumentException(String.format(
                     "Illegal type=%s (bits=%d). Only 16bit and 32bit types are supported", type, type.getBits()));
         }
@@ -281,6 +325,38 @@ public class ModbusBitUtilities {
                 ModbusRegister register = new BasicModbusRegister(b3, b4);
                 ModbusRegister register2 = new BasicModbusRegister(b1, b2);
                 return new BasicModbusRegisterArray(new ModbusRegister[] { register, register2 });
+            }
+            case INT64:
+            case UINT64: {
+                long longValue = numericCommand.longValue();
+                // big endian byte ordering
+                byte b1 = (byte) (longValue >> 56);
+                byte b2 = (byte) (longValue >> 48);
+                byte b3 = (byte) (longValue >> 40);
+                byte b4 = (byte) (longValue >> 32);
+                byte b5 = (byte) (longValue >> 24);
+                byte b6 = (byte) (longValue >> 16);
+                byte b7 = (byte) (longValue >> 8);
+                byte b8 = (byte) longValue;
+                return new BasicModbusRegisterArray(
+                        new ModbusRegister[] { new BasicModbusRegister(b1, b2), new BasicModbusRegister(b3, b4),
+                                new BasicModbusRegister(b5, b6), new BasicModbusRegister(b7, b8) });
+            }
+            case INT64_SWAP:
+            case UINT64_SWAP: {
+                long longValue = numericCommand.longValue();
+                // big endian byte ordering
+                byte b1 = (byte) (longValue >> 56);
+                byte b2 = (byte) (longValue >> 48);
+                byte b3 = (byte) (longValue >> 40);
+                byte b4 = (byte) (longValue >> 32);
+                byte b5 = (byte) (longValue >> 24);
+                byte b6 = (byte) (longValue >> 16);
+                byte b7 = (byte) (longValue >> 8);
+                byte b8 = (byte) longValue;
+                return new BasicModbusRegisterArray(
+                        new ModbusRegister[] { new BasicModbusRegister(b7, b8), new BasicModbusRegister(b5, b6),
+                                new BasicModbusRegister(b3, b4), new BasicModbusRegister(b1, b2) });
             }
             default:
                 throw new NotImplementedException(

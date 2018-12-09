@@ -202,7 +202,87 @@ public class BitUtilitiesCommandToRegistersTest {
                         new Object[] { OpenClosedType.CLOSED, ValueType.INT16, shorts(0x0000) },
                         // Unsupported command
                         new Object[] { IncreaseDecreaseType.INCREASE, ValueType.FLOAT32_SWAP,
-                                NotImplementedException.class });
+                                NotImplementedException.class },
+
+                        //
+                        // INT64
+                        //
+                        new Object[] { new DecimalType("1.0"), ValueType.INT64, shorts(0, 0, 0, 1) },
+                        new Object[] { new DecimalType("1.6"), ValueType.INT64, shorts(0, 0, 0, 1) },
+                        new Object[] { new DecimalType("2.6"), ValueType.INT64, shorts(0, 0, 0, 2) },
+                        new Object[] { new DecimalType("-1004.4"), ValueType.INT64,
+                                shorts(0xFFFF, 0xFFFF, 0xFFFF, 0xFC14), },
+                        new Object[] { new DecimalType("64000"), ValueType.INT64, shorts(0, 0, 0, 64000), },
+                        new Object[] {
+                                // out of bounds of unsigned 32bit
+                                new DecimalType("34359738368"),
+                                // 70004 -> 0x00011174 (32bit) -> 0x1174 (16bit)
+                                ValueType.INT64, shorts(0x0, 0x8, 0x0, 0x0), },
+                        new Object[] {
+                                // out of bounds of unsigned 64bit
+                                new DecimalType("3498348904359085439088905"),
+                                // should pick the low 64 bits
+                                ValueType.INT64, shorts(0xDFC5, 0xBBB7, 0x772E, 0x7909), },
+
+                        //
+                        // UINT64 (same as INT64)
+                        //
+                        new Object[] { new DecimalType("1.0"), ValueType.UINT64, shorts(0, 0, 0, 1) },
+                        new Object[] { new DecimalType("1.6"), ValueType.UINT64, shorts(0, 0, 0, 1) },
+                        new Object[] { new DecimalType("2.6"), ValueType.UINT64, shorts(0, 0, 0, 2) },
+                        new Object[] { new DecimalType("-1004.4"), ValueType.UINT64,
+                                shorts(0xFFFF, 0xFFFF, 0xFFFF, 0xFC14), },
+                        new Object[] { new DecimalType("64000"), ValueType.UINT64, shorts(0, 0, 0, 64000), },
+                        new Object[] {
+                                // out of bounds of unsigned 32bit
+                                new DecimalType("34359738368"),
+                                // 70004 -> 0x00011174 (32bit) -> 0x1174 (16bit)
+                                ValueType.UINT64, shorts(0x0, 0x8, 0x0, 0x0), },
+                        new Object[] {
+                                // out of bounds of unsigned 64bit
+                                new DecimalType("3498348904359085439088905"),
+                                // should pick the low 64 bits
+                                ValueType.UINT64, shorts(0xDFC5, 0xBBB7, 0x772E, 0x7909), },
+
+                        //
+                        // INT64_SWAP
+                        //
+                        new Object[] { new DecimalType("1.0"), ValueType.INT64_SWAP, shorts(1, 0, 0, 0) },
+                        new Object[] { new DecimalType("1.6"), ValueType.INT64_SWAP, shorts(1, 0, 0, 0) },
+                        new Object[] { new DecimalType("2.6"), ValueType.INT64_SWAP, shorts(2, 0, 0, 0) },
+                        new Object[] { new DecimalType("-1004.4"), ValueType.INT64_SWAP,
+                                shorts(0xFC14, 0xFFFF, 0xFFFF, 0xFFFF), },
+                        new Object[] { new DecimalType("64000"), ValueType.INT64_SWAP, shorts(64000, 0, 0, 0), },
+                        new Object[] {
+                                // out of bounds of unsigned 32bit
+                                new DecimalType("34359738368"),
+                                // 70004 -> 0x00011174 (32bit) -> 0x1174 (16bit)
+                                ValueType.INT64_SWAP, shorts(0x0, 0x0, 0x8, 0x0), },
+                        new Object[] {
+                                // out of bounds of unsigned 64bit
+                                new DecimalType("3498348904359085439088905"),
+                                // should pick the low 64 bits
+                                ValueType.INT64_SWAP, shorts(0x7909, 0x772E, 0xBBB7, 0xDFC5), },
+
+                        //
+                        // UINT64_SWAP (same as INT64_SWAP)
+                        //
+                        new Object[] { new DecimalType("1.0"), ValueType.UINT64_SWAP, shorts(1, 0, 0, 0) },
+                        new Object[] { new DecimalType("1.6"), ValueType.UINT64_SWAP, shorts(1, 0, 0, 0) },
+                        new Object[] { new DecimalType("2.6"), ValueType.UINT64_SWAP, shorts(2, 0, 0, 0) },
+                        new Object[] { new DecimalType("-1004.4"), ValueType.UINT64_SWAP,
+                                shorts(0xFC14, 0xFFFF, 0xFFFF, 0xFFFF), },
+                        new Object[] { new DecimalType("64000"), ValueType.UINT64_SWAP, shorts(64000, 0, 0, 0), },
+                        new Object[] {
+                                // out of bounds of unsigned 32bit
+                                new DecimalType("34359738368"),
+                                // 70004 -> 0x00011174 (32bit) -> 0x1174 (16bit)
+                                ValueType.UINT64_SWAP, shorts(0x0, 0x0, 0x8, 0x0), },
+                        new Object[] {
+                                // out of bounds of unsigned 64bit
+                                new DecimalType("3498348904359085439088905"),
+                                // should pick the low 64 bits
+                                ValueType.UINT64_SWAP, shorts(0x7909, 0x772E, 0xBBB7, 0xDFC5), });
 
     }
 
@@ -216,7 +296,8 @@ public class BitUtilitiesCommandToRegistersTest {
         ModbusRegisterArray registers = ModbusBitUtilities.commandToRegisters(this.command, this.type);
         short[] expectedRegisters = (short[]) expectedResult;
 
-        assertThat(registers.size(), is(equalTo(expectedRegisters.length)));
+        assertThat(String.format("register index command=%s, type=%s", command, type), registers.size(),
+                is(equalTo(expectedRegisters.length)));
         for (int i = 0; i < expectedRegisters.length; i++) {
             int expectedRegisterDataUnsigned = expectedRegisters[i] & 0xffff;
             int actual = registers.getRegister(i).getValue();
