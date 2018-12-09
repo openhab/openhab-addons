@@ -201,10 +201,10 @@ Similarly, `data` thing is responsible of converting openHAB commands to write r
 
 | Parameter                                   | Type    | Required | Default if omitted | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------- | ------- | -------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `readValueType`                             | text    |          | (empty)            | How data is read from modbus. Use empty for write-only things.<br /><br />Bit value type must be used with coils and discrete inputs. With registers all value types are applicable. Valid values are: `"float32"`, `"float32_swap"`, `"int32"`, `"int32_swap"`, `"uint32"`, `"uint32_swap"`, `"int16"`, `"uint16"`, `"int8"`, `"uint8"`, or `"bit"`. See also [Value types on read and write](#value-types-on-read-and-write).                                                                                                                                                                                                                       |
+| `readValueType`                             | text    |          | (empty)            | How data is read from modbus. Use empty for write-only things.<br /><br />Bit value type must be used with coils and discrete inputs. With registers all value types are applicable. Valid values are: `"int64"`, `"int64_swap"`, `"uint64"`, `"uint64_swap"`, `"float32"`, `"float32_swap"`, `"int32"`, `"int32_swap"`, `"uint32"`, `"uint32_swap"`, `"int16"`, `"uint16"`, `"int8"`, `"uint8"`, or `"bit"`. See also [Value types on read and write](#value-types-on-read-and-write).                                                                                                                                                                                                                       |
 | `readStart`                                 | text    |          | (empty)            | Start address to start reading the value. Use empty for write-only things. <br /><br />Input as zero-based index number, e.g. in place of `400001` (first holding register), use the address `"0"`.  Must be between (poller start) and (poller start + poller length - 1) (inclusive).<br /><br />With registers and value type less than 16 bits, you must use `"X.Y"` format where `Y` specifies the sub-element to read from the 16 bit register:<ul> <li>For example, `"3.1"` would mean pick second bit from register index `3` with bit value type. </li><li>With int8 valuetype, it would pick the high byte of register index `3`.</li></ul> |
 | `readTransform`                             | text    |          | `"default"`        | Transformation to apply to polled data, after it has been converted to number using `readValueType`. <br /><br />Use "default" to communicate that no transformation is done and value should be passed as is.<br />Use `"SERVICENAME(ARG)"` to use transformation service `SERVICENAME` with argument `ARG`. <br />Any other value than the above types will be interpreted as static text, in which case the actual content of the polled value is ignored.                                                                                                                                                                                         |
-| `writeValueType`                            | text    |          | (empty)            | How data is written to modbus. Only applicable to registers. Valid values are: `"float32"`, `"float32_swap"`, `"int32"`, `"int32_swap"`, `"int16"`. See also [Value types on read and write](#value-types-on-read-and-write).                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `writeValueType`                            | text    |          | (empty)            | How data is written to modbus. Only applicable to registers. Valid values are: `"int64"`, `"int64_swap"`, `"float32"`, `"float32_swap"`, `"int32"`, `"int32_swap"`, `"int16"`. See also [Value types on read and write](#value-types-on-read-and-write).                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `writeStart`                                | text    |          | (empty)            | Start address of the first holding register or coil in the write. Use empty for read-only things. <br />Use zero based address, e.g. in place of `400001` (first holding register), use the address `"0"`. This address is passed to data frame as is.                                                                                                                                                                                                                                                                                                                                                                                                      |
 | `writeType`                                 | text    |          | (empty)            | Type of data to write. Use empty for read-only things. Valid values: `"coil"` or `"holding"`.<br /><br /> Coil uses function code (FC) FC05 or FC15. Holding register uses FC06 or FC16. See `writeMultipleEvenWithSingleRegisterOrCoil` parameter.                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `writeTransform`                            | text    |          | `"default"`        | Transformation to apply to received commands.<br /><br />Use `"default"` to communicate that no transformation is done and value should be passed as is.    <br />Use `"SERVICENAME(ARG)"` to use transformation service `SERVICENAME` with argument `ARG`.    <br />Any other value than the above types will be interpreted as static text, in which case the actual content of the command value is ignored.                                                                                                                                                                                                                                       |
@@ -354,7 +354,7 @@ See [Full examples](#full-examples) section for practical examples.
 
 #### `uint8`:
 
-- same as `int8` except values are interpreted as unsigned integers
+- same as `int8` except value is interpreted as unsigned integer
 
 #### `int16`:
 
@@ -363,7 +363,7 @@ See [Full examples](#full-examples) section for practical examples.
 
 #### `uint16`:
 
-- same as `int16` except values are interpreted as unsigned integers
+- same as `int16` except value is interpreted as unsigned integer
 
 #### `int32`:
 
@@ -373,13 +373,23 @@ See [Full examples](#full-examples) section for practical examples.
 
 #### `uint32`:
 
-- same as `int32` except values are interpreted as unsigned integers
+- same as `int32` except value is interpreted as unsigned integer
 
 #### `float32`:
 
 - registers `index` and `(index + 1)` are interpreted as signed 32bit floating point number
 - it assumed that the first register contains the most significant 16 bits
 - it is assumed that each register is encoded in most significant bit first order
+
+#### `int64`:
+
+- registers `index`, `(index + 1)`, `(index + 2)`, `(index + 3)` are interpreted as signed 64bit integer.
+- it assumed that the first register contains the most significant 16 bits
+- it is assumed that each register is encoded in most significant bit first order
+
+#### `uint64`:
+
+- same as `int64` except value is interpreted as unsigned integer
 
 The MODBUS specification defines each 16bit word to be encoded as Big Endian,
 but there is no specification on the order of those words within 32bit or larger data types.
@@ -388,7 +398,8 @@ Endian mode things work fine, but add a device with a different Endian mode and 
 very hard to correct. To resolve this the binding supports a second set of valuetypes
 that have the words swapped.
 
-If you get strange values using the `int32`, `uint32` or `float32` valuetypes then just try the `int32_swap`, `uint32_swap` or `float32_swap` valuetype, depending upon what your data type is.
+If you get strange values using the `int32`, `uint32`, `float32`, `int64`, or `uint64` valuetypes then just try the `int32_swap`, `uint32_swap`, `float32_swap`, `int64_swap`, or `uint64_swap` valuetype, depending upon what your data type is.
+
 
 #### `int32_swap`:
 
@@ -398,7 +409,7 @@ If you get strange values using the `int32`, `uint32` or `float32` valuetypes th
 
 #### `uint32_swap`:
 
-- same as `int32_swap` except values are interpreted as unsigned integers
+- same as `int32_swap` except value is interpreted as unsigned integer
 
 #### `float32_swap`:
 
@@ -406,6 +417,13 @@ If you get strange values using the `int32`, `uint32` or `float32` valuetypes th
 - it assumed that the first register contains the least significant 16 bits
 - it is assumed that each register is encoded in most significant bit first order (Big Endian)
 
+#### `int64_swap`:
+
+- same as `int64` but registers swapped, that is, registers (index + 3), (index + 2), (index + 1), (index + 1) are interpreted as signed 64bit integer
+
+#### `uint64_swap`:
+
+- same as `uint64` except value is interpreted as unsigned integer
 
 ### REFRESH Command
 

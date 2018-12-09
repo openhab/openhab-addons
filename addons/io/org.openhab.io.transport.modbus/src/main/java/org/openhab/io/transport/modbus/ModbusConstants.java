@@ -30,17 +30,22 @@ public class ModbusConstants {
      *
      */
     public static enum ValueType {
-        BIT("bit", 1),
-        INT8("int8", 8),
-        UINT8("uint8", 8),
-        INT16("int16", 16),
-        UINT16("uint16", 16),
-        INT32("int32", 32),
-        UINT32("uint32", 32),
-        FLOAT32("float32", 32),
-        INT32_SWAP("int32_swap", 32),
-        UINT32_SWAP("uint32_swap", 32),
-        FLOAT32_SWAP("float32_swap", 32);
+    BIT("bit", 1),
+    INT8("int8", 8),
+    UINT8("uint8", 8),
+    INT16("int16", 16),
+    UINT16("uint16", 16),
+    INT32("int32", 32),
+    UINT32("uint32", 32),
+    FLOAT32("float32", 32),
+    INT64("int64", 64),
+    UINT64("uint64", 64),
+
+    INT32_SWAP("int32_swap", 32),
+    UINT32_SWAP("uint32_swap", 32),
+    FLOAT32_SWAP("float32_swap", 32),
+    INT64_SWAP("int64_swap", 64),
+    UINT64_SWAP("uint64_swap", 64);
 
         private final String configValue;
         private final int bits;

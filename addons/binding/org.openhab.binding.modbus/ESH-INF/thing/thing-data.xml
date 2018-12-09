@@ -54,6 +54,11 @@
 				
 				<br /><br />With registers all value types are applicable.]]></description>
 				<options>
+					<option value="int64">64bit signed integer (int64)</option>
+					<option value="uint64">64bit unsigned integer (uint64)</option>
+					<option value="int64_swap">64bit signed integer, 16bit words in reverse order (dcba) (int64_swap)</option>
+					<option value="uint64_swap">64bit unsigned integer, 16bit words in reverse order (dcba) (uint64_swap)</option>
+				
 					<option value="float32">32bit floating point (float32)</option>
 					<option value="float32_swap">32bit floating point, 16bit words swapped (float32_swap)</option>
 
@@ -101,6 +106,8 @@
 				<description>How data is written to modbus. Only applicable to registers, you can leave this undefined for coil.
 				</description>
 				<options>
+					<option value="int64">64bit integer, as two's complement (int64)</option>
+					<option value="int64_swap">64bit signed integer, as two's complement but with 16bit words in reverse order (dcba) (int64_swap)</option>
 					<option value="float32">32bit floating point (float32)</option>
 					<option value="float32_swap">32bit floating point, 16bit words swapped (float32_swap)</option>
 					<option value="int32">32bit integer, as two's complement (int32)</option>
