@@ -763,6 +763,74 @@ sitemap modbus_ex_scaling label="modbus_ex_scaling"
 
 See [transformation example](#transformation-example-scaling) for the `divide10.js` and `multiply10.js`.
 
+### Dimmer Example
+
+Dimmer type Items are not a straightforward match to Modbus registers, as they feature a numeric value which is limited to 0-100 Percent, as well as handling ON/OFF commands.
+
+Transforms can be used to match and scale both reading and writing.
+
+Example for a dimmer device where 255 register value = 100% for fully ON:
+
+`things/modbus_ex_dimmer.things`:
+
+```xtend
+Bridge modbus:tcp:remoteTCP [ host="192.168.0.10", port=502 ]  {
+   Bridge poller MBDimmer [ start=4700, length=2, refresh=1000, type="holding" ]  {
+	         Thing data DimmerReg [ readStart="4700", readValueType="uint16", readTransform="JS(dimread255.js)", writeStart="4700", writeValueType="uint16", writeType="holding", writeTransform="JS(dimwrite255.js)" ]
+   }
+}
+```
+
+`items/modbus_ex_dimmer.items`:
+```xtend
+Dimmer myDimmer "My Dimmer d2 [%.1f]"   { channel="modbus:data:remoteTCP:MBDimmer:DimmerReg:dimmer" }
+```
+
+`sitemaps/modbus_ex_dimmer.sitemap`:
+
+```xtend
+sitemap modbus_ex_dimmer label="modbus_ex_dimmer"
+{
+    Frame {
+        Switch item=myDimmer
+        Slider item=myDimmer
+    }
+}
+```
+
+`transform/dimread255.js`:
+```javascript
+// Wrap everything in a function (no global variable pollution)
+// variable "input" contains data string passed by binding
+(function(inputData) {
+    // here set the 100% equivalent register value
+    var MAX_SCALE = 255;
+    // convert to percent
+    return Math.round( parseFloat(inputData, 10) * 100 / MAX_SCALE );
+})(input)
+```
+
+`transform/dimwrite255.js`:
+```javascript
+// variable "input" contains command string passed by openHAB
+(function(inputData) {
+    // here set the 100% equivalent register value
+    var MAX_SCALE = 255;
+    var out = 0
+    if (inputData == 'ON') {
+          // set max
+         out = MAX_SCALE
+    } else if (inputData == 'OFF') {
+         out = 0
+    } else {
+         // scale from percent
+         out = Math.round( parseFloat(inputData, 10) * MAX_SCALE / 100 )
+    }
+    return out
+})(input)
+```
+
+
 ### Rollershutter Example
 
 #### Rollershutter
@@ -828,7 +896,7 @@ sitemap modbus_ex_rollershutter label="modbus_ex_rollershutter" {
 
 ```javascript
 // Wrap everything in a function
-// variable "input" contains data passed by openhab
+// variable "input" contains data passed by openHAB
 (function(cmd) {
     var cmdToValue = {"UP": 1,  "DOWN": -1, "MOVE": 1, "STOP": 0};
     var cmdToAddress = {"UP": 1, "DOWN": 1, "MOVE": 2, "STOP": 2};
