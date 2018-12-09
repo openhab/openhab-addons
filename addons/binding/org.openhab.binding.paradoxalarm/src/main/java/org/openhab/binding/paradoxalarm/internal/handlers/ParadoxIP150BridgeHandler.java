@@ -8,18 +8,23 @@
  */
 package org.openhab.binding.paradoxalarm.internal.handlers;
 
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.paradoxalarm.internal.communication.GenericCommunicator;
 import org.openhab.binding.paradoxalarm.internal.communication.IParadoxCommunicator;
 import org.openhab.binding.paradoxalarm.internal.communication.IParadoxGenericCommunicator;
@@ -40,7 +45,7 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
     private final static Logger logger = LoggerFactory.getLogger(ParadoxIP150BridgeHandler.class);
 
     private static IParadoxCommunicator communicator;
-    private @NonNullByDefault({}) static ParadoxIP150BridgeConfiguration config;
+    private static ParadoxIP150BridgeConfiguration config;
     private @Nullable ScheduledFuture<?> refreshCacheUpdateSchedule;
 
     public ParadoxIP150BridgeHandler(Bridge bridge) throws Exception {
@@ -94,8 +99,6 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
         logger.debug("Start initializing!");
         updateStatus(ThingStatus.UNKNOWN);
         try {
-            scheduleRefresh();
-
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -125,21 +128,39 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
     private void updateDataCache(boolean withEpromValues) {
         try {
             logger.debug("Refreshing memory map");
-            communicator.refreshMemoryMap();
-
             RawStructuredDataCache cache = RawStructuredDataCache.getInstance();
 
-            cache.setIsOnline(communicator.isOnline());
-            cache.setPanelInfoBytes(communicator.getPanelInfoBytes());
-            cache.setPartitionStateFlags(communicator.readPartitionFlags());
-            cache.setZoneStateFlags(communicator.readZoneStateFlags());
+            boolean isOnline = communicator.isOnline();
+            cache.setIsOnline(isOnline);
 
-            if (withEpromValues) {
-                cache.setPartitionLabels(communicator.readPartitionLabels());
-                cache.setZoneLabels(communicator.readZoneLabels());
+            if (isOnline) {
+                communicator.refreshMemoryMap();
+
+                cache.setPanelInfoBytes(communicator.getPanelInfoBytes());
+                cache.setPartitionStateFlags(communicator.readPartitionFlags());
+                cache.setZoneStateFlags(communicator.readZoneStateFlags());
+
+                if (withEpromValues) {
+                    cache.setPartitionLabels(communicator.readPartitionLabels());
+                    cache.setZoneLabels(communicator.readZoneLabels());
+                }
             }
+            announceUpdateToHandlers();
         } catch (Exception e) {
             logger.error("Communicator cannot refresh cached memory map. Exception: {}", e);
+        }
+    }
+
+    private void announceUpdateToHandlers() {
+        Bridge bridge = getThing();
+        List<Thing> things = bridge.getThings();
+        for (Thing thing : things) {
+            ThingHandler handler = thing.getHandler();
+            Channel bridgeChannel = bridge
+                    .getChannel(ParadoxAlarmBindingConstants.IP150_COMMUNICATION_COMMAND_CHANNEL_UID);
+            if (handler != null && bridgeChannel != null) {
+                handler.handleCommand(bridgeChannel.getUID(), RefreshType.REFRESH);
+            }
         }
     }
 
@@ -173,13 +194,26 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
                 }
             }
         }
+        updateDataCache(true);
 
         if (communicator == null || !communicator.isOnline()) {
             logger.debug("Communicator is null or not online");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Device is offline");
+
         } else {
             logger.debug("Communicator is online");
             updateStatus(ThingStatus.ONLINE);
+        }
+    }
+
+    @Override
+    protected void updateStatus(@NonNull ThingStatus status, ThingStatusDetail statusDetail,
+            @Nullable String description) {
+        super.updateStatus(status, statusDetail, description);
+        if (status.equals(ThingStatus.ONLINE)) {
+            scheduleRefresh();
+        } else if (ThingStatus.OFFLINE.equals(status)) {
+            HandlersUtil.cancelSchedule(refreshCacheUpdateSchedule);
         }
     }
 

@@ -9,7 +9,6 @@
 package org.openhab.binding.paradoxalarm.internal.handlers;
 
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -59,7 +58,6 @@ public abstract class EntityBaseHandler extends BaseThingHandler {
                 updateEntity();
                 updateStatus(ThingStatus.ONLINE);
             }
-            createSchedules();
             logger.debug("Finished initializing!");
         } catch (ParadoxBindingException e) {
             logger.error("Unable to retrieve/create Paradox panel instance. Exception: {}", e);
@@ -68,36 +66,17 @@ public abstract class EntityBaseHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (ParadoxAlarmBindingConstants.PARTITION_THING_TYPE_UID.equals(channelUID.getId())
-                || ParadoxAlarmBindingConstants.ZONE_THING_TYPE_UID.equals(channelUID.getId())) {
-            if (command instanceof RefreshType) {
-                updateEntity();
-            }
+        if (command instanceof RefreshType) {
+            updateEntity();
         }
     }
 
     @Override
     public void dispose() {
-        cancelSchedules();
     }
 
     protected void initializeConfig(ThingTypeUID thingTypeUID) {
         config = getConfigAs(EntityConfiguration.class);
-    }
-
-    protected void createSchedules() {
-        createRefreshSchedule();
-    }
-
-    protected void cancelSchedules() {
-        HandlersUtil.cancelSchedule(refreshEntitySchedule);
-    }
-
-    private void createRefreshSchedule() {
-        logger.debug("Scheduling thing update{}. Refresh interval: {}sec.", config.getRefresh());
-        refreshEntitySchedule = scheduler.scheduleWithFixedDelay(() -> {
-            updateEntity();
-        }, INITIAL_DELAY, config.getRefresh(), TimeUnit.SECONDS);
     }
 
     protected abstract void updateEntity();

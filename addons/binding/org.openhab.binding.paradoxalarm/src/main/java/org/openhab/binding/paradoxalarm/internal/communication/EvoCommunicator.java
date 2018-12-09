@@ -179,7 +179,11 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
     }
 
     public byte[] readRAMBlock(int blockNo) throws Exception {
-        return readRAM(blockNo, (byte) 64);
+        if (isOnline) {
+            return readRAM(blockNo, (byte) 64);
+        } else {
+            return new byte[0];
+        }
     }
 
     public byte[] readRAM(int blockNo, byte bytesToRead) throws Exception {

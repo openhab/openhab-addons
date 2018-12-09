@@ -10,9 +10,6 @@ package org.openhab.binding.paradoxalarm.internal.handlers;
 
 import static org.openhab.binding.paradoxalarm.internal.handlers.ParadoxAlarmBindingConstants.*;
 
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -37,20 +34,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ParadoxPanelHandler extends BaseThingHandler {
 
-    private static final int UPDATE_THING_REFRESH_INTERVAL_SEC = 60;
-
-    private static final long INITIAL_DELAY = 0;
-
     private final Logger logger = LoggerFactory.getLogger(ParadoxPanelHandler.class);
-
-    @Nullable
-    ScheduledFuture<?> refreshMemoryMapSchedule;
-
-    @Nullable
-    ScheduledFuture<?> reinitializeParadoxPanelSchedule;
-
-    @Nullable
-    ScheduledFuture<?> updateThingSchedule;
 
     @Nullable
     private ParadoxPanelConfiguration config;
@@ -61,10 +45,8 @@ public class ParadoxPanelHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (ParadoxAlarmBindingConstants.PANEL_THING_TYPE_UID.equals(channelUID.getId())) {
-            if (command instanceof RefreshType) {
-                refreshData();
-            }
+        if (command instanceof RefreshType) {
+            updateThing();
         }
     }
 
@@ -74,7 +56,6 @@ public class ParadoxPanelHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
         try {
             initializeModel();
-            setupSchedule();
             updateThing();
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
@@ -84,46 +65,12 @@ public class ParadoxPanelHandler extends BaseThingHandler {
         logger.debug("Finished initializing!");
     }
 
-    @Override
-    public void dispose() {
-        HandlersUtil.cancelSchedule(refreshMemoryMapSchedule);
-        HandlersUtil.cancelSchedule(reinitializeParadoxPanelSchedule);
-        HandlersUtil.cancelSchedule(updateThingSchedule);
-        super.dispose();
-    }
-
     private void initializeModel() throws Exception, ParadoxBindingException {
         config = getConfigAs(ParadoxPanelConfiguration.class);
         ParadoxPanel.getInstance();
     }
 
-    private void setupSchedule() {
-        scheduleRefreshRuntimeInfo();
-        scheduleUpdateThing();
-    }
-
-    @SuppressWarnings("null")
-    private void scheduleRefreshRuntimeInfo() {
-        logger.debug("Scheduling cache update. Refresh interval: " + config.getRefresh() + "s.");
-        refreshMemoryMapSchedule = scheduler.scheduleWithFixedDelay(() -> {
-            refreshData();
-        }, INITIAL_DELAY, config.getRefresh(), TimeUnit.SECONDS);
-    }
-
-    @SuppressWarnings("null")
-    private void scheduleUpdateThing() {
-        logger.debug("Scheduling update thing. Refresh interval: " + config.getRefresh() + "s.");
-        updateThingSchedule = scheduler.scheduleWithFixedDelay(() -> {
-            try {
-                updateThing();
-            } catch (ParadoxBindingException e) {
-                logger.error("Unable to update thing {} due to exception {}", getThing().getLabel(), e);
-            }
-        }, INITIAL_DELAY, UPDATE_THING_REFRESH_INTERVAL_SEC, TimeUnit.SECONDS);
-
-    }
-
-    private void refreshData() {
+    private void refreshModelData() {
         try {
             ParadoxPanel.getInstance().updateEntitiesStates();
         } catch (Exception e) {
@@ -131,22 +78,27 @@ public class ParadoxPanelHandler extends BaseThingHandler {
         }
     }
 
-    private void updateThing() throws ParadoxBindingException {
-        ParadoxPanel panel = ParadoxPanel.getInstance();
+    private void updateThing() {
+        try {
+            refreshModelData();
 
-        StringType panelState = panel.isOnline() ? STATE_ONLINE : STATE_OFFLINE;
-        updateState(PANEL_STATE_CHANNEL_UID, panelState);
+            ParadoxPanel panel = ParadoxPanel.getInstance();
+            StringType panelState = panel.isOnline() ? STATE_ONLINE : STATE_OFFLINE;
+            updateState(PANEL_STATE_CHANNEL_UID, panelState);
 
-        ParadoxInformation panelInformation = panel.getPanelInformation();
-        if (panelInformation != null) {
-            updateState(PANEL_SERIAL_NUMBER_CHANNEL_UID, new StringType(panelInformation.getSerialNumber()));
-            updateState(PANEL_TYPE_CHANNEL_UID, new StringType(panelInformation.getPanelType().name()));
-            updateState(PANEL_HARDWARE_VERSION_CHANNEL_UID,
-                    new StringType(panelInformation.getHardwareVersion().toString()));
-            updateState(PANEL_APPLICATION_VERSION_CHANNEL_UID,
-                    new StringType(panelInformation.getApplicationVersion().toString()));
-            updateState(PANEL_BOOTLOADER_VERSION_CHANNEL_UID,
-                    new StringType(panelInformation.getBootLoaderVersion().toString()));
+            ParadoxInformation panelInformation = panel.getPanelInformation();
+            if (panelInformation != null) {
+                updateState(PANEL_SERIAL_NUMBER_CHANNEL_UID, new StringType(panelInformation.getSerialNumber()));
+                updateState(PANEL_TYPE_CHANNEL_UID, new StringType(panelInformation.getPanelType().name()));
+                updateState(PANEL_HARDWARE_VERSION_CHANNEL_UID,
+                        new StringType(panelInformation.getHardwareVersion().toString()));
+                updateState(PANEL_APPLICATION_VERSION_CHANNEL_UID,
+                        new StringType(panelInformation.getApplicationVersion().toString()));
+                updateState(PANEL_BOOTLOADER_VERSION_CHANNEL_UID,
+                        new StringType(panelInformation.getBootLoaderVersion().toString()));
+            }
+        } catch (ParadoxBindingException e) {
+            logger.error("Unable to retrieve ParadoxPanel instance. {}", e);
         }
 
     }

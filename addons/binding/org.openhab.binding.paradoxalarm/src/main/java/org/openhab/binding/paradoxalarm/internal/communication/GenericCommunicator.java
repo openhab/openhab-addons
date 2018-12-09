@@ -63,7 +63,7 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
     }
 
     @Override
-    public void close() {
+    public synchronized void close() {
         logger.info("Closing communication to Paradox system");
         try {
             tx.close();
@@ -87,7 +87,7 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
     }
 
     @Override
-    public void loginSequence() throws IOException, InterruptedException {
+    public synchronized void loginSequence() throws IOException, InterruptedException {
         if (socket.isClosed()) {
             reinitializeSocket();
         }
@@ -171,7 +171,7 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
     }
 
     @Override
-    public void logoutSequence() throws IOException {
+    public synchronized void logoutSequence() throws IOException {
         logger.info("Logout packet sent to IP150.");
         byte[] logoutMessage = new byte[] { 0x00, 0x07, 0x05, 0x00, 0x00, 0x00, 0x00 };
         ParadoxIPPacket logoutPacket = new ParadoxIPPacket(logoutMessage, true)
