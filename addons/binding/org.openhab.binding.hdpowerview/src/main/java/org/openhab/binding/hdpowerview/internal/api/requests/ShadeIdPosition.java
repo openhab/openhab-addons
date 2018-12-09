@@ -20,8 +20,8 @@ class ShadeIdPosition {
     int id;
     ShadePosition positions;
 
-    public ShadeIdPosition(int intid, ShadePosition position) {
-        this.id = intid;
+    public ShadeIdPosition(int id, ShadePosition position) {
+        this.id = id;
         this.positions = position;
     }
 }
