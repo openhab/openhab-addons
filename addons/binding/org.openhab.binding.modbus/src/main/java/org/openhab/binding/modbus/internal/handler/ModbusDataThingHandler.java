@@ -11,6 +11,8 @@ package org.openhab.binding.modbus.internal.handler;
 import static org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal.*;
 
 import java.math.BigDecimal;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -91,6 +93,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
 
     private final Logger logger = LoggerFactory.getLogger(ModbusDataThingHandler.class);
 
+    private static final Duration MIN_STATUS_INFO_UPDATE_INTERVAL = Duration.ofSeconds(1);
     private static final Map<String, List<Class<? extends State>>> CHANNEL_ID_TO_ACCEPTED_TYPES = new HashMap<>();
 
     static {
@@ -132,6 +135,10 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
     private volatile boolean childOfEndpoint;
     private volatile @Nullable ModbusPollerThingHandler pollerHandler;
     private volatile Map<String, ChannelUID> channelCache = new HashMap<>();
+
+    private volatile LocalDateTime lastStatusInfoUpdate = LocalDateTime.MIN;
+    private volatile ThingStatusInfo statusInfo = new ThingStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
+            null);
 
     public ModbusDataThingHandler(Thing thing) {
         super(thing);
@@ -233,7 +240,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 logger.error(
                         "Thing {} seems to have writeTransformation but no other write parameters. Since the transformation did not return a JSON for command '{}' (channel {}), this is a configuration error.",
                         getThing().getUID(), command, channelUID);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
+                updateStatusIfChanged(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
                         "Seems to have writeTransformation but no other write parameters. Since the transformation did not return a JSON for command '%s' (channel %s), this is a configuration error",
                         command, channelUID));
                 return null;
@@ -321,7 +328,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             Bridge bridge = getBridge();
             if (bridge == null) {
                 logger.debug("Thing {} '{}' has no bridge", getThing().getUID(), getThing().getLabel());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "No poller bridge");
+                updateStatusIfChanged(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "No poller bridge");
                 return;
             }
             BridgeHandler bridgeHandler = bridge.getHandler();
@@ -346,7 +353,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 if (pollTask == null) {
                     logger.debug("Poller {} '{}' has no poll task -- configuration is changing?", bridge.getUID(),
                             bridge.getLabel());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                    updateStatusIfChanged(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                             String.format("Poller %s '%s' has no poll task", bridge.getUID(), bridge.getLabel()));
                     return;
                 }
@@ -360,11 +367,11 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             validateAndParseWriteParameters();
             validateMustReadOrWrite();
 
-            updateStatus(ThingStatus.ONLINE);
+            updateStatusIfChanged(ThingStatus.ONLINE);
         } catch (ModbusConfigurationException | EndpointNotInitializedException e) {
             logger.debug("Thing {} '{}' initialization error: {}", getThing().getUID(), getThing().getLabel(),
                     e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatusIfChanged(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } finally {
             logger.trace("initialize() of thing {} '{}' finished", thing.getUID(), thing.getLabel());
         }
@@ -391,6 +398,8 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         childOfEndpoint = false;
         pollerHandler = null;
         channelCache = new HashMap<>();
+        lastStatusInfoUpdate = LocalDateTime.MIN;
+        statusInfo = new ThingStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null);
     }
 
     @Override
@@ -707,7 +716,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 tryUpdateState(uid, state);
             });
 
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatusIfChanged(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     String.format("Error (%s) with read. Request: %s. Description: %s. Message: %s",
                             error.getClass().getSimpleName(), request, error.toString(), error.getMessage()));
         }
@@ -744,7 +753,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 tryUpdateState(uid, state);
             });
 
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatusIfChanged(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     String.format("Error (%s) with write. Request: %s. Description: %s. Message: %s",
                             error.getClass().getSimpleName(), request, error.toString(), error.getMessage()));
         }
@@ -758,9 +767,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             return;
         }
         logger.debug("Successful write, matching request {}", request);
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE);
-        }
+        updateStatusIfChanged(ThingStatus.ONLINE);
         ChannelUID lastWriteSuccessUID = getChannelUID(ModbusBindingConstantsInternal.CHANNEL_LAST_WRITE_SUCCESS);
         if (isLinked(lastWriteSuccessUID)) {
             updateState(lastWriteSuccessUID, new DateTimeType());
@@ -833,9 +840,8 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         }
 
         synchronized (this) {
-            if (getThing().getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE);
-            }
+            updateStatusIfChanged(ThingStatus.ONLINE);
+
             // Update channels
             states.forEach((uid, state) -> {
                 tryUpdateState(uid, state);
@@ -856,6 +862,26 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
 
     private ChannelUID getChannelUID(String channelID) {
         return channelCache.computeIfAbsent(channelID, id -> new ChannelUID(getThing().getUID(), id));
+    }
+
+    private void updateStatusIfChanged(ThingStatus status) {
+        updateStatusIfChanged(status, ThingStatusDetail.NONE, null);
+    }
+
+    private void updateStatusIfChanged(ThingStatus status, ThingStatusDetail statusDetail) {
+        updateStatusIfChanged(status, statusDetail, null);
+    }
+
+    private void updateStatusIfChanged(ThingStatus status, ThingStatusDetail statusDetail,
+            @Nullable String description) {
+        ThingStatusInfo newStatusInfo = new ThingStatusInfo(status, statusDetail, description);
+        Duration durationSinceLastUpdate = Duration.between(lastStatusInfoUpdate, LocalDateTime.now());
+        boolean intervalElapsed = MIN_STATUS_INFO_UPDATE_INTERVAL.minus(durationSinceLastUpdate).isNegative();
+        if (statusInfo.getStatus() == ThingStatus.UNKNOWN || !statusInfo.equals(newStatusInfo) || intervalElapsed) {
+            statusInfo = newStatusInfo;
+            lastStatusInfoUpdate = LocalDateTime.now();
+            updateStatus(status, statusDetail);
+        }
     }
 
 }
