@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="km200"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="sensor" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="kmdevice" />
+		</supported-bridge-type-refs>
+		<label>Sensors</label>
+		<description>This thing is representing the sensors.</description>
+		<properties>
+			<property name="root">#system#sensors</property>
+		</properties>
+	</thing-type>
+</thing:thing-descriptions>
