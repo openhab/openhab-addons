@@ -26,6 +26,6 @@ public class HueStatePlug extends AbstractHueState {
 
     @Override
     public String toString() {
-        return "[on: " + on + " reachable: " + reachable;
+        return "on: " + on + ", reachable: " + reachable;
     }
 }

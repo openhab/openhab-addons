@@ -42,6 +42,7 @@ import org.eclipse.smarthome.core.service.ReadyMarker;
 import org.eclipse.smarthome.core.service.ReadyService;
 import org.eclipse.smarthome.core.service.ReadyService.ReadyTracker;
 import org.eclipse.smarthome.core.storage.StorageService;
+import org.openhab.io.hueemulation.internal.RESTApi.HttpMethod;
 import org.openhab.io.hueemulation.internal.dto.HueDataStore;
 import org.openhab.io.hueemulation.internal.dto.HueGroup;
 import org.openhab.io.hueemulation.internal.dto.response.HueResponse;
@@ -102,7 +103,6 @@ public class HueEmulationService implements ReadyTracker {
 
     //// Required services ////
     private @NonNullByDefault({}) HttpService httpService;
-    private @NonNullByDefault({}) ItemRegistry itemRegistry;
     private @NonNullByDefault({}) NetworkAddressService networkAddressService;
     private @NonNullByDefault({}) ReadyService readyService;
     protected @NonNullByDefault({}) HueEmulationUpnpServer discovery;
@@ -127,6 +127,9 @@ public class HueEmulationService implements ReadyTracker {
         protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
             Utils.setHeaders(resp);
             final Path path = Paths.get(req.getRequestURI());
+            final boolean isDebug = req.getParameter("debug") != null;
+            String postBody;
+            final HttpMethod method;
 
             try (PrintWriter httpOut = resp.getWriter()) {
                 // UPNP discovery document
@@ -137,10 +140,43 @@ public class HueEmulationService implements ReadyTracker {
 
                 StringWriter out = new StringWriter();
 
-                resp.setContentType("application/json");
+                if (!isDebug) {
+                    resp.setContentType("application/json");
+                } else {
+                    resp.setContentType("text/plain");
+                }
+
+                try {
+                    method = HttpMethod.valueOf(req.getMethod());
+                } catch (Exception e) {
+                    resp.setStatus(405);
+                    apiServerError(req, out, HueResponse.METHOD_NOT_ALLOWED,
+                            req.getMethod() + " not allowed for this resource");
+                    httpOut.print(out.toString());
+                    return;
+                }
+
+                if (method == HttpMethod.POST || method == HttpMethod.PUT) {
+                    try {
+                        postBody = req.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+                    } catch (IllegalStateException e) {
+                        try {
+                            postBody = new BufferedReader(new InputStreamReader(req.getInputStream())).lines()
+                                    .collect(Collectors.joining("\n"));
+                        } catch (IllegalStateException e2) {
+                            apiServerError(req, out, HueResponse.INTERNAL_ERROR,
+                                    "Could not read http body. Jetty failure.");
+                            resp.setStatus(500);
+                            return;
+                        }
+                    }
+                } else {
+                    postBody = "";
+                }
+
                 int statuscode = 0;
                 try {
-                    statuscode = restAPI.handle(req, out, path);
+                    statuscode = restAPI.handle(method, postBody, out, path, isDebug);
                 } catch (IllegalStateException e) {
                     logger.warn("Unexpected multiple stream access", e);
                     resp.setStatus(500);
@@ -235,7 +271,7 @@ public class HueEmulationService implements ReadyTracker {
     protected void deactivate() {
         readyService.unregisterTracker(this);
         configManagement.stopPairingTimeoutThread();
-        lightItems.close(itemRegistry);
+        lightItems.close();
         userManagement.writeToFile();
         configManagement.writeToFile();
 
@@ -275,8 +311,6 @@ public class HueEmulationService implements ReadyTracker {
             logger.debug("Hue Emulation: Cannot register /description.xml");
         }
 
-        lightItems.fetchItemsAndWatchRegistry(itemRegistry);
-
         configManagement.checkPairingTimeout();
         restartDiscovery();
 
@@ -314,11 +348,11 @@ public class HueEmulationService implements ReadyTracker {
 
     @Reference
     protected void setItemRegistry(ItemRegistry itemRegistry) {
-        this.itemRegistry = itemRegistry;
+        lightItems.setItemRegistry(itemRegistry);
     }
 
     protected void unsetItemRegistry(ItemRegistry itemRegistry) {
-        this.itemRegistry = null;
+        lightItems.setItemRegistry(null);
     }
 
     @Reference
@@ -341,9 +375,10 @@ public class HueEmulationService implements ReadyTracker {
 
     @Reference(policy = ReferencePolicy.DYNAMIC)
     protected void setStorageService(StorageService storageService) {
-        userManagement.loadUsersFromFile(storageService.getStorage("hue.emulation.users"));
-        lightItems.loadMappingFromFile(storageService.getStorage("hue.emulation.lights"));
-        configManagement.loadConfigFromFile(storageService.getStorage("hue.emulation.config"));
+        ClassLoader loader = this.getClass().getClassLoader();
+        userManagement.loadUsersFromFile(storageService.getStorage("hue.emulation.users", loader));
+        lightItems.loadMappingFromFile(storageService.getStorage("hue.emulation.lights", loader));
+        configManagement.loadConfigFromFile(storageService.getStorage("hue.emulation.config", loader));
     }
 
     protected void unsetStorageService(StorageService storageService) {

@@ -8,8 +8,6 @@
  */
 package org.openhab.io.hueemulation.internal.dto;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
@@ -28,7 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class HueDataStore {
     public HueAuthorizedConfig config = new HueAuthorizedConfig();
     public TreeMap<Integer, HueDevice> lights = new TreeMap<>();
-    public Map<Integer, HueGroup> groups = new TreeMap<>();
+    public TreeMap<Integer, HueGroup> groups = new TreeMap<>();
     public Map<Integer, Dummy> scenes = new TreeMap<>();
     public Map<Integer, Dummy> rules = new TreeMap<>();
     public Map<Integer, Dummy> sensors = new TreeMap<>();
@@ -36,32 +34,24 @@ public class HueDataStore {
     public Map<Integer, Dummy> resourcelinks = Collections.emptyMap();
 
     public HueDataStore() {
+        resetGroupsAndLights();
+    }
+
+    public void resetGroupsAndLights() {
+        groups.clear();
+        lights.clear();
         // There must be a group 0 all the time!
         groups.put(0, new HueGroup("All lights", null, Collections.emptyMap()));
     }
 
-    public static class Dummy {
+    public int generateNextLightHueID() {
+        return lights.size() == 0 ? 1 : new Integer(lights.lastKey().intValue() + 1);
     }
 
-    public static class UserAuth {
-        public String name = "";
-        public String createDate = "";
-        public String lastUseDate = "";
+    public int generateNextGroupHueID() {
+        return groups.size() == 0 ? 1 : new Integer(groups.lastKey().intValue() + 1);
+    }
 
-        /**
-         * For de-serialization.
-         */
-        public UserAuth() {
-        }
-
-        /**
-         * Create a new user
-         *
-         * @param name Visible name
-         */
-        public UserAuth(String name) {
-            this.name = name;
-            this.createDate = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-        }
+    public static class Dummy {
     }
 }
