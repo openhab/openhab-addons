@@ -129,39 +129,6 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler {
     }
 
     @Override
-    public void channelLinked(ChannelUID channelUID) {
-        String channelId = channelUID.getIdWithoutGroup();
-        logger.debug("Handle channel linked for channel '{}'", channelId);
-        switch (channelId) {
-            case CHANNEL_TEMPLATE:
-                String ain = getIdentifier();
-                if (ain != null) {
-                    addLinkedTemplateChannel(ain, channelUID);
-                }
-                updateState(CHANNEL_TEMPLATE, UnDefType.UNDEF);
-                break;
-            default:
-                super.channelLinked(channelUID);
-                break;
-        }
-    }
-
-    @Override
-    public void channelUnlinked(ChannelUID channelUID) {
-        String channelId = channelUID.getIdWithoutGroup();
-        logger.debug("Handle channel unlinked for channel '{}'", channelId);
-        switch (channelId) {
-            case CHANNEL_TEMPLATE:
-                String ain = getIdentifier();
-                if (ain != null) {
-                    removeLinkedTemplateChannel(ain);
-                }
-                break;
-        }
-        super.channelUnlinked(channelUID);
-    }
-
-    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         String channelId = channelUID.getIdWithoutGroup();
         logger.debug("Handle command '{}' for channel {}", command, channelId);
@@ -188,11 +155,11 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler {
             case CHANNEL_VOLTAGE:
                 logger.debug("Channel {} is a read-only channel and cannot handle command '{}'", channelId, command);
                 break;
-            case CHANNEL_TEMPLATE:
+            case CHANNEL_APPLY_TEMPLATE:
                 if (command instanceof StringType) {
                     fritzBox.applyTempalte(command.toString());
                 }
-                updateState(CHANNEL_TEMPLATE, UnDefType.UNDEF);
+                updateState(CHANNEL_APPLY_TEMPLATE, UnDefType.UNDEF);
                 break;
             case CHANNEL_OUTLET:
                 if (command instanceof OnOffType) {

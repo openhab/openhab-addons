@@ -34,7 +34,7 @@
 		<state pattern="%s" readOnly="true" />
 	</channel-type>
 
-	<channel-type id="template">
+	<channel-type id="apply_template" advanced="true">
 		<item-type>String</item-type>
 		<label>Template</label>
 		<description>Apply template for device(s).</description>

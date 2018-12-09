@@ -35,7 +35,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.avmfritz.internal.ahamodel.AVMFritzBaseModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.SwitchModel;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaWebInterface;
@@ -87,47 +86,6 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler {
     }
 
     @Override
-    public void channelLinked(ChannelUID channelUID) {
-        String channelId = channelUID.getIdWithoutGroup();
-        logger.debug("Handle channel linked for channel '{}'", channelId);
-        switch (channelId) {
-            case CHANNEL_TEMPLATE:
-                String ain = getIdentifier();
-                Bridge bridge = getBridge();
-                if (ain != null && bridge != null) {
-                    BridgeHandler bridgeHandler = bridge.getHandler();
-                    if (bridgeHandler != null && bridgeHandler instanceof AVMFritzBaseBridgeHandler) {
-                        ((AVMFritzBaseBridgeHandler) bridgeHandler).addLinkedTemplateChannel(ain, channelUID);
-                    }
-                }
-                updateState(CHANNEL_TEMPLATE, UnDefType.UNDEF);
-                break;
-            default:
-                super.channelLinked(channelUID);
-                break;
-        }
-    }
-
-    @Override
-    public void channelUnlinked(ChannelUID channelUID) {
-        String channelId = channelUID.getIdWithoutGroup();
-        logger.debug("Handle channel unlinked for channel '{}'", channelId);
-        switch (channelId) {
-            case CHANNEL_TEMPLATE:
-                String ain = getIdentifier();
-                Bridge bridge = getBridge();
-                if (ain != null && bridge != null) {
-                    BridgeHandler bridgeHandler = bridge.getHandler();
-                    if (bridgeHandler != null && bridgeHandler instanceof AVMFritzBaseBridgeHandler) {
-                        ((AVMFritzBaseBridgeHandler) bridgeHandler).removeLinkedTemplateChannel(ain);
-                    }
-                }
-                break;
-        }
-        super.channelUnlinked(channelUID);
-    }
-
-    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         String channelId = channelUID.getIdWithoutGroup();
         logger.debug("Handle command '{}' for channel {}", command, channelId);
@@ -169,12 +127,6 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler {
             case CHANNEL_CONTACT_STATE:
             case CHANNEL_LAST_CHANGE:
                 logger.debug("Channel {} is a read-only channel and cannot handle command '{}'", channelId, command);
-                break;
-            case CHANNEL_TEMPLATE:
-                if (command instanceof StringType) {
-                    fritzBox.applyTempalte(command.toString());
-                }
-                updateState(CHANNEL_TEMPLATE, UnDefType.UNDEF);
                 break;
             case CHANNEL_OUTLET:
                 if (command instanceof OnOffType) {

@@ -22,9 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -105,9 +103,9 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     private final AVMFritzDynamicStateDescriptionProvider stateDescriptionProvider;
 
     /**
-     * keeps track of all linked template channels (contains a pair of AIN / {@link ChannelUID})
+     * keeps track of the {@link ChannelUID} for the 'apply_tamplate' {@link Channel}
      */
-    private final Map<String, ChannelUID> linkedTemplateChannels = new ConcurrentHashMap<>();
+    private final ChannelUID applyTemplateChannelUID;
 
     /**
      * Constructor
@@ -119,6 +117,8 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
         super(bridge);
         this.httpClient = httpClient;
         this.stateDescriptionProvider = stateDescriptionProvider;
+
+        applyTemplateChannelUID = new ChannelUID(bridge.getUID(), CHANNEL_APPLY_TEMPLATE);
     }
 
     /**
@@ -180,7 +180,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
             logger.debug("Poll FRITZ!Box for updates {}", getThing().getUID());
             FritzAhaUpdateCallback updateCallback = new FritzAhaUpdateCallback(webInterface, this);
             webInterface.asyncGet(updateCallback);
-            if (!linkedTemplateChannels.isEmpty()) {
+            if (isLinked(applyTemplateChannelUID)) {
                 logger.debug("Poll FRITZ!Box for templates {}", getThing().getUID());
                 FritzAhaUpdateTemplatesCallback templateCallback = new FritzAhaUpdateTemplatesCallback(webInterface,
                         this);
@@ -202,52 +202,17 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Called from {@link AVMFritzBaseThingHandler} to add a linked template channel (pair of AIN / {@link ChannelUID}).
-     *
-     * @param ain AIN of the device
-     * @param channelUID {@link ChannelUID} of the linked channel
-     */
-    public void addLinkedTemplateChannel(String ain, ChannelUID channelUID) {
-        linkedTemplateChannels.put(ain, channelUID);
-    }
-
-    /**
-     * Called from {@link AVMFritzBaseThingHandler} to remove a linked template channel.
-     *
-     * @param ain AIN of the device
-     */
-    public void removeLinkedTemplateChannel(String ain) {
-        linkedTemplateChannels.remove(ain);
-    }
-
-    /**
      * Called from {@link FritzAhaApplyTemplateCallback} to provide new templates for things.
      *
      * @param templateList list of template models
      */
     public void addTemplateList(ArrayList<TemplateModel> templateList) {
-        Map<ChannelUID, List<StateOption>> channelStateOptionsMap = new HashMap<>();
+        List<StateOption> options = new ArrayList<>();
         for (TemplateModel template : templateList) {
             logger.debug("Process template model: {}", template);
-            for (org.openhab.binding.avmfritz.internal.ahamodel.templates.DeviceModel device : template.getDeviceList()
-                    .getDevices()) {
-                String ain = device.getIdentifier();
-                if (linkedTemplateChannels.containsKey(ain)) {
-                    StateOption stateOption = new StateOption(template.getIdentifier(), template.getName());
-                    ChannelUID channelUID = linkedTemplateChannels.get(ain);
-                    logger.debug("Add template '{}' ('{}') to state options for channel '{}'", template.getName(),
-                            template.getIdentifier(), channelUID);
-                    if (channelStateOptionsMap.containsKey(channelUID)) {
-                        channelStateOptionsMap.get(channelUID).add(stateOption);
-                    } else {
-                        List<StateOption> stateOptions = new ArrayList<>();
-                        stateOptions.add(stateOption);
-                        channelStateOptionsMap.put(channelUID, stateOptions);
-                    }
-                }
-            }
+            options.add(new StateOption(template.getIdentifier(), template.getName()));
         }
-        stateDescriptionProvider.setStateOptions(channelStateOptionsMap);
+        stateDescriptionProvider.setStateOptions(applyTemplateChannelUID, options);
     }
 
     /**
@@ -511,9 +476,23 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Handle command '{}' for channel {}", command, channelUID);
-        if (command instanceof RefreshType) {
+        String channelId = channelUID.getIdWithoutGroup();
+        logger.debug("Handle command '{}' for channel {}", command, channelId);
+        if (command == RefreshType.REFRESH) {
             handleRefreshCommand();
+        }
+        FritzAhaWebInterface fritzBox = getWebInterface();
+        if (fritzBox == null) {
+            logger.debug("Cannot handle command '{}' because connection is missing", command);
+            return;
+        }
+        switch (channelId) {
+            case CHANNEL_APPLY_TEMPLATE:
+                if (command instanceof StringType) {
+                    fritzBox.applyTempalte(command.toString());
+                }
+                updateState(CHANNEL_APPLY_TEMPLATE, UnDefType.UNDEF);
+                break;
         }
     }
 

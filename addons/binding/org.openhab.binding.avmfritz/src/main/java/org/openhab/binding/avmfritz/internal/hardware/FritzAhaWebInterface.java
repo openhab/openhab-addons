@@ -10,8 +10,8 @@ package org.openhab.binding.avmfritz.internal.hardware;
 
 import static org.eclipse.jetty.http.HttpMethod.*;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ExecutionException;
@@ -181,13 +181,7 @@ public class FritzAhaWebInterface {
             logger.error("This version of Java does not support MD5 hashing");
             return "";
         }
-        byte[] handshakeHash;
-        try {
-            handshakeHash = md5.digest(handshake.getBytes("UTF-16LE"));
-        } catch (UnsupportedEncodingException e) {
-            logger.error("This version of Java does not understand UTF-16LE encoding");
-            return "";
-        }
+        byte[] handshakeHash = md5.digest(handshake.getBytes(StandardCharsets.UTF_16LE));
         String response = challenge.concat("-");
         for (byte handshakeByte : handshakeHash) {
             response = response.concat(String.format("%02x", handshakeByte));
@@ -296,7 +290,7 @@ public class FritzAhaWebInterface {
         FritzAhaContentExchange postExchange = new FritzAhaContentExchange(callback);
         httpClient.newRequest(getURL(path)).timeout(config.getAsyncTimeout(), TimeUnit.SECONDS).method(POST)
                 .onResponseSuccess(postExchange).onResponseFailure(postExchange) // .onComplete(postExchange)
-                .content(new StringContentProvider(addSID(args), "UTF-8")).send(postExchange);
+                .content(new StringContentProvider(addSID(args), StandardCharsets.UTF_8)).send(postExchange);
         return postExchange;
     }
 

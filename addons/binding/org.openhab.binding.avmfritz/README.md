@@ -107,7 +107,7 @@ If correct credentials are set in the bridge configuration, connected AHA device
 | mode            | String                   | States the mode of the device (MANUAL/AUTOMATIC/VACATION)                                              | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E, FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT    |
 | locked          | Contact                  | Device is locked for switching over external sources (OPEN/CLOSE)                                      | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E, FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT    |
 | device_locked   | Contact                  | Device is locked for switching manually (OPEN/CLOSE) - FRITZ!OS 6.90                                   | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E, FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT    |
-| template        | String                   | Apply template for device(s) (channel's state options contains available templates) - FRITZ!OS 7       | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E, FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT    |
+| apply_template  | String                   | Apply template for device(s) (channel's state options contains available templates) - FRITZ!OS 7       | FRITZ!Box, FRITZ!Powerline 546E                                                                     |
 | temperature     | Number:Temperature       | Current measured temperature                                                                           | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!DECT Repeater 100, FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT |
 | energy          | Number:Energy            | Accumulated energy consumption                                                                         | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E                                                |
 | power           | Number:Power             | Current power consumption                                                                              | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E                                                |
@@ -150,12 +150,13 @@ Bridge avmfritz:fritzbox:1 "FRITZ!Box" [ ipAddress="192.168.x.x", password="xxx"
 demo.items:
 
 ```java
+String ApplyTemplate "Apply template" { channel="avmfritz:1:xxxxxxxxxxxx:apply_template" }
+
 Switch Outlet1 "Switchable outlet" { channel="avmfritz:FRITZ_DECT_200:1:xxxxxxxxxxxx:outlet" }
 Number:Temperature Temperature1 "Current measured temperature [%.1f %unit%]" { channel="avmfritz:FRITZ_DECT_200:1:xxxxxxxxxxxx:temperature" }
 Number:Energy Energy1 "Accumulated energy consumption [%.3f kWh]" { channel="avmfritz:FRITZ_DECT_200:1:xxxxxxxxxxxx:energy" }
 Number:Power Power1 "Current power consumption [%.2f %unit%]" { channel="avmfritz:FRITZ_DECT_200:1:xxxxxxxxxxxx:power" }
 Number:ElectricPotential Voltage1 "Current voltage [%.1f %unit%]" { channel="avmfritz:FRITZ_DECT_200:1:xxxxxxxxxxxx:voltage" }
-String Template1 "Apply template" { channel="avmfritz:FRITZ_DECT_200:1:xxxxxxxxxxxx:template" }
 
 Switch Outlet2 "Switchable outlet" { channel="avmfritz:FRITZ_Powerline_546E:1:yy_yy_yy_yy_yy_yy:outlet" }
 
@@ -164,7 +165,6 @@ Number:Temperature COMETDECTSetTemperature "Thermostat temperature set point [%.
 String COMETDECTRadiatorMode "Radiator mode [%s]" { channel="avmfritz:Comet_DECT:1:aaaaaabbbbbb:radiator_mode" }
 Number COMETDECTBattery "Battery level" { channel="avmfritz:Comet_DECT:1:aaaaaabbbbbb:battery_level" }
 Switch COMETDECTBatteryLow "Battery low" { channel="avmfritz:Comet_DECT:1:aaaaaabbbbbb:battery_low" }
-String COMETDECTTemplate "Apply template" { channel="avmfritz:Comet_DECT:1:aaaaaabbbbbb:template" }
 
 Contact HANFUNContactState "Status [%s]" { channel="avmfritz:HAN_FUN_CONTACT:1:zzzzzzzzzzzz_1:contact_state" }
 
@@ -180,35 +180,37 @@ demo.sitemap:
 ```java
 sitemap demo label="Main Menu" {
 
-	Frame label="FRITZ!DECT 200 switchable outlet" {
-		Switch item=Outlet1 icon="poweroutlet"
-		Text item=Temperature1 icon="temperature"
-		Text item=Energy1 icon="energy"
-		Text item=Power1 icon="energy"
-		Text item=Voltage1 icon="energy"
-		Selection item=Template1
-	}
+    Frame label="FRITZ!Box" {
+        Seelction item=ApplyTemplate
+    }
 
-	Frame label="FRITZ!Powerline 546E switchable outlet" {
-		Switch item=Outlet2 icon="poweroutlet"
-	}
+    Frame label="FRITZ!DECT 200 switchable outlet" {
+        Switch item=Outlet1 icon="poweroutlet"
+        Text item=Temperature1 icon="temperature"
+        Text item=Energy1 icon="energy"
+        Text item=Power1 icon="energy"
+        Text item=Voltage1 icon="energy"
+    }
 
-	Frame label="Comet DECT heating thermostat" {
-		Text item=COMETDECTTemperature icon="temperature"
-		Setpoint item=COMETDECTSetTemperature minValue=8.0 maxValue=28.0 step=0.5 icon="temperature"
-		Selection item=COMETDECTRadiatorMode mappings=["ON"="ON", "OFF"="OFF", "COMFORT"="COMFORT", "ECO"="ECO", "BOOST"="BOOST"] icon="heating"
-		Text item=COMETDECTBattery icon="battery"
-		Switch item=COMETDECTBatteryLow icon="lowbattery"
-		Selection item=COMETDECTTemplate
-	}
-	 
+    Frame label="FRITZ!Powerline 546E switchable outlet" {
+    Switch item=Outlet2 icon="poweroutlet"
+    }
+
+    Frame label="Comet DECT heating thermostat" {
+        Text item=COMETDECTTemperature icon="temperature"
+        Setpoint item=COMETDECTSetTemperature minValue=8.0 maxValue=28.0 step=0.5 icon="temperature"
+        Selection item=COMETDECTRadiatorMode mappings=["ON"="ON", "OFF"="OFF", "COMFORT"="COMFORT", "ECO"="ECO", "BOOST"="BOOST"] icon="heating"
+        Text item=COMETDECTBattery icon="battery"
+        Switch item=COMETDECTBatteryLow icon="lowbattery"
+    }
+ 
     Frame label="HAN-FUN Contact" {
         Text item=HANFUNContactState
     }
-	
-	Frame label="HAN-FUN Switch" {
-	    Text item=HANFUNSwitchLastChanged
-	}
+
+    Frame label="HAN-FUN Switch" {
+        Text item=HANFUNSwitchLastChanged
+    }
 }
 ```
 
