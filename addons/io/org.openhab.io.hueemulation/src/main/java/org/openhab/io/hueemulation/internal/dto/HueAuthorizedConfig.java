@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.io.hueemulation.internal.dto.HueDataStore.UserAuth;
 
 /**
  * Hue API config object
@@ -48,5 +47,5 @@ public class HueAuthorizedConfig extends HueUnauthorizedConfig {
     public String proxyaddress = "none";
     public int proxyport = 0;
 
-    public final Map<String, UserAuth> whitelist = new TreeMap<>();
+    public final Map<String, HueUserAuth> whitelist = new TreeMap<>();
 }
