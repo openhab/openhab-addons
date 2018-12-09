@@ -218,6 +218,20 @@ public class HueEmulationServiceOSGiTest extends JavaOSGiTest {
     }
 
     @Test
+    public void DebugTest() throws InterruptedException, ExecutionException, TimeoutException, IOException {
+        HttpURLConnection c;
+        String body;
+
+        hueService.ds.config.whitelist.put("testuser", new HueUserAuth("testUserLabel"));
+        hueService.ds.lights.put(2, new HueDevice(item, "color", DeviceType.ColorType));
+
+        c = (HttpURLConnection) new URL(host + "/api/testuser/lights?debug=true").openConnection();
+        assertThat(c.getResponseCode(), is(200));
+        body = read(c);
+        assertThat(body, containsString("Exposed lights"));
+    }
+
+    @Test
     public void LightGroupItemSwitchTest()
             throws InterruptedException, ExecutionException, TimeoutException, IOException {
         HttpURLConnection c;
