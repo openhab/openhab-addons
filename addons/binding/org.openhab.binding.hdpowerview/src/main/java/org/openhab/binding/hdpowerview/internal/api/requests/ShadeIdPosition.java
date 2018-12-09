@@ -17,10 +17,10 @@ import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
  */
 class ShadeIdPosition {
 
-    String id;
+    int id;
     ShadePosition positions;
 
-    public ShadeIdPosition(String id, ShadePosition position) {
+    public ShadeIdPosition(int id, ShadePosition position) {
         this.id = id;
         this.positions = position;
     }
