@@ -90,12 +90,10 @@ public class ZoneDiscoveryService extends AbstractDiscoveryService {
             Map<String, Object> properties = new HashMap<>();
             properties.put(CONFIG_ZONE, zoneName);
 
-            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid)
-                    .withProperties(properties)
-                    .withLabel(state.name + " " + zoneName)
-                    .withBridge(bridgeUid)
-                    .build();
-            
+            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                    .withLabel(state.name + " " + zoneName).withBridge(bridgeUid)
+                    .withRepresentationProperty(CONFIG_ZONE).build();
+
             thingDiscovered(discoveryResult);
         }
     }
