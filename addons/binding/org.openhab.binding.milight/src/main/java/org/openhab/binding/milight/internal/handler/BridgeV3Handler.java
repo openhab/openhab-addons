@@ -72,7 +72,7 @@ public class BridgeV3Handler extends AbstractBridgeHandler {
             socket = new DatagramSocket(null);
             socket.setReuseAddress(true);
             socket.setBroadcast(true);
-            socket.bind(new InetSocketAddress(MilightBindingConstants.PORT_DISCOVER));
+            socket.bind(null);
         } catch (SocketException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }

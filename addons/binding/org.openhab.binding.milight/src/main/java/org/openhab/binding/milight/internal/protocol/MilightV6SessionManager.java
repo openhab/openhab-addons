@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -110,7 +109,7 @@ public class MilightV6SessionManager implements Runnable, Closeable {
          * SESSION_VALID_KEEP_ALIVE will be reported in the interval, given to the constructor of
          * {@link MilightV6SessionManager}.
          *
-         * @param state The new state
+         * @param state   The new state
          * @param address The remote IP address. Only guaranteed to be non null in the SESSION_VALID* states.
          */
         void sessionStateChanged(SessionState state, @Nullable InetAddress address);
@@ -536,7 +535,7 @@ public class MilightV6SessionManager implements Runnable, Closeable {
             datagramSocket.setBroadcast(true);
             datagramSocket.setReuseAddress(true);
             datagramSocket.setSoTimeout(150);
-            datagramSocket.bind(new InetSocketAddress(port));
+            datagramSocket.bind(null);
 
             if (ProtocolConstants.DEBUG_SESSION) {
                 logger.debug("MilightCommunicationV6 receive thread ready");
