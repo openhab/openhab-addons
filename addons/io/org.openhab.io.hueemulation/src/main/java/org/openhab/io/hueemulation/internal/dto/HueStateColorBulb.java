@@ -32,7 +32,14 @@ public class HueStateColorBulb extends HueStateBulb {
 
     /** time for transition in centiseconds. */
     public int transitiontime;
-    public String colormode = "ct";
+
+    public static enum ColorMode {
+        ct,
+        hs,
+        xy
+    }
+
+    public ColorMode colormode = ColorMode.ct;
 
     protected HueStateColorBulb() {
     }
@@ -40,6 +47,7 @@ public class HueStateColorBulb extends HueStateBulb {
     public HueStateColorBulb(boolean on) {
         super(on);
         this.bri = on ? MAX_BRI : 0;
+        colormode = ColorMode.ct;
     }
 
     /**
@@ -50,6 +58,7 @@ public class HueStateColorBulb extends HueStateBulb {
      */
     public HueStateColorBulb(PercentType brightness, boolean on) {
         super(brightness, on);
+        colormode = ColorMode.ct;
     }
 
     /**
@@ -62,6 +71,7 @@ public class HueStateColorBulb extends HueStateBulb {
         this.hue = hsb.getHue().intValue() * MAX_HUE / 360;
         this.sat = hsb.getSaturation().intValue() * MAX_SAT / 100;
         this.bri = hsb.getBrightness().intValue() * MAX_BRI / 100;
+        colormode = this.sat > 0 ? ColorMode.hs : ColorMode.ct;
     }
 
     /**
@@ -70,13 +80,15 @@ public class HueStateColorBulb extends HueStateBulb {
     public HSBType toHSBType() {
         int bri = this.bri * 100 / MAX_BRI;
         int sat = this.sat * 100 / MAX_SAT;
-        int hue = this.sat * 360 / MAX_HUE;
+        int hue = this.hue * 360 / MAX_HUE;
 
         if (!this.on) {
-            return new HSBType(new DecimalType(hue), new PercentType(sat), new PercentType(0));
-        } else {
-            return new HSBType(new DecimalType(hue), new PercentType(sat), new PercentType(bri));
+            bri = 0;
         }
+        if (colormode == ColorMode.ct) {
+            sat = 0;
+        }
+        return new HSBType(new DecimalType(hue), new PercentType(sat), new PercentType(bri));
     }
 
     @Override
@@ -86,7 +98,8 @@ public class HueStateColorBulb extends HueStateBulb {
             xyString += d + " ";
         }
         xyString += "}";
-        return "[on: " + on + " bri: " + bri + " hue: " + hue + " sat: " + sat + " xy: " + xyString + " ct: " + ct
-                + " alert: " + alert + " effect: " + effect + " colormode: " + colormode + " reachable: " + reachable;
+        return "on: " + on + ", brightness: " + bri + ", hue: " + hue + ", sat: " + sat + ", xy: " + xyString + ", ct: "
+                + ct + ", alert: " + alert + ", effect: " + effect + ", colormode: " + colormode + ", reachable: "
+                + reachable;
     }
 }
