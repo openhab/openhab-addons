@@ -680,7 +680,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
 
                     default:
                         try {
-                            logger.debug("Channel params: {}", params);
+                            logger.debug("Update channel state, channel params: {}", params);
                             Converter<WSResourceValue, Type> converter = ConverterFactory.getInstance()
                                     .getConverter(value.getClass(), channel.getAcceptedItemType());
                             State state = (State) converter.convertFromResourceValue(value,
@@ -706,6 +706,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 }
             } else {
                 lastUpdate.put(value.getResourceID(), LocalDateTime.now());
+                updateTriggers(value.getResourceID(), Duration.ZERO);
             }
         }
     }
@@ -717,18 +718,22 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 if (params.getChannelTypeId() != null) {
                     switch (params.getChannelTypeId()) {
                         case CHANNEL_TYPE_PUSH_BUTTON_TRIGGER:
-                            ButtonPressDurationDetector button = new ButtonPressDurationDetector(duration,
-                                    params.getShortPressMaxTime(), params.getLongPressMaxTime(),
-                                    params.getExtraLongPressMaxTime());
-                            logger.debug("resourceId={}, ButtonPressDurationDetector={}", resourceId, button);
-                            if (button.isShortPress()) {
-                                triggerChannel(channel.getUID().getId(), EVENT_SHORT_PRESS);
-                            } else if (button.isLongPress()) {
-                                triggerChannel(channel.getUID().getId(), EVENT_LONG_PRESS);
-                            } else if (button.isExtraLongPress()) {
-                                triggerChannel(channel.getUID().getId(), EVENT_EXTRA_LONG_PRESS);
+                            logger.debug("Update trigger channel, channel params: {}", params);
+                            if (duration.toMillis() == 0) {
+                                triggerChannel(channel.getUID().getId(), EVENT_PRESSED);
+                            } else {
+                                triggerChannel(channel.getUID().getId(), EVENT_RELEASED);
+                                triggerChannel(channel.getUID().getId(), String.valueOf(duration.toMillis()));
+                                ButtonPressDurationDetector button = new ButtonPressDurationDetector(duration,
+                                        params.getShortPressMaxTime(), params.getLongPressMaxTime());
+                                logger.debug("resourceId={}, ButtonPressDurationDetector={}", resourceId, button);
+                                if (button.isShortPress()) {
+                                    triggerChannel(channel.getUID().getId(), EVENT_SHORT_PRESS);
+                                } else if (button.isLongPress()) {
+                                    triggerChannel(channel.getUID().getId(), EVENT_LONG_PRESS);
+                                }
+                                break;
                             }
-                            break;
                     }
                 }
             }

@@ -64,7 +64,6 @@ public class IhcBindingConstants {
     public final static String PARAM_CMD_TO_REACT = "commandToReact";
     public static final String PARAM_SERIAL_NUMBER = "serialNumber";
     public static final String PARAM_PULSE_WIDTH = "pulseWidth";
-    public final static String PARAM_EXTRA_LONG_PRESS_MAX_TIME = "extraLongPressMaxTime";
     public final static String PARAM_LONG_PRESS_MAX_TIME = "longPressMaxTime";
     public final static String PARAM_SHORT_PRESS_MAX_TIME = "shortPressMaxTime";
     public static final String PARAM_INVERTED = "inverted";
@@ -73,7 +72,8 @@ public class IhcBindingConstants {
     public final static String DIRECTION_WRITE_ONLY = "WriteOnly";
     public final static String DIRECTION_READ_ONLY = "ReadOnly";
 
+    public final static String EVENT_PRESSED = "PRESSED";
+    public final static String EVENT_RELEASED = "RELEASED";
     public final static String EVENT_SHORT_PRESS = "SHORT_PRESS";
     public final static String EVENT_LONG_PRESS = "LONG_PRESS";
-    public final static String EVENT_EXTRA_LONG_PRESS = "EXTRA_LONG_PRESS";
 }

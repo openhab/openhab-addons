@@ -23,11 +23,9 @@ public class ButtonPressDurationDetector {
 
     private boolean shortPress;
     private boolean longPress;
-    private boolean extraLongPress;
     private Duration duration;
     private long short_press_max_time;
     private long long_press_max_time;
-    private long extra_long_press_max_time;
 
     public boolean isShortPress() {
         return shortPress;
@@ -37,16 +35,10 @@ public class ButtonPressDurationDetector {
         return longPress;
     }
 
-    public boolean isExtraLongPress() {
-        return extraLongPress;
-    }
-
-    public ButtonPressDurationDetector(Duration duration, long short_press_max_time, long long_press_max_time,
-            long extra_long_press_max_time) {
+    public ButtonPressDurationDetector(Duration duration, long short_press_max_time, long long_press_max_time) {
         this.duration = duration;
         this.short_press_max_time = short_press_max_time;
         this.long_press_max_time = long_press_max_time;
-        this.extra_long_press_max_time = extra_long_press_max_time;
 
         calculate();
     }
@@ -60,11 +52,8 @@ public class ButtonPressDurationDetector {
         } else if (isBetween(duration.toMillis(), short_press_max_time, long_press_max_time)) {
             logger.debug("Button press duration > {}ms and <= {}ms", short_press_max_time, long_press_max_time);
             longPress = true;
-        } else if (isBetween(duration.toMillis(), long_press_max_time, extra_long_press_max_time)) {
-            logger.debug("Button press duration > {}ms and <= {}ms", long_press_max_time, extra_long_press_max_time);
-            extraLongPress = true;
         } else {
-            logger.debug("Button press duration > {}ms, ignore it", extra_long_press_max_time);
+            logger.debug("Button press duration > {}ms, ignore it", long_press_max_time);
         }
     }
 
@@ -74,7 +63,7 @@ public class ButtonPressDurationDetector {
 
     @Override
     public String toString() {
-        return String.format("duration=%sms, shortPress=%b, longPress=%b, extraLongPress=%b", duration.toMillis(),
-                shortPress, longPress, extraLongPress);
+        return String.format("[ duration=%sms, shortPress=%b, longPress=%b ]", duration.toMillis(), shortPress,
+                longPress);
     }
 }

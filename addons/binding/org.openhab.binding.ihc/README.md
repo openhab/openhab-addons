@@ -59,7 +59,7 @@ List of supported channel types.
 | rollershutter-channel             | RollerShutter | Generic rollershutter channel.                                                                  | resourceId, direction, commandToReact, pulseWidth                      |
 | rf-device-low-battery-channel     | Switch        | RF device low battery warning.                                                                  | serialNumber                                                           |
 | rf-device-signal-strength-channel | String        | RF device signal strength.                                                                      | serialNumber                                                           |
-| push-button-trigger               | Trigger       | Push button trigger channel. Possible trigger event: SHORT_PRESS, LONG_PRESS, EXTRA_LONG_PRESS. | resourceId, shortPressMaxTime, longPressMaxTime, extraLongPressMaxTime |
+| push-button-trigger               | Trigger       | Push button trigger channel. Possible trigger events: PRESSED, RELEASED, SHORT_PRESS, LONG_PRESS and value as a duration in milliseconds. | resourceId, shortPressMaxTime, longPressMaxTime |
 
 Channel parameters:
 
@@ -73,7 +73,6 @@ Channel parameters:
 | serialNumber          | Integer      | yes      |               | Serial number of RF device in decimal format.                                                            |
 | shortPressMaxTime     | Integer      | yes      | 1000          | Short press max time in milliseconds.                                                                    |
 | longPressMaxTime      | Integer      | yes      | 2000          | Long press max time in milliseconds.                                                                     |
-| extraLongPressMaxTime | Integer      | yes      | 4000          | Extra long press max time in milliseconds.                                                               |
 
 There are several ways to find the correct resource id's:
 
@@ -112,7 +111,7 @@ ihc:controller:elko [ ip="192.168.1.2", username="openhab", password="secret", t
         Type contact-channel               : my_test_contact "My Test Contact"         [ resourceId=3988827 ]
         Type number-channel                : my_test_number  "My Test Number"          [ resourceId=3988827, direction="ReadOnly" ]
         Type rf-device-low-battery-channel : my_low_battery  "My Low Battery Warning"  [ serialNumber=123456789 ]
-        Type push-button-trigger           : my_test_trigger                           [ resourceId=3988827, shortPressMaxTime=1000, longPressMaxTime=2000, extraLongPressMaxTime=4000 ]
+        Type push-button-trigger           : my_test_trigger "My Test Trigger"         [ resourceId=3988827, shortPressMaxTime=1000, longPressMaxTime=2000 ]
         
         Type dimmer-channel                : inc_resource        "Increase resource"   [ resourceId=9000001, direction="WriteOnly", commandToReact="INCREASE", pulseWidth=300 ]
         Type dimmer-channel                : dec_resource        "Decrease resource"   [ resourceId=9000002, direction="WriteOnly", commandToReact="DECREASE", pulseWidth=300 ]
@@ -146,6 +145,19 @@ then
     logInfo("Test","Long press detected")
 end
 
+rule "My test trigger test rule 2"
+when
+    Channel 'ihc:controller:elko:my_test_trigger' triggered 
+then
+    val String e = receivedEvent.toString.split(' ').get(2).toString
+    switch e {
+        case "PRESSED":             { logInfo("Test","Button pressed") }
+        case "RELEASED":            { logInfo("Test","Button released") }
+        case "SHORT_PRESS":         { logInfo("Test","Button short press") }
+        case "LONG_PRESS":          { logInfo("Test","Button long press") }
+        default:                    { logInfo("Test","Button pressed {}ms", e) }
+    }
+end
 ```
 
 ### Thing status

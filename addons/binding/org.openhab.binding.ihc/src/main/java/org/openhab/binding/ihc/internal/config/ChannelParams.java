@@ -32,7 +32,6 @@ public class ChannelParams {
     private Long serialNumber;
     private Integer shortPressMaxTime;
     private Integer longPressMaxTime;
-    private Integer extraLongPressMaxTime;
 
     public ChannelParams(Channel channel) throws IllegalArgumentException {
         if (channel == null) {
@@ -61,9 +60,6 @@ public class ChannelParams {
                     break;
                 case PARAM_PULSE_WIDTH:
                     pulseWidth = getChannelParameterAsInteger(entry.getValue());
-                    break;
-                case PARAM_EXTRA_LONG_PRESS_MAX_TIME:
-                    extraLongPressMaxTime = getChannelParameterAsInteger(entry.getValue());
                     break;
                 case PARAM_LONG_PRESS_MAX_TIME:
                     longPressMaxTime = getChannelParameterAsInteger(entry.getValue());
@@ -148,10 +144,6 @@ public class ChannelParams {
         return longPressMaxTime;
     }
 
-    public Integer getExtraLongPressMaxTime() {
-        return extraLongPressMaxTime;
-    }
-
     private Boolean getChannelParameterAsBoolean(Object value) throws IllegalArgumentException {
         if (value != null) {
             try {
@@ -198,9 +190,9 @@ public class ChannelParams {
 
     @Override
     public String toString() {
-        return "channelTypeId=" + channelTypeId + ", resourceId=" + resourceId + ", direction=" + direction
-                + ", commandToReact=" + commandToReact + ", pulseWidth=" + pulseWidth + ", inverted=" + inverted
-                + ", serialNumber=" + serialNumber + ", shortPressMaxTime=" + shortPressMaxTime + ", longPressMaxTime="
-                + longPressMaxTime + ", extraLongPressMaxTime=" + extraLongPressMaxTime;
+        return String.format(
+                "[ channelTypeId=%s, resourceId=%d, direction=%s, commandToReact=%s, pulseWidth=%d, inverted=%b, serialNumber=%d, shortPressMaxTime=%d, longPressMaxTime=%d ]",
+                channelTypeId, resourceId, direction, commandToReact, pulseWidth, inverted, serialNumber,
+                shortPressMaxTime, longPressMaxTime);
     }
 }
