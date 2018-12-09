@@ -44,11 +44,7 @@
 	<channel-type id="buildGroup">
 		<item-type>Switch</item-type>
 		<label>Made Group</label>
-	</channel-type>
-	<channel-type id="dynamicGroupHandling">
-		<item-type>Switch</item-type>
-		<label>Keep Groups</label>
-	</channel-type>
+	</channel-type>	
 	<channel-type id="playlists" advanced="true">
 		<item-type>String</item-type>
 		<label>Playlists</label>

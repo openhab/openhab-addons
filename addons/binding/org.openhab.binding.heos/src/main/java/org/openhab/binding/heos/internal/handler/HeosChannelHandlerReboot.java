@@ -9,6 +9,7 @@
 package org.openhab.binding.heos.internal.handler;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.heos.handler.HeosBridgeHandler;
 import org.openhab.binding.heos.internal.api.HeosFacade;
 
@@ -37,6 +38,9 @@ public class HeosChannelHandlerReboot extends HeosChannelHandler {
 
     @Override
     protected void handleCommandBridge() {
+        if (command instanceof RefreshType) {
+            return;
+        }
         if (command.equals(OnOffType.ON)) {
             api.reboot();
         }

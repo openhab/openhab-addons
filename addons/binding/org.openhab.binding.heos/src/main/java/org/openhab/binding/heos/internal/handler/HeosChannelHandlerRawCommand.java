@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.heos.internal.handler;
 
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.heos.handler.HeosBridgeHandler;
 import org.openhab.binding.heos.internal.api.HeosFacade;
 
@@ -37,6 +38,9 @@ public class HeosChannelHandlerRawCommand extends HeosChannelHandler {
 
     @Override
     protected void handleCommandBridge() {
+        if (command instanceof RefreshType) {
+            return;
+        }
         api.sendRawCommand(command.toString());
     }
 }

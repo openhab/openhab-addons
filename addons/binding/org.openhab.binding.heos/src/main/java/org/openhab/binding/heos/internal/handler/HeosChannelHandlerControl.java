@@ -9,6 +9,7 @@
 
 package org.openhab.binding.heos.internal.handler;
 
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.heos.handler.HeosBridgeHandler;
 import org.openhab.binding.heos.internal.api.HeosFacade;
 
@@ -19,7 +20,6 @@ import org.openhab.binding.heos.internal.api.HeosFacade;
  * @author Johannes Einig - Initial contribution
  *
  */
-
 public class HeosChannelHandlerControl extends HeosChannelHandler {
 
     public HeosChannelHandlerControl(HeosBridgeHandler bridge, HeosFacade api) {
@@ -42,6 +42,10 @@ public class HeosChannelHandlerControl extends HeosChannelHandler {
     }
 
     private void handleCommand() {
+        if (command instanceof RefreshType) {
+            api.getHeosPlayState(id);
+            return;
+        }
         switch (command.toString()) {
             case "PLAY":
                 api.play(id);

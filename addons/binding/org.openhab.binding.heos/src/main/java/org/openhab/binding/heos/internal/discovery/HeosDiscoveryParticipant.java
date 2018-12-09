@@ -27,6 +27,7 @@ import org.jupnp.model.meta.DeviceDetails;
 import org.jupnp.model.meta.ManufacturerDetails;
 import org.jupnp.model.meta.ModelDetails;
 import org.jupnp.model.meta.RemoteDevice;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,9 +38,10 @@ import org.slf4j.LoggerFactory;
  * @author Johannes Einig - Initial contribution
  */
 @NonNullByDefault
+@Component(service = UpnpDiscoveryParticipant.class, immediate = true, configurationPid = "discovery.heos")
 public class HeosDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
-    private Logger logger = LoggerFactory.getLogger(HeosDiscoveryParticipant.class);
+    private final Logger logger = LoggerFactory.getLogger(HeosDiscoveryParticipant.class);
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -56,7 +58,7 @@ public class HeosDiscoveryParticipant implements UpnpDiscoveryParticipant {
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
                     .withLabel(" Bridge - " + device.getDetails().getFriendlyName())
                     .withRepresentationProperty(PLAYER_TYPE).build();
-            logger.info("Found HEOS device with UID: {}", uid.getAsString());
+            logger.debug("Found HEOS device with UID: {}", uid.getAsString());
             return result;
         }
         return null;

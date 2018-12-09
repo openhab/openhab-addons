@@ -13,6 +13,7 @@ import static org.openhab.binding.heos.internal.resources.HeosConstants.FAVORIT_
 import java.util.List;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.heos.handler.HeosBridgeHandler;
 import org.openhab.binding.heos.internal.api.HeosFacade;
 
@@ -41,6 +42,10 @@ public class HeosChannelHandlerFavoriteSelect extends HeosChannelHandler {
 
     @Override
     protected void handleCommandBridge() {
+        if (command instanceof RefreshType) {
+            bridge.resetPlayerList(channelUID);
+            return;
+        }
         if (command.equals(OnOffType.ON)) {
             List<String[]> selectedPlayerList = bridge.getSelectedPlayerList();
             if (!selectedPlayerList.isEmpty()) {

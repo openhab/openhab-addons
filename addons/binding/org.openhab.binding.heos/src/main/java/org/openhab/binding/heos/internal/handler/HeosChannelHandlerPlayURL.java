@@ -11,6 +11,7 @@ package org.openhab.binding.heos.internal.handler;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.heos.handler.HeosBridgeHandler;
 import org.openhab.binding.heos.internal.api.HeosFacade;
 
@@ -43,6 +44,9 @@ public class HeosChannelHandlerPlayURL extends HeosChannelHandler {
     }
 
     private void handleCommand() {
+        if (command instanceof RefreshType) {
+            return;
+        }
         try {
             URL url = new URL(command.toString());
             api.playURL(id, url);

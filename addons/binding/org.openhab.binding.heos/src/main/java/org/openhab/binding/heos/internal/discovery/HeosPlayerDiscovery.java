@@ -16,6 +16,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -28,21 +30,18 @@ import org.openhab.binding.heos.internal.resources.HeosPlayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Sets;
-
 /**
  * The {@link HeosPlayerDiscovery} discovers the player and groups within
  * the HEOS network and reacts on changed groups or player.
  *
  * @author Johannes Einig - Initial contribution
  */
-
-public class HeosPlayerDiscovery extends AbstractDiscoveryService {
+public class HeosPlayerDiscovery extends AbstractDiscoveryService implements HeosPlayerDiscoveryListener {
     private static final int SEARCH_TIME = 20;
     private static final int INITIAL_DELAY = 5;
     private static final int SCAN_INTERVAL = 20;
 
-    private Logger logger = LoggerFactory.getLogger(HeosPlayerDiscovery.class);
+    private final Logger logger = LoggerFactory.getLogger(HeosPlayerDiscovery.class);
 
     private HeosBridgeHandler bridge;
 
@@ -51,22 +50,21 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService {
     private ScheduledFuture<?> scanningJob;
 
     public HeosPlayerDiscovery(HeosBridgeHandler bridge) throws IllegalArgumentException {
-        super(20);
+        super(SEARCH_TIME);
         this.bridge = bridge;
         this.scanningRunnable = new PlayerScan();
-        bridge.setHeosPlayerDiscovery(this);
+        bridge.registerPlayerDiscoverListener(this);
     }
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
-        Set<ThingTypeUID> supportedThings = Sets.newHashSet(THING_TYPE_GROUP, THING_TYPE_PLAYER);
-
+        Set<ThingTypeUID> supportedThings = Stream.of(THING_TYPE_GROUP, THING_TYPE_PLAYER).collect(Collectors.toSet());
         return supportedThings;
     }
 
     @Override
     protected void startScan() {
-        logger.info("Start scan for HEOS Player");
+        logger.debug("Start scan for HEOS Player");
 
         Map<String, HeosPlayer> playerMap = new HashMap<>();
         playerMap = bridge.getNewPlayer();
@@ -74,7 +72,7 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService {
         if (playerMap == null) {
             return;
         } else {
-            logger.info("Found: {} new Player", playerMap.size());
+            logger.debug("Found: {} new Player", playerMap.size());
             ThingUID bridgeUID = bridge.getThing().getUID();
 
             for (String playerPID : playerMap.keySet()) {
@@ -91,7 +89,7 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService {
             }
         }
 
-        logger.info("Start scan for HEOS Groups");
+        logger.debug("Start scan for HEOS Groups");
 
         Map<String, HeosGroup> groupMap = new HashMap<>();
 
@@ -101,14 +99,14 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService {
             return;
         } else {
             if (!groupMap.isEmpty()) {
-                logger.info("Found: {} new Groups", groupMap.size());
+                logger.debug("Found: {} new Groups", groupMap.size());
                 ThingUID bridgeUID = bridge.getThing().getUID();
 
                 for (String groupGID : groupMap.keySet()) {
                     HeosGroup group = groupMap.get(groupGID);
 
                     // uses an unsigned hashCode from the group name to identify the group and generates the Thing UID.
-                    // Only the name does not work because it can consists non allowed characters. This also making it
+                    // Only the name does not work because it can consists non allowed characters. This also makes it
                     // possible to add player to a group. Keeping the Name lets the binding still identifying the group
                     // as known
 
@@ -123,9 +121,10 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService {
                     DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(group.getName())
                             .withProperties(properties).withBridge(bridgeUID).build();
                     thingDiscovered(result);
+                    bridge.setThingStatusOnline(uid);
                 }
             } else {
-                logger.info("No HEOS Groups found");
+                logger.debug("No HEOS Groups found");
             }
         }
         removedPlayers();
@@ -133,7 +132,6 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService {
     }
 
     // Informs the system of removed groups by using the thingRemoved method.
-
     private void removedGroups() {
         Map<String, HeosGroup> removedGroupMap = new HashMap<>();
         removedGroupMap = bridge.getRemovedGroups();
@@ -141,14 +139,14 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService {
             for (String key : removedGroupMap.keySet()) {
                 // The same as above!
                 ThingUID uid = new ThingUID(THING_TYPE_GROUP, removedGroupMap.get(key).getGroupMemberHash());
-                logger.info("Removed HEOS Group: {}", uid);
+                logger.debug("Removed HEOS Group: {}", uid);
                 thingRemoved(uid);
+                bridge.setThingStatusOffline(uid);
             }
         }
     }
 
     // Informs the system of removed players by using the thingRemoved method.
-
     private void removedPlayers() {
         Map<String, HeosPlayer> removedPlayerMap = new HashMap<>();
         removedPlayerMap = bridge.getRemovedPlayer();
@@ -156,7 +154,7 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService {
             for (String key : removedPlayerMap.keySet()) {
                 // The same as above!
                 ThingUID uid = new ThingUID(THING_TYPE_PLAYER, removedPlayerMap.get(key).getPid());
-                logger.info("Removed HEOS Player: {} ", uid);
+                logger.debug("Removed HEOS Player: {} ", uid);
                 thingRemoved(uid);
             }
         }
@@ -197,5 +195,10 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService {
         public void run() {
             startScan();
         }
+    }
+
+    @Override
+    public void playerChanged() {
+        scanForNewPlayers();
     }
 }

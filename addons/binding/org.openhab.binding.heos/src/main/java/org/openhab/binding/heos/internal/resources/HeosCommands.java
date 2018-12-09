@@ -14,7 +14,6 @@ package org.openhab.binding.heos.internal.resources;
  *
  * @author Johannes Einig - Initial contribution
  */
-
 public class HeosCommands {
 
     private String playerID = "";

@@ -24,9 +24,11 @@ import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.heos.internal.HeosChannelHandlerFactory;
 import org.openhab.binding.heos.internal.api.HeosFacade;
@@ -51,11 +53,7 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
     protected HeosChannelHandlerFactory channelHandlerFactory;
     protected HeosBridgeHandler bridge;
 
-    private long refreshStartTime;
-    private long refreshRequestTime;
-    private static final int REFRESH_BLOCK_TIME = 5000;
-
-    private Logger logger = LoggerFactory.getLogger(HeosThingBaseHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(HeosThingBaseHandler.class);
 
     public HeosThingBaseHandler(Thing thing, HeosSystem heos, HeosFacade api) {
         super(thing);
@@ -76,9 +74,9 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
      * For more information about refreshing the channels see
      * {link {@link HeosThingBaseHandler#handleRefresh()}
      */
-    protected abstract void refreshChannels();
-
     public abstract void setStatusOffline();
+
+    public abstract void setStatusOnline();
 
     public abstract PercentType getNotificationSoundVolume();
 
@@ -86,31 +84,20 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
 
     @Override
     public void handleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
-        if (command instanceof RefreshType) {
-            if (ONLINE.equals(this.getThing().getStatus().toString())) {
-                handleRefresh();
-            }
-            return;
-        }
         HeosChannelHandler channelHandler = channelHandlerFactory.getChannelHandler(channelUID);
         if (channelHandler != null) {
             channelHandler.handleCommand(command, id, this, channelUID);
         }
     }
 
-    /**
-     * Handles the Refresh command.
-     * Because refreshing the channels requires a request of the current state
-     * via the Telnet connection, updating all channels after each other would
-     * lead to a high amount of network traffic. So the handleRefresh() blocks
-     * the update request of {@link HeosThingBaseHandler#updateHeosThingState()}.
-     */
-    private synchronized void handleRefresh() {
-        refreshRequestTime = System.currentTimeMillis();
-        if (refreshRequestTime - refreshStartTime > REFRESH_BLOCK_TIME) {
-            updateHeosThingState();
-            refreshChannels();
-            refreshStartTime = System.currentTimeMillis();
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        if (ThingStatus.OFFLINE.equals(bridgeStatusInfo.getStatus())) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        } else if (ThingStatus.ONLINE.equals(bridgeStatusInfo.getStatus())) {
+            updateStatus(ThingStatus.ONLINE);
+        } else if (ThingStatus.UNINITIALIZED.equals(bridgeStatusInfo.getStatus())) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 
@@ -127,12 +114,12 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
      * Has to be called by the player or group handler to initialize
      * {@link HeosChannelHandlerFactory} and bridge
      */
-    protected void initChannelHandlerFatory() {
+    protected void initChannelHandlerFactory() {
         if (getBridge() != null) {
             this.bridge = (HeosBridgeHandler) getBridge().getHandler();
             this.channelHandlerFactory = bridge.getChannelHandlerFactory();
         } else {
-            logger.warn("No Bridge set within handler");
+            logger.warn("No Bridge set within child handler");
         }
     }
 
@@ -153,6 +140,7 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
      * @param url The external URL where the file is located
      */
     public void playURL(String urlStr) {
+        ;
         try {
             URL url = new URL(urlStr);
             api.playURL(id, url);
@@ -171,7 +159,7 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
      * @param command
      */
     protected void handleThingStateUpdate(@NonNull String event, @NonNull String command) {
-        if (event.equals(HEOS_STATE)) {
+        if (event.equals(STATE)) {
             switch (command) {
                 case PLAY:
                     updateState(CH_ID_CONTROL, PlayPauseType.PLAY);
@@ -184,10 +172,10 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
                     break;
             }
         }
-        if (event.equals(HEOS_VOLUME)) {
+        if (event.equals(VOLUME)) {
             updateState(CH_ID_VOLUME, PercentType.valueOf(command));
         }
-        if (event.equals(HEOS_MUTE)) {
+        if (event.equals(MUTE)) {
             if (command != null) {
                 switch (command) {
                     case ON:
@@ -199,25 +187,25 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
                 }
             }
         }
-        if (event.equals(HEOS_CUR_POS)) {
+        if (event.equals(CUR_POS)) {
             this.updateState(CH_ID_CUR_POS, DecimalType.valueOf(command));
         }
-        if (event.equals(HEOS_DURATION)) {
+        if (event.equals(DURATION)) {
             this.updateState(CH_ID_DURATION, DecimalType.valueOf(command));
         }
         if (event.equals(SHUFFLE_MODE_CHANGED)) {
-            if (command.equals(HEOS_ON)) {
+            if (command.equals(ON)) {
                 this.updateState(CH_ID_SHUFFLE_MODE, OnOffType.ON);
             } else {
                 this.updateState(CH_ID_SHUFFLE_MODE, OnOffType.OFF);
             }
         }
         if (event.equals(REPEAT_MODE_CHANGED)) {
-            if (command.toString().equals(HEOS_REPEAT_ALL)) {
+            if (command.toString().equals(REPEAT_ALL)) {
                 this.updateState(CH_ID_REPEAT_MODE, StringType.valueOf(HEOS_UI_ALL));
-            } else if (command.toString().equals(HEOS_REPEAT_ONE)) {
+            } else if (command.toString().equals(REPEAT_ONE)) {
                 this.updateState(CH_ID_REPEAT_MODE, StringType.valueOf(HEOS_UI_ONE));
-            } else if (command.toString().equals(HEOS_OFF)) {
+            } else if (command.toString().equals(OFF)) {
                 this.updateState(CH_ID_REPEAT_MODE, StringType.valueOf(HEOS_UI_OFF));
             }
         }
@@ -254,9 +242,6 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
                         String inputName = info.get(MID).substring(info.get(MID).indexOf("/") + 1);
                         updateState(CH_ID_INPUTS, StringType.valueOf(inputName));
                     }
-                    // else {
-                    // updateState(CH_ID_INPUTS, StringType.valueOf(""));
-                    // }
                     break;
                 case TYPE:
                     if (INPUT_SID.equals(info.get(SID))) {

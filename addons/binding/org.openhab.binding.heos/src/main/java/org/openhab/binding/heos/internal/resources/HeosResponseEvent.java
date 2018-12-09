@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author Johannes Einig - Initial contribution
  */
-
 public class HeosResponseEvent {
     // RAW Values filled by Gson not decoded more or less for information
     private String command;
@@ -92,7 +91,6 @@ public class HeosResponseEvent {
      *
      * @return the event type of the HEOS message
      */
-
     public String getEventType() {
         return eventType;
     }
@@ -104,7 +102,6 @@ public class HeosResponseEvent {
      *
      * @return a map with all messages
      */
-
     public Map<String, String> getMessagesMap() {
         return messagesMap;
     }
@@ -113,7 +110,6 @@ public class HeosResponseEvent {
      *
      * @return the HOES system error code
      */
-
     public String getErrorCode() {
         return errorCode;
     }
@@ -122,7 +118,6 @@ public class HeosResponseEvent {
      *
      * @return the HEOS system error message
      */
-
     public String getErrorMessage() {
         return errorMessage;
     }

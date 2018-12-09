@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.heos.internal.handler;
 
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.heos.handler.HeosBridgeHandler;
 import org.openhab.binding.heos.internal.api.HeosFacade;
 
@@ -40,10 +41,14 @@ public class HeosChannelHandlerInputs extends HeosChannelHandler {
     }
 
     private void handleCommand() {
+        if (command instanceof RefreshType) {
+            api.getNowPlayingMedia(id);
+            return;
+        }
         if (bridge.getSelectedPlayer().isEmpty()) {
             api.playInputSource(id, command.toString());
         } else if (bridge.getSelectedPlayer().size() > 1) {
-            logger.warn("Only one source can be selected for HEOS Input. Selected amount of sources: {} ",
+            logger.debug("Only one source can be selected for HEOS Input. Selected amount of sources: {} ",
                     bridge.getSelectedPlayer().size());
         } else {
             for (String sourcePid : bridge.getSelectedPlayer().keySet()) {

@@ -10,6 +10,7 @@ package org.openhab.binding.heos.internal.api;
 
 import java.net.URL;
 
+import org.openhab.binding.heos.internal.resources.HeosConstants;
 import org.openhab.binding.heos.internal.resources.HeosEventListener;
 
 /**
@@ -18,7 +19,6 @@ import org.openhab.binding.heos.internal.resources.HeosEventListener;
  *
  * @author Johannes Einig - Initial contribution
  */
-
 public class HeosFacade {
 
     private HeosSystem controller;
@@ -356,13 +356,129 @@ public class HeosFacade {
     }
 
     /**
-     * Plays a specific media file from te queue
+     * Plays a specific media file from the queue
      *
      * @param pid The player ID the media shall be played on
      * @param qid The queue ID of the media. (starts by 1)
      */
     public void playMediafromQueue(String pid, String qid) {
         controller.send(controller.command().playQueueItem(pid, qid));
+    }
+
+    /**
+     * Asks for the actual state of the player. The result has
+     * to be handled by the event controller. The system returns {@link HeosConstants.PLAY},
+     * {@link HeosConstants.PAUSE} or {@link HeosConstants.STOP}.
+     *
+     * @param id The player ID the state shall get for
+     */
+    public void getHeosPlayState(String id) {
+        controller.send(controller.command().getPlayState(id));
+    }
+
+    /**
+     * Ask for the actual mute state of the player. The result has
+     * to be handled by the event controller. The HEOS system returns {@link HeosConstants.ON}
+     * or {@link HeosConstants.OFF}.
+     *
+     * @param id The player id the mute state shall get for
+     */
+    public void getHeosPlayerMuteState(String id) {
+        controller.send(controller.command().getMute(id));
+    }
+
+    /**
+     * Ask for the actual volume the player. The result has
+     * to be handled by the event controller. The HEOS system returns
+     * a value between 0 and 100
+     *
+     * @param id The player id the volume shall get for
+     */
+    public void getHeosPlayerVolume(String id) {
+        controller.send(controller.command().getVolume(id));
+    }
+
+    /**
+     * Ask for the actual song duration of the player. The result has
+     * to be handled by the event controller.
+     *
+     * @param id The player id the song duration shall get for
+     */
+    public void getHeosPlayerDuration(String id) {
+        controller.send(controller.command().getPlayState(id));
+    }
+
+    /**
+     * Ask for the actual song position of the player. The result has
+     * to be handled by the event controller.
+     *
+     * @param id The player id the song position shall get for
+     */
+    public void getHeosPlayerCurrentPosition(String id) {
+        controller.send(controller.command().getPlayState(id));
+    }
+
+    /**
+     * Ask for the actual shuffle mode of the player. The result has
+     * to be handled by the event controller. The HEOS system returns {@link HeosConstants.ON},
+     * {@link HeosConstants.HEOS_REPEAT_ALL} or {@link HeosConstants.HEOS_REPEAT_ONE}
+     *
+     * @param id The player id the shuffle mode shall get for
+     */
+    public void getHeosPlayerShuffleMode(String id) {
+        controller.send(controller.command().getPlayMode(id));
+    }
+
+    public void getHeosPlayerRepeatMode(String id) {
+        controller.send(controller.command().getPlayMode(id));
+    }
+
+    public void getHeosGroupeMuteState(String id) {
+        controller.send(controller.command().getGroupMute(id));
+    }
+
+    public void getHeosGroupVolume(String id) {
+        controller.send(controller.command().getGroupVolume(id));
+    }
+
+    public void getNowPlayingMedia(String id) {
+        controller.send(controller.command().getNowPlayingMedia(id));
+    }
+
+    public void getNowPlayingMediaArtist(String id) {
+        controller.send(controller.command().getNowPlayingMedia(id));
+    }
+
+    public void getNowPlayingMediaSong(String id) {
+        controller.send(controller.command().getNowPlayingMedia(id));
+    }
+
+    public void getNowPlayingMediaAlbum(String id) {
+        controller.send(controller.command().getNowPlayingMedia(id));
+    }
+
+    public void getNowPlayingMediaImageUrl(String id) {
+        controller.send(controller.command().getNowPlayingMedia(id));
+    }
+
+    public void getNowPlayingMediaImageQid(String id) {
+        controller.send(controller.command().getNowPlayingMedia(id));
+    }
+
+    public void getNowPlayingMediaMid(String id) {
+        controller.send(controller.command().getNowPlayingMedia(id));
+    }
+
+    public void getNowPlayingMediaAlbumID(String id) {
+        controller.send(controller.command().getNowPlayingMedia(id));
+    }
+
+    public void getNowPlayingMediaStation(String id) {
+        controller.send(controller.command().getNowPlayingMedia(id));
+    }
+
+    public void getNowPlayingMediaType(String id) {
+        controller.send(controller.command().getNowPlayingMedia(id));
     }
 
     /**

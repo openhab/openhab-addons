@@ -10,15 +10,22 @@ package org.openhab.binding.heos.internal;
 
 import static org.openhab.binding.heos.HeosBindingConstants.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.openhab.binding.heos.handler.HeosBridgeHandler;
 import org.openhab.binding.heos.internal.api.HeosFacade;
 import org.openhab.binding.heos.internal.handler.HeosChannelHandler;
+import org.openhab.binding.heos.internal.handler.HeosChannelHandlerAlbum;
+import org.openhab.binding.heos.internal.handler.HeosChannelHandlerArtist;
 import org.openhab.binding.heos.internal.handler.HeosChannelHandlerBuildGroup;
 import org.openhab.binding.heos.internal.handler.HeosChannelHandlerControl;
-import org.openhab.binding.heos.internal.handler.HeosChannelHandlerDynGroupHandling;
+import org.openhab.binding.heos.internal.handler.HeosChannelHandlerCover;
+import org.openhab.binding.heos.internal.handler.HeosChannelHandlerCurrentPosition;
+import org.openhab.binding.heos.internal.handler.HeosChannelHandlerDuration;
 import org.openhab.binding.heos.internal.handler.HeosChannelHandlerFavoriteSelect;
 import org.openhab.binding.heos.internal.handler.HeosChannelHandlerGrouping;
 import org.openhab.binding.heos.internal.handler.HeosChannelHandlerInputs;
@@ -30,20 +37,24 @@ import org.openhab.binding.heos.internal.handler.HeosChannelHandlerRawCommand;
 import org.openhab.binding.heos.internal.handler.HeosChannelHandlerReboot;
 import org.openhab.binding.heos.internal.handler.HeosChannelHandlerRepeatMode;
 import org.openhab.binding.heos.internal.handler.HeosChannelHandlerShuffleMode;
+import org.openhab.binding.heos.internal.handler.HeosChannelHandlerStation;
+import org.openhab.binding.heos.internal.handler.HeosChannelHandlerTitle;
+import org.openhab.binding.heos.internal.handler.HeosChannelHandlerType;
 import org.openhab.binding.heos.internal.handler.HeosChannelHandlerVolume;
 
 /**
- * The {@link HeosChannelHandlerFactory} is responsible for creating the single handler
- * for the channel of the single things.
+ * The {@link HeosChannelHandlerFactory} is responsible for creating and returning
+ * of the single handler for each channel of the single things.
+ * It also stores already created handler for further use.
  *
  * @author Johannes Einig - Initial contribution
  *
  */
-
 public class HeosChannelHandlerFactory {
 
     private HeosBridgeHandler bridge;
     private HeosFacade api;
+    private Map<ChannelUID, HeosChannelHandler> handlerStorageMap = new HashMap<>();
 
     public HeosChannelHandlerFactory(HeosBridgeHandler bridge, HeosFacade api) {
         this.bridge = bridge;
@@ -51,6 +62,16 @@ public class HeosChannelHandlerFactory {
     }
 
     public HeosChannelHandler getChannelHandler(ChannelUID channelUID) {
+        if (handlerStorageMap.containsKey(channelUID)) {
+            return handlerStorageMap.get(channelUID);
+        } else {
+            HeosChannelHandler createdChannelHandler = createNewChannelHandler(channelUID);
+            handlerStorageMap.put(channelUID, createdChannelHandler);
+            return createdChannelHandler;
+        }
+    }
+
+    private HeosChannelHandler createNewChannelHandler(ChannelUID channelUID) {
         ChannelTypeUID channelTypeUID;
         Channel channel = bridge.getThing().getChannel(channelUID.getId());
         if (channel == null) {
@@ -75,8 +96,6 @@ public class HeosChannelHandlerFactory {
                 return new HeosChannelHandlerRawCommand(bridge, api);
             case CH_ID_REBOOT:
                 return new HeosChannelHandlerReboot(bridge, api);
-            case CH_ID_DYNGROUPSHAND:
-                return new HeosChannelHandlerDynGroupHandling(bridge, api);
             case CH_ID_BUILDGROUP:
                 return new HeosChannelHandlerBuildGroup(bridge, api);
             case CH_ID_PLAYLISTS:
@@ -85,6 +104,22 @@ public class HeosChannelHandlerFactory {
                 return new HeosChannelHandlerRepeatMode(bridge, api);
             case CH_ID_SHUFFLE_MODE:
                 return new HeosChannelHandlerShuffleMode(bridge, api);
+            case CH_ID_ALBUM:
+                return new HeosChannelHandlerAlbum(bridge, api);
+            case CH_ID_SONG:
+                return new HeosChannelHandlerTitle(bridge, api);
+            case CH_ID_ARTIST:
+                return new HeosChannelHandlerArtist(bridge, api);
+            case CH_ID_COVER:
+                return new HeosChannelHandlerCover(bridge, api);
+            case CH_ID_CUR_POS:
+                return new HeosChannelHandlerCurrentPosition(bridge, api);
+            case CH_ID_DURATION:
+                return new HeosChannelHandlerDuration(bridge, api);
+            case CH_ID_TYPE:
+                return new HeosChannelHandlerType(bridge, api);
+            case CH_ID_STATION:
+                return new HeosChannelHandlerStation(bridge, api);
         }
         if (channelTypeUID != null) {
             if (CH_TYPE_FAVORITE.equals(channelTypeUID)) {

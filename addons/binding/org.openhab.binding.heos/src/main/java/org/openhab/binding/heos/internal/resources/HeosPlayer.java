@@ -17,7 +17,6 @@ import java.util.Map;
  *
  * @author Johannes Einig - Initial contribution
  */
-
 public class HeosPlayer extends HeosMediaObject {
 
     private final String[] supportedPlayerInfo = { "name", "pid", "gip", "ip", "model", "version", "lineout, network" };

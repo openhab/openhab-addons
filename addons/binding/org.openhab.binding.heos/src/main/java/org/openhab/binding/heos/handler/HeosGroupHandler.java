@@ -15,22 +15,18 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.heos.internal.api.HeosFacade;
 import org.openhab.binding.heos.internal.api.HeosSystem;
-import org.openhab.binding.heos.internal.resources.HeosConstants;
 import org.openhab.binding.heos.internal.resources.HeosGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,12 +37,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Johannes Einig - Initial contribution
  */
-
 public class HeosGroupHandler extends HeosThingBaseHandler {
 
     private String gid;
     private HeosGroup heosGroup;
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public HeosGroupHandler(Thing thing, HeosSystem heos, HeosFacade api) {
         super(thing, heos, api);
@@ -72,8 +67,7 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
         this.gid = this.thing.getConfiguration().get(GID).toString();
         this.heosGroup.setGid(gid);
         api.registerforChangeEvents(this);
-        ScheduledExecutorService executerPool = Executors.newScheduledThreadPool(1);
-        executerPool.schedule(new InitializationRunnable(), 4, TimeUnit.SECONDS);
+        scheduledStartUp();
     }
 
     @Override
@@ -89,7 +83,7 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
     @Override
     public void playerStateChangeEvent(String pid, String event, String command) {
         if (this.getThing().getStatus().equals(ThingStatus.UNINITIALIZED)) {
-            logger.info("Can't Handle Event. Group {} not initialized. Status is: {}", this.getConfig().get(NAME),
+            logger.debug("Can't Handle Event. Group {} not initialized. Status is: {}", this.getConfig().get(NAME),
                     this.getThing().getStatus().toString());
             return;
         }
@@ -133,6 +127,11 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
         updateStatus(ThingStatus.OFFLINE);
     }
 
+    @Override
+    public void setStatusOnline() {
+        this.initialize();
+    }
+
     /**
      *
      * @return The instance of the HEOS group
@@ -146,45 +145,9 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
         heosGroup = heos.getGroupState(heosGroup);
     }
 
-    @Override
-    protected void refreshChannels() {
-        postCommand(CH_ID_UNGROUP, OnOffType.ON);
-        updateState(CH_ID_VOLUME, PercentType.valueOf(heosGroup.getLevel()));
-
-        if (heosGroup.getMute().equals(ON)) {
-            updateState(CH_ID_MUTE, OnOffType.ON);
-        } else {
-            updateState(CH_ID_MUTE, OnOffType.OFF);
-        }
-
-        if (heosGroup.getState().equals(PLAY)) {
-            updateState(CH_ID_CONTROL, PlayPauseType.PLAY);
-        }
-        if (heosGroup.getState().equals(PAUSE) || heosGroup.getState().equals(STOP)) {
-            updateState(CH_ID_CONTROL, PlayPauseType.PAUSE);
-        }
-        if (heosGroup.getShuffle().equals(HeosConstants.HEOS_ON)) {
-            updateState(CH_ID_SHUFFLE_MODE, OnOffType.ON);
-        }
-        if (heosGroup.getShuffle().equals(HeosConstants.HEOS_OFF)) {
-            updateState(CH_ID_SHUFFLE_MODE, OnOffType.OFF);
-        }
-        updateState(CH_ID_SONG, StringType.valueOf(heosGroup.getSong()));
-        updateState(CH_ID_ARTIST, StringType.valueOf(heosGroup.getArtist()));
-        updateState(CH_ID_ALBUM, StringType.valueOf(heosGroup.getAlbum()));
-        updateState(CH_ID_COVER, StringType.valueOf(heosGroup.getImageUrl()));
-        updateState(CH_ID_STATION, StringType.valueOf(heosGroup.getStation()));
-        updateState(CH_ID_TYPE, StringType.valueOf(heosGroup.getType()));
-        updateState(CH_ID_CUR_POS, StringType.valueOf("0"));
-        updateState(CH_ID_DURATION, StringType.valueOf("0"));
-        updateState(CH_ID_REPEAT_MODE, StringType.valueOf(heosGroup.getRepeatMode()));
-    }
-
-    public class InitializationRunnable implements Runnable {
-        @SuppressWarnings("null")
-        @Override
-        public void run() {
-            initChannelHandlerFatory();
+    private void scheduledStartUp() {
+        scheduler.schedule(() -> {
+            initChannelHandlerFactory();
             heosGroup = heos.getGroupState(heosGroup);
             if (!heosGroup.isOnline() || !heosGroup.getGroupMemberHash()
                     .equals(thing.getConfiguration().get(GROUP_MEMBER_HASH).toString())) {
@@ -193,12 +156,11 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
                 return;
             }
             updateStatus(ThingStatus.ONLINE);
-            bridge.setThingStatusOnline(thing.getUID()); // informs the System about the existing group
             HashMap<String, HeosGroup> usedToFillOldGroupMap = new HashMap<>();
             usedToFillOldGroupMap.put(heosGroup.getNameHash(), heosGroup);
             heos.addHeosGroupToOldGroupMap(usedToFillOldGroupMap);
+            updateState(CH_ID_UNGROUP, OnOffType.ON);
             id = heosGroup.getGid(); // Updates the id of the group. Needed if group leader has changed
-            refreshChannels();
-        }
+        }, 4, TimeUnit.SECONDS);
     }
 }

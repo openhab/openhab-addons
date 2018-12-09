@@ -11,7 +11,7 @@ package org.openhab.binding.heos.internal.api;
 import static org.openhab.binding.heos.internal.resources.HeosConstants.*;
 
 import org.openhab.binding.heos.internal.resources.HeosCommands;
-import org.openhab.binding.heos.internal.resources.HeosResponse;
+import org.openhab.binding.heos.internal.resources.HeosResponseDecoder;
 import org.openhab.binding.heos.internal.resources.HeosSystemEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,39 +22,38 @@ import org.slf4j.LoggerFactory;
  *
  * @author Johannes Einig - Initial contribution
  */
-
 public class HeosEventController extends HeosSystemEventListener {
-    private HeosResponse response;
+    private HeosResponseDecoder heosDecoder;
     private HeosSystem system;
     private HeosCommands command;
     private String eventType;
     private String eventCommand;
 
-    private Logger logger = LoggerFactory.getLogger(HeosEventController.class);
+    private final Logger logger = LoggerFactory.getLogger(HeosEventController.class);
 
-    public HeosEventController(HeosResponse response, HeosCommands command, HeosSystem system) {
-        this.response = response;
+    public HeosEventController(HeosResponseDecoder heosDecoder, HeosCommands command, HeosSystem system) {
+        this.heosDecoder = heosDecoder;
         this.system = system;
         this.command = command;
     }
 
     public void handleEvent(int client) {
         if (client == 0) {
-            logger.debug("HEOS send response: {}", response.getRawResponseMessage());
+            logger.debug("HEOS send response: {}", heosDecoder.getRawResponseMessage());
         } else if (client == 1) {
-            logger.debug("HEOS event response: {}", response.getRawResponseMessage());
+            logger.debug("HEOS event response: {}", heosDecoder.getRawResponseMessage());
         }
 
-        if (response.getEvent().getResult().equals(FAIL)) {
-            String errorCode = response.getEvent().getErrorCode();
-            String errorMessage = response.getEvent().getErrorMessage();
+        if (heosDecoder.getSendResult().equals(FAIL)) {
+            String errorCode = heosDecoder.getErrorCode();
+            String errorMessage = heosDecoder.getErrorMessage();
 
-            logger.warn("HEOS System response failure with error code '{}' and message '{}'", errorCode, errorMessage);
+            logger.debug("HEOS System response failure with error code '{}' and message '{}'", errorCode, errorMessage);
 
             return;
         } else {
-            this.eventType = response.getEvent().getEventType();
-            this.eventCommand = response.getEvent().getCommandType();
+            this.eventType = heosDecoder.getEventType();
+            this.eventCommand = heosDecoder.getCommandType();
 
             switch (eventType) {
                 case EVENTTYPE_EVENT:
@@ -124,8 +123,13 @@ public class HeosEventController extends HeosSystemEventListener {
                 playerStateChanged();
                 break;
             case GET_VOLUME:
+                volumeChanged();
                 break;
             case GET_MUTE:
+                muteChanged();
+                break;
+            case GET_PLAY_MODE:
+                playModeChanged();
                 break;
             case GET_QUEUE:
                 break;
@@ -154,62 +158,81 @@ public class HeosEventController extends HeosSystemEventListener {
     }
 
     private void eventTypeGroup() {
-        // not implemented yet
+        switch (eventCommand) {
+            case GET_VOLUME:
+                volumeChanged();
+                break;
+            case GET_MUTE:
+                muteChanged();
+                break;
+        }
     }
 
     private void playerStateChanged() {
-        String pid = response.getPid();
-        String event = HEOS_STATE;
-        String command = response.getEvent().getMessagesMap().get(HEOS_STATE);
+        String pid = heosDecoder.getPid();
+        String event = STATE;
+        String command = heosDecoder.getPlayState();
         fireStateEvent(pid, event, command);
     }
 
     private void playerProgressChanged() {
-        String pos = response.getEvent().getMessagesMap().get(HEOS_CUR_POS);
-        String duration = response.getEvent().getMessagesMap().get(HEOS_DURATION);
-        String pid = response.getPid();
+        String pos = heosDecoder.getPlayerCurrentPosition();
+        String duration = heosDecoder.getPlayerDuration();
+        String pid = heosDecoder.getPid();
 
         int intPosition = Integer.valueOf(pos) / 1000;
         int intDuration = Integer.valueOf(duration) / 1000;
 
-        fireStateEvent(pid, HEOS_CUR_POS, String.valueOf(intPosition));
-        fireStateEvent(pid, HEOS_DURATION, String.valueOf(intDuration));
+        fireStateEvent(pid, CUR_POS, String.valueOf(intPosition));
+        fireStateEvent(pid, DURATION, String.valueOf(intDuration));
     }
 
     private void volumeChanged() {
-        String pid = response.getPid();
-        String event = HEOS_VOLUME;
-        String command = response.getEvent().getMessagesMap().get(HEOS_LEVEL);
+        String pid = heosDecoder.getPid();
+        String event = VOLUME;
+        String command = heosDecoder.getPlayerVolume();
         fireStateEvent(pid, event, command);
-        event = HEOS_MUTE;
-        command = response.getEvent().getMessagesMap().get(HEOS_MUTE);
+        event = MUTE;
+        command = heosDecoder.getPlayerMuteState();
         fireStateEvent(pid, event, command);
+    }
+
+    private void muteChanged() {
+        String pid = heosDecoder.getPid();
+        String event = MUTE;
+        String command = heosDecoder.getPlayerMuteState();
+        fireStateEvent(pid, event, command);
+    }
+
+    private void playModeChanged() {
+        shuffleModeChanged();
+        repeatModeChanged();
     }
 
     private void mediaStateChanged() {
-        String pid = response.getPid();
+        String pid = heosDecoder.getPid();
         system.send(command.getNowPlayingMedia(pid));
-        fireMediaEvent(pid, response.getPayload().getPayloadList().get(0));
+        fireMediaEvent(pid, heosDecoder.getNowPlayingMedia());
     }
 
     private void getMediaState() {
-        String pid = response.getPid();
-        fireMediaEvent(pid, response.getPayload().getPayloadList().get(0));
+        String pid = heosDecoder.getPid();
+        fireMediaEvent(pid, heosDecoder.getNowPlayingMedia());
     }
 
     private void signIn() {
-        if (response.getEvent().getMessagesMap().get(COM_UNDER_PROCESS).equals(FALSE)) {
+        if (!heosDecoder.isCommandUnderProgress()) {
             fireBridgeEvent(EVENTTYPE_SYSTEM, SUCCESS, SING_IN);
         }
     }
 
     private void shuffleModeChanged() {
-        fireStateEvent(response.getPid(), SHUFFLE_MODE_CHANGED, response.getEvent().getMessagesMap().get(HEOS_SHUFFLE));
+        fireStateEvent(heosDecoder.getPid(), SHUFFLE_MODE_CHANGED, heosDecoder.getShuffleMode());
+
     }
 
     private void repeatModeChanged() {
-        fireStateEvent(response.getPid(), REPEAT_MODE_CHANGED,
-                response.getEvent().getMessagesMap().get(HEOS_REPEAT_MODE));
+        fireStateEvent(heosDecoder.getPid(), REPEAT_MODE_CHANGED, heosDecoder.getRepeateMode());
     }
 
     private void userChanged() {

@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.heos.internal.resources;
 
-import static org.openhab.binding.heos.internal.resources.HeosConstants.*;
+import static org.openhab.binding.heos.internal.resources.HeosConstants.FAIL;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,22 +24,17 @@ import org.slf4j.LoggerFactory;
  *
  * @author Johannes Einig - Initial contribution
  */
-
 public class HeosSendCommand {
 
     private Telnet client;
-    private HeosJsonParser parser;
-    private HeosResponse response;
+    private HeosResponseDecoder decoder;
     private HeosEventController eventController;
     private final Logger logger = LoggerFactory.getLogger(HeosSendCommand.class);
-
     private String command;
 
-    public HeosSendCommand(Telnet client, HeosJsonParser parser, HeosResponse response,
-            HeosEventController eventController) {
+    public HeosSendCommand(Telnet client, HeosResponseDecoder decoder, HeosEventController eventController) {
         this.client = client;
-        this.parser = parser;
-        this.response = response;
+        this.decoder = decoder;
         this.eventController = eventController;
     }
 
@@ -52,12 +47,12 @@ public class HeosSendCommand {
 
         if (executeSendCommand()) {
             while (sendTryCounter < 1) {
-                if (response.getEvent().getResult().equals(FAIL)) {
+                if (decoder.getSendResult().equals(FAIL)) {
                     executeSendCommand();
                     ++sendTryCounter;
                 }
-                if (response.getEvent().getMessagesMap().get(COM_UNDER_PROCESS).equals(TRUE)) {
-                    while (response.getEvent().getMessagesMap().get(COM_UNDER_PROCESS).equals(TRUE)) {
+                if (decoder.isCommandUnderProgress()) {
+                    while (decoder.isCommandUnderProgress()) {
                         try {
                             Thread.sleep(1000);
                         } catch (InterruptedException e) {
@@ -66,7 +61,7 @@ public class HeosSendCommand {
                         List<String> readResultList = client.readLine(15000);
 
                         for (int i = 0; i < readResultList.size(); i++) {
-                            parser.parseResult(readResultList.get(i));
+                            decoder.getHeosJsonParser().parseResult(readResultList.get(i));
                             eventController.handleEvent(0); // Important don't remove it. Costs you some live time... ;)
                         }
                     }
@@ -87,7 +82,6 @@ public class HeosSendCommand {
      * @param command
      * @return true if send was successful
      */
-
     public boolean sendWithoutResponse(String command) {
         try {
             return client.send(command);
@@ -103,14 +97,13 @@ public class HeosSendCommand {
      * shall be prevented with an Map which reads until no
      * End of line is detected.
      */
-
     private boolean executeSendCommand() throws ReadException, IOException {
         boolean sendSuccess = client.send(command);
         if (sendSuccess) {
             List<String> readResultList = client.readLine();
 
             for (int i = 0; i < readResultList.size(); i++) {
-                parser.parseResult(readResultList.get(i));
+                decoder.getHeosJsonParser().parseResult(readResultList.get(i));
                 eventController.handleEvent(0);
             }
             return true;

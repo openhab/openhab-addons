@@ -17,7 +17,6 @@ import com.google.gson.GsonBuilder;
  *
  * @author Johannes Einig - Initial contribution
  */
-
 public class HeosJsonParser {
 
     private HeosResponse response;

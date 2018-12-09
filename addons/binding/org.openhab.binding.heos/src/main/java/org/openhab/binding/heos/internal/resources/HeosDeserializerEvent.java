@@ -26,7 +26,6 @@ import com.google.gson.JsonParseException;
  *
  * @author Johannes Einig - Initial contribution
  */
-
 public class HeosDeserializerEvent implements JsonDeserializer<HeosResponseEvent> {
 
     private HeosResponseEvent responseHeos = new HeosResponseEvent();

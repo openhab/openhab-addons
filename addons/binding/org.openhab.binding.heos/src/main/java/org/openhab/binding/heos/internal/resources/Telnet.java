@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author Johannes Einig - Initial contribution
  */
-
 public class Telnet {
 
     private static final int READ_TIMEOUT = 3000;

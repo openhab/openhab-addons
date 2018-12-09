@@ -14,7 +14,6 @@ package org.openhab.binding.heos.internal.resources;
  *
  * @author Johannes Einig - Initial contribution
  */
-
 public class HeosResponse {
 
     private HeosResponseEvent event;
@@ -33,7 +32,6 @@ public class HeosResponse {
      *
      * @return the Heos Event Type
      */
-
     public HeosResponseEvent getEvent() {
         return event;
     }
@@ -43,7 +41,6 @@ public class HeosResponse {
      *
      * @return the Heos Payload
      */
-
     public HeosResponsePayload getPayload() {
         return payload;
     }
@@ -60,7 +57,6 @@ public class HeosResponse {
      *
      * @return the Player ID from which the response was received
      */
-
     public String getPid() {
         return pid;
     }
@@ -73,7 +69,6 @@ public class HeosResponse {
      *
      * @return the undecoded message received from HEOS
      */
-
     public String getRawResponseMessage() {
         return rawResponseMessage;
     }

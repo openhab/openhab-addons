@@ -9,6 +9,7 @@
 package org.openhab.binding.heos.internal.handler;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.heos.handler.HeosBridgeHandler;
 import org.openhab.binding.heos.internal.api.HeosFacade;
 import org.openhab.binding.heos.internal.resources.HeosConstants;
@@ -42,10 +43,14 @@ public class HeosChannelHandlerShuffleMode extends HeosChannelHandler {
     }
 
     private void handleCommand() {
+        if (command instanceof RefreshType) {
+            api.getHeosPlayerShuffleMode(id);
+            return;
+        }
         if (OnOffType.ON.equals(command)) {
-            api.setShuffleMode(id, HeosConstants.HEOS_ON);
+            api.setShuffleMode(id, HeosConstants.ON);
         } else if (OnOffType.OFF.equals(command)) {
-            api.setShuffleMode(id, HeosConstants.HEOS_OFF);
+            api.setShuffleMode(id, HeosConstants.OFF);
         }
     }
 }

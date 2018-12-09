@@ -9,6 +9,7 @@
 package org.openhab.binding.heos.internal.handler;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.heos.handler.HeosBridgeHandler;
 import org.openhab.binding.heos.handler.HeosGroupHandler;
 import org.openhab.binding.heos.internal.api.HeosFacade;
@@ -34,6 +35,11 @@ public class HeosChannelHandlerGrouping extends HeosChannelHandler {
 
     @Override
     protected void handleCommandGroup() {
+        if (command instanceof RefreshType) {
+            HeosGroupHandler heosGroupHandler = HeosGroupHandler.class.cast(handler);
+            heosGroupHandler.initialize();
+            return;
+        }
         if (command.equals(OnOffType.OFF)) {
             api.ungroupGroup(id);
         } else if (command.equals(OnOffType.ON)) {

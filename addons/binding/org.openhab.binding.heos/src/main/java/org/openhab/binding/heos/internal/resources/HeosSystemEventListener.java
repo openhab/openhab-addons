@@ -12,22 +12,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * The {@link HeosSystemEventListener } is used for classes which
  * wants to inform players or groups about change events
  * from the HEOS system. Classes which wants to be informed
  * has to implement the {@link HeosEventListener} and register at
- * the class which extends this {@link HeosSystemEventListener} *
+ * the class which extends this {@link HeosSystemEventListener}
  *
  * @author Johannes Einig - Initial contribution
  */
-
 public class HeosSystemEventListener {
-
-    private Logger logger = LoggerFactory.getLogger(HeosSystemEventListener.class);
 
     protected List<HeosEventListener> listenerList = new ArrayList<>();
 
@@ -37,7 +31,6 @@ public class HeosSystemEventListener {
      *
      * @param listener the lister from type {@link HeosEventListener} for change events
      */
-
     public void addListener(HeosEventListener listener) {
         listenerList.add(listener);
     }
@@ -47,7 +40,6 @@ public class HeosSystemEventListener {
      *
      * @param listener the listener from type {@link HeosEventListener} to be removed
      */
-
     public void removeListener(HeosEventListener listener) {
         listenerList.remove(listener);
     }
@@ -59,7 +51,6 @@ public class HeosSystemEventListener {
      * @param event   the name of the event (see {@link HeosConstants} for event types)
      * @param command the command of the event
      */
-
     public void fireStateEvent(String pid, String event, String command) {
         listenerList.forEach(element -> element.playerStateChangeEvent(pid, event, command));
     }
@@ -70,7 +61,6 @@ public class HeosSystemEventListener {
      * @param pid  the ID of the player or group which has changed
      * @param info an HashMap which contains the media information
      */
-
     public void fireMediaEvent(String pid, Map<String, String> info) {
         listenerList.forEach(element -> element.playerMediaChangeEvent(pid, info));
     }
@@ -82,7 +72,6 @@ public class HeosSystemEventListener {
      * @param result  the result (success or fail)
      * @param command the command of the event
      */
-
     public void fireBridgeEvent(String event, String result, String command) {
         for (int i = 0; i < listenerList.size(); i++) {
             listenerList.get(i).bridgeChangeEvent(event, result, command);

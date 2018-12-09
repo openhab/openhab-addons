@@ -20,7 +20,6 @@ import java.util.Map;
  *
  * @author Johannes Einig - Initial contribution
  */
-
 public class HeosGroup extends HeosMediaObject {
     private final String[] supportedGroupInfo = { "name", "gip", "leader" };
     private final String[] supportedGroupStates = { "state", "level", "mute" };

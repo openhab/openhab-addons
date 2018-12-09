@@ -14,7 +14,6 @@ package org.openhab.binding.heos.internal.resources;
  *
  * @author Johannes Einig - Initial contribution
  */
-
 public class HeosConstants {
 
     public static final String HEOS = "heos";
@@ -40,10 +39,10 @@ public class HeosConstants {
     public static final String FALSE = "false";
     public static final String ERROR = "Error";
     public static final String COM_UNDER_PROCESS = "command under process";
-    public static final String HEOS_ON = "on";
-    public static final String HEOS_OFF = "off";
-    public static final String HEOS_REPEAT_ALL = "on_all";
-    public static final String HEOS_REPEAT_ONE = "on_one";
+    public static final String ON = "on";
+    public static final String OFF = "off";
+    public static final String REPEAT_ALL = "on_all";
+    public static final String REPEAT_ONE = "on_one";
 
     // Event Types
     public static final String EVENTTYPE_SYSTEM = "system";
@@ -77,19 +76,19 @@ public class HeosConstants {
     public static final String QID = "qid";
 
     // State commands
-    public static final String HEOS_VOLUME = "volume";
-    public static final String HEOS_MUTE = "mute";
-    public static final String HEOS_LEVEL = "level";
-    public static final String HEOS_STATE = "state";
-    public static final String HEOS_CUR_POS = "cur_pos";
-    public static final String HEOS_DURATION = "duration";
-    public static final String HEOS_REPEAT_MODE = "repeat";
-    public static final String HEOS_SHUFFLE = "shuffle";
+    public static final String VOLUME = "volume";
+    public static final String MUTE = "mute";
+    public static final String LEVEL = "level";
+    public static final String STATE = "state";
+    public static final String CUR_POS = "cur_pos";
+    public static final String DURATION = "duration";
+    public static final String REPEAT_MODE = "repeat";
+    public static final String SHUFFLE = "shuffle";
 
     // Several command
 
-    public static final String HEOS_ROLE = "role";
-    public static final String HEOS_LEADER = "leader";
+    public static final String ROLE = "role";
+    public static final String LEADER = "leader";
 
     // Player commands
     public static final String GET_NOW_PLAYING_MEDIA = "get_now_playing_media";
@@ -97,9 +96,21 @@ public class HeosConstants {
     public static final String GET_PLAY_STATE = "get_play_state";
     public static final String GET_VOLUME = "get_volume";
     public static final String GET_MUTE = "get_mute";
+    public static final String GET_PLAY_MODE = "get_play_mode";
     public static final String GET_QUEUE = "get_queue";
     public static final String SET_PLAY_STATE = "set_play_state";
     public static final String SET_VOLUME = "set_volume";
+    public static final String PLAY = "play";
+    public static final String PAUSE = "pause";
+    public static final String STOP = "stop";
+    public static final String SONG = "song";
+    public static final String ALBUM = "album";
+    public static final String ARTIST = "artist";
+    public static final String STATION = "station";
+    public static final String IMAGE_URL = "image_url";
+    public static final String RAW_COMMAND = "rawCommand";
+    public static final String PLAY_URL = "play_stream";
+    public static final String ALBUM_ID = "album_id";
 
     // UI Commands
 

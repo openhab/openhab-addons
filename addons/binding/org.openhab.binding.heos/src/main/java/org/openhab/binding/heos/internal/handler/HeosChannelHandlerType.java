@@ -11,18 +11,17 @@ package org.openhab.binding.heos.internal.handler;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.heos.handler.HeosBridgeHandler;
 import org.openhab.binding.heos.internal.api.HeosFacade;
-import org.openhab.binding.heos.internal.resources.HeosConstants;
 
 /**
- * The {@link HeosChannelHandlerRepeatMode} handles the RepeatMode channel command
- * from the implementing thing.
+ * The {@link HeosChannelHandlerType} handles the refresh commands
+ * coming from the implementing thing
  *
  * @author Johannes Einig - Initial contribution
  *
  */
-public class HeosChannelHandlerRepeatMode extends HeosChannelHandler {
+public class HeosChannelHandlerType extends HeosChannelHandler {
 
-    public HeosChannelHandlerRepeatMode(HeosBridgeHandler bridge, HeosFacade api) {
+    public HeosChannelHandlerType(HeosBridgeHandler bridge, HeosFacade api) {
         super(bridge, api);
     }
 
@@ -38,20 +37,13 @@ public class HeosChannelHandlerRepeatMode extends HeosChannelHandler {
 
     @Override
     protected void handleCommandBridge() {
-        // Do nothing
+        // No such channel on bridge
     }
 
     private void handleCommand() {
         if (command instanceof RefreshType) {
-            api.getHeosPlayerRepeatMode(id);
+            api.getNowPlayingMediaType(id);
             return;
-        }
-        if (HeosConstants.HEOS_UI_ALL.equalsIgnoreCase(command.toString())) {
-            api.setRepeatMode(id, HeosConstants.REPEAT_ALL);
-        } else if (HeosConstants.HEOS_UI_ONE.equalsIgnoreCase(command.toString())) {
-            api.setRepeatMode(id, HeosConstants.REPEAT_ONE);
-        } else if (HeosConstants.HEOS_UI_OFF.equalsIgnoreCase(command.toString())) {
-            api.setRepeatMode(id, HeosConstants.OFF);
         }
     }
 }

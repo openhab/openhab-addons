@@ -9,6 +9,7 @@
 package org.openhab.binding.heos.internal.handler;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.heos.handler.HeosBridgeHandler;
 import org.openhab.binding.heos.internal.api.HeosFacade;
 
@@ -27,6 +28,10 @@ public class HeosChannelHandlerMute extends HeosChannelHandler {
 
     @Override
     protected void handleCommandPlayer() {
+        if (command instanceof RefreshType) {
+            api.getHeosPlayerMuteState(id);
+            return;
+        }
         if (command.equals(OnOffType.ON)) {
             api.muteON(id);
         } else if (command.equals(OnOffType.OFF)) {
@@ -36,6 +41,10 @@ public class HeosChannelHandlerMute extends HeosChannelHandler {
 
     @Override
     protected void handleCommandGroup() {
+        if (command instanceof RefreshType) {
+            api.getHeosGroupeMuteState(id);
+            return;
+        }
         if (command.equals(OnOffType.ON)) {
             api.muteGroupON(id);
         } else if (command.equals(OnOffType.OFF)) {

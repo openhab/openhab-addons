@@ -17,7 +17,6 @@ import java.util.Map;
  *
  * @author Johannes Einig - Initial contribution
  */
-
 public class HeosMediaObject {
 
     private final String[] supportedMediaItems = { "type", "station", "song", "album", "artist", "image_url", "qid",

@@ -23,9 +23,8 @@ import org.slf4j.LoggerFactory;
  * channel handler which handles the command from the channels of the things
  * to the HEOS system
  *
- * @author Johannes Einig - Initial contribution *
+ * @author Johannes Einig - Initial contribution
  */
-
 public abstract class HeosChannelHandler {
 
     protected Object handler;
@@ -34,7 +33,7 @@ public abstract class HeosChannelHandler {
     protected String id;
     protected Command command;
     protected ChannelUID channelUID;
-    protected Logger logger = LoggerFactory.getLogger(HeosChannelHandler.class);
+    protected final Logger logger = LoggerFactory.getLogger(HeosChannelHandler.class);
 
     /**
      *
@@ -69,7 +68,7 @@ public abstract class HeosChannelHandler {
     }
 
     /**
-     * Handle a command for classes without an id. Used
+     * Handles a command for classes without an id. Used
      * for BridgeHandler
      *
      * @param command    the command to handle

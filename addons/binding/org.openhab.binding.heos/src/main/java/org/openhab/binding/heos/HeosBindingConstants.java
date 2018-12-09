@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
+import org.openhab.binding.heos.internal.resources.HeosConstants;
 
 /**
  * The {@link HeosBinding} class defines common constants, which are
@@ -24,7 +25,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
  * @author Johannes Einig - Initial contribution
  */
 @NonNullByDefault
-public class HeosBindingConstants {
+public class HeosBindingConstants extends HeosConstants {
 
     public static final String BINDING_ID = "heos";
 
@@ -71,32 +72,12 @@ public class HeosBindingConstants {
     public static final String PASSWORD = "password";
     public static final String HEARTBEAT = "heartbeat";
 
-    public static final String LEADER = "leader";
-
     public static final String PLAYER = "Player";
     public static final String GROUP = "Group";
     public static final String TYPE = "type";
 
     public static final String ONLINE = "ONLINE";
     public static final String OFFLINE = "OFFLINE";
-
-    public static final String STATE = "state";
-    public static final String PLAY = "play";
-    public static final String PAUSE = "pause";
-    public static final String STOP = "stop";
-    public static final String ON = "on";
-    public static final String OFF = "off";
-    public static final String MUTE = "mute";
-    public static final String VOLUME = "volume";
-    public static final String SONG = "song";
-    public static final String ALBUM = "album";
-    public static final String ARTIST = "artist";
-    public static final String STATION = "station";
-    public static final String IMAGE_URL = "image_url";
-    public static final String CUR_POS = "curPos";
-    public static final String DURATION = "duration";
-    public static final String RAW_COMMAND = "rawCommand";
-    public static final String PLAY_URL = "play_stream";
 
     public static final String NAME_HASH = "nameHash";
     public static final String GROUP_MEMBER_HASH = "groupMemberHash";

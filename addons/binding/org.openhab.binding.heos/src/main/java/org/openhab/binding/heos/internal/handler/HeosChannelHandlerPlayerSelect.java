@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Channel;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.heos.handler.HeosBridgeHandler;
 import org.openhab.binding.heos.internal.api.HeosFacade;
 
@@ -42,6 +43,9 @@ public class HeosChannelHandlerPlayerSelect extends HeosChannelHandler {
 
     @Override
     protected void handleCommandBridge() {
+        if (command instanceof RefreshType) {
+            return;
+        }
         List<String[]> selectedPlayerList = bridge.getSelectedPlayerList();
         Channel channel = bridge.getThing().getChannel(channelUID.getId());
         if (channel == null) {

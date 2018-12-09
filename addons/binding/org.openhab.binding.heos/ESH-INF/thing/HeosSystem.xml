@@ -8,8 +8,7 @@
 		<label>HEOS Bridge</label>
 		<description>The HEOS System Bridge</description>
 		<channels>
-			<channel typeId="reboot" id="Reboot"></channel>
-			<channel typeId="dynamicGroupHandling" id="DynamicGroupHandling"></channel>
+			<channel typeId="reboot" id="Reboot"></channel>			
 			<channel typeId="buildGroup" id="BuildGroup"></channel>	
 			<channel typeId="rawCommand" id="RawCommand"></channel>
 		</channels>

@@ -29,13 +29,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This makes HEOS to serve as an {@link AudioSink}. *
+ * This makes HEOS to serve as an {@link AudioSink}.
  *
- * @author Kai Kreuzer - Initial contribution and API
- * @author Johannes Einig - Originally class was written for the Sonos binding by Kai Kreuzer. Adapted the class to be
- *         used by the HEOS binding *
+ * @author Johannes Einig - Initial contribution
+ *
  */
-
 public class HeosAudioSink implements AudioSink {
 
     private final Logger logger = LoggerFactory.getLogger(HeosAudioSink.class);
@@ -87,7 +85,7 @@ public class HeosAudioSink implements AudioSink {
                 url = callbackUrl + relativeUrl;
                 AudioFormat audioFormat = audioStream.getFormat();
                 if (!ThingHandlerHelper.isHandlerInitialized(handler)) {
-                    logger.warn("HEOS speaker '{}' is not initialized - status is {}", handler.getThing().getUID(),
+                    logger.debug("HEOS speaker '{}' is not initialized - status is {}", handler.getThing().getUID(),
                             handler.getThing().getStatus());
                 } else if (AudioFormat.MP3.isCompatible(audioFormat)) {
                     handler.playURL(url + AudioStreamUtils.EXTENSION_SEPARATOR + FileAudioStream.MP3_EXTENSION);

@@ -1,47 +1,56 @@
 # Denon HEOS Binding
 
-This binding support the HEOS-System from Denon for openHAB 2. The binding provides control of the players and groups within the network. It also supports selecting favorites and play them on players or groups within the HEOS-Network. 
-The binding first establishes a connection to one of the players of the HEOS-Network and use them as a bridge. After a connection is established, the binding searches for all available players and groups via the bridge. To keep the network traffic low it is recommended to establish only one connection via one bridge. Connection to the bridge is done via a Telnet connection.
-
-#### A detailed explanation of binding possibilities and the handling can be found at the end. Also some examples are provided how the binding can be used
+This binding support the HEOS-System from Denon. The binding provides control of the players and groups within the network.
+It also supports selecting favorites and play them on players or groups within the HEOS-Network. 
+The binding first establishes a connection to one of the players of the HEOS-Network and use them as a bridge.
+After a connection is established, the binding searches for all available players and groups via the bridge.
+To keep the network traffic low it is recommended to establish only one connection via one bridge.
+Connection to the bridge is done via a Telnet connection.
 
 ## Supported Things
 
 Bridge:
-The binding supports a bride for connecting to the HEOS-Network
+The binding supports a bridge to connect to the HEOS-Network.
+A bridge uses the thing ID "bridge"
+
 
 Player:
-A generic player is supported via this binding. Currently no differences are made between the players.
+A generic player is supported via this binding.
+Currently no differences are made between the players.
+A player uses the thing ID "player"
 
 Groups:
-Groups are supported by this binding.
+The binding supports HEOS groups.
+A group uses the thing ID "group"
 
 
 ## Discovery
 
-This binding supports full automatic discovery of available players to be used as a bridge, players and groups (both after establishing a connection via a bridge). It is recommended to use the PaperUI or other GUI to setup the system and add all players and groups.
-The bridge is discovered through UPnP in the local network. Once it is added the players and groups are discovered via the bridge and placed within the inbox.
-Nethertheless also manual configuration is possible
+This binding supports full automatic discovery of available players to be used as a bridge, players and groups (both after establishing a connection via a bridge).
+It is recommended to use the PaperUI or other GUI to setup the system and add all players and groups.
+The bridge is discovered through UPnP in the local network.
+Once it is added the players and groups are discovered via the bridge and placed within the inbox.
 
 ## Binding Configuration
 
-This binding does not require any configuration via a .cfg file. The configuration is done via the Thing definition.
-Within the binding the callback URL can be set. This URL is needed if a player or a group is registered as an audio sink within openHAB. If a device is registered as an audio sink notification sounds will be played at this device.
-For further information about notifications also refer to the [openHAB documentation](http://docs.openHAB.org/configuration/multimedia.html).
-
-The URL defines the base address where the sound files are located. For example if the files are placed within the openHAB directory \openHAB-conf\sounds the callback address has be set to the openHAB server address inclusive the port.  
-
-Example: http://192.168.0.7:8080 if the sound file can be accessed there, or if the sound file is located on the openHAB server http://localhost:8080 for example.
-
+This binding does not require any configuration. 
 
 ## Thing Configuration
 
-**It is recommended to configure the things via the PaperUI or HABmin**
-
 ### Bridge Configuration
 
-The bridge can be added via the PaperUI. After adding the bridge, the user name and password can be set by editing the thing via the PaperUI. For manual configuration the following parameters can be defined. The ipAddress has to be defined. All other fields are optional.
-The password and the user name are used to login to the HEOS account. This is required to load the favorites, playlists and so on from personal settings. If no login information is provided these features can't be used.  
+The bridge has the following configuration parameter
+
+| Parameter         | Description                                                | Required  |
+|-----------------  |----------------------------------------------------------- | --------- |
+| name              | Player Type of the bridge                                  | no        |
+| ipAddress         | The network address of the bridge                          | yes       |
+| username          | The user name to login to the HEOS account                 | no        |
+| password          | The password for the HEOS account                          | no        |
+| heartbeat         | The time in seconds for the HEOS Heartbeat (default = 60s) | no        |
+
+The password and the user name are used to login to the HEOS account. This is required to load the favorites, playlists and so on from personal settings.
+If no login information is provided these features can't be used.  
 
 ````
 Bridge heos:bridge:main "name" [ipAddress="192.168.0.1", name="Default", unserName="xxx", password="123456"]  
@@ -49,30 +58,43 @@ Bridge heos:bridge:main "name" [ipAddress="192.168.0.1", name="Default", unserNa
 
 ### Player Configuration
 
-Players can be added via the PaperUI. All fields are then filled automatically.
-For manual configuration a player is defined as followed:
+Player have the following configuration parameter
+
+| Parameter         | Description                                                | Required  |
+|-----------------  |----------------------------------------------------------- | --------- |
+| pid               | The internal player ID                                     | yes       |
+| name              | The name of the player                                     | no        |
+| model             | The model type of the player                               | no        |
+| ipAddress         | The IP addres of the player                                | no        |
+
+For manual configuration a player can be defined as followed:
 
 ````
 Thing heos:player:pid "name" [pid="123456789", name="name", model="modelName", ipAddress="192.168.0.xxx"] 
 ````
 
-PID behind the heos:player:--- should be changed as required. Every name or value can be used. It is recommended to use the player PID. Within the configuration the PID is mandatory. The rest is not required.
-If the PID isn't known it can be discovered by establishing a TelNet connection (port 1255) to one player and search for available players
-(Command: heos://player/get_players)
-within the network. For further details refer to the [HEOS CLI](http://rn.dmglobal.com/euheos/HEOS_CLI_ProtocolSpecification.pdf) specification.
-
-
-*If player is configured by PaperUI the UID of the player is equal to the player ID (PID) from the HEOS system*
+PID behind the heos:player:--- should be changed as required. Every name or value can be used.
+It is recommended to use the player PID. Within the configuration the PID is mandatory.
+The rest is not required.
+If the PID isn't known it can be discovered by establishing a TelNet connection (port 1255) to one player and search for available players (Command: heos://player/get_players) within the network.
+For further details refer to the [HEOS CLI](http://rn.dmglobal.com/euheos/HEOS_CLI_ProtocolSpecification.pdf) specification.
 
 ### Group Configuration
+
+Player have the following configuration parameter
+
+| Parameter         | Description                                                | Required  |
+|-----------------  |----------------------------------------------------------- | --------- |
+| gid               | The internal group ID                                      | yes       |
+| name              | The name of the group                                      | no        |
+| leader            | The PID of the group leader                                | no        |
+| nameHash          | The name hash value                                        | no        |
+| groupMemberHash   | A hash value calculated by the group members               | no        |
+
 
 ```
 Thing heos:group:memberHash "name" [gid="123456789", name="name", model="modelName", ipAddress="192.168.0.xxx", memberHash="123456789"] 
 ```
-
-*If group is configured by PaperUI the group UID is calculated by the Hash value of the group members*
-
-Required fields are the GID which is the PID of the group leading player.  
 
 ### Defining Bridge and Players together
 
@@ -90,11 +112,7 @@ Bridge heos:bridge:main "Bridge" [ipAddress="192.168.0.1", name="Bridge", userNa
 
 ## Channels
 
-Note:
-The channels have different paths if you configure our Things manual or via an UI. It is recommended to check the correct path via an UI.
-
-
-### Player provide the following channels:
+### Channels of Thing type 'player'
 
 | Channel ID        | Item Type     | Description                                                           |
 |-----------------  |-----------    |---------------------------------------------------------------------  |
@@ -117,13 +135,13 @@ The channels have different paths if you configure our Things manual or via an U
 
 
 
-####Example:
+#### Example
 
 ```
 Player LivingRoom_Control "Control" {channel="heos:player:main:LivingRoom:Control"}
 ```
 
-### Groups provide the following channels:
+### Channels of Thing type 'group'
 
 | Channel ID        | Item Type     | Description                                                           |
 |-----------------  |-----------    |--------------------------------------------------------------------   |
@@ -144,7 +162,6 @@ Player LivingRoom_Control "Control" {channel="heos:player:main:LivingRoom:Contro
 | Shuffle           | Switch        | Switches shuffle ON or OFF                                            |
 | RepeatMode        | String        | Defines the repeat mode: Inputs are: "One" ; "All" or "Off"           |
 | Playlists         | String        | Plays a playlist. Playlists are identified by numbers (starting at 0!). List can be found in the HEOS App            |
-#### Inputs depending on Player type (Date 12.02.2017):
 
 | Input names   |
 |-------------- |
@@ -180,17 +197,16 @@ Player LivingRoom_Control "Control" {channel="heos:player:main:LivingRoom:Contro
 | tvaudio       |
 | phono         |
 
-An actual list can be found within the HEOS CLI protocol which can be found [here](http://rn.dmglobal.com/euheos/HEOS_CLI_ProtocolSpecification.pdf).
+An current list can be found within the HEOS CLI protocol which can be found [here](http://rn.dmglobal.com/euheos/HEOS_CLI_ProtocolSpecification.pdf).
 
-### The Bridge provides the following channels:
+### Channels of Thing type 'bridge'
 
 | Channel ID            | Item Type     | Description                                                                                                                                               |
 |---------------------- |-----------    |--------------------------------------------------------------------------------------------------------------------------------------------------------   |
 | Reboot                | Switch        | Reboot the whole HEOS System. Can be used if you get in trouble with the system                                                                           |
-| DynamicGroupHandling  | Switch        | If this option id activated the system automatically removes groups if they are ungrouped. Only works if the group is added via an UI.                    |
 | BuildGroup            | Switch        | Is used to define a group. The player which shall be grouped has to be selected first. If Switch is then activated the group is build.                    |
 | RawCommand            | String        | A channel where every HEOS CLI command can be send to.                                                                                                    |
-| PlayUrl               | String        | Plays a media file located at the URL. First select the player channel where the stram shall be played. Then send the stream via the Play URL channel.    |
+
 
 For a list of the commands please refer to the [HEOS CLI protocol](http://rn.dmglobal.com/euheos/HEOS_CLI_ProtocolSpecification.pdf).
 
@@ -235,9 +251,6 @@ Example
  ```
 
  The {playerUID} has either a P in front of the number which indicates that this is a player or a G to indicate this is a group.
- 
- 
- **Note: It seems at the moment that the dynamic channels are only work correctly if things are managed via UI.**
 
 ## Full Example
 
@@ -283,11 +296,20 @@ This section gives some detailed explanations how to use the binding.
 
 ### Grouping Players
 
-Players can be grouped via the binding. To do so, select the player channels of the players you want to group at the bridge and then use the "Made Group" channel to create the group. The first player which is selected will be the group leader. The group GID then is the same as the PID of the group leader. Therefore changing play pause and some other things at the leading player will also change that at the whole group. Muting and Volume on the other hand can be changed individually for each player also for the group leader. If you want to change that for the whole group you have to do it via the group thing.
+Players can be grouped via the binding.
+To do so, select the player channels of the players you want to group at the bridge and then use the "Made Group" channel to create the group.
+The first player which is selected will be the group leader.
+The group GID then is the same as the PID of the group leader.
+Therefore changing play pause and some other things at the leading player will also change that at the whole group.
+Muting and Volume on the other hand can be changed individually for each player also for the group leader.
+If you want to change that for the whole group you have to do it via the group thing.
 
 ### Inputs
 
-To play inputs like the Aux_In it can be played at each player or group. It is also possible to play an input from an other player at the selected player. To do so, first select the player channel of the player where the input is located (source) at the bridge. Then use the input channel of the player where the source shall be played (destination) to activate the input.
+To play inputs like the Aux_In it can be played at each player or group.
+It is also possible to play an input from an other player at the selected player.
+To do so, first select the player channel of the player where the input is located (source) at the bridge.
+Then use the input channel of the player where the source shall be played (destination) to activate the input.
 
 #### Example
 
@@ -325,9 +347,10 @@ Sitemap:
 Switch item=HeosKitchen_InputSelect	mappings=[aux_in_1 = "Aux In" , LivingRoom = "Living Room"]
 ```
 
-### The OnlineState of Groups and Players
+### The Online status of Groups and Players
 
-The online state of a Thing can be helpful for groups to control the visibility of group items within sitemap. So if the group is removed the visibility of those items is also changed.
+The online state of a Thing can be helpful for groups to control the visibility of group items within sitemap.
+So if the group is removed the visibility of those items is also changed.
 
 #### Example
 
@@ -377,16 +400,10 @@ Frame label="Heos Group" visibility=[HeosGroup_Status==ONLINE] {
 }
 ```
 
-### Dynamic Group Handling (Keep Groups)
-
-Groups are a more or less dynamic item compared to the players. The players are always present within the network and are only added or removed if they are added or removed physically. Groups on the other hand are dynamic because they are only virtual created and removed. 
-Therefore dynamic group handling only sets groups to OFFLINE if the option is activated. This is indicated via the "OnlineStatus" channel of the group. If the group then is created again the binding automatically sets the status to online without the need of action by the user.
-If dynamic group handling is deactivated the group thing is completely removed if the binding is notified about a removed group. The group then has to be added manually again if created.
-
-
 ### Playlists
 
-Playlists can be played by sending the number (starts at 0!) to the binding via the playlists channel at the corresponding player or group. To find the correct number for the playlist, please have a look to the HEOS App and see at which position the playlist you want to play is located.
+Playlists can be played by sending the number (starts at 0!) to the binding via the playlists channel at the corresponding player or group.
+To find the correct number for the playlist, please have a look to the HEOS App and see at which position the playlist you want to play is located.
 
 #### Example
 

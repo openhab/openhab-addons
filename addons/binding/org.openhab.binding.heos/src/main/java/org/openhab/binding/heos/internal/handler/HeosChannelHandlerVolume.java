@@ -9,6 +9,7 @@
 package org.openhab.binding.heos.internal.handler;
 
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.heos.handler.HeosBridgeHandler;
 import org.openhab.binding.heos.internal.api.HeosFacade;
 
@@ -28,6 +29,10 @@ public class HeosChannelHandlerVolume extends HeosChannelHandler {
 
     @Override
     protected void handleCommandPlayer() {
+        if (command instanceof RefreshType) {
+            api.getHeosPlayerVolume(id);
+            return;
+        }
         if (command instanceof IncreaseDecreaseType) {
             if (IncreaseDecreaseType.INCREASE.equals(command)) {
                 api.increaseVolume(id);
@@ -41,6 +46,10 @@ public class HeosChannelHandlerVolume extends HeosChannelHandler {
 
     @Override
     protected void handleCommandGroup() {
+        if (command instanceof RefreshType) {
+            api.getHeosGroupVolume(id);
+            return;
+        }
         if (command instanceof IncreaseDecreaseType) {
             if (IncreaseDecreaseType.INCREASE.equals(command)) {
                 api.increaseGroupVolume(id);

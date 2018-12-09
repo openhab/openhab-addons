@@ -18,7 +18,6 @@ import java.util.Map;
  *
  * @author Johannes Einig - Initial contribution
  */
-
 public class HeosResponsePayload {
 
     private List<Map<String, String>> payload = new ArrayList<>();
@@ -49,7 +48,6 @@ public class HeosResponsePayload {
      *
      * @return a list with HashMaps for each JSON Array
      */
-
     public List<Map<String, String>> getPayloadList() {
         return payload;
     }
@@ -68,7 +66,6 @@ public class HeosResponsePayload {
      *
      * @return nested Lists for the groups and their members
      */
-
     public List<List<Map<String, String>>> getPlayerList() {
         return groupMembers;
     }

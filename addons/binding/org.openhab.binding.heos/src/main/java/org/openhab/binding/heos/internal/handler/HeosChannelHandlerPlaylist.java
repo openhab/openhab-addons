@@ -10,6 +10,7 @@ package org.openhab.binding.heos.internal.handler;
 
 import static org.openhab.binding.heos.internal.resources.HeosConstants.PLAYLISTS_SID;
 
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.heos.handler.HeosBridgeHandler;
 import org.openhab.binding.heos.internal.api.HeosFacade;
 
@@ -42,6 +43,9 @@ public class HeosChannelHandlerPlaylist extends HeosChannelHandler {
     }
 
     private void handleCommand() {
+        if (command instanceof RefreshType) {
+            return;
+        }
         String cid = bridge.getHeosPlaylists().get(Integer.valueOf(command.toString()));
         api.addContainerToQueuePlayNow(id, PLAYLISTS_SID, cid);
     }

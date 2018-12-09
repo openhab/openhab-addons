@@ -8,25 +8,18 @@
  */
 package org.openhab.binding.heos.handler;
 
-import static org.openhab.binding.heos.HeosBindingConstants.*;
 import static org.openhab.binding.heos.internal.resources.HeosConstants.PID;
 
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
-import org.eclipse.smarthome.core.library.types.PlayPauseType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.heos.internal.api.HeosFacade;
 import org.openhab.binding.heos.internal.api.HeosSystem;
-import org.openhab.binding.heos.internal.resources.HeosConstants;
 import org.openhab.binding.heos.internal.resources.HeosPlayer;
 
 /**
@@ -53,13 +46,22 @@ public class HeosPlayerHandler extends HeosThingBaseHandler {
     @Override
     public void initialize() {
         api.registerforChangeEvents(this);
-        ScheduledExecutorService executerPool = Executors.newScheduledThreadPool(1);
-        executerPool.schedule(new InitializationRunnable(), 3, TimeUnit.SECONDS);
-        updateStatus(ThingStatus.ONLINE);
+        // Because initialization can take longer a scheduler with an extra thread is created
+        scheduler.schedule(() -> {
+            initChannelHandlerFactory();
+            player = heos.getPlayerState(pid);
+            if (!player.isOnline()) {
+                setStatusOffline();
+                bridge.setThingStatusOffline(thing.getUID());
+                return;
+            }
+            updateStatus(ThingStatus.ONLINE);
+        }, 3, TimeUnit.SECONDS);
     }
 
     @Override
     public PercentType getNotificationSoundVolume() {
+        //updateHeosThingState();
         return PercentType.valueOf(player.getLevel());
     }
 
@@ -77,8 +79,8 @@ public class HeosPlayerHandler extends HeosThingBaseHandler {
 
     @Override
     public void playerMediaChangeEvent(String pid, Map<String, String> info) {
-        this.player.updateMediaInfo(info);
         if (pid.equals(this.pid)) {
+            this.player.updateMediaInfo(info);
             handleThingMediaUpdate(info);
         }
     }
@@ -96,60 +98,13 @@ public class HeosPlayerHandler extends HeosThingBaseHandler {
     }
 
     @Override
+    public void setStatusOnline() {
+        this.initialize();
+    }
+
+    @Override
     protected void updateHeosThingState() {
         player = heos.getPlayerState(pid);
     }
 
-    @Override
-    protected void refreshChannels() {
-        if (player.getLevel() != null) {
-            updateState(CH_ID_VOLUME, PercentType.valueOf(player.getLevel()));
-        }
-
-        if (player.getMute().equals(ON)) {
-            updateState(CH_ID_MUTE, OnOffType.ON);
-        } else {
-            updateState(CH_ID_MUTE, OnOffType.OFF);
-        }
-
-        if (player.getState().equals(PLAY)) {
-            updateState(CH_ID_CONTROL, PlayPauseType.PLAY);
-        }
-        if (player.getState().equals(PAUSE) || player.getState().equals(STOP)) {
-            updateState(CH_ID_CONTROL, PlayPauseType.PAUSE);
-        }
-        if (player.getShuffle().equals(HeosConstants.HEOS_ON)) {
-            updateState(CH_ID_SHUFFLE_MODE, OnOffType.ON);
-        }
-        if (player.getShuffle().equals(HeosConstants.HEOS_OFF)) {
-            updateState(CH_ID_SHUFFLE_MODE, OnOffType.OFF);
-        }
-        updateState(CH_ID_SONG, StringType.valueOf(player.getSong()));
-        updateState(CH_ID_ARTIST, StringType.valueOf(player.getArtist()));
-        updateState(CH_ID_ALBUM, StringType.valueOf(player.getAlbum()));
-        updateState(CH_ID_COVER, StringType.valueOf(player.getImageUrl()));
-        updateState(CH_ID_STATION, StringType.valueOf(player.getStation()));
-        updateState(CH_ID_TYPE, StringType.valueOf(player.getType()));
-        updateState(CH_ID_CUR_POS, StringType.valueOf("0"));
-        updateState(CH_ID_DURATION, StringType.valueOf("0"));
-        updateState(CH_ID_INPUTS, StringType.valueOf("NULL"));
-        updateState(CH_ID_REPEAT_MODE, StringType.valueOf(player.getRepeatMode()));
-    }
-
-    public class InitializationRunnable implements Runnable {
-        @SuppressWarnings("null")
-        @Override
-        public void run() {
-            initChannelHandlerFatory();
-            player = heos.getPlayerState(pid);
-
-            if (!player.isOnline()) {
-                setStatusOffline();
-                bridge.setThingStatusOffline(thing.getUID());
-                return;
-            }
-            bridge.setThingStatusOnline(thing.getUID());
-            refreshChannels();
-        }
-    }
 }

@@ -8,39 +8,42 @@
  */
 package org.openhab.binding.heos.internal.handler;
 
-import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.heos.handler.HeosBridgeHandler;
 import org.openhab.binding.heos.internal.api.HeosFacade;
 
 /**
- * The {@link HeosChannelHandlerDynGroupHandling} handles the Dynamic Group Handling channel command
- * from the implementing thing.
+ * The {@link HeosChannelHandlerAlbum} handles the refresh commands
+ * coming from the implementing thing
  *
  * @author Johannes Einig - Initial contribution
  *
  */
-public class HeosChannelHandlerDynGroupHandling extends HeosChannelHandler {
+public class HeosChannelHandlerAlbum extends HeosChannelHandler {
 
-    public HeosChannelHandlerDynGroupHandling(HeosBridgeHandler bridge, HeosFacade api) {
+    public HeosChannelHandlerAlbum(HeosBridgeHandler bridge, HeosFacade api) {
         super(bridge, api);
     }
 
     @Override
     protected void handleCommandPlayer() {
-        // not used on player
+        handleCommand();
     }
 
     @Override
     protected void handleCommandGroup() {
-        // not used on group
+        handleCommand();
     }
 
     @Override
     protected void handleCommandBridge() {
-        if (command.equals(OnOffType.ON)) {
-            bridge.setHandleGroups(true);
-        } else {
-            bridge.setHandleGroups(false);
+        // No such channel on bridge
+    }
+
+    private void handleCommand() {
+        if (command instanceof RefreshType) {
+            api.getNowPlayingMediaAlbum(id);
+            return;
         }
     }
 }
