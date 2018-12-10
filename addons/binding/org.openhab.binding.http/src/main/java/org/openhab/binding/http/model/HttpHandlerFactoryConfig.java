@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.http.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.http.HttpBindingConstants;
 
 import java.time.Duration;
@@ -17,6 +18,7 @@ import java.time.Duration;
  *
  * @author Brian J. Tarricone
  */
+@NonNullByDefault
 public class HttpHandlerFactoryConfig {
     private long connectTimeout = HttpBindingConstants.DEFAULT_CONNECT_TIMEOUT.toMillis();
     private long requestTimeout = HttpBindingConstants.DEFAULT_REQUEST_TIMEOUT.toMillis();

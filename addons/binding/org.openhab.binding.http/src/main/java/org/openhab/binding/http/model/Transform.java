@@ -1,8 +1,11 @@
 package org.openhab.binding.http.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@NonNullByDefault
 public class Transform {
     private static final Pattern EXTRACT_FUNCTION_PATTERN = Pattern.compile("(.*?)\\((.*)\\)");
 
@@ -31,5 +34,3 @@ public class Transform {
         return pattern;
     }
 }
-
-

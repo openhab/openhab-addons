@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.http.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpStatus;
@@ -62,6 +63,7 @@ import static org.openhab.binding.http.HttpBindingConstants.MAX_IMAGE_RESPONSE_B
 import static org.openhab.binding.http.HttpBindingConstants.MAX_RESPONSE_BODY_LEN;
 import static org.openhab.binding.http.HttpBindingConstants.THING_TYPE_IMAGE;
 
+@NonNullByDefault
 public class HttpThingHandler extends BaseThingHandler {
     private static State stateFromString(final String stateStr) {
         final String stateStrTrimmed = stateStr.trim();

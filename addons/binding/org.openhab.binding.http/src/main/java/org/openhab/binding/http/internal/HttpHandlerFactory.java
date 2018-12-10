@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.http.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -49,6 +50,7 @@ import static org.openhab.binding.http.HttpBindingConstants.THING_TYPE_SWITCH;
  *
  * @author Brian J. Tarricone
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.http")
 public class HttpHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THINGS = new HashSet<>(Arrays.asList(

@@ -1,5 +1,6 @@
 package org.openhab.binding.http.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
@@ -18,6 +19,7 @@ import static org.openhab.binding.http.HttpBindingConstants.DEFAULT_STATE_REFRES
  *
  * @author Brian J. Tarricone
  */
+@NonNullByDefault
 public class HttpHandlerConfig {
     /**
      * Enumeration describing the HTTP method.
@@ -31,6 +33,7 @@ public class HttpHandlerConfig {
      *
      * @author Brian J. Tarricone
      */
+    @NonNullByDefault
     public static class StateRequest {
         private final URL url;
         private final Duration refreshInterval;
@@ -60,6 +63,7 @@ public class HttpHandlerConfig {
      *
      * @author Brian J. Tarricone
      */
+    @NonNullByDefault
     public static class CommandRequest {
         private final Method method;
         private final URL url;

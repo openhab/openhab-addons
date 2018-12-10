@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.http.util;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
@@ -36,6 +37,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author Brian J. Tarricone
  */
+@NonNullByDefault
 public class HttpUtil {
     /**
      * Encapsulation of a returned HTTP response, suitable for handling Thing State.
