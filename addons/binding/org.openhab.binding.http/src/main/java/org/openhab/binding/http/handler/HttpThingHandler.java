@@ -202,12 +202,6 @@ public class HttpThingHandler extends BaseThingHandler {
     }
 
     @Override
-    public void handleRemoval() {
-        cancelStateFetch();
-        super.handleRemoval();
-    }
-
-    @Override
     public void dispose() {
         cancelStateFetch();
     }
