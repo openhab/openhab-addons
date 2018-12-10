@@ -21,11 +21,6 @@ import org.openhab.binding.http.handler.HttpThingHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-
 import static org.openhab.binding.http.HttpBindingConstants.THING_TYPE_HTTP;
 
 /**
@@ -74,15 +69,5 @@ public class HttpHandlerFactory extends BaseThingHandlerFactory {
     @SuppressWarnings("unused")
     protected void unsetItemChannelLinkRegistry(final ItemChannelLinkRegistry itemChannelLinkRegistry) {
         this.itemChannelLinkRegistry = null;
-    }
-
-    private <K, V> Map<K, V> dictionaryToMap(final Dictionary<K, V> dict) {
-        final Map<K, V> map = new HashMap<>(dict.size());
-        final Enumeration<K> keys = dict.keys();
-        while (keys.hasMoreElements()) {
-            final K key = keys.nextElement();
-            map.put(key, dict.get(key));
-        }
-        return map;
     }
 }
