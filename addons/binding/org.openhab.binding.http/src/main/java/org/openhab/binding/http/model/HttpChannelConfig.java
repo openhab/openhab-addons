@@ -1,9 +1,18 @@
+/*
+ * Copyright (c) 2018 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.http.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
+import org.osgi.framework.BundleContext;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -20,7 +29,7 @@ import static org.openhab.binding.http.HttpBindingConstants.DEFAULT_STATE_REFRES
  * @author Brian J. Tarricone
  */
 @NonNullByDefault
-public class HttpHandlerConfig {
+public class HttpChannelConfig {
     /**
      * Enumeration describing the HTTP method.
      */
@@ -33,7 +42,6 @@ public class HttpHandlerConfig {
      *
      * @author Brian J. Tarricone
      */
-    @NonNullByDefault
     public static class StateRequest {
         private final URL url;
         private final Duration refreshInterval;
@@ -63,7 +71,6 @@ public class HttpHandlerConfig {
      *
      * @author Brian J. Tarricone
      */
-    @NonNullByDefault
     public static class CommandRequest {
         private final Method method;
         private final URL url;
@@ -115,11 +122,11 @@ public class HttpHandlerConfig {
     @SuppressWarnings("unused")
     private @Nullable String commandResponseTransform;
 
-    public Optional<StateRequest> getStateRequest() throws IllegalArgumentException {
+    public Optional<StateRequest> getStateRequest(final BundleContext bundleContext) throws IllegalArgumentException {
         return Optional.ofNullable(this.stateUrl).map(stateUrl -> {
             try {
                 final Optional<Transform> stateResponseTransform = Optional.ofNullable(this.stateResponseTransform)
-                        .map(Transform::parse);
+                        .map(s -> Transform.parse(bundleContext, s));
                 return new StateRequest(new URL(stateUrl), Duration.ofMillis(this.stateRefreshInterval), stateResponseTransform);
             } catch (final MalformedURLException e) {
                 throw new IllegalArgumentException("Invalid stateUrl: " + e.getMessage());
@@ -129,7 +136,7 @@ public class HttpHandlerConfig {
         });
     }
 
-    public Optional<CommandRequest> getCommandRequest() throws IllegalArgumentException {
+    public Optional<CommandRequest> getCommandRequest(final BundleContext bundleContext) throws IllegalArgumentException {
         return Optional.ofNullable(this.commandUrl).map(commandUrl -> {
             final Method commandMethod;
             try {
@@ -140,14 +147,14 @@ public class HttpHandlerConfig {
             final Optional<Transform> commandRequestTransform;
             try {
                 commandRequestTransform = Optional.ofNullable(this.commandRequestTransform)
-                        .map(Transform::parse);
+                        .map(s -> Transform.parse(bundleContext, s));
             } catch (final IllegalArgumentException e) {
                 throw new IllegalArgumentException("Invalid commandRequestTransform: " + e.getMessage());
             }
             final Optional<Transform> commandResponseTransform;
             try {
                 commandResponseTransform = Optional.ofNullable(this.commandResponseTransform)
-                        .map(Transform::parse);
+                        .map(s -> Transform.parse(bundleContext, s));
             } catch (final IllegalArgumentException e) {
                 throw new IllegalArgumentException("Invalid commandResponseTransform: " + e.getMessage());
             }

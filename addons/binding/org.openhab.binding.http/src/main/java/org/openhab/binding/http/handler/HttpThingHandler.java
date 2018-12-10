@@ -11,16 +11,7 @@ package org.openhab.binding.http.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.http.HttpStatus;
-import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.library.types.DateTimeType;
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.HSBType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.OpenClosedType;
-import org.eclipse.smarthome.core.library.types.PointType;
-import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.library.types.UpDownType;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -28,84 +19,33 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.link.ItemChannelLinkRegistry;
-import org.eclipse.smarthome.core.transform.TransformationException;
-import org.eclipse.smarthome.core.transform.TransformationHelper;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.http.internal.HttpChannelState;
 import org.openhab.binding.http.internal.HttpHandlerFactory;
-import org.openhab.binding.http.model.HttpHandlerConfig;
-import org.openhab.binding.http.model.HttpHandlerConfig.CommandRequest;
-import org.openhab.binding.http.model.HttpHandlerConfig.StateRequest;
-import org.openhab.binding.http.model.Transform;
-import org.openhab.binding.http.util.HttpUtil;
+import org.openhab.binding.http.model.HttpChannelConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigDecimal;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
-import static org.openhab.binding.http.HttpBindingConstants.CHANNEL_STATE;
-import static org.openhab.binding.http.HttpBindingConstants.DEFAULT_CONTENT_TYPE;
+import static org.openhab.binding.http.HttpBindingConstants.CHANNEL_TYPE_ID_IMAGE;
 import static org.openhab.binding.http.HttpBindingConstants.MAX_IMAGE_RESPONSE_BODY_LEN;
 import static org.openhab.binding.http.HttpBindingConstants.MAX_RESPONSE_BODY_LEN;
-import static org.openhab.binding.http.HttpBindingConstants.THING_TYPE_IMAGE;
 
 @NonNullByDefault
 public class HttpThingHandler extends BaseThingHandler {
-    private static State stateFromString(final String stateStr) {
-        final String stateStrTrimmed = stateStr.trim();
-        switch (stateStrTrimmed) {
-            case "ON":
-                return OnOffType.ON;
-            case "OFF":
-                return OnOffType.OFF;
-            case "OPEN":
-                return OpenClosedType.OPEN;
-            case "CLOSED":
-                return OpenClosedType.CLOSED;
-            case "UP":
-                return UpDownType.UP;
-            case "DOWN":
-                return UpDownType.DOWN;
-            default:
-                try {
-                    return new PointType(stateStrTrimmed);
-                } catch (final IllegalArgumentException e) { /* try something else */ }
-                try {
-                    return new HSBType(stateStrTrimmed);
-                } catch (final IllegalArgumentException e) { /* try something else */ }
-                try {
-                    return new DecimalType(new BigDecimal(stateStrTrimmed));
-                } catch (final NumberFormatException e) { /* try something else */ }
-                try {
-                    return new DateTimeType(stateStrTrimmed);
-                } catch (final IllegalArgumentException e) { /* try something else */ }
-                return new StringType(stateStr);
-        }
-    }
-
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    private final Map<ChannelUID, HttpChannelState> channels = new HashMap<>();
+
     private final HttpClient httpClient;
-    private final int maxHttpResponseBodyLen;
 
     private final ItemChannelLinkRegistry itemChannelLinkRegistry;
-
-    private Optional<StateRequest> stateRequest = Optional.empty();
-    private volatile boolean fetchingState = false;
-    private Optional<ScheduledFuture<?>> stateUpdater = Optional.empty();
-    private Optional<String> lastStateEtag = Optional.empty();
-    private Optional<CommandRequest> commandRequest = Optional.empty();
 
     private Duration connectTimeout;
     private Duration requestTimeout;
@@ -121,55 +61,49 @@ public class HttpThingHandler extends BaseThingHandler {
         this.itemChannelLinkRegistry = itemChannelLinkRegistry;
         this.connectTimeout = connectTimeout;
         this.requestTimeout = requestTimeout;
-        if (needsRawType()) {
-            this.maxHttpResponseBodyLen = MAX_IMAGE_RESPONSE_BODY_LEN;
-        } else {
-            this.maxHttpResponseBodyLen = MAX_RESPONSE_BODY_LEN;
-        }
-    }
-
-    private boolean needsRawType() {
-        return getThing().getThingTypeUID().equals(THING_TYPE_IMAGE);
     }
 
     @Override
     public void initialize() {
         try {
-            updateConfig(getThing().getConfiguration().getProperties());
+            for (final Channel channel : getThing().getChannels()) {
+                final ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
+                if (channelTypeUID != null) {
+                    final int maxHttpResponseBodyLen;
+                    if (CHANNEL_TYPE_ID_IMAGE.equals(channelTypeUID.getId())) {
+                        maxHttpResponseBodyLen = MAX_IMAGE_RESPONSE_BODY_LEN;
+                    } else {
+                        maxHttpResponseBodyLen = MAX_RESPONSE_BODY_LEN;
+                    }
+
+                    final HttpChannelConfig config = channel.getConfiguration().as(HttpChannelConfig.class);
+                    final HttpChannelState channelState = new HttpChannelState(
+                            channel.getUID(),
+                            channelTypeUID,
+                            this.httpClient,
+                            this.connectTimeout,
+                            this.requestTimeout,
+                            maxHttpResponseBodyLen,
+                            config.getStateRequest(bundleContext),
+                            scheduler,
+                            config.getCommandRequest(bundleContext),
+                            this::updateState,
+                            this::communicationsError
+                    );
+                    channels.put(channel.getUID(), channelState);
+                }
+            }
             updateStatus(ThingStatus.ONLINE);
         } catch (final IllegalArgumentException e) {
+            disposeChannels();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
     }
 
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
-        if (!CHANNEL_STATE.equals(channelUID.getId())) {
-            logger.warn("[{}] unknown channel '{}'", getThing().getUID(), channelUID.getId());
-        } else if (command.equals(RefreshType.REFRESH)) {
-            this.stateRequest.ifPresent(this::fetchState);
-        } else if (!this.commandRequest.isPresent()) {
-            logger.warn("[{}] got command on channel '{}', but no command URL set", getThing().getUID(), channelUID.getId());
-        } else {
-            final CommandRequest commandRequest = this.commandRequest.get();
-            final HttpHandlerConfig.Method method = commandRequest.getMethod();
-            final String commandStr = command.toFullString();
-            try {
-                final String transformedCommand = doTransform(commandRequest.getRequestTransform(), commandStr);
-                final URL transformedUrl = formatUrl(commandRequest.getUrl(), transformedCommand);
-                makeHttpRequest(method, transformedUrl, commandRequest.getContentType(), Optional.empty(), Optional.of(commandStr)).whenComplete((response, t) -> {
-                    if (t != null) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connetion to server failed when sending command: " + t.getMessage());
-                    } else if (response.getResponse().getStatus() / 100 != 2) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Server returned HTTP status " + response.getResponse().getStatus() + " when sending command");
-                    } else {
-                        updateStatus(ThingStatus.ONLINE);
-                        updateState(stateFromResponse(response, commandRequest.getResponseTransform()));
-                    }
-                });
-            } catch (final IllegalArgumentException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-            }
+        if (channels.containsKey(channelUID)) {
+            channels.get(channelUID).handleCommand(command);
         }
     }
 
@@ -182,12 +116,22 @@ public class HttpThingHandler extends BaseThingHandler {
     }
 
     @Override
+    protected void updateState(final ChannelUID channelUID, final State state) {
+        final boolean needsUpdate = this.itemChannelLinkRegistry.getLinkedItems(channelUID).stream()
+                .anyMatch(item -> !state.equals(item.getState()));
+        if (needsUpdate) {
+            updateStatus(ThingStatus.ONLINE);
+            super.updateState(channelUID, state);
+        }
+    }
+
+    @Override
     public void dispose() {
-        cancelStateFetch();
+        disposeChannels();
     }
 
     /**
-     * Allows {@link HttpHandlerFactory} to update notify this class of changes in binding parameters.
+     * Allows {@link HttpHandlerFactory} to notify this class of changes in binding parameters.
      *
      * @param connectTimeout HTTP connect timeout
      * @param requestTimeout HTTP request timeout
@@ -195,123 +139,18 @@ public class HttpThingHandler extends BaseThingHandler {
     public void updateBindingConfig(final Duration connectTimeout, final Duration requestTimeout) {
         this.connectTimeout = connectTimeout;
         this.requestTimeout = requestTimeout;
+        this.channels.values().forEach(channelState -> channelState.updateBindingConfig(connectTimeout, requestTimeout));
     }
 
-    private void updateConfig(final Map<String, Object> properties) throws IllegalArgumentException {
-        final HttpHandlerConfig config = new Configuration(properties).as(HttpHandlerConfig.class);
-        this.stateRequest = config.getStateRequest();
-        this.commandRequest = config.getCommandRequest();
-        stateRequest.ifPresent(this::startStateFetch);
-    }
-
-    private URL formatUrl(final URL origUrl, final String command) throws IllegalArgumentException {
-        final String origUrlStr = origUrl.toString();
-        if (origUrlStr.contains("%s")) {
-            try {
-                return new URL(String.format(origUrlStr, command));
-            } catch (final MalformedURLException e) {
-                throw new IllegalArgumentException("Failed to interpolate command into URL: " + e.getMessage(), e);
-            }
-        } else {
-            return origUrl;
+    private void communicationsError(final ChannelUID channelUID, final ThingStatusDetail errorDetail, final String errorDescription) {
+        if (channels.size() == 1) {
+            // if we only have one channel, treat an error on that channel as offline for the entire thing
+            updateStatus(ThingStatus.OFFLINE, errorDetail, errorDescription);
         }
     }
 
-    private CompletionStage<HttpUtil.HttpResponse> makeHttpRequest(final HttpHandlerConfig.Method method,
-                                                                   final URL url,
-                                                                   final String contentType,
-                                                                   final Optional<String> lastEtag,
-                                                                   final Optional<String> requestBody)
-    {
-        return HttpUtil.makeRequest(
-                this.httpClient,
-                method.toString(),
-                url,
-                contentType,
-                lastEtag,
-                requestBody,
-                this.connectTimeout,
-                this.requestTimeout,
-                this.maxHttpResponseBodyLen
-        );
-    }
-
-    private void updateState(final State state) {
-        final ChannelUID stateChannelUID = getThing().getChannel(CHANNEL_STATE).getUID();
-        final boolean needsUpdate = this.itemChannelLinkRegistry.getLinkedItems(stateChannelUID).stream()
-                .anyMatch(item -> !state.equals(item.getState()));
-        if (needsUpdate) {
-            Optional.ofNullable(getCallback()).ifPresent(cb -> cb.stateUpdated(stateChannelUID, state));
-        }
-    }
-
-    private void startStateFetch(final StateRequest stateRequest) {
-        cancelStateFetch();
-
-        this.stateUpdater = Optional.of(scheduler.scheduleWithFixedDelay(
-                () -> fetchState(stateRequest),
-                0,
-                stateRequest.getRefreshInterval().toMillis(),
-                TimeUnit.MILLISECONDS
-        ));
-    }
-
-    private void cancelStateFetch() {
-        this.stateUpdater = this.stateUpdater.flatMap(su -> {
-            su.cancel(false);
-            return Optional.empty();
-        });
-    }
-
-    private void fetchState(final StateRequest stateRequest) {
-        if (!this.fetchingState) {
-            this.fetchingState = true;
-            final URL url = stateRequest.getUrl();
-            makeHttpRequest(HttpHandlerConfig.Method.GET, url, DEFAULT_CONTENT_TYPE, this.lastStateEtag, Optional.empty()).whenComplete((response, t) -> {
-                this.fetchingState = false;
-                if (t != null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection to server failed when fetching state: " + t.getMessage());
-                } else if (response.getResponse().getStatus() == HttpStatus.NOT_MODIFIED_304) {
-                    // no need to do anything; last fetched state is still valid
-                    updateStatus(ThingStatus.ONLINE);
-                } else if (response.getResponse().getStatus() / 100 != 2) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Server returned HTTP status " + response.getResponse().getStatus() + " when fetching state");
-                } else {
-                    updateStatus(ThingStatus.ONLINE);
-                    final State newState = stateFromResponse(response, stateRequest.getResponseTransform());
-                    logger.debug("[{}] got new state '{}'", getThing().getUID(), newState.toFullString());
-                    updateState(newState);
-                    this.lastStateEtag = Optional.ofNullable(response.getResponse().getHeaders().get("etag"));
-                }
-            });
-        }
-    }
-
-    private String doTransform(final Optional<Transform> maybeTransform, final String value) throws IllegalArgumentException {
-        return maybeTransform.map(transform ->
-                Optional.ofNullable(TransformationHelper.getTransformationService(bundleContext, transform.getFunction())).map(service -> {
-                    try {
-                        return service.transform(transform.getPattern(), value);
-                    } catch (final TransformationException e) {
-                        throw new IllegalArgumentException(e.getMessage(), e);
-                    }
-                }).orElseThrow(() -> new IllegalArgumentException("No transformation service available for function " + transform.getFunction()))
-        ).orElse(value);
-    }
-
-    private State stateFromResponse(final HttpUtil.HttpResponse response, final Optional<Transform> transform) {
-        if (needsRawType()) {
-            return response.asRawType();
-        } else {
-            try {
-                return stateFromString(doTransform(transform, response.asString()));
-            } catch (final IllegalArgumentException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                return UnDefType.UNDEF;
-            } catch (final IllegalStateException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "HTTP server returned unparseable state: " + e.getMessage());
-                return UnDefType.UNDEF;
-            }
-        }
+    private void disposeChannels() {
+        this.channels.values().forEach(HttpChannelState::close);
+        this.channels.clear();
     }
 }

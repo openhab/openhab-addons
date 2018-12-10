@@ -8,7 +8,7 @@
         <parameter name="stateUrl" type="text" required="true">
             <label>State URL</label>
             <description>
-                URL to fetch to retrieve the state of the Thing. The URL should return a State value; see the README
+                URL to fetch to retrieve the state of the channel. The URL should return a State value; see the README
                 for more information.
             </description>
         </parameter>
@@ -26,17 +26,17 @@
     <config-description uri="thing-type:http:config-all">
         <parameter-group name="state-config">
             <label>State Configuration</label>
-            <description>This section allows you to configure a request to make to fetch the state of the Thing.</description>
+            <description>This section allows you to configure a request to make to fetch the state of the channel.</description>
         </parameter-group>
         <parameter-group name="command-config">
             <label>Command Configuration</label>
-            <description>This setion allows you to configure a request to make to change the state of the Thing.</description>
+            <description>This setion allows you to configure a request to make to change the state of the channel.</description>
         </parameter-group>
 
         <parameter name="stateUrl" type="text" groupName="state-config">
             <label>State URL</label>
             <description>
-                URL to fetch to retrieve the state of the Thing. The URL should return a State value; see the README for
+                URL to fetch to retrieve the state of the channel. The URL should return a State value; see the README for
                 more information.
             </description>
         </parameter>
@@ -52,7 +52,7 @@
 
         <parameter name="commandMethod" type="text" groupName="command-config">
             <label>Command HTTP Method</label>
-            <description>HTTP Method to use when sending a command to the Thing.</description>
+            <description>HTTP Method to use when sending a command to the channel.</description>
             <default>POST</default>
             <options>
                 <option value="POST">POST</option>
@@ -62,7 +62,7 @@
         <parameter name="commandUrl" type="text" groupName="command-config">
             <label>Command URL</label>
             <description><![CDATA[
-                URL to request to change the state of the Thing.  See the README for possible Command values. For POST
+                URL to request to change the state of the channel.  See the README for possible Command values. For POST
                 requests, the request body will be by default of type <code>text/plain</code> and will simply be the
                 command.  For GET requests, the request body will be empty, but you can interpolate the command into
                 the URL by using <code>%s</code>.

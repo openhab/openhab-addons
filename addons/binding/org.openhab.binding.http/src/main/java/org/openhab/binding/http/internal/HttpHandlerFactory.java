@@ -25,25 +25,12 @@ import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
-import static org.openhab.binding.http.HttpBindingConstants.THING_TYPE_COLOR;
-import static org.openhab.binding.http.HttpBindingConstants.THING_TYPE_CONTACT;
-import static org.openhab.binding.http.HttpBindingConstants.THING_TYPE_DATETIME;
-import static org.openhab.binding.http.HttpBindingConstants.THING_TYPE_DIMMER;
-import static org.openhab.binding.http.HttpBindingConstants.THING_TYPE_IMAGE;
-import static org.openhab.binding.http.HttpBindingConstants.THING_TYPE_LOCATION;
-import static org.openhab.binding.http.HttpBindingConstants.THING_TYPE_NUMBER;
-import static org.openhab.binding.http.HttpBindingConstants.THING_TYPE_PLAYER;
-import static org.openhab.binding.http.HttpBindingConstants.THING_TYPE_ROLLERSHUTTER;
-import static org.openhab.binding.http.HttpBindingConstants.THING_TYPE_STRING;
-import static org.openhab.binding.http.HttpBindingConstants.THING_TYPE_SWITCH;
+import static org.openhab.binding.http.HttpBindingConstants.THING_TYPE_HTTP;
 
 /**
  * Handler factory for creating handlers for things of type http.
@@ -53,20 +40,6 @@ import static org.openhab.binding.http.HttpBindingConstants.THING_TYPE_SWITCH;
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.http")
 public class HttpHandlerFactory extends BaseThingHandlerFactory {
-    private static final Set<ThingTypeUID> SUPPORTED_THINGS = new HashSet<>(Arrays.asList(
-            THING_TYPE_COLOR,
-            THING_TYPE_CONTACT,
-            THING_TYPE_DATETIME,
-            THING_TYPE_DIMMER,
-            THING_TYPE_IMAGE,
-            THING_TYPE_LOCATION,
-            THING_TYPE_NUMBER,
-            THING_TYPE_PLAYER,
-            THING_TYPE_ROLLERSHUTTER,
-            THING_TYPE_STRING,
-            THING_TYPE_SWITCH
-    ));
-
     private final Map<ThingUID, HttpThingHandler> handlers = new HashMap<>();
 
     private HttpClient httpClient;
@@ -89,7 +62,7 @@ public class HttpHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(final ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THINGS.contains(thingTypeUID);
+        return THING_TYPE_HTTP.equals(thingTypeUID);
     }
 
     @Override

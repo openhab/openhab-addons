@@ -4,21 +4,7 @@ This binding can be used to make HTTP requests to fetch and update device state.
 
 ## Supported Things
 
-This binding supports Things of type:
-
-| Thing Type      | Item Type     | Read-only |
-|-----------------|---------------|-----------|
-| `color`         | Color         | no        |
-| `contact`       | Contact       | yes       |
-| `datetime`      | DateTime      | yes       |
-| `dimmer`        | Dimmer        | no        |
-| `image`         | Image         | yes       |
-| `location`      | Location      | yes       |
-| `number`        | Number        | no        |
-| `player`        | Player        | no        |
-| `rollershutter` | Rollershutter | no        |
-| `string`        | String        | no        |
-| `switch`        | Switch        | no        |
+This binding supports a single thing type: `http`.
 
 ## Discovery
 
@@ -35,11 +21,39 @@ The binding has the following configuration options:
 
 ## Thing Configuration
 
+The Thing itself does not support any configuration.  However, to be useful,
+any number of channels can be added to a created Thing.  Each channel can be
+configured with different URLs to fetch and update state.
+
+## Channels
+
+There are no built-in channels; instead channels are added dynamically by
+the user.
+
+These channel types are supported:
+
+| Channel Type    | Item Type     | Read-only |
+|-----------------|---------------|-----------|
+| `color`         | Color         | no        |
+| `contact`       | Contact       | yes       |
+| `datetime`      | DateTime      | yes       |
+| `dimmer`        | Dimmer        | no        |
+| `image`         | Image         | yes       |
+| `location`      | Location      | yes       |
+| `number`        | Number        | no        |
+| `player`        | Player        | no        |
+| `rollershutter` | Rollershutter | no        |
+| `string`        | String        | no        |
+| `switch`        | Switch        | no        |
+
+  
+Configuration is as follows.
+
 ### State Configiration
 
 | Parameter              | Name                          | Description                                                                                    | Default Value |
 |------------------------|-------------------------------|------------------------------------------------------------------------------------------------|---------------|
-| stateUrl               | State URL                     | URL to fetch to retrieve the state of the Thing.                                               |               |
+| stateUrl               | State URL                     | URL to fetch to retrieve the state of the Channel.                                             |               |
 | stateRefreshInterval   | State Refresh Interval        | How often (in milliseconds) to refresh state by fetching the State URL.                        | 60000ms       |
 | stateResponseTransform | State Response Transformation | A transformation function that will transform the HTTP response into a recognized state value. |               |
 
@@ -61,8 +75,8 @@ The expected State values differ depending on Thing type:
 
 | Parameter                | Name                            | Description                                                                               | Default Value             |
 |--------------------------|---------------------------------|-------------------------------------------------------------------------------------------|---------------------------|
-| commandMethod            | Command HTTP Method             | HTTP Method to use when sending a command to the Thing.                                   | POST                      |
-| commandUrl               | Command URL                     | URL to request to change the state of the Thing.                                          |                           |
+| commandMethod            | Command HTTP Method             | HTTP Method to use when sending a command to the Channel.                                 | POST                      |
+| commandUrl               | Command URL                     | URL to request to change the state of the Channel.                                        |                           |
 | commandContentType       | Command Content Type            | The content type to use for the HTTP request.                                             | text/plain; charset=utf-8 |
 | commandRequestTransform  | Command Request Transformation  | A transformation rule used to transform the command before it is sent to the Command URL. |                           |
 | commandResponseTransform | Command Response Transformation | A transformation rule used to transform the HTTP response from the Command URL.           |                           |
@@ -71,7 +85,7 @@ If `commandMethod` is set to POST, the command to be sent will be provided
 in the entity body of the request.  If set to GET, the command can be
 interpolated into the `commandUrl` by specifying a `%s` somewhere in the URL.
 
-The expected Command values differ depending on Thing type:
+The expected Command values differ depending on Channel type:
 
 * color: `ON`, `OFF`, `INCREASE`, `DECREASE`, or a comma-separated Hue,Saturation,Brightness (HSB) value such as `250,80,100`
 * dimmer: `ON`, `OFF`, `INCREASE`, `DECREASE`, or a percentage value such as `42`
@@ -81,58 +95,35 @@ The expected Command values differ depending on Thing type:
 * string: a bare string, such as `I like home automation`
 * switch: `ON` or `OFF`
 
-## Channels
-
-| Channel Type ID | Item Type    | Description                             |
-|-----------------|--------------|-----------------------------------------|
-| state           | (various)    | The Thing-type-dependent state received |
-
 ## Full Example
+
+Say we have a building with a door security system that allows you to send a
+HTTP request to unlock the door, and also has a camera that exports a JPEG
+image to the HTTP server every few seconds.  We could represent that as
+follows:
 
 Things:
 
 ```
-Thing http:dimmer:dimmer_light_1 [ stateUrl="https://example.com/dimmer_light_1" commandMethod="POST" commandUrl="https://example.com/dimmer_light_1" ]
-Thing http:image:image_1 [ stateUrl="https://example.com/foo.jpg" ]
+Thing http:http:front_door_switch {
+    Channels:
+        Type switch : door_open "Door Open" [ stateUrl="https://example.com/door_open" commandMethod="POST" commandUrl="https://example.com/door_open" ]
+        Type image : door_camera "Door Camera" [ stateUrl="https://example.com/door_camera.jpg" refreshInterval="5000" ]
+}
 ```
 
 Items:
 
 ```
-Dimmer DimmerLight1 { channel="http:dimmer_light_1:state" }
-Image Image1 { channel="http:image_1:state" }
+Switch DoorOpen { channel="http:front_door_switch:door_open" }
+Image Image1 { channel="http:front_door:door_camera" }
 ```
 
 Sitemap:
 
 ```
-Frame label="HTTP Test" {
-    Dimmer item=DimmerLight1
-    Image item=Image1
-}
-```
-
-## Use case example
-
-The binding can be used to adapt regular web services with arbitrary
-request/response semantics to be used with openHAB. For example, say
-I live in an apartment complex and the main door to the building can
-be opened using a HTTP request.  I can model this with a Thing:
-
-```
-Thing http:switch:front_door [ stateUrl="https://example.com/building-front-door" stateRefreshInterval="5000" commandMethod="POST" commandUrl="https://example.com/building-front-door" ]
-```
-
-... and an Item:
-
-```
-Switch FrontDoor { channel="http:front_door:state" }
-```
-
-For display, I can also create a Sitemap:
-
-```
-Frame label="Door Control" icon="door" {
-    Switch item=FrontDoor
+Frame label="Front Door" {
+    Swith item=Open Door
+    Image item=Exterior Camera
 }
 ```
