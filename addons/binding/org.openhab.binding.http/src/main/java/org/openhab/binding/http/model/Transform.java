@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2018 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.http.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -5,6 +13,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * A class describing a parsed transformation function.
+ *
+ * @author Brian J. Tarricone
+ */
 @NonNullByDefault
 public class Transform {
     private static final Pattern EXTRACT_FUNCTION_PATTERN = Pattern.compile("(.*?)\\((.*)\\)");
