@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.TypeParser;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.http.model.ErrorListener;
 import org.openhab.binding.http.model.HttpChannelConfig;
@@ -33,10 +34,11 @@ import org.openhab.binding.http.util.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ScheduledExecutorService;
@@ -54,37 +56,16 @@ import static org.openhab.binding.http.HttpBindingConstants.DEFAULT_CONTENT_TYPE
  */
 @NonNullByDefault
 public class HttpChannelState implements AutoCloseable {
-    private static State stateFromString(final String stateStr) {
-        final String stateStrTrimmed = stateStr.trim();
-        switch (stateStrTrimmed) {
-            case "ON":
-                return OnOffType.ON;
-            case "OFF":
-                return OnOffType.OFF;
-            case "OPEN":
-                return OpenClosedType.OPEN;
-            case "CLOSED":
-                return OpenClosedType.CLOSED;
-            case "UP":
-                return UpDownType.UP;
-            case "DOWN":
-                return UpDownType.DOWN;
-            default:
-                try {
-                    return new PointType(stateStrTrimmed);
-                } catch (final IllegalArgumentException e) { /* try something else */ }
-                try {
-                    return new HSBType(stateStrTrimmed);
-                } catch (final IllegalArgumentException e) { /* try something else */ }
-                try {
-                    return new DecimalType(new BigDecimal(stateStrTrimmed));
-                } catch (final NumberFormatException e) { /* try something else */ }
-                try {
-                    return new DateTimeType(stateStrTrimmed);
-                } catch (final IllegalArgumentException e) { /* try something else */ }
-                return new StringType(stateStr);
-        }
-    }
+    private static final List<Class<? extends State>> STATE_TYPES = Arrays.asList(
+            OnOffType.class,
+            OpenClosedType.class,
+            UpDownType.class,
+            PointType.class,
+            HSBType.class,
+            DecimalType.class,
+            DateTimeType.class,
+            StringType.class
+    );
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -262,7 +243,7 @@ public class HttpChannelState implements AutoCloseable {
             return response.asRawType();
         } else {
             try {
-                return stateFromString(doTransform(transform, response.asString()));
+                return TypeParser.parseState(STATE_TYPES, doTransform(transform, response.asString()));
             } catch (final IllegalArgumentException e) {
                 this.errorListener.accept(this.channelUID, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 return UnDefType.UNDEF;
