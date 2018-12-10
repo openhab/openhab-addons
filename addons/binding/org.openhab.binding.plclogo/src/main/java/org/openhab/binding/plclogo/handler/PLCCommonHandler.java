@@ -12,7 +12,6 @@ import static org.openhab.binding.plclogo.PLCLogoBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -179,8 +178,7 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
     protected int getBase(final String name) {
         Layout layout = null;
 
-        String family = getLogoFamily();
-        logger.debug("Get base address of {} LOGO! for block {} .", family, name);
+        logger.debug("Get base address of {} LOGO! for block {} .", getLogoFamily(), name);
 
         String block = name.split("\\.")[0];
         if (isValid(name) && !block.isEmpty()) {
@@ -240,8 +238,7 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
      * @return Configured LOGO! family
      */
     protected String getLogoFamily() {
-        Objects.requireNonNull(family, "PLCCommonHandler: Family may not be null");
-        return family;
+        return family != null ? family : "NOT SUPPORTED";
     }
 
     /**
@@ -249,17 +246,17 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
      */
     protected void doInitialization() {
         Bridge bridge = getBridge();
-        Objects.requireNonNull(bridge, "PLCCommonHandler: Bridge may not be null");
-
-        PLCBridgeHandler handler = (PLCBridgeHandler) bridge.getHandler();
-        Objects.requireNonNull(handler, "PLCCommonHandler: Bridge handler may not be null");
-
-        family = handler.getLogoFamily();
-        client = handler.getLogoClient();
-        if ((client == null) || (family == null)) {
-            String message = "Can not initialize LOGO! block handler.";
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
-            logger.warn("Can not initialize thing {} for LOGO! {}.", thing.getUID(), bridge.getUID());
+        if (bridge != null) {
+            PLCBridgeHandler handler = (PLCBridgeHandler) bridge.getHandler();
+            if (handler != null) {
+                family = handler.getLogoFamily();
+                client = handler.getLogoClient();
+                if ((client == null) || (family == null)) {
+                    String message = "Can not initialize LOGO! block handler.";
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
+                    logger.warn("Can not initialize thing {} for LOGO! {}.", thing.getUID(), bridge.getUID());
+                }
+            }
         }
     }
 

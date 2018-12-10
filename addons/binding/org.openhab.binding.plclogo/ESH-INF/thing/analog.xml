@@ -8,8 +8,8 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="device" />
 		</supported-bridge-type-refs>
-		<label>LOGO! Analog Block</label>
-		<description>Siemens LOGO! analog input/output block</description>
+		<label>Analog Blocks</label>
+		<description>Siemens LOGO! analog input/output blocks</description>
 		<config-description-ref uri="thing-type:plclogo:analog" />
 	</thing-type>
 </thing:thing-descriptions>
