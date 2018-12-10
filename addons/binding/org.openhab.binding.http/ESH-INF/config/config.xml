@@ -17,6 +17,16 @@
             <description>How often (in milliseconds) to refresh state by fetching the State URL.</description>
             <default>60000</default>
         </parameter>
+        <parameter name="stateConnectTimeout" type="integer" required="true">
+            <label>State Connect Timeout</label>
+            <description>HTTP connect timeout, in milliseconds.</description>
+            <default>3000</default>
+        </parameter>
+        <parameter name="stateRequestTimeout" type="integer" required="true">
+            <label>State Request Timeout</label>
+            <description>HTTP request timeout, in milliseconds.</description>
+            <default>5000</default>
+        </parameter>
         <parameter name="stateResponseTransform" type="text">
             <label>State Response Transformation</label>
             <description>A transformation rule used to transform the HTTP response from the State URL.</description>
@@ -45,6 +55,16 @@
             <description>How often (in milliseconds) to refresh state by fetching the State URL.</description>
             <default>60000</default>
         </parameter>
+        <parameter name="stateConnectTimeout" type="integer" required="true">
+            <label>State Connect Timeout</label>
+            <description>HTTP connect timeout, in milliseconds.</description>
+            <default>3000</default>
+        </parameter>
+        <parameter name="stateRequestTimeout" type="integer" required="true">
+            <label>State Request Timeout</label>
+            <description>HTTP request timeout, in milliseconds.</description>
+            <default>5000</default>
+        </parameter>
         <parameter name="stateResponseTransform" type="text" groupName="state-config">
             <label>State Response Transformation</label>
             <description>A transformation rule used to transform the HTTP response from the State URL.</description>
@@ -67,6 +87,16 @@
                 command.  For GET requests, the request body will be empty, but you can interpolate the command into
                 the URL by using <code>%s</code>.
             ]]></description>
+        </parameter>
+        <parameter name="commandConnectTimeout" type="integer" required="true">
+            <label>Command Connect Timeout</label>
+            <description>HTTP connect timeout, in milliseconds.</description>
+            <default>3000</default>
+        </parameter>
+        <parameter name="commandRequestTimeout" type="integer" required="true">
+            <label>Command Request Timeout</label>
+            <description>HTTP request timeout, in milliseconds.</description>
+            <default>5000</default>
         </parameter>
         <parameter name="commandContentType" type="text" required="true" groupName="command-config">
             <label>Command Content Type</label>

@@ -20,7 +20,9 @@ import java.time.Duration;
 import java.util.Optional;
 
 import static org.openhab.binding.http.HttpBindingConstants.DEFAULT_COMMAND_METHOD;
+import static org.openhab.binding.http.HttpBindingConstants.DEFAULT_CONNECT_TIMEOUT;
 import static org.openhab.binding.http.HttpBindingConstants.DEFAULT_CONTENT_TYPE;
+import static org.openhab.binding.http.HttpBindingConstants.DEFAULT_REQUEST_TIMEOUT;
 import static org.openhab.binding.http.HttpBindingConstants.DEFAULT_STATE_REFRESH_INTERVAL;
 
 /**
@@ -44,17 +46,34 @@ public class HttpChannelConfig {
      */
     public static class StateRequest {
         private final URL url;
+        private final Duration connectTimeout;
+        private final Duration requestTimeout;
         private final Duration refreshInterval;
         private final Optional<Transform> responseTransform;
 
-        StateRequest(final URL url, final Duration refreshInterval, final Optional<Transform> responseTransform) {
+        StateRequest(final URL url,
+                     final Duration connectTimeout,
+                     final Duration requestTimeout,
+                     final Duration refreshInterval,
+                     final Optional<Transform> responseTransform)
+        {
             this.url = url;
+            this.connectTimeout = connectTimeout;
+            this.requestTimeout = requestTimeout;
             this.refreshInterval = refreshInterval;
             this.responseTransform = responseTransform;
         }
 
         public URL getUrl() {
             return url;
+        }
+
+        public Duration getConnectTimeout() {
+            return connectTimeout;
+        }
+
+        public Duration getRequestTimeout() {
+            return requestTimeout;
         }
 
         public Duration getRefreshInterval() {
@@ -74,13 +93,24 @@ public class HttpChannelConfig {
     public static class CommandRequest {
         private final Method method;
         private final URL url;
+        private final Duration connectTimeout;
+        private final Duration requestTimeout;
         private final String contentType;
         private final Optional<Transform> requestTransform;
         private final Optional<Transform> responseTransform;
 
-        CommandRequest(final Method method, final URL url, final String contentType, final Optional<Transform> requestTransform, final Optional<Transform> responseTransform) {
+        CommandRequest(final Method method,
+                       final URL url,
+                       final Duration connectTimeout,
+                       final Duration requestTimeout,
+                       final String contentType,
+                       final Optional<Transform> requestTransform,
+                       final Optional<Transform> responseTransform)
+        {
             this.method = method;
             this.url = url;
+            this.connectTimeout = connectTimeout;
+            this.requestTimeout = requestTimeout;
             this.contentType = contentType;
             this.requestTransform = requestTransform;
             this.responseTransform = responseTransform;
@@ -92,6 +122,14 @@ public class HttpChannelConfig {
 
         public URL getUrl() {
             return url;
+        }
+
+        public Duration getConnectTimeout() {
+            return connectTimeout;
+        }
+
+        public Duration getRequestTimeout() {
+            return requestTimeout;
         }
 
         public String getContentType() {
@@ -110,12 +148,16 @@ public class HttpChannelConfig {
     @SuppressWarnings("unused")
     private @Nullable String stateUrl;
     private long stateRefreshInterval = DEFAULT_STATE_REFRESH_INTERVAL.toMillis();
+    private long stateConnectTimeout = DEFAULT_CONNECT_TIMEOUT.toMillis();
+    private long stateRequestTimeout = DEFAULT_REQUEST_TIMEOUT.toMillis();
     @SuppressWarnings("unused")
     private @Nullable String stateResponseTransform;
 
     private String commandMethod = DEFAULT_COMMAND_METHOD.name();
     @SuppressWarnings("unused")
     private @Nullable String commandUrl;
+    private long commandConnectTimeout = DEFAULT_CONNECT_TIMEOUT.toMillis();
+    private long commandRequestTimeout = DEFAULT_REQUEST_TIMEOUT.toMillis();
     private String commandContentType = DEFAULT_CONTENT_TYPE;
     @SuppressWarnings("unused")
     private @Nullable String commandRequestTransform;
@@ -127,7 +169,13 @@ public class HttpChannelConfig {
             try {
                 final Optional<Transform> stateResponseTransform = Optional.ofNullable(this.stateResponseTransform)
                         .map(s -> Transform.parse(bundleContext, s));
-                return new StateRequest(new URL(stateUrl), Duration.ofMillis(this.stateRefreshInterval), stateResponseTransform);
+                return new StateRequest(
+                        new URL(stateUrl),
+                        Duration.ofMillis(this.stateConnectTimeout),
+                        Duration.ofMillis(this.stateRequestTimeout),
+                        Duration.ofMillis(this.stateRefreshInterval),
+                        stateResponseTransform
+                );
             } catch (final MalformedURLException e) {
                 throw new IllegalArgumentException("Invalid stateUrl: " + e.getMessage());
             } catch (final IllegalArgumentException e) {
@@ -159,7 +207,15 @@ public class HttpChannelConfig {
                 throw new IllegalArgumentException("Invalid commandResponseTransform: " + e.getMessage());
             }
             try {
-                return new CommandRequest(commandMethod, new URL(commandUrl), this.commandContentType, commandRequestTransform, commandResponseTransform);
+                return new CommandRequest(
+                        commandMethod,
+                        new URL(commandUrl),
+                        Duration.ofMillis(this.commandConnectTimeout),
+                        Duration.ofMillis(this.commandRequestTimeout),
+                        this.commandContentType,
+                        commandRequestTransform,
+                        commandResponseTransform
+                );
             } catch (final MalformedURLException e) {
                 throw new IllegalArgumentException("Invalid commandUrl: " + e.getMessage());
             }

@@ -83,14 +83,9 @@ public class HttpChannelState implements AutoCloseable {
     private Optional<ScheduledFuture<?>> stateUpdater = Optional.empty();
     private Optional<String> lastStateEtag = Optional.empty();
 
-    private Duration connectTimeout;
-    private Duration requestTimeout;
-
     public HttpChannelState(final ChannelUID channelUID,
                             final ChannelTypeUID channelTypeUID,
                             final HttpClient httpClient,
-                            final Duration connectTimeout,
-                            final Duration requestTimeout,
                             final int maxHttpResponseBodyLen,
                             final Optional<HttpChannelConfig.StateRequest> stateRequest,
                             final ScheduledExecutorService scheduler,
@@ -101,8 +96,6 @@ public class HttpChannelState implements AutoCloseable {
         this.channelUID = channelUID;
         this.channelTypeUID = channelTypeUID;
         this.httpClient = httpClient;
-        this.connectTimeout = connectTimeout;
-        this.requestTimeout = requestTimeout;
         this.maxHttpResponseBodyLen = maxHttpResponseBodyLen;
         this.stateRequest = stateRequest;
         this.scheduler = scheduler;
@@ -130,7 +123,15 @@ public class HttpChannelState implements AutoCloseable {
             try {
                 final String transformedCommand = doTransform(commandRequest.getRequestTransform(), commandStr);
                 final URL transformedUrl = formatUrl(commandRequest.getUrl(), transformedCommand);
-                makeHttpRequest(method, transformedUrl, commandRequest.getContentType(), Optional.empty(), Optional.of(commandStr)).whenComplete((response, t) -> {
+                makeHttpRequest(
+                        method,
+                        transformedUrl,
+                        commandRequest.getConnectTimeout(),
+                        commandRequest.getRequestTimeout(),
+                        commandRequest.getContentType(),
+                        Optional.empty(),
+                        Optional.of(commandStr)
+                ).whenComplete((response, t) -> {
                     if (t != null) {
                         this.errorListener.accept(this.channelUID, ThingStatusDetail.COMMUNICATION_ERROR, "Connetion to server failed when sending command: " + t.getMessage());
                     } else if (response.getResponse().getStatus() / 100 != 2) {
@@ -143,17 +144,6 @@ public class HttpChannelState implements AutoCloseable {
                 this.errorListener.accept(this.channelUID,  ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             }
         }
-    }
-
-    /**
-     * Allows the handler to notify this class of changes in binding parameters.
-     *
-     * @param connectTimeout HTTP connect timeout
-     * @param requestTimeout HTTP request timeout
-     */
-    public void updateBindingConfig(final Duration connectTimeout, final Duration requestTimeout) {
-        this.connectTimeout = connectTimeout;
-        this.requestTimeout = requestTimeout;
     }
 
     /**
@@ -179,6 +169,8 @@ public class HttpChannelState implements AutoCloseable {
 
     private CompletionStage<HttpUtil.HttpResponse> makeHttpRequest(final HttpChannelConfig.Method method,
                                                                    final URL url,
+                                                                   final Duration connectTimeout,
+                                                                   final Duration requestTimeout,
                                                                    final String contentType,
                                                                    final Optional<String> lastEtag,
                                                                    final Optional<String> requestBody)
@@ -190,8 +182,8 @@ public class HttpChannelState implements AutoCloseable {
                 contentType,
                 lastEtag,
                 requestBody,
-                this.connectTimeout,
-                this.requestTimeout,
+                connectTimeout,
+                requestTimeout,
                 this.maxHttpResponseBodyLen
         );
     }
@@ -218,7 +210,15 @@ public class HttpChannelState implements AutoCloseable {
         if (!this.fetchingState) {
             this.fetchingState = true;
             final URL url = stateRequest.getUrl();
-            makeHttpRequest(HttpChannelConfig.Method.GET, url, DEFAULT_CONTENT_TYPE, this.lastStateEtag, Optional.empty()).whenComplete((response, t) -> {
+            makeHttpRequest(
+                    HttpChannelConfig.Method.GET,
+                    url,
+                    stateRequest.getConnectTimeout(),
+                    stateRequest.getRequestTimeout(),
+                    DEFAULT_CONTENT_TYPE,
+                    this.lastStateEtag,
+                    Optional.empty()
+            ).whenComplete((response, t) -> {
                 this.fetchingState = false;
                 if (t != null) {
                     this.errorListener.accept(this.channelUID, ThingStatusDetail.COMMUNICATION_ERROR, "Connection to server failed when fetching state: " + t.getMessage());

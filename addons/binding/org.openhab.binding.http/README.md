@@ -12,12 +12,7 @@ Automatic discovery is not supported.
 
 ## Binding Configuration
 
-The binding has the following configuration options:
-
-| Parameter      | Name            | Description                                                          | Required | Default value |
-|----------------|-----------------|----------------------------------------------------------------------|----------|---------------|
-| connectTimeout | Connect Timeout | Milliseconds before HTTP client will give up trying to connect.      | yes      | 3000ms        |
-| requestTimeout | Request Timeout | Milliseconds before HTTP client will give up waiting for a response. | yes      | 5000ms        |
+The binding itself has no configuration.
 
 ## Thing Configuration
 
@@ -54,6 +49,8 @@ Configuration is as follows.
 | Parameter              | Name                          | Description                                                                                    | Default Value |
 |------------------------|-------------------------------|------------------------------------------------------------------------------------------------|---------------|
 | stateUrl               | State URL                     | URL to fetch to retrieve the state of the Channel.                                             |               |
+| stateConnectTimeout    | State Connect Timeout         | Milliseconds before HTTP client will give up trying to connect.                                | 3000ms        |
+| stateRequestTimeout    | State Request Timeout         | Milliseconds before HTTP client will give up waiting for a response.                           | 5000ms        |
 | stateRefreshInterval   | State Refresh Interval        | How often (in milliseconds) to refresh state by fetching the State URL.                        | 60000ms       |
 | stateResponseTransform | State Response Transformation | A transformation function that will transform the HTTP response into a recognized state value. |               |
 
@@ -77,6 +74,8 @@ The expected State values differ depending on Thing type:
 |--------------------------|---------------------------------|-------------------------------------------------------------------------------------------|---------------------------|
 | commandMethod            | Command HTTP Method             | HTTP Method to use when sending a command to the Channel.                                 | POST                      |
 | commandUrl               | Command URL                     | URL to request to change the state of the Channel.                                        |                           |
+| commandConnectTimeout    | Command Connect Timeout         | Milliseconds before HTTP client will give up trying to connect.                           | 3000ms        |
+| commandRequestTimeout    | Command Request Timeout         | Milliseconds before HTTP client will give up waiting for a response.                      | 5000ms        |
 | commandContentType       | Command Content Type            | The content type to use for the HTTP request.                                             | text/plain; charset=utf-8 |
 | commandRequestTransform  | Command Request Transformation  | A transformation rule used to transform the command before it is sent to the Command URL. |                           |
 | commandResponseTransform | Command Response Transformation | A transformation rule used to transform the HTTP response from the Command URL.           |                           |

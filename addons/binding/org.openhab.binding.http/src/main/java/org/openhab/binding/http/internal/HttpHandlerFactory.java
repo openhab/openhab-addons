@@ -10,7 +10,6 @@ package org.openhab.binding.http.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
@@ -21,7 +20,6 @@ import org.eclipse.smarthome.core.thing.link.ItemChannelLinkRegistry;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.http.handler.HttpThingHandler;
 import org.openhab.binding.http.model.HttpHandlerFactoryConfig;
-import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -40,21 +38,14 @@ import static org.openhab.binding.http.HttpBindingConstants.THING_TYPE_HTTP;
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.http")
 public class HttpHandlerFactory extends BaseThingHandlerFactory {
-    private final Map<ThingUID, HttpThingHandler> handlers = new HashMap<>();
 
     private HttpClient httpClient;
     private ItemChannelLinkRegistry itemChannelLinkRegistry;
-    private HttpHandlerFactoryConfig config = new HttpHandlerFactoryConfig();
 
     @Override
     protected ThingHandler createHandler(final Thing thing) {
         if (supportsThingType(thing.getThingTypeUID())) {
-            final HttpThingHandler handler = new HttpThingHandler(
-                    thing, this.httpClient, this.itemChannelLinkRegistry,
-                    this.config.getConnectTimeout(), this.config.getRequestTimeout()
-            );
-            this.handlers.put(thing.getUID(), handler);
-            return handler;
+            return new HttpThingHandler(thing, this.httpClient, this.itemChannelLinkRegistry);
         } else {
             return null;
         }
@@ -63,20 +54,6 @@ public class HttpHandlerFactory extends BaseThingHandlerFactory {
     @Override
     public boolean supportsThingType(final ThingTypeUID thingTypeUID) {
         return THING_TYPE_HTTP.equals(thingTypeUID);
-    }
-
-    @Override
-    public void unregisterHandler(final Thing thing) {
-        super.unregisterHandler(thing);
-        this.handlers.remove(thing.getUID());
-    }
-
-    @Override
-    protected void activate(final ComponentContext componentContext) {
-        super.activate(componentContext);
-        final Map<String, Object> properties = dictionaryToMap(componentContext.getProperties());
-        this.config = new Configuration(properties).as(HttpHandlerFactoryConfig.class);
-        this.handlers.forEach((uid, handler) -> handler.updateBindingConfig(this.config.getConnectTimeout(), this.config.getRequestTimeout()));
     }
 
     @Reference

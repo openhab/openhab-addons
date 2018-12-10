@@ -47,20 +47,13 @@ public class HttpThingHandler extends BaseThingHandler {
 
     private final ItemChannelLinkRegistry itemChannelLinkRegistry;
 
-    private Duration connectTimeout;
-    private Duration requestTimeout;
-
     public HttpThingHandler(final Thing thing,
                             final HttpClient httpClient,
-                            final ItemChannelLinkRegistry itemChannelLinkRegistry,
-                            final Duration connectTimeout,
-                            final Duration requestTimeout)
+                            final ItemChannelLinkRegistry itemChannelLinkRegistry)
     {
         super(thing);
         this.httpClient = httpClient;
         this.itemChannelLinkRegistry = itemChannelLinkRegistry;
-        this.connectTimeout = connectTimeout;
-        this.requestTimeout = requestTimeout;
     }
 
     @Override
@@ -81,8 +74,6 @@ public class HttpThingHandler extends BaseThingHandler {
                             channel.getUID(),
                             channelTypeUID,
                             this.httpClient,
-                            this.connectTimeout,
-                            this.requestTimeout,
                             maxHttpResponseBodyLen,
                             config.getStateRequest(bundleContext),
                             scheduler,
@@ -128,18 +119,6 @@ public class HttpThingHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         disposeChannels();
-    }
-
-    /**
-     * Allows {@link HttpHandlerFactory} to notify this class of changes in binding parameters.
-     *
-     * @param connectTimeout HTTP connect timeout
-     * @param requestTimeout HTTP request timeout
-     */
-    public void updateBindingConfig(final Duration connectTimeout, final Duration requestTimeout) {
-        this.connectTimeout = connectTimeout;
-        this.requestTimeout = requestTimeout;
-        this.channels.values().forEach(channelState -> channelState.updateBindingConfig(connectTimeout, requestTimeout));
     }
 
     private void communicationsError(final ChannelUID channelUID, final ThingStatusDetail errorDetail, final String errorDescription) {
