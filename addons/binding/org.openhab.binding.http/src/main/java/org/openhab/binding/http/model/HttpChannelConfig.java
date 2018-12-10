@@ -41,8 +41,6 @@ public class HttpChannelConfig {
 
     /**
      * A class describing configuration for the HTTP request to make when fetching {@link State}.
-     *
-     * @author Brian J. Tarricone
      */
     public static class StateRequest {
         private final URL url;
@@ -87,8 +85,6 @@ public class HttpChannelConfig {
 
     /**
      * A class describing configuration for the HTTP request to make when sending a {@link Command}.
-     *
-     * @author Brian J. Tarricone
      */
     public static class CommandRequest {
         private final Method method;
