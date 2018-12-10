@@ -9,6 +9,7 @@
 package org.openhab.binding.http.internal;
 
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
@@ -18,26 +19,22 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.link.ItemChannelLinkRegistry;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.http.handler.HttpThingHandler;
+import org.openhab.binding.http.model.HttpHandlerFactoryConfig;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Duration;
 import java.util.Arrays;
 import java.util.Dictionary;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.openhab.binding.http.HttpBindingConstants.BINDING_ID;
-import static org.openhab.binding.http.HttpBindingConstants.CONFIG_CONNECT_TIMEOUT;
-import static org.openhab.binding.http.HttpBindingConstants.CONFIG_REQUEST_TIMEOUT;
-import static org.openhab.binding.http.HttpBindingConstants.DEFAULT_CONNECT_TIMEOUT;
-import static org.openhab.binding.http.HttpBindingConstants.DEFAULT_REQUEST_TIMEOUT;
 import static org.openhab.binding.http.HttpBindingConstants.THING_TYPE_COLOR;
 import static org.openhab.binding.http.HttpBindingConstants.THING_TYPE_CONTACT;
 import static org.openhab.binding.http.HttpBindingConstants.THING_TYPE_DATETIME;
@@ -77,14 +74,16 @@ public class HttpHandlerFactory extends BaseThingHandlerFactory {
 
     private Optional<HttpClient> httpClient = Optional.empty();
     private Optional<ItemChannelLinkRegistry> itemChannelLinkRegistry = Optional.empty();
-    private Duration connectTimeout = DEFAULT_CONNECT_TIMEOUT;
-    private Duration requestTimeout = DEFAULT_REQUEST_TIMEOUT;
+    private HttpHandlerFactoryConfig config = new HttpHandlerFactoryConfig();
 
     @Override
     protected ThingHandler createHandler(final Thing thing) {
         if (supportsThingType(thing.getThingTypeUID())) {
             if (this.httpClient.isPresent() && this.itemChannelLinkRegistry.isPresent()) {
-                final HttpThingHandler handler = new HttpThingHandler(thing, this.httpClient.get(), this.itemChannelLinkRegistry.get(), this.connectTimeout, this.requestTimeout);
+                final HttpThingHandler handler = new HttpThingHandler(
+                        thing, this.httpClient.get(), this.itemChannelLinkRegistry.get(),
+                        this.config.getConnectTimeout(), this.config.getRequestTimeout()
+                );
                 this.handlers.put(thing.getUID(), handler);
                 return handler;
             } else {
@@ -109,10 +108,9 @@ public class HttpHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected void activate(final ComponentContext componentContext) {
         super.activate(componentContext);
-        final Dictionary<String, Object> properties = componentContext.getProperties();
-        this.connectTimeout = parseDuration(properties, CONFIG_CONNECT_TIMEOUT).orElse(DEFAULT_CONNECT_TIMEOUT);
-        this.requestTimeout = parseDuration(properties, CONFIG_REQUEST_TIMEOUT).orElse(DEFAULT_REQUEST_TIMEOUT);
-        this.handlers.forEach((uid, handler) -> handler.updateBindingConfig(this.connectTimeout, this.requestTimeout));
+        final Map<String, Object> properties = dictionaryToMap(componentContext.getProperties());
+        this.config = new Configuration(properties).as(HttpHandlerFactoryConfig.class);
+        this.handlers.forEach((uid, handler) -> handler.updateBindingConfig(this.config.getConnectTimeout(), this.config.getRequestTimeout()));
     }
 
     @Reference
@@ -137,15 +135,13 @@ public class HttpHandlerFactory extends BaseThingHandlerFactory {
         this.itemChannelLinkRegistry = Optional.empty();
     }
 
-    private Optional<Duration> parseDuration(final Dictionary<String, Object> properties, final String key) {
-        return Optional.ofNullable(properties.get(key)).flatMap(s -> {
-            try {
-                return Optional.of(Duration.ofMillis(Long.valueOf(s.toString())));
-            } catch (final NumberFormatException e) {
-                logger.warn("[{}] invalid requestTimeout value supplied ({}); falling back to default", BINDING_ID, s);
-                return Optional.empty();
-            }
-        });
+    private <K, V> Map<K, V> dictionaryToMap(final Dictionary<K, V> dict) {
+        final Map<K, V> map = new HashMap<>(dict.size());
+        final Enumeration<K> keys = dict.keys();
+        while (keys.hasMoreElements()) {
+            final K key = keys.nextElement();
+            map.put(key, dict.get(key));
+        }
+        return map;
     }
-
 }

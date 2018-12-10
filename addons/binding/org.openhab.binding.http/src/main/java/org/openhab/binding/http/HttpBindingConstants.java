@@ -33,9 +33,6 @@ public class HttpBindingConstants {
 
     public static final Set<String> VALID_URL_SCHEMES = new HashSet<>(Arrays.asList("http", "https"));
 
-    public static final String CONFIG_CONNECT_TIMEOUT = "connectTimeout";
-    public static final String CONFIG_REQUEST_TIMEOUT = "requestTimeout";
-
     public static final String CONFIG_STATE_URL = "stateUrl";
     public static final String CONFIG_STATE_REFRESH_INTERVAL = "stateRefreshInterval";
     public static final String CONFIG_STATE_RESPONSE_TRANSFORM = "stateResponseTransform";
