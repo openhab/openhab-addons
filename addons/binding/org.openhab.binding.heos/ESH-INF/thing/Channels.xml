@@ -22,7 +22,7 @@
 		<label>Group</label>
 	</channel-type>
 	<channel-type id="title">
-		<item-type>String </item-type>
+		<item-type>String</item-type>
 		<label>Song</label>
 		<state readOnly="true"></state>
 	</channel-type>
