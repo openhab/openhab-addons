@@ -19,12 +19,12 @@
         </parameter>
         <parameter name="stateUsername" type="text">
             <label>State Username</label>
-            <description>Optional username to use for HTTP Basic authentication/</description>
+            <description>Optional username to use for HTTP Basic authentication.</description>
         </parameter>
         <parameter name="statePassword" type="text">
             <context>password</context>
             <label>State Password</label>
-            <description>Optional password to use for HTTP Basic authentication/</description>
+            <description>Optional password to use for HTTP Basic authentication</description>
         </parameter>
         <parameter name="stateConnectTimeout" type="integer" required="true">
             <label>State Connect Timeout</label>
@@ -66,12 +66,12 @@
         </parameter>
         <parameter name="stateUsername" type="text" groupName="state-config">
             <label>State Username</label>
-            <description>Optional username to use for HTTP Basic authentication/</description>
+            <description>Optional username to use for HTTP Basic authentication.</description>
         </parameter>
         <parameter name="statePassword" type="text" groupName="state-config">
             <context>password</context>
             <label>State Password</label>
-            <description>Optional password to use for HTTP Basic authentication/</description>
+            <description>Optional password to use for HTTP Basic authentication.</description>
         </parameter>
         <parameter name="stateConnectTimeout" type="integer" groupName="state-config" required="true">
             <label>State Connect Timeout</label>
@@ -109,12 +109,12 @@
         </parameter>
         <parameter name="commandUsername" type="text" groupName="command-config">
             <label>Command Username</label>
-            <description>Optional username to use for HTTP Basic authentication/</description>
+            <description>Optional username to use for HTTP Basic authentication.</description>
         </parameter>
         <parameter name="commandPassword" type="text" groupName="command-config">
             <context>password</context>
             <label>Command Password</label>
-            <description>Optional password to use for HTTP Basic authentication/</description>
+            <description>Optional password to use for HTTP Basic authentication.</description>
         </parameter>
         <parameter name="commandConnectTimeout" type="integer" groupName="command-config" required="true">
             <label>Command Connect Timeout</label>
