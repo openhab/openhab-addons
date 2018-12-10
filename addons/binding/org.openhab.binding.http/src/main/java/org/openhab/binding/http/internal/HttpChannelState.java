@@ -128,6 +128,8 @@ public class HttpChannelState implements AutoCloseable {
                         transformedUrl,
                         commandRequest.getConnectTimeout(),
                         commandRequest.getRequestTimeout(),
+                        commandRequest.getUsername(),
+                        commandRequest.getPassword(),
                         commandRequest.getContentType(),
                         Optional.empty(),
                         Optional.of(commandStr)
@@ -171,6 +173,8 @@ public class HttpChannelState implements AutoCloseable {
                                                                    final URL url,
                                                                    final Duration connectTimeout,
                                                                    final Duration requestTimeout,
+                                                                   final Optional<String> username,
+                                                                   final Optional<String> password,
                                                                    final String contentType,
                                                                    final Optional<String> lastEtag,
                                                                    final Optional<String> requestBody)
@@ -179,6 +183,8 @@ public class HttpChannelState implements AutoCloseable {
                 this.httpClient,
                 method.toString(),
                 url,
+                username,
+                password,
                 contentType,
                 lastEtag,
                 requestBody,
@@ -215,6 +221,8 @@ public class HttpChannelState implements AutoCloseable {
                     url,
                     stateRequest.getConnectTimeout(),
                     stateRequest.getRequestTimeout(),
+                    stateRequest.getUsername(),
+                    stateRequest.getPassword(),
                     DEFAULT_CONTENT_TYPE,
                     this.lastStateEtag,
                     Optional.empty()

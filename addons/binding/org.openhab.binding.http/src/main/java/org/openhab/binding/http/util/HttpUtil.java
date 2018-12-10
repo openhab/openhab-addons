@@ -23,6 +23,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Optional;
@@ -202,6 +203,8 @@ public class HttpUtil {
     public static CompletionStage<HttpResponse> makeRequest(final HttpClient httpClient,
                                                             final String method,
                                                             final URL url,
+                                                            final Optional<String> username,
+                                                            final Optional<String> password,
                                                             final String contentType,
                                                             final Optional<String> lastEtag,
                                                             final Optional<String> body,
@@ -216,6 +219,7 @@ public class HttpUtil {
                     .idleTimeout(requestTimeout.toMillis(), TimeUnit.MILLISECONDS)
                     .method(method)
                     .header("content-type", contentType);
+            buildBasicAuthHeader(username, password).ifPresent(hdr -> request.header("authorization", hdr));
             lastEtag.ifPresent(le -> request.header("if-none-match", le));
             body.ifPresent(b -> request.content(new StringContentProvider(b)));
             final CompletionStageResponseListener listener = new CompletionStageResponseListener(maxResponseBodyLen);
@@ -226,6 +230,18 @@ public class HttpUtil {
             return failedFuture(e.getCause() != null ? e.getCause() : e);
         } catch (final Exception e) {
             return failedFuture(e);
+        }
+    }
+
+    private static Optional<String> buildBasicAuthHeader(final Optional<String> username, final Optional<String> password) {
+        if (username.isPresent() || password.isPresent()) {
+            final StringBuilder sb = new StringBuilder();
+            username.ifPresent(sb::append);
+            sb.append(':');
+            password.ifPresent(sb::append);
+            return Optional.of("Basic " + Base64.getEncoder().encodeToString(sb.toString().getBytes(StandardCharsets.UTF_8)));
+        } else {
+            return Optional.empty();
         }
     }
 }

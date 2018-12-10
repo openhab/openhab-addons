@@ -47,18 +47,24 @@ public class HttpChannelConfig {
      */
     public static class StateRequest {
         private final URL url;
+        private final Optional<String> username;
+        private final Optional<String> password;
         private final Duration connectTimeout;
         private final Duration requestTimeout;
         private final Duration refreshInterval;
         private final Optional<Transform> responseTransform;
 
         StateRequest(final URL url,
+                     final Optional<String> username,
+                     final Optional<String> password,
                      final Duration connectTimeout,
                      final Duration requestTimeout,
                      final Duration refreshInterval,
                      final Optional<Transform> responseTransform)
         {
             this.url = url;
+            this.username = username;
+            this.password = password;
             this.connectTimeout = connectTimeout;
             this.requestTimeout = requestTimeout;
             this.refreshInterval = refreshInterval;
@@ -67,6 +73,14 @@ public class HttpChannelConfig {
 
         public URL getUrl() {
             return url;
+        }
+
+        public Optional<String> getUsername() {
+            return username;
+        }
+
+        public Optional<String> getPassword() {
+            return password;
         }
 
         public Duration getConnectTimeout() {
@@ -92,6 +106,8 @@ public class HttpChannelConfig {
     public static class CommandRequest {
         private final Method method;
         private final URL url;
+        private final Optional<String> username;
+        private final Optional<String> password;
         private final Duration connectTimeout;
         private final Duration requestTimeout;
         private final String contentType;
@@ -100,6 +116,8 @@ public class HttpChannelConfig {
 
         CommandRequest(final Method method,
                        final URL url,
+                       final Optional<String> username,
+                       final Optional<String> password,
                        final Duration connectTimeout,
                        final Duration requestTimeout,
                        final String contentType,
@@ -108,6 +126,8 @@ public class HttpChannelConfig {
         {
             this.method = method;
             this.url = url;
+            this.username = username;
+            this.password = password;
             this.connectTimeout = connectTimeout;
             this.requestTimeout = requestTimeout;
             this.contentType = contentType;
@@ -121,6 +141,14 @@ public class HttpChannelConfig {
 
         public URL getUrl() {
             return url;
+        }
+
+        public Optional<String> getUsername() {
+            return username;
+        }
+
+        public Optional<String> getPassword() {
+            return password;
         }
 
         public Duration getConnectTimeout() {
@@ -146,6 +174,10 @@ public class HttpChannelConfig {
 
     @SuppressWarnings("unused")
     private @Nullable String stateUrl;
+    @SuppressWarnings("unused")
+    private @Nullable String stateUsername;
+    @SuppressWarnings("unused")
+    private @Nullable String statePassword;
     private long stateRefreshInterval = DEFAULT_STATE_REFRESH_INTERVAL.toMillis();
     private long stateConnectTimeout = DEFAULT_CONNECT_TIMEOUT.toMillis();
     private long stateRequestTimeout = DEFAULT_REQUEST_TIMEOUT.toMillis();
@@ -155,6 +187,10 @@ public class HttpChannelConfig {
     private String commandMethod = DEFAULT_COMMAND_METHOD.name();
     @SuppressWarnings("unused")
     private @Nullable String commandUrl;
+    @SuppressWarnings("unused")
+    private @Nullable String commandUsername;
+    @SuppressWarnings("unused")
+    private @Nullable String commandPassword;
     private long commandConnectTimeout = DEFAULT_CONNECT_TIMEOUT.toMillis();
     private long commandRequestTimeout = DEFAULT_REQUEST_TIMEOUT.toMillis();
     private String commandContentType = DEFAULT_CONTENT_TYPE;
@@ -170,6 +206,8 @@ public class HttpChannelConfig {
                         .map(s -> Transform.parse(bundleContext, s));
                 return new StateRequest(
                         new URL(stateUrl),
+                        Optional.ofNullable(stateUsername),
+                        Optional.ofNullable(statePassword),
                         Duration.ofMillis(this.stateConnectTimeout),
                         Duration.ofMillis(this.stateRequestTimeout),
                         Duration.ofMillis(this.stateRefreshInterval),
@@ -209,6 +247,8 @@ public class HttpChannelConfig {
                 return new CommandRequest(
                         commandMethod,
                         new URL(commandUrl),
+                        Optional.ofNullable(commandUsername),
+                        Optional.ofNullable(commandPassword),
                         Duration.ofMillis(this.commandConnectTimeout),
                         Duration.ofMillis(this.commandRequestTimeout),
                         this.commandContentType,
