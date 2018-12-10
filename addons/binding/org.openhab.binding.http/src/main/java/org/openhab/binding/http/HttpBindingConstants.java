@@ -9,12 +9,9 @@
 package org.openhab.binding.http;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.openhab.binding.http.model.CommandRequest;
+import org.openhab.binding.http.model.HttpHandlerConfig;
 
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 public class HttpBindingConstants {
     public static final String BINDING_ID = "http";
@@ -31,23 +28,12 @@ public class HttpBindingConstants {
     public static final ThingTypeUID THING_TYPE_STRING = new ThingTypeUID(BINDING_ID, "string");
     public static final ThingTypeUID THING_TYPE_SWITCH = new ThingTypeUID(BINDING_ID, "switch");
 
-    public static final Set<String> VALID_URL_SCHEMES = new HashSet<>(Arrays.asList("http", "https"));
-
-    public static final String CONFIG_STATE_URL = "stateUrl";
-    public static final String CONFIG_STATE_REFRESH_INTERVAL = "stateRefreshInterval";
-    public static final String CONFIG_STATE_RESPONSE_TRANSFORM = "stateResponseTransform";
-    public static final String CONFIG_COMMAND_METHOD = "commandMethod";
-    public static final String CONFIG_COMMAND_URL = "commandUrl";
-    public static final String CONFIG_COMMAND_CONTENT_TYPE = "commandContentType";
-    public static final String CONFIG_COMMAND_REQUEST_TRANSFORM = "commandRequestTransform";
-    public static final String CONFIG_COMMAND_RESPONSE_TRANSFORM = "commandResponseTransform";
-
     public static final String CHANNEL_STATE = "state";
 
     public static final Duration DEFAULT_CONNECT_TIMEOUT = Duration.ofSeconds(3);
     public static final Duration DEFAULT_REQUEST_TIMEOUT = Duration.ofSeconds(5);
     public static final Duration DEFAULT_STATE_REFRESH_INTERVAL = Duration.ofSeconds(60);
-    public static final CommandRequest.Method DEFAULT_COMMAND_METHOD = CommandRequest.Method.POST;
+    public static final HttpHandlerConfig.Method DEFAULT_COMMAND_METHOD = HttpHandlerConfig.Method.POST;
     public static final String DEFAULT_CONTENT_TYPE = "text/plain; charset=utf-8";
 
     public static final int MAX_RESPONSE_BODY_LEN = 1024;

@@ -11,6 +11,7 @@ package org.openhab.binding.http.handler;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -34,8 +35,9 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.http.internal.HttpHandlerFactory;
-import org.openhab.binding.http.model.CommandRequest;
-import org.openhab.binding.http.model.StateRequest;
+import org.openhab.binding.http.model.HttpHandlerConfig;
+import org.openhab.binding.http.model.HttpHandlerConfig.CommandRequest;
+import org.openhab.binding.http.model.HttpHandlerConfig.StateRequest;
 import org.openhab.binding.http.model.Transform;
 import org.openhab.binding.http.util.HttpUtil;
 import org.slf4j.Logger;
@@ -55,21 +57,10 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import static org.openhab.binding.http.HttpBindingConstants.CHANNEL_STATE;
-import static org.openhab.binding.http.HttpBindingConstants.CONFIG_COMMAND_CONTENT_TYPE;
-import static org.openhab.binding.http.HttpBindingConstants.CONFIG_COMMAND_METHOD;
-import static org.openhab.binding.http.HttpBindingConstants.CONFIG_COMMAND_REQUEST_TRANSFORM;
-import static org.openhab.binding.http.HttpBindingConstants.CONFIG_COMMAND_RESPONSE_TRANSFORM;
-import static org.openhab.binding.http.HttpBindingConstants.CONFIG_COMMAND_URL;
-import static org.openhab.binding.http.HttpBindingConstants.CONFIG_STATE_REFRESH_INTERVAL;
-import static org.openhab.binding.http.HttpBindingConstants.CONFIG_STATE_RESPONSE_TRANSFORM;
-import static org.openhab.binding.http.HttpBindingConstants.CONFIG_STATE_URL;
-import static org.openhab.binding.http.HttpBindingConstants.DEFAULT_COMMAND_METHOD;
 import static org.openhab.binding.http.HttpBindingConstants.DEFAULT_CONTENT_TYPE;
-import static org.openhab.binding.http.HttpBindingConstants.DEFAULT_STATE_REFRESH_INTERVAL;
 import static org.openhab.binding.http.HttpBindingConstants.MAX_IMAGE_RESPONSE_BODY_LEN;
 import static org.openhab.binding.http.HttpBindingConstants.MAX_RESPONSE_BODY_LEN;
 import static org.openhab.binding.http.HttpBindingConstants.THING_TYPE_IMAGE;
-import static org.openhab.binding.http.HttpBindingConstants.VALID_URL_SCHEMES;
 
 public class HttpThingHandler extends BaseThingHandler {
     private static State stateFromString(final String stateStr) {
@@ -163,7 +154,7 @@ public class HttpThingHandler extends BaseThingHandler {
             logger.warn("[{}] got command on channel '{}', but no command URL set", getThing().getUID(), channelUID.getId());
         } else {
             final CommandRequest commandRequest = this.commandRequest.get();
-            final CommandRequest.Method method = commandRequest.getMethod();
+            final HttpHandlerConfig.Method method = commandRequest.getMethod();
             final String commandStr = command.toFullString();
             try {
                 final String transformedCommand = doTransform(commandRequest.getRequestTransform(), commandStr);
@@ -241,54 +232,10 @@ public class HttpThingHandler extends BaseThingHandler {
         this.requestTimeout = requestTimeout;
     }
 
-    private Optional<URL> parseUrlConfig(final Map<String, Object> config, final String key) throws IllegalArgumentException {
-        return Optional.ofNullable(config.get(key)).map(s -> {
-            try {
-                final URL url = new URL(s.toString());
-                if (!VALID_URL_SCHEMES.contains(url.getProtocol())) {
-                    throw new IllegalArgumentException(key + " provided uses unsupported URL scheme "+ url.getProtocol());
-                } else {
-                    return url;
-                }
-            } catch (final MalformedURLException e) {
-                throw new IllegalArgumentException(key + " provided was not a valid URL: " + e.getMessage());
-            }
-        });
-    }
-
-    private void updateConfig(final Map<String, Object> config) throws IllegalArgumentException {
-        final Optional<URL> stateUrl = parseUrlConfig(config, CONFIG_STATE_URL);
-        final long stateRefreshInterval = Optional.ofNullable(config.get(CONFIG_STATE_REFRESH_INTERVAL)).flatMap(sri -> {
-            try {
-                return Optional.of(Long.valueOf(sri.toString()));
-            } catch (final NumberFormatException e) {
-                logger.warn("[{}] stateRefreshInterval ({}) provided but was not a valid number; falling back to default", thing.getUID(), config.get(CONFIG_STATE_REFRESH_INTERVAL));
-                return Optional.empty();
-            }
-        }).orElse(DEFAULT_STATE_REFRESH_INTERVAL.toMillis());
-        this.stateRequest = stateUrl.map(url -> {
-            final Optional<Transform> stateResponseTransform = Optional.ofNullable(config.get(CONFIG_STATE_RESPONSE_TRANSFORM))
-                    .map(Object::toString).map(Transform::parse);
-            return new StateRequest(url, Duration.ofMillis(stateRefreshInterval), stateResponseTransform);
-        });
-
-        final CommandRequest.Method commandMethod = Optional.ofNullable(config.get(CONFIG_COMMAND_METHOD)).map(cm -> {
-            try {
-                return CommandRequest.Method.valueOf(cm.toString());
-            } catch (final Exception e) {
-                throw new IllegalArgumentException("commandMethod provided was not a valid HTTP method");
-            }
-        }).orElse(DEFAULT_COMMAND_METHOD);
-        final Optional<URL> commandUrl = parseUrlConfig(config, CONFIG_COMMAND_URL);
-        this.commandRequest = commandUrl.map(url -> {
-            final String commandContentType = Optional.ofNullable(config.get(CONFIG_COMMAND_CONTENT_TYPE)).map(Object::toString).orElse(DEFAULT_CONTENT_TYPE);
-            final Optional<Transform> commandRequestTransform = Optional.ofNullable(config.get(CONFIG_COMMAND_REQUEST_TRANSFORM))
-                    .map(Object::toString).map(Transform::parse);
-            final Optional<Transform> commandResponseTransform = Optional.ofNullable(config.get(CONFIG_COMMAND_RESPONSE_TRANSFORM))
-                    .map(Object::toString).map(Transform::parse);
-            return new CommandRequest(commandMethod, url, commandContentType, commandRequestTransform, commandResponseTransform);
-        });
-
+    private void updateConfig(final Map<String, Object> properties) throws IllegalArgumentException {
+        final HttpHandlerConfig config = new Configuration(properties).as(HttpHandlerConfig.class);
+        this.stateRequest = config.getStateRequest();
+        this.commandRequest = config.getCommandRequest();
         stateRequest.ifPresent(this::startStateFetch);
     }
 
@@ -305,7 +252,7 @@ public class HttpThingHandler extends BaseThingHandler {
         }
     }
 
-    private CompletionStage<HttpUtil.HttpResponse> makeHttpRequest(final CommandRequest.Method method,
+    private CompletionStage<HttpUtil.HttpResponse> makeHttpRequest(final HttpHandlerConfig.Method method,
                                                                    final URL url,
                                                                    final String contentType,
                                                                    final Optional<String> lastEtag,
@@ -355,7 +302,7 @@ public class HttpThingHandler extends BaseThingHandler {
         if (!this.fetchingState) {
             this.fetchingState = true;
             final URL url = stateRequest.getUrl();
-            makeHttpRequest(CommandRequest.Method.GET, url, DEFAULT_CONTENT_TYPE, this.lastStateEtag, Optional.empty()).whenComplete((response, t) -> {
+            makeHttpRequest(HttpHandlerConfig.Method.GET, url, DEFAULT_CONTENT_TYPE, this.lastStateEtag, Optional.empty()).whenComplete((response, t) -> {
                 this.fetchingState = false;
                 if (t != null) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection to server failed when fetching state: " + t.getMessage());
