@@ -150,7 +150,7 @@ Bridge avmfritz:fritzbox:1 "FRITZ!Box" [ ipAddress="192.168.x.x", password="xxx"
 demo.items:
 
 ```java
-String ApplyTemplate "Apply template" { channel="avmfritz:1:xxxxxxxxxxxx:apply_template" }
+String ApplyTemplate "Apply template" { channel="avmfritz:fritzbox:1:apply_template" }
 
 Switch Outlet1 "Switchable outlet" { channel="avmfritz:FRITZ_DECT_200:1:xxxxxxxxxxxx:outlet" }
 Number:Temperature Temperature1 "Current measured temperature [%.1f %unit%]" { channel="avmfritz:FRITZ_DECT_200:1:xxxxxxxxxxxx:temperature" }
