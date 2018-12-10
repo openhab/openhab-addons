@@ -23,8 +23,6 @@ import org.openhab.binding.http.model.HttpHandlerFactoryConfig;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Dictionary;
@@ -32,7 +30,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import static org.openhab.binding.http.HttpBindingConstants.THING_TYPE_COLOR;
@@ -68,27 +65,21 @@ public class HttpHandlerFactory extends BaseThingHandlerFactory {
             THING_TYPE_SWITCH
     ));
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     private final Map<ThingUID, HttpThingHandler> handlers = new HashMap<>();
 
-    private Optional<HttpClient> httpClient = Optional.empty();
-    private Optional<ItemChannelLinkRegistry> itemChannelLinkRegistry = Optional.empty();
+    private HttpClient httpClient;
+    private ItemChannelLinkRegistry itemChannelLinkRegistry;
     private HttpHandlerFactoryConfig config = new HttpHandlerFactoryConfig();
 
     @Override
     protected ThingHandler createHandler(final Thing thing) {
         if (supportsThingType(thing.getThingTypeUID())) {
-            if (this.httpClient.isPresent() && this.itemChannelLinkRegistry.isPresent()) {
-                final HttpThingHandler handler = new HttpThingHandler(
-                        thing, this.httpClient.get(), this.itemChannelLinkRegistry.get(),
-                        this.config.getConnectTimeout(), this.config.getRequestTimeout()
-                );
-                this.handlers.put(thing.getUID(), handler);
-                return handler;
-            } else {
-                throw new IllegalStateException("Cannot instantiate HttpThingHandler without a HTTP client or item registry");
-            }
+            final HttpThingHandler handler = new HttpThingHandler(
+                    thing, this.httpClient, this.itemChannelLinkRegistry,
+                    this.config.getConnectTimeout(), this.config.getRequestTimeout()
+            );
+            this.handlers.put(thing.getUID(), handler);
+            return handler;
         } else {
             return null;
         }
@@ -116,23 +107,23 @@ public class HttpHandlerFactory extends BaseThingHandlerFactory {
     @Reference
     @SuppressWarnings("unused")
     protected void setHttpClientFactory(final HttpClientFactory httpClientFactory) {
-        this.httpClient = Optional.of(httpClientFactory.getCommonHttpClient());
+        this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
     @SuppressWarnings("unused")
     protected void unsetHttpClientFactory(final HttpClientFactory httpClientFactory) {
-        this.httpClient = Optional.empty();
+        this.httpClient = null;
     }
 
     @Reference
     @SuppressWarnings("unused")
     protected void setItemChannelLinkRegistry(final ItemChannelLinkRegistry itemChannelLinkRegistry) {
-        this.itemChannelLinkRegistry = Optional.of(itemChannelLinkRegistry);
+        this.itemChannelLinkRegistry = itemChannelLinkRegistry;
     }
 
     @SuppressWarnings("unused")
     protected void unsetItemChannelLinkRegistry(final ItemChannelLinkRegistry itemChannelLinkRegistry) {
-        this.itemChannelLinkRegistry = Optional.empty();
+        this.itemChannelLinkRegistry = null;
     }
 
     private <K, V> Map<K, V> dictionaryToMap(final Dictionary<K, V> dict) {
