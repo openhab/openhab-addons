@@ -186,17 +186,6 @@ public class HttpThingHandler extends BaseThingHandler {
     }
 
     @Override
-    public void handleConfigurationUpdate(final Map<String, Object> configurationParameters) {
-        super.handleConfigurationUpdate(configurationParameters);
-        try {
-            updateConfig(configurationParameters);
-            updateStatus(ThingStatus.ONLINE);
-        } catch (final IllegalArgumentException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-        }
-    }
-
-    @Override
     public void channelLinked(ChannelUID channelUID) {
         if (channelUID.equals(getThing().getChannel(CHANNEL_STATE).getUID())) {
             this.linkedItems = this.itemChannelLinkRegistry.getLinkedItems(channelUID);
