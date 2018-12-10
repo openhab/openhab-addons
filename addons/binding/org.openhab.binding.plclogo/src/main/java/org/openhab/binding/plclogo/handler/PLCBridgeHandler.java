@@ -90,10 +90,11 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
 
         @Override
         public void run() {
+            PLCLogoClient localClient = client;
             Layout memory = LOGO_MEMORY_BLOCK.get(getLogoFamily()).get("SIZE");
-            if ((memory != null) && (client != null)) {
+            if ((memory != null) && (localClient != null)) {
                 try {
-                    int result = client.readDBArea(1, 0, memory.length, S7Client.S7WLByte, buffer);
+                    int result = localClient.readDBArea(1, 0, memory.length, S7Client.S7WLByte, buffer);
                     if (result == 0) {
                         synchronized (handlers) {
                             for (PLCCommonHandler handler : handlers) {
@@ -118,7 +119,7 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
                     logger.error("Reader thread got exception: {}.", exception.getMessage());
                 }
             } else {
-                logger.debug("Either memory block {} or LOGO! client {} is invalid.", memory, client);
+                logger.debug("Either memory block {} or LOGO! client {} is invalid.", memory, localClient);
             }
         }
     };
@@ -144,13 +145,14 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
+        PLCLogoClient localClient = client;
         String channelId = channelUID.getId();
         Channel channel = thing.getChannel(channelId);
         Layout layout = LOGO_CHANNELS.get(channelId);
-        if ((client != null) && (channel != null) && (layout != null)) {
+        if ((localClient != null) && (channel != null) && (layout != null)) {
             byte[] buffer = new byte[layout.length];
             Arrays.fill(buffer, (byte) 0);
-            int result = client.readDBArea(1, layout.address, buffer.length, S7Client.S7WLByte, buffer);
+            int result = localClient.readDBArea(1, layout.address, buffer.length, S7Client.S7WLByte, buffer);
             if (result == 0) {
                 if (RTC_CHANNEL.equals(channelId)) {
                     ZonedDateTime clock = ZonedDateTime.now();
@@ -259,22 +261,12 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
 
         if (rtcJob != null) {
             rtcJob.cancel(false);
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException exception) {
-                logger.debug("Dispose of RTC job throw an exception: {}.", exception.getMessage());
-            }
             rtcJob = null;
             logger.info("Destroy RTC job for {}.", config.get().getAddress());
         }
 
         if (readerJob != null) {
             readerJob.cancel(false);
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException exception) {
-                logger.debug("Dispose of reader job throw an exception: {}.", exception.getMessage());
-            }
             readerJob = null;
             logger.info("Destroy reader job for {}.", config.get().getAddress());
         }
@@ -354,13 +346,15 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
      */
     private boolean connect() {
         boolean result = false;
-        if (client != null) {
+
+        PLCLogoClient localClient = client;
+        if (localClient != null) {
             Integer local = config.get().getLocalTSAP();
             Integer remote = config.get().getRemoteTSAP();
-            if (!client.isConnected() && (local != null) && (remote != null)) {
-                client.Connect(config.get().getAddress(), local.intValue(), remote.intValue());
+            if (!localClient.isConnected() && (local != null) && (remote != null)) {
+                localClient.Connect(config.get().getAddress(), local.intValue(), remote.intValue());
             }
-            result = client.isConnected();
+            result = localClient.isConnected();
         }
         return result;
     }
@@ -372,12 +366,15 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
      */
     private boolean disconnect() {
         boolean result = false;
-        if (client != null) {
-            if (client.isConnected()) {
-                client.Disconnect();
+
+        PLCLogoClient localClient = client;
+        if (localClient != null) {
+            if (localClient.isConnected()) {
+                localClient.Disconnect();
             }
-            result = !client.isConnected();
+            result = !localClient.isConnected();
         }
+
         return result;
     }
 

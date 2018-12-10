@@ -20,8 +20,8 @@ import org.openhab.binding.plclogo.PLCLogoBindingConstants;
 @NonNullByDefault
 public class PLCLogoBridgeConfiguration {
 
-    private String address;
-    private String family;
+    private String address = "";
+    private String family = "";
     private String localTSAP = "0x3000";
     private String remoteTSAP = "0x2000";
     private Integer refresh = 100;

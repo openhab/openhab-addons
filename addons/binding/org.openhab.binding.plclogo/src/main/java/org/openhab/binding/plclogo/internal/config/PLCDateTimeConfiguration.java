@@ -21,8 +21,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class PLCDateTimeConfiguration extends PLCCommonConfiguration {
 
-    private String block;
-    private String type;
+    private String block = "";
+    private String type = "";
 
     /**
      * Get configured Siemens LOGO! block name.
