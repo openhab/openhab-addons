@@ -64,21 +64,21 @@
             <description>How often (in milliseconds) to refresh state by fetching the State URL.</description>
             <default>60000</default>
         </parameter>
-        <parameter name="stateUsername" type="text">
+        <parameter name="stateUsername" type="text" groupName="state-config">
             <label>State Username</label>
             <description>Optional username to use for HTTP Basic authentication/</description>
         </parameter>
-        <parameter name="statePassword" type="text">
+        <parameter name="statePassword" type="text" groupName="state-config">
             <context>password</context>
             <label>State Password</label>
             <description>Optional password to use for HTTP Basic authentication/</description>
         </parameter>
-        <parameter name="stateConnectTimeout" type="integer" required="true">
+        <parameter name="stateConnectTimeout" type="integer" groupName="state-config" required="true">
             <label>State Connect Timeout</label>
             <description>HTTP connect timeout, in milliseconds.</description>
             <default>3000</default>
         </parameter>
-        <parameter name="stateRequestTimeout" type="integer" required="true">
+        <parameter name="stateRequestTimeout" type="integer" groupName="state-config" required="true">
             <label>State Request Timeout</label>
             <description>HTTP request timeout, in milliseconds.</description>
             <default>5000</default>
@@ -107,21 +107,21 @@
                 the URL by using <code>%s</code>.
             ]]></description>
         </parameter>
-        <parameter name="commandUsername" type="text">
+        <parameter name="commandUsername" type="text" groupName="command-config">
             <label>Command Username</label>
             <description>Optional username to use for HTTP Basic authentication/</description>
         </parameter>
-        <parameter name="commandPassword" type="text">
+        <parameter name="commandPassword" type="text" groupName="command-config">
             <context>password</context>
             <label>Command Password</label>
             <description>Optional password to use for HTTP Basic authentication/</description>
         </parameter>
-        <parameter name="commandConnectTimeout" type="integer" required="true">
+        <parameter name="commandConnectTimeout" type="integer" groupName="command-config" required="true">
             <label>Command Connect Timeout</label>
             <description>HTTP connect timeout, in milliseconds.</description>
             <default>3000</default>
         </parameter>
-        <parameter name="commandRequestTimeout" type="integer" required="true">
+        <parameter name="commandRequestTimeout" type="integer" groupName="command-config" required="true">
             <label>Command Request Timeout</label>
             <description>HTTP request timeout, in milliseconds.</description>
             <default>5000</default>
