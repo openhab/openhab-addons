@@ -13,7 +13,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
@@ -48,11 +47,9 @@ import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -103,7 +100,6 @@ public class HttpThingHandler extends BaseThingHandler {
     private final int maxHttpResponseBodyLen;
 
     private final ItemChannelLinkRegistry itemChannelLinkRegistry;
-    private Set<Item> linkedItems = Collections.emptySet();
 
     private Optional<StateRequest> stateRequest = Optional.empty();
     private volatile boolean fetchingState = false;
@@ -186,22 +182,6 @@ public class HttpThingHandler extends BaseThingHandler {
     }
 
     @Override
-    public void channelLinked(ChannelUID channelUID) {
-        if (channelUID.equals(getThing().getChannel(CHANNEL_STATE).getUID())) {
-            this.linkedItems = this.itemChannelLinkRegistry.getLinkedItems(channelUID);
-        }
-        super.channelLinked(channelUID);
-    }
-
-    @Override
-    public void channelUnlinked(ChannelUID channelUID) {
-        super.channelUnlinked(channelUID);
-        if (channelUID.equals(getThing().getChannel(CHANNEL_STATE).getUID())) {
-            this.linkedItems = this.itemChannelLinkRegistry.getLinkedItems(channelUID);
-        }
-    }
-
-    @Override
     public void dispose() {
         cancelStateFetch();
     }
@@ -257,11 +237,11 @@ public class HttpThingHandler extends BaseThingHandler {
     }
 
     private void updateState(final State state) {
-        final boolean needsUpdate = this.linkedItems.stream().anyMatch(item -> !state.equals(item.getState()));
+        final ChannelUID stateChannelUID = getThing().getChannel(CHANNEL_STATE).getUID();
+        final boolean needsUpdate = this.itemChannelLinkRegistry.getLinkedItems(stateChannelUID).stream()
+                .anyMatch(item -> !state.equals(item.getState()));
         if (needsUpdate) {
-            Optional.ofNullable(getCallback()).ifPresent(
-                    cb -> cb.stateUpdated(getThing().getChannel(CHANNEL_STATE).getUID(), state)
-            );
+            Optional.ofNullable(getCallback()).ifPresent(cb -> cb.stateUpdated(stateChannelUID, state));
         }
     }
 
