@@ -36,7 +36,10 @@ public class HttpChannelConfig {
      * Enumeration describing the HTTP method.
      */
     public enum Method {
-        POST, GET
+        POST,
+        GET,
+        @SuppressWarnings("unused")
+        PUT
     }
 
     /**
