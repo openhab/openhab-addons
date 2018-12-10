@@ -23,12 +23,10 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.http.internal.HttpChannelState;
-import org.openhab.binding.http.internal.HttpHandlerFactory;
 import org.openhab.binding.http.model.HttpChannelConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
