@@ -181,7 +181,7 @@ demo.sitemap:
 sitemap demo label="Main Menu" {
 
     Frame label="FRITZ!Box" {
-        Seelction item=ApplyTemplate
+        Selection item=ApplyTemplate
     }
 
     Frame label="FRITZ!DECT 200 switchable outlet" {
@@ -193,7 +193,7 @@ sitemap demo label="Main Menu" {
     }
 
     Frame label="FRITZ!Powerline 546E switchable outlet" {
-    Switch item=Outlet2 icon="poweroutlet"
+        Switch item=Outlet2 icon="poweroutlet"
     }
 
     Frame label="Comet DECT heating thermostat" {
@@ -214,7 +214,7 @@ sitemap demo label="Main Menu" {
 }
 ```
 
-demo.rule:
+demo.rules:
 
 ```java
 rule "HAN-FUN Button pressed"
