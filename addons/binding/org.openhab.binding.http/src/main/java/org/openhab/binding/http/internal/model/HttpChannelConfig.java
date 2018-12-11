@@ -52,7 +52,7 @@ public class HttpChannelConfig {
     @SuppressWarnings("unused")
     private @Nullable String stateResponseTransform;
 
-    private String commandMethod = DEFAULT_COMMAND_METHOD.name();
+    private HttpMethod commandMethod = DEFAULT_COMMAND_METHOD;
     @SuppressWarnings("unused")
     private @Nullable String commandUrl;
     @SuppressWarnings("unused")
@@ -103,14 +103,13 @@ public class HttpChannelConfig {
      */
     public Optional<CommandRequest> getCommandRequest(final BundleContext bundleContext) {
         return Optional.ofNullable(this.commandUrl).map(commandUrl -> {
-            final HttpMethod commandMethod = parseCommandMethod(this.commandMethod);
             final Optional<Transform> commandRequestTransform = parseTransform(
                     bundleContext, "commandRequestTransform", this.commandRequestTransform);
             final Optional<Transform> commandResponseTransform = parseTransform(
                     bundleContext, "commandResponseTransform", this.commandResponseTransform);
             try {
                 return new CommandRequest(
-                        commandMethod,
+                        this.commandMethod,
                         new URL(commandUrl),
                         Optional.ofNullable(commandUsername),
                         Optional.ofNullable(commandPassword),
@@ -124,14 +123,6 @@ public class HttpChannelConfig {
                 throw new InvalidConfigurationException("Invalid commandUrl: " + e.getMessage());
             }
         });
-    }
-
-    private HttpMethod parseCommandMethod(final String methodStr) {
-        try {
-            return HttpMethod.valueOf(methodStr);
-        } catch (final IllegalArgumentException e) {
-            throw new InvalidConfigurationException("Invalid commandMethod");
-        }
     }
 
     private Optional<Transform> parseTransform(final BundleContext bundleContext,
