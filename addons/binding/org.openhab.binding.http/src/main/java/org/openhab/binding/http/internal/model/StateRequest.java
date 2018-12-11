@@ -8,7 +8,9 @@
  */
 package org.openhab.binding.http.internal.model;
 
+import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.http.internal.HttpBindingConstants;
 
 import java.net.URL;
 import java.time.Duration;
@@ -19,14 +21,8 @@ import java.util.Optional;
  *
  * @author Brian J. Tarricone - Initial contribution
  */
-public class StateRequest {
-    private final URL url;
-    private final Optional<String> username;
-    private final Optional<String> password;
-    private final Duration connectTimeout;
-    private final Duration requestTimeout;
+public class StateRequest extends ChannelRequest {
     private final Duration refreshInterval;
-    private final Optional<Transform> responseTransform;
 
     StateRequest(final URL url,
                  final Optional<String> username,
@@ -36,40 +32,11 @@ public class StateRequest {
                  final Duration refreshInterval,
                  final Optional<Transform> responseTransform)
     {
-        this.url = url;
-        this.username = username;
-        this.password = password;
-        this.connectTimeout = connectTimeout;
-        this.requestTimeout = requestTimeout;
+        super(HttpMethod.GET, url, username, password, connectTimeout, requestTimeout, HttpBindingConstants.DEFAULT_CONTENT_TYPE, Optional.empty(), responseTransform);
         this.refreshInterval = refreshInterval;
-        this.responseTransform = responseTransform;
-    }
-
-    public URL getUrl() {
-        return url;
-    }
-
-    public Optional<String> getUsername() {
-        return username;
-    }
-
-    public Optional<String> getPassword() {
-        return password;
-    }
-
-    public Duration getConnectTimeout() {
-        return connectTimeout;
-    }
-
-    public Duration getRequestTimeout() {
-        return requestTimeout;
     }
 
     public Duration getRefreshInterval() {
         return refreshInterval;
-    }
-
-    public Optional<Transform> getResponseTransform() {
-        return responseTransform;
     }
 }

@@ -10,7 +10,6 @@ package org.openhab.binding.http.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -50,7 +49,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import static org.openhab.binding.http.internal.HttpBindingConstants.CHANNEL_TYPE_ID_IMAGE;
-import static org.openhab.binding.http.internal.HttpBindingConstants.DEFAULT_CONTENT_TYPE;
 
 /**
  * This holds the state and handles commands for a channel connected to a HTTP Thing.
@@ -128,22 +126,16 @@ public class HttpChannelState implements AutoCloseable {
             logger.warn("[{}] Got command on channel '{}', but no command URL set", this.channelUID.getId(), command.toFullString());
         } else {
             final CommandRequest commandRequest = this.commandRequest.get();
-            final HttpMethod method = commandRequest.getMethod();
             final String commandStr = command.toFullString();
             try {
                 final String transformedCommand = doTransform(commandRequest.getRequestTransform(), commandStr);
                 final URL transformedUrl = formatUrl(commandRequest.getUrl(), transformedCommand);
                 HttpUtil.makeRequest(
                         this.httpClient,
-                        method.name(),
+                        commandRequest,
                         transformedUrl,
-                        commandRequest.getUsername(),
-                        commandRequest.getPassword(),
-                        commandRequest.getContentType(),
                         Optional.empty(),
                         Optional.of(commandStr),
-                        commandRequest.getConnectTimeout(),
-                        commandRequest.getRequestTimeout(),
                         this.maxHttpResponseBodyLen
                 ).whenComplete((response, t) -> {
                     if (t != null) {
@@ -192,15 +184,10 @@ public class HttpChannelState implements AutoCloseable {
             final URL url = stateRequest.getUrl();
             HttpUtil.makeRequest(
                     this.httpClient,
-                    HttpMethod.GET.name(),
+                    stateRequest,
                     url,
-                    stateRequest.getUsername(),
-                    stateRequest.getPassword(),
-                    DEFAULT_CONTENT_TYPE,
                     this.lastStateEtag,
                     Optional.empty(),
-                    stateRequest.getConnectTimeout(),
-                    stateRequest.getRequestTimeout(),
                     this.maxHttpResponseBodyLen
             ).whenComplete((response, t) -> {
                 this.fetchingState = false;

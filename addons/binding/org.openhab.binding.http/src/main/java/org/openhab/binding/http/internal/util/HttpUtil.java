@@ -16,10 +16,10 @@ import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.smarthome.core.library.types.RawType;
+import org.openhab.binding.http.internal.model.ChannelRequest;
 
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashSet;
@@ -106,37 +106,29 @@ public class HttpUtil {
      * Make a HTTP request and return an async response.
      *
      * @param httpClient HTTP client to use to make the request
-     * @param method HTTP method
-     * @param url URL to request
-     * @param contentType Content type of the request body, if any
+     * @param channelRequest request object with HTTP request parameters
      * @param lastEtag Last E-Tag header received for this request, if any
      * @param body Request body to send, if any
-     * @param connectTimeout HTTP connect timeout
-     * @param requestTimeout HTTP request timeout
      * @param maxResponseBodyLen Maximum response body length, in bytes
      * @return A {@link CompletionStage} pointing to a {@link HttpResponse} on success.
      */
     public static CompletionStage<HttpResponse> makeRequest(final HttpClient httpClient,
-                                                            final String method,
+                                                            final ChannelRequest channelRequest,
                                                             final URL url,
-                                                            final Optional<String> username,
-                                                            final Optional<String> password,
-                                                            final String contentType,
                                                             final Optional<String> lastEtag,
                                                             final Optional<String> body,
-                                                            final Duration connectTimeout,
-                                                            final Duration requestTimeout,
                                                             final int maxResponseBodyLen)
     {
         final CompletableFuture<HttpResponse> future = new CompletableFuture<>();
         try {
             final Request request = httpClient
                     .newRequest(url.toURI())
-                    .timeout(connectTimeout.toMillis(), TimeUnit.MILLISECONDS)
-                    .idleTimeout(requestTimeout.toMillis(), TimeUnit.MILLISECONDS)
-                    .method(method)
-                    .header("content-type", contentType);
-            buildBasicAuthHeader(username, password).ifPresent(hdr -> request.header("authorization", hdr));
+                    .timeout(channelRequest.getConnectTimeout().toMillis(), TimeUnit.MILLISECONDS)
+                    .idleTimeout(channelRequest.getRequestTimeout().toMillis(), TimeUnit.MILLISECONDS)
+                    .method(channelRequest.getMethod())
+                    .header("content-type", channelRequest.getContentType());
+            buildBasicAuthHeader(channelRequest.getUsername(), channelRequest.getPassword())
+                    .ifPresent(hdr -> request.header("authorization", hdr));
             lastEtag.ifPresent(le -> request.header("if-none-match", le));
             body.ifPresent(b -> request.content(new StringContentProvider(b)));
             final BufferingResponseListener listener = new BufferingResponseListener(maxResponseBodyLen) {

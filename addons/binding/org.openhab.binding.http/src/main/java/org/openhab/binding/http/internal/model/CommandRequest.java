@@ -20,17 +20,7 @@ import java.util.Optional;
  *
  * @author Brian J. Tarricone - Initial contribution
  */
-public class CommandRequest {
-    private final HttpMethod method;
-    private final URL url;
-    private final Optional<String> username;
-    private final Optional<String> password;
-    private final Duration connectTimeout;
-    private final Duration requestTimeout;
-    private final String contentType;
-    private final Optional<Transform> requestTransform;
-    private final Optional<Transform> responseTransform;
-
+public class CommandRequest extends ChannelRequest {
     CommandRequest(final HttpMethod method,
                    final URL url,
                    final Optional<String> username,
@@ -41,50 +31,6 @@ public class CommandRequest {
                    final Optional<Transform> requestTransform,
                    final Optional<Transform> responseTransform)
     {
-        this.method = method;
-        this.url = url;
-        this.username = username;
-        this.password = password;
-        this.connectTimeout = connectTimeout;
-        this.requestTimeout = requestTimeout;
-        this.contentType = contentType;
-        this.requestTransform = requestTransform;
-        this.responseTransform = responseTransform;
-    }
-
-    public HttpMethod getMethod() {
-        return method;
-    }
-
-    public URL getUrl() {
-        return url;
-    }
-
-    public Optional<String> getUsername() {
-        return username;
-    }
-
-    public Optional<String> getPassword() {
-        return password;
-    }
-
-    public Duration getConnectTimeout() {
-        return connectTimeout;
-    }
-
-    public Duration getRequestTimeout() {
-        return requestTimeout;
-    }
-
-    public String getContentType() {
-        return contentType;
-    }
-
-    public Optional<Transform> getRequestTransform() {
-        return requestTransform;
-    }
-
-    public Optional<Transform> getResponseTransform() {
-        return responseTransform;
+        super(method, url, username, password, connectTimeout, requestTimeout, contentType, requestTransform, responseTransform);
     }
 }
