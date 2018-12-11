@@ -35,7 +35,7 @@ public class Transform {
      * @return a new {@link Transform}
      * @throws IllegalArgumentException if the provided string is invalid or if the transformation service is unavailable
      */
-    static Transform parse(final BundleContext bundleContext, final String s) throws IllegalArgumentException {
+    static Transform parse(final BundleContext bundleContext, final String s) {
         final Matcher matcher = EXTRACT_FUNCTION_PATTERN.matcher(s);
         if (!matcher.matches() || !matcher.find()) {
             throw new IllegalArgumentException("Supplied string (" + s + ") is not a valid transformation funcion");
@@ -43,11 +43,9 @@ public class Transform {
             final String function = matcher.group(1);
             final String pattern = matcher.group(2);
             final Optional<TransformationService> service = Optional.ofNullable(TransformationHelper.getTransformationService(bundleContext, function));
-            if (!service.isPresent()) {
-                throw new IllegalArgumentException("Cannot get transformation service for function '" + function + "'");
-            } else {
-                return new Transform(service.get(), pattern);
-            }
+            return service
+                    .map(svc -> new Transform(svc, pattern))
+                    .orElseThrow(() -> new IllegalArgumentException("Cannot get transformation service for function '" + function + "'"));
         }
     }
 

@@ -88,7 +88,7 @@ public class HttpThingHandler extends BaseThingHandler {
                 }
             }
             updateStatus(ThingStatus.ONLINE);
-        } catch (final IllegalArgumentException e) {
+        } catch (final HttpChannelConfig.InvalidConfigurationException e) {
             disposeChannels();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }

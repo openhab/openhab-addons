@@ -31,6 +31,15 @@ import static org.openhab.binding.http.internal.HttpBindingConstants.DEFAULT_STA
  */
 @NonNullByDefault
 public class HttpChannelConfig {
+    /**
+     * An exception class describing a failure to parse configuration.
+     */
+    public static class InvalidConfigurationException extends RuntimeException {
+        InvalidConfigurationException(final String message) {
+            super(message);
+        }
+    }
+
     @SuppressWarnings("unused")
     private @Nullable String stateUrl;
     @SuppressWarnings("unused")
@@ -58,11 +67,18 @@ public class HttpChannelConfig {
     @SuppressWarnings("unused")
     private @Nullable String commandResponseTransform;
 
-    public Optional<StateRequest> getStateRequest(final BundleContext bundleContext) throws IllegalArgumentException {
+    /**
+     * Returnes a parsed state request configuration, if one was specified.
+     *
+     * @param bundleContext the OSGi bundle context
+     * @return an optional {@link StateRequest}
+     * @throws InvalidConfigurationException if any part of the configuration is not valid
+     */
+    public Optional<StateRequest> getStateRequest(final BundleContext bundleContext) {
         return Optional.ofNullable(this.stateUrl).map(stateUrl -> {
+            final Optional<Transform> stateResponseTransform = parseTransform(
+                    bundleContext, "stateResponseTransform", this.stateResponseTransform);
             try {
-                final Optional<Transform> stateResponseTransform = Optional.ofNullable(this.stateResponseTransform)
-                        .map(s -> Transform.parse(bundleContext, s));
                 return new StateRequest(
                         new URL(stateUrl),
                         Optional.ofNullable(stateUsername),
@@ -73,35 +89,25 @@ public class HttpChannelConfig {
                         stateResponseTransform
                 );
             } catch (final MalformedURLException e) {
-                throw new IllegalArgumentException("Invalid stateUrl: " + e.getMessage());
-            } catch (final IllegalArgumentException e) {
-                throw new IllegalArgumentException("Invalid stateResponseTransform: " + e.getMessage(), e);
+                throw new InvalidConfigurationException("Invalid stateUrl: " + e.getMessage());
             }
         });
     }
 
-    public Optional<CommandRequest> getCommandRequest(final BundleContext bundleContext) throws IllegalArgumentException {
+    /**
+     * Returnes a parsed command request configuration, if one was specified.
+     *
+     * @param bundleContext the OSGi bundle context
+     * @return an optional {@link CommandRequest}
+     * @throws InvalidConfigurationException if any part of the configuration is not valid
+     */
+    public Optional<CommandRequest> getCommandRequest(final BundleContext bundleContext) {
         return Optional.ofNullable(this.commandUrl).map(commandUrl -> {
-            final HttpMethod commandMethod;
-            try {
-                commandMethod = HttpMethod.valueOf(this.commandMethod);
-            } catch (final IllegalArgumentException e) {
-                throw new IllegalArgumentException("Invalid commandMethod", e);
-            }
-            final Optional<Transform> commandRequestTransform;
-            try {
-                commandRequestTransform = Optional.ofNullable(this.commandRequestTransform)
-                        .map(s -> Transform.parse(bundleContext, s));
-            } catch (final IllegalArgumentException e) {
-                throw new IllegalArgumentException("Invalid commandRequestTransform: " + e.getMessage());
-            }
-            final Optional<Transform> commandResponseTransform;
-            try {
-                commandResponseTransform = Optional.ofNullable(this.commandResponseTransform)
-                        .map(s -> Transform.parse(bundleContext, s));
-            } catch (final IllegalArgumentException e) {
-                throw new IllegalArgumentException("Invalid commandResponseTransform: " + e.getMessage());
-            }
+            final HttpMethod commandMethod = parseCommandMethod(this.commandMethod);
+            final Optional<Transform> commandRequestTransform = parseTransform(
+                    bundleContext, "commandRequestTransform", this.commandRequestTransform);
+            final Optional<Transform> commandResponseTransform = parseTransform(
+                    bundleContext, "commandResponseTransform", this.commandResponseTransform);
             try {
                 return new CommandRequest(
                         commandMethod,
@@ -115,8 +121,28 @@ public class HttpChannelConfig {
                         commandResponseTransform
                 );
             } catch (final MalformedURLException e) {
-                throw new IllegalArgumentException("Invalid commandUrl: " + e.getMessage());
+                throw new InvalidConfigurationException("Invalid commandUrl: " + e.getMessage());
             }
         });
+    }
+
+    private HttpMethod parseCommandMethod(final String methodStr) {
+        try {
+            return HttpMethod.valueOf(methodStr);
+        } catch (final IllegalArgumentException e) {
+            throw new InvalidConfigurationException("Invalid commandMethod");
+        }
+    }
+
+    private Optional<Transform> parseTransform(final BundleContext bundleContext,
+                                               final String configKeyName,
+                                               final String transformStr)
+            throws InvalidConfigurationException
+    {
+        try {
+            return Optional.ofNullable(transformStr).map(s -> Transform.parse(bundleContext, s));
+        } catch (final IllegalArgumentException e) {
+            throw new InvalidConfigurationException(String.format("Invalid %s: %s", configKeyName, e.getMessage()));
+        }
     }
 }
