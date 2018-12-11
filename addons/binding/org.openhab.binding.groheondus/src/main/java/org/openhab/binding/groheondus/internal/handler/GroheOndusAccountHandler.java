@@ -70,7 +70,7 @@ public class GroheOndusAccountHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.ONLINE);
 
             scheduler.submit(() -> getThing().getThings().forEach(thing -> {
-                GroheOndusApplianceHandler thingHandler = (GroheOndusApplianceHandler) thing.getHandler();
+                GroheOndusBaseHandler thingHandler = (GroheOndusBaseHandler) thing.getHandler();
                 if (thingHandler != null) {
                     thingHandler.updateChannels();
                 }
