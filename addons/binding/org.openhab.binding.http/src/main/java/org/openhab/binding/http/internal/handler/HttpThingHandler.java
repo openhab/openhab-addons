@@ -9,16 +9,13 @@
 package org.openhab.binding.http.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.thing.link.ItemChannelLinkRegistry;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
@@ -29,7 +26,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import static org.openhab.binding.http.internal.HttpBindingConstants.CHANNEL_TYPE_ID_IMAGE;
 import static org.openhab.binding.http.internal.HttpBindingConstants.MAX_IMAGE_RESPONSE_BODY_LEN;
@@ -48,15 +44,9 @@ public class HttpThingHandler extends BaseThingHandler {
 
     private final HttpClient httpClient;
 
-    private final ItemChannelLinkRegistry itemChannelLinkRegistry;
-
-    public HttpThingHandler(final Thing thing,
-                            final HttpClient httpClient,
-                            final ItemChannelLinkRegistry itemChannelLinkRegistry)
-    {
+    public HttpThingHandler(final Thing thing, final HttpClient httpClient) {
         super(thing);
         this.httpClient = httpClient;
-        this.itemChannelLinkRegistry = itemChannelLinkRegistry;
     }
 
     @Override
@@ -102,21 +92,12 @@ public class HttpThingHandler extends BaseThingHandler {
     }
 
     @Override
-    protected void updateStatus(final ThingStatus status, final ThingStatusDetail statusDetail, @Nullable final String description) {
-        final ThingStatusInfo curStatusInfo = getThing().getStatusInfo();
-        if (!Objects.equals(status, curStatusInfo.getStatus()) || !Objects.equals(statusDetail, curStatusInfo.getStatusDetail()) || !Objects.equals(description, curStatusInfo.getDescription())) {
-            super.updateStatus(status, statusDetail, description);
-        }
-    }
-
-    @Override
     protected void updateState(final ChannelUID channelUID, final State state) {
-        final boolean needsUpdate = this.itemChannelLinkRegistry.getLinkedItems(channelUID).stream()
-                .anyMatch(item -> !state.equals(item.getState()));
-        if (needsUpdate) {
+        if (!getThing().getStatus().equals(ThingStatus.ONLINE)) {
+            // a previous HTTP failure may have set status to OFFLINE, so update here
             updateStatus(ThingStatus.ONLINE);
-            super.updateState(channelUID, state);
         }
+        super.updateState(channelUID, state);
     }
 
     @Override

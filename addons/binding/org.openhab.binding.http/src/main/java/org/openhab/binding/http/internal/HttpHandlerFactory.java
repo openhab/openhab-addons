@@ -15,7 +15,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.eclipse.smarthome.core.thing.link.ItemChannelLinkRegistry;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.http.internal.handler.HttpThingHandler;
 import org.osgi.service.component.annotations.Component;
@@ -33,12 +32,11 @@ import static org.openhab.binding.http.internal.HttpBindingConstants.THING_TYPE_
 public class HttpHandlerFactory extends BaseThingHandlerFactory {
 
     private @NonNullByDefault({}) HttpClient httpClient;
-    private @NonNullByDefault({}) ItemChannelLinkRegistry itemChannelLinkRegistry;
 
     @Override
     protected ThingHandler createHandler(final Thing thing) {
         if (supportsThingType(thing.getThingTypeUID())) {
-            return new HttpThingHandler(thing, this.httpClient, this.itemChannelLinkRegistry);
+            return new HttpThingHandler(thing, this.httpClient);
         } else {
             return null;
         }
@@ -58,16 +56,5 @@ public class HttpHandlerFactory extends BaseThingHandlerFactory {
     @SuppressWarnings("unused")
     protected void unsetHttpClientFactory(final HttpClientFactory httpClientFactory) {
         this.httpClient = null;
-    }
-
-    @Reference
-    @SuppressWarnings("unused")
-    protected void setItemChannelLinkRegistry(final ItemChannelLinkRegistry itemChannelLinkRegistry) {
-        this.itemChannelLinkRegistry = itemChannelLinkRegistry;
-    }
-
-    @SuppressWarnings("unused")
-    protected void unsetItemChannelLinkRegistry(final ItemChannelLinkRegistry itemChannelLinkRegistry) {
-        this.itemChannelLinkRegistry = null;
     }
 }
