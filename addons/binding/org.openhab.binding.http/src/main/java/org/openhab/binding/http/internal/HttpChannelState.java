@@ -143,7 +143,7 @@ public class HttpChannelState implements AutoCloseable {
                         this.maxHttpResponseBodyLen
                 ).whenComplete((response, t) -> {
                     if (t != null) {
-                        this.errorListener.accept(this.channelUID, ThingStatusDetail.COMMUNICATION_ERROR, "Connetion to server failed when sending command: " + t.getMessage());
+                        this.errorListener.accept(this.channelUID, ThingStatusDetail.COMMUNICATION_ERROR, "Connection to server failed when sending command: " + t.getMessage());
                     } else if (response.getResponse().getStatus() / 100 != 2) {
                         this.errorListener.accept(this.channelUID, ThingStatusDetail.COMMUNICATION_ERROR, "Server returned HTTP status " + response.getResponse().getStatus() + " when sending command");
                     } else {

@@ -128,6 +128,8 @@ public class HttpThingHandler extends BaseThingHandler {
         if (channels.size() == 1) {
             // if we only have one channel, treat an error on that channel as offline for the entire thing
             updateStatus(ThingStatus.OFFLINE, errorDetail, errorDescription);
+        } else {
+            logger.info("[{}] {}", channelUID.getId(), errorDescription);
         }
     }
 
