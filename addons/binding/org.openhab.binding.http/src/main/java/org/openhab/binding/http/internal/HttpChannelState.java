@@ -11,14 +11,6 @@ package org.openhab.binding.http.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpStatus;
-import org.eclipse.smarthome.core.library.types.DateTimeType;
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.HSBType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.OpenClosedType;
-import org.eclipse.smarthome.core.library.types.PointType;
-import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
@@ -39,8 +31,6 @@ import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -48,6 +38,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+import static org.openhab.binding.http.internal.HttpBindingConstants.CHANNEL_STATE_TYPES;
 import static org.openhab.binding.http.internal.HttpBindingConstants.CHANNEL_TYPE_ID_IMAGE;
 
 /**
@@ -57,17 +48,6 @@ import static org.openhab.binding.http.internal.HttpBindingConstants.CHANNEL_TYP
  */
 @NonNullByDefault
 public class HttpChannelState implements AutoCloseable {
-    private static final List<Class<? extends State>> STATE_TYPES = Arrays.asList(
-            OnOffType.class,
-            OpenClosedType.class,
-            UpDownType.class,
-            PointType.class,
-            HSBType.class,
-            DecimalType.class,
-            DateTimeType.class,
-            StringType.class
-    );
-
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final ChannelUID channelUID;
@@ -216,9 +196,13 @@ public class HttpChannelState implements AutoCloseable {
     private State stateFromResponse(final HttpUtil.HttpResponse response, final Optional<Transform> transform) {
         if (CHANNEL_TYPE_ID_IMAGE.equals(this.channelTypeUID.getId())) {
             return response.asRawType();
-        } else {
+        } else if (CHANNEL_STATE_TYPES.containsKey(this.channelTypeUID.getId())){
             try {
-                return TypeParser.parseState(STATE_TYPES, doTransform(transform, response.asString()));
+                final String stateStr = doTransform(transform, response.asString());
+                return Optional.ofNullable(TypeParser.parseState(CHANNEL_STATE_TYPES.get(this.channelTypeUID.getId()), stateStr)).orElseGet(() -> {
+                    this.errorListener.accept(this.channelUID, ThingStatusDetail.COMMUNICATION_ERROR, String.format("State '%s' is not valid for channel '%s'", stateStr, this.channelUID.getId()));
+                    return UnDefType.UNDEF;
+                });
             } catch (final TransformationException e) {
                 this.errorListener.accept(this.channelUID, ThingStatusDetail.COMMUNICATION_ERROR, "Failed to transform response: " + e.getMessage());
                 return UnDefType.UNDEF;
@@ -226,6 +210,9 @@ public class HttpChannelState implements AutoCloseable {
                 this.errorListener.accept(this.channelUID, ThingStatusDetail.COMMUNICATION_ERROR, "HTTP server returned unparseable state: " + e.getMessage());
                 return UnDefType.UNDEF;
             }
+        } else {
+            logger.warn("Unknown channel type '{}' for channel '{}'", this.channelTypeUID.getId(), this.channelUID.getId());
+            return UnDefType.UNDEF;
         }
     }
 }

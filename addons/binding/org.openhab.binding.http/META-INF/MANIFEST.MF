@@ -9,6 +9,8 @@ Bundle-SymbolicName: org.openhab.binding.http;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
 Import-Package: 
+ javax.measure,
+ javax.measure.quantity,
  org.apache.commons.io,
  org.apache.commons.lang,
  org.eclipse.jdt.annotation;resolution:=optional,
