@@ -64,8 +64,7 @@ public class HttpThingHandler extends BaseThingHandler {
 
                     final HttpChannelConfig config = channel.getConfiguration().as(HttpChannelConfig.class);
                     final HttpChannelState channelState = new HttpChannelState(
-                            channel.getUID(),
-                            channelTypeUID,
+                            channel,
                             this.httpClient,
                             maxHttpResponseBodyLen,
                             config.getStateRequest(bundleContext),

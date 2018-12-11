@@ -20,6 +20,7 @@ import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
@@ -85,8 +86,7 @@ public class HttpChannelState implements AutoCloseable {
     private Optional<ScheduledFuture<?>> stateUpdater = Optional.empty();
     private Optional<String> lastStateEtag = Optional.empty();
 
-    public HttpChannelState(final ChannelUID channelUID,
-                            final ChannelTypeUID channelTypeUID,
+    public HttpChannelState(final Channel channel,
                             final HttpClient httpClient,
                             final int maxHttpResponseBodyLen,
                             final Optional<StateRequest> stateRequest,
@@ -96,8 +96,8 @@ public class HttpChannelState implements AutoCloseable {
                             final BiConsumer<ChannelUID, State> stateUpdatedListener,
                             final ErrorListener errorListener)
     {
-        this.channelUID = channelUID;
-        this.channelTypeUID = channelTypeUID;
+        this.channelUID = channel.getUID();
+        this.channelTypeUID = channel.getChannelTypeUID();
         this.httpClient = httpClient;
         this.maxHttpResponseBodyLen = maxHttpResponseBodyLen;
         this.stateRequest = stateRequest;
