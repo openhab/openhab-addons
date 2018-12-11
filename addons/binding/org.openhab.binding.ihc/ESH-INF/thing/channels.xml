@@ -274,15 +274,10 @@
 				<label>Resource Id</label>
 				<description></description>
 			</parameter>
-			<parameter name="shortPressMaxTime" type="integer" required="true" step="1000" min="0" max="5000" unit="ms">
-				<label>Short press max time</label>
-				<description>Short press max time in milliseconds.</description>
+			<parameter name="longPressTime" type="integer" required="true" step="1000" min="0" max="5000" unit="ms">
+				<label>Long press time</label>
+				<description>Long press time in milliseconds.</description>
 				<default>1000</default>
-			</parameter>
-			<parameter name="longPressMaxTime" type="integer" required="true" step="1000" min="0" max="5000" unit="ms">
-				<label>Long press max time</label>
-				<description>Long press max time in milliseconds.</description>
-				<default>2000</default>
 			</parameter>
 		</config-description>
 	</channel-type>

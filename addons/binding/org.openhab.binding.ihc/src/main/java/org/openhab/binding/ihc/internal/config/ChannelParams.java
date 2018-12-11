@@ -30,8 +30,7 @@ public class ChannelParams {
     private Integer pulseWidth;
     private Boolean inverted;
     private Long serialNumber;
-    private Integer shortPressMaxTime;
-    private Integer longPressMaxTime;
+    private Integer longPressTime;
 
     public ChannelParams(Channel channel) throws IllegalArgumentException {
         if (channel == null) {
@@ -61,11 +60,8 @@ public class ChannelParams {
                 case PARAM_PULSE_WIDTH:
                     pulseWidth = getChannelParameterAsInteger(entry.getValue());
                     break;
-                case PARAM_LONG_PRESS_MAX_TIME:
-                    longPressMaxTime = getChannelParameterAsInteger(entry.getValue());
-                    break;
-                case PARAM_SHORT_PRESS_MAX_TIME:
-                    shortPressMaxTime = getChannelParameterAsInteger(entry.getValue());
+                case PARAM_LONG_PRESS_TIME:
+                    longPressTime = getChannelParameterAsInteger(entry.getValue());
                     break;
                 case PARAM_INVERTED:
                     inverted = getChannelParameterAsBoolean(entry.getValue());
@@ -136,12 +132,8 @@ public class ChannelParams {
         return serialNumber;
     }
 
-    public Integer getShortPressMaxTime() {
-        return shortPressMaxTime;
-    }
-
-    public Integer getLongPressMaxTime() {
-        return longPressMaxTime;
+    public Integer getLongPressTime() {
+        return longPressTime;
     }
 
     private Boolean getChannelParameterAsBoolean(Object value) throws IllegalArgumentException {
@@ -191,8 +183,8 @@ public class ChannelParams {
     @Override
     public String toString() {
         return String.format(
-                "[ channelTypeId=%s, resourceId=%d, direction=%s, commandToReact=%s, pulseWidth=%d, inverted=%b, serialNumber=%d, shortPressMaxTime=%d, longPressMaxTime=%d ]",
+                "[ channelTypeId=%s, resourceId=%d, direction=%s, commandToReact=%s, pulseWidth=%d, inverted=%b, serialNumber=%d, longPressTime=%d ]",
                 channelTypeId, resourceId, direction, commandToReact, pulseWidth, inverted, serialNumber,
-                shortPressMaxTime, longPressMaxTime);
+                longPressTime);
     }
 }

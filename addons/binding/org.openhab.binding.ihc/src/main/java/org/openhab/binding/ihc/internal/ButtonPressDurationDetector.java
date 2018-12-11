@@ -24,7 +24,7 @@ public class ButtonPressDurationDetector {
     private boolean shortPress;
     private boolean longPress;
     private Duration duration;
-    private long short_press_max_time;
+    private long long_press_time;
     private long long_press_max_time;
 
     public boolean isShortPress() {
@@ -35,9 +35,9 @@ public class ButtonPressDurationDetector {
         return longPress;
     }
 
-    public ButtonPressDurationDetector(Duration duration, long short_press_max_time, long long_press_max_time) {
+    public ButtonPressDurationDetector(Duration duration, long long_press_time, long long_press_max_time) {
         this.duration = duration;
-        this.short_press_max_time = short_press_max_time;
+        this.long_press_time = long_press_time;
         this.long_press_max_time = long_press_max_time;
 
         calculate();
@@ -46,11 +46,11 @@ public class ButtonPressDurationDetector {
     private void calculate() {
         if (duration.toMillis() < 0) {
             logger.debug("Button press duration < 0ms");
-        } else if (isBetween(duration.toMillis(), 0, short_press_max_time)) {
-            logger.debug("Button press duration > {}ms and <= {}ms", 0, short_press_max_time);
+        } else if (isBetween(duration.toMillis(), 0, long_press_time)) {
+            logger.debug("Button press duration > {}ms and < {}ms", 0, long_press_time);
             shortPress = true;
-        } else if (isBetween(duration.toMillis(), short_press_max_time, long_press_max_time)) {
-            logger.debug("Button press duration > {}ms and <= {}ms", short_press_max_time, long_press_max_time);
+        } else if (isBetween(duration.toMillis(), long_press_time, long_press_max_time)) {
+            logger.debug("Button press duration > {}ms and < {}ms", long_press_time, long_press_max_time);
             longPress = true;
         } else {
             logger.debug("Button press duration > {}ms, ignore it", long_press_max_time);

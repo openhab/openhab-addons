@@ -24,10 +24,10 @@ public class ButtonPressDurationDetectorTest {
     @Test
     public void testShortPress() {
         Duration duration = Duration.ofMillis(450);
-        long short_press_max_time = 1000;
+        long long_press_time = 1000;
         long long_press_max_time = 2000;
 
-        ButtonPressDurationDetector button = new ButtonPressDurationDetector(duration, short_press_max_time,
+        ButtonPressDurationDetector button = new ButtonPressDurationDetector(duration, long_press_time,
                 long_press_max_time);
 
         assertTrue(button.isShortPress());
@@ -37,10 +37,10 @@ public class ButtonPressDurationDetectorTest {
     @Test
     public void testLongPress() {
         Duration duration = Duration.ofMillis(1003);
-        long short_press_max_time = 1000;
+        long long_press_time = 1000;
         long long_press_max_time = 2000;
 
-        ButtonPressDurationDetector button = new ButtonPressDurationDetector(duration, short_press_max_time,
+        ButtonPressDurationDetector button = new ButtonPressDurationDetector(duration, long_press_time,
                 long_press_max_time);
 
         assertFalse(button.isShortPress());
@@ -50,10 +50,10 @@ public class ButtonPressDurationDetectorTest {
     @Test
     public void testExtraLongPress() {
         Duration duration = Duration.ofMillis(2423);
-        long short_press_max_time = 1000;
+        long long_press_time = 1000;
         long long_press_max_time = 2000;
 
-        ButtonPressDurationDetector button = new ButtonPressDurationDetector(duration, short_press_max_time,
+        ButtonPressDurationDetector button = new ButtonPressDurationDetector(duration, long_press_time,
                 long_press_max_time);
 
         assertFalse(button.isShortPress());
@@ -63,10 +63,10 @@ public class ButtonPressDurationDetectorTest {
     @Test
     public void testTooLongPress() {
         Duration duration = Duration.ofMillis(5001);
-        long short_press_max_time = 1000;
+        long long_press_time = 1000;
         long long_press_max_time = 2000;
 
-        ButtonPressDurationDetector button = new ButtonPressDurationDetector(duration, short_press_max_time,
+        ButtonPressDurationDetector button = new ButtonPressDurationDetector(duration, long_press_time,
                 long_press_max_time);
 
         assertFalse(button.isShortPress());

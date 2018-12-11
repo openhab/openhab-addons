@@ -80,6 +80,9 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
     /** Maximum pulse width in milliseconds. */
     private static final int MAX_PULSE_WIDTH_IN_MS = 4000;
 
+    /** Maximum long press time in milliseconds. */
+    private static final int MAX_LONG_PRESS_IN_MS = 5000;
+
     /** Name of the local IHC / ELKO project file */
     private static final String LOCAL_IHC_PROJECT_FILE_NAME_TEMPLATE = "ihc-project-file-%s.xml";
 
@@ -115,6 +118,8 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
 
     private ScheduledFuture<?> controlJob;
     private ScheduledFuture<?> pollingJobRf;
+
+    private Map<String, ScheduledFuture<?>> longPressFutures = new HashMap<>();
 
     public IhcHandler(Thing thing) {
         super(thing);
@@ -567,7 +572,6 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
 
     private void printChannels(List<Channel> thingChannels) {
         if (logger.isDebugEnabled()) {
-
             thingChannels.forEach(channel -> {
                 String resourceId;
                 try {
@@ -598,6 +602,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
      *
      */
     private void disconnect() {
+        cancelAllLongPressTasks();
         if (pollingJobRf != null && !pollingJobRf.isCancelled()) {
             pollingJobRf.cancel(true);
             pollingJobRf = null;
@@ -680,7 +685,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
 
                     default:
                         try {
-                            logger.debug("Update channel state, channel params: {}", params);
+                            logger.debug("Update channel '{}' state, channel params: {}", channel.getUID(), params);
                             Converter<WSResourceValue, Type> converter = ConverterFactory.getInstance()
                                     .getConverter(value.getClass(), channel.getAcceptedItemType());
                             State state = (State) converter.convertFromResourceValue(value,
@@ -718,19 +723,20 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 if (params.getChannelTypeId() != null) {
                     switch (params.getChannelTypeId()) {
                         case CHANNEL_TYPE_PUSH_BUTTON_TRIGGER:
-                            logger.debug("Update trigger channel, channel params: {}", params);
+                            logger.debug("Update trigger channel '{}', channel params: {}", channel.getUID().getId(),
+                                    params);
                             if (duration.toMillis() == 0) {
                                 triggerChannel(channel.getUID().getId(), EVENT_PRESSED);
+                                createLongPressTask(channel.getUID().getId(), params.getLongPressTime());
                             } else {
+                                cancelLongPressTask(channel.getUID().getId());
                                 triggerChannel(channel.getUID().getId(), EVENT_RELEASED);
                                 triggerChannel(channel.getUID().getId(), String.valueOf(duration.toMillis()));
                                 ButtonPressDurationDetector button = new ButtonPressDurationDetector(duration,
-                                        params.getShortPressMaxTime(), params.getLongPressMaxTime());
+                                        params.getLongPressTime(), MAX_LONG_PRESS_IN_MS);
                                 logger.debug("resourceId={}, ButtonPressDurationDetector={}", resourceId, button);
                                 if (button.isShortPress()) {
                                     triggerChannel(channel.getUID().getId(), EVENT_SHORT_PRESS);
-                                } else if (button.isLongPress()) {
-                                    triggerChannel(channel.getUID().getId(), EVENT_LONG_PRESS);
                                 }
                                 break;
                             }
@@ -738,6 +744,28 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 }
             }
         });
+    }
+
+    private void createLongPressTask(String channelId, long longPressTimeInMs) {
+        if (longPressFutures.containsKey(channelId)) {
+            cancelLongPressTask(channelId);
+        }
+        logger.debug("Create long press task for channel '{}'", channelId);
+        longPressFutures.put(channelId, scheduler.schedule(() -> triggerChannel(channelId, EVENT_LONG_PRESS),
+                longPressTimeInMs, TimeUnit.MILLISECONDS));
+    }
+
+    private void cancelLongPressTask(String channelId) {
+        if (longPressFutures.containsKey(channelId)) {
+            logger.debug("Cancel long press task for channel '{}'", channelId);
+            longPressFutures.get(channelId).cancel(false);
+            longPressFutures.remove(channelId);
+        }
+    }
+
+    private void cancelAllLongPressTasks() {
+        longPressFutures.entrySet().parallelStream().forEach(e -> e.getValue().cancel(true));
+        longPressFutures.clear();
     }
 
     private void updateRfDeviceStates() {

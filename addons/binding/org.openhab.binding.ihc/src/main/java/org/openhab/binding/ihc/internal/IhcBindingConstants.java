@@ -64,8 +64,7 @@ public class IhcBindingConstants {
     public final static String PARAM_CMD_TO_REACT = "commandToReact";
     public static final String PARAM_SERIAL_NUMBER = "serialNumber";
     public static final String PARAM_PULSE_WIDTH = "pulseWidth";
-    public final static String PARAM_LONG_PRESS_MAX_TIME = "longPressMaxTime";
-    public final static String PARAM_SHORT_PRESS_MAX_TIME = "shortPressMaxTime";
+    public final static String PARAM_LONG_PRESS_TIME = "longPressTime";
     public static final String PARAM_INVERTED = "inverted";
 
     public final static String DIRECTION_READ_WRITE = "ReadWrite";

@@ -37,29 +37,27 @@ List of default controller channels.
 | Channel             | Item Type    | Description                                                    |
 | ------------------- | ------------ | -------------------------------------------------------------- |
 | controllerState     | String       | Displays IHC / ELKO controller state.                          |
-| controllerSwVersion | String       | Displays IHC / ELKO controller software version.               |
-| controllerHwVersion | String       | Displays IHC / ELKO controller hardware version.               |
 | controllerUptime    | Number       | Displays IHC / ELKO controller uptime in seconds.              |
 | controllerTime      | DateTime     | Displays IHC / ELKO controller date and time                   |
 
 When `createChannelsAutomatically` parameter is enabled, binding will automatically create channels accordingly to project file.
-Binding create channels for dataline_inputs, dataline_outputs, airlink_inputs, airlink_outputs and resource_temperatures, and also channels for wireless device signal strength and low battery warnings.
+Binding create channels for dataline_inputs, dataline_outputs, airlink_inputs, airlink_outputs, airlink_relays, airlink_dimmings, resource_temperatures and resource_humidity_levels, and also channels for wireless device signal strengths and low battery warnings.
 User can manually add other channels or disable channel auto generation and add all needed channels manually.
 
 List of supported channel types.
 
-| Channel Type ID                   | Item Type     | Description                                                                                     | Supported channel parameters                                           |
-| --------------------------------- | ------------- | ----------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| switch-channel                    | Switch        | Generic switch channel.                                                                         | resourceId, direction, commandToReact, pulseWidth, inverted            |
-| contact-channel                   | Contact       | Generic contact channel.                                                                        | resourceId, inverted                                                   |
-| number-channel                    | Number        | Generic number channel.                                                                         | resourceId, direction, commandToReact, pulseWidth                      |
-| dimmer-channel                    | Dimmer        | Generic dimmer channel.                                                                         | resourceId, direction, commandToReact, pulseWidth                      |
-| datetime-channel                  | DateTime      | Generic datetime channel.                                                                       | resourceId, direction, commandToReact, pulseWidth                      |
-| string-channel                    | String        | Generic string (enum) channel.                                                                  | resourceId, direction, commandToReact, pulseWidth                      |
-| rollershutter-channel             | RollerShutter | Generic rollershutter channel.                                                                  | resourceId, direction, commandToReact, pulseWidth                      |
-| rf-device-low-battery-channel     | Switch        | RF device low battery warning.                                                                  | serialNumber                                                           |
-| rf-device-signal-strength-channel | String        | RF device signal strength.                                                                      | serialNumber                                                           |
-| push-button-trigger               | Trigger       | Push button trigger channel. Possible trigger events: PRESSED, RELEASED, SHORT_PRESS, LONG_PRESS and value as a duration in milliseconds. | resourceId, shortPressMaxTime, longPressMaxTime |
+| Channel Type ID                   | Item Type     | Description                                                                                                                               | Supported channel parameters                                |
+| --------------------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| switch-channel                    | Switch        | Generic switch channel.                                                                                                                   | resourceId, direction, commandToReact, pulseWidth, inverted |
+| contact-channel                   | Contact       | Generic contact channel.                                                                                                                  | resourceId, inverted                                        |
+| number-channel                    | Number        | Generic number channel.                                                                                                                   | resourceId, direction, commandToReact, pulseWidth           |
+| dimmer-channel                    | Dimmer        | Generic dimmer channel.                                                                                                                   | resourceId, direction, commandToReact, pulseWidth           |
+| datetime-channel                  | DateTime      | Generic datetime channel.                                                                                                                 | resourceId, direction, commandToReact, pulseWidth           |
+| string-channel                    | String        | Generic string (enum) channel.                                                                                                            | resourceId, direction, commandToReact, pulseWidth           |
+| rollershutter-channel             | RollerShutter | Generic rollershutter channel.                                                                                                            | resourceId, direction, commandToReact, pulseWidth           |
+| rf-device-low-battery-channel     | Switch        | RF device low battery warning.                                                                                                            | serialNumber                                                |
+| rf-device-signal-strength-channel | String        | RF device signal strength.                                                                                                                | serialNumber                                                |
+| push-button-trigger               | Trigger       | Push button trigger channel. Possible trigger events: PRESSED, RELEASED, SHORT_PRESS, LONG_PRESS and value as a duration in milliseconds. | resourceId, longPressTime                                   |
 
 Channel parameters:
 
@@ -71,8 +69,7 @@ Channel parameters:
 | pulseWidth            | Integer      | no       |               | Pulse width in milliseconds. If defined, binding send pulse rather than command value to IHC controller. |
 | inverted              | Boolean      | no       | false         | OpenHAB state is inverted compared to IHC output/input signal.                                           |
 | serialNumber          | Integer      | yes      |               | Serial number of RF device in decimal format.                                                            |
-| shortPressMaxTime     | Integer      | yes      | 1000          | Short press max time in milliseconds.                                                                    |
-| longPressMaxTime      | Integer      | yes      | 2000          | Long press max time in milliseconds.                                                                     |
+| longPressTime         | Integer      | yes      | 1000          | Long press time in milliseconds.                                                                         |
 
 There are several ways to find the correct resource id's:
 
@@ -111,7 +108,7 @@ ihc:controller:elko [ ip="192.168.1.2", username="openhab", password="secret", t
         Type contact-channel               : my_test_contact "My Test Contact"         [ resourceId=3988827 ]
         Type number-channel                : my_test_number  "My Test Number"          [ resourceId=3988827, direction="ReadOnly" ]
         Type rf-device-low-battery-channel : my_low_battery  "My Low Battery Warning"  [ serialNumber=123456789 ]
-        Type push-button-trigger           : my_test_trigger "My Test Trigger"         [ resourceId=3988827, shortPressMaxTime=1000, longPressMaxTime=2000 ]
+        Type push-button-trigger           : my_test_trigger "My Test Trigger"         [ resourceId=3988827, longPressTime=1000 ]
         
         Type dimmer-channel                : inc_resource        "Increase resource"   [ resourceId=9000001, direction="WriteOnly", commandToReact="INCREASE", pulseWidth=300 ]
         Type dimmer-channel                : dec_resource        "Decrease resource"   [ resourceId=9000002, direction="WriteOnly", commandToReact="DECREASE", pulseWidth=300 ]
@@ -163,4 +160,3 @@ end
 ### Thing status
 
 Check thing status for errors.
-
