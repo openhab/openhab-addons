@@ -64,13 +64,9 @@ public class Transform {
      *
      * @param value the value to transform
      * @return the transformed value
-     * @throws IllegalArgumentException if an error occurs during the transformation
+     * @throws TransformationException if an error occurs during the transformation
      */
-    public String applyTransform(final String value) throws IllegalArgumentException {
-        try {
-            return service.transform(this.pattern, value);
-        } catch (final TransformationException e) {
-            throw new IllegalArgumentException("Failed to transform value: " + e.getMessage(), e);
-        }
+    public String applyTransform(final String value) throws TransformationException {
+        return service.transform(this.pattern, value);
     }
 }

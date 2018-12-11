@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
+import org.eclipse.smarthome.core.transform.TransformationException;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
@@ -142,8 +143,10 @@ public class HttpChannelState implements AutoCloseable {
                         stateUpdatedListener.accept(this.channelUID, stateFromResponse(response, commandRequest.getResponseTransform()));
                     }
                 });
-            } catch (final IllegalArgumentException e) {
-                this.errorListener.accept(this.channelUID,  ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            } catch (final TransformationException e) {
+                this.errorListener.accept(this.channelUID,  ThingStatusDetail.COMMUNICATION_ERROR, "Failed to transform request: " + e.getMessage());
+            } catch (final MalformedURLException e) {
+                this.errorListener.accept(this.channelUID,  ThingStatusDetail.CONFIGURATION_ERROR, "Failed to interpolate command into URL: " + e.getMessage());
             }
         }
     }
@@ -156,14 +159,10 @@ public class HttpChannelState implements AutoCloseable {
         cancelStateFetch();
     }
 
-    private URL formatUrl(final URL origUrl, final String command) throws IllegalArgumentException {
+    private URL formatUrl(final URL origUrl, final String command) throws MalformedURLException {
         final String origUrlStr = origUrl.toString();
         if (origUrlStr.contains("%s")) {
-            try {
-                return new URL(String.format(origUrlStr, command));
-            } catch (final MalformedURLException e) {
-                throw new IllegalArgumentException("Failed to interpolate command into URL: " + e.getMessage(), e);
-            }
+            return new URL(String.format(origUrlStr, command));
         } else {
             return origUrl;
         }
@@ -242,8 +241,12 @@ public class HttpChannelState implements AutoCloseable {
         }
     }
 
-    private String doTransform(final Optional<Transform> maybeTransform, final String value) throws IllegalArgumentException {
-        return maybeTransform.map(transform -> transform.applyTransform(value)).orElse(value);
+    private String doTransform(final Optional<Transform> transform, final String value) throws TransformationException {
+        if (transform.isPresent()) {
+            return transform.get().applyTransform(value);
+        } else {
+            return value;
+        }
     }
 
     private State stateFromResponse(final HttpUtil.HttpResponse response, final Optional<Transform> transform) {
@@ -252,8 +255,8 @@ public class HttpChannelState implements AutoCloseable {
         } else {
             try {
                 return TypeParser.parseState(STATE_TYPES, doTransform(transform, response.asString()));
-            } catch (final IllegalArgumentException e) {
-                this.errorListener.accept(this.channelUID, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            } catch (final TransformationException e) {
+                this.errorListener.accept(this.channelUID, ThingStatusDetail.COMMUNICATION_ERROR, "Failed to transform response: " + e.getMessage());
                 return UnDefType.UNDEF;
             } catch (final IllegalStateException e) {
                 this.errorListener.accept(this.channelUID, ThingStatusDetail.COMMUNICATION_ERROR, "HTTP server returned unparseable state: " + e.getMessage());
