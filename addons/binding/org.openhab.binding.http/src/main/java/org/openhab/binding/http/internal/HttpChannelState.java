@@ -46,6 +46,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 import static org.openhab.binding.http.internal.HttpBindingConstants.CHANNEL_TYPE_ID_IMAGE;
 import static org.openhab.binding.http.internal.HttpBindingConstants.DEFAULT_CONTENT_TYPE;
@@ -76,6 +77,7 @@ public class HttpChannelState implements AutoCloseable {
     private final int maxHttpResponseBodyLen;
     private final Optional<StateRequest> stateRequest;
     private final Optional<CommandRequest> commandRequest;
+    private final Function<ChannelUID, Boolean> isChannelLinked;
     private final BiConsumer<ChannelUID, State> stateUpdatedListener;
     private final ErrorListener errorListener;
 
@@ -90,6 +92,7 @@ public class HttpChannelState implements AutoCloseable {
                             final Optional<StateRequest> stateRequest,
                             final ScheduledExecutorService scheduler,
                             final Optional<CommandRequest> commandRequest,
+                            final Function<ChannelUID, Boolean> isChannelLinked,
                             final BiConsumer<ChannelUID, State> stateUpdatedListener,
                             final ErrorListener errorListener)
     {
@@ -99,6 +102,7 @@ public class HttpChannelState implements AutoCloseable {
         this.maxHttpResponseBodyLen = maxHttpResponseBodyLen;
         this.stateRequest = stateRequest;
         this.commandRequest = commandRequest;
+        this.isChannelLinked = isChannelLinked;
         this.stateUpdatedListener = stateUpdatedListener;
         this.errorListener = errorListener;
 
@@ -183,7 +187,7 @@ public class HttpChannelState implements AutoCloseable {
     }
 
     private void fetchState(final StateRequest stateRequest) {
-        if (!this.fetchingState) {
+        if (!this.fetchingState && isChannelLinked.apply(this.channelUID)) {
             this.fetchingState = true;
             final URL url = stateRequest.getUrl();
             HttpUtil.makeRequest(

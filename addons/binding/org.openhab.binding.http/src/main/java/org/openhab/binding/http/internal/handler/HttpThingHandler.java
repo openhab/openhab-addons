@@ -71,6 +71,7 @@ public class HttpThingHandler extends BaseThingHandler {
                             config.getStateRequest(bundleContext),
                             scheduler,
                             config.getCommandRequest(bundleContext),
+                            this::isLinked,
                             this::updateState,
                             this::communicationsError
                     );
