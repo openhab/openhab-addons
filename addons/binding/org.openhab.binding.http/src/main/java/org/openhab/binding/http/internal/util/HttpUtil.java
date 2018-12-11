@@ -80,7 +80,7 @@ public class HttpUtil {
          * @return a string representation of the response
          * @throws IllegalStateException if the response is binary data and not text
          */
-        public String asString() throws IllegalStateException {
+        public String asString() {
             if (!canBeString()) {
                 throw new IllegalStateException("Response is not convertible to text");
             } else {
