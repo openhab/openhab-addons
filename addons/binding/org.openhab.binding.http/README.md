@@ -6,24 +6,11 @@ This binding can be used to make HTTP requests to fetch and update device state.
 
 This binding supports a single thing type: `http`.
 
-## Discovery
-
-Automatic discovery is not supported.
-
-## Binding Configuration
-
-The binding itself has no configuration.
-
-## Thing Configuration
-
-The Thing itself does not support any configuration.  However, to be useful,
-any number of channels can be added to a created Thing.  Each channel can be
-configured with different URLs to fetch and update state.
-
 ## Channels
 
 There are no built-in channels; instead channels are added dynamically by
-the user.
+the user.  Each channel can be configured with different URLs to fetch and
+update state.
 
 These channel types are supported:
 
