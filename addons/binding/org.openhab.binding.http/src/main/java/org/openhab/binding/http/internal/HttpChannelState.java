@@ -75,7 +75,6 @@ public class HttpChannelState implements AutoCloseable {
     private final HttpClient httpClient;
     private final int maxHttpResponseBodyLen;
     private final Optional<StateRequest> stateRequest;
-    private final ScheduledExecutorService scheduler;
     private final Optional<CommandRequest> commandRequest;
     private final BiConsumer<ChannelUID, State> stateUpdatedListener;
     private final ErrorListener errorListener;
@@ -99,12 +98,18 @@ public class HttpChannelState implements AutoCloseable {
         this.httpClient = httpClient;
         this.maxHttpResponseBodyLen = maxHttpResponseBodyLen;
         this.stateRequest = stateRequest;
-        this.scheduler = scheduler;
         this.commandRequest = commandRequest;
         this.stateUpdatedListener = stateUpdatedListener;
         this.errorListener = errorListener;
 
-        this.stateRequest.ifPresent(this::startStateFetch);
+        this.stateRequest.ifPresent(sr ->
+                this.stateUpdater = Optional.of(scheduler.scheduleWithFixedDelay(
+                        () -> fetchState(sr),
+                        0,
+                        sr.getRefreshInterval().toMillis(),
+                        TimeUnit.MILLISECONDS
+                ))
+        );
     }
 
     /**
@@ -168,17 +173,6 @@ public class HttpChannelState implements AutoCloseable {
         } else {
             return origUrl;
         }
-    }
-
-    private void startStateFetch(final StateRequest stateRequest) {
-        cancelStateFetch();
-
-        this.stateUpdater = Optional.of(scheduler.scheduleWithFixedDelay(
-                () -> fetchState(stateRequest),
-                0,
-                stateRequest.getRefreshInterval().toMillis(),
-                TimeUnit.MILLISECONDS
-        ));
     }
 
     private void cancelStateFetch() {
