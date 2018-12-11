@@ -95,19 +95,49 @@
 		<description>Application artwork channel.</description>
 		<state readOnly="true" />
 	</channel-type>
-	<channel-type id="keyEnter-channel">
+	<channel-type id="keyUp-channel" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Up button</label>
+		<description>Push Up button.</description>
+		<category>MediaControl</category>
+	</channel-type>
+	<channel-type id="keyDown-channel" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Down button</label>
+		<description>Push Down button.</description>
+		<category>MediaControl</category>
+	</channel-type>
+	<channel-type id="keyRight-channel" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Right button</label>
+		<description>Push Right button.</description>
+		<category>MediaControl</category>
+	</channel-type>
+	<channel-type id="keyLeft-channel" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Left button</label>
+		<description>Push Left button.</description>
+		<category>MediaControl</category>
+	</channel-type>
+	<channel-type id="keyEnter-channel" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Enter button</label>
 		<description>Push Enter button.</description>
 		<category>MediaControl</category>
 	</channel-type>
-	<channel-type id="keyBack-channel">
+	<channel-type id="keyBack-channel" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Back button</label>
 		<description>Push Back button.</description>
 		<category>MediaControl</category>
 	</channel-type>
-	<channel-type id="keyPS-channel">
+	<channel-type id="keyOption-channel" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Option button</label>
+		<description>Push Option button.</description>
+		<category>MediaControl</category>
+	</channel-type>
+	<channel-type id="keyPS-channel" advanced="true">
 		<item-type>Switch</item-type>
 		<label>PS button</label>
 		<description>Push PS button.</description>

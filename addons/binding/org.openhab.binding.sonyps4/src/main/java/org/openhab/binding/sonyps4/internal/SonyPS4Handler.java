@@ -97,11 +97,26 @@ public class SonyPS4Handler extends BaseThingHandler {
                     startApplication(currentApplicationId);
                 }
             }
+            if (CHANNEL_KEY_UP.equals(channelUID.getId()) && command instanceof OnOffType) {
+                sendRemoteKey(PS4_KEY_UP);
+            }
+            if (CHANNEL_KEY_DOWN.equals(channelUID.getId()) && command instanceof OnOffType) {
+                sendRemoteKey(PS4_KEY_DOWN);
+            }
+            if (CHANNEL_KEY_RIGHT.equals(channelUID.getId()) && command instanceof OnOffType) {
+                sendRemoteKey(PS4_KEY_RIGHT);
+            }
+            if (CHANNEL_KEY_LEFT.equals(channelUID.getId()) && command instanceof OnOffType) {
+                sendRemoteKey(PS4_KEY_LEFT);
+            }
             if (CHANNEL_KEY_ENTER.equals(channelUID.getId()) && command instanceof OnOffType) {
                 sendRemoteKey(PS4_KEY_ENTER);
             }
             if (CHANNEL_KEY_BACK.equals(channelUID.getId()) && command instanceof OnOffType) {
                 sendRemoteKey(PS4_KEY_BACK);
+            }
+            if (CHANNEL_KEY_OPTION.equals(channelUID.getId()) && command instanceof OnOffType) {
+                sendRemoteKey(PS4_KEY_OPTION);
             }
             if (CHANNEL_KEY_PS.equals(channelUID.getId()) && command instanceof OnOffType) {
                 sendRemoteKey(PS4_KEY_PS);
