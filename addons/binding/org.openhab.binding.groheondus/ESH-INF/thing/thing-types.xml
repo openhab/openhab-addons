@@ -23,18 +23,18 @@
 		</config-description>
 	</bridge-type>
 
-	<thing-type id="appliance">
+	<thing-type id="senseguard">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="account" />
 		</supported-bridge-type-refs>
 
-		<label>GROHE Appliance</label>
-		<description>An appliance from GROHE</description>
+		<label>GROHE SENSE GUARD Appliance</label>
+		<description>A SENSE GUARD device</description>
 
 		<channels>
 			<channel id="name" typeId="name" />
 			<channel id="pressure" typeId="pressure" />
-			<channel id="temperature" typeId="temperature" />
+			<channel id="temperature_guard" typeId="temperature_guard" />
 			<channel id="valve_open" typeId="valve_open" />
 		</channels>
 
@@ -60,6 +60,43 @@
 		</config-description>
 	</thing-type>
 
+	<thing-type id="sense">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account" />
+		</supported-bridge-type-refs>
+
+		<label>GROHE SENSE Appliance</label>
+		<description>A SENSE device</description>
+
+		<channels>
+			<channel id="name" typeId="name" />
+			<channel id="humidity" typeId="humidity" />
+			<channel id="temperature" typeId="temperature" />
+			<channel id="battery" typeId="system.battery-level" />
+		</channels>
+
+		<representation-property>applianceId</representation-property>
+
+		<config-description>
+			<parameter name="applianceId" type="text" required="true">
+				<label>Appliance ID</label>
+				<description>The UUID of the appliance as retrieved from the GROHE ONDUS API.</description>
+			</parameter>
+			<parameter name="roomId" type="integer" required="true">
+				<label>Room ID</label>
+				<description>The ID of the room the appliance is in as retrieved from the GROHE ONDUS API.</description>
+			</parameter>
+			<parameter name="locationId" type="integer" required="true">
+				<label>Location ID</label>
+				<description>The ID of the location the room is in as retrieved from the GROHE ONDUS API.</description>
+			</parameter>
+			<parameter name="pollingInterval" type="integer" required="false">
+				<label>Polling Interval</label>
+				<description>The interval in seconds used to poll the API for new data.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
 	<channel-type id="name">
 		<item-type>String</item-type>
 		<label>Appliance name</label>
@@ -70,7 +107,7 @@
 		<label>Pressure</label>
 		<description>The pressure of your water supply</description>
 	</channel-type>
-	<channel-type id="temperature">
+	<channel-type id="temperature_guard">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>The ambient temperature of the appliance</description>
@@ -80,5 +117,17 @@
 		<item-type>Switch</item-type>
 		<label>Valve open</label>
 		<description>Valve switch</description>
+	</channel-type>
+	<channel-type id="humidity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<description>The humidity reported by the device</description>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>The temperature reported by the device</description>
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 </thing:thing-descriptions>
