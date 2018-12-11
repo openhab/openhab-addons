@@ -10,8 +10,7 @@ package org.openhab.binding.http.internal.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.State;
+import org.eclipse.jetty.http.HttpMethod;
 import org.osgi.framework.BundleContext;
 
 import java.net.MalformedURLException;
@@ -32,146 +31,6 @@ import static org.openhab.binding.http.internal.HttpBindingConstants.DEFAULT_STA
  */
 @NonNullByDefault
 public class HttpChannelConfig {
-    /**
-     * Enumeration describing the HTTP method.
-     */
-    public enum Method {
-        POST,
-        GET,
-        @SuppressWarnings("unused")
-        PUT
-    }
-
-    /**
-     * A class describing configuration for the HTTP request to make when fetching {@link State}.
-     */
-    public static class StateRequest {
-        private final URL url;
-        private final Optional<String> username;
-        private final Optional<String> password;
-        private final Duration connectTimeout;
-        private final Duration requestTimeout;
-        private final Duration refreshInterval;
-        private final Optional<Transform> responseTransform;
-
-        StateRequest(final URL url,
-                     final Optional<String> username,
-                     final Optional<String> password,
-                     final Duration connectTimeout,
-                     final Duration requestTimeout,
-                     final Duration refreshInterval,
-                     final Optional<Transform> responseTransform)
-        {
-            this.url = url;
-            this.username = username;
-            this.password = password;
-            this.connectTimeout = connectTimeout;
-            this.requestTimeout = requestTimeout;
-            this.refreshInterval = refreshInterval;
-            this.responseTransform = responseTransform;
-        }
-
-        public URL getUrl() {
-            return url;
-        }
-
-        public Optional<String> getUsername() {
-            return username;
-        }
-
-        public Optional<String> getPassword() {
-            return password;
-        }
-
-        public Duration getConnectTimeout() {
-            return connectTimeout;
-        }
-
-        public Duration getRequestTimeout() {
-            return requestTimeout;
-        }
-
-        public Duration getRefreshInterval() {
-            return refreshInterval;
-        }
-
-        public Optional<Transform> getResponseTransform() {
-            return responseTransform;
-        }
-    }
-
-    /**
-     * A class describing configuration for the HTTP request to make when sending a {@link Command}.
-     */
-    public static class CommandRequest {
-        private final Method method;
-        private final URL url;
-        private final Optional<String> username;
-        private final Optional<String> password;
-        private final Duration connectTimeout;
-        private final Duration requestTimeout;
-        private final String contentType;
-        private final Optional<Transform> requestTransform;
-        private final Optional<Transform> responseTransform;
-
-        CommandRequest(final Method method,
-                       final URL url,
-                       final Optional<String> username,
-                       final Optional<String> password,
-                       final Duration connectTimeout,
-                       final Duration requestTimeout,
-                       final String contentType,
-                       final Optional<Transform> requestTransform,
-                       final Optional<Transform> responseTransform)
-        {
-            this.method = method;
-            this.url = url;
-            this.username = username;
-            this.password = password;
-            this.connectTimeout = connectTimeout;
-            this.requestTimeout = requestTimeout;
-            this.contentType = contentType;
-            this.requestTransform = requestTransform;
-            this.responseTransform = responseTransform;
-        }
-
-        public Method getMethod() {
-            return method;
-        }
-
-        public URL getUrl() {
-            return url;
-        }
-
-        public Optional<String> getUsername() {
-            return username;
-        }
-
-        public Optional<String> getPassword() {
-            return password;
-        }
-
-        public Duration getConnectTimeout() {
-            return connectTimeout;
-        }
-
-        public Duration getRequestTimeout() {
-            return requestTimeout;
-        }
-
-        public String getContentType() {
-            return contentType;
-        }
-
-        public Optional<Transform> getRequestTransform() {
-            return requestTransform;
-        }
-
-        public Optional<Transform> getResponseTransform() {
-            return responseTransform;
-        }
-    }
-
     @SuppressWarnings("unused")
     private @Nullable String stateUrl;
     @SuppressWarnings("unused")
@@ -223,9 +82,9 @@ public class HttpChannelConfig {
 
     public Optional<CommandRequest> getCommandRequest(final BundleContext bundleContext) throws IllegalArgumentException {
         return Optional.ofNullable(this.commandUrl).map(commandUrl -> {
-            final Method commandMethod;
+            final HttpMethod commandMethod;
             try {
-                commandMethod = Method.valueOf(this.commandMethod);
+                commandMethod = HttpMethod.valueOf(this.commandMethod);
             } catch (final IllegalArgumentException e) {
                 throw new IllegalArgumentException("Invalid commandMethod", e);
             }

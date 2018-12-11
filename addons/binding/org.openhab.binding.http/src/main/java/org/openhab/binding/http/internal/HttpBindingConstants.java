@@ -8,8 +8,8 @@
  */
 package org.openhab.binding.http.internal;
 
+import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.openhab.binding.http.internal.model.HttpChannelConfig;
 
 import java.time.Duration;
 
@@ -28,7 +28,7 @@ public class HttpBindingConstants {
     public static final Duration DEFAULT_CONNECT_TIMEOUT = Duration.ofSeconds(3);
     public static final Duration DEFAULT_REQUEST_TIMEOUT = Duration.ofSeconds(5);
     public static final Duration DEFAULT_STATE_REFRESH_INTERVAL = Duration.ofSeconds(60);
-    public static final HttpChannelConfig.Method DEFAULT_COMMAND_METHOD = HttpChannelConfig.Method.POST;
+    public static final HttpMethod DEFAULT_COMMAND_METHOD = HttpMethod.POST;
     public static final String DEFAULT_CONTENT_TYPE = "text/plain; charset=utf-8";
 
     public static final int MAX_RESPONSE_BODY_LEN = 1024;

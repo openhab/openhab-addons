@@ -10,6 +10,7 @@ package org.openhab.binding.http.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -28,8 +29,9 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.TypeParser;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.http.internal.model.CommandRequest;
 import org.openhab.binding.http.internal.model.ErrorListener;
-import org.openhab.binding.http.internal.model.HttpChannelConfig;
+import org.openhab.binding.http.internal.model.StateRequest;
 import org.openhab.binding.http.internal.model.Transform;
 import org.openhab.binding.http.internal.util.HttpUtil;
 import org.slf4j.Logger;
@@ -74,9 +76,9 @@ public class HttpChannelState implements AutoCloseable {
     private final ChannelTypeUID channelTypeUID;
     private final HttpClient httpClient;
     private final int maxHttpResponseBodyLen;
-    private final Optional<HttpChannelConfig.StateRequest> stateRequest;
+    private final Optional<StateRequest> stateRequest;
     private final ScheduledExecutorService scheduler;
-    private final Optional<HttpChannelConfig.CommandRequest> commandRequest;
+    private final Optional<CommandRequest> commandRequest;
     private final BiConsumer<ChannelUID, State> stateUpdatedListener;
     private final ErrorListener errorListener;
 
@@ -88,9 +90,9 @@ public class HttpChannelState implements AutoCloseable {
                             final ChannelTypeUID channelTypeUID,
                             final HttpClient httpClient,
                             final int maxHttpResponseBodyLen,
-                            final Optional<HttpChannelConfig.StateRequest> stateRequest,
+                            final Optional<StateRequest> stateRequest,
                             final ScheduledExecutorService scheduler,
-                            final Optional<HttpChannelConfig.CommandRequest> commandRequest,
+                            final Optional<CommandRequest> commandRequest,
                             final BiConsumer<ChannelUID, State> stateUpdatedListener,
                             final ErrorListener errorListener)
     {
@@ -118,8 +120,8 @@ public class HttpChannelState implements AutoCloseable {
         } else if (!this.commandRequest.isPresent()) {
             logger.warn("[{}] Got command '{}', but no command URL set", this.channelUID.getId(), command.toFullString());
         } else {
-            final HttpChannelConfig.CommandRequest commandRequest = this.commandRequest.get();
-            final HttpChannelConfig.Method method = commandRequest.getMethod();
+            final CommandRequest commandRequest = this.commandRequest.get();
+            final HttpMethod method = commandRequest.getMethod();
             final String commandStr = command.toFullString();
             try {
                 final String transformedCommand = doTransform(commandRequest.getRequestTransform(), commandStr);
@@ -168,7 +170,7 @@ public class HttpChannelState implements AutoCloseable {
         }
     }
 
-    private CompletionStage<HttpUtil.HttpResponse> makeHttpRequest(final HttpChannelConfig.Method method,
+    private CompletionStage<HttpUtil.HttpResponse> makeHttpRequest(final HttpMethod method,
                                                                    final URL url,
                                                                    final Duration connectTimeout,
                                                                    final Duration requestTimeout,
@@ -180,7 +182,7 @@ public class HttpChannelState implements AutoCloseable {
     {
         return HttpUtil.makeRequest(
                 this.httpClient,
-                method.toString(),
+                method.name(),
                 url,
                 username,
                 password,
@@ -193,7 +195,7 @@ public class HttpChannelState implements AutoCloseable {
         );
     }
 
-    private void startStateFetch(final HttpChannelConfig.StateRequest stateRequest) {
+    private void startStateFetch(final StateRequest stateRequest) {
         cancelStateFetch();
 
         this.stateUpdater = Optional.of(scheduler.scheduleWithFixedDelay(
@@ -211,12 +213,12 @@ public class HttpChannelState implements AutoCloseable {
         });
     }
 
-    private void fetchState(final HttpChannelConfig.StateRequest stateRequest) {
+    private void fetchState(final StateRequest stateRequest) {
         if (!this.fetchingState) {
             this.fetchingState = true;
             final URL url = stateRequest.getUrl();
             makeHttpRequest(
-                    HttpChannelConfig.Method.GET,
+                    HttpMethod.GET,
                     url,
                     stateRequest.getConnectTimeout(),
                     stateRequest.getRequestTimeout(),
