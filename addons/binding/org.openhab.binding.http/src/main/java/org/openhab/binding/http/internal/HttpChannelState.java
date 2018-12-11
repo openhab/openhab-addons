@@ -116,7 +116,7 @@ public class HttpChannelState implements AutoCloseable {
         if (command.equals(RefreshType.REFRESH)) {
             this.stateRequest.ifPresent(this::fetchState);
         } else if (!this.commandRequest.isPresent()) {
-            logger.warn("[{}] Got command '{}', but no command URL set", this.channelUID.getId(), command.toFullString());
+            logger.warn("[{}] Got command on channel '{}', but no command URL set", this.channelUID.getId(), command.toFullString());
         } else {
             final CommandRequest commandRequest = this.commandRequest.get();
             final HttpMethod method = commandRequest.getMethod();
