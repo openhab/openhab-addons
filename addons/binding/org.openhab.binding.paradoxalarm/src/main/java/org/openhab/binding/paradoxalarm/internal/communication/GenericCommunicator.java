@@ -88,11 +88,17 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
 
     @Override
     public synchronized void loginSequence() throws IOException, InterruptedException {
+        logger.debug("Login sequence started");
+
+        if (isOnline()) {
+            logger.debug("Already logged on. No action needed. Returning.");
+            return;
+        }
+
         if (socket.isClosed()) {
             reinitializeSocket();
         }
 
-        logger.debug("Login sequence started");
         logger.debug("Step1");
         // 1: Login to module request (IP150 only)
         ParadoxIPPacket ipPacket = new ParadoxIPPacket(password, false).setCommand(HeaderCommand.CONNECT_TO_IP_MODULE);

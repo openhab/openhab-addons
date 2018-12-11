@@ -39,12 +39,18 @@ public class ParadoxZoneHandler extends EntityBaseHandler {
         int index = calculateEntityIndex();
         try {
             List<Zone> zones = ParadoxPanel.getInstance().getZones();
-            Zone zone = zones.get(index);
-            if (zone != null) {
-                updateState(ZONE_LABEL_CHANNEL_UID, new StringType(zone.getLabel()));
-                updateState(ZONE_IS_OPENED_CHANNEL_UID, OpenClosedType.from(zone.getZoneState().isOpened()));
-                updateState(ZONE_IS_TAMPERED_CHANNEL_UID, OpenClosedType.from(zone.getZoneState().isTampered()));
-                updateState(ZONE_HAS_LOW_BATTERY_CHANNEL_UID, OpenClosedType.from(zone.getZoneState().hasLowBattery()));
+            if (zones != null && zones.size() > index) {
+                Zone zone = zones.get(index);
+                if (zone != null) {
+                    updateState(ZONE_LABEL_CHANNEL_UID, new StringType(zone.getLabel()));
+                    updateState(ZONE_IS_OPENED_CHANNEL_UID, OpenClosedType.from(zone.getZoneState().isOpened()));
+                    updateState(ZONE_IS_TAMPERED_CHANNEL_UID, OpenClosedType.from(zone.getZoneState().isTampered()));
+                    updateState(ZONE_HAS_LOW_BATTERY_CHANNEL_UID,
+                            OpenClosedType.from(zone.getZoneState().hasLowBattery()));
+                }
+            } else {
+                logger.error("Attempted to access zone out of bounds of current zone list. Index: {}, List: {}", index,
+                        zones);
             }
         } catch (ParadoxBindingException e) {
             logger.error("Unable to update zone {} due to missing ParadoxPanel. Exception: {}",

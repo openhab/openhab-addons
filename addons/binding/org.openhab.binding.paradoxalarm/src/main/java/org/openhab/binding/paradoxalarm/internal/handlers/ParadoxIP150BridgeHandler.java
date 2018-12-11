@@ -42,6 +42,8 @@ import org.slf4j.LoggerFactory;
  */
 public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
 
+    private static final int INITIAL_SCHEDULE_DELAY = 15;
+
     private final static Logger logger = LoggerFactory.getLogger(ParadoxIP150BridgeHandler.class);
 
     private static IParadoxCommunicator communicator;
@@ -52,21 +54,12 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
         super(bridge);
         logger.info("Starting creation of communicator handler");
         config = getConfigAs(ParadoxIP150BridgeConfiguration.class);
-        getCommunicator();
+        communicator = initializeCommunicator();
         updateDataCache(true);
         logger.info("Communicator handler created successfully");
     }
 
-    public static IParadoxCommunicator getCommunicator() throws Exception {
-        synchronized (ParadoxIP150BridgeHandler.class) {
-            if (communicator == null) {
-                communicator = initializeCommunicator();
-            }
-            return communicator;
-        }
-    }
-
-    protected static IParadoxCommunicator initializeCommunicator() throws Exception {
+    private static IParadoxCommunicator initializeCommunicator() throws Exception {
         synchronized (ParadoxIP150BridgeHandler.class) {
             String ipAddress = config.getIpAddress();
             int tcpPort = config.getPort();
@@ -118,7 +111,7 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
         logger.debug("Scheduling cache update. Refresh interval: " + config.getRefresh() + "s.");
         refreshCacheUpdateSchedule = scheduler.scheduleWithFixedDelay(() -> {
             updateDataCache();
-        }, 0, config.getRefresh(), TimeUnit.SECONDS);
+        }, INITIAL_SCHEDULE_DELAY, config.getRefresh(), TimeUnit.SECONDS);
     }
 
     private void updateDataCache() {
@@ -184,6 +177,8 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
                 String commandAsString = command.toFullString();
                 if (commandAsString.equals("RESET")) {
                     try {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                                "Bringing bridge offline due to reinitialization of communicator.");
                         reinitializeCommunicator();
                     } catch (Exception e) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -199,20 +194,22 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
         if (communicator == null || !communicator.isOnline()) {
             logger.debug("Communicator is null or not online");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Device is offline");
-
         } else {
             logger.debug("Communicator is online");
             updateStatus(ThingStatus.ONLINE);
         }
     }
 
+    @SuppressWarnings("null")
     @Override
     protected void updateStatus(@NonNull ThingStatus status, ThingStatusDetail statusDetail,
             @Nullable String description) {
         super.updateStatus(status, statusDetail, description);
         if (status.equals(ThingStatus.ONLINE)) {
-            scheduleRefresh();
-        } else if (ThingStatus.OFFLINE.equals(status)) {
+            if (refreshCacheUpdateSchedule == null || refreshCacheUpdateSchedule.isDone()) {
+                scheduleRefresh();
+            }
+        } else {
             HandlersUtil.cancelSchedule(refreshCacheUpdateSchedule);
         }
     }
