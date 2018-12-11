@@ -1,7 +1,8 @@
 {
 	"deviceMapping": {
 		"id": [
-			"chuangmi.plug.m1"
+			"chuangmi.plug.m1",
+			"chuangmi.plug.hmi205"
 		],
 		"channels": [
 			{
@@ -18,15 +19,15 @@
 					}
 				]
 			},
-            {
-                "property": "temperature",
-                "friendlyName": "Temperature",
-                "channel": "temperature",
-                "type": "Number",
-                "refresh": true,
-                "ChannelGroup": "",
-                "actions": []
-            }
+			{
+				"property": "temperature",
+				"friendlyName": "Temperature",
+				"channel": "temperature",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": []
+			}
 		]
 	}
 }

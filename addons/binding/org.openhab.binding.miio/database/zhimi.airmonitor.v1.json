@@ -1,7 +1,8 @@
 {
 	"deviceMapping": {
 		"id": [
-			"zhimi.airmonitor.v1"
+			"zhimi.airmonitor.v1",
+			"cgllc.airmonitor.b1"
 		],
 		"channels": [
 			{
@@ -80,7 +81,7 @@
 			},
 			{
 				"property": "night_end_time",
-				"friendlyName": "USB State",
+				"friendlyName": "Night End Time",
 				"channel": "night_end",
 				"type": "Number",
 				"refresh": true,
