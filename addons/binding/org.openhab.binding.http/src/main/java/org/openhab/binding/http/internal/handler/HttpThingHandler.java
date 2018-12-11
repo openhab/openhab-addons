@@ -27,10 +27,6 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.openhab.binding.http.internal.HttpBindingConstants.CHANNEL_TYPE_ID_IMAGE;
-import static org.openhab.binding.http.internal.HttpBindingConstants.MAX_IMAGE_RESPONSE_BODY_LEN;
-import static org.openhab.binding.http.internal.HttpBindingConstants.MAX_RESPONSE_BODY_LEN;
-
 /**
  * Handler for HTTP Things.
  *
@@ -55,18 +51,10 @@ public class HttpThingHandler extends BaseThingHandler {
             for (final Channel channel : getThing().getChannels()) {
                 final ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
                 if (channelTypeUID != null) {
-                    final int maxHttpResponseBodyLen;
-                    if (CHANNEL_TYPE_ID_IMAGE.equals(channelTypeUID.getId())) {
-                        maxHttpResponseBodyLen = MAX_IMAGE_RESPONSE_BODY_LEN;
-                    } else {
-                        maxHttpResponseBodyLen = MAX_RESPONSE_BODY_LEN;
-                    }
-
                     final HttpChannelConfig config = channel.getConfiguration().as(HttpChannelConfig.class);
                     final HttpChannelState channelState = new HttpChannelState(
                             channel,
                             this.httpClient,
-                            maxHttpResponseBodyLen,
                             config.getStateRequest(bundleContext),
                             scheduler,
                             config.getCommandRequest(bundleContext),

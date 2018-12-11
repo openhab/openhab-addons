@@ -40,6 +40,8 @@ import java.util.function.Function;
 
 import static org.openhab.binding.http.internal.HttpBindingConstants.CHANNEL_STATE_TYPES;
 import static org.openhab.binding.http.internal.HttpBindingConstants.CHANNEL_TYPE_ID_IMAGE;
+import static org.openhab.binding.http.internal.HttpBindingConstants.MAX_IMAGE_RESPONSE_BODY_LEN;
+import static org.openhab.binding.http.internal.HttpBindingConstants.MAX_RESPONSE_BODY_LEN;
 
 /**
  * This holds the state and handles commands for a channel connected to a HTTP Thing.
@@ -66,7 +68,6 @@ public class HttpChannelState implements AutoCloseable {
 
     public HttpChannelState(final Channel channel,
                             final HttpClient httpClient,
-                            final int maxHttpResponseBodyLen,
                             final Optional<StateRequest> stateRequest,
                             final ScheduledExecutorService scheduler,
                             final Optional<CommandRequest> commandRequest,
@@ -77,7 +78,8 @@ public class HttpChannelState implements AutoCloseable {
         this.channelUID = channel.getUID();
         this.channelTypeUID = channel.getChannelTypeUID();
         this.httpClient = httpClient;
-        this.maxHttpResponseBodyLen = maxHttpResponseBodyLen;
+        this.maxHttpResponseBodyLen = CHANNEL_TYPE_ID_IMAGE.equals(channel.getChannelTypeUID().getId())
+                ? MAX_IMAGE_RESPONSE_BODY_LEN : MAX_RESPONSE_BODY_LEN;
         this.stateRequest = stateRequest;
         this.commandRequest = commandRequest;
         this.isChannelLinked = isChannelLinked;

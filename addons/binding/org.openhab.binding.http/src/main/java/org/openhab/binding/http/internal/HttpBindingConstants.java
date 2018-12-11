@@ -41,7 +41,7 @@ public class HttpBindingConstants {
 
     static final ThingTypeUID THING_TYPE_HTTP = new ThingTypeUID(BINDING_ID, "http");
 
-    public static final String CHANNEL_TYPE_ID_IMAGE = "state-image";
+    static final String CHANNEL_TYPE_ID_IMAGE = "state-image";
 
     static final Map<String, List<Class<? extends State>>> CHANNEL_STATE_TYPES;
     static {
@@ -65,8 +65,8 @@ public class HttpBindingConstants {
     public static final HttpMethod DEFAULT_COMMAND_METHOD = HttpMethod.POST;
     public static final String DEFAULT_CONTENT_TYPE = "text/plain; charset=utf-8";
 
-    public static final int MAX_RESPONSE_BODY_LEN = 1024;
-    public static final int MAX_IMAGE_RESPONSE_BODY_LEN = 100 * 1024 * 1024;
+    static final int MAX_RESPONSE_BODY_LEN = 1024;
+    static final int MAX_IMAGE_RESPONSE_BODY_LEN = 100 * 1024 * 1024;
 
     private HttpBindingConstants() {}
 }
