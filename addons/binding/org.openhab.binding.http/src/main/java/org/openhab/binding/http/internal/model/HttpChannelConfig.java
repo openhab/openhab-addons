@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.http.model;
+package org.openhab.binding.http.internal.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -19,11 +19,11 @@ import java.net.URL;
 import java.time.Duration;
 import java.util.Optional;
 
-import static org.openhab.binding.http.HttpBindingConstants.DEFAULT_COMMAND_METHOD;
-import static org.openhab.binding.http.HttpBindingConstants.DEFAULT_CONNECT_TIMEOUT;
-import static org.openhab.binding.http.HttpBindingConstants.DEFAULT_CONTENT_TYPE;
-import static org.openhab.binding.http.HttpBindingConstants.DEFAULT_REQUEST_TIMEOUT;
-import static org.openhab.binding.http.HttpBindingConstants.DEFAULT_STATE_REFRESH_INTERVAL;
+import static org.openhab.binding.http.internal.HttpBindingConstants.DEFAULT_COMMAND_METHOD;
+import static org.openhab.binding.http.internal.HttpBindingConstants.DEFAULT_CONNECT_TIMEOUT;
+import static org.openhab.binding.http.internal.HttpBindingConstants.DEFAULT_CONTENT_TYPE;
+import static org.openhab.binding.http.internal.HttpBindingConstants.DEFAULT_REQUEST_TIMEOUT;
+import static org.openhab.binding.http.internal.HttpBindingConstants.DEFAULT_STATE_REFRESH_INTERVAL;
 
 /**
  * A class describing configuration for the HTTP handler.

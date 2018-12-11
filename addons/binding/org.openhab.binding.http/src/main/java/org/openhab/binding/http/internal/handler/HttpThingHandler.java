@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.http.handler;
+package org.openhab.binding.http.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -23,7 +23,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.http.internal.HttpChannelState;
-import org.openhab.binding.http.model.HttpChannelConfig;
+import org.openhab.binding.http.internal.model.HttpChannelConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,9 +31,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static org.openhab.binding.http.HttpBindingConstants.CHANNEL_TYPE_ID_IMAGE;
-import static org.openhab.binding.http.HttpBindingConstants.MAX_IMAGE_RESPONSE_BODY_LEN;
-import static org.openhab.binding.http.HttpBindingConstants.MAX_RESPONSE_BODY_LEN;
+import static org.openhab.binding.http.internal.HttpBindingConstants.CHANNEL_TYPE_ID_IMAGE;
+import static org.openhab.binding.http.internal.HttpBindingConstants.MAX_IMAGE_RESPONSE_BODY_LEN;
+import static org.openhab.binding.http.internal.HttpBindingConstants.MAX_RESPONSE_BODY_LEN;
 
 @NonNullByDefault
 public class HttpThingHandler extends BaseThingHandler {

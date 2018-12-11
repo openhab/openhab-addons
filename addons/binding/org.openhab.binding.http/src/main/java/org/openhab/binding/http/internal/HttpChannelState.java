@@ -27,10 +27,10 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.TypeParser;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.http.model.ErrorListener;
-import org.openhab.binding.http.model.HttpChannelConfig;
-import org.openhab.binding.http.model.Transform;
-import org.openhab.binding.http.util.HttpUtil;
+import org.openhab.binding.http.internal.model.ErrorListener;
+import org.openhab.binding.http.internal.model.HttpChannelConfig;
+import org.openhab.binding.http.internal.model.Transform;
+import org.openhab.binding.http.internal.util.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,8 +46,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 
-import static org.openhab.binding.http.HttpBindingConstants.CHANNEL_TYPE_ID_IMAGE;
-import static org.openhab.binding.http.HttpBindingConstants.DEFAULT_CONTENT_TYPE;
+import static org.openhab.binding.http.internal.HttpBindingConstants.CHANNEL_TYPE_ID_IMAGE;
+import static org.openhab.binding.http.internal.HttpBindingConstants.DEFAULT_CONTENT_TYPE;
 
 /**
  * This holds the state and handles commands for a channel connected to a HTTP Thing.

@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.http.util;
+package org.openhab.binding.http.internal.util;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -14,7 +14,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.smarthome.core.library.types.RawType;
-import org.openhab.binding.http.HttpBindingConstants;
+import org.openhab.binding.http.internal.HttpBindingConstants;
 
 import java.io.ByteArrayOutputStream;
 import java.net.URL;

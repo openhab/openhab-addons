@@ -6,10 +6,10 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.http;
+package org.openhab.binding.http.internal;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.openhab.binding.http.model.HttpChannelConfig;
+import org.openhab.binding.http.internal.model.HttpChannelConfig;
 
 import java.time.Duration;
 

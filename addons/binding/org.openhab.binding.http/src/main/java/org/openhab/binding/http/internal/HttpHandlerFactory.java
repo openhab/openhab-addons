@@ -17,11 +17,11 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.link.ItemChannelLinkRegistry;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
-import org.openhab.binding.http.handler.HttpThingHandler;
+import org.openhab.binding.http.internal.handler.HttpThingHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import static org.openhab.binding.http.HttpBindingConstants.THING_TYPE_HTTP;
+import static org.openhab.binding.http.internal.HttpBindingConstants.THING_TYPE_HTTP;
 
 /**
  * Handler factory for creating handlers for things of type http.

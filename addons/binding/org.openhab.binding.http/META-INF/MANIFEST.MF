@@ -8,9 +8,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.http;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
-Export-Package: 
- org.openhab.binding.http,
- org.openhab.binding.http.handler
 Import-Package: 
  org.apache.commons.io,
  org.apache.commons.lang,
@@ -32,8 +29,6 @@ Import-Package:
  org.eclipse.smarthome.core.transform,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.io.net.http,
- org.openhab.binding.http,
- org.openhab.binding.http.handler,
  org.osgi.framework,
  org.osgi.service.component,
  org.slf4j
