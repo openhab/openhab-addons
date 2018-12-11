@@ -12,25 +12,21 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
+import org.eclipse.jetty.client.api.Result;
+import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.smarthome.core.library.types.RawType;
-import org.openhab.binding.http.internal.HttpBindingConstants;
 
-import java.io.ByteArrayOutputStream;
 import java.net.URL;
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -42,8 +38,6 @@ import java.util.concurrent.TimeUnit;
 public class HttpUtil {
     /**
      * Encapsulation of a returned HTTP response, suitable for handling Thing State.
-     *
-     * @author Brian J. Tarricone - Initial contribution
      */
     public static class HttpResponse {
         private static final Set<String> SUPPORTED_TEXT_TYPES = new HashSet<>(Arrays.asList(
@@ -54,23 +48,11 @@ public class HttpUtil {
         ));
 
         private final Response response;
-        private final ByteBuffer responseBody;
-        private final String mimeType;
-        private final Optional<Charset> charset;
+        private final BufferingResponseListener listener;
 
-        HttpResponse(final Response response, final ByteBuffer responseBody) {
+        HttpResponse(final Response response, final BufferingResponseListener listener) {
             this.response = response;
-            this.responseBody = responseBody;
-
-            final String contentType = Optional.ofNullable(response.getHeaders().get("content-type"))
-                    .orElse(HttpBindingConstants.DEFAULT_CONTENT_TYPE);
-            final String[] parts = contentType.split(";");
-            this.mimeType = parts[0];
-            this.charset = Arrays.stream(parts, 1, parts.length)
-                    .map(String::trim)
-                    .filter(s -> s.toLowerCase(Locale.US).startsWith("charset="))
-                    .findFirst()
-                    .map(s -> Charset.forName(s.substring(8)));
+            this.listener = listener;
         }
 
         /**
@@ -88,7 +70,8 @@ public class HttpUtil {
          * @return the {@link RawType}
          */
         public RawType asRawType() {
-            return new RawType(asByteArray(), this.mimeType);
+            final String mediaType = Optional.ofNullable(listener.getMediaType()).orElse("application/octet-stream");
+            return new RawType(listener.getContent(), mediaType);
         }
 
         /**
@@ -101,7 +84,7 @@ public class HttpUtil {
             if (!canBeString()) {
                 throw new IllegalStateException("Response is not convertible to text");
             } else {
-                return new String(asByteArray(), this.charset.orElse(StandardCharsets.UTF_8));
+                return listener.getContentAsString();
             }
         }
 
@@ -114,76 +97,9 @@ public class HttpUtil {
         }
 
         private boolean canBeString() {
-            return this.mimeType.startsWith("text/") || SUPPORTED_TEXT_TYPES.contains(this.mimeType);
+            final String mediaType = listener.getMediaType();
+            return mediaType != null && mediaType.startsWith("text/") || SUPPORTED_TEXT_TYPES.contains(mediaType);
         }
-
-        private byte[] asByteArray() {
-            if (this.responseBody.hasArray()) {
-                return this.responseBody.array();
-            } else {
-                this.responseBody.rewind();
-                final byte[] array = new byte[this.responseBody.remaining()];
-                this.responseBody.get(array);
-                return array;
-            }
-        }
-    }
-
-    /**
-     * A Jetty HTTP response listener allows us to deal with the async response as a {@link CompletionStage}.
-     *
-     * @author Brian J. Tarricone - Initial contribution
-     */
-    private static class CompletionStageResponseListener extends Response.Listener.Adapter {
-        private final long maxResponseBodyLen;
-        private final CompletableFuture<HttpResponse> future = new CompletableFuture<>();
-        private final ByteArrayOutputStream responseBodyAccum = new ByteArrayOutputStream();
-
-        CompletionStageResponseListener(final long maxResponseBodyLen) {
-            this.maxResponseBodyLen = maxResponseBodyLen;
-        }
-
-        @Override
-        public void onContent(final Response response, final ByteBuffer byteBuffer) {
-            if (responseBodyAccum.size() + byteBuffer.remaining() >= this.maxResponseBodyLen) {
-                response.abort(new IllegalArgumentException("Response body is larger than the max allowed length (" + maxResponseBodyLen + ")"));
-            } else if (!future.isDone()) {
-                if (byteBuffer.hasArray()) {
-                    responseBodyAccum.write(byteBuffer.array(), 0, byteBuffer.remaining());
-                } else {
-                    final int len = byteBuffer.remaining();
-                    final byte[] buf = new byte[len];
-                    byteBuffer.get(buf);
-                    responseBodyAccum.write(buf, 0, len);
-                }
-            }
-        }
-
-        @Override
-        public void onSuccess(final Response response) {
-            future.complete(new HttpResponse(response, ByteBuffer.wrap(responseBodyAccum.toByteArray())));
-        }
-
-        @Override
-        public void onFailure(final Response response, final Throwable throwable) {
-            future.completeExceptionally(throwable);
-        }
-
-        void setOn(final Request request) {
-            request.onResponseContent(this);
-            request.onResponseSuccess(this);
-            request.onResponseFailure(this);
-        }
-
-        CompletionStage<HttpResponse> getCompletionStage() {
-            return future;
-        }
-    }
-
-    private static <T> CompletionStage<T> failedFuture(final Throwable ex) {
-        final CompletableFuture<T> future = new CompletableFuture<>();
-        future.completeExceptionally(ex);
-        return future;
     }
 
     /**
@@ -212,6 +128,7 @@ public class HttpUtil {
                                                             final Duration requestTimeout,
                                                             final int maxResponseBodyLen)
     {
+        final CompletableFuture<HttpResponse> future = new CompletableFuture<>();
         try {
             final Request request = httpClient
                     .newRequest(url.toURI())
@@ -222,15 +139,22 @@ public class HttpUtil {
             buildBasicAuthHeader(username, password).ifPresent(hdr -> request.header("authorization", hdr));
             lastEtag.ifPresent(le -> request.header("if-none-match", le));
             body.ifPresent(b -> request.content(new StringContentProvider(b)));
-            final CompletionStageResponseListener listener = new CompletionStageResponseListener(maxResponseBodyLen);
-            listener.setOn(request);
-            request.send();
-            return listener.getCompletionStage();
-        } catch (final ExecutionException e) {
-            return failedFuture(e.getCause() != null ? e.getCause() : e);
+            final BufferingResponseListener listener = new BufferingResponseListener(maxResponseBodyLen) {
+                @NonNullByDefault({})
+                @Override
+                public void onComplete(final Result result) {
+                    if (result.getFailure() != null) {
+                        future.completeExceptionally(result.getFailure());
+                    } else {
+                        future.complete(new HttpResponse(result.getResponse(), this));
+                    }
+                }
+            };
+            request.send(listener);
         } catch (final Exception e) {
-            return failedFuture(e);
+            future.completeExceptionally(e);
         }
+        return future;
     }
 
     private static Optional<String> buildBasicAuthHeader(final Optional<String> username, final Optional<String> password) {
