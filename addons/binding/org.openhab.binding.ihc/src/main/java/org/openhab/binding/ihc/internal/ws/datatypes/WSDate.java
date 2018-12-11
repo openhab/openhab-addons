@@ -162,5 +162,4 @@ public class WSDate {
     public ZonedDateTime getAsZonedDateTime(ZoneId zoneId) {
         return ZonedDateTime.of(getAsLocalDateTime(), zoneId);
     }
-
 }

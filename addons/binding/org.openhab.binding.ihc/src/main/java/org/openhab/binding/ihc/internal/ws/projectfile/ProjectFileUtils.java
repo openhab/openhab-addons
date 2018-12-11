@@ -93,8 +93,6 @@ public class ProjectFileUtils {
                             && projectInfo.getLastmodified().getHours() == hour
                             && projectInfo.getLastmodified().getMinutes() == minute) {
                         return true;
-                    } else {
-                        return false;
                     }
                 }
             } catch (Exception e) {
@@ -112,7 +110,6 @@ public class ProjectFileUtils {
         for (int i = 0; i < nodes.getLength(); i++) {
             Element element = (Element) nodes.item(i);
 
-            // String enumName = element.getAttribute("name");
             int typedefId = Integer.parseInt(element.getAttribute("id").replace("_0x", ""), 16);
             String enum_name = element.getAttribute("name");
 
@@ -131,7 +128,6 @@ public class ProjectFileUtils {
             LOGGER.debug("Enum values found: typedefId={}, name={}: {}", typedefId, enum_name, enumValues);
             enumDictionary.put(typedefId, enumValues);
         }
-
         return enumDictionary;
     }
 }

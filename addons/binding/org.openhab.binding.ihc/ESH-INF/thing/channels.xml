@@ -263,8 +263,8 @@
 		<label>Push button trigger channel</label>
 		<event>
 			<options>
-			    <option value="PRESSED">Pressed</option>
-			    <option value="RELEASED">Released</option>
+				<option value="PRESSED">Pressed</option>
+				<option value="RELEASED">Released</option>
 				<option value="SHORT_PRESS">Short press</option>
 				<option value="LONG_PRESS">Long press</option>
 			</options>
