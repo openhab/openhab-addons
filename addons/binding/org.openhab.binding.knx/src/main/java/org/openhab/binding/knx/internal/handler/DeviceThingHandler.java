@@ -340,17 +340,14 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
                             OutboundSpec commandSpec = selector.getCommandSpec(configuration, typeHelper, type);
                             if (commandSpec != null) {
                                 GroupAddress mainGa = getKNXChannelMainGA(channel);
-                                // only process if value has changed
-                                if (getRespondingSpecValue(mainGa) != commandSpec.getType()) {
-                                    // if destination is mainGA AND changed value, for mainGA expose next expected
-                                    // GroupValueWrite from openHAB to KNX
-                                    if (destination.equals(mainGa)) {
-                                        logger.trace("onGroupWrite mainGA groupAddressesWriteExposeOnce: '{}'",
-                                                destination);
-                                        groupAddressesWriteBlockedOnce.add(destination);
-                                    }
-                                    processDataReceived(destination, asdu, listenSpec, channel.getUID());
+                                // if destination is mainGA AND changed value, for mainGA expose next expected
+                                // GroupValueWrite from openHAB to KNX
+                                if (destination.equals(mainGa)) {
+                                    logger.trace("onGroupWrite mainGA groupAddressesWriteExposeOnce: '{}'",
+                                            destination);
+                                    groupAddressesWriteBlockedOnce.add(destination);
                                 }
+                                processDataReceived(destination, asdu, listenSpec, channel.getUID());
                                 rememberRespondingSpec(commandSpec, true);
                             }
                         }
