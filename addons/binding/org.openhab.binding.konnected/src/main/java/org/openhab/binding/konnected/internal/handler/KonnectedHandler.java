@@ -175,7 +175,7 @@ public class KonnectedHandler extends BaseThingHandler {
     }
 
     private void checkConfiguration() throws ConfigValidationException {
-        logger.debug("Checking configurauon on thing {}", this.getThing().getUID().getAsString());
+        logger.debug("Checking configuration on thing {}", this.getThing().getUID().getAsString());
         Configuration testConfig = this.getConfig();
         String testRetryCount = testConfig.get(RETRY_COUNT).toString();
         String testRequestTimeout = testConfig.get(REQUEST_TIMEOUT).toString();
