@@ -35,7 +35,7 @@ public class HttpChannelConfig {
      * An exception class describing a failure to parse configuration.
      */
     public static class InvalidConfigurationException extends RuntimeException {
-        InvalidConfigurationException(final String message) {
+        public InvalidConfigurationException(final String message) {
             super(message);
         }
     }

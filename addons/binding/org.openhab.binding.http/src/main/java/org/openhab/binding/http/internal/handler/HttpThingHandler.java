@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Handler for HTTP Things.
@@ -51,7 +52,8 @@ public class HttpThingHandler extends BaseThingHandler {
             for (final Channel channel : getThing().getChannels()) {
                 final ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
                 if (channelTypeUID != null) {
-                    final HttpChannelConfig config = channel.getConfiguration().as(HttpChannelConfig.class);
+                    final HttpChannelConfig config = Optional.ofNullable(channel.getConfiguration().as(HttpChannelConfig.class))
+                        .orElseThrow(() -> new HttpChannelConfig.InvalidConfigurationException("A required configuration property was not set"));
                     final HttpChannelState channelState = new HttpChannelState(
                             channel,
                             this.httpClient,
