@@ -291,11 +291,13 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
                             RefreshType.REFRESH);
                     if (responseSpec != null) {
                         logger.trace("onGroupRead isControl -> postCommand");
-                        // REFRESH to get event for scripting
-                        postCommand(channel.getUID().getId(), RefreshType.REFRESH);
+                        // This event should be sent to KNX as GroupValueResponse immediately.
                         sendGroupValueResponse(channel, destination);
-                    } else {
-                        logger.trace("onGroupRead isControl but no responseSpec found.");
+                        // Send REFRESH to openHAB to get this event for scripting with postCommand
+                        // and remember to ignore/block this REFRESH to be sent back to KNX as GroupValueWrite after
+                        // postCommand is done!
+                        groupAddressesWriteBlockedOnce.add(destination);
+                        postCommand(channel.getUID().getId(), RefreshType.REFRESH);
                     }
                 });
             }
@@ -339,11 +341,13 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
                         if (type != null) {
                             OutboundSpec commandSpec = selector.getCommandSpec(configuration, typeHelper, type);
                             if (commandSpec != null) {
-                                GroupAddress mainGa = getKNXChannelMainGA(channel);
-                                // only process if value has changed
-                                if (getRespondingSpecValue(mainGa) != commandSpec.getType()) {
-                                    // if destination is mainGA AND changed value, for mainGA expose next expected
-                                    // GroupValueWrite from openHAB to KNX
+                                // Only process Control Channel, if it is not blocked after a GroupValueResponse was
+                                // sent to KNX by openHAB (set from: onGroupRead "Send REFRESH...").
+                                if (!groupAddressesWriteBlockedOnce.remove(commandSpec.getGroupAddress())) {
+                                    GroupAddress mainGa = getKNXChannelMainGA(channel);
+                                    // If destination is mainGA, for mainGA expose next expected GroupValueWrite from
+                                    // openHAB to KNX. Simulates openHAB to handle this GA like a Hardware-DTP where
+                                    // T-flag (german:Ü) is not set.
                                     if (destination.equals(mainGa)) {
                                         logger.trace("onGroupWrite mainGA groupAddressesWriteExposeOnce: '{}'",
                                                 destination);
