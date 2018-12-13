@@ -16,9 +16,9 @@ import javax.imageio.ImageIO;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.automation.annotation.ActionInput;
-import org.eclipse.smarthome.automation.annotation.ActionScope;
 import org.eclipse.smarthome.automation.annotation.RuleAction;
-import org.eclipse.smarthome.core.thing.binding.AnnotatedActionThingHandlerService;
+import org.eclipse.smarthome.core.thing.binding.ThingActions;
+import org.eclipse.smarthome.core.thing.binding.ThingActionsScope;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.lgwebos.handler.LGWebOSHandler;
 import org.osgi.service.component.annotations.Component;
@@ -42,10 +42,9 @@ import com.connectsdk.service.command.ServiceCommandError;
  *
  * @author Sebastian Prehn - Initial contribution
  */
-@ActionScope(name = "binding.lgwebos")
-@Component(immediate = false, service = { AnnotatedActionThingHandlerService.class })
-
-public class ActionService implements AnnotatedActionThingHandlerService {
+@ThingActionsScope(name = "lgwebos")
+@Component()
+public class ActionService implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(ActionService.class);
     private @Nullable LGWebOSHandler handler;
 
@@ -59,7 +58,7 @@ public class ActionService implements AnnotatedActionThingHandlerService {
         return this.handler;
     }
 
-    public enum Button {
+    private enum Button {
         UP,
         DOWN,
         LEFT,
