@@ -175,10 +175,12 @@ public class KonnectedHandler extends BaseThingHandler {
     }
 
     private void checkConfiguration() throws ConfigValidationException {
-        KonnectedConfiguration testConfig = getConfigAs(KonnectedConfiguration.class);
+        logger.debug("Checking configuration on thing {}", this.getThing().getUID().getAsString());
+        Configuration testConfig = this.getConfig();
         String testRetryCount = testConfig.get(RETRY_COUNT).toString();
         String testRequestTimeout = testConfig.get(REQUEST_TIMEOUT).toString();
-
+        logger.debug("The RequestTimeout Parameter is Configured as: {}", testRequestTimeout);
+        logger.debug("The Retry Count Parameter is Configured as: {}", testRetryCount);
         try {
             this.retryCount = Integer.parseInt(testRetryCount);
         } catch (NumberFormatException e) {
@@ -188,6 +190,7 @@ public class KonnectedHandler extends BaseThingHandler {
             this.retryCount = 2;
         }
         try {
+
             this.http.setRequestTimeout(Integer.parseInt(testRequestTimeout));
         } catch (NumberFormatException e) {
             logger.debug(
@@ -201,7 +204,7 @@ public class KonnectedHandler extends BaseThingHandler {
         }
 
         else {
-            this.config = testConfig;
+            this.config = getConfigAs(KonnectedConfiguration.class);
         }
     }
 
@@ -399,6 +402,7 @@ public class KonnectedHandler extends BaseThingHandler {
      * Prepares and sends the {@link KonnectedModulePayload} via the {@link KonnectedHttpUtils}
      *
      * @return response obtained from sending the settings payload to Konnected module defined by the thing
+     *
      * @throws KonnectedHttpRetryExceeded if unable to communicate with the Konnected module defined by the Thing
      */
     private String updateKonnectedModule() throws KonnectedHttpRetryExceeded {
