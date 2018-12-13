@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.deconz.internal.discovery;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -35,7 +33,7 @@ import org.openhab.binding.deconz.internal.handler.DeconzBridgeHandler;
  */
 @NonNullByDefault
 public class ThingDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
-    private final List<DiscoveryResult> results = new ArrayList<>();
+
     private @NonNullByDefault({}) DeconzBridgeHandler handler;
 
     public ThingDiscoveryService() {
@@ -83,7 +81,6 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements T
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withBridge(handler.getThing().getUID())
                 .withLabel(sensor.name + " (" + sensor.manufacturername + ")").withProperty("id", sensorID)
                 .withProperty("uid", sensor.uniqueid).withRepresentationProperty("uid").build();
-        results.add(discoveryResult);
         thingDiscovered(discoveryResult);
     }
 
