@@ -44,13 +44,13 @@ import org.slf4j.LoggerFactory;
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.pulseaudio")
 public class PulseaudioHandlerFactory extends BaseThingHandlerFactory {
-    private Logger logger = LoggerFactory.getLogger(PulseaudioHandlerFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(PulseaudioHandlerFactory.class);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.concat(PulseaudioBridgeHandler.SUPPORTED_THING_TYPES_UIDS.stream(),
                     PulseaudioHandler.SUPPORTED_THING_TYPES_UIDS.stream()).collect(Collectors.toSet()));
 
-    private Map<ThingHandler, ServiceRegistration<?>> discoveryServiceReg = new HashMap<>();
+    private final Map<ThingHandler, ServiceRegistration<?>> discoveryServiceReg = new HashMap<>();
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -73,8 +73,8 @@ public class PulseaudioHandlerFactory extends BaseThingHandlerFactory {
     private void registerDeviceDiscoveryService(PulseaudioBridgeHandler paBridgeHandler) {
         PulseaudioDeviceDiscoveryService discoveryService = new PulseaudioDeviceDiscoveryService(paBridgeHandler);
         discoveryService.activate();
-        this.discoveryServiceReg.put(paBridgeHandler, bundleContext.registerService(DiscoveryService.class.getName(),
-                discoveryService, new Hashtable<String, Object>()));
+        this.discoveryServiceReg.put(paBridgeHandler,
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
     private ThingUID getPulseaudioDeviceUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration,
