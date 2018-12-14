@@ -341,26 +341,11 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
                         if (type != null) {
                             OutboundSpec commandSpec = selector.getCommandSpec(configuration, typeHelper, type);
                             if (commandSpec != null) {
-                                // Only process Control Channel, if it is not blocked after a GroupValueResponse was
-                                // sent to KNX by openHAB (set from: onGroupRead "Send REFRESH...").
-                                if (!groupAddressesWriteBlockedOnce.remove(commandSpec.getGroupAddress())) {
-                                    GroupAddress mainGa = getKNXChannelMainGA(channel);
-                                    // If destination is mainGA, for mainGA expose next expected GroupValueWrite from
-                                    // openHAB to KNX. Simulates openHAB to handle this GA like a Hardware-DTP where
-                                    // T-flag (german:Ü) is not set.
-                                    if (destination.equals(mainGa)) {
-                                        logger.trace("onGroupWrite mainGA groupAddressesWriteExposeOnce: '{}'",
-                                                destination);
-                                        groupAddressesWriteBlockedOnce.add(destination);
-                                    }
-                                    processDataReceived(destination, asdu, listenSpec, channel.getUID());
-                                }
                                 rememberRespondingSpec(commandSpec, true);
                             }
                         }
-                    } else {
-                        processDataReceived(destination, asdu, listenSpec, channel.getUID());
                     }
+                    processDataReceived(destination, asdu, listenSpec, channel.getUID());
                 }
             });
         }
@@ -426,21 +411,4 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
         return KNXChannelTypes.getType(channel.getChannelTypeUID());
     }
 
-    private GroupAddress getKNXChannelMainGA(Channel channel) {
-        return getKNXChannelType(channel).getWriteAddresses(channel.getConfiguration()).stream().findFirst().get();
-    }
-
-    private @Nullable Type getRespondingSpecValue(GroupAddress destination) {
-        Optional<OutboundSpec> os = groupAddressesRespondingSpec.stream().filter(spec -> {
-            GroupAddress groupAddress = spec.getGroupAddress();
-            if (groupAddress != null) {
-                return groupAddress.equals(destination);
-            }
-            return false;
-        }).findFirst();
-        if (os.isPresent()) {
-            return os.get().getType();
-        }
-        return null;
-    }
 }
