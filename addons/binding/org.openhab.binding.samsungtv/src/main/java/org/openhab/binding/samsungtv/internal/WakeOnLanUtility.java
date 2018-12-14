@@ -17,7 +17,6 @@ import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.util.Enumeration;
 
-import org.openhab.binding.samsungtv.internal.handler.SamsungTvHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +28,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WakeOnLanUtility {
 
-    private static Logger logger = LoggerFactory.getLogger(SamsungTvHandler.class);
+    private static Logger logger = LoggerFactory.getLogger(WakeOnLanUtility.class);
 
     /**
      * Get MAC address for host
@@ -44,9 +43,14 @@ public class WakeOnLanUtility {
             proc.waitFor();
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             String macAddress = stdInput.readLine();
-            logger.info("MAC address of host {} is {}", hostName, macAddress);
-            return macAddress;
-
+            if (macAddress != null) {
+                logger.info("MAC address of host {} is {}", hostName, macAddress);
+                return macAddress;
+            } else {
+                BufferedReader stdErr = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
+                String error = stdErr.readLine();
+                logger.warn("Cannot get MAC addres of host {}: ", hostName, error);
+            }
         } catch (Exception e) {
             logger.info("Problem getting MAC address: {}", e.getMessage());
         }

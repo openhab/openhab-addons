@@ -111,6 +111,11 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
 
         String channel = channelUID.getId();
 
+        // if power on command try WOL for good measure:
+        if ((channel.equals(POWER) || channel.equals(ART_MODE)) && OnOffType.ON.equals(command)) {
+            sendWOLandResendCommand(channel, command);
+        }
+
         // Delegate command to correct service
         for (SamsungTvService service : services) {
             for (String s : service.getSupportedChannelNames()) {
@@ -121,12 +126,7 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
             }
         }
 
-        // if power command failed: try to use WOL
-        if ((channel.equals(POWER) || channel.equals(ART_MODE)) && OnOffType.ON.equals(command)) {
-            sendWOLandResendCommand(channel, command);
-        } else {
-            logger.warn("Channel '{}' not supported", channelUID);
-        }
+        logger.warn("Channel '{}' not supported", channelUID);
     }
 
     @Override

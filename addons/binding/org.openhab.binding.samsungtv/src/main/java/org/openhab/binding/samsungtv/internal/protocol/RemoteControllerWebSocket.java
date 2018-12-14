@@ -78,6 +78,8 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
 
     @Override
     public void openConnection() throws RemoteControllerException {
+        logger.trace("openConnection()");
+
         if (!(client.isStarted() || client.isStarting())) {
             logger.debug("RemoteControllerWebSocket start Client");
             try {
@@ -95,6 +97,8 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
     }
 
     private void connectWebSockets() {
+        logger.trace("connectWebSockets()");
+
         try {
             webSocketRemote.connect(new URI("ws", null, host, port, WS_ENDPOINT_REMOTE_CONTROL, "name=openhab", null));
         } catch (RemoteControllerException | URISyntaxException e) {
@@ -180,12 +184,13 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
         }
 
         void close() {
+            logger.debug("{} connection close requested", this.getClass().getSimpleName());
             getSession().close();
         }
 
         void sendCommand(String cmd) {
             try {
-                // retry openening connection just in case
+                // retry opening connection just in case
                 openConnection();
 
                 if (isConnected()) {
@@ -514,8 +519,6 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
 
             sendKeyData(key, press);
         }
-
-        logger.debug("Command successfully sent");
     }
 
     /**
@@ -655,6 +658,7 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
 
     @Override
     public void lifeCycleStarted(LifeCycle arg0) {
+        logger.trace("WebSocketClient started");
         connectWebSockets();
     }
 
@@ -665,14 +669,17 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
 
     @Override
     public void lifeCycleStarting(LifeCycle arg0) {
+        logger.trace("WebSocketClient starting");
     }
 
     @Override
     public void lifeCycleStopped(LifeCycle arg0) {
+        logger.trace("WebSocketClient stopped");
     }
 
     @Override
     public void lifeCycleStopping(LifeCycle arg0) {
+        logger.trace("WebSocketClient stopping");
     }
 
 }

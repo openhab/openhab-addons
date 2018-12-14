@@ -86,10 +86,11 @@ public class RemoteControllerLegacy extends RemoteController {
         try {
             socket.connect(new InetSocketAddress(host, port), CONNECTION_TIMEOUT);
         } catch (Exception e) {
+            logger.debug("Cannot connect to Legacy Remote Controller: {}", e.getMessage());
             throw new RemoteControllerException("Connection failed", e);
         }
 
-        logger.debug("Connection successfully opened...quering access");
+        logger.debug("Connection successfully opened...querying access");
 
         try {
             /* @formatter:off
