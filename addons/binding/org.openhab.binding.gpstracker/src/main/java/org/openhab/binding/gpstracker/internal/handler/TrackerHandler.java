@@ -183,6 +183,7 @@ public class TrackerHandler extends BaseThingHandler {
                 config.put(ConfigHelper.CONFIG_REGION_NAME, CHANNEL_DISTANCE_SYSTEM_NAME);
                 config.put(CONFIG_REGION_CENTER_LOCATION, sysLocation.toFullString());
                 config.put(ConfigHelper.CONFIG_REGION_RADIUS, CHANNEL_DISTANCE_SYSTEM_RADIUS);
+                config.put(ConfigHelper.CONFIG_ACCURACY_THRESHOLD, 0);
 
                 channelBuilder = callback.createChannelBuilder(systemDistanceChannelUID, CHANNEL_TYPE_DISTANCE)
                         .withLabel("System Distance")
@@ -286,41 +287,54 @@ public class TrackerHandler extends BaseThingHandler {
     }
 
     private void updateDistanceChannelFromMessage(LocationMessage message, Channel c) {
-        String regionName = ConfigHelper.getRegionName(c.getConfiguration());
-        PointType center = ConfigHelper.getRegionCenterLocation(c.getConfiguration());
-        PointType newLocation = message.getTrackerLocation();
-        if (center != null) {
-            double newDistance = newLocation.distanceFrom(center).doubleValue();
-            updateState(c.getUID(), new QuantityType<>(newDistance / 1000, MetricPrefix.KILO(SIUnits.METRE)));
-            logger.trace("Region {} center distance from tracker location {} is {}m", regionName, newLocation, newDistance);
+        Configuration currentConfig = c.getConfiguration();
+        //convert into meters which is the unit of the threshold
+        double accuracyThreshold = convertToMeters(ConfigHelper.getAccuracyThreshold(currentConfig));
+        if (accuracyThreshold > message.getGpsAccuracy().doubleValue() || accuracyThreshold == 0) {
+            if (accuracyThreshold > 0) {
+                logger.debug("Location accuracy is below required threshold: {}<{}", message.getGpsAccuracy(), accuracyThreshold);
+            } else {
+                logger.debug("Location accuracy threshold check is disabled.");
+            }
 
-            //fire trigger based on distance calculation only in case of pure location message
-            if (!(message instanceof TransitionMessage)) {
-                //convert into meters which is the unit of the calculated distance
-                double radiusMeter = convertRadiusToMeters(ConfigHelper.getRegionRadius(c.getConfiguration()));
-                if (radiusMeter > newDistance) {
-                    triggerRegionChannel(regionName, EVENT_ENTER);
-                } else {
-                    triggerRegionChannel(regionName, EVENT_LEAVE);
+            String regionName = ConfigHelper.getRegionName(currentConfig);
+            PointType center = ConfigHelper.getRegionCenterLocation(currentConfig);
+            PointType newLocation = message.getTrackerLocation();
+            if (center != null) {
+                double newDistance = newLocation.distanceFrom(center).doubleValue();
+                updateState(c.getUID(), new QuantityType<>(newDistance / 1000, MetricPrefix.KILO(SIUnits.METRE)));
+                logger.trace("Region {} center distance from tracker location {} is {}m", regionName, newLocation, newDistance);
+
+                //fire trigger based on distance calculation only in case of pure location message
+                if (!(message instanceof TransitionMessage)) {
+                    //convert into meters which is the unit of the calculated distance
+                    double radiusMeter = convertToMeters(ConfigHelper.getRegionRadius(c.getConfiguration()));
+                    if (radiusMeter > newDistance) {
+                        triggerRegionChannel(regionName, EVENT_ENTER);
+                    } else {
+                        triggerRegionChannel(regionName, EVENT_LEAVE);
+                    }
                 }
             }
+        } else {
+            logger.debug("Skip update as location accuracy is above required threshold: {}>={}", message.getGpsAccuracy(), accuracyThreshold);
         }
     }
 
-    private double convertRadiusToMeters(double radius) {
+    private double convertToMeters(double valueToConvert) {
         if (unitProvider != null) {
             @Nullable Unit<Length> unit = unitProvider.getUnit(Length.class);
             if (unit != null && !SIUnits.METRE.equals(unit)) {
-                double value = ImperialUnits.YARD.getConverterTo(SIUnits.METRE).convert(radius);
-                logger.trace("Region radius converted: {}yd->{}m", radius, value);
+                double value = ImperialUnits.YARD.getConverterTo(SIUnits.METRE).convert(valueToConvert);
+                logger.trace("Value converted: {}yd->{}m", valueToConvert, value);
                 return value;
             } else {
                 logger.trace("System uses SI measurement units. No conversion is needed.");
             }
         } else {
-            logger.trace("No unit provider. Considering region radius {} in meters.", radius);
+            logger.trace("No unit provider. Considering region radius {} in meters.", valueToConvert);
         }
-        return radius;
+        return valueToConvert;
     }
 
     /**
