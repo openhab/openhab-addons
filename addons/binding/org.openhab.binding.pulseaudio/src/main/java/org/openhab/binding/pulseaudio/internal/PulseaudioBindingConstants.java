@@ -48,7 +48,7 @@ public class PulseaudioBindingConstants {
 
     public static final String DEVICE_PARAMETER_NAME = "name";
 
-    public static Map<String, Boolean> TYPE_FILTERS = new HashMap<String, Boolean>();
+    public static final Map<String, Boolean> TYPE_FILTERS = new HashMap<>();
 
     static {
         TYPE_FILTERS.put(SINK_THING_TYPE.getId(), true);
