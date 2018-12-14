@@ -20,4 +20,5 @@ public class JeeLinkConfig {
     public Integer baudRate;
     public String initCommands;
     public Integer initDelay;
+    public Integer reconnectInterval;
 }
