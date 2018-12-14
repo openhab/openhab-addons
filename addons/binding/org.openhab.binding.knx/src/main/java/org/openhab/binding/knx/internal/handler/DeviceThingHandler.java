@@ -351,7 +351,6 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
                                     if (destination.equals(mainGa)) {
                                         logger.trace("onGroupWrite mainGA groupAddressesWriteExposeOnce: '{}'",
                                                 destination);
-                                        groupAddressesWriteBlockedOnce.add(destination);
                                     }
                                     processDataReceived(destination, asdu, listenSpec, channel.getUID());
                                 }
