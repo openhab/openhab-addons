@@ -96,6 +96,52 @@ Mapping table between data types:
 | WSDateValue             | DateTime          | datetime-channel                 | <resource_date id="_0x97dd0e" …>                                                                                                           |
 | WSTimeValue             | DateTime          | datetime-channel                 | <resource_time id="_0x97db0d" …>                                                                                                           |
 
+## Profiles
+
+Binding provides IHC / ELKO specific `ihc:pushbutton-to-command` profile for `push-button-trigger` channels.
+This profile can be used to transforms trigger events to item commands without writing rules.
+
+Profile support following configuration parameters:
+
+| Parameter             | Param Type   | Required | Default value | Description                                                                                               |
+| --------------------- | ------------ | -------- | ------------- | --------------------------------------------------------------------------------------------------------- |
+| short-press-command   | String       | no       | ON            | Define the command be send when short button press is detected.                                           |
+| long-press-command    | String       | no       | INCREASE      | Define the command be send when long button press is detected.                                            |
+| long-press-time       | Integer      | no       | 1000          | Define the long button press time in milliseconds.                                                        |
+| repeat-time           | Integer      | no       | 200           | How often long button press command is send in milliseconds. If 0, long press command is sent only ones.  |
+| timeout               | Integer      | no       | 10000         | Timeout for repeated long press command. Cancel long press command sending when this limit is exceeded.   |
+
+Supported commands:
+
+| Command     | Supported Item Type |
+| ----------- | ------------------- |
+| ON          | Switch              |
+| OFF         | Switch              |
+| STOP        | Player              |
+| PLAY        | Player              |
+| PAUSE       | Player              |
+| NEXT        | Player              |
+| PREVIOUS    | Player              |
+| FASTFORWARD | Player              |
+| REWIND      | Player              |
+| INCREASE    | Dimmer              |
+| DECREASE    | Dimmer              |
+| UP          | Rollershutter       |
+| DOWN        | Rollershutter       |
+| TOGGLE      | Switch              |
+
+All commands but `TOGGLE` are standard openHAB commands. 
+When `TOGGLE` command is specified, profile will toggle switch item state. 
+E.g. if item state has been OFF, profile will send ON command to item.
+ 
+Example:
+
+```xtend
+Dimmer test { channel="ihc:controller:elko:my_test_trigger"[profile="ihc:pushbutton-to-command", short-press-command="TOGGLE", long-press-command="INCREASE", long-press-time=1000, repeat-time=200] }
+```
+
+Will send TOGGLE (ON/OFF) command to Dimmer test item when short button press is detected (button press less than 1000ms) and send INCREASE commands as long button is pressed over 1000ms (200ms interval).
+
 
 ## Examples
 
@@ -130,6 +176,9 @@ Switch low_battery  "Low Battery"    { channel="ihc:controller:elko:my_low_batte
 Dimmer test_dimmer  "Test Dimmer"    { channel="ihc:controller:elko:inc_resource", channel="ihc:controller:elko:dec_resource" }
 
 Number multi_resource_test  "Multi resource test"  { channel="ihc:controller:elko:readonly_resource", channel="ihc:controller:elko:write1_resource", channel="ihc:controller:elko:write2_resource", channel="ihc:controller:elko:write3_resource" }
+
+Dimmer dimmer { channel="ihc:controller:elko:my_test_trigger"[profile="ihc:pushbutton-to-command", short-press-command="TOGGLE", long-press-command="INCREASE", long-press-time=1000, repeat-time=200] }
+
 ```
 
 ### example.rules
