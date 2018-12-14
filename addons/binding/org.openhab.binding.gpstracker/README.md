@@ -101,8 +101,9 @@ These dynamic channels require the following parameters:
 | Region Name   | String   | Region name. If the region is configured in the tracker app as well use the same name. Distance channels can also be defined as binding only regions (not configured in trackers) |
 | Region center | Location | Region center location                                                                                                                                                            |
 | Region Radius | Integer  | Geofence radius                                                                                                                                                                   |
+| Accuracy Threshold | Integer  | Location accuracy threshold (0 to disable)                                                                                                                                                                 |
 
-Distance values will be updated each time a GPS location log record is received from the tracker.
+Distance values will be updated each time a GPS location log record is received from the tracker if the accuracy is below the threshold or if the threshold is disabled.
 
 When this calculated distance is less than the defined geofence radius the binding also fires event on Region Trigger channel.
 
@@ -145,7 +146,8 @@ Thing gpstracker:tracker:EX   "EX tracker" [trackerId="EX"] {
             Type regionDistance : homeDistance "Distance from Home" [
                 regionName="Home",
                 regionCenterLocation="11.1111,22.2222",
-                regionRadius=100
+                regionRadius=100,
+                accuracyThreshold=30
             ]
 }
 ```

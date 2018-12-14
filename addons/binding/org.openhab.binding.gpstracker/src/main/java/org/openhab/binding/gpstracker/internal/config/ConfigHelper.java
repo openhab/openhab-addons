@@ -24,6 +24,7 @@ public class ConfigHelper {
     public static final String CONFIG_REGION_NAME = "regionName";
     public static final String CONFIG_REGION_RADIUS = "regionRadius";
     public static final String CONFIG_REGION_CENTER_LOCATION = "regionCenterLocation";
+    public static final String CONFIG_ACCURACY_THRESHOLD = "accuracyThreshold";
 
     /**
      * Constructor.
@@ -32,6 +33,11 @@ public class ConfigHelper {
 
     public static double getRegionRadius(Configuration config) {
         return ((BigDecimal) config.get(CONFIG_REGION_RADIUS)).doubleValue();
+    }
+
+    public static double getAccuracyThreshold(Configuration config) {
+        Object value = config.get(CONFIG_ACCURACY_THRESHOLD);
+        return value != null ? ((BigDecimal) value).doubleValue(): 0;
     }
 
     public static String getRegionName(Configuration config) {
