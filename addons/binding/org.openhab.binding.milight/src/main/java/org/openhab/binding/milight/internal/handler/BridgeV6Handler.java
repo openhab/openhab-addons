@@ -39,7 +39,7 @@ import org.openhab.binding.milight.internal.protocol.MilightV6SessionManager.Ses
 public class BridgeV6Handler extends AbstractBridgeHandler implements ISessionState {
     private @NonNullByDefault({}) MilightV6SessionManager session;
     final DateTimeFormatter timeFormat = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
-    private String offlineReasion = "";
+    private String offlineReason = "";
     private @Nullable ScheduledFuture<?> scheduledFuture;
 
     public BridgeV6Handler(Bridge bridge) {
@@ -126,9 +126,9 @@ public class BridgeV6Handler extends AbstractBridgeHandler implements ISessionSt
                 break;
             default:
                 // Delay putting the session offline
-                offlineReasion = state.name();
+                offlineReason = state.name();
                 scheduledFuture = scheduler.schedule(() -> updateStatus(ThingStatus.OFFLINE,
-                        ThingStatusDetail.CONFIGURATION_PENDING, offlineReasion), 1000, TimeUnit.MILLISECONDS);
+                        ThingStatusDetail.CONFIGURATION_PENDING, offlineReason), 1000, TimeUnit.MILLISECONDS);
                 break;
         }
     }

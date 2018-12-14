@@ -107,14 +107,14 @@ public class BridgeV3Handler extends AbstractBridgeHandler {
             discoverPacketV3.setPort(MilightBindingConstants.PORT_DISCOVER);
             socket.setSoTimeout(100);
 
-            final int ATTEMPTS = 3;
+            final int attempts = 3;
             int timeoutsCounter = 0;
             while (running) {
                 try {
                     packet.setLength(buffer.length);
                     socket.receive(packet);
                 } catch (SocketTimeoutException e) {
-                    if (timeoutsCounter >= ATTEMPTS) {
+                    if (timeoutsCounter >= attempts) {
                         socket.setSoTimeout(config.refreshTime * 1000);
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Bridge did not respond!");
                         timeoutsCounter = 0;
