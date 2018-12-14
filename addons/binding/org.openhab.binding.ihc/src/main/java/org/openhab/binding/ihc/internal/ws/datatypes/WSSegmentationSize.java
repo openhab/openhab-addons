@@ -45,8 +45,12 @@ public class WSSegmentationSize extends WSBaseDataType {
     }
 
     public WSSegmentationSize parseXMLData(String data) throws IhcExecption {
-        String value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getIHCProjectSegmentationSize1");
-        setSegmentationSize(Integer.parseInt(value));
-        return this;
+        try {
+            String value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getIHCProjectSegmentationSize1");
+            setSegmentationSize(Integer.parseInt(value));
+            return this;
+        } catch (Exception e) {
+            throw new IhcExecption("Error occured during XML data parsing", e);
+        }
     }
 }

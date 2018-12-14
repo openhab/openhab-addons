@@ -45,13 +45,18 @@ public class WSControllerState extends WSBaseDataType {
     }
 
     public WSControllerState parseXMLData(String data) throws IhcExecption {
-        if (data.contains("getState1")) {
-            state = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getState1/ns1:state");
-        } else if (data.contains("waitForControllerStateChange3")) {
-            state = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:waitForControllerStateChange3/ns1:state");
-        } else {
-            throw new IhcExecption("Encoding error, unsupported data");
+        try {
+            if (data.contains("getState1")) {
+                state = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getState1/ns1:state");
+            } else if (data.contains("waitForControllerStateChange3")) {
+                state = parseXMLValue(data,
+                        "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:waitForControllerStateChange3/ns1:state");
+            } else {
+                throw new IhcExecption("Encoding error, unsupported data");
+            }
+            return this;
+        } catch (Exception e) {
+            throw new IhcExecption("Error occured during XML data parsing", e);
         }
-        return this;
     }
 }

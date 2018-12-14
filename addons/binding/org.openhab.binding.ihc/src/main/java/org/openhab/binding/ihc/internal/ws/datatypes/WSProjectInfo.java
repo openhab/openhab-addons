@@ -188,54 +188,63 @@ public class WSProjectInfo extends WSBaseDataType {
     }
 
     public WSProjectInfo parseXMLData(String data) throws IhcExecption {
-        String value = parseXMLValue(data,
-                "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getProjectInfo1/ns1:visualMinorVersion");
-        setVisualMinorVersion(Integer.parseInt(value));
+        try {
+            String value = parseXMLValue(data,
+                    "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getProjectInfo1/ns1:visualMinorVersion");
+            setVisualMinorVersion(Integer.parseInt(value));
 
-        value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getProjectInfo1/ns1:visualMajorVersion");
-        setVisualMajorVersion(Integer.parseInt(value));
+            value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getProjectInfo1/ns1:visualMajorVersion");
+            setVisualMajorVersion(Integer.parseInt(value));
 
-        value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getProjectInfo1/ns1:projectMajorRevision");
-        setProjectMajorRevision(Integer.parseInt(value));
+            value = parseXMLValue(data,
+                    "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getProjectInfo1/ns1:projectMajorRevision");
+            setProjectMajorRevision(Integer.parseInt(value));
 
-        value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getProjectInfo1/ns1:projectMinorRevision");
-        setProjectMinorRevision(Integer.parseInt(value));
+            value = parseXMLValue(data,
+                    "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getProjectInfo1/ns1:projectMinorRevision");
+            setProjectMinorRevision(Integer.parseInt(value));
 
-        WSDate lastmodified = new WSDate();
+            WSDate lastmodified = new WSDate();
 
-        value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getProjectInfo1/ns1:lastmodified/ns1:day");
-        lastmodified.setDay(Integer.parseInt(value));
+            value = parseXMLValue(data,
+                    "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getProjectInfo1/ns1:lastmodified/ns1:day");
+            lastmodified.setDay(Integer.parseInt(value));
 
-        value = parseXMLValue(data,
-                "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getProjectInfo1/ns1:lastmodified/ns1:monthWithJanuaryAsOne");
-        lastmodified.setMonthWithJanuaryAsOne(Integer.parseInt(value));
+            value = parseXMLValue(data,
+                    "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getProjectInfo1/ns1:lastmodified/ns1:monthWithJanuaryAsOne");
+            lastmodified.setMonthWithJanuaryAsOne(Integer.parseInt(value));
 
-        value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getProjectInfo1/ns1:lastmodified/ns1:hours");
-        lastmodified.setHours(Integer.parseInt(value));
+            value = parseXMLValue(data,
+                    "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getProjectInfo1/ns1:lastmodified/ns1:hours");
+            lastmodified.setHours(Integer.parseInt(value));
 
-        value = parseXMLValue(data,
-                "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getProjectInfo1/ns1:lastmodified/ns1:minutes");
-        lastmodified.setMinutes(Integer.parseInt(value));
+            value = parseXMLValue(data,
+                    "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getProjectInfo1/ns1:lastmodified/ns1:minutes");
+            lastmodified.setMinutes(Integer.parseInt(value));
 
-        value = parseXMLValue(data,
-                "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getProjectInfo1/ns1:lastmodified/ns1:seconds");
-        lastmodified.setSeconds(Integer.parseInt(value));
+            value = parseXMLValue(data,
+                    "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getProjectInfo1/ns1:lastmodified/ns1:seconds");
+            lastmodified.setSeconds(Integer.parseInt(value));
 
-        value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getProjectInfo1/ns1:lastmodified/ns1:year");
-        lastmodified.setYear(Integer.parseInt(value));
+            value = parseXMLValue(data,
+                    "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getProjectInfo1/ns1:lastmodified/ns1:year");
+            lastmodified.setYear(Integer.parseInt(value));
 
-        setLastmodified(lastmodified);
+            setLastmodified(lastmodified);
 
-        value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getProjectInfo1/ns1:projectNumber");
-        setProjectNumber(value);
+            value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getProjectInfo1/ns1:projectNumber");
+            setProjectNumber(value);
 
-        value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getProjectInfo1/ns1:customerName");
-        setCustomerName(value);
+            value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getProjectInfo1/ns1:customerName");
+            setCustomerName(value);
 
-        value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getProjectInfo1/ns1:installerName");
-        setInstallerName(value);
+            value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getProjectInfo1/ns1:installerName");
+            setInstallerName(value);
 
-        return this;
+            return this;
+        } catch (Exception e) {
+            throw new IhcExecption("Error occured during XML data parsing", e);
+        }
     }
 
     @Override

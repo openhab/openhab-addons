@@ -87,48 +87,55 @@ public class WSTimeManagerSettings extends WSBaseDataType {
     }
 
     public WSTimeManagerSettings parseXMLData(String data) throws IhcExecption {
-        String value = parseXMLValue(data,
-                "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:synchroniseTimeAgainstServer");
-        setSynchroniseTimeAgainstServer(Boolean.parseBoolean(value));
+        try {
+            String value = parseXMLValue(data,
+                    "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:synchroniseTimeAgainstServer");
+            setSynchroniseTimeAgainstServer(Boolean.parseBoolean(value));
 
-        value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:useDST");
-        setUseDST(Boolean.parseBoolean(value));
+            value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:useDST");
+            setUseDST(Boolean.parseBoolean(value));
 
-        value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:gmtOffsetInHours");
-        setGmtOffsetInHours(Integer.parseInt(value));
+            value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:gmtOffsetInHours");
+            setGmtOffsetInHours(Integer.parseInt(value));
 
-        value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:serverName");
-        setServerName(value);
+            value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:serverName");
+            setServerName(value);
 
-        value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:syncIntervalInHours");
-        setSyncIntervalInHours(Integer.parseInt(value));
+            value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:syncIntervalInHours");
+            setSyncIntervalInHours(Integer.parseInt(value));
 
-        WSDate timeAndDateInUTC = new WSDate();
+            WSDate timeAndDateInUTC = new WSDate();
 
-        value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:timeAndDateInUTC/ns1:day");
-        timeAndDateInUTC.setDay(Integer.parseInt(value));
+            value = parseXMLValue(data,
+                    "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:timeAndDateInUTC/ns1:day");
+            timeAndDateInUTC.setDay(Integer.parseInt(value));
 
-        value = parseXMLValue(data,
-                "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:timeAndDateInUTC/ns1:monthWithJanuaryAsOne");
-        timeAndDateInUTC.setMonthWithJanuaryAsOne(Integer.parseInt(value));
+            value = parseXMLValue(data,
+                    "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:timeAndDateInUTC/ns1:monthWithJanuaryAsOne");
+            timeAndDateInUTC.setMonthWithJanuaryAsOne(Integer.parseInt(value));
 
-        value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:timeAndDateInUTC/ns1:hours");
-        timeAndDateInUTC.setHours(Integer.parseInt(value));
+            value = parseXMLValue(data,
+                    "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:timeAndDateInUTC/ns1:hours");
+            timeAndDateInUTC.setHours(Integer.parseInt(value));
 
-        value = parseXMLValue(data,
-                "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:timeAndDateInUTC/ns1:minutes");
-        timeAndDateInUTC.setMinutes(Integer.parseInt(value));
+            value = parseXMLValue(data,
+                    "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:timeAndDateInUTC/ns1:minutes");
+            timeAndDateInUTC.setMinutes(Integer.parseInt(value));
 
-        value = parseXMLValue(data,
-                "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:timeAndDateInUTC/ns1:seconds");
-        timeAndDateInUTC.setSeconds(Integer.parseInt(value));
+            value = parseXMLValue(data,
+                    "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:timeAndDateInUTC/ns1:seconds");
+            timeAndDateInUTC.setSeconds(Integer.parseInt(value));
 
-        value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:timeAndDateInUTC/ns1:year");
-        timeAndDateInUTC.setYear(Integer.parseInt(value));
+            value = parseXMLValue(data,
+                    "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:timeAndDateInUTC/ns1:year");
+            timeAndDateInUTC.setYear(Integer.parseInt(value));
 
-        setTimeAndDateInUTC(timeAndDateInUTC);
+            setTimeAndDateInUTC(timeAndDateInUTC);
 
-        return this;
+            return this;
+        } catch (Exception e) {
+            throw new IhcExecption("Error occured during XML data parsing", e);
+        }
     }
 
     @Override

@@ -122,19 +122,22 @@ public class WSLoginResult extends WSBaseDataType {
     }
 
     public WSLoginResult parseXMLData(String data) throws IhcExecption {
+        try {
+            loginWasSuccessful = parseValueToBoolean(data,
+                    "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:authenticate2/ns1:loginWasSuccessful");
 
-        loginWasSuccessful = parseValueToBoolean(data,
-                "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:authenticate2/ns1:loginWasSuccessful");
+            loginFailedDueToConnectionRestrictions = parseValueToBoolean(data,
+                    "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:authenticate2/ns1:loginFailedDueToConnectionRestrictions");
 
-        loginFailedDueToConnectionRestrictions = parseValueToBoolean(data,
-                "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:authenticate2/ns1:loginFailedDueToConnectionRestrictions");
+            loginFailedDueToInsufficientUserRights = parseValueToBoolean(data,
+                    "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:authenticate2/ns1:loginFailedDueToInsufficientUserRights");
 
-        loginFailedDueToInsufficientUserRights = parseValueToBoolean(data,
-                "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:authenticate2/ns1:loginFailedDueToInsufficientUserRights");
+            loginFailedDueToAccountInvalid = parseValueToBoolean(data,
+                    "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:authenticate2/ns1:loginFailedDueToAccountInvalid");
 
-        loginFailedDueToAccountInvalid = parseValueToBoolean(data,
-                "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:authenticate2/ns1:loginFailedDueToAccountInvalid");
-
-        return this;
+            return this;
+        } catch (Exception e) {
+            throw new IhcExecption("Error occured during XML data parsing", e);
+        }
     }
 }

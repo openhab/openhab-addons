@@ -209,35 +209,40 @@ public class WSSystemInfo extends WSBaseDataType {
     }
 
     public WSSystemInfo parseXMLData(String data) throws IhcExecption {
-        String value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:uptime");
-        setUptime(Long.parseLong(value));
+        try {
+            String value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:uptime");
+            setUptime(Long.parseLong(value));
 
-        value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:serialNumber");
-        setSerialNumber(value);
+            value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:serialNumber");
+            setSerialNumber(value);
 
-        value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:realtimeclock");
-        setRealTimeClock(ZonedDateTime.parse(value));
+            value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:realtimeclock");
+            setRealTimeClock(ZonedDateTime.parse(value));
 
-        value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:brand");
-        setBrand(value);
+            value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:brand");
+            setBrand(value);
 
-        value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:version");
-        setVersion(value);
+            value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:version");
+            setVersion(value);
 
-        value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:hwRevision");
-        setHwRevision(value);
+            value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:hwRevision");
+            setHwRevision(value);
 
-        value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:swDate");
-        setSwDate(ZonedDateTime.parse(value));
+            value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:swDate");
+            setSwDate(ZonedDateTime.parse(value));
 
-        value = parseXMLValue(data,
-                "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:applicationIsWithoutViewer");
-        setApplicationIsWithoutViewer(Boolean.parseBoolean(value));
+            value = parseXMLValue(data,
+                    "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:applicationIsWithoutViewer");
+            setApplicationIsWithoutViewer(Boolean.parseBoolean(value));
 
-        value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:productionDate");
-        setProductionDate(ZonedDateTime.parse(value));
+            value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:productionDate");
+            value = "2017/43";
+            setProductionDate(ZonedDateTime.parse(value));
 
-        return this;
+            return this;
+        } catch (Exception e) {
+            throw new IhcExecption("Error occured during XML data parsing", e);
+        }
     }
 
     @Override

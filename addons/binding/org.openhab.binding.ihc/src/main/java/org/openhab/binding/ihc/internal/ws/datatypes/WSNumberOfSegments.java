@@ -46,8 +46,12 @@ public class WSNumberOfSegments extends WSBaseDataType {
     }
 
     public WSNumberOfSegments parseXMLData(String data) throws IhcExecption {
-        String value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getIHCProjectNumberOfSegments1");
-        setNumberOfSegments(Integer.parseInt(value));
-        return this;
+        try {
+            String value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getIHCProjectNumberOfSegments1");
+            setNumberOfSegments(Integer.parseInt(value));
+            return this;
+        } catch (Exception e) {
+            throw new IhcExecption("Error occured during XML data parsing", e);
+        }
     }
 }

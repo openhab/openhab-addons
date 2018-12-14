@@ -71,8 +71,8 @@ public class IhcAirlinkManagementService extends IhcBaseService {
                 throw new IhcExecption("Illegal resource value notification response received");
             }
             return resourceValueList;
-        } catch (XPathExpressionException | IOException e) {
-            throw new IhcExecption(e);
+        } catch (Exception e) {
+            throw new IhcExecption("Error occured during XML data parsing", e);
         }
     }
 
