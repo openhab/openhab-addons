@@ -252,7 +252,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
         } catch (IhcExecption e) {
             logger.error("Can't update channel '{}' value, cause ", channelUID, e.getMessage());
         } catch (IllegalArgumentException e) {
-            logger.warn("Can't find resource id, reason {}", e.getMessage());
+            logger.warn("Can't find resource id, reason:  {}", e.getMessage());
         }
     }
 
@@ -274,7 +274,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
 
             updateState(new ChannelUID(getThing().getUID(), CHANNEL_CONTROLLER_STATE), new StringType(value));
         } catch (IhcExecption e) {
-            logger.warn("Controller state information fetch failed, reason {}", e.getMessage());
+            logger.warn("Controller state information fetch failed, reason:  {}", e.getMessage());
         }
     }
 
@@ -300,7 +300,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
             properties.put(PROPERTY_PROJECT_NUMBER, projectInfo.getProjectNumber());
             updateProperties(properties);
         } catch (IhcExecption e) {
-            logger.warn("Controller information fetch failed, reason {}", e.getMessage());
+            logger.warn("Controller information fetch failed, reason:  {}", e.getMessage());
         }
     }
 
@@ -312,7 +312,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
             updateState(new ChannelUID(getThing().getUID(), CHANNEL_CONTROLLER_UPTIME),
                     new DecimalType((double) systemInfo.getUptime() / 1000));
         } catch (IhcExecption e) {
-            logger.warn("Controller uptime information fetch failed, reason {}", e.getMessage());
+            logger.warn("Controller uptime information fetch failed, reason:  {}", e.getMessage());
         }
     }
 
@@ -325,7 +325,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                     .withZoneSameInstant(ZoneId.systemDefault());
             updateState(new ChannelUID(getThing().getUID(), CHANNEL_CONTROLLER_TIME), new DateTimeType(time));
         } catch (IhcExecption e) {
-            logger.warn("Controller uptime information fetch failed, reason {}", e.getMessage());
+            logger.warn("Controller uptime information fetch failed, reason:  {}", e.getMessage());
         }
     }
 
@@ -344,7 +344,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
         } catch (IhcExecption e) {
             logger.error("Can't update channel '{}' value, cause ", channelUID, e.getMessage());
         } catch (IllegalArgumentException e) {
-            logger.warn("Can't find resource id, reason {}", e.getMessage());
+            logger.warn("Can't find resource id, reason:  {}", e.getMessage());
         }
     }
 
@@ -473,7 +473,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                         }
                     }
                 } catch (IllegalArgumentException e) {
-                    logger.warn("Can't find resource id, reason {}", e.getMessage());
+                    logger.warn("Can't find resource id, reason:  {}", e.getMessage());
                 }
         }
     }
@@ -496,7 +496,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                         updateNotificationsRequestReminder();
                     }
                 } catch (IllegalArgumentException e) {
-                    logger.warn("Can't find resource id, reason {}", e.getMessage());
+                    logger.warn("Can't find resource id, reason:  {}", e.getMessage());
                 }
         }
     }
@@ -803,7 +803,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                     });
                 });
             } catch (IhcExecption e) {
-                logger.debug("Error occured when fetching RF device information, reason: {} ", e.getMessage());
+                logger.debug("Error occured when fetching RF device information, reason: : {} ", e.getMessage());
                 return;
             }
         }
