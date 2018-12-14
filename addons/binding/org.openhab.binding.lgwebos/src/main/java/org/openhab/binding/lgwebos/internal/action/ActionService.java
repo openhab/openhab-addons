@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2010-2018 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.lgwebos.internal.action;
 
 import java.awt.image.BufferedImage;
@@ -14,6 +22,7 @@ import java.util.stream.Stream;
 
 import javax.imageio.ImageIO;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.automation.annotation.ActionInput;
 import org.eclipse.smarthome.automation.annotation.RuleAction;
@@ -44,6 +53,7 @@ import com.connectsdk.service.command.ServiceCommandError;
  */
 @ThingActionsScope(name = "lgwebos")
 @Component()
+@NonNullByDefault
 public class ActionService implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(ActionService.class);
     private @Nullable LGWebOSHandler handler;
@@ -107,22 +117,25 @@ public class ActionService implements ThingActions {
     public void launchApplicationWithParam(
             @ActionInput(name = "appId", label = "@text/actionLaunchApplicationInputAppIDLabel", description = "@text/actionLaunchApplicationInputAppIDDesc") String appId,
             @ActionInput(name = "param", label = "@text/actionLaunchApplicationInputParamLabel", description = "@text/actionLaunchApplicationInputParamDesc") Object param) {
-        getControl(Launcher.class).ifPresent(control -> control.getAppList(new Launcher.AppListListener() {
-            @Override
-            public void onError(ServiceCommandError error) {
-                logger.warn("error requesting application list: {}.", error == null ? "" : error.getMessage());
-            }
+        getControl(Launcher.class).ifPresent(control -> control.getAppList(
 
-            @Override
-            public void onSuccess(List<AppInfo> appInfos) {
-                Optional<AppInfo> appInfo = appInfos.stream().filter(a -> a.getId().equals(appId)).findFirst();
-                if (appInfo.isPresent()) {
-                    control.launchAppWithInfo(appInfo.get(), param, createResponseListener());
-                } else {
-                    logger.warn("TV does not support any app with id: {}.", appId);
-                }
-            }
-        }));
+                new Launcher.AppListListener() {
+                    @Override
+                    public void onError(@Nullable ServiceCommandError error) {
+                        logger.warn("error requesting application list: {}.", error == null ? "" : error.getMessage());
+                    }
+
+                    @Override
+                    @NonNullByDefault({})
+                    public void onSuccess(List<AppInfo> appInfos) {
+                        Optional<AppInfo> appInfo = appInfos.stream().filter(a -> a.getId().equals(appId)).findFirst();
+                        if (appInfo.isPresent()) {
+                            control.launchAppWithInfo(appInfo.get(), param, createResponseListener());
+                        } else {
+                            logger.warn("TV does not support any app with id: {}.", appId);
+                        }
+                    }
+                }));
     }
 
     @RuleAction(label = "@text/actionSendTextLabel", description = "@text/actionSendTextDesc")
@@ -180,16 +193,18 @@ public class ActionService implements ThingActions {
         getControl(TVControl.class).ifPresent(control -> control.channelDown(createResponseListener()));
     }
 
-    private <C extends CapabilityMethods> Optional<C> getControl(Class<C> clazz) {
-        if (this.handler == null) {
+    private <C extends @Nullable CapabilityMethods> Optional<C> getControl(Class<C> clazz) {
+        LGWebOSHandler lgWebOSHandler = this.handler;
+        if (lgWebOSHandler == null) {
             logger.warn("LGWebOS ThingHandler is null.");
             return Optional.empty();
         }
-        final Optional<ConnectableDevice> connectableDevice = this.handler.getDevice();
+        final Optional<ConnectableDevice> connectableDevice = lgWebOSHandler.getDevice();
         if (!connectableDevice.isPresent()) {
             logger.warn("Device not online.");
             return Optional.empty();
         }
+
         C control = connectableDevice.get().getCapability(clazz);
         if (control == null) {
             logger.warn("Device does not have the ability: {}", clazz.getName());
@@ -202,7 +217,7 @@ public class ActionService implements ThingActions {
         return new ResponseListener<O>() {
 
             @Override
-            public void onError(ServiceCommandError error) {
+            public void onError(@Nullable ServiceCommandError error) {
                 logger.warn("Response: {}", error == null ? "" : error.getMessage());
             }
 

@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.eclipse.jdt.annotation.NonNull;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -38,15 +38,14 @@ import com.connectsdk.service.sessions.LaunchSession;
 @NonNullByDefault
 public class LauncherApplication extends BaseChannelHandler<Launcher.AppInfoListener, LaunchSession> {
     private final Logger logger = LoggerFactory.getLogger(LauncherApplication.class);
-    private final Map<String, List<AppInfo>> applicationListCache = new HashMap<>();
+    private final Map<String, @Nullable List<AppInfo>> applicationListCache = new HashMap<>();
 
     private Launcher getControl(final ConnectableDevice device) {
         return device.getCapability(Launcher.class);
     }
 
     @Override
-    public void onDeviceReady(@NonNull ConnectableDevice device, @NonNull String channelId,
-            @NonNull LGWebOSHandler handler) {
+    public void onDeviceReady(ConnectableDevice device, String channelId, LGWebOSHandler handler) {
         super.onDeviceReady(device, channelId, handler);
         if (hasCapability(device, Launcher.Application_List)) {
 
@@ -74,8 +73,7 @@ public class LauncherApplication extends BaseChannelHandler<Launcher.AppInfoList
     }
 
     @Override
-    public void onDeviceRemoved(@NonNull ConnectableDevice device, @NonNull String channelId,
-            @NonNull LGWebOSHandler handler) {
+    public void onDeviceRemoved(ConnectableDevice device, String channelId, LGWebOSHandler handler) {
         super.onDeviceRemoved(device, channelId, handler);
         applicationListCache.remove(device.getId());
     }
