@@ -194,6 +194,7 @@ public class LGHomBotHandler extends BaseThingHandler {
     public void initialize() {
         disposed = false;
         logger.debug("Initializing handler for LG-HomBot");
+        config = getConfigAs(LGHomBotConfiguration.class);
 
         updateAllChannels();
         setupRefreshTimer(config.getPollingPeriod());
@@ -204,7 +205,7 @@ public class LGHomBotHandler extends BaseThingHandler {
      * Sets up a refresh timer (using the scheduler) with the given interval.
      *
      * @param initialWaitTime The delay before the first refresh. Maybe 0 to immediately
-     *                            initiate a refresh.
+     *            initiate a refresh.
      */
     private void setupRefreshTimer(int initialWaitTime) {
         if (refreshTimer != null) {
@@ -345,18 +346,25 @@ public class LGHomBotHandler extends BaseThingHandler {
                                     || state.equals(HBSTATE_BACKMOVING_INIT)) {
                                 channel = new ChannelUID(getThing().getUID(), CHANNEL_START);
                                 updateState(channel, OnOffType.ON);
+                                channel = new ChannelUID(getThing().getUID(), CHANNEL_CLEAN);
+                                updateState(channel, OnOffType.ON);
                                 channel = new ChannelUID(getThing().getUID(), CHANNEL_HOME);
                                 updateState(channel, OnOffType.OFF);
                             }
                             if (state.equals(HBSTATE_HOMING) || state.equals(HBSTATE_DOCKING)) {
                                 channel = new ChannelUID(getThing().getUID(), CHANNEL_START);
                                 updateState(channel, OnOffType.OFF);
+                                channel = new ChannelUID(getThing().getUID(), CHANNEL_CLEAN);
+                                updateState(channel, OnOffType.OFF);
                                 channel = new ChannelUID(getThing().getUID(), CHANNEL_HOME);
                                 updateState(channel, OnOffType.ON);
                             }
-                            if (state.equals(HBSTATE_PAUSE) || state.equals(HBSTATE_CHARGING)
-                                    || state.equals(HBSTATE_DIAGNOSIS) || state.equals(HBSTATE_RESERVATION)) {
+                            if (state.equals(HBSTATE_STANDBY) || state.equals(HBSTATE_PAUSE)
+                                    || state.equals(HBSTATE_CHARGING) || state.equals(HBSTATE_DIAGNOSIS)
+                                    || state.equals(HBSTATE_RESERVATION) || state.equals(HBSTATE_ERROR)) {
                                 channel = new ChannelUID(getThing().getUID(), CHANNEL_START);
+                                updateState(channel, OnOffType.OFF);
+                                channel = new ChannelUID(getThing().getUID(), CHANNEL_CLEAN);
                                 updateState(channel, OnOffType.OFF);
                                 channel = new ChannelUID(getThing().getUID(), CHANNEL_HOME);
                                 updateState(channel, OnOffType.OFF);
