@@ -14,9 +14,12 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -25,29 +28,45 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.freebox.internal.api.model.FreeboxAirMediaConfig;
+import org.openhab.binding.freebox.internal.api.model.FreeboxAirMediaConfigResponse;
 import org.openhab.binding.freebox.internal.api.model.FreeboxAirMediaReceiver;
 import org.openhab.binding.freebox.internal.api.model.FreeboxAirMediaReceiverRequest;
+import org.openhab.binding.freebox.internal.api.model.FreeboxAirMediaReceiversResponse;
 import org.openhab.binding.freebox.internal.api.model.FreeboxAuthorizationStatus;
+import org.openhab.binding.freebox.internal.api.model.FreeboxAuthorizationStatusResponse;
 import org.openhab.binding.freebox.internal.api.model.FreeboxAuthorizeRequest;
 import org.openhab.binding.freebox.internal.api.model.FreeboxAuthorizeResponse;
+import org.openhab.binding.freebox.internal.api.model.FreeboxAuthorizeResult;
 import org.openhab.binding.freebox.internal.api.model.FreeboxCallEntry;
+import org.openhab.binding.freebox.internal.api.model.FreeboxCallEntryResponse;
 import org.openhab.binding.freebox.internal.api.model.FreeboxConnectionStatus;
+import org.openhab.binding.freebox.internal.api.model.FreeboxConnectionStatusResponse;
 import org.openhab.binding.freebox.internal.api.model.FreeboxDiscoveryResponse;
+import org.openhab.binding.freebox.internal.api.model.FreeboxEmptyResponse;
 import org.openhab.binding.freebox.internal.api.model.FreeboxFtpConfig;
-import org.openhab.binding.freebox.internal.api.model.FreeboxLanConfig;
+import org.openhab.binding.freebox.internal.api.model.FreeboxFtpConfigResponse;
+import org.openhab.binding.freebox.internal.api.model.FreeboxLanConfigResponse;
 import org.openhab.binding.freebox.internal.api.model.FreeboxLanHost;
+import org.openhab.binding.freebox.internal.api.model.FreeboxLanHostsResponse;
 import org.openhab.binding.freebox.internal.api.model.FreeboxLanInterface;
+import org.openhab.binding.freebox.internal.api.model.FreeboxLanInterfacesResponse;
 import org.openhab.binding.freebox.internal.api.model.FreeboxLcdConfig;
+import org.openhab.binding.freebox.internal.api.model.FreeboxLcdConfigResponse;
 import org.openhab.binding.freebox.internal.api.model.FreeboxLoginResponse;
 import org.openhab.binding.freebox.internal.api.model.FreeboxOpenSessionRequest;
 import org.openhab.binding.freebox.internal.api.model.FreeboxOpenSessionResponse;
 import org.openhab.binding.freebox.internal.api.model.FreeboxPhoneStatus;
+import org.openhab.binding.freebox.internal.api.model.FreeboxPhoneStatusResponse;
 import org.openhab.binding.freebox.internal.api.model.FreeboxResponse;
 import org.openhab.binding.freebox.internal.api.model.FreeboxSambaConfig;
+import org.openhab.binding.freebox.internal.api.model.FreeboxSambaConfigResponse;
 import org.openhab.binding.freebox.internal.api.model.FreeboxSystemConfig;
+import org.openhab.binding.freebox.internal.api.model.FreeboxSystemConfigResponse;
 import org.openhab.binding.freebox.internal.api.model.FreeboxUPnPAVConfig;
+import org.openhab.binding.freebox.internal.api.model.FreeboxUPnPAVConfigResponse;
 import org.openhab.binding.freebox.internal.api.model.FreeboxWifiGlobalConfig;
-import org.openhab.binding.freebox.internal.api.model.FreeboxXdslStatus;
+import org.openhab.binding.freebox.internal.api.model.FreeboxWifiGlobalConfigResponse;
+import org.openhab.binding.freebox.internal.api.model.FreeboxXdslStatusResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,138 +85,9 @@ public class FreeboxApiManager {
 
     private final Logger logger = LoggerFactory.getLogger(FreeboxApiManager.class);
 
-    private static final int HTTP_CALL_DEFAULT_TIMEOUT_MS = 10000;
+    private static final int HTTP_CALL_DEFAULT_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(10);
     private static final String AUTH_HEADER = "X-Fbx-App-Auth";
     private static final String HTTP_CALL_CONTENT_TYPE = "application/json; charset=utf-8";
-
-    private static class AuthorizeResponse extends FreeboxResponse<FreeboxAuthorizeResponse> {
-        @Override
-        public void evaluate() throws FreeboxException {
-            super.evaluate();
-            if ((getResult().getAppToken() == null) || getResult().getAppToken().isEmpty()) {
-                throw new FreeboxException("No app token in response", this);
-            }
-            if (getResult().getTrackId() == null) {
-                throw new FreeboxException("No track id in response", this);
-            }
-        }
-    }
-
-    private static class AuthorizationStatusResponse extends FreeboxResponse<FreeboxAuthorizationStatus> {
-    }
-
-    private static class LoginResponse extends FreeboxResponse<FreeboxLoginResponse> {
-        @Override
-        public void evaluate() throws FreeboxException {
-            super.evaluate();
-            if ((getResult().getChallenge() == null) || getResult().getChallenge().isEmpty()) {
-                throw new FreeboxException("No challenge in response", this);
-            }
-        }
-    }
-
-    private static class OpenSessionResponse extends FreeboxResponse<FreeboxOpenSessionResponse> {
-        @Override
-        public void evaluate() throws FreeboxException {
-            super.evaluate();
-            if ((getResult().getSessionToken() == null) || getResult().getSessionToken().isEmpty()) {
-                throw new FreeboxException("No session token in response", this);
-            }
-        }
-    }
-
-    public static class EmptyResponse extends FreeboxResponse<Object> {
-    }
-
-    private static class ConnectionStatusResponse extends FreeboxResponse<FreeboxConnectionStatus> {
-    }
-
-    private static class XdslStatusResponse extends FreeboxResponse<FreeboxXdslStatus> {
-    }
-
-    private static class WifiGlobalConfigResponse extends FreeboxResponse<FreeboxWifiGlobalConfig> {
-        @Override
-        public void evaluate() throws FreeboxException {
-            super.evaluate();
-            if (getResult().isEnabled() == null) {
-                throw new FreeboxException("No Wifi status in response", this);
-            }
-        }
-    }
-
-    private static class FtpConfigResponse extends FreeboxResponse<FreeboxFtpConfig> {
-        @Override
-        public void evaluate() throws FreeboxException {
-            super.evaluate();
-            if (getResult().isEnabled() == null) {
-                throw new FreeboxException("No FTP status in response", this);
-            }
-        }
-    }
-
-    private static class AirMediaConfigResponse extends FreeboxResponse<FreeboxAirMediaConfig> {
-        @Override
-        public void evaluate() throws FreeboxException {
-            super.evaluate();
-            if (getResult().isEnabled() == null) {
-                throw new FreeboxException("No AirMedia status in response", this);
-            }
-        }
-    }
-
-    private static class UPnPAVConfigResponse extends FreeboxResponse<FreeboxUPnPAVConfig> {
-        @Override
-        public void evaluate() throws FreeboxException {
-            super.evaluate();
-            if (getResult().isEnabled() == null) {
-                throw new FreeboxException("No UPnP AV status in response", this);
-            }
-        }
-    }
-
-    private static class SambaConfigResponse extends FreeboxResponse<FreeboxSambaConfig> {
-        @Override
-        public void evaluate() throws FreeboxException {
-            super.evaluate();
-            if (getResult().isFileShareEnabled() == null) {
-                throw new FreeboxException("No file sharing status in response", this);
-            }
-            if (getResult().isPrintShareEnabled() == null) {
-                throw new FreeboxException("No printer sharing status in response", this);
-            }
-        }
-    }
-
-    private static class LcdConfigResponse extends FreeboxResponse<FreeboxLcdConfig> {
-    }
-
-    private static class SystemConfigResponse extends FreeboxResponse<FreeboxSystemConfig> {
-    }
-
-    private static class LanConfigResponse extends FreeboxResponse<FreeboxLanConfig> {
-    }
-
-    private static class LanHostsResponse extends FreeboxResponse<List<FreeboxLanHost>> {
-    }
-
-    private static class LanInterfacesResponse extends FreeboxResponse<List<FreeboxLanInterface>> {
-    }
-
-    private static class PhoneStatusResponse extends FreeboxResponse<List<FreeboxPhoneStatus>> {
-        @Override
-        public void evaluate() throws FreeboxException {
-            super.evaluate();
-            if (getResult() == null || getResult().size() == 0) {
-                throw new FreeboxException("No phone status in response", this);
-            }
-        }
-    }
-
-    private static class CallEntryResponse extends FreeboxResponse<List<FreeboxCallEntry>> {
-    }
-
-    private static class AirMediaReceiversResponse extends FreeboxResponse<List<FreeboxAirMediaReceiver>> {
-    }
 
     private String appId;
     private String appName;
@@ -235,32 +125,33 @@ public class FreeboxApiManager {
         }
         this.baseAddress = (useHttps ? "https://" : "http://") + fqdn + apiBaseUrl + "v" + majorVersion + "/";
 
-        String authorizeStatus = FreeboxAuthorizationStatus.AUTHORIZATION_STATUS_UNKNOWN;
+        boolean granted = false;
         try {
             String token = appToken;
             if (StringUtils.isEmpty(token)) {
                 FreeboxAuthorizeRequest request = new FreeboxAuthorizeRequest(appId, appName, appVersion, deviceName);
-                FreeboxAuthorizeResponse response = executeUrl("POST", "login/authorize/", gson.toJson(request),
-                        AuthorizeResponse.class, false);
+                FreeboxAuthorizeResult response = executePostUrl("login/authorize/", gson.toJson(request),
+                        FreeboxAuthorizeResponse.class, false);
                 token = response.getAppToken();
                 int trackId = response.getTrackId();
 
                 logger.info("####################################################################");
                 logger.info("# Please accept activation request directly on your freebox        #");
-                logger.info("# Once done, record Apptoken in the Freebox Item configuration     #");
+                logger.info("# Once done, record Apptoken in the Freebox thing configuration    #");
                 logger.info("# {} #", token);
                 logger.info("####################################################################");
 
+                FreeboxAuthorizationStatus result;
                 do {
                     Thread.sleep(2000);
-                    authorizeStatus = executeUrl("GET", "login/authorize/" + trackId, null,
-                            AuthorizationStatusResponse.class, false).getStatus();
-                } while (FreeboxAuthorizationStatus.AUTHORIZATION_STATUS_PENDING.equalsIgnoreCase(authorizeStatus));
+                    result = executeGetUrl("login/authorize/" + trackId, FreeboxAuthorizationStatusResponse.class,
+                            false);
+                } while (result.isStatusPending());
+                granted = result.isStatusGranted();
             } else {
-                authorizeStatus = FreeboxAuthorizationStatus.AUTHORIZATION_STATUS_GRANTED;
+                granted = true;
             }
-
-            if (!FreeboxAuthorizationStatus.AUTHORIZATION_STATUS_GRANTED.equalsIgnoreCase(authorizeStatus)) {
+            if (!granted) {
                 return false;
             }
 
@@ -278,16 +169,16 @@ public class FreeboxApiManager {
             throw new FreeboxException("No app token to open a new session");
         }
         sessionToken = null;
-        String challenge = executeUrl("GET", "login/", null, LoginResponse.class, false).getChallenge();
+        String challenge = executeGetUrl("login/", FreeboxLoginResponse.class, false).getChallenge();
         FreeboxOpenSessionRequest request = new FreeboxOpenSessionRequest(appId, hmacSha1(appToken, challenge));
-        sessionToken = executeUrl("POST", "login/session/", gson.toJson(request), OpenSessionResponse.class, false,
+        sessionToken = executePostUrl("login/session/", gson.toJson(request), FreeboxOpenSessionResponse.class, false,
                 false, true).getSessionToken();
     }
 
     public synchronized void closeSession() {
         if (sessionToken != null) {
             try {
-                executeUrl("POST", "login/logout/", null, EmptyResponse.class, false);
+                executePostUrl("login/logout/", null, FreeboxEmptyResponse.class, false);
             } catch (FreeboxException e) {
             }
             sessionToken = null;
@@ -299,73 +190,73 @@ public class FreeboxApiManager {
     }
 
     public FreeboxConnectionStatus getConnectionStatus() throws FreeboxException {
-        return executeUrl("GET", "connection/", null, ConnectionStatusResponse.class);
+        return executeGetUrl("connection/", FreeboxConnectionStatusResponse.class);
     }
 
     public String getxDslStatus() throws FreeboxException {
-        return executeUrl("GET", "connection/xdsl/", null, XdslStatusResponse.class).getStatus();
+        return executeGetUrl("connection/xdsl/", FreeboxXdslStatusResponse.class).getStatus();
     }
 
     public boolean isWifiEnabled() throws FreeboxException {
-        return executeUrl("GET", "wifi/config/", null, WifiGlobalConfigResponse.class).isEnabled();
+        return executeGetUrl("wifi/config/", FreeboxWifiGlobalConfigResponse.class).isEnabled();
     }
 
     public boolean enableWifi(boolean enable) throws FreeboxException {
         FreeboxWifiGlobalConfig config = new FreeboxWifiGlobalConfig();
         config.setEnabled(enable);
-        return executeUrl("PUT", "wifi/config/", gson.toJson(config), WifiGlobalConfigResponse.class).isEnabled();
+        return executePutUrl("wifi/config/", gson.toJson(config), FreeboxWifiGlobalConfigResponse.class).isEnabled();
     }
 
     public boolean isFtpEnabled() throws FreeboxException {
-        return executeUrl("GET", "ftp/config/", null, FtpConfigResponse.class).isEnabled();
+        return executeGetUrl("ftp/config/", FreeboxFtpConfigResponse.class).isEnabled();
     }
 
     public boolean enableFtp(boolean enable) throws FreeboxException {
         FreeboxFtpConfig config = new FreeboxFtpConfig();
         config.setEnabled(enable);
-        return executeUrl("PUT", "ftp/config/", gson.toJson(config), FtpConfigResponse.class).isEnabled();
+        return executePutUrl("ftp/config/", gson.toJson(config), FreeboxFtpConfigResponse.class).isEnabled();
     }
 
     public boolean isAirMediaEnabled() throws FreeboxException {
-        return executeUrl("GET", "airmedia/config/", null, AirMediaConfigResponse.class).isEnabled();
+        return executeGetUrl("airmedia/config/", FreeboxAirMediaConfigResponse.class).isEnabled();
     }
 
     public boolean enableAirMedia(boolean enable) throws FreeboxException {
         FreeboxAirMediaConfig config = new FreeboxAirMediaConfig();
         config.setEnabled(enable);
-        return executeUrl("PUT", "airmedia/config/", gson.toJson(config), AirMediaConfigResponse.class).isEnabled();
+        return executePutUrl("airmedia/config/", gson.toJson(config), FreeboxAirMediaConfigResponse.class).isEnabled();
     }
 
     public boolean isUPnPAVEnabled() throws FreeboxException {
-        return executeUrl("GET", "upnpav/config/", null, UPnPAVConfigResponse.class).isEnabled();
+        return executeGetUrl("upnpav/config/", FreeboxUPnPAVConfigResponse.class).isEnabled();
     }
 
     public boolean enableUPnPAV(boolean enable) throws FreeboxException {
         FreeboxUPnPAVConfig config = new FreeboxUPnPAVConfig();
         config.setEnabled(enable);
-        return executeUrl("PUT", "upnpav/config/", gson.toJson(config), UPnPAVConfigResponse.class).isEnabled();
+        return executePutUrl("upnpav/config/", gson.toJson(config), FreeboxUPnPAVConfigResponse.class).isEnabled();
     }
 
     public FreeboxSambaConfig getSambaConfig() throws FreeboxException {
-        return executeUrl("GET", "netshare/samba/", null, SambaConfigResponse.class);
+        return executeGetUrl("netshare/samba/", FreeboxSambaConfigResponse.class);
     }
 
     public boolean enableSambaFileShare(boolean enable) throws FreeboxException {
         FreeboxSambaConfig config = new FreeboxSambaConfig();
         config.setFileShareEnabled(enable);
-        return executeUrl("PUT", "netshare/samba/", gson.toJson(config), SambaConfigResponse.class)
+        return executePutUrl("netshare/samba/", gson.toJson(config), FreeboxSambaConfigResponse.class)
                 .isFileShareEnabled();
     }
 
     public boolean enableSambaPrintShare(boolean enable) throws FreeboxException {
         FreeboxSambaConfig config = new FreeboxSambaConfig();
         config.setPrintShareEnabled(enable);
-        return executeUrl("PUT", "netshare/samba/", gson.toJson(config), SambaConfigResponse.class)
+        return executePutUrl("netshare/samba/", gson.toJson(config), FreeboxSambaConfigResponse.class)
                 .isPrintShareEnabled();
     }
 
     public FreeboxLcdConfig getLcdConfig() throws FreeboxException {
-        return executeUrl("GET", "lcd/config/", null, LcdConfigResponse.class);
+        return executeGetUrl("lcd/config/", FreeboxLcdConfigResponse.class);
     }
 
     public int setLcdBrightness(int brightness) throws FreeboxException {
@@ -373,19 +264,19 @@ public class FreeboxApiManager {
         int newValue = Math.min(100, brightness);
         newValue = Math.max(newValue, 0);
         config.setBrightness(newValue);
-        return executeUrl("PUT", "lcd/config/", gson.toJson(config), LcdConfigResponse.class).getBrightness();
+        return executePutUrl("lcd/config/", gson.toJson(config), FreeboxLcdConfigResponse.class).getBrightness();
     }
 
     public int increaseLcdBrightness() throws FreeboxException {
         FreeboxLcdConfig config = getLcdConfig();
         config.setBrightness(Math.min(100, config.getBrightness() + 1));
-        return executeUrl("PUT", "lcd/config/", gson.toJson(config), LcdConfigResponse.class).getBrightness();
+        return executePutUrl("lcd/config/", gson.toJson(config), FreeboxLcdConfigResponse.class).getBrightness();
     }
 
     public int decreaseLcdBrightness() throws FreeboxException {
         FreeboxLcdConfig config = getLcdConfig();
         config.setBrightness(Math.max(0, config.getBrightness() - 1));
-        return executeUrl("PUT", "lcd/config/", gson.toJson(config), LcdConfigResponse.class).getBrightness();
+        return executePutUrl("lcd/config/", gson.toJson(config), FreeboxLcdConfigResponse.class).getBrightness();
     }
 
     public FreeboxLcdConfig setLcdOrientation(int orientation) throws FreeboxException {
@@ -394,27 +285,27 @@ public class FreeboxApiManager {
         newValue = Math.max(newValue, 0);
         config.setOrientation(newValue);
         config.setOrientationForced(true);
-        return executeUrl("PUT", "lcd/config/", gson.toJson(config), LcdConfigResponse.class);
+        return executePutUrl("lcd/config/", gson.toJson(config), FreeboxLcdConfigResponse.class);
     }
 
     public boolean setLcdOrientationForced(boolean forced) throws FreeboxException {
         FreeboxLcdConfig config = getLcdConfig();
         config.setOrientationForced(forced);
-        return executeUrl("PUT", "lcd/config/", gson.toJson(config), LcdConfigResponse.class).isOrientationForced();
+        return executePutUrl("lcd/config/", gson.toJson(config), FreeboxLcdConfigResponse.class).isOrientationForced();
     }
 
     public FreeboxSystemConfig getSystemConfig() throws FreeboxException {
-        return executeUrl("GET", "system/", null, SystemConfigResponse.class);
+        return executeGetUrl("system/", FreeboxSystemConfigResponse.class);
     }
 
     public boolean isInLanBridgeMode() throws FreeboxException {
-        return executeUrl("GET", "lan/config/", null, LanConfigResponse.class).isInBridgeMode();
+        return executeGetUrl("lan/config/", FreeboxLanConfigResponse.class).isInBridgeMode();
     }
 
     public List<FreeboxLanHost> getLanHosts() throws FreeboxException {
         List<FreeboxLanHost> hosts = new ArrayList<>();
-        List<FreeboxLanInterface> interfaces = executeUrl("GET", "lan/browser/interfaces/", null,
-                LanInterfacesResponse.class);
+        List<FreeboxLanInterface> interfaces = executeGetUrl("lan/browser/interfaces/",
+                FreeboxLanInterfacesResponse.class);
         if (interfaces != null) {
             for (FreeboxLanInterface lanInterface : interfaces) {
                 if (lanInterface.getHostCount() > 0) {
@@ -429,19 +320,22 @@ public class FreeboxApiManager {
     }
 
     private List<FreeboxLanHost> getLanHostsFromInterface(String lanInterface) throws FreeboxException {
-        return executeUrl("GET", "lan/browser/" + encodeUrl(lanInterface) + "/", null, LanHostsResponse.class);
+        return executeGetUrl("lan/browser/" + encodeUrl(lanInterface) + "/", FreeboxLanHostsResponse.class);
     }
 
     public FreeboxPhoneStatus getPhoneStatus() throws FreeboxException {
-        return executeUrl("GET", "phone/?_dc=1415032391207", null, PhoneStatusResponse.class).get(0);
+        // This API is undocumented but working
+        // It is extracted from the freeboxos-java library
+        // https://github.com/MatMaul/freeboxos-java/blob/master/src/org/matmaul/freeboxos/phone/PhoneManager.java#L17
+        return executeGetUrl("phone/?_dc=1415032391207", FreeboxPhoneStatusResponse.class).get(0);
     }
 
     public List<FreeboxCallEntry> getCallEntries() throws FreeboxException {
-        return executeUrl("GET", "call/log/", null, CallEntryResponse.class);
+        return executeGetUrl("call/log/", FreeboxCallEntryResponse.class);
     }
 
     public List<FreeboxAirMediaReceiver> getAirMediaReceivers() throws FreeboxException {
-        return executeUrl("GET", "airmedia/receivers/", null, AirMediaReceiversResponse.class, true, true, false);
+        return executeGetUrl("airmedia/receivers/", FreeboxAirMediaReceiversResponse.class, true, true, false);
     }
 
     public void playMedia(String url, String airPlayName, String airPlayPassword) throws FreeboxException {
@@ -452,8 +346,8 @@ public class FreeboxApiManager {
             request.setPassword(airPlayPassword);
         }
         request.setMedia(url);
-        executeUrl("POST", "airmedia/receivers/" + encodeUrl(airPlayName) + "/", gson.toJson(request),
-                EmptyResponse.class, true, false, true);
+        executePostUrl("airmedia/receivers/" + encodeUrl(airPlayName) + "/", gson.toJson(request),
+                FreeboxEmptyResponse.class, true, false, true);
     }
 
     public void stopMedia(String airPlayName, String airPlayPassword) throws FreeboxException {
@@ -463,22 +357,49 @@ public class FreeboxApiManager {
         if (StringUtils.isNotEmpty(airPlayPassword)) {
             request.setPassword(airPlayPassword);
         }
-        executeUrl("POST", "airmedia/receivers/" + encodeUrl(airPlayName) + "/", gson.toJson(request),
-                EmptyResponse.class, true, false, true);
+        executePostUrl("airmedia/receivers/" + encodeUrl(airPlayName) + "/", gson.toJson(request),
+                FreeboxEmptyResponse.class, true, false, true);
     }
 
     public void reboot() throws FreeboxException {
-        executeUrl("POST", "system/reboot/", null, EmptyResponse.class);
+        executePostUrl("system/reboot/", null, FreeboxEmptyResponse.class);
     }
 
-    private <T extends FreeboxResponse<F>, F> F executeUrl(String httpMethod, String relativeUrl, String requestContent,
+    private <T extends FreeboxResponse<F>, F> F executeGetUrl(String relativeUrl, Class<T> responseClass)
+            throws FreeboxException {
+        return executeUrl("GET", relativeUrl, null, responseClass, true, false, false);
+    }
+
+    private <T extends FreeboxResponse<F>, F> F executeGetUrl(String relativeUrl, Class<T> responseClass,
+            boolean retryAuth) throws FreeboxException {
+        return executeUrl("GET", relativeUrl, null, responseClass, retryAuth, false, false);
+    }
+
+    private <T extends FreeboxResponse<F>, F> F executeGetUrl(String relativeUrl, Class<T> responseClass,
+            boolean retryAuth, boolean patchTableReponse, boolean doNotLogData) throws FreeboxException {
+        return executeUrl("GET", relativeUrl, null, responseClass, retryAuth, patchTableReponse, doNotLogData);
+    }
+
+    private <T extends FreeboxResponse<F>, F> F executePostUrl(String relativeUrl, String requestContent,
             Class<T> responseClass) throws FreeboxException {
-        return executeUrl(httpMethod, relativeUrl, requestContent, responseClass, true, false, false);
+        return executeUrl("POST", relativeUrl, requestContent, responseClass, true, false, false);
     }
 
-    private <T extends FreeboxResponse<F>, F> F executeUrl(String httpMethod, String relativeUrl, String requestContent,
+    private <T extends FreeboxResponse<F>, F> F executePostUrl(String relativeUrl, String requestContent,
             Class<T> responseClass, boolean retryAuth) throws FreeboxException {
-        return executeUrl(httpMethod, relativeUrl, requestContent, responseClass, retryAuth, false, false);
+        return executeUrl("POST", relativeUrl, requestContent, responseClass, retryAuth, false, false);
+    }
+
+    private <T extends FreeboxResponse<F>, F> F executePostUrl(String relativeUrl, String requestContent,
+            Class<T> responseClass, boolean retryAuth, boolean patchTableReponse, boolean doNotLogData)
+            throws FreeboxException {
+        return executeUrl("POST", relativeUrl, requestContent, responseClass, retryAuth, patchTableReponse,
+                doNotLogData);
+    }
+
+    private <T extends FreeboxResponse<F>, F> F executePutUrl(String relativeUrl, String requestContent,
+            Class<T> responseClass) throws FreeboxException {
+        return executeUrl("PUT", relativeUrl, requestContent, responseClass, true, false, false);
     }
 
     private <T extends FreeboxResponse<F>, F> F executeUrl(String httpMethod, String relativeUrl, String requestContent,
@@ -501,6 +422,10 @@ public class FreeboxApiManager {
                     doNotLogData ? "***" : requestContent);
             String jsonResponse = HttpUtil.executeUrl(httpMethod, baseAddress + relativeUrl, headers, stream,
                     contentType, HTTP_CALL_DEFAULT_TIMEOUT_MS);
+            if (stream != null) {
+                stream.close();
+                stream = null;
+            }
 
             if (patchTableReponse) {
                 // Replace empty result by an empty table result
@@ -517,11 +442,11 @@ public class FreeboxApiManager {
             }
             throw e;
         } catch (IOException e) {
-            throw new FreeboxException(
-                    httpMethod + " request " + relativeUrl + ": execution failed: " + e.getMessage());
+            throw new FreeboxException(httpMethod + " request " + relativeUrl + ": execution failed: " + e.getMessage(),
+                    e);
         } catch (JsonSyntaxException e) {
             throw new FreeboxException(
-                    httpMethod + " request " + relativeUrl + ": response parsing failed: " + e.getMessage());
+                    httpMethod + " request " + relativeUrl + ": response parsing failed: " + e.getMessage(), e);
         }
     }
 
@@ -529,7 +454,7 @@ public class FreeboxApiManager {
             boolean doNotLogData) throws JsonSyntaxException, FreeboxException {
         logger.debug("evaluateJsonReesponse Json {}", doNotLogData ? "***" : jsonResponse);
         // First check only if the result is successful
-        FreeboxResponse<Object> partialResponse = gson.fromJson(jsonResponse, EmptyResponse.class);
+        FreeboxResponse<Object> partialResponse = gson.fromJson(jsonResponse, FreeboxEmptyResponse.class);
         partialResponse.evaluate();
         // Parse the full response in case of success
         T fullResponse = gson.fromJson(jsonResponse, responseClass);
@@ -542,7 +467,7 @@ public class FreeboxApiManager {
         try {
             return URLEncoder.encode(url, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            throw new FreeboxException("Encoding the URL \"" + url + "\" in UTF-8 failed");
+            throw new FreeboxException("Encoding the URL \"" + url + "\" in UTF-8 failed", e);
         }
     }
 
@@ -564,8 +489,9 @@ public class FreeboxApiManager {
 
             // Covert array of Hex bytes to a String
             return new String(hexBytes, "UTF-8");
-        } catch (Exception e) {
-            throw new FreeboxException("Computing the hmac-sha1 of the challenge and the app token failed");
+        } catch (IllegalArgumentException | NoSuchAlgorithmException | InvalidKeyException | IllegalStateException
+                | UnsupportedEncodingException e) {
+            throw new FreeboxException("Computing the hmac-sha1 of the challenge and the app token failed", e);
         }
     }
 

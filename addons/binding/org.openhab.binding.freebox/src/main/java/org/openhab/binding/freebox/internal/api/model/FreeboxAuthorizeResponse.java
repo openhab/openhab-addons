@@ -8,22 +8,27 @@
  */
 package org.openhab.binding.freebox.internal.api.model;
 
+import org.openhab.binding.freebox.internal.api.FreeboxException;
+
 /**
  * The {@link FreeboxAuthorizeResponse} is the Java class used to map the
- * structure used by the response of the request authorization API
+ * response of the request authorization API
  * https://dev.freebox.fr/sdk/os/login/#
  *
  * @author Laurent Garnier - Initial contribution
  */
-public class FreeboxAuthorizeResponse {
-    private String appToken;
-    private Integer trackId;
-
-    public String getAppToken() {
-        return appToken;
-    }
-
-    public Integer getTrackId() {
-        return trackId;
+public class FreeboxAuthorizeResponse extends FreeboxResponse<FreeboxAuthorizeResult> {
+    @Override
+    public void evaluate() throws FreeboxException {
+        super.evaluate();
+        if (getResult() == null) {
+            throw new FreeboxException("Missing result data in request authorization API response", this);
+        }
+        if ((getResult().getAppToken() == null) || getResult().getAppToken().isEmpty()) {
+            throw new FreeboxException("No app token in response", this);
+        }
+        if (getResult().getTrackId() == null) {
+            throw new FreeboxException("No track id in response", this);
+        }
     }
 }
