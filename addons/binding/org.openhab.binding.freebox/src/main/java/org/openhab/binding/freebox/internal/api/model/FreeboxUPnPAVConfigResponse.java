@@ -11,21 +11,21 @@ package org.openhab.binding.freebox.internal.api.model;
 import org.openhab.binding.freebox.internal.api.FreeboxException;
 
 /**
- * The {@link FreeboxLoginResponse} is the Java class used to map the
- * response of the login API
- * https://dev.freebox.fr/sdk/os/login/#
+ * The {@link FreeboxUPnPAVConfigResponse} is the Java class used to map the
+ * response of the UPnP AV configuration API
+ * https://dev.freebox.fr/sdk/os/upnpav/#
  *
  * @author Laurent Garnier - Initial contribution
  */
-public class FreeboxLoginResponse extends FreeboxResponse<FreeboxLoginResult> {
+public class FreeboxUPnPAVConfigResponse extends FreeboxResponse<FreeboxUPnPAVConfig> {
     @Override
     public void evaluate() throws FreeboxException {
         super.evaluate();
         if (getResult() == null) {
-            throw new FreeboxException("Missing result data in login API response", this);
+            throw new FreeboxException("Missing result data in UPnP AV configuration API response", this);
         }
-        if ((getResult().getChallenge() == null) || getResult().getChallenge().isEmpty()) {
-            throw new FreeboxException("No challenge in response", this);
+        if (getResult().isEnabled() == null) {
+            throw new FreeboxException("No UPnP AV status in response", this);
         }
     }
 }
