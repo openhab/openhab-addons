@@ -96,7 +96,7 @@ public class WebSocketConnection {
         SensorMessage changedMessage = gson.fromJson(message, SensorMessage.class);
         ValueUpdateListener listener = valueListener.get(changedMessage.id);
         if (listener != null) {
-            listener.valueUpdated(changedMessage.id, changedMessage.state);
+            listener.websocketUpdate(changedMessage.id, changedMessage.state);
         }
     }
 
