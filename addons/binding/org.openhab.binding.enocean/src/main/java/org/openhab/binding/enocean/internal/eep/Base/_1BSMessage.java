@@ -26,4 +26,22 @@ public abstract class _1BSMessage extends EEP {
     public _1BSMessage() {
         super();
     }
+
+    @Override
+    public boolean isValid() {
+        if (!super.isValid()) {
+            logger.warn("Discard message because it is invalid!");
+            return false;
+        }
+
+        byte db0 = bytes[0];
+        boolean lrn = getBit(db0, 3);
+
+        if (!lrn) {
+            logger.info("Discard message because this is a teach-in telegram!");
+            return false;
+        }
+
+        return true;
+    }
 }
