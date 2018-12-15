@@ -399,6 +399,10 @@ public abstract class EnOceanTransceiver {
                         teachInListener.espPacketReceived(msg);
                         return;
                     }
+
+                    logger.info("Discard message because this is a teach-in telegram from {}!",
+                            HexUtils.bytesToHex(msg.getSenderId()));
+                    return;
                 }
 
                 long s = Long.parseLong(HexUtils.bytesToHex(senderId), 16);

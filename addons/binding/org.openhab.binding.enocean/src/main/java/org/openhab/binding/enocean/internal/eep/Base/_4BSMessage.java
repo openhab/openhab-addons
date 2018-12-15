@@ -65,24 +65,6 @@ public abstract class _4BSMessage extends EEP {
     }
 
     @Override
-    public boolean isValid() {
-        if (!super.isValid()) {
-            logger.warn("Discard message because it is invalid!");
-            return false;
-        }
-
-        byte db0 = getDB_0();
-        boolean lrn = getBit(db0, 3);
-
-        if (!lrn) {
-            logger.info("Discard message because this is a teach-in telegram!");
-            return false;
-        }
-
-        return true;
-    }
-
-    @Override
     protected void teachInQueryImpl(Configuration config) {
 
         if (config == null) {
