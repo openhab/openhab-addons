@@ -38,7 +38,7 @@ public class FreeboxBindingConstants {
 
     // All supported Bridge types
     public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(FREEBOX_BRIDGE_TYPE_SERVER).collect(Collectors.toSet()));
+            .singleton(FREEBOX_BRIDGE_TYPE_SERVER);
 
     // All supported Thing types
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections

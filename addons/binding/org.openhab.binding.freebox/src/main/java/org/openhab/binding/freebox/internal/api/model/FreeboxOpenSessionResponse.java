@@ -8,27 +8,24 @@
  */
 package org.openhab.binding.freebox.internal.api.model;
 
+import org.openhab.binding.freebox.internal.api.FreeboxException;
+
 /**
  * The {@link FreeboxOpenSessionResponse} is the Java class used to map the
- * structure used by the response of the open session API
+ * response of the open session API
  * https://dev.freebox.fr/sdk/os/login/#
  *
  * @author Laurent Garnier - Initial contribution
  */
-public class FreeboxOpenSessionResponse {
-    private String sessionToken;
-    private String challenge;
-    private FreeboxPermissions permissions;
-
-    public String getSessionToken() {
-        return sessionToken;
-    }
-
-    public String getChallenge() {
-        return challenge;
-    }
-
-    public FreeboxPermissions getPermissions() {
-        return permissions;
+public class FreeboxOpenSessionResponse extends FreeboxResponse<FreeboxOpenSessionResult> {
+    @Override
+    public void evaluate() throws FreeboxException {
+        super.evaluate();
+        if (getResult() == null) {
+            throw new FreeboxException("Missing result data in open session API response", this);
+        }
+        if ((getResult().getSessionToken() == null) || getResult().getSessionToken().isEmpty()) {
+            throw new FreeboxException("No session token in response", this);
+        }
     }
 }

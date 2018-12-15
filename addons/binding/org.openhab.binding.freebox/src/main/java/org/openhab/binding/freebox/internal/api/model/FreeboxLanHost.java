@@ -52,7 +52,7 @@ public class FreeboxLanHost {
         return primaryNameManual;
     }
 
-    public FreeboxLanHostL2Ident getL2ident() {
+    public FreeboxLanHostL2Ident getL2Ident() {
         return l2ident;
     }
 
@@ -84,7 +84,7 @@ public class FreeboxLanHost {
         return names;
     }
 
-    public List<FreeboxLanHostL3Connectivity> getL3connectivities() {
+    public List<FreeboxLanHostL3Connectivity> getL3Connectivities() {
         return l3connectivities;
     }
 }

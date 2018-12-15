@@ -16,12 +16,35 @@ package org.openhab.binding.freebox.internal.api.model;
  * @author Laurent Garnier - Initial contribution
  */
 public class FreeboxAuthorizationStatus {
-    public static final String AUTHORIZATION_STATUS_UNKNOWN = "unknown";
-    public static final String AUTHORIZATION_STATUS_PENDING = "pending";
-    public static final String AUTHORIZATION_STATUS_GRANTED = "granted";
+
+    private static enum AuthorizationStatus {
+        UNKNOWN("unknown"),
+        PENDING("pending"),
+        TIMEOUT("timeout"),
+        GRANTED("granted"),
+        DENIED("denied");
+
+        private String status;
+
+        private AuthorizationStatus(String status) {
+            this.status = status;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+    }
 
     private String status;
     private String challenge;
+
+    public boolean isStatusPending() {
+        return AuthorizationStatus.PENDING.getStatus().equalsIgnoreCase(status);
+    }
+
+    public boolean isStatusGranted() {
+        return AuthorizationStatus.GRANTED.getStatus().equalsIgnoreCase(status);
+    }
 
     public String getStatus() {
         return status;
