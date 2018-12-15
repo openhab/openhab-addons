@@ -34,20 +34,18 @@ public class IhcConfigurationServiceTest {
 
     private IhcConfigurationService ihcConfigurationService;
     private final String url = "https://1.1.1.1/ws/ConfigurationService";
+    final String query = ResourceFileUtils.getFileContent("src/test/resources/EmptyQuery.xml");
 
     @Before
     public void setUp() throws IhcExecption, SocketTimeoutException {
         ihcConfigurationService = spy(new IhcConfigurationService(url, 0, new IhcConnectionPool()));
         doNothing().when(ihcConfigurationService).openConnection(eq(url));
-
-        final String query = ResourceFileUtils.getFileContent("src/test/resources/EmptyQuery.xml");
-        final String response = ResourceFileUtils.getFileContent("src/test/resources/GetSystemInfoResponse.xml");
-
-        doReturn(response).when(ihcConfigurationService).sendQuery(eq(query), ArgumentMatchers.anyInt());
     }
 
     @Test
-    public void test() throws IhcExecption {
+    public void testv2() throws IhcExecption {
+        final String response = ResourceFileUtils.getFileContent("src/test/resources/GetSystemInfoResponse.xml");
+        doReturn(response).when(ihcConfigurationService).sendQuery(eq(query), ArgumentMatchers.anyInt());
         doNothing().when(ihcConfigurationService).setRequestProperty(eq("SOAPAction"), eq("getSystemInfo"));
 
         final WSSystemInfo result = ihcConfigurationService.getSystemInfo();
@@ -63,5 +61,37 @@ public class IhcConfigurationServiceTest {
                 result.getSwDate().toLocalDateTime());
         assertEquals(3980146956L, result.getUptime());
         assertEquals("2.7.144", result.getVersion());
+        assertEquals("2011-04-28T09:00:00Z", result.getProductionDate());
+        assertEquals("", result.getDatalineVersion());
+        assertEquals("", result.getRfModuleSoftwareVersion());
+        assertEquals("", result.getRfModuleSerialNumber());
     }
+
+    @Test
+    public void testv3() throws IhcExecption {
+        final String response = ResourceFileUtils.getFileContent("src/test/resources/GetSystemInfoResponse2.xml");
+        doReturn(response).when(ihcConfigurationService).sendQuery(eq(query), ArgumentMatchers.anyInt());
+        doNothing().when(ihcConfigurationService).setRequestProperty(eq("SOAPAction"), eq("getSystemInfo"));
+
+        final WSSystemInfo result = ihcConfigurationService.getSystemInfo();
+
+        Mockito.verify(ihcConfigurationService).setRequestProperty(eq("SOAPAction"), eq("getSystemInfo"));
+        assertEquals(false, result.getApplicationIsWithoutViewer());
+        assertEquals("LK", result.getBrand());
+        assertEquals("7.1", result.getHwRevision());
+        assertEquals(
+                LocalDateTime.parse("2018-12-15T13:15:00Z", DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")),
+                result.getRealTimeClock().toLocalDateTime());
+        assertEquals("CN1734000000", result.getSerialNumber());
+        assertEquals(
+                LocalDateTime.parse("2018-07-23T10:00:00Z", DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")),
+                result.getSwDate().toLocalDateTime());
+        assertEquals(164057634L, result.getUptime());
+        assertEquals("3.3.9", result.getVersion());
+        assertEquals("2017/34", result.getProductionDate());
+        assertEquals("IOB.B.03.02.01", result.getDatalineVersion());
+        assertEquals("3.06.c", result.getRfModuleSoftwareVersion());
+        assertEquals("640C10140000", result.getRfModuleSerialNumber());
+    }
+
 }

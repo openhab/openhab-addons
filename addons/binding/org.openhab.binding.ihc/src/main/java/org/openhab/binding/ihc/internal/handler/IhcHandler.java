@@ -293,8 +293,16 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
             properties.put(PROPERTY_APP_WITHOUT_VIEWER, Boolean.toString(systemInfo.getApplicationIsWithoutViewer()));
             properties.put(PROPERTY_SW_DATE,
                     systemInfo.getSwDate().withZoneSameInstant(ZoneId.systemDefault()).toString());
-            properties.put(PROPERTY_PRODUCTION_DATE,
-                    systemInfo.getProductionDate().withZoneSameInstant(ZoneId.systemDefault()).toString());
+            properties.put(PROPERTY_PRODUCTION_DATE, systemInfo.getProductionDate());
+            if (!systemInfo.getDatalineVersion().isEmpty()) {
+                properties.put(PROPERTY_DATALINE_VERSION, systemInfo.getDatalineVersion());
+            }
+            if (!systemInfo.getRfModuleSerialNumber().isEmpty()) {
+                properties.put(PROPERTY_RF_MODULE_SERIALNUMBER, systemInfo.getRfModuleSerialNumber());
+            }
+            if (!systemInfo.getRfModuleSoftwareVersion().isEmpty()) {
+                properties.put(PROPERTY_RF_MODULE_VERSION, systemInfo.getRfModuleSoftwareVersion());
+            }
             properties.put(PROPERTY_PROJECT_DATE,
                     projectInfo.getLastmodified().getAsLocalDateTime().atZone(ZoneId.systemDefault()).toString());
             properties.put(PROPERTY_PROJECT_NUMBER, projectInfo.getProjectNumber());

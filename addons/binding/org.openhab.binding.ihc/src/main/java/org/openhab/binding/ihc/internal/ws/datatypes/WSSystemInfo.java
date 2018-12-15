@@ -27,13 +27,17 @@ public class WSSystemInfo extends WSBaseDataType {
     private String hwRevision;
     private ZonedDateTime swDate;
     private boolean applicationIsWithoutViewer;
-    private ZonedDateTime productionDate;
+    private String productionDate;
+    private String datalineVersion;
+    private String rfModuleSoftwareVersion;
+    private String rfModuleSerialNumber;
 
     public WSSystemInfo() {
     }
 
     public WSSystemInfo(long uptime, ZonedDateTime realtimeclock, String serialNumber, String brand, String version,
-            String hwRevision, ZonedDateTime swDate, boolean applicationIsWithoutViewer, ZonedDateTime productionDate) {
+            String hwRevision, ZonedDateTime swDate, boolean applicationIsWithoutViewer, String productionDate,
+            String datalineVersion, String rfModuleSoftwareVersion, String rfModuleSerialNumber) {
 
         this.uptime = uptime;
         this.realtimeclock = realtimeclock;
@@ -44,6 +48,9 @@ public class WSSystemInfo extends WSBaseDataType {
         this.swDate = swDate;
         this.applicationIsWithoutViewer = applicationIsWithoutViewer;
         this.productionDate = productionDate;
+        this.datalineVersion = datalineVersion;
+        this.rfModuleSoftwareVersion = rfModuleSoftwareVersion;
+        this.rfModuleSerialNumber = rfModuleSerialNumber;
     }
 
     /**
@@ -195,7 +202,7 @@ public class WSSystemInfo extends WSBaseDataType {
      *
      * @return productionDate
      */
-    public ZonedDateTime getProductionDate() {
+    public String getProductionDate() {
         return productionDate;
     }
 
@@ -204,8 +211,62 @@ public class WSSystemInfo extends WSBaseDataType {
      *
      * @param productionDate
      */
-    public void setProductionDate(ZonedDateTime productionDate) {
+    public void setProductionDate(String productionDate) {
         this.productionDate = productionDate;
+    }
+
+    /**
+     * Gets the datalineVersion value for this WSSystemInfo.
+     *
+     * @return datalineVersion
+     */
+    public String getDatalineVersion() {
+        return datalineVersion;
+    }
+
+    /**
+     * Sets the datalineVersion value for this WSSystemInfo.
+     *
+     * @param datalineVersion
+     */
+    public void setDatalineVersion(String datalineVersion) {
+        this.datalineVersion = datalineVersion;
+    }
+
+    /**
+     * Gets the rfModuleSoftwareVersion value for this WSSystemInfo.
+     *
+     * @return rfModuleSoftwareVersion
+     */
+    public String getRfModuleSoftwareVersion() {
+        return rfModuleSoftwareVersion;
+    }
+
+    /**
+     * Sets the rfModuleSoftwareVersion value for this WSSystemInfo.
+     *
+     * @param rfModuleSoftwareVersion
+     */
+    public void setRfModuleSoftwareVersion(String rfModuleSoftwareVersion) {
+        this.rfModuleSoftwareVersion = rfModuleSoftwareVersion;
+    }
+
+    /**
+     * Gets the rfModuleSerialNumber value for this WSSystemInfo.
+     *
+     * @return rfModuleSerialNumber
+     */
+    public String getRfModuleSerialNumber() {
+        return rfModuleSerialNumber;
+    }
+
+    /**
+     * Sets the rfModuleSerialNumber value for this WSSystemInfo.
+     *
+     * @param rfModuleSerialNumber
+     */
+    public void setRfModuleSerialNumber(String rfModuleSerialNumber) {
+        this.rfModuleSerialNumber = rfModuleSerialNumber;
     }
 
     public WSSystemInfo parseXMLData(String data) throws IhcExecption {
@@ -236,8 +297,17 @@ public class WSSystemInfo extends WSBaseDataType {
             setApplicationIsWithoutViewer(Boolean.parseBoolean(value));
 
             value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:productionDate");
-            value = "2017/43";
-            setProductionDate(ZonedDateTime.parse(value));
+            setProductionDate(value);
+
+            value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:datalineVersion");
+            setDatalineVersion(value);
+
+            value = parseXMLValue(data,
+                    "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:rfModuleSoftwareVersion");
+            setRfModuleSoftwareVersion(value);
+
+            value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:rfModuleSerialNumber");
+            setRfModuleSerialNumber(value);
 
             return this;
         } catch (Exception e) {
@@ -248,8 +318,8 @@ public class WSSystemInfo extends WSBaseDataType {
     @Override
     public String toString() {
         return String.format(
-                "[ uptime=%d, realtimeclock=%s, serialNumber=%s, brand=%s, version=%s, hwRevision=%s, swDate=%s, applicationIsWithoutViewer=%b, productionDate=%s ]",
+                "[ uptime=%d, realtimeclock=%s, serialNumber=%s, brand=%s, version=%s, hwRevision=%s, swDate=%s, applicationIsWithoutViewer=%b, productionDate=%s, datalineVersion=%s, rfModuleSoftwareVersion=%s, rfModuleSerialNumber=%s ]",
                 uptime, realtimeclock, serialNumber, brand, version, hwRevision, swDate, applicationIsWithoutViewer,
-                productionDate);
+                productionDate, datalineVersion, rfModuleSoftwareVersion, rfModuleSerialNumber);
     }
 }

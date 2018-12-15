@@ -34,6 +34,9 @@ public class IhcBindingConstants {
     public static final String PROPERTY_PRODUCTION_DATE = "controllerProductionDate";
     public static final String PROPERTY_PROJECT_DATE = "projectDate";
     public static final String PROPERTY_PROJECT_NUMBER = "projectNumber";
+    public static final String PROPERTY_DATALINE_VERSION = "controllerDatalineVersion";
+    public static final String PROPERTY_RF_MODULE_VERSION = "controllerRfModSwVersion";
+    public static final String PROPERTY_RF_MODULE_SERIALNUMBER = "controllerRfModSerialNumber";
 
     // List of all Channel ids
     public static final String CHANNEL_CONTROLLER_STATE = "controllerState";
