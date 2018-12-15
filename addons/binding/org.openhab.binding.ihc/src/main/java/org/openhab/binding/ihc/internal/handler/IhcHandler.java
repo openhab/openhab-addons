@@ -592,7 +592,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 String channelType = channel.getAcceptedItemType() != null ? channel.getAcceptedItemType() : "";
                 String channelLabel = channel.getLabel() != null ? channel.getLabel() : "";
 
-                logger.debug("Channel: {}", String.format("%-50s | %-10s | %-10s | %s", channel.getUID(), resourceId,
+                logger.debug("Channel: {}", String.format("%-55s | %-10s | %-10s | %s", channel.getUID(), resourceId,
                         channelType, channelLabel));
             });
         }
