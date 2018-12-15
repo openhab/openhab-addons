@@ -11,21 +11,21 @@ package org.openhab.binding.freebox.internal.api.model;
 import org.openhab.binding.freebox.internal.api.FreeboxException;
 
 /**
- * The {@link FreeboxLoginResponse} is the Java class used to map the
- * response of the login API
- * https://dev.freebox.fr/sdk/os/login/#
+ * The {@link FreeboxWifiGlobalConfigResponse} is the Java class used to map the
+ * response of the Wifi global configuration API
+ * https://dev.freebox.fr/sdk/os/wifi/# *
  *
  * @author Laurent Garnier - Initial contribution
  */
-public class FreeboxLoginResponse extends FreeboxResponse<FreeboxLoginResult> {
+public class FreeboxWifiGlobalConfigResponse extends FreeboxResponse<FreeboxWifiGlobalConfig> {
     @Override
     public void evaluate() throws FreeboxException {
         super.evaluate();
         if (getResult() == null) {
-            throw new FreeboxException("Missing result data in login API response", this);
+            throw new FreeboxException("Missing result data in Wifi global configuration API response", this);
         }
-        if ((getResult().getChallenge() == null) || getResult().getChallenge().isEmpty()) {
-            throw new FreeboxException("No challenge in response", this);
+        if (getResult().isEnabled() == null) {
+            throw new FreeboxException("No Wifi status in response", this);
         }
     }
 }

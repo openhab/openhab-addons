@@ -16,9 +16,36 @@ package org.openhab.binding.freebox.internal.api.model;
  * @author Laurent Garnier - Initial contribution
  */
 public class FreeboxAirMediaReceiverRequest {
-    private static final String START_ACTION = "start";
-    private static final String STOP_ACTION = "stop";
-    private static final String VIDEO = "video";
+
+    private static enum MediaAction {
+        START("start"),
+        STOP("stop");
+
+        private String action;
+
+        private MediaAction(String action) {
+            this.action = action;
+        }
+
+        public String getAction() {
+            return action;
+        }
+    }
+
+    private static enum MediaType {
+        VIDEO("video"),
+        PHOTO("photo");
+
+        private String mediaType;
+
+        private MediaType(String mediaType) {
+            this.mediaType = mediaType;
+        }
+
+        public String getMediaType() {
+            return mediaType;
+        }
+    }
 
     private String action;
     private String mediaType;
@@ -27,15 +54,15 @@ public class FreeboxAirMediaReceiverRequest {
     private String media;
 
     public void setStartAction() {
-        this.action = START_ACTION;
+        this.action = MediaAction.START.getAction();
     }
 
     public void setStopAction() {
-        this.action = STOP_ACTION;
+        this.action = MediaAction.STOP.getAction();
     }
 
     public void setVideoMediaType() {
-        this.mediaType = VIDEO;
+        this.mediaType = MediaType.VIDEO.getMediaType();
     }
 
     public void setPassword(String password) {

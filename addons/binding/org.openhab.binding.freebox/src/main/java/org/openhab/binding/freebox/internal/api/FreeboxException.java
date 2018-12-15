@@ -22,15 +22,23 @@ public class FreeboxException extends Exception {
     protected FreeboxResponse<?> response;
 
     public FreeboxException(String msg) {
-        this(msg, null);
+        this(msg, null, null);
     }
 
-    public FreeboxException(FreeboxResponse<?> response) {
-        this(response.getMsg(), response);
+    public FreeboxException(String msg, Throwable cause) {
+        this(msg, cause, null);
     }
 
     public FreeboxException(String msg, FreeboxResponse<?> response) {
-        super(msg);
+        this(msg, null, response);
+    }
+
+    public FreeboxException(FreeboxResponse<?> response) {
+        this(response.getMsg(), null, response);
+    }
+
+    public FreeboxException(String msg, Throwable cause, FreeboxResponse<?> response) {
+        super(msg, cause);
         this.response = response;
     }
 

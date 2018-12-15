@@ -8,24 +8,22 @@
  */
 package org.openhab.binding.freebox.internal.api.model;
 
+import java.util.List;
+
 import org.openhab.binding.freebox.internal.api.FreeboxException;
 
 /**
- * The {@link FreeboxLoginResponse} is the Java class used to map the
- * response of the login API
- * https://dev.freebox.fr/sdk/os/login/#
+ * The {@link FreeboxPhoneStatusResponse} is the Java class used to map the
+ * response of the phone API
  *
  * @author Laurent Garnier - Initial contribution
  */
-public class FreeboxLoginResponse extends FreeboxResponse<FreeboxLoginResult> {
+public class FreeboxPhoneStatusResponse extends FreeboxResponse<List<FreeboxPhoneStatus>> {
     @Override
     public void evaluate() throws FreeboxException {
         super.evaluate();
-        if (getResult() == null) {
-            throw new FreeboxException("Missing result data in login API response", this);
-        }
-        if ((getResult().getChallenge() == null) || getResult().getChallenge().isEmpty()) {
-            throw new FreeboxException("No challenge in response", this);
+        if (getResult() == null || getResult().size() == 0) {
+            throw new FreeboxException("No phone status in response", this);
         }
     }
 }

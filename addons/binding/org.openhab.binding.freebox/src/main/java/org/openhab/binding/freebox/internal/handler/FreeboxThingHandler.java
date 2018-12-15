@@ -34,7 +34,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.freebox.internal.FreeboxBindingConstants;
 import org.openhab.binding.freebox.internal.api.FreeboxException;
 import org.openhab.binding.freebox.internal.api.model.FreeboxAirMediaReceiver;
 import org.openhab.binding.freebox.internal.api.model.FreeboxCallEntry;
@@ -126,7 +125,7 @@ public class FreeboxThingHandler extends BaseThingHandler {
             if (bridgeStatus == ThingStatus.ONLINE) {
                 this.bridgeHandler = (FreeboxHandler) bridgeHandler;
 
-                if (getThing().getThingTypeUID().equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_PHONE)) {
+                if (getThing().getThingTypeUID().equals(FREEBOX_THING_TYPE_PHONE)) {
                     updateStatus(ThingStatus.ONLINE);
                     lastPhoneCheck = Calendar.getInstance();
                     if (phoneJob == null || phoneJob.isCancelled()) {
@@ -137,7 +136,7 @@ public class FreeboxThingHandler extends BaseThingHandler {
                                 try {
                                     pollPhoneState();
                                 } catch (Exception e) {
-                                    logger.info("Phone state job failed: {}", e.getMessage(), e);
+                                    logger.debug("Phone state job failed: {}", e.getMessage(), e);
                                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                             e.getMessage());
                                 }
@@ -152,23 +151,22 @@ public class FreeboxThingHandler extends BaseThingHandler {
                                 try {
                                     pollPhoneCalls();
                                 } catch (Exception e) {
-                                    logger.info("Phone calls job failed: {}", e.getMessage(), e);
+                                    logger.debug("Phone calls job failed: {}", e.getMessage(), e);
                                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                             e.getMessage());
                                 }
                             }, 1, pollingInterval, TimeUnit.SECONDS);
                         }
                     }
-                } else if (getThing().getThingTypeUID().equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_DEVICE)) {
+                } else if (getThing().getThingTypeUID().equals(FREEBOX_THING_TYPE_NET_DEVICE)) {
                     updateStatus(ThingStatus.ONLINE);
                     netAddress = getConfigAs(FreeboxNetDeviceConfiguration.class).macAddress;
                     netAddress = (netAddress == null) ? "" : netAddress;
-                } else if (getThing().getThingTypeUID()
-                        .equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_INTERFACE)) {
+                } else if (getThing().getThingTypeUID().equals(FREEBOX_THING_TYPE_NET_INTERFACE)) {
                     updateStatus(ThingStatus.ONLINE);
                     netAddress = getConfigAs(FreeboxNetInterfaceConfiguration.class).ipAddress;
                     netAddress = (netAddress == null) ? "" : netAddress;
-                } else if (getThing().getThingTypeUID().equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_AIRPLAY)) {
+                } else if (getThing().getThingTypeUID().equals(FREEBOX_THING_TYPE_AIRPLAY)) {
                     updateStatus(ThingStatus.UNKNOWN);
                     airPlayName = getConfigAs(FreeboxAirPlayDeviceConfiguration.class).name;
                     airPlayName = (airPlayName == null) ? "" : airPlayName;
@@ -268,8 +266,8 @@ public class FreeboxThingHandler extends BaseThingHandler {
     }
 
     public void updateNetInfo(List<FreeboxLanHost> hosts) {
-        if (!getThing().getThingTypeUID().equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_DEVICE)
-                && !getThing().getThingTypeUID().equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_INTERFACE)) {
+        if (!getThing().getThingTypeUID().equals(FREEBOX_THING_TYPE_NET_DEVICE)
+                && !getThing().getThingTypeUID().equals(FREEBOX_THING_TYPE_NET_INTERFACE)) {
             return;
         }
         if (getThing().getStatus() != ThingStatus.ONLINE) {
@@ -281,17 +279,16 @@ public class FreeboxThingHandler extends BaseThingHandler {
         String vendor = null;
         if (hosts != null) {
             for (FreeboxLanHost host : hosts) {
-                if (getThing().getThingTypeUID().equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_DEVICE)
+                if (getThing().getThingTypeUID().equals(FREEBOX_THING_TYPE_NET_DEVICE)
                         && netAddress.equals(host.getMAC())) {
                     found = true;
                     reachable = host.isReachable();
                     vendor = host.getVendorName();
                     break;
                 }
-                if (host.getL3connectivities() != null) {
-                    for (FreeboxLanHostL3Connectivity l3 : host.getL3connectivities()) {
-                        if (getThing().getThingTypeUID()
-                                .equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_INTERFACE)
+                if (host.getL3Connectivities() != null) {
+                    for (FreeboxLanHostL3Connectivity l3 : host.getL3Connectivities()) {
+                        if (getThing().getThingTypeUID().equals(FREEBOX_THING_TYPE_NET_INTERFACE)
                                 && netAddress.equals(l3.getAddr())) {
                             found = true;
                             if (l3.isReachable()) {
@@ -305,8 +302,7 @@ public class FreeboxThingHandler extends BaseThingHandler {
             }
         }
         if (found) {
-            updateState(new ChannelUID(getThing().getUID(), FreeboxBindingConstants.REACHABLE),
-                    reachable ? OnOffType.ON : OnOffType.OFF);
+            updateState(new ChannelUID(getThing().getUID(), REACHABLE), reachable ? OnOffType.ON : OnOffType.OFF);
         }
         if (vendor != null && !vendor.isEmpty()) {
             updateProperty(Thing.PROPERTY_VENDOR, vendor);
@@ -314,7 +310,10 @@ public class FreeboxThingHandler extends BaseThingHandler {
     }
 
     public void updateAirPlayDevice(List<FreeboxAirMediaReceiver> receivers) {
-        if (!getThing().getThingTypeUID().equals(FreeboxBindingConstants.FREEBOX_THING_TYPE_AIRPLAY)) {
+        if (!getThing().getThingTypeUID().equals(FREEBOX_THING_TYPE_AIRPLAY)) {
+            return;
+        }
+        if (airPlayName == null) {
             return;
         }
 

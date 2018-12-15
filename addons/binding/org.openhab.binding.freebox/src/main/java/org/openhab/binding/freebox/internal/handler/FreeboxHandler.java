@@ -35,7 +35,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.freebox.internal.FreeboxBindingConstants;
 import org.openhab.binding.freebox.internal.FreeboxDataListener;
 import org.openhab.binding.freebox.internal.api.FreeboxApiManager;
 import org.openhab.binding.freebox.internal.api.FreeboxException;
@@ -152,9 +151,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
 
             logger.debug("Binding will schedule a job to establish a connection...");
             if (authorizeJob == null || authorizeJob.isCancelled()) {
-                authorizeJob = scheduler.schedule(() -> {
-                    authorize();
-                }, 1, TimeUnit.SECONDS);
+                authorizeJob = scheduler.schedule(this::authorize, 1, TimeUnit.SECONDS);
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -242,7 +239,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
             logger.debug("Thing {}: {}", getThing().getUID(), errorMsg);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
         } else {
-            logger.info("Thing {}: session opened with {} using {} API version {}", getThing().getUID(), fqdn,
+            logger.debug("Thing {}: session opened with {} using {} API version {}", getThing().getUID(), fqdn,
                     (useHttps ? "HTTPS" : "HTTP"), result.getApiVersion());
             if (globalJob == null || globalJob.isCancelled()) {
                 long pollingInterval = getConfigAs(FreeboxServerConfiguration.class).refreshInterval;
@@ -251,7 +248,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
                     try {
                         pollServerState();
                     } catch (Exception e) {
-                        logger.info("Server state job failed: {}", e.getMessage(), e);
+                        logger.debug("Server state job failed: {}", e.getMessage(), e);
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                     }
                 }, 1, pollingInterval, TimeUnit.SECONDS);
@@ -260,10 +257,10 @@ public class FreeboxHandler extends BaseBridgeHandler {
 
         Map<String, String> properties = editProperties();
         if (result != null && StringUtils.isNotEmpty(result.getApiBaseUrl())) {
-            properties.put(FreeboxBindingConstants.API_BASE_URL, result.getApiBaseUrl());
+            properties.put(API_BASE_URL, result.getApiBaseUrl());
         }
         if (result != null && StringUtils.isNotEmpty(result.getApiVersion())) {
-            properties.put(FreeboxBindingConstants.API_VERSION, result.getApiVersion());
+            properties.put(API_VERSION, result.getApiVersion());
         }
         if (result != null && StringUtils.isNotEmpty(result.getDeviceType())) {
             properties.put(Thing.PROPERTY_HARDWARE_VERSION, result.getDeviceType());
@@ -319,7 +316,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
             updateChannelDecimalState(BYTESDOWN, connectionStatus.getBytesDown());
             return true;
         } catch (FreeboxException e) {
-            logException(e);
+            logger.debug("Thing {}: exception in fetchConnectionStatus: {}", getThing().getUID(), e.getMessage(), e);
             return false;
         }
     }
@@ -332,7 +329,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
             }
             return true;
         } catch (FreeboxException e) {
-            logException(e);
+            logger.debug("Thing {}: exception in fetchxDslStatus: {}", getThing().getUID(), e.getMessage(), e);
             return false;
         }
     }
@@ -342,7 +339,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
             updateChannelSwitchState(WIFISTATUS, apiManager.isWifiEnabled());
             return true;
         } catch (FreeboxException e) {
-            logException(e);
+            logger.debug("Thing {}: exception in fetchWifiConfig: {}", getThing().getUID(), e.getMessage(), e);
             return false;
         }
     }
@@ -352,7 +349,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
             updateChannelSwitchState(FTPSTATUS, apiManager.isFtpEnabled());
             return true;
         } catch (FreeboxException e) {
-            logException(e);
+            logger.debug("Thing {}: exception in fetchFtpConfig: {}", getThing().getUID(), e.getMessage(), e);
             return false;
         }
     }
@@ -364,7 +361,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
             }
             return true;
         } catch (FreeboxException e) {
-            logException(e);
+            logger.debug("Thing {}: exception in fetchAirMediaConfig: {}", getThing().getUID(), e.getMessage(), e);
             return false;
         }
     }
@@ -376,7 +373,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
             }
             return true;
         } catch (FreeboxException e) {
-            logException(e);
+            logger.debug("Thing {}: exception in fetchUPnPAVConfig: {}", getThing().getUID(), e.getMessage(), e);
             return false;
         }
     }
@@ -388,7 +385,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
             updateChannelSwitchState(SAMBAPRINTERSTATUS, config.isPrintShareEnabled());
             return true;
         } catch (FreeboxException e) {
-            logException(e);
+            logger.debug("Thing {}: exception in fetchSambaConfig: {}", getThing().getUID(), e.getMessage(), e);
             return false;
         }
     }
@@ -401,7 +398,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
             updateChannelSwitchState(LCDFORCED, config.isOrientationForced());
             return true;
         } catch (FreeboxException e) {
-            logException(e);
+            logger.debug("Thing {}: exception in fetchLCDConfig: {}", getThing().getUID(), e.getMessage(), e);
             return false;
         }
     }
@@ -436,7 +433,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
             updateChannelDecimalState(FANSPEED, config.getFanRpm());
             return true;
         } catch (FreeboxException e) {
-            logException(e);
+            logger.debug("Thing {}: exception in fetchSystemConfig: {}", getThing().getUID(), e.getMessage(), e);
             return false;
         }
     }
@@ -458,7 +455,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
 
             return hosts;
         } catch (FreeboxException e) {
-            logException(e);
+            logger.debug("Thing {}: exception in fetchLanHosts: {}", getThing().getUID(), e.getMessage(), e);
             return null;
         }
     }
@@ -480,7 +477,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
 
             return devices;
         } catch (FreeboxException e) {
-            logException(e);
+            logger.debug("Thing {}: exception in fetchAirPlayDevices: {}", getThing().getUID(), e.getMessage(), e);
             return null;
         }
     }
@@ -671,10 +668,6 @@ public class FreeboxHandler extends BaseBridgeHandler {
 
     private void updateChannelDecimalState(String channel, long state) {
         updateState(new ChannelUID(getThing().getUID(), channel), new DecimalType(state));
-    }
-
-    public void logException(FreeboxException e) {
-        logger.debug("Thing {}: {}", getThing().getUID(), e.getMessage(), e);
     }
 
     public void logCommandException(FreeboxException e, ChannelUID channelUID, Command command) {

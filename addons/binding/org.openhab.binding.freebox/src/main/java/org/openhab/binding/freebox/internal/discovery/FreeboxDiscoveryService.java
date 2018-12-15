@@ -163,8 +163,8 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
                     }
 
                     // Network interfaces
-                    if (host.getL3connectivities() != null && discoverNetInterface) {
-                        for (FreeboxLanHostL3Connectivity l3 : host.getL3connectivities()) {
+                    if (host.getL3Connectivities() != null && discoverNetInterface) {
+                        for (FreeboxLanHostL3Connectivity l3 : host.getL3Connectivities()) {
                             String addr = l3.getAddr();
                             if (StringUtils.isNotEmpty(addr)) {
                                 String uid = addr.replaceAll("[^A-Za-z0-9_]", "_");
