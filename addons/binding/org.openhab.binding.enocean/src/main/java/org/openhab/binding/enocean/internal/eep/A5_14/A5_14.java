@@ -28,14 +28,14 @@ public abstract class A5_14 extends _4BSMessage {
     }
 
     private State getBatteryVoltage() {
-        byte db3 = getDB_3();
+        int db3 = getDB_3Value();
 
         if (db3 > 250) {
             logger.warn("EEP A5-14 error code {}", db3);
             return UnDefType.UNDEF;
         }
 
-        float voltage = db3 / 50; // 0..250 = 0.0..5.0V
+        double voltage = db3 / 50.0; // 0..250 = 0.0..5.0V
 
         return new QuantityType<>(voltage, SmartHomeUnits.VOLT);
     }
