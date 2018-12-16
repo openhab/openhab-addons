@@ -12,7 +12,7 @@ Because the Dutch Meter standard is based on the IEC-62056-21 standard it might 
 
 ## Serial Port Configuration
 
-The P1-port is a serial port. To configure the serial port within openHAB see the general documentation about serial port configuration: [/docs/administration/serial.html](/docs/administration/serial.html)
+The P1-port is a serial port. To configure the serial port within openHAB see the [general documentation about serial port configuration](/docs/administration/serial.html).
 
 ## Supported Things
 
