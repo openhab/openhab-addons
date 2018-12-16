@@ -7,12 +7,12 @@ When connecting this port from a serial port the data can be read out.
 This binding reads the P1-port of the Dutch Smart Meters that comply to NTA8130, DSMR v2.1, DSMR v2.2, DSMR v3.0, DSMR v4.0, DSMR v4.04, and DSMR 5.0.
 Although DSMR v4.2 is not an official specification, the binding has support for this version.
 
-If you are not living in the Netherlands but do want to read a meter please have look at the [IEC-62056-21 Meter Binding](https://github.com/openhab/openhab1-addons/wiki/IEC-62056---21-Meter-Binding).
+If you are not living in the Netherlands but do want to read a meter please have look at the [SmartMeter Binding](https://www.openhab.org/addons/bindings/smartmeter).
 Because the Dutch Meter standard is based on the IEC-62056-21 standard it might be desirable to build support for other country metering systems based on that standard in this binding.
 
 ## Serial Port Configuration
 
-The P1-port is a serial port. To configure the serial port within openHAB see the general documentation about serial port configuration: [/docs/administration/serial.html](/docs/administration/serial.html)
+The P1-port is a serial port. To configure the serial port within openHAB see the [general documentation about serial port configuration](/docs/administration/serial.html).
 
 ## Supported Things
 
