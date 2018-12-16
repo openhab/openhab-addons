@@ -137,7 +137,7 @@ public class LxControlDimmer extends LxControl {
             Double max = getMax();
             Double min = getMin();
             if (max != null && min != null) {
-                return (loxoneValue - min) * ((max - min) / 100);
+                return loxoneValue;
             }
         }
         return null;
@@ -152,8 +152,7 @@ public class LxControlDimmer extends LxControl {
             Double max = getMax();
             Double min = getMin();
             if (max != null && min != null) {
-                double value = min + (ohValue / ((max - min) / 100));
-                return value; // no rounding to integer value is needed as loxone is accepting floating point values
+                return ohValue; // no rounding to integer value is needed as loxone is accepting floating point values
             }
         }
         return null;
