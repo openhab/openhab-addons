@@ -5,7 +5,7 @@ Bundle-Name: WifiLED Binding Tests
 Bundle-SymbolicName: org.openhab.binding.wifiled.test;singleton:=true
 Bundle-Vendor: openHAB
 Fragment-Host: org.openhab.binding.wifiled
-Bundle-Version: 2.4.0.qualifier
+Bundle-Version: 2.5.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: 
  org.eclipse.jdt.annotation;resolution:=optional,

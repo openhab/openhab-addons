@@ -3,7 +3,7 @@ Automatic-Module-Name: org.openhab.binding.gpstracker
 Bundle-Name: GPSTracker Binding
 Bundle-SymbolicName: org.openhab.binding.gpstracker;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.4.0.qualifier
+Bundle-Version: 2.5.0.qualifier
 Bundle-ManifestVersion: 2
 Bundle-Description: GPSTracker binding for openHAB
 Bundle-ClassPath: .

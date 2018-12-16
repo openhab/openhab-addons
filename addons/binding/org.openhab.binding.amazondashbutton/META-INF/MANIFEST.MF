@@ -12,7 +12,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.amazondashbutton;singleton:=tru
  e
 Bundle-Vendor: openHAB
-Bundle-Version: 2.4.0.qualifier
+Bundle-Version: 2.5.0.qualifier
 Import-Package: 
  com.google.common.base,
  com.google.common.collect,
