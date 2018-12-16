@@ -6,7 +6,7 @@ Bundle-Name: Google Cloud Text-to-Speech
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.voice.googletts;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.4.0.qualifier
+Bundle-Version: 2.5.0.qualifier
 Bundle-ClassPath: 
  .,
  lib/api-common-1.7.0.jar,

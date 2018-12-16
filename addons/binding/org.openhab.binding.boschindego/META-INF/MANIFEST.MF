@@ -14,7 +14,7 @@ Bundle-Name: BoschIndego Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.boschindego;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.4.0.qualifier
+Bundle-Version: 2.5.0.qualifier
 Import-Package: 
  org.apache.commons.codec,
  org.apache.commons.codec.binary,
