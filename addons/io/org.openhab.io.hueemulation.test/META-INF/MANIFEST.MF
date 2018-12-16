@@ -5,7 +5,7 @@ Bundle-Name: Hue Emulation Service Tests
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.io.hueemulation.test;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.4.0.qualifier
+Bundle-Version: 2.5.0.qualifier
 Fragment-Host: org.openhab.io.hueemulation
 Import-Package: 
  com.google.gson,
