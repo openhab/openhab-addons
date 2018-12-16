@@ -123,6 +123,7 @@ public class Connection {
     private @Nullable Date verifyTime;
     private long renewTime = 0;
     private @Nullable String deviceName;
+    private @Nullable String accountCustomerId;
 
     private final Gson gson = new Gson();
     private final Gson gsonWithNullSerialization;
@@ -235,7 +236,7 @@ public class Connection {
             return "";
         }
         StringBuilder builder = new StringBuilder();
-        builder.append("5\n"); // version
+        builder.append("6\n"); // version
         builder.append(frc);
         builder.append("\n");
         builder.append(serial);
@@ -247,6 +248,8 @@ public class Connection {
         builder.append(amazonSite);
         builder.append("\n");
         builder.append(deviceName);
+        builder.append("\n");
+        builder.append(accountCustomerId);
         builder.append("\n");
         builder.append(loginTime.getTime());
         builder.append("\n");
@@ -315,10 +318,11 @@ public class Connection {
         Scanner scanner = new Scanner(data);
         String version = scanner.nextLine();
         // check if serialize version
-        if (!version.equals("5")) {
+        if (!version.equals("5") && !version.equals("6")) {
             scanner.close();
             return null;
         }
+        int intVersion = Integer.parseInt(version);
 
         frc = scanner.nextLine();
         serial = scanner.nextLine();
@@ -333,6 +337,14 @@ public class Connection {
         setAmazonSite(domain);
 
         deviceName = scanner.nextLine();
+
+        if (intVersion > 5) {
+            String accountCustomerId = scanner.nextLine();
+            if (!StringUtils.equals(accountCustomerId, "null")) {
+                this.accountCustomerId = accountCustomerId;
+            }
+        }
+
         Date loginTime = new Date(Long.parseLong(scanner.nextLine()));
         CookieStore cookieStore = cookieManager.getCookieStore();
         cookieStore.removeAll();
@@ -358,8 +370,29 @@ public class Connection {
         scanner.close();
         try {
             checkRenewSession();
-        } catch (URISyntaxException | IOException | ConnectionException e) {
 
+            if (StringUtils.isEmpty(this.accountCustomerId)) {
+                List<Device> devices = this.getDeviceList();
+                for (Device device : devices) {
+                    if (StringUtils.equals(device.serialNumber, this.serial)) {
+                        this.accountCustomerId = device.deviceOwnerCustomerId;
+                        break;
+                    }
+                }
+                if (StringUtils.isEmpty(this.accountCustomerId)) {
+                    for (Device device : devices) {
+                        if (StringUtils.equals(device.accountName, "This Device")) {
+                            this.accountCustomerId = device.deviceOwnerCustomerId;
+                            String serial = device.serialNumber;
+                            if (serial != null) {
+                                this.serial = serial;
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        } catch (URISyntaxException | IOException | ConnectionException e) {
         }
         return loginTime;
     }
@@ -1083,7 +1116,9 @@ public class Connection {
             operationPayload.addProperty("deviceType", device.deviceType);
             operationPayload.addProperty("deviceSerialNumber", device.serialNumber);
             operationPayload.addProperty("locale", "");
-            operationPayload.addProperty("customerId", device.deviceOwnerCustomerId);
+            operationPayload.addProperty("customerId",
+                    StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
+                            : this.accountCustomerId);
         }
         if (parameters != null) {
             for (String key : parameters.keySet()) {
@@ -1153,7 +1188,10 @@ public class Connection {
 
             // "customerId": "ALEXA_CUSTOMER_ID"
             String customerId = "\"customerId\":\"ALEXA_CUSTOMER_ID\"";
-            String newCustomerId = "\"customerId\":\"" + device.deviceOwnerCustomerId + "\"";
+            String newCustomerId = "\"customerId\":\""
+                    + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
+                            : this.accountCustomerId)
+                    + "\"";
             sequenceJson = sequenceJson.replace(customerId.subSequence(0, customerId.length()),
                     newCustomerId.subSequence(0, newCustomerId.length()));
 
