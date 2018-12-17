@@ -161,4 +161,26 @@ public class HueRestAPITest {
         assertThat(((HueStateColorBulb) ds.lights.get(2).state).on, is(true));
         assertThat(((HueStateColorBulb) ds.lights.get(2).state).bri, is(200));
     }
+
+    @Test
+    public void switchOnWithXY() throws IOException {
+        ds.config.whitelist.put("testuser", new HueUserAuth("testuser"));
+
+        assertThat(((HueStateColorBulb) ds.lights.get(2).state).on, is(false));
+        assertThat(((HueStateColorBulb) ds.lights.get(2).state).bri, is(0));
+
+        String body = "{'on':true,'bri':200,'xy':[0.5119,0.4147]}";
+        StringWriter out = new StringWriter();
+        int result = restAPI.handle(HttpMethod.PUT, body, out, Paths.get("/api/testuser/lights/2/state"), false);
+        assertEquals(200, result);
+        assertThat(out.toString(), containsString("success"));
+        assertThat(((HueStateColorBulb) ds.lights.get(2).state).on, is(true));
+        assertThat(((HueStateColorBulb) ds.lights.get(2).state).bri, is(200));
+        assertThat(((HueStateColorBulb) ds.lights.get(2).state).xy[0], is(0.5119));
+        assertThat(((HueStateColorBulb) ds.lights.get(2).state).xy[1], is(0.4147));
+        assertThat(((HueStateColorBulb) ds.lights.get(2).state).colormode, is(HueStateColorBulb.ColorMode.xy));
+        assertThat(((HueStateColorBulb) ds.lights.get(2).state).toHSBType().getHue().intValue(), is((int)27.47722590981918));
+        assertThat(((HueStateColorBulb) ds.lights.get(2).state).toHSBType().getSaturation().intValue(), is(88));
+        assertThat(((HueStateColorBulb) ds.lights.get(2).state).toHSBType().getBrightness().intValue(), is(78));
+    }
 }
