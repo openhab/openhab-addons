@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.auth.client.oauth2.OAuthFactory;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -28,7 +29,6 @@ import org.openhab.binding.spotify.internal.discovery.SpotifyDeviceDiscoveryServ
 import org.openhab.binding.spotify.internal.handler.SpotifyBridgeHandler;
 import org.openhab.binding.spotify.internal.handler.SpotifyDeviceHandler;
 import org.openhab.binding.spotify.internal.handler.SpotifyDynamicStateDescriptionProvider;
-import org.openhab.binding.spotify.internal.oauth2.OAuthFactory;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -60,10 +60,10 @@ public class SpotifyHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        final ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SpotifyBindingConstants.THING_TYPE_PLAYER.equals(thingTypeUID)) {
-            SpotifyBridgeHandler handler = new SpotifyBridgeHandler((Bridge) thing, oAuthFactory, httpClient,
+            final SpotifyBridgeHandler handler = new SpotifyBridgeHandler((Bridge) thing, oAuthFactory, httpClient,
                     spotifyDynamicStateDescriptionProvider);
             authService.addSpotifyAccountHandler(handler);
             registerDiscoveryService(handler);
@@ -81,9 +81,9 @@ public class SpotifyHandlerFactory extends BaseThingHandlerFactory {
      * @param handler handler to register service for
      */
     private synchronized void registerDiscoveryService(SpotifyBridgeHandler handler) {
-        SpotifyDeviceDiscoveryService discoveryService = new SpotifyDeviceDiscoveryService(handler, httpClient);
-        ServiceRegistration<?> serviceRegistration = bundleContext.registerService(DiscoveryService.class.getName(),
-                discoveryService, new Hashtable<String, Object>());
+        final SpotifyDeviceDiscoveryService discoveryService = new SpotifyDeviceDiscoveryService(handler, httpClient);
+        final ServiceRegistration<?> serviceRegistration = bundleContext
+                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>());
 
         discoveryService.activate();
         discoveryServiceRegs.put(handler.getThing().getUID(), serviceRegistration);
@@ -92,11 +92,11 @@ public class SpotifyHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof SpotifyBridgeHandler) {
-            ThingUID uid = thingHandler.getThing().getUID();
-            ServiceRegistration<?> serviceReg = discoveryServiceRegs.get(uid);
+            final ThingUID uid = thingHandler.getThing().getUID();
+            final ServiceRegistration<?> serviceReg = discoveryServiceRegs.get(uid);
 
             if (serviceReg != null) {
-                SpotifyDeviceDiscoveryService service = (SpotifyDeviceDiscoveryService) getBundleContext()
+                final SpotifyDeviceDiscoveryService service = (SpotifyDeviceDiscoveryService) getBundleContext()
                         .getService(serviceReg.getReference());
                 // remove discovery service, if bridge handler is removed
                 service.deactivate();

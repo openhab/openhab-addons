@@ -22,7 +22,12 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.auth.client.oauth2.AccessTokenRefreshListener;
+import org.eclipse.smarthome.core.auth.client.oauth2.AccessTokenResponse;
+import org.eclipse.smarthome.core.auth.client.oauth2.OAuthClientService;
+import org.eclipse.smarthome.core.auth.client.oauth2.OAuthException;
+import org.eclipse.smarthome.core.auth.client.oauth2.OAuthFactory;
+import org.eclipse.smarthome.core.auth.client.oauth2.OAuthResponseException;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -55,12 +60,6 @@ import org.openhab.binding.spotify.internal.api.model.Image;
 import org.openhab.binding.spotify.internal.api.model.Item;
 import org.openhab.binding.spotify.internal.api.model.Me;
 import org.openhab.binding.spotify.internal.api.model.Playlist;
-import org.openhab.binding.spotify.internal.oauth2.AccessTokenRefreshListener;
-import org.openhab.binding.spotify.internal.oauth2.AccessTokenResponse;
-import org.openhab.binding.spotify.internal.oauth2.OAuthClientService;
-import org.openhab.binding.spotify.internal.oauth2.OAuthException;
-import org.openhab.binding.spotify.internal.oauth2.OAuthFactory;
-import org.openhab.binding.spotify.internal.oauth2.OAuthResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -170,7 +169,8 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     public boolean isAuthorized() {
         try {
             return oAuthService != null && oAuthService.getAccessTokenResponse() != null
-                    && oAuthService.getAccessTokenResponse().getAccessToken() != null;
+                    && oAuthService.getAccessTokenResponse().getAccessToken() != null
+                    && oAuthService.getAccessTokenResponse().getRefreshToken() != null;
         } catch (OAuthException | IOException | OAuthResponseException | RuntimeException e) {
             return false;
         }
@@ -209,10 +209,11 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     @Override
     public String authorize(String redirectUri, String reqCode) {
         try {
-            AccessTokenResponse credentials = oAuthService.getAccessTokenResponseByAuthorizationCode(reqCode,
+            logger.debug("Make call to Spotify to get access token.");
+            final AccessTokenResponse credentials = oAuthService.getAccessTokenResponseByAuthorizationCode(reqCode,
                     redirectUri);
-            updateConfiguration(credentials);
-            String user = updateProperties(credentials);
+            final String user = updateProperties(credentials);
+            logger.debug("Authorized for user: {}", user);
             startPolling();
             return user;
         } catch (RuntimeException | OAuthException | IOException e) {
@@ -225,18 +226,11 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         }
     }
 
-    private void updateConfiguration(AccessTokenResponse credentials) {
-        Configuration conf = editConfiguration();
-
-        conf.put(CONFIGURATION_CLIENT_REFRESH_TOKEN, credentials.getRefreshToken());
-        updateConfiguration(conf);
-    }
-
     private String updateProperties(AccessTokenResponse credentials) {
         if (spotifyApi != null) {
-            Me me = spotifyApi.getMe();
-            String user = me.getDisplayName() == null ? me.getId() : me.getDisplayName();
-            Map<String, String> props = editProperties();
+            final Me me = spotifyApi.getMe();
+            final String user = me.getDisplayName() == null ? me.getId() : me.getDisplayName();
+            final Map<String, String> props = editProperties();
 
             props.put(PROPERTY_SPOTIFY_USER, user);
             updateProperties(props);
@@ -251,8 +245,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         active = true;
         configuration = getConfigAs(SpotifyBridgeConfiguration.class);
         oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(), SPOTIFY_API_TOKEN_URL,
-                SPOTIFY_AUTHORIZE_URL, configuration.clientId, configuration.clientSecret, SPOTIFY_SCOPES, true,
-                scheduler, httpClient, configuration.refreshToken);
+                SPOTIFY_AUTHORIZE_URL, configuration.clientId, configuration.clientSecret, SPOTIFY_SCOPES, true);
         oAuthService.addAccessTokenRefreshListener(SpotifyBridgeHandler.this);
         spotifyApi = new SpotifyApi(oAuthService, scheduler, httpClient);
         handleCommand = new SpotifyHandleCommands(spotifyApi);
@@ -268,7 +261,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
 
     @Override
     public List<Device> listDevices() {
-        List<Device> listDevices = devicesCache.getValue();
+        final List<Device> listDevices = devicesCache.getValue();
 
         return listDevices == null ? Collections.emptyList() : listDevices;
     }
@@ -316,16 +309,16 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         synchronized (scheduler) {
             try {
                 // Collect devices and populate selection with available devices.
-                List<Device> ld = devicesCache.getValue();
-                List<Device> listDevices = ld == null ? Collections.emptyList() : ld;
+                final List<Device> ld = devicesCache.getValue();
+                final List<Device> listDevices = ld == null ? Collections.emptyList() : ld;
                 spotifyDynamicStateDescriptionProvider.setDevices(listDevices);
                 // Collect currently playing context.
-                CurrentlyPlayingContext pc = playingContextCache.getValue();
-                CurrentlyPlayingContext playingContext = pc == null ? EMPTY_CURRENTLYPLAYINGCONTEXT : pc;
+                final CurrentlyPlayingContext pc = playingContextCache.getValue();
+                final CurrentlyPlayingContext playingContext = pc == null ? EMPTY_CURRENTLYPLAYINGCONTEXT : pc;
                 updateStatus(ThingStatus.ONLINE);
                 updatePlayerInfo(playingContext);
 
-                List<Playlist> playlists = playlistCache.getValue();
+                final List<Playlist> playlists = playlistCache.getValue();
                 spotifyDynamicStateDescriptionProvider
                         .setPlayList(playlists == null ? Collections.emptyList() : playlists);
 
@@ -373,7 +366,8 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
      * @param playing true if the current active device is playing
      */
     private void updateDevicesStatus(List<Device> spotifyDevices, boolean playing) {
-        getThing().getThings().stream().filter(thing -> thing.getHandler() instanceof SpotifyDeviceHandler)
+        getThing().getThings().stream() //
+                .filter(thing -> thing.getHandler() instanceof SpotifyDeviceHandler) //
                 .filter(thing -> !spotifyDevices.stream()
                         .anyMatch(sd -> ((SpotifyDeviceHandler) thing.getHandler()).updateDeviceStatus(sd, playing)))
                 .forEach(thing -> ((SpotifyDeviceHandler) thing.getHandler()).setStatusGone());
@@ -389,9 +383,9 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         updateChannelState(CHANNEL_DEVICESHUFFLE, playerInfo.isShuffleState() ? OnOffType.ON : OnOffType.OFF);
         updateChannelState(CHANNEL_TRACKREPEAT, playerInfo.getRepeatState());
 
-        boolean hasItem = playerInfo.getItem() != null;
-        Item item = hasItem ? playerInfo.getItem() : EMPTY_ITEM;
-        State trackId = valueOrEmpty(item.getId());
+        final boolean hasItem = playerInfo.getItem() != null;
+        final Item item = hasItem ? playerInfo.getItem() : EMPTY_ITEM;
+        final State trackId = valueOrEmpty(item.getId());
 
         progressUpdater.updateProgress(active, playerInfo.isPlaying(), item.getDurationMs(),
                 playerInfo.getProgressMs());
@@ -416,8 +410,8 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
             updateChannelState(CHANNEL_PLAYED_TRACKDISCNUMBER, valueOrZero(item.getDiscNumber()));
             updateChannelState(CHANNEL_PLAYED_TRACKPOPULARITY, valueOrZero(item.getPopularity()));
 
-            boolean hasAlbum = hasItem && item.getAlbum() != null;
-            Album album = hasAlbum ? item.getAlbum() : EMPTY_ALBUM;
+            final boolean hasAlbum = hasItem && item.getAlbum() != null;
+            final Album album = hasAlbum ? item.getAlbum() : EMPTY_ALBUM;
             updateChannelState(CHANNEL_PLAYED_ALBUMID, valueOrEmpty(album.getId()));
             updateChannelState(CHANNEL_PLAYED_ALBUMHREF, valueOrEmpty(album.getHref()));
             updateChannelState(CHANNEL_PLAYED_ALBUMURI, valueOrEmpty(album.getUri()));
@@ -425,7 +419,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
             updateChannelState(CHANNEL_PLAYED_ALBUMTYPE, valueOrEmpty(album.getType()));
             albumUpdater.updateAlbumImage(album);
 
-            Artist firstArtist = hasItem && item.getArtists() != null && !item.getArtists().isEmpty()
+            final Artist firstArtist = hasItem && item.getArtists() != null && !item.getArtists().isEmpty()
                     ? item.getArtists().get(0)
                     : EMPTY_ARTIST;
 
@@ -435,7 +429,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
             updateChannelState(CHANNEL_PLAYED_ARTISTNAME, valueOrEmpty(firstArtist.getName()));
             updateChannelState(CHANNEL_PLAYED_ARTISTTYPE, valueOrEmpty(firstArtist.getType()));
         }
-        Device device = playerInfo.getDevice() == null ? EMPTY_DEVICE : playerInfo.getDevice();
+        final Device device = playerInfo.getDevice() == null ? EMPTY_DEVICE : playerInfo.getDevice();
         // Only update activeDeviceId if it has a value, otherwise keep old value.
         if (device.getId() != null) {
             lastKnownDeviceId = device.getId();
@@ -484,7 +478,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
      * @param state State to set on the channel
      */
     private void updateChannelState(String channelId, State state) {
-        Channel channel = thing.getChannel(channelId);
+        final Channel channel = thing.getChannel(channelId);
 
         if (channel != null && isLinked(channel.getUID())) {
             updateState(channel.getUID(), state);
@@ -568,11 +562,11 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
          * @param album album data
          */
         public void updateAlbumImage(Album album) {
-            Channel channel = thing.getChannel(CHANNEL_PLAYED_ALBUMIMAGE);
-            List<Image> images = album.getImages();
+            final Channel channel = thing.getChannel(CHANNEL_PLAYED_ALBUMIMAGE);
+            final List<Image> images = album.getImages();
 
             if (channel != null && images != null && !images.isEmpty()) {
-                String imageUrl = images.get(0).getUrl();
+                final String imageUrl = images.get(0).getUrl();
 
                 if (!lastAlbumImageUrl.equals(imageUrl)) {
                     // Download the cover art in a different thread to not delay the other operations
@@ -592,7 +586,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
          */
         public void refreshAlbumImage(ChannelUID channelUID) {
             if (!lastAlbumImageUrl.isEmpty() && isLinked(channelUID)) {
-                String imageUrl = lastAlbumImageUrl;
+                final String imageUrl = lastAlbumImageUrl;
                 scheduler.execute(() -> refreshAlbumAsynced(channelUID, imageUrl));
             }
         }
@@ -600,7 +594,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         private void refreshAlbumAsynced(ChannelUID channelUID, String imageUrl) {
             try {
                 if (lastAlbumImageUrl.equals(imageUrl) && isLinked(channelUID)) {
-                    RawType image = HttpUtil.downloadImage(imageUrl, true, MAX_IMAGE_SIZE);
+                    final RawType image = HttpUtil.downloadImage(imageUrl, true, MAX_IMAGE_SIZE);
                     updateChannelState(CHANNEL_PLAYED_ALBUMIMAGE, image == null ? UnDefType.UNDEF : image);
                 }
             } catch (RuntimeException e) {

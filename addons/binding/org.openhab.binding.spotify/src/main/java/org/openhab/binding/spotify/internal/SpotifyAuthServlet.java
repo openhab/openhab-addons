@@ -82,7 +82,7 @@ public class SpotifyAuthServlet extends HttpServlet {
             throws ServletException, IOException {
         logger.debug("Spotify auth callback servlet received GET request {}.", req.getRequestURI());
         final String servletBaseURL = req.getRequestURL().toString();
-        Map<String, String> replaceMap = new HashMap<>();
+        final Map<String, String> replaceMap = new HashMap<>();
 
         handleSpotifyRedirect(replaceMap, servletBaseURL, req.getQueryString());
         resp.setContentType(CONTENT_TYPE);
@@ -109,7 +109,7 @@ public class SpotifyAuthServlet extends HttpServlet {
         replaceMap.put(KEY_PAGE_REFRESH, "");
 
         if (queryString != null) {
-            MultiMap<String> params = new MultiMap<>();
+            final MultiMap<String> params = new MultiMap<>();
             UrlEncoded.decodeTo(queryString, params, StandardCharsets.UTF_8.name());
             final String reqCode = params.getString("code");
             final String reqState = params.getString("state");
@@ -139,7 +139,7 @@ public class SpotifyAuthServlet extends HttpServlet {
      * @return A String with the players formatted with the player template
      */
     private String formatPlayers(String playerTemplate, String servletBaseURL) {
-        List<SpotifyAccountHandler> players = spotifyAuthService.getSpotifyAccountHandlers();
+        final List<SpotifyAccountHandler> players = spotifyAuthService.getSpotifyAccountHandlers();
 
         return players.isEmpty() ? HTML_EMPTY_PLAYERS
                 : players.stream().map(p -> formatPlayer(playerTemplate, p, servletBaseURL))
@@ -155,11 +155,11 @@ public class SpotifyAuthServlet extends HttpServlet {
      * @return A String with the player formatted with the player template
      */
     private String formatPlayer(String playerTemplate, SpotifyAccountHandler handler, String servletBaseURL) {
-        Map<String, String> map = new HashMap<>();
+        final Map<String, String> map = new HashMap<>();
 
         map.put(PLAYER_ID, handler.getUID().getAsString());
         map.put(PLAYER_NAME, handler.getLabel());
-        String spotifyUser = handler.getUser();
+        final String spotifyUser = handler.getUser();
 
         if (handler.isAuthorized()) {
             map.put(PLAYER_AUTHORIZED_CLASS, " authorized");
@@ -185,12 +185,12 @@ public class SpotifyAuthServlet extends HttpServlet {
      * @return a template with keys replaced
      */
     private String replaceKeysFromMap(String template, Map<String, String> map) {
-        Matcher m = MESSAGE_KEY_PATTERN.matcher(template);
-        StringBuffer sb = new StringBuffer();
+        final Matcher m = MESSAGE_KEY_PATTERN.matcher(template);
+        final StringBuffer sb = new StringBuffer();
 
         while (m.find()) {
             try {
-                String key = m.group(1);
+                final String key = m.group(1);
                 m.appendReplacement(sb, Matcher.quoteReplacement(map.getOrDefault(key, "${" + key + '}')));
             } catch (RuntimeException e) {
                 logger.debug("Error occurred during template filling, cause ", e);

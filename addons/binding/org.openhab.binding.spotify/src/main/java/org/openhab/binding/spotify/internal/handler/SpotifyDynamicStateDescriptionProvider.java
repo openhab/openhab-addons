@@ -42,7 +42,7 @@ public class SpotifyDynamicStateDescriptionProvider implements DynamicStateDescr
     public void setDevices(List<Device> spotifyDevices) {
         if (spotifyDevices.size() != devices.size() || !spotifyDevices.stream().allMatch(sd -> devices.stream()
                 .anyMatch(d -> sd.getId() == d.getId() && d.getName() != null && d.getName().equals(sd.getName())))) {
-            List<StateOption> devicesStateOptions = spotifyDevices.stream()
+            final List<StateOption> devicesStateOptions = spotifyDevices.stream()
                     .map(device -> new StateOption(device.getId(), device.getName())).collect(Collectors.toList());
             devices = spotifyDevices;
             devicesStateDescription = new StateDescription(null, null, null, null, devicesStateOptions.isEmpty(),
@@ -54,7 +54,7 @@ public class SpotifyDynamicStateDescriptionProvider implements DynamicStateDescr
         if (spotifyPlaylists.size() != playlists.size() || !spotifyPlaylists.stream()
                 .allMatch(sp -> playlists.stream().anyMatch(p -> p.getUri() != null && sp.getUri().equals(p.getUri())
                         && p.getName() != null && p.getName().equals(sp.getName())))) {
-            List<StateOption> playlistStateOptions = spotifyPlaylists.stream()
+            final List<StateOption> playlistStateOptions = spotifyPlaylists.stream()
                     .map(device -> new StateOption(device.getUri(), device.getName())).collect(Collectors.toList());
 
             playlists = spotifyPlaylists;

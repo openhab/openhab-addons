@@ -70,10 +70,10 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        SpotifyBridgeHandler bridgeHandler = (SpotifyBridgeHandler) getBridge().getHandler();
+        final SpotifyBridgeHandler bridgeHandler = (SpotifyBridgeHandler) getBridge().getHandler();
         spotifyApi = bridgeHandler.getSpotifyApi();
 
-        Configuration config = thing.getConfiguration();
+        final Configuration config = thing.getConfiguration();
         deviceId = (String) config.get(PROPERTY_SPOTIFY_DEVICE_ID);
         commandHandler = new SpotifyHandleCommands(spotifyApi);
         updateStatus(ThingStatus.UNKNOWN);
@@ -105,7 +105,7 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
             updateChannelState(CHANNEL_DEVICEVOLUME,
                     device.getVolumePercent() == null ? UnDefType.UNDEF : new PercentType(device.getVolumePercent()));
             active = device.isActive();
-            updateChannelState(CHANNEL_DEVICEACTIVE, active ? OnOffType.ON : OnOffType.OFF);
+            updateChannelState(CHANNEL_DEVICEACTIVE, OnOffType.from(active));
             updateChannelState(CHANNEL_DEVICEPLAYER,
                     online && active && playing ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
             return true;
@@ -133,7 +133,7 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
      * @return true if device is online
      */
     private boolean setOnlineStatus(boolean restricted) {
-        updateChannelState(CHANNEL_DEVICERESTRICTED, restricted ? OnOffType.ON : OnOffType.OFF);
+        updateChannelState(CHANNEL_DEVICERESTRICTED, OnOffType.from(restricted));
         if (restricted) {
             // Only change status if device is currently online
             if (thing.getStatus() == ThingStatus.ONLINE) {
@@ -154,7 +154,7 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
      * @param state State to set on the channel
      */
     private void updateChannelState(String channelId, State state) {
-        Channel channel = thing.getChannel(channelId);
+        final Channel channel = thing.getChannel(channelId);
 
         if (channel != null && isLinked(channel.getUID())) {
             updateState(channel.getUID(), state);

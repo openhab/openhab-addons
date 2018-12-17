@@ -89,7 +89,6 @@ public class SpotifyBindingConstants {
 
     // List of Bridge configuration params
     public static final String CONFIGURATION_CLIENT_ID = "clientId";
-    public static final String CONFIGURATION_CLIENT_REFRESH_TOKEN = "refreshToken";
 
     // List of Bridge/Thing properties
     public static final String PROPERTY_SPOTIFY_USER = "user";

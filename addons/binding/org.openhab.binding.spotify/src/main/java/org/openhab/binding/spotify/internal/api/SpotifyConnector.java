@@ -39,7 +39,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Hilbrand Bouwkamp - Initial contribution
  */
 @NonNullByDefault
-public class SpotifyConnector {
+class SpotifyConnector {
 
     private static final String RETRY_AFTER_HEADER = "Retry-After";
     private static final String AUTHORIZATION_HEADER = "Authorization";
@@ -75,7 +75,7 @@ public class SpotifyConnector {
      * @return the raw reponse given
      */
     public ContentResponse request(Function<HttpClient, Request> requester, String authorization) {
-        Caller caller = new Caller(requester, authorization);
+        final Caller caller = new Caller(requester, authorization);
 
         try {
             return caller.call().get();
@@ -83,7 +83,7 @@ public class SpotifyConnector {
             Thread.currentThread().interrupt();
             throw new SpotifyException("Thread interrupted");
         } catch (ExecutionException e) {
-            Throwable cause = e.getCause();
+            final Throwable cause = e.getCause();
 
             if (cause instanceof RuntimeException) {
                 throw (RuntimeException) cause;
@@ -103,7 +103,7 @@ public class SpotifyConnector {
         private final Function<HttpClient, Request> requester;
         private final String authorization;
 
-        private CompletableFuture<ContentResponse> future = new CompletableFuture<>();
+        private final CompletableFuture<ContentResponse> future = new CompletableFuture<>();
         private int delaySeconds;
         private int attempts;
 
@@ -130,7 +130,7 @@ public class SpotifyConnector {
         public CompletableFuture<ContentResponse> call() {
             attempts++;
             try {
-                boolean success = processResponse(
+                final boolean success = processResponse(
                         requester.apply(httpClient).header(AUTHORIZATION_HEADER, authorization)
                                 .timeout(HTTP_CLIENT_TIMEOUT_SECONDS, TimeUnit.SECONDS).send());
 
@@ -190,7 +190,7 @@ public class SpotifyConnector {
                     throw new SpotifyAuthorizationException(processErrorState(response));
                 case TOO_MANY_REQUESTS_429:
                     // Response Code 429 means requests rate limits exceeded.
-                    String retryAfter = response.getHeaders().get(RETRY_AFTER_HEADER);
+                    final String retryAfter = response.getHeaders().get(RETRY_AFTER_HEADER);
 
                     logger.debug(
                             "Spotify Web API returned code 429 (rate limit exceeded). Retry After {} seconds. Decrease polling interval of bridge! Going to sleep...",
@@ -225,13 +225,15 @@ public class SpotifyConnector {
          */
         private String processErrorState(ContentResponse response) {
             try {
-                JsonElement element = parser.parse(response.getContentAsString());
+                final JsonElement element = parser.parse(response.getContentAsString());
 
                 if (element.isJsonObject()) {
-                    JsonObject object = element.getAsJsonObject();
+                    final JsonObject object = element.getAsJsonObject();
                     if (object.has("error") && object.get("error").isJsonObject()) {
-                        String message = object.get("error").getAsJsonObject().get("message").getAsString();
+                        final String message = object.get("error").getAsJsonObject().get("message").getAsString();
 
+                        // Bad request can be anything, from authorization problems to start play problems.
+                        // Therefore authorization type errors are filtered and handled differently.
                         logger.debug("Bad request: {}", message);
                         if (message.contains("expired")) {
                             throw new SpotifyTokenExpiredException(message);
@@ -239,7 +241,7 @@ public class SpotifyConnector {
                             return message;
                         }
                     } else if (object.has("error_description")) {
-                        String errorDescription = object.get("error_description").getAsString();
+                        final String errorDescription = object.get("error_description").getAsString();
 
                         logger.debug("Authorization error: {}", errorDescription);
                         throw new SpotifyAuthorizationException(errorDescription);

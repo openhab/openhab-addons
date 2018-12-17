@@ -96,7 +96,7 @@ public class SpotifyAuthService {
      * @throws IOException thrown when an HTML template could not be read
      */
     private String readTemplate(String templateName) throws IOException {
-        URL index = bundleContext.getBundle().getEntry(templateName);
+        final URL index = bundleContext.getBundle().getEntry(templateName);
 
         if (index == null) {
             throw new FileNotFoundException(
@@ -118,7 +118,7 @@ public class SpotifyAuthService {
      * @return returns the name of the Spotify user that is authorized
      */
     public String authorize(String servletBaseURL, String state, String code) {
-        SpotifyAccountHandler listener = getSpotifyAuthListener(state);
+        final SpotifyAccountHandler listener = getSpotifyAuthListener(state);
 
         if (listener == null) {
             logger.debug(
@@ -160,7 +160,7 @@ public class SpotifyAuthService {
      * @return the {@link SpotifyAccountHandler} matching the thing UID or null
      */
     private @Nullable SpotifyAccountHandler getSpotifyAuthListener(String thingUID) {
-        Optional<SpotifyAccountHandler> listener = handlers.stream().filter(l -> l.equalsThingUID(thingUID))
+        final Optional<SpotifyAccountHandler> listener = handlers.stream().filter(l -> l.equalsThingUID(thingUID))
                 .findFirst();
         return listener.isPresent() ? listener.get() : null;
     }

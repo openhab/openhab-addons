@@ -18,5 +18,4 @@ public class SpotifyBridgeConfiguration {
     public String clientId;
     public String clientSecret;
     public int refreshPeriod;
-    public String refreshToken;
 }

@@ -25,6 +25,10 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.smarthome.core.auth.client.oauth2.AccessTokenResponse;
+import org.eclipse.smarthome.core.auth.client.oauth2.OAuthClientService;
+import org.eclipse.smarthome.core.auth.client.oauth2.OAuthException;
+import org.eclipse.smarthome.core.auth.client.oauth2.OAuthResponseException;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyAuthorizationException;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyException;
@@ -36,10 +40,6 @@ import org.openhab.binding.spotify.internal.api.model.Me;
 import org.openhab.binding.spotify.internal.api.model.ModelUtil;
 import org.openhab.binding.spotify.internal.api.model.Playlist;
 import org.openhab.binding.spotify.internal.api.model.Playlists;
-import org.openhab.binding.spotify.internal.oauth2.AccessTokenResponse;
-import org.openhab.binding.spotify.internal.oauth2.OAuthClientService;
-import org.openhab.binding.spotify.internal.oauth2.OAuthException;
-import org.openhab.binding.spotify.internal.oauth2.OAuthResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,7 +79,7 @@ public class SpotifyApi {
      * @return Returns the Spotify user information
      */
     public Me getMe() {
-        ContentResponse response = request(GET, SPOTIFY_API_URL, "");
+        final ContentResponse response = request(GET, SPOTIFY_API_URL, "");
 
         return ModelUtil.gsonInstance().fromJson(response.getContentAsString(), Me.class);
     }
@@ -92,14 +92,14 @@ public class SpotifyApi {
      * @param trackId id of the track to play
      */
     public void playTrack(String deviceId, String trackId) {
-        String url = "play" + optionalDeviceId(deviceId, QSM);
-        String play;
+        final String url = "play" + optionalDeviceId(deviceId, QSM);
+        final String play;
         if (trackId.contains(":track:")) {
-            String jsonRequest = "{\"uris\":[%s],\"offset\":{\"position\":0}}";
+            final String jsonRequest = "{\"uris\":[%s],\"offset\":{\"position\":0}}";
             play = String.format(jsonRequest, Arrays.asList(trackId.split(",")).stream().map(t -> '"' + t + '"')
                     .collect(Collectors.joining(",")));
         } else {
-            String jsonRequest = "{\"context_uri\":\"%s\",\"offset\":{\"position\":0}}";
+            final String jsonRequest = "{\"context_uri\":\"%s\",\"offset\":{\"position\":0}}";
             play = String.format(jsonRequest, trackId);
         }
         requestPlayer(PUT, url, play);
@@ -202,8 +202,8 @@ public class SpotifyApi {
      * @return Calls Spotify Api and returns the list of device or an empty list if nothing was returned
      */
     public List<Device> getDevices() {
-        ContentResponse response = requestPlayer(GET, "devices");
-        Devices deviceList = ModelUtil.gsonInstance().fromJson(response.getContentAsString(), Devices.class);
+        final ContentResponse response = requestPlayer(GET, "devices");
+        final Devices deviceList = ModelUtil.gsonInstance().fromJson(response.getContentAsString(), Devices.class);
 
         return deviceList == null || deviceList.getDevices() == null ? Collections.emptyList()
                 : deviceList.getDevices();
@@ -213,8 +213,8 @@ public class SpotifyApi {
      * @return Returns the playlists of the user.
      */
     public List<Playlist> getPlaylists() {
-        ContentResponse response = request(GET, SPOTIFY_API_URL + "/playlists", "");
-        Playlists playlists = ModelUtil.gsonInstance().fromJson(response.getContentAsString(), Playlists.class);
+        final ContentResponse response = request(GET, SPOTIFY_API_URL + "/playlists", "");
+        final Playlists playlists = ModelUtil.gsonInstance().fromJson(response.getContentAsString(), Playlists.class);
 
         return playlists == null || playlists.getItems() == null ? Collections.emptyList() : playlists.getItems();
     }
@@ -224,8 +224,8 @@ public class SpotifyApi {
      *         returned by Spotify
      */
     public CurrentlyPlayingContext getPlayerInfo() {
-        ContentResponse response = requestPlayer(GET, "");
-        CurrentlyPlayingContext context = ModelUtil.gsonInstance().fromJson(response.getContentAsString(),
+        final ContentResponse response = requestPlayer(GET, "");
+        final CurrentlyPlayingContext context = ModelUtil.gsonInstance().fromJson(response.getContentAsString(),
                 CurrentlyPlayingContext.class);
 
         return context == null ? EMPTY_CURRENTLYPLAYINGCONTEXT : context;
@@ -266,12 +266,12 @@ public class SpotifyApi {
      */
     private ContentResponse request(HttpMethod method, String url, String requestData) {
         logger.debug("Request: ({}) {} - {}", method, url, requestData);
-        Function<HttpClient, Request> call = httpClient -> httpClient.newRequest(url).method(method)
+        final Function<HttpClient, Request> call = httpClient -> httpClient.newRequest(url).method(method)
                 .header("Accept", CONTENT_TYPE).content(new StringContentProvider(requestData), CONTENT_TYPE);
         try {
             try {
-                AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
-                String accessToken = accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();
+                final AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
+                final String accessToken = accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();
 
                 if (accessToken == null || accessToken.isEmpty()) {
                     throw new SpotifyAuthorizationException("No spotify accesstoken. Is this thing authorized?");
@@ -282,10 +282,10 @@ public class SpotifyApi {
                 // Retry with new access token
                 return connector.request(call, BEARER + oAuthClientService.refreshToken().getAccessToken());
             }
-        } catch (OAuthException | IOException e) {
+        } catch (IOException e) {
             logger.debug("Request failed to during refresh token: ", e);
             throw new SpotifyException(e.getMessage());
-        } catch (OAuthResponseException e) {
+        } catch (OAuthException | OAuthResponseException e) {
             logger.debug("Request authorization failed to during refresh token: ", e);
             throw new SpotifyAuthorizationException(e.getMessage());
         }

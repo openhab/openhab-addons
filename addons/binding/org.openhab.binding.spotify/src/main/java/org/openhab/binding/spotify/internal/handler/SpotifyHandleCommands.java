@@ -57,12 +57,12 @@ class SpotifyHandleCommands {
     public boolean handleCommand(ChannelUID channelUID, Command command, boolean active, String deviceId) {
         logger.debug("Received channel: {}, command: {}", channelUID, command);
         boolean commandRun = false;
-        String channel = channelUID.getId();
+        final String channel = channelUID.getId();
 
         switch (channel) {
             case CHANNEL_DEVICENAME:
                 if (command instanceof StringType) {
-                    String newDeviceId = command.toString();
+                    final String newDeviceId = command.toString();
 
                     if (deviceId.equals(newDeviceId) && active) {
                         spotifyApi.play(newDeviceId);
@@ -89,12 +89,12 @@ class SpotifyHandleCommands {
                 }
             case CHANNEL_DEVICEVOLUME:
                 if (command instanceof DecimalType) {
-                    PercentType volume = new PercentType(((DecimalType) command).intValue());
+                    final PercentType volume = new PercentType(((DecimalType) command).intValue());
 
                     spotifyApi.setVolume(deviceId, volume.intValue());
                     commandRun = true;
                 } else if (command instanceof PercentType) {
-                    PercentType volume = (PercentType) command;
+                    final PercentType volume = (PercentType) command;
 
                     spotifyApi.setVolume(deviceId, volume.intValue());
                     commandRun = true;
@@ -121,7 +121,7 @@ class SpotifyHandleCommands {
      */
     private boolean handleDevicePlay(Command command, boolean active, String deviceId) {
         if (command instanceof PlayPauseType) {
-            boolean play = command == PlayPauseType.PLAY;
+            final boolean play = command == PlayPauseType.PLAY;
 
             if (active || deviceId.isEmpty()) {
                 if (play) {

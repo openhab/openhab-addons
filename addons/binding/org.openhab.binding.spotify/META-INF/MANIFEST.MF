@@ -7,7 +7,7 @@ Bundle-Name: Spotify Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.spotify;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.4.0.qualifier
+Bundle-Version: 2.5.0.qualifier
 Import-Package: 
  com.google.gson,
  com.google.gson.annotations,
@@ -20,21 +20,16 @@ Import-Package:
  org.eclipse.jetty.client.util,
  org.eclipse.jetty.http,
  org.eclipse.jetty.util,
- org.eclipse.jetty.util.component,
- org.eclipse.jetty.util.ssl,
  org.eclipse.smarthome.config.core,
- org.eclipse.smarthome.config.core.status,
  org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.core.auth.client.oauth2,
  org.eclipse.smarthome.core.cache,
- org.eclipse.smarthome.core.common.registry,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
- org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.io.net.http,
- org.joda.time,
  org.osgi.framework,
  org.osgi.service.component,
  org.osgi.service.http,

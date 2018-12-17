@@ -9,7 +9,7 @@ The binding requires you to register an Application with Spotify Web API at [htt
 ### Create Spotify Application
 
 Follow the instructions in the tutorial at [https://developer.spotify.com/web-api/tutorial/](https://developer.spotify.com/web-api/tutorial/).
-Skip into and follow instructions under:
+Follow instructions under:
 
  1. Setting Up Your Account
  1. Registering Your Application
@@ -30,13 +30,13 @@ When you have authorized with Spotify, this Redirect URI is where authorization 
 1. Install the binding and make sure the _Spotify Binding_ is listed on your server
 1. Complete the Spotify Application Registation if you have not already done so, see above.
 1. Make sure you have your Spotify Application _Client ID_ and _Client Secret_ identities available.
-1. Go to to your preferred openHAB admin UI and add a new Thing. Select the **"Spotify Player Bridge"**. Choose new Id for the player, unless you like the generated one, put in the _Client ID_ and _Client Secret_ from the Spotify Application registration in their respective fields of the bridge configuration. You can leave the refreshPeriod and refreshToken as is. Save the bridge.
-1. The bridge thing will stay in state _INITIALIZING_ and eventually go OFFLINE - this is fine. You have to authorize this bridge with Spotify.
+1. Go to to your preferred openHAB admin UI and add a new Thing. Select the **"Spotify Player Bridge"**. Choose new Id for the player, unless you like the generated one, put in the _Client ID_ and _Client Secret_ from the Spotify Application registration in their respective fields of the bridge configuration. You can leave the _refreshPeriod_ as is. Save the bridge.
+1. The bridge thing will stay in state _INITIALIZING_ and eventually go _OFFLINE_ - this is fine. You have to authorize this bridge with Spotify.
 1. Go to the authorization page of your server. `http://<your openHAB address>:8080/connectspotify`. Your newly added bridge should be listed there.
 1. Press the _"Authorize Player"_ button. This will take you either to the login page of Spotify or directly to the authorization screen. Login and/or authorize the application. If the Redirect URIs are correct you will be returned and the entry should show you are authorized with you Spotify user name/id. If not, go back to your Spotify Application and ensure you have the right Redirect URIs.
-1. The binding will be updated with a _refreshToken_ and go ONLINE. The _refreshToken_ is used to re-authorize the bridge with Spotify Connect Web API whenever required.
+1. The binding will be updated with a refresh token and go ONLINE. The refresh token is used to re-authorize the bridge with Spotify Connect Web API whenever required.
 
-Now that you have got your bridge ONLINE it is time to discover your devices! Go to openHAB Inbox and search for Spotify Connect Devices. Any device currently available on your account should show up immediately.
+Now that you have got your bridge _ONLINE_ it is time to discover your devices! Go to Paper UI Inbox and search for Spotify Connect Devices. Any device currently available on your account should show up immediately.
 
 If no devices show up you can start Spotify App on your PC/Mac/iOS/Android and start playing on your devices as you run discovery.
 This should make any Spotify Connect devices and Spotify Apps discoverable.
@@ -45,13 +45,26 @@ You may have to trigger the openHAB discovery several times as bridge will only 
 Should the bridge configuration be broken for any reason, the authorization procedure can be reinitiated from step 6 whenever required.
 You can force reinitialization by authorize on the connect Spotify page if the page would show it as authorized. This will reset the refresh token.
 
+The following configuration options are available on the Spotify Bridge player:
+| Parameter     | Description                                                                                                                                                   |
+|---------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| clientId      | This is the Client ID provided by Spotify when you add a new Application for openHAB to your Spotify Account. Go to https://developer.spotify.com/ (Required) |
+| clientSecret  | This is the Client Secret provided by Spotify when you add a new Application for openHAB to your Spotify Account.   (Required)                                |
+| refreshPeriod | This is the frequency of the polling requests to the Spotify Connect Web API in seconds.                                                                       |
+
+The following configuration option is available on the Spotify device:
+| Parameter | Description                                           |
+|-----------|-------------------------------------------------------|
+| id        | This is the device ID provided by Spotify (Required). |
+
+
 ## Supported Things
 
 All Spotify Connect capable devices should be discoverable through this binding.
 If you can control them from Spotify Player app on your PC/Mac/iPhone/Android/xxx you should be able to add it as a thing.
 Some devices can be restricted and not available for playing. The bridge will make these available in the discovery of devices, but they will never be ONLINE.
 A Spotify web player in a browser is only available as long as the page is open. It will get a unique id for that session. If you close the page it will be gone. Opening a new web player will result in a new id.
-Some devices will not be visible (i.e. Chrome casts) when they are not active. They go into a sleep mode and are not visible through the Spotify Web API. The binding will them show as _GONE_.   
+Some devices will not be visible (i.e. Chrome casts) when they are not active. They go into a sleep mode and are not visible through the Spotify Web API. The binding will them show as _GONE_.
 
 ## Discovery
 
@@ -83,13 +96,13 @@ __Common Channels:__
 | trackDurationMs | Number    | Read-only  | The duration of the currently played track in milliseconds. This is updated every second.   |
 | trackProgress   | String    | Read-only  | The Progress (m:ss) of the currently played track. This is updated every second.            |
 | trackProgressMs | Number    | Read-only  | The Progress of the currently played track in milliseconds.                                 |
-| playlist        | Selection | Read-only  | This channel will be populated with the users playlists. Set the playlist id to start.      |  
+| playlist        | Selection | Read-only  | This channel will be populated with the users playlists. Set the playlist id to start.      |
 | albumName       | String    | Read-only  | Album Name of the currently played track.                                                   |
 | albumImage      | RawType   | Read-only  | Album Image of the currently played track.                                                  |
 | artistName      | String    | Read-only  | Artist Name of the currently played track.                                                  |
 
 Note: The `deviceName` and `playlist` channels are Selection channels.
-They will dynamically be populated with the user specific devices and playlists.
+They will dynamically be populated with the user specific devices and playlists.EXCEPTION_MESSAGE_CLOSED
 
 __Advanced Channels:__
 
@@ -140,25 +153,17 @@ __Advanced Channels:__
 
 ## Full Example
 
-This is a roughly what I have used to test the binding in development. Auto created items, and I added separate items in files for the Player channel.
-Don't know how to set it up in sitemap under basicui. So I mapped a Switch to the Player channel and referenced that from the sitemap to start/stop playing.
-The channel supports step tracks forward/backward.
-
 In this example there is a bridge configured with Thing ID __user1__ and illustrating that the bridge is authorized to play in the context of the Spotify user account __user1__.
 
 spotify.things:
 
 ```
-Bridge spotify:player:user1 "Me" [clientId="<your client id>", clientSecret="<your client secret>", refreshToken="<your refresh token>"] {
+Bridge spotify:player:user1 "Me" [clientId="<your client id>", clientSecret="<your client secret>"] {
   Things:
     device device1 "Device 1" [id="<spotify device id>"]
     device device2 "Device 2" [id="<spotify device id>"]
 }
 ```
-
-Note: The `refreshToken` will be automatically set when the authorized.
-Copy this value from the Paper UI configuration in your manual things file to persist the refreshToken.
-Otherwise it will be gone after a restart.
 
 spotify.items:
 
