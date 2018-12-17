@@ -89,7 +89,7 @@ public class QueuedSend implements Runnable, Closeable {
                                 item.packet.getAddress().getHostAddress());
                     }
                 }
-            } catch (Exception e) {
+            } catch (IOException e) {
                 logger.warn("Failed to send Message to '{}': {}", item.packet.getAddress().getHostAddress(),
                         e.getMessage());
             }
