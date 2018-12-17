@@ -10,10 +10,9 @@
 			manufacturers.</description>
 
 		<config-description>
-			<parameter name="host" type="text" required="true">
+			<parameter name="host" type="text">
 				<label>IP or Host Name</label>
-				<description>Will be resolved by discovery if auto configured
-				</description>
+				<description>You either need an IP/Hostname or the Bridge ID.</description>
 				<context>network-address</context>
 			</parameter>
 			<parameter name="repeat" type="integer" required="false" min="0" max="5">
@@ -39,12 +38,13 @@
 				</description>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="bridgeid" type="text" required="true">
+			<parameter name="bridgeid" type="text">
 				<label>Bridge ID</label>
 				<description>The mac address of the bridge in upper case letters without delimiter.
-					This is used to check if the given IP corresponds to the right device. The bridge is set offline if the device
-					does not respond with the correct Bride ID and a re-detection is started. Useful for DHCP environments where
-					IPs may change over time, after power outage etc. Will be resolved by discovery if auto configured.
+					Use this parameter and leave the IP/Hostname empty for DHCP environments where IPs may often change over time.
+
+					The Bridge ID is also used to check if a given IP corresponds to the right device.
+					The bridge is set offline if the device does not respond with the correct Bridge ID and a re-detection is started.
 				</description>
 				<advanced>true</advanced>
 			</parameter>
@@ -81,7 +81,7 @@
 			<parameter name="zone" type="integer" required="true">
 				<label>Zone</label>
 				<description>A milight bulb can be assigned to zone 0-4. zone 0 controls all bulbs of that type.
-                </description>
+				</description>
 				<default>1</default>
 			</parameter>
 		</config-description>
@@ -106,7 +106,7 @@
 			<parameter name="zone" type="integer" required="true">
 				<label>Zone</label>
 				<description>A milight bulb can be assigned to zone 0-4. zone 0 controls all bulbs of that type.
-                </description>
+				</description>
 				<default>1</default>
 			</parameter>
 		</config-description>

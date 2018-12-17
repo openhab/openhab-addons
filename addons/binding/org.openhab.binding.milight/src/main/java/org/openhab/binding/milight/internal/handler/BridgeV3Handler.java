@@ -61,11 +61,19 @@ public class BridgeV3Handler extends AbstractBridgeHandler {
      */
     @Override
     protected void startConnectAndKeepAlive() {
-        if (running) {
-            return;
+        if (address == null) {
+            if (!config.bridgeid.matches("^([0-9A-Fa-f]{12})$")) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "bridgeID invalid!");
+                return;
+            }
+            try {
+                address = InetAddress.getByAddress(new byte[] { (byte) 255, (byte) 255, (byte) 255, (byte) 255 });
+            } catch (UnknownHostException neverHappens) {
+            }
         }
-        if (port == 0) {
-            port = MilightBindingConstants.PORT_VER3;
+
+        if (config.port == 0) {
+            config.port = MilightBindingConstants.PORT_VER3;
         }
 
         try {
@@ -95,23 +103,20 @@ public class BridgeV3Handler extends AbstractBridgeHandler {
 
     private void receive() {
         try {
-
-            discoverPacketV3.setAddress(
-                    InetAddress.getByAddress(new byte[] { (byte) 255, (byte) 255, (byte) 255, (byte) 255 }));
+            discoverPacketV3.setAddress(address);
             discoverPacketV3.setPort(MilightBindingConstants.PORT_DISCOVER);
             socket.setSoTimeout(100);
 
-            final int ATTEMPTS = 3;
+            final int attempts = 3;
             int timeoutsCounter = 0;
             while (running) {
                 try {
                     packet.setLength(buffer.length);
                     socket.receive(packet);
                 } catch (SocketTimeoutException e) {
-                    if (timeoutsCounter >= ATTEMPTS) {
+                    if (timeoutsCounter >= attempts) {
                         socket.setSoTimeout(config.refreshTime * 1000);
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                                "Bridge did not respond or the bridge's MAC address does not match with your configuration!");
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Bridge did not respond!");
                         timeoutsCounter = 0;
                     } else {
                         socket.setSoTimeout(300);
@@ -155,8 +160,14 @@ public class BridgeV3Handler extends AbstractBridgeHandler {
                 final InetAddress addressOfBridge = ((InetSocketAddress) packet.getSocketAddress()).getAddress();
                 final String bridgeID = msg[1];
 
-                if (!config.bridgeid.equals(bridgeID)) {
+                if (!config.bridgeid.isEmpty() && !bridgeID.equals(config.bridgeid)) {
                     // We found a bridge, but it is not the one that is handled by this handler
+                    if (this.address != null) { // The user has set a host address -> but wrong bridge found!
+                        stopKeepAlive();
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                "Wrong bridge found on host address. Change bridgeid or host configuration.");
+                        break;
+                    }
                     continue;
                 }
 
@@ -165,6 +176,13 @@ public class BridgeV3Handler extends AbstractBridgeHandler {
                     this.address = addressOfBridge;
                     Configuration c = editConfiguration();
                     c.put(BridgeHandlerConfig.CONFIG_HOST_NAME, addressOfBridge.getHostAddress());
+                    preventReinit = true;
+                    updateConfiguration(c);
+                    preventReinit = false;
+                } else if (config.bridgeid.isEmpty()) { // bridge id was not set and is now known. Store it.
+                    config.bridgeid = bridgeID;
+                    Configuration c = editConfiguration();
+                    c.put(BridgeHandlerConfig.CONFIG_BRIDGE_ID, bridgeID);
                     preventReinit = true;
                     updateConfiguration(c);
                     preventReinit = false;

@@ -128,7 +128,6 @@ public class QueueItem {
      */
     public static QueueItem createNonRepeatable(DatagramSocket socket, int customDelayTime, InetAddress address,
             int port, byte[]... data) {
-
         QueueItem item = new QueueItem(socket, QueuedSend.NO_CATEGORY, data[0], false, customDelayTime, 1, address,
                 port);
 
