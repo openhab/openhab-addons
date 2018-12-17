@@ -237,7 +237,7 @@ public class HueDevice {
                 if (newBri < 0 || newBri > HueStateBulb.MAX_BRI) {
                     throw new IllegalArgumentException();
                 }
-                command = new PercentType((int) newBri * 100.0 / HueStateBulb.MAX_BRI + 0.5));
+                command = new PercentType((int) (newBri * 100.0 / HueStateBulb.MAX_BRI + 0.5));
                 successApplied.put("bri", newState.bri);
             } catch (ClassCastException e) {
                 errorApplied.add("bri_inc");
