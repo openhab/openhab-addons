@@ -234,7 +234,7 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
 
                 EEP eep = EEPFactory.createEEP(sendingEEPType);
                 ESP3Packet press = eep.setSenderId(senderId).setDestinationId(destinationId)
-                        .convertFromCommand(channelId, channel.getChannelTypeUID().getId(), command, currentState,
+                        .convertFromCommand(channelId, channel.getChannelTypeUID().getId(), result, currentState,
                                 channel.getConfiguration())
                         .setSuppressRepeating(getConfiguration().suppressRepeating).getERP1Message();
 
