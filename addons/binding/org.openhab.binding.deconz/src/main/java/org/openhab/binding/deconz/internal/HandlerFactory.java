@@ -41,7 +41,7 @@ import org.osgi.service.component.annotations.Reference;
 public class HandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
             .of(BRIDGE_TYPE, THING_TYPE_PRESENCE_SENSOR, THING_TYPE_DAYLIGHT_SENSOR, THING_TYPE_POWER_SENSOR,
-                    THING_TYPE_LIGHT_SENSOR, THING_TYPE_TEMPERATURE_SENSOR)
+                    THING_TYPE_LIGHT_SENSOR, THING_TYPE_TEMPERATURE_SENSOR, THING_TYPE_SWITCH)
             .collect(Collectors.toSet());
 
     private @NonNullByDefault({}) WebSocketFactory webSocketFactory;
