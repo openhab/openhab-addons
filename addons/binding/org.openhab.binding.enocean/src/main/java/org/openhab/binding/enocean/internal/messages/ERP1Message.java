@@ -76,11 +76,16 @@ public class ERP1Message extends ESP3Packet {
             rorg = RORG.getRORG(payload[0]);
 
             switch (rorg) {
-                case RPS: // treat each RPS message as a teach in message
+                case RPS:
+                    if (dataLength >= 6) {
+                        senderId = Arrays.copyOfRange(payload, 2, 6);
+                        teachIn = false;
+                    }
+                    break;
                 case _1BS:
                     if (dataLength >= 6) {
                         senderId = Arrays.copyOfRange(payload, 2, 6);
-                        teachIn = rorg == RORG.RPS || ((_1BSMessage.TeachInBit & payload[1]) == 0);
+                        teachIn = ((_1BSMessage.TeachInBit & payload[1]) == 0);
                     }
                     break;
                 case _4BS:
