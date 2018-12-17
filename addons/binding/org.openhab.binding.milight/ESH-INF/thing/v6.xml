@@ -102,7 +102,7 @@
 			<parameter name="zone" type="integer" required="true">
 				<label>Zone</label>
 				<description>A milight bulb can be assigned to zone 0-4. zone 0 controls all bulbs of that type.
-                </description>
+				</description>
 				<default>1</default>
 			</parameter>
 		</config-description>
@@ -132,7 +132,7 @@
 			<parameter name="zone" type="integer" required="true">
 				<label>Zone</label>
 				<description>A milight bulb can be assigned to zone 0-4. zone 0 controls all bulbs of that type.
-                </description>
+				</description>
 				<default>1</default>
 			</parameter>
 		</config-description>
@@ -164,7 +164,7 @@
 			<parameter name="zone" type="integer" required="true">
 				<label>Zone</label>
 				<description>A milight bulb can be assigned to zone 0-4. zone 0 controls all bulbs of that type.
-                </description>
+				</description>
 				<default>1</default>
 			</parameter>
 		</config-description>

@@ -36,9 +36,7 @@ public abstract class AbstractBridgeHandler extends BaseBridgeHandler {
     protected volatile boolean preventReinit = false;
     protected BridgeHandlerConfig config = new BridgeHandlerConfig();
     protected @Nullable InetAddress address;
-    @NonNullByDefault({})
-    protected DatagramSocket socket;
-    protected int port;
+    protected @NonNullByDefault({}) DatagramSocket socket;
 
     public AbstractBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -73,19 +71,14 @@ public abstract class AbstractBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         config = getConfigAs(BridgeHandlerConfig.class);
 
-        try {
-            address = InetAddress.getByName(config.host);
-        } catch (UnknownHostException ignored) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No address known!");
-            return;
-        }
-
-        port = config.port;
-
-        // Version 1/2 do not support response messages / detection. We therefore directly call bridgeDetected(addr).
-        if (config.bridgeid.length() != 12) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridgeID of length 12!");
-            return;
+        if (!config.host.isEmpty()) {
+            try {
+                address = InetAddress.getByName(config.host);
+            } catch (UnknownHostException ignored) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Address set, but is invalid!");
+                return;
+            }
         }
 
         startConnectAndKeepAlive();

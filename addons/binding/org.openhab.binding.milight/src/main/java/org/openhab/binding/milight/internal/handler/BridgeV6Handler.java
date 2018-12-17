@@ -15,6 +15,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -37,6 +39,8 @@ import org.openhab.binding.milight.internal.protocol.MilightV6SessionManager.Ses
 public class BridgeV6Handler extends AbstractBridgeHandler implements ISessionState {
     private @NonNullByDefault({}) MilightV6SessionManager session;
     final DateTimeFormatter timeFormat = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
+    private String offlineReason = "";
+    private @Nullable ScheduledFuture<?> scheduledFuture;
 
     public BridgeV6Handler(Bridge bridge) {
         super(bridge);
@@ -54,19 +58,25 @@ public class BridgeV6Handler extends AbstractBridgeHandler implements ISessionSt
      */
     @Override
     protected void startConnectAndKeepAlive() {
-        if (port == 0) {
-            port = MilightBindingConstants.PORT_VER6;
+        if (!config.bridgeid.matches("^([0-9A-Fa-f]{12})$")) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "bridgeID invalid!");
+            return;
+        }
+
+        if (config.port == 0) {
+            config.port = MilightBindingConstants.PORT_VER6;
         }
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Waiting for session");
         int refreshTime = Math.max(Math.min(config.refreshTime, MilightV6SessionManager.TIMEOUT_MS), 100);
-        this.session = new MilightV6SessionManager(config.bridgeid, this, address, port, refreshTime,
+        this.session = new MilightV6SessionManager(config.bridgeid, this, address, config.port, refreshTime,
                 new byte[] { (byte) config.passwordByte1, (byte) config.passwordByte2 });
         session.start().thenAccept(d -> this.socket = d);
     }
 
     @Override
     public void dispose() {
+        stopMakeOfflineTimer();
         try {
             session.close();
         } catch (IOException ignore) {
@@ -81,6 +91,7 @@ public class BridgeV6Handler extends AbstractBridgeHandler implements ISessionSt
 
     @Override
     public void sessionStateChanged(SessionState state, @Nullable InetAddress newAddress) {
+        stopMakeOfflineTimer();
         switch (state) {
             case SESSION_VALID_KEEP_ALIVE:
                 preventReinit = true;
@@ -94,25 +105,39 @@ public class BridgeV6Handler extends AbstractBridgeHandler implements ISessionSt
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No IP address received");
                     break;
                 }
-                updateStatus(ThingStatus.ONLINE);
-                this.address = newAddress;
-                // As soon as the session is valid, update the user visible configuration of the host IP.
-                Configuration c = editConfiguration();
-                c.put(BridgeHandlerConfig.CONFIG_HOST_NAME, newAddress.getHostAddress());
-                thing.setProperty(MilightBindingConstants.PROPERTY_SESSIONID, session.getSession());
-                thing.setProperty(MilightBindingConstants.PROPERTY_SESSIONCONFIRMED,
-                        String.valueOf(session.getLastSessionValidConfirmation()));
-                preventReinit = true;
-                updateConfiguration(c);
-                preventReinit = false;
+                if (!newAddress.equals(address) || !thing.getStatus().equals(ThingStatus.ONLINE)) {
+                    updateStatus(ThingStatus.ONLINE);
+                    this.address = newAddress;
+                    // As soon as the session is valid, update the user visible configuration of the host IP.
+                    Configuration c = editConfiguration();
+                    c.put(BridgeHandlerConfig.CONFIG_HOST_NAME, newAddress.getHostAddress());
+                    thing.setProperty(MilightBindingConstants.PROPERTY_SESSIONID, session.getSession());
+                    thing.setProperty(MilightBindingConstants.PROPERTY_SESSIONCONFIRMED,
+                            String.valueOf(session.getLastSessionValidConfirmation()));
+                    preventReinit = true;
+                    updateConfiguration(c);
+                    preventReinit = false;
+                }
                 break;
             case SESSION_INVALID:
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Session could not be established");
+
                 break;
             default:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, state.name());
+                // Delay putting the session offline
+                offlineReason = state.name();
+                scheduledFuture = scheduler.schedule(() -> updateStatus(ThingStatus.OFFLINE,
+                        ThingStatusDetail.CONFIGURATION_PENDING, offlineReason), 1000, TimeUnit.MILLISECONDS);
                 break;
+        }
+    }
+
+    private void stopMakeOfflineTimer() {
+        ScheduledFuture<?> future = scheduledFuture;
+        if (future != null) {
+            future.cancel(false);
+            scheduledFuture = null;
         }
     }
 }
