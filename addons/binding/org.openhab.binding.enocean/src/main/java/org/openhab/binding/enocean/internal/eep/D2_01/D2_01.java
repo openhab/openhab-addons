@@ -75,7 +75,7 @@ public abstract class D2_01 extends _VLDMessage {
 
     protected State getSwitchingData() {
         if (getCMD() == CMD_ACTUATOR_STATUS_RESPONE) {
-            return (bytes[bytes.length - 1] & outputValueMask) == STATUS_SWITCHING_ON ? OnOffType.OFF : OnOffType.ON;
+            return (bytes[bytes.length - 1] & outputValueMask) == STATUS_SWITCHING_OFF ? OnOffType.OFF : OnOffType.ON;
         }
 
         return UnDefType.UNDEF;
