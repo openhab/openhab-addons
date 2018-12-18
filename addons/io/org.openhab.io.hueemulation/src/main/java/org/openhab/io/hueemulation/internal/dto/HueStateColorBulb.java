@@ -69,9 +69,9 @@ public class HueStateColorBulb extends HueStateBulb {
      */
     public HueStateColorBulb(HSBType hsb) {
         super(hsb.getBrightness().intValue() > 0);
-        this.hue = hsb.getHue().intValue() * MAX_HUE / 360;
-        this.sat = hsb.getSaturation().intValue() * MAX_SAT / 100;
-        this.bri = hsb.getBrightness().intValue() * MAX_BRI / 100;
+        this.hue = (int) (hsb.getHue().intValue() * MAX_HUE / 360.0 + 0.5);
+        this.sat = (int) (hsb.getSaturation().intValue() * MAX_SAT / 100.0 + 0.5);
+        this.bri = (int) (hsb.getBrightness().intValue() * MAX_BRI / 100.0 + 0.5);
         colormode = this.sat > 0 ? ColorMode.hs : ColorMode.ct;
     }
 
