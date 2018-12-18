@@ -147,6 +147,13 @@
 		<description>Used energy in Kilowatt hours</description>
 		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
+	
+    <channel-type id="batteryVoltage">
+        <item-type>Number:ElectricPotential</item-type>
+        <label>Battery Voltage</label>
+        <description>Voltage of the battery</description>
+        <state pattern="%f %unit%" readOnly="true" />
+    </channel-type>
 
 	<!-- Teach in Channel -->
 	<channel-type id="teachInCMD" advanced="true">

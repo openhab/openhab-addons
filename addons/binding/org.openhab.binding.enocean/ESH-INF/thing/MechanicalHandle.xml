@@ -11,7 +11,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Mechanical Handle</label>
-		<description>Mechanical handle sensor for window/door handles (EEP: F6-10)</description>
+		<description>Mechanical handle sensor for window/door handles</description>
 
 		<config-description>
 			<parameter name="enoceanId" type="text">
@@ -25,6 +25,7 @@
 				<options>
 					<option value="F6_10_00">F6-10-00</option>
 					<option value="F6_10_01">F6-10-01</option>
+					<option value="A5_14_09">A5-14-09</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
 				<required>true</required>
