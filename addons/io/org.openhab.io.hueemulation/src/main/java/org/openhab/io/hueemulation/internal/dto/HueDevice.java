@@ -223,7 +223,7 @@ public class HueDevice {
             try {
                 if (as(HueStateBulb.class).bri != newState.bri) {
                     as(HueStateBulb.class).bri = newState.bri;
-                    command = new PercentType(newState.bri * 100 / HueStateBulb.MAX_BRI);
+                    command = new PercentType((int) (newState.bri * 100.0 / HueStateBulb.MAX_BRI + 0.5));
                 }
                 successApplied.put("bri", newState.bri);
             } catch (ClassCastException e) {
@@ -237,7 +237,7 @@ public class HueDevice {
                 if (newBri < 0 || newBri > HueStateBulb.MAX_BRI) {
                     throw new IllegalArgumentException();
                 }
-                command = new PercentType(newBri * 100 / HueStateBulb.MAX_BRI);
+                command = new PercentType((int) (newBri * 100.0 / HueStateBulb.MAX_BRI + 0.5));
                 successApplied.put("bri", newState.bri);
             } catch (ClassCastException e) {
                 errorApplied.add("bri_inc");
