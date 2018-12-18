@@ -125,20 +125,29 @@ public abstract class IhcHttpsClient {
                     query);
         }
 
-        final RequestConfig params = RequestConfig.custom().setConnectTimeout(connectTimeout).setSocketTimeout(timeout)
-                .build();
+        final RequestConfig params = RequestConfig.custom().setConnectTimeout(connectTimeout)
+                .setConnectionRequestTimeout(connectTimeout).setSocketTimeout(timeout).build();
         postReq.setConfig(params);
 
         // Execute POST
         LocalDateTime start = LocalDateTime.now();
-        HttpResponse response = client.execute(postReq, ihcConnectionPool.getHttpContext());
-        String resp = EntityUtils.toString(response.getEntity());
-        if (logger.isTraceEnabled()) {
-            logger.trace("Received response (connectionPool={}, clientId={} requestId={}, in {}, headers={}): {}",
-                    ihcConnectionPool.hashCode(), client.hashCode(), requestId,
-                    Duration.between(start, LocalDateTime.now()), response.getAllHeaders(), resp);
+        try {
+            HttpResponse response = client.execute(postReq, ihcConnectionPool.getHttpContext());
+            String resp = EntityUtils.toString(response.getEntity());
+            if (logger.isTraceEnabled()) {
+                logger.trace("Received response (connectionPool={}, clientId={} requestId={}, in {}, headers={}): {}",
+                        ihcConnectionPool.hashCode(), client.hashCode(), requestId,
+                        Duration.between(start, LocalDateTime.now()), response.getAllHeaders(), resp);
+            }
+            return resp;
+        } catch (Exception e) {
+            if (logger.isTraceEnabled()) {
+                logger.trace("Exception occured (connectionPool={}, clientId={} requestId={}, in {}): {}",
+                        ihcConnectionPool.hashCode(), client.hashCode(), requestId,
+                        Duration.between(start, LocalDateTime.now()), e.getMessage());
+            }
+            throw (e);
         }
-        return resp;
     }
 
     /**
