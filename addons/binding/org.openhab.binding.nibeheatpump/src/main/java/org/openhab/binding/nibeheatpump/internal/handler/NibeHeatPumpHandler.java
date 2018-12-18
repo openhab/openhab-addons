@@ -97,10 +97,10 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
          * Initialize cache object.
          *
          * @param lastUpdateTime
-         *            Time in milliseconds.
+         *                           Time in milliseconds.
          *
          * @param value
-         *            Cache value.
+         *                           Cache value.
          */
         CacheObject(long lastUpdateTime, Double value) {
             this.lastUpdateTime = lastUpdateTime;

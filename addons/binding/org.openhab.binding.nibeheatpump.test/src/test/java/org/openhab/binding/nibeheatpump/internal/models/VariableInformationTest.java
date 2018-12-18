@@ -38,4 +38,14 @@ public class VariableInformationTest {
         assertEquals(VariableInformation.NibeDataType.S16, variableInfo.dataType);
         assertEquals(VariableInformation.Type.SENSOR, variableInfo.type);
     }
+
+    @Test
+    public void TestF470Variable() {
+        final int coilAddress = 40020;
+        final VariableInformation variableInfo = VariableInformation.getVariableInfo(PumpModel.F470, coilAddress);
+        assertEquals(10, variableInfo.factor);
+        assertEquals("EB100-BT16 Evaporator temp", variableInfo.variable);
+        assertEquals(VariableInformation.NibeDataType.S16, variableInfo.dataType);
+        assertEquals(VariableInformation.Type.SENSOR, variableInfo.type);
+    }
 }
