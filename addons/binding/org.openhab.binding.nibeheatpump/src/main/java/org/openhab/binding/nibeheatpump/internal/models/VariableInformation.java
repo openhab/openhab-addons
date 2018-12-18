@@ -50,6 +50,8 @@ public class VariableInformation {
                 return F1X45.getVariableInfo(key);
             case F750:
                 return F750.getVariableInfo(key);
+            case F470:
+                return F470.getVariableInfo(key);
             default:
                 return null;
         }

@@ -1,0 +1,3470 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="nibeheatpump"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0" 
+xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="f470-40004" advanced="false">
+		<item-type>Number</item-type>
+		<label>BT1 Outdoor Temperature</label>
+		<description>Current outdoor temperature</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40005" advanced="true">
+		<item-type>Number</item-type>
+		<label>EP23-BT2 Supply temp S4</label>
+		<description>Supply temperature for system 4</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40006" advanced="true">
+		<item-type>Number</item-type>
+		<label>EP22-BT2 Supply temp S3</label>
+		<description>Supply temperature for system 3</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40007" advanced="true">
+		<item-type>Number</item-type>
+		<label>EP21-BT2 Supply temp S2</label>
+		<description>Supply temperature for system 2</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40008" advanced="true">
+		<item-type>Number</item-type>
+		<label>BT2 Supply temp S1</label>
+		<description>Supply temperature for system 1</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40012" advanced="true">
+		<item-type>Number</item-type>
+		<label>EB100-EP14-BT3 Return temp</label>
+		<description>Return temperature</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40013" advanced="true">
+		<item-type>Number</item-type>
+		<label>BT7 HW Top</label>
+		<description>Hot water top temperature, BT7</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40014" advanced="true">
+		<item-type>Number</item-type>
+		<label>BT6 HW Load</label>
+		<description>Hot water load temperature, BT6</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40020" advanced="false">
+		<item-type>Number</item-type>
+		<label>EB100-BT16 Evaporator temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40022" advanced="false">
+		<item-type>Number</item-type>
+		<label>EB100-EP14-BT17 Suction</label>
+		<description>Suction temperature, BT17</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40023" advanced="false">
+		<item-type>Number</item-type>
+		<label>EB100-BT18 Compressor temp.</label>
+		<description>Valid only for F3/470</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40024" advanced="false">
+		<item-type>Number</item-type>
+		<label>EB100-BT19 Addition temp.</label>
+		<description>Valid only for F3/470</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40025" advanced="false">
+		<item-type>Number</item-type>
+		<label>BT20 Exhaust air temp. 1</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40026" advanced="false">
+		<item-type>Number</item-type>
+		<label>BT21 Vented air temp. 1</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40030" advanced="true">
+		<item-type>Number</item-type>
+		<label>EP23-BT50 Room Temp S4</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40031" advanced="true">
+		<item-type>Number</item-type>
+		<label>EP22-BT50 Room Temp S3</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40032" advanced="true">
+		<item-type>Number</item-type>
+		<label>EP21-BT50 Room Temp S2</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40033" advanced="true">
+		<item-type>Number</item-type>
+		<label>BT50 Room Temp S1</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40043" advanced="true">
+		<item-type>Number</item-type>
+		<label>BT53 Solar Panel Temp</label>
+		<description>Used in Solar and AHPS Docking accessories</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40044" advanced="true">
+		<item-type>Number</item-type>
+		<label>BT54 Solar Load Temp</label>
+		<description>Used in Solar and AHPS Docking accessories</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40054" advanced="true">
+		<item-type>Number</item-type>
+		<label>EB100-FD1 Temperature limiter</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40067" advanced="true">
+		<item-type>Number</item-type>
+		<label>BT1 Average</label>
+		<description>EB100-BT1 Outdoor temperature average</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40071" advanced="true">
+		<item-type>Number</item-type>
+		<label>BT25 Ext. Supply</label>
+		<description>External supply temperature, BT25</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40074" advanced="true">
+		<item-type>Number</item-type>
+		<label>EB100-FR1 Anode Status</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40075" advanced="true">
+		<item-type>Number</item-type>
+		<label>BT22 Supply air temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40076" advanced="true">
+		<item-type>Number</item-type>
+		<label>EP30-BT55 Solar Tank Top Temp</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40079" advanced="true">
+		<item-type>Number</item-type>
+		<label>EB100-BE3 Current</label>
+		<description></description>
+		<state pattern="%.1f A" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40081" advanced="true">
+		<item-type>Number</item-type>
+		<label>EB100-BE2 Current</label>
+		<description></description>
+		<state pattern="%.1f A" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40083" advanced="true">
+		<item-type>Number</item-type>
+		<label>EB100-BE1 Current</label>
+		<description></description>
+		<state pattern="%.1f A" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40122" advanced="true">
+		<item-type>Number</item-type>
+		<label>BT52 external water heater load temp.</label>
+		<description>Used in DEH and AHPS Docking accessories</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40127" advanced="true">
+		<item-type>Number</item-type>
+		<label>EP23-BT3 Return temp S4</label>
+		<description>Return temperature for system 4</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40128" advanced="true">
+		<item-type>Number</item-type>
+		<label>EP22-BT3 Return temp S3</label>
+		<description>Return temperature for system 3</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40129" advanced="true">
+		<item-type>Number</item-type>
+		<label>EP21-BT3 Return temp S2</label>
+		<description>Return temperature for system 2</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40159" advanced="true">
+		<item-type>Number</item-type>
+		<label>EP47-BT2 Supply temp S8</label>
+		<description>Supply temperature for system 8</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40160" advanced="true">
+		<item-type>Number</item-type>
+		<label>EP46-BT2 Supply temp S7</label>
+		<description>Supply temperature for system 7</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40161" advanced="true">
+		<item-type>Number</item-type>
+		<label>EP45-BT2 Supply temp S6</label>
+		<description>Supply temperature for system 6</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40162" advanced="true">
+		<item-type>Number</item-type>
+		<label>EP44-BT2 Supply temp S5</label>
+		<description>Supply temperature for system 5</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40163" advanced="true">
+		<item-type>Number</item-type>
+		<label>EP47-BT3 Return temp S8</label>
+		<description>Return temperature for system 8</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40164" advanced="true">
+		<item-type>Number</item-type>
+		<label>EP46-BT3 Return temp S7</label>
+		<description>Return temperature for system 7</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40165" advanced="true">
+		<item-type>Number</item-type>
+		<label>EP45-BT3 Return temp S6</label>
+		<description>Return temperature for system 6</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40166" advanced="true">
+		<item-type>Number</item-type>
+		<label>EP44-BT3 Return temp S5</label>
+		<description>Return temperature for system 5</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40167" advanced="true">
+		<item-type>Number</item-type>
+		<label>EP47-BT50 Room Temp S8</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40168" advanced="true">
+		<item-type>Number</item-type>
+		<label>EP46-BT50 Room Temp S7</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40169" advanced="true">
+		<item-type>Number</item-type>
+		<label>EP45-BT50 Room Temp S6</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40170" advanced="true">
+		<item-type>Number</item-type>
+		<label>EP44-BT50 Room Temp S5</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40185" advanced="true">
+		<item-type>Number</item-type>
+		<label>BT1 Average, 1h</label>
+		<description>EB100-BT1 Outdoor temperature average, 1h</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40188" advanced="true">
+		<item-type>Number</item-type>
+		<label>EP47-BT50 Room Temp S8 Average</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40189" advanced="true">
+		<item-type>Number</item-type>
+		<label>EP46-BT50 Room Temp S7 Average</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40190" advanced="true">
+		<item-type>Number</item-type>
+		<label>EP45-BT50 Room Temp S6 Average</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40191" advanced="true">
+		<item-type>Number</item-type>
+		<label>EP44-BT50 Room Temp S5 Average</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40192" advanced="true">
+		<item-type>Number</item-type>
+		<label>EP23-BT50 Room Temp S4 Average</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40193" advanced="true">
+		<item-type>Number</item-type>
+		<label>EP22-BT50 Room Temp S3 Average</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40194" advanced="true">
+		<item-type>Number</item-type>
+		<label>EP21-BT50 Room Temp S2 Average</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40195" advanced="true">
+		<item-type>Number</item-type>
+		<label>BT50 Room Temp S1 Average</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40212" advanced="true">
+		<item-type>Number</item-type>
+		<label>BT74 Average</label>
+		<description>BT74 heating cooling sensor average</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40217" advanced="true">
+		<item-type>Number</item-type>
+		<label>Calc. Supply S8</label>
+		<description>Calculated supply temperature for the climate system</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40218" advanced="true">
+		<item-type>Number</item-type>
+		<label>Calc. Supply S7</label>
+		<description>Calculated supply temperature for the climate system</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40219" advanced="true">
+		<item-type>Number</item-type>
+		<label>Calc. Supply S6</label>
+		<description>Calculated supply temperature for the climate system</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40220" advanced="true">
+		<item-type>Number</item-type>
+		<label>Calculated Supply S5</label>
+		<description>Calculated supply temperature for the climate system</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40305" advanced="true">
+		<item-type>Number</item-type>
+		<label>Mixing Valve State S8</label>
+		<description>State of the mixing valve for the climate system</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40306" advanced="true">
+		<item-type>Number</item-type>
+		<label>Mixing Valve State S7</label>
+		<description>State of the mixing valve for the climate system</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40307" advanced="true">
+		<item-type>Number</item-type>
+		<label>Mixing Valve State S6</label>
+		<description>State of the mixing valve for the climate system</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40308" advanced="true">
+		<item-type>Number</item-type>
+		<label>Mixing Valve State S5</label>
+		<description>State of the mixing valve for the climate system</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40339" advanced="true">
+		<item-type>Number</item-type>
+		<label>External adjustment activated via input S8</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40340" advanced="true">
+		<item-type>Number</item-type>
+		<label>External adjustment activated via input S7</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40341" advanced="true">
+		<item-type>Number</item-type>
+		<label>External adjustment activated via input S6</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40342" advanced="true">
+		<item-type>Number</item-type>
+		<label>External adjustment activated via input S5</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40365" advanced="true">
+		<item-type>Number</item-type>
+		<label>Extra heating system pump S8</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40366" advanced="true">
+		<item-type>Number</item-type>
+		<label>Extra heating system pump S7</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40367" advanced="true">
+		<item-type>Number</item-type>
+		<label>Extra heating system pump S6</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40368" advanced="true">
+		<item-type>Number</item-type>
+		<label>Extra heating system pump S5</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40755" advanced="true">
+		<item-type>Number</item-type>
+		<label>Tot. ext. HW add op.time</label>
+		<description>Total external hw-electric additive operation time</description>
+		<state pattern="%.1f h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40868" advanced="true">
+		<item-type>Number</item-type>
+		<label>+Adjust AUX Port</label>
+		<description></description>
+		<state pattern="%d 1" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40870" advanced="true">
+		<item-type>Number</item-type>
+		<label>+Adjust OP mode</label>
+		<description>Tells if plusadjust system calls for heat or cool</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40871" advanced="true">
+		<item-type>Number</item-type>
+		<label>+Adjust Comfort mode</label>
+		<description>Which comfort mode</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40872" advanced="true">
+		<item-type>Number</item-type>
+		<label>+Adjust Parallell adjustment</label>
+		<description>requested adjustment</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40873" advanced="true">
+		<item-type>Number</item-type>
+		<label>+Adjust Humidity</label>
+		<description>Humidity</description>
+		<state pattern="%.1f %RH" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40874" advanced="true">
+		<item-type>Number</item-type>
+		<label>+Adjust Temp indoor</label>
+		<description>Average of all room sensors</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40875" advanced="true">
+		<item-type>Number</item-type>
+		<label>+Adjust Temp outdoor</label>
+		<description>Outdoor temp</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40876" advanced="true">
+		<item-type>Number</item-type>
+		<label>+Adjust Version</label>
+		<description>PCA input version</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40877" advanced="true">
+		<item-type>Number</item-type>
+		<label>+Adjust Activated</label>
+		<description>If plusadjust accessory is activated</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40878" advanced="true">
+		<item-type>Number</item-type>
+		<label>+Adjust Need</label>
+		<description>If plusadjust system calls for heat</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40889" advanced="true">
+		<item-type>Number</item-type>
+		<label>BT64 Average</label>
+		<description>BT64 Cooling supply average</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41027" advanced="true">
+		<item-type>Number</item-type>
+		<label>Humidity average</label>
+		<description>Humidity average</description>
+		<state pattern="%.1f %" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41189" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA20-BE5 EME10 Current</label>
+		<description></description>
+		<state pattern="%.1f A" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41190" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA20-BE5 EME10 Average Current</label>
+		<description></description>
+		<state pattern="%.1f A" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41191" advanced="true">
+		<item-type>Number</item-type>
+		<label>PV Panel State</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41256" advanced="true">
+		<item-type>Number</item-type>
+		<label>Fan speed current</label>
+		<description>The current fan speed after scheduling and blocks are considered</description>
+		<state pattern="%d %" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41257" advanced="true">
+		<item-type>Number</item-type>
+		<label>Fan speed current</label>
+		<description>The current fan speed after scheduling and blocks are considered</description>
+		<state pattern="%d %" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41258" advanced="true">
+		<item-type>Number</item-type>
+		<label>Fan speed current</label>
+		<description>The current fan speed after scheduling and blocks are considered</description>
+		<state pattern="%d %" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41265" advanced="true">
+		<item-type>String</item-type>
+		<label>Smart Home Mode</label>
+		<description>Current smart home mode, 0=Default,1=Away from home,2=Vacation</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="0">Default</option>
+				<option value="1">Away from home</option>
+				<option value="2">Vacation</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="f470-41266" advanced="true">
+		<item-type>Number</item-type>
+		<label>Offset to smart home system</label>
+		<description>Offset to smart home system</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41267" advanced="true">
+		<item-type>Number</item-type>
+		<label>Smart Home ctrl syst 8</label>
+		<description>Smart Home is controlling the system</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41268" advanced="true">
+		<item-type>Number</item-type>
+		<label>Smart Home ctrl syst 7</label>
+		<description>Smart Home is controlling the system</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41269" advanced="true">
+		<item-type>Number</item-type>
+		<label>Smart Home ctrl syst 6</label>
+		<description>Smart Home is controlling the system</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41270" advanced="true">
+		<item-type>Number</item-type>
+		<label>Smart Home ctrl syst 5</label>
+		<description>Smart Home is controlling the system</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41271" advanced="true">
+		<item-type>Number</item-type>
+		<label>Smart Home ctrl syst 4</label>
+		<description>Smart Home is controlling the system</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41272" advanced="true">
+		<item-type>Number</item-type>
+		<label>Smart Home ctrl syst 3</label>
+		<description>Smart Home is controlling the system</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41273" advanced="true">
+		<item-type>Number</item-type>
+		<label>Smart Home ctrl syst 2</label>
+		<description>Smart Home is controlling the system</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41274" advanced="true">
+		<item-type>Number</item-type>
+		<label>Smart Home ctrl syst 1</label>
+		<description>Smart Home is controlling the system</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41928" advanced="true">
+		<item-type>Number</item-type>
+		<label>Smart Price Adaption Price</label>
+		<description>The current electric price</description>
+		<state pattern="%.2f" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41929" advanced="true">
+		<item-type>Number</item-type>
+		<label>Smart Price Adaption Price Level</label>
+		<description>Whether the current price is unknown (0), low (1), medium (2), high (3)</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41930" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Power 10</label>
+		<description></description>
+		<state pattern="%d W" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41931" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Power 9</label>
+		<description></description>
+		<state pattern="%d W" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41932" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Power 8</label>
+		<description></description>
+		<state pattern="%d W" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41933" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Power 7</label>
+		<description></description>
+		<state pattern="%d W" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41934" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Power 6</label>
+		<description></description>
+		<state pattern="%d W" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41935" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Power 5</label>
+		<description></description>
+		<state pattern="%d W" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41936" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Power 4</label>
+		<description></description>
+		<state pattern="%d W" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41937" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Power 3</label>
+		<description></description>
+		<state pattern="%d W" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41938" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Power 2</label>
+		<description></description>
+		<state pattern="%d W" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41939" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Power 1</label>
+		<description></description>
+		<state pattern="%d W" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41940" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Error High 10</label>
+		<description></description>
+		<state pattern="%d W" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41941" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Error High 9</label>
+		<description></description>
+		<state pattern="%d W" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41942" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Error High 8</label>
+		<description></description>
+		<state pattern="%d W" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41943" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Error High 7</label>
+		<description></description>
+		<state pattern="%d W" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41944" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Error High 6</label>
+		<description></description>
+		<state pattern="%d W" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41945" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Error High 5</label>
+		<description></description>
+		<state pattern="%d W" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41946" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Error High 4</label>
+		<description></description>
+		<state pattern="%d W" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41947" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Error High 3</label>
+		<description></description>
+		<state pattern="%d W" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41948" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Error High 2</label>
+		<description></description>
+		<state pattern="%d W" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41949" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Error High 1</label>
+		<description></description>
+		<state pattern="%d W" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41950" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Error Low 10</label>
+		<description></description>
+		<state pattern="%d W" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41951" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Error Low 9</label>
+		<description></description>
+		<state pattern="%d W" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41952" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Error Low 8</label>
+		<description></description>
+		<state pattern="%d W" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41953" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Error Low 7</label>
+		<description></description>
+		<state pattern="%d W" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41954" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Error Low 6</label>
+		<description></description>
+		<state pattern="%d W" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41955" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Error Low 5</label>
+		<description></description>
+		<state pattern="%d W" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41956" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Error Low 4</label>
+		<description></description>
+		<state pattern="%d W" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41957" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Error Low 3</label>
+		<description></description>
+		<state pattern="%d W" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41958" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Error Low 2</label>
+		<description></description>
+		<state pattern="%d W" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41959" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Error Low 1</label>
+		<description></description>
+		<state pattern="%d W" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41960" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Com Percentage 10</label>
+		<description></description>
+		<state pattern="%d %" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41961" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Com Percentage 9</label>
+		<description></description>
+		<state pattern="%d %" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41962" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Com Percentage 8</label>
+		<description></description>
+		<state pattern="%d %" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41963" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Com Percentage 7</label>
+		<description></description>
+		<state pattern="%d %" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41964" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Com Percentage 6</label>
+		<description></description>
+		<state pattern="%d %" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41965" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Com Percentage 5</label>
+		<description></description>
+		<state pattern="%d %" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41966" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Com Percentage 4</label>
+		<description></description>
+		<state pattern="%d %" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41967" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Com Percentage 3</label>
+		<description></description>
+		<state pattern="%d %" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41968" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Com Percentage 2</label>
+		<description></description>
+		<state pattern="%d %" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41969" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Com Percentage 1</label>
+		<description></description>
+		<state pattern="%d %" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41980" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Voltage1 10</label>
+		<description></description>
+		<state pattern="%.1f V" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41981" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Voltage1 9</label>
+		<description></description>
+		<state pattern="%.1f V" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41982" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Voltage1 8</label>
+		<description></description>
+		<state pattern="%.1f V" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41983" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Voltage1 7</label>
+		<description></description>
+		<state pattern="%.1f V" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41984" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Voltage1 6</label>
+		<description></description>
+		<state pattern="%.1f V" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41985" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Voltage1 5</label>
+		<description></description>
+		<state pattern="%.1f V" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41986" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Voltage1 4</label>
+		<description></description>
+		<state pattern="%.1f V" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41987" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Voltage1 3</label>
+		<description></description>
+		<state pattern="%.1f V" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41988" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Voltage1 2</label>
+		<description></description>
+		<state pattern="%.1f V" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41989" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Voltage1 1</label>
+		<description></description>
+		<state pattern="%.1f V" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41990" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Voltage2 10</label>
+		<description></description>
+		<state pattern="%.1f V" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41991" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Voltage2 9</label>
+		<description></description>
+		<state pattern="%.1f V" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41992" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Voltage2 8</label>
+		<description></description>
+		<state pattern="%.1f V" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41993" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Voltage2 7</label>
+		<description></description>
+		<state pattern="%.1f V" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41994" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Voltage2 6</label>
+		<description></description>
+		<state pattern="%.1f V" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41995" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Voltage2 5</label>
+		<description></description>
+		<state pattern="%.1f V" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41996" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Voltage2 4</label>
+		<description></description>
+		<state pattern="%.1f V" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41997" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Voltage2 3</label>
+		<description></description>
+		<state pattern="%.1f V" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41998" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Voltage2 2</label>
+		<description></description>
+		<state pattern="%.1f V" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-41999" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Voltage2 1</label>
+		<description></description>
+		<state pattern="%.1f V" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42000" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Temperature 10</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42001" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Temperature 9</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42002" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Temperature 8</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42003" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Temperature 7</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42004" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Temperature 6</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42005" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Temperature 5</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42006" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Temperature 4</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42007" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Temperature 3</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42008" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Temperature 2</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42009" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Temperature 1</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42010" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Energy 10</label>
+		<description></description>
+		<state pattern="%.1f kWh" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42012" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Energy 9</label>
+		<description></description>
+		<state pattern="%.1f kWh" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42014" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Energy 8</label>
+		<description></description>
+		<state pattern="%.1f kWh" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42016" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Energy 7</label>
+		<description></description>
+		<state pattern="%.1f kWh" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42018" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Energy 6</label>
+		<description></description>
+		<state pattern="%.1f kWh" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42020" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Energy 5</label>
+		<description></description>
+		<state pattern="%.1f kWh" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42022" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Energy 4</label>
+		<description></description>
+		<state pattern="%.1f kWh" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42024" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Energy 3</label>
+		<description></description>
+		<state pattern="%.1f kWh" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42026" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Energy 2</label>
+		<description></description>
+		<state pattern="%.1f kWh" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42028" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Energy 1</label>
+		<description></description>
+		<state pattern="%.1f kWh" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42030" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 EME20 Version</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42033" advanced="true">
+		<item-type>Number</item-type>
+		<label>PV Panel Heat Offset</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42034" advanced="true">
+		<item-type>Number</item-type>
+		<label>PV Panel Pool Offset</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42035" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 EME20 Total Power</label>
+		<description></description>
+		<state pattern="%d W" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42037" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 EME20 Total Average Power</label>
+		<description></description>
+		<state pattern="%d W" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42075" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 EME20 Total Energy</label>
+		<description></description>
+		<state pattern="%.1f kWh" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42080" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Alarm 504</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42081" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Alarm 505</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42082" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Alarm 506</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42083" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Alarm 507</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42084" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Alarm 508</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42085" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Alarm 509</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42086" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Alarm 510</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42087" advanced="true">
+		<item-type>Number</item-type>
+		<label>AA23-BE5 Alarm 511</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42100" advanced="true">
+		<item-type>Number</item-type>
+		<label>BT1 Average, 24h</label>
+		<description>EB100-BT1 Outdoor temperature average, 24h</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42101" advanced="true">
+		<item-type>Number</item-type>
+		<label>Used heating power average, 24h</label>
+		<description>Used heating power average, 24h</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42136" advanced="true">
+		<item-type>Number</item-type>
+		<label>BT22 Supply air temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42137" advanced="true">
+		<item-type>Number</item-type>
+		<label>BT22 Supply air temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-42138" advanced="true">
+		<item-type>Number</item-type>
+		<label>BT22 Supply air temp.</label>
+		<description></description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-43001" advanced="true">
+		<item-type>Number</item-type>
+		<label>Software version</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-43006" advanced="true">
+		<item-type>Number</item-type>
+		<label>Calc. Supply S4</label>
+		<description>Calculated supply temperature for the climate system</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-43007" advanced="true">
+		<item-type>Number</item-type>
+		<label>Calc. Supply S3</label>
+		<description>Calculated supply temperature for the climate system</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-43008" advanced="true">
+		<item-type>Number</item-type>
+		<label>Calc. Supply S2</label>
+		<description>Calculated supply temperature for the climate system</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-43009" advanced="true">
+		<item-type>Number</item-type>
+		<label>Calc. Supply S1</label>
+		<description>Calculated supply temperature for the climate system</description>
+		<state pattern="%.1f °C" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-43013" advanced="true">
+		<item-type>String</item-type>
+		<label>Freeze Protection Status</label>
+		<description>1 = Freeze protection active</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="1">Freeze protection active</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="f470-43081" advanced="true">
+		<item-type>Number</item-type>
+		<label>Tot. op.time add.</label>
+		<description>Total electric additive operation time</description>
+		<state pattern="%.1f h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-43084" advanced="false">
+		<item-type>Number</item-type>
+		<label>Int. el.add. Power</label>
+		<description>Current power from the internal electrical addition</description>
+		<state pattern="%.2f kW" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-43086" advanced="true">
+		<item-type>String</item-type>
+		<label>Prio</label>
+		<description>Indicates what heating action (HW/heat/pool) currently prioritised 10=Off 20=Hot Water 30=Heat 40=Pool 41=Pool 2 50=Transfer 60=Cooling</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="10">Off</option>
+				<option value="20">Hot Water</option>
+				<option value="30">Heat</option>
+				<option value="40">Pool</option>
+				<option value="41">Pool 2</option>
+				<option value="50">Transfer</option>
+				<option value="60">Cooling</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="f470-43091" advanced="true">
+		<item-type>Number</item-type>
+		<label>Int. el.add. State</label>
+		<description>Number of steps active for internal step-controlled addition</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-43093" advanced="true">
+		<item-type>Number</item-type>
+		<label>Mixing Valve State S4</label>
+		<description>State of the mixing valve for the climate system</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-43094" advanced="true">
+		<item-type>Number</item-type>
+		<label>Mixing Valve State S3</label>
+		<description>State of the mixing valve for the climate system</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-43095" advanced="true">
+		<item-type>Number</item-type>
+		<label>Mixing Valve State S2</label>
+		<description>State of the mixing valve for the climate system</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-43096" advanced="true">
+		<item-type>Number</item-type>
+		<label>Mixing Valve State S1</label>
+		<description>State of the mixing valve for the climate system</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-43105" advanced="true">
+		<item-type>Number</item-type>
+		<label>Status FJVM</label>
+		<description>The state of the FJVM accessory</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-43108" advanced="true">
+		<item-type>Number</item-type>
+		<label>Fan speed current</label>
+		<description>The current fan speed after scheduling and blocks are considered</description>
+		<state pattern="%d %" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-43158" advanced="true">
+		<item-type>Number</item-type>
+		<label>External adjustment activated via input S4</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-43159" advanced="true">
+		<item-type>Number</item-type>
+		<label>External adjustment activated via input S3</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-43160" advanced="true">
+		<item-type>Number</item-type>
+		<label>External adjustment activated via input S2</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-43161" advanced="true">
+		<item-type>Number</item-type>
+		<label>External adjustment activated via input S1</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-43180" advanced="true">
+		<item-type>String</item-type>
+		<label>HWC Pump Status GP11</label>
+		<description>Hot water circulation pump status. 1=on, 0=off</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="1">on</option>
+				<option value="0">off</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="f470-43239" advanced="true">
+		<item-type>Number</item-type>
+		<label>Tot. HW op.time add.</label>
+		<description>Total electric additive operation time in hot water mode</description>
+		<state pattern="%.1f h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-43383" advanced="true">
+		<item-type>Number</item-type>
+		<label>FJVM Relays</label>
+		<description>Indicates the active relays on the FJVM accessory. The information is binary encoded</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-43416" advanced="true">
+		<item-type>Number</item-type>
+		<label>Compressor starts EB100-EP14</label>
+		<description>Number of compressorer starts</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-43420" advanced="true">
+		<item-type>Number</item-type>
+		<label>Tot. op.time compr. EB100-EP14</label>
+		<description>Total compressorer operation time</description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-43424" advanced="true">
+		<item-type>Number</item-type>
+		<label>Tot. HW op.time compr. EB100-EP14</label>
+		<description>Total compressorer operation time in hot water mode</description>
+		<state pattern="%d h" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-43427" advanced="true">
+		<item-type>String</item-type>
+		<label>Compressor State EP14</label>
+		<description>20 = Stopped, 40 = Starting, 60 = Running, 100 = Stopping</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="20">Stopped</option>
+				<option value="40">Starting</option>
+				<option value="60">Running</option>
+				<option value="100">Stopping</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="f470-43431" advanced="true">
+		<item-type>String</item-type>
+		<label>Supply Pump State EP14</label>
+		<description>10=off,15=starting,20=on,40=10-day mode,80=calibration</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="10">off</option>
+				<option value="15">starting</option>
+				<option value="20">on</option>
+				<option value="40">10-day mode</option>
+				<option value="80">calibration</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="f470-43435" advanced="true">
+		<item-type>String</item-type>
+		<label>Cpr Status EP14</label>
+		<description>Status of the compressor. 1=on,0=off 0=Off 1=On</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="1">on</option>
+				<option value="0">off</option>
+				<option value="0">Off</option>
+				<option value="1">On</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="f470-43460" advanced="true">
+		<item-type>Number</item-type>
+		<label>State DEH</label>
+		<description>The state of the DEH accessory</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-43514" advanced="true">
+		<item-type>String</item-type>
+		<label>EB100-EP14 PCA Base Relays</label>
+		<description>Indicates active relays on the PCA Base card. Please refer to the wiring diagram for relay description. Binary encoded. 1=on, 0=off. Bit0=K4,Bit1=K3,Bit2=K2,Bit3=K1</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="1">on</option>
+				<option value="0">off. Bit0 K4 Bit1 K3 Bit2 K2 Bit3 K1</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="f470-43516" advanced="true">
+		<item-type>Number</item-type>
+		<label>PCA-Power Relays EP14</label>
+		<description>Indicates the active relays on the PCA-Power card. The information is binary encoded</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-44331" advanced="true">
+		<item-type>Number</item-type>
+		<label>Software release</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-44744" advanced="true">
+		<item-type>Number</item-type>
+		<label>Extra heating system pump S4</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-44745" advanced="true">
+		<item-type>Number</item-type>
+		<label>Extra heating system pump S3</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-44746" advanced="true">
+		<item-type>Number</item-type>
+		<label>Extra heating system pump S2</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-44750" advanced="true">
+		<item-type>Number</item-type>
+		<label>FJVM pump</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-44874" advanced="true">
+		<item-type>Number</item-type>
+		<label>State SG Ready</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-44878" advanced="true">
+		<item-type>Number</item-type>
+		<label>SG Ready input A</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-44879" advanced="true">
+		<item-type>Number</item-type>
+		<label>SG Ready input B</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-44896" advanced="true">
+		<item-type>Number</item-type>
+		<label>Smart Price Adaption Heating Offset</label>
+		<description></description>
+		<state pattern="%.1f" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-44897" advanced="true">
+		<item-type>String</item-type>
+		<label>Smart Price Adaption HW Comfort Mode</label>
+		<description>0=Eco,1=Normal,2=Luxury,10=Normal+,20=Mini</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="0">Eco</option>
+				<option value="1">Normal</option>
+				<option value="2">Luxury</option>
+				<option value="10">Normal+</option>
+				<option value="20">Mini</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="f470-44898" advanced="true">
+		<item-type>Number</item-type>
+		<label>Smart Price Adaption Pool Offset</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-44899" advanced="true">
+		<item-type>Number</item-type>
+		<label>Smart Price Adaption Cool Offset</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-44908" advanced="true">
+		<item-type>Number</item-type>
+		<label>State smart price adaption</label>
+		<description></description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-45001" advanced="true">
+		<item-type>Number</item-type>
+		<label>Alarm</label>
+		<description>Indicates the alarm number of the most severe current alarm</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47291" advanced="true">
+		<item-type>Number</item-type>
+		<label>Floor drying timer</label>
+		<description></description>
+		<state pattern="%d hrs" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40879" advanced="true">
+		<item-type>Number</item-type>
+		<label>+Adjust Parallell factor</label>
+		<description></description>
+		<state min="1" max="10" step="1" pattern="%d 1" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40880" advanced="true">
+		<item-type>Number</item-type>
+		<label>+Adjust Max change</label>
+		<description>Largest allowed change</description>
+		<state min="-128" max="127" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-40881" advanced="true">
+		<item-type>Switch</item-type>
+		<label>+Adjust Affect system8</label>
+		<description>System affected by paralell change</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-40882" advanced="true">
+		<item-type>Switch</item-type>
+		<label>+Adjust Affect system7</label>
+		<description>System affected by paralell change</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-40883" advanced="true">
+		<item-type>Switch</item-type>
+		<label>+Adjust Affect system6</label>
+		<description>System affected by paralell change</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-40884" advanced="true">
+		<item-type>Switch</item-type>
+		<label>+Adjust Affect system5</label>
+		<description>System affected by paralell change</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-40885" advanced="true">
+		<item-type>Switch</item-type>
+		<label>+Adjust Affect system4</label>
+		<description>System affected by paralell change</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-40886" advanced="true">
+		<item-type>Switch</item-type>
+		<label>+Adjust Affect system3</label>
+		<description>System affected by paralell change</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-40887" advanced="true">
+		<item-type>Switch</item-type>
+		<label>+Adjust Affect system2</label>
+		<description>System affected by paralell change</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-40888" advanced="true">
+		<item-type>Switch</item-type>
+		<label>+Adjust Affect system1</label>
+		<description>System affected by paralell change</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-45171" advanced="true">
+		<item-type>Number</item-type>
+		<label>Alarm Reset</label>
+		<description>Reset alarm by setting value 1</description>
+		<state min="0" max="255" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47004" advanced="true">
+		<item-type>Number</item-type>
+		<label>Heat Curve S4</label>
+		<description>Heat curve, see manual for more information</description>
+		<state min="0" max="15" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47005" advanced="true">
+		<item-type>Number</item-type>
+		<label>Heat Curve S3</label>
+		<description>Heat curve, see manual for more information</description>
+		<state min="0" max="15" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47006" advanced="true">
+		<item-type>Number</item-type>
+		<label>Heat Curve S2</label>
+		<description>Heat curve, see manual for more information</description>
+		<state min="0" max="15" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47007" advanced="true">
+		<item-type>Number</item-type>
+		<label>Heat Curve S1</label>
+		<description>Heat curve, see manual for more information</description>
+		<state min="0" max="15" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47008" advanced="true">
+		<item-type>Number</item-type>
+		<label>Heat Offset S4</label>
+		<description>Offset of the heat curve, see manual for more information</description>
+		<state min="-10" max="10" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47009" advanced="true">
+		<item-type>Number</item-type>
+		<label>Heat Offset S3</label>
+		<description>Offset of the heat curve, see manual for more information</description>
+		<state min="-10" max="10" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47010" advanced="true">
+		<item-type>Number</item-type>
+		<label>Heat Offset S2</label>
+		<description>Offset of the heat curve, see manual for more information</description>
+		<state min="-10" max="10" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47011" advanced="true">
+		<item-type>Number</item-type>
+		<label>Heat Offset S1</label>
+		<description>Offset of the heat curve, see manual for more information</description>
+		<state min="-10" max="10" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47012" advanced="true">
+		<item-type>Number</item-type>
+		<label>Min Supply System 4</label>
+		<description></description>
+		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47013" advanced="true">
+		<item-type>Number</item-type>
+		<label>Min Supply System 3</label>
+		<description></description>
+		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47014" advanced="true">
+		<item-type>Number</item-type>
+		<label>Min Supply System 2</label>
+		<description></description>
+		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47015" advanced="true">
+		<item-type>Number</item-type>
+		<label>Min Supply System 1</label>
+		<description></description>
+		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47016" advanced="true">
+		<item-type>Number</item-type>
+		<label>Max Supply System 4</label>
+		<description></description>
+		<state min="50" max="800" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47017" advanced="true">
+		<item-type>Number</item-type>
+		<label>Max Supply System 3</label>
+		<description></description>
+		<state min="50" max="800" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47018" advanced="true">
+		<item-type>Number</item-type>
+		<label>Max Supply System 2</label>
+		<description></description>
+		<state min="50" max="800" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47019" advanced="true">
+		<item-type>Number</item-type>
+		<label>Max Supply System 1</label>
+		<description></description>
+		<state min="50" max="800" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47020" advanced="true">
+		<item-type>Number</item-type>
+		<label>Own Heating Curve P7</label>
+		<description>User defined heating curve point</description>
+		<state min="5" max="80" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47021" advanced="true">
+		<item-type>Number</item-type>
+		<label>Own Heating Curve P6</label>
+		<description>User defined heating curve point</description>
+		<state min="5" max="80" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47022" advanced="true">
+		<item-type>Number</item-type>
+		<label>Own Heating Curve P5</label>
+		<description>User defined heating curve point</description>
+		<state min="5" max="80" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47023" advanced="true">
+		<item-type>Number</item-type>
+		<label>Own Heating Curve P4</label>
+		<description>User defined heating curve point</description>
+		<state min="5" max="80" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47024" advanced="true">
+		<item-type>Number</item-type>
+		<label>Own Heating Curve P3</label>
+		<description>User defined heating curve point</description>
+		<state min="5" max="80" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47025" advanced="true">
+		<item-type>Number</item-type>
+		<label>Own Heating Curve P2</label>
+		<description>User defined heating curve point</description>
+		<state min="5" max="80" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47026" advanced="true">
+		<item-type>Number</item-type>
+		<label>Own Heating Curve P1</label>
+		<description>User defined heating curve point</description>
+		<state min="5" max="80" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47027" advanced="true">
+		<item-type>Number</item-type>
+		<label>Point offset outdoor temp.</label>
+		<description>Outdoor temperature point where the heat curve is offset</description>
+		<state min="-40" max="30" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47028" advanced="true">
+		<item-type>Number</item-type>
+		<label>Point offset</label>
+		<description>Amount of offset at the point offset temperature</description>
+		<state min="-10" max="10" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47029" advanced="true">
+		<item-type>Number</item-type>
+		<label>External adjustment S4</label>
+		<description>Change of the offset of the heat curve when closing the external adjustment input</description>
+		<state min="-10" max="10" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47030" advanced="true">
+		<item-type>Number</item-type>
+		<label>External adjustment S3</label>
+		<description>Change of the offset of the heat curve when closing the external adjustment input</description>
+		<state min="-10" max="10" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47031" advanced="true">
+		<item-type>Number</item-type>
+		<label>External adjustment S2</label>
+		<description>Change of the offset of the heat curve when closing the external adjustment input</description>
+		<state min="-10" max="10" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47032" advanced="true">
+		<item-type>Number</item-type>
+		<label>External adjustment S1</label>
+		<description>Change of the offset of the heat curve when closing the external adjustment input</description>
+		<state min="-10" max="10" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47033" advanced="true">
+		<item-type>Number</item-type>
+		<label>External adjustment with room sensor S4</label>
+		<description>Room temperature setting when closing the external adjustment input</description>
+		<state min="50" max="300" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47034" advanced="true">
+		<item-type>Number</item-type>
+		<label>External adjustment with room sensor S3</label>
+		<description>Room temperature setting when closing the external adjustment input</description>
+		<state min="50" max="300" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47035" advanced="true">
+		<item-type>Number</item-type>
+		<label>External adjustment with room sensor S2</label>
+		<description>Room temperature setting when closing the external adjustment input</description>
+		<state min="50" max="300" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47036" advanced="true">
+		<item-type>Number</item-type>
+		<label>External adjustment with room sensor S1</label>
+		<description>Room temperature setting when closing the external adjustment input</description>
+		<state min="50" max="300" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47041" advanced="true">
+		<item-type>String</item-type>
+		<label>Hot water comfort mode</label>
+		<description>Setting in menu 2.2. 0=Economy,1=Normal,2=Luxury,4=Smart Control 0=Economy 1=Normal 2=Luxury</description>
+		<state min="0" max="4" step="1" pattern="%d" readOnly="false">
+			<options>
+				<option value="0">Economy</option>
+				<option value="1">Normal</option>
+				<option value="2">Luxury</option>
+				<option value="4">Smart Control</option>
+				<option value="0">Economy</option>
+				<option value="1">Normal</option>
+				<option value="2">Luxury</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="f470-47043" advanced="true">
+		<item-type>Number</item-type>
+		<label>Start temperature HW Luxury</label>
+		<description>Start temperature for heating water</description>
+		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47044" advanced="true">
+		<item-type>Number</item-type>
+		<label>Start temperature HW Normal</label>
+		<description>Start temperature for heating water</description>
+		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47045" advanced="true">
+		<item-type>Number</item-type>
+		<label>Start temperature HW Economy</label>
+		<description>Start temperature for heating water</description>
+		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47046" advanced="true">
+		<item-type>Number</item-type>
+		<label>Stop temperature Periodic HW</label>
+		<description>Temperature where hot water generation will stop</description>
+		<state min="550" max="700" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47047" advanced="true">
+		<item-type>Number</item-type>
+		<label>Stop temperature HW Luxury</label>
+		<description>Temperature where hot water generation will stop</description>
+		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47048" advanced="true">
+		<item-type>Number</item-type>
+		<label>Stop temperature HW Normal</label>
+		<description>Temperature where hot water generation will stop</description>
+		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47049" advanced="true">
+		<item-type>Number</item-type>
+		<label>Stop temperature HW Economy</label>
+		<description>Temperature where hot water generation will stop</description>
+		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47050" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Periodic HW</label>
+		<description>Activates the periodic hot water generation</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-47051" advanced="true">
+		<item-type>Number</item-type>
+		<label>Periodic HW Interval</label>
+		<description>Interval between Periodic hot water sessions</description>
+		<state min="1" max="90" step="1" pattern="%d days" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47054" advanced="true">
+		<item-type>Number</item-type>
+		<label>Run time HWC</label>
+		<description>Run time for the hot water circulation system</description>
+		<state min="1" max="60" step="1" pattern="%d min" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47055" advanced="true">
+		<item-type>Number</item-type>
+		<label>Still time HWC</label>
+		<description>Still time for the hot water circulation system</description>
+		<state min="0" max="60" step="1" pattern="%d min" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47131" advanced="true">
+		<item-type>String</item-type>
+		<label>Language</label>
+		<description>Display language in the heat pump 0=English 1=Svenska 2=Deutsch 3=Francais 4=Espanol 5=Suomi 6=Lietuviu 7=Cesky 8=Polski 9=Nederlands 10=Norsk 11=Dansk 12=Eesti 13=Latviesu 16=Magyar</description>
+		<state min="0" max="21" step="1" pattern="%d" readOnly="false">
+			<options>
+				<option value="0">English</option>
+				<option value="1">Svenska</option>
+				<option value="2">Deutsch</option>
+				<option value="3">Francais</option>
+				<option value="4">Espanol</option>
+				<option value="5">Suomi</option>
+				<option value="6">Lietuviu</option>
+				<option value="7">Cesky</option>
+				<option value="8">Polski</option>
+				<option value="9">Nederlands</option>
+				<option value="10">Norsk</option>
+				<option value="11">Dansk</option>
+				<option value="12">Eesti</option>
+				<option value="13">Latviesu</option>
+				<option value="16">Magyar</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="f470-47137" advanced="true">
+		<item-type>String</item-type>
+		<label>Operational mode</label>
+		<description>The operational mode of the heat pump 0=Auto 1=Manual 2=Add. heat only</description>
+		<state min="0" max="2" step="1" pattern="%d" readOnly="false">
+			<options>
+				<option value="0">Auto</option>
+				<option value="1">Manual</option>
+				<option value="2">Add. heat only</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="f470-47138" advanced="true">
+		<item-type>String</item-type>
+		<label>Operational mode heat medium pump</label>
+		<description> 10=Intermittent 20=Continous 30=Economy 40=Auto</description>
+		<state min="10" max="40" step="1" pattern="%d" readOnly="false">
+			<options>
+				<option value="10">Intermittent</option>
+				<option value="20">Continous</option>
+				<option value="30">Economy</option>
+				<option value="40">Auto</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="f470-47212" advanced="true">
+		<item-type>Number</item-type>
+		<label>Max int add. power</label>
+		<description></description>
+		<state min="0" max="4500" step="1" pattern="%.2f kW" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47214" advanced="true">
+		<item-type>Number</item-type>
+		<label>Fuse</label>
+		<description>Size of the fuse that the HP is connected to</description>
+		<state min="1" max="400" step="1" pattern="%d A" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47261" advanced="true">
+		<item-type>Number</item-type>
+		<label>Exhaust Fan speed 4</label>
+		<description></description>
+		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47262" advanced="true">
+		<item-type>Number</item-type>
+		<label>Exhaust Fan speed 3</label>
+		<description></description>
+		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47263" advanced="true">
+		<item-type>Number</item-type>
+		<label>Exhaust Fan speed 2</label>
+		<description></description>
+		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47264" advanced="true">
+		<item-type>Number</item-type>
+		<label>Exhaust Fan speed 1</label>
+		<description></description>
+		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47265" advanced="true">
+		<item-type>Number</item-type>
+		<label>Exhaust Fan speed normal</label>
+		<description></description>
+		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47266" advanced="true">
+		<item-type>Number</item-type>
+		<label>Supply Fan speed 4</label>
+		<description></description>
+		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47267" advanced="true">
+		<item-type>Number</item-type>
+		<label>Supply Fan speed 3</label>
+		<description></description>
+		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47268" advanced="true">
+		<item-type>Number</item-type>
+		<label>Supply Fan speed 2</label>
+		<description></description>
+		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47269" advanced="true">
+		<item-type>Number</item-type>
+		<label>Supply Fan speed 1</label>
+		<description></description>
+		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47270" advanced="true">
+		<item-type>Number</item-type>
+		<label>Supply Fan speed normal</label>
+		<description></description>
+		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47271" advanced="true">
+		<item-type>Number</item-type>
+		<label>Fan return time 4</label>
+		<description>Time from a changed fan speed until it returns to normal speed</description>
+		<state min="1" max="99" step="1" pattern="%d h" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47272" advanced="true">
+		<item-type>Number</item-type>
+		<label>Fan return time 3</label>
+		<description>Time from a changed fan speed until it returns to normal speed</description>
+		<state min="1" max="99" step="1" pattern="%d h" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47273" advanced="true">
+		<item-type>Number</item-type>
+		<label>Fan return time 2</label>
+		<description>Time from a changed fan speed until it returns to normal speed</description>
+		<state min="1" max="99" step="1" pattern="%d h" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47274" advanced="true">
+		<item-type>Number</item-type>
+		<label>Fan return time 1</label>
+		<description>Time from a changed fan speed until it returns to normal speed</description>
+		<state min="1" max="99" step="1" pattern="%d h" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47275" advanced="true">
+		<item-type>Number</item-type>
+		<label>Filter Reminder period</label>
+		<description>Time between the reminder of filter replacement/cleaning.</description>
+		<state min="1" max="24" step="1" pattern="%d Months" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47276" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Floor drying</label>
+		<description> 0=Off 1=On</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-47277" advanced="true">
+		<item-type>Number</item-type>
+		<label>Floor drying period 7</label>
+		<description>Days each period is active</description>
+		<state min="0" max="30" step="1" pattern="%d days" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47278" advanced="true">
+		<item-type>Number</item-type>
+		<label>Floor drying period 6</label>
+		<description>Days each period is active</description>
+		<state min="0" max="30" step="1" pattern="%d days" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47279" advanced="true">
+		<item-type>Number</item-type>
+		<label>Floor drying period 5</label>
+		<description>Days each period is active</description>
+		<state min="0" max="30" step="1" pattern="%d days" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47280" advanced="true">
+		<item-type>Number</item-type>
+		<label>Floor drying period 4</label>
+		<description>Days each period is active</description>
+		<state min="0" max="30" step="1" pattern="%d days" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47281" advanced="true">
+		<item-type>Number</item-type>
+		<label>Floor drying period 3</label>
+		<description>Days each period is active</description>
+		<state min="0" max="30" step="1" pattern="%d days" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47282" advanced="true">
+		<item-type>Number</item-type>
+		<label>Floor drying period 2</label>
+		<description>Days each period is active</description>
+		<state min="0" max="30" step="1" pattern="%d days" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47283" advanced="true">
+		<item-type>Number</item-type>
+		<label>Floor drying period 1</label>
+		<description>Days each period is active</description>
+		<state min="0" max="30" step="1" pattern="%d days" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47284" advanced="true">
+		<item-type>Number</item-type>
+		<label>Floor drying temp. 7</label>
+		<description>Supply temperature each period</description>
+		<state min="15" max="70" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47285" advanced="true">
+		<item-type>Number</item-type>
+		<label>Floor drying temp. 6</label>
+		<description>Supply temperature each period</description>
+		<state min="15" max="70" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47286" advanced="true">
+		<item-type>Number</item-type>
+		<label>Floor drying temp. 5</label>
+		<description>Supply temperature each period</description>
+		<state min="15" max="70" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47287" advanced="true">
+		<item-type>Number</item-type>
+		<label>Floor drying temp. 4</label>
+		<description>Supply temperature each period</description>
+		<state min="15" max="70" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47288" advanced="true">
+		<item-type>Number</item-type>
+		<label>Floor drying temp. 3</label>
+		<description>Supply temperature each period</description>
+		<state min="15" max="70" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47289" advanced="true">
+		<item-type>Number</item-type>
+		<label>Floor drying temp. 2</label>
+		<description>Supply temperature each period</description>
+		<state min="15" max="70" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47290" advanced="true">
+		<item-type>Number</item-type>
+		<label>Floor drying temp. 1</label>
+		<description>Supply temperature each period</description>
+		<state min="15" max="70" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47292" advanced="true">
+		<item-type>Number</item-type>
+		<label>Trend temperature</label>
+		<description>Above the set outdoor temperature the addition activation time is limited to give the compressor more time to raise the hot water temperature.</description>
+		<state min="0" max="200" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47293" advanced="true">
+		<item-type>Number</item-type>
+		<label>Transfer time HW-Heat</label>
+		<description>Time between hot water and heating operating mode</description>
+		<state min="1" max="60" step="1" pattern="%d mins" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47300" advanced="true">
+		<item-type>Number</item-type>
+		<label>DOT</label>
+		<description>Dimensioning outdoor temperature</description>
+		<state min="-400" max="200" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47301" advanced="true">
+		<item-type>Number</item-type>
+		<label>delta T at DOT</label>
+		<description>Delta T (BT12-BT3)at dimensioning outdoor temperature</description>
+		<state min="10" max="250" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47302" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Climate system 2 accessory</label>
+		<description>Activates the climate system 2 accessory 0=Off 1=On</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-47303" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Climate system 3 accessory</label>
+		<description>Activates the climate system 3 accessory 0=Off 1=On</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-47304" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Climate system 4 accessory</label>
+		<description>Activates the climate system 4 accessory 0=Off 1=On</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-47305" advanced="true">
+		<item-type>Number</item-type>
+		<label>Climate system 4 mixing valve amp.</label>
+		<description>Mixing valve amplification for extra climate systems</description>
+		<state min="1" max="100" step="1" pattern="%.1f" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47306" advanced="true">
+		<item-type>Number</item-type>
+		<label>Climate system 3 mixing valve amp.</label>
+		<description>Mixing valve amplification for extra climate systems</description>
+		<state min="1" max="100" step="1" pattern="%.1f" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47307" advanced="true">
+		<item-type>Number</item-type>
+		<label>Climate system 2 mixing valve amp.</label>
+		<description>Mixing valve amplification for extra climate systems</description>
+		<state min="1" max="100" step="1" pattern="%.1f" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47308" advanced="true">
+		<item-type>Number</item-type>
+		<label>Climate system 4 shunt wait</label>
+		<description>Wait time between changes of the shunt in extra climate systems</description>
+		<state min="10" max="300" step="1" pattern="%.1f secs" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47309" advanced="true">
+		<item-type>Number</item-type>
+		<label>Climate system 3 shunt wait</label>
+		<description>Wait time between changes of the shunt in extra climate systems</description>
+		<state min="10" max="300" step="1" pattern="%.1f secs" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47310" advanced="true">
+		<item-type>Number</item-type>
+		<label>Climate system 2 shunt wait</label>
+		<description>Wait time between changes of the shunt in extra climate systems</description>
+		<state min="10" max="300" step="1" pattern="%.1f secs" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47351" advanced="true">
+		<item-type>Switch</item-type>
+		<label>FJVM accessory</label>
+		<description>Activates the FJVM accessory 0=Off 1=On</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-47352" advanced="true">
+		<item-type>Switch</item-type>
+		<label>SMS40 accessory</label>
+		<description>Activates the SMS40 accessory</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-47365" advanced="true">
+		<item-type>Switch</item-type>
+		<label>RMU System 1</label>
+		<description>Activates the RMU accessory for system 1</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-47366" advanced="true">
+		<item-type>Switch</item-type>
+		<label>RMU System 2</label>
+		<description>Activates the RMU accessory for system 2</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-47367" advanced="true">
+		<item-type>Switch</item-type>
+		<label>RMU System 3</label>
+		<description>Activates the RMU accessory for system 3</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-47368" advanced="true">
+		<item-type>Switch</item-type>
+		<label>RMU System 4</label>
+		<description>Activates the RMU accessory for system 4</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-47370" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Allow Additive Heating</label>
+		<description>Whether to allow additive heating (only valid for operational mode Manual)</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-47371" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Allow Heating</label>
+		<description>Whether to allow heating (only valid for operational mode Manual or Add. heat only)</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-47372" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Allow Cooling</label>
+		<description>Whether to allow cooling (only valid for operational mode Manual or Add. heat only)</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-47374" advanced="true">
+		<item-type>String</item-type>
+		<label>Start Temperature Cooling</label>
+		<description>Start temperature for cooling, as set in menu 4.9.2 0=Off 1=On</description>
+		<state min="-200" max="400" step="1" pattern="%.1f °C" readOnly="false">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">On</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="f470-47375" advanced="true">
+		<item-type>Number</item-type>
+		<label>Stop Temperature Heating</label>
+		<description>Stop temperature for heating, as set in menu 4.9.2</description>
+		<state min="-200" max="400" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47376" advanced="true">
+		<item-type>Number</item-type>
+		<label>Stop Temperature Additive</label>
+		<description>Stop temperature for additive, as set in menu 4.9.2</description>
+		<state min="-250" max="400" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47377" advanced="true">
+		<item-type>String</item-type>
+		<label>Outdoor Filter Time</label>
+		<description> 12=12 Hours 24=24 Hours</description>
+		<state min="0" max="48" step="1" pattern="%d h" readOnly="false">
+			<options>
+				<option value="12">Hours 24</option>
+				<option value="24">Hours</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="f470-47378" advanced="true">
+		<item-type>Number</item-type>
+		<label>Max diff. comp.</label>
+		<description></description>
+		<state min="10" max="250" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47379" advanced="true">
+		<item-type>Number</item-type>
+		<label>Max diff. add.</label>
+		<description></description>
+		<state min="10" max="240" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47384" advanced="true">
+		<item-type>String</item-type>
+		<label>Date format</label>
+		<description> 1=DD-MM-YY 2=YY-MM-DD</description>
+		<state min="1" max="2" step="1" pattern="%d" readOnly="false">
+			<options>
+				<option value="1">DD-MM-YY</option>
+				<option value="2">YY-MM-DD</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="f470-47385" advanced="true">
+		<item-type>String</item-type>
+		<label>Time format</label>
+		<description> 12=12 hours 24=24 Hours</description>
+		<state min="12" max="24" step="1" pattern="%d" readOnly="false">
+			<options>
+				<option value="12">hours 24</option>
+				<option value="24">Hours</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="f470-47387" advanced="true">
+		<item-type>Switch</item-type>
+		<label>HW production</label>
+		<description>Activates hot water production where applicable 0=Off 1=On</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-47388" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Alarm lower room temp.</label>
+		<description>Lowers the room temperature during red light alarms to notify the occupants of the building that something is the matter 0=Off 1=On</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-47389" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Alarm lower HW temp.</label>
+		<description>Lowers the hot water temperature during red light alarms to notify the occupants of the building that something is the matter 0=Off 1=On</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-47391" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Use room sensor S4</label>
+		<description>When activated the system uses the room sensor 0=Off 1=On</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-47392" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Use room sensor S3</label>
+		<description>When activated the system uses the room sensor 0=Off 1=On</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-47393" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Use room sensor S2</label>
+		<description>When activated the system uses the room sensor 0=Off 1=On</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-47394" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Use room sensor S1</label>
+		<description>When activated the system uses the room sensor 0=Off 1=On</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-47395" advanced="true">
+		<item-type>Number</item-type>
+		<label>Room sensor setpoint S4</label>
+		<description>Sets the room temperature setpoint for the system</description>
+		<state min="50" max="300" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47396" advanced="true">
+		<item-type>Number</item-type>
+		<label>Room sensor setpoint S3</label>
+		<description>Sets the room temperature setpoint for the system</description>
+		<state min="50" max="300" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47397" advanced="true">
+		<item-type>Number</item-type>
+		<label>Room sensor setpoint S2</label>
+		<description>Sets the room temperature setpoint for the system</description>
+		<state min="50" max="300" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47398" advanced="true">
+		<item-type>Number</item-type>
+		<label>Room sensor setpoint S1</label>
+		<description>Sets the room temperature setpoint for the system</description>
+		<state min="50" max="300" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47399" advanced="true">
+		<item-type>Number</item-type>
+		<label>Room sensor factor S4</label>
+		<description>Setting of how much the difference between set and actual room temperature should affect the supply temperature.</description>
+		<state min="0" max="60" step="1" pattern="%.1f" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47400" advanced="true">
+		<item-type>Number</item-type>
+		<label>Room sensor factor S3</label>
+		<description>Setting of how much the difference between set and actual room temperature should affect the supply temperature.</description>
+		<state min="0" max="60" step="1" pattern="%.1f" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47401" advanced="true">
+		<item-type>Number</item-type>
+		<label>Room sensor factor S2</label>
+		<description>Setting of how much the difference between set and actual room temperature should affect the supply temperature.</description>
+		<state min="0" max="60" step="1" pattern="%.1f" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47402" advanced="true">
+		<item-type>Number</item-type>
+		<label>Room sensor factor S1</label>
+		<description>Setting of how much the difference between set and actual room temperature should affect the supply temperature.</description>
+		<state min="0" max="60" step="1" pattern="%.1f" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47442" advanced="true">
+		<item-type>String</item-type>
+		<label>preset flow clim. sys.</label>
+		<description>Preset flow setting for climate system. 0 = manual setting, 1 = radiator, 2 = floor heating, 3 = radiator + floor heating.</description>
+		<state min="0" max="3" step="1" pattern="%d" readOnly="false">
+			<options>
+				<option value="0">manual setting</option>
+				<option value="1">radiator</option>
+				<option value="2">floor heating</option>
+				<option value="3">radiator + floor heating.</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="f470-47525" advanced="true">
+		<item-type>Number</item-type>
+		<label>Heat Curve S8</label>
+		<description>Heat curve, see manual for more information</description>
+		<state min="0" max="15" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47536" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Fan synch mode</label>
+		<description>If the fan should have a lower speed when the compressor is not running 0=Off 1=On</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-47537" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Night cooling</label>
+		<description>If the fan should have a higher speed when there is a high room temp and a low outdoor temp. 0=Off 1=On</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-47538" advanced="true">
+		<item-type>Number</item-type>
+		<label>Start room temp. night cooling</label>
+		<description></description>
+		<state min="20" max="30" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47539" advanced="true">
+		<item-type>Number</item-type>
+		<label>Night Cooling Min. diff.</label>
+		<description>Minimum difference between room temp and outdoor temp to start night cooling</description>
+		<state min="3" max="10" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-47556" advanced="true">
+		<item-type>Switch</item-type>
+		<label>DEH accessory</label>
+		<description>Activates the DEH accessory</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-47564" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Allow Heating Sys1</label>
+		<description>Whether to allow heating for system 1 (only valid for operational mode Manual or Add. heat only)</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-47565" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Allow Heating Sys2</label>
+		<description>Whether to allow heating for system 2 (only valid for operational mode Manual or Add. heat only)</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-47567" advanced="true">
+		<item-type>Number</item-type>
+		<label>Heat Curve S7</label>
+		<description>Heat curve, see manual for more information</description>
+		<state min="0" max="15" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48043" advanced="true">
+		<item-type>String</item-type>
+		<label>Holiday - Activated</label>
+		<description>0=inactive, 10=active</description>
+		<state min="0" max="10" step="1" pattern="%d" readOnly="false">
+			<options>
+				<option value="0">inactive</option>
+				<option value="10">active</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="f470-48132" advanced="true">
+		<item-type>String</item-type>
+		<label>Temporary Lux</label>
+		<description>0=Off, 1=3h, 2=6h, 3=12h, 4=One time increase</description>
+		<state min="-128" max="127" step="1" pattern="%d" readOnly="false">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">3h</option>
+				<option value="2">6h</option>
+				<option value="3">12h</option>
+				<option value="4">One time increase</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="f470-48282" advanced="true">
+		<item-type>Switch</item-type>
+		<label>SG Ready heating</label>
+		<description>Sets whether or not SG Ready should affect heating</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-48283" advanced="true">
+		<item-type>Switch</item-type>
+		<label>SG Ready cooling</label>
+		<description>Sets whether or not SG Ready should affect cooling</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-48284" advanced="true">
+		<item-type>Switch</item-type>
+		<label>SG Ready hot water</label>
+		<description>Sets whether or not SG Ready should affect hot water</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-48285" advanced="true">
+		<item-type>Switch</item-type>
+		<label>SG Ready pool</label>
+		<description>Sets whether or not SG Ready should affect pool</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-48488" advanced="true">
+		<item-type>Number</item-type>
+		<label>Heat Curve S6</label>
+		<description>Heat curve, see manual for more information</description>
+		<state min="0" max="15" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48489" advanced="true">
+		<item-type>Number</item-type>
+		<label>Heat Curve S5</label>
+		<description>Heat curve, see manual for more information</description>
+		<state min="0" max="15" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48491" advanced="true">
+		<item-type>Number</item-type>
+		<label>Heat Offset S8</label>
+		<description>Offset of the heat curve, see manual for more information</description>
+		<state min="-10" max="10" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48492" advanced="true">
+		<item-type>Number</item-type>
+		<label>Heat Offset S7</label>
+		<description>Offset of the heat curve, see manual for more information</description>
+		<state min="-10" max="10" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48493" advanced="true">
+		<item-type>Number</item-type>
+		<label>Heat Offset S6</label>
+		<description>Offset of the heat curve, see manual for more information</description>
+		<state min="-10" max="10" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48494" advanced="true">
+		<item-type>Number</item-type>
+		<label>Heat Offset S5</label>
+		<description>Offset of the heat curve, see manual for more information</description>
+		<state min="-10" max="10" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48495" advanced="true">
+		<item-type>Number</item-type>
+		<label>Min Supply System 8</label>
+		<description></description>
+		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48496" advanced="true">
+		<item-type>Number</item-type>
+		<label>Min Supply System 7</label>
+		<description></description>
+		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48497" advanced="true">
+		<item-type>Number</item-type>
+		<label>Min Supply System 6</label>
+		<description></description>
+		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48498" advanced="true">
+		<item-type>Number</item-type>
+		<label>Min Supply System 5</label>
+		<description></description>
+		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48499" advanced="true">
+		<item-type>Number</item-type>
+		<label>Max Supply System 8</label>
+		<description></description>
+		<state min="50" max="800" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48500" advanced="true">
+		<item-type>Number</item-type>
+		<label>Max Supply System 7</label>
+		<description></description>
+		<state min="50" max="800" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48501" advanced="true">
+		<item-type>Number</item-type>
+		<label>Max Supply System 6</label>
+		<description></description>
+		<state min="50" max="800" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48502" advanced="true">
+		<item-type>Number</item-type>
+		<label>Max Supply System 5</label>
+		<description></description>
+		<state min="50" max="800" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48503" advanced="true">
+		<item-type>Number</item-type>
+		<label>External adjustment S8</label>
+		<description>Change of the offset of the heat curve when closing the external adjustment input</description>
+		<state min="-10" max="10" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48504" advanced="true">
+		<item-type>Number</item-type>
+		<label>External adjustment S7</label>
+		<description>Change of the offset of the heat curve when closing the external adjustment input</description>
+		<state min="-10" max="10" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48505" advanced="true">
+		<item-type>Number</item-type>
+		<label>External adjustment S6</label>
+		<description>Change of the offset of the heat curve when closing the external adjustment input</description>
+		<state min="-10" max="10" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48506" advanced="true">
+		<item-type>Number</item-type>
+		<label>External adjustment S5</label>
+		<description>Change of the offset of the heat curve when closing the external adjustment input</description>
+		<state min="-10" max="10" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48507" advanced="true">
+		<item-type>Number</item-type>
+		<label>External adjustment with room sensor S8</label>
+		<description>Room temperature setting when closing the external adjustment input</description>
+		<state min="50" max="300" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48508" advanced="true">
+		<item-type>Number</item-type>
+		<label>External adjustment with room sensor S7</label>
+		<description>Room temperature setting when closing the external adjustment input</description>
+		<state min="50" max="300" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48509" advanced="true">
+		<item-type>Number</item-type>
+		<label>External adjustment with room sensor S6</label>
+		<description>Room temperature setting when closing the external adjustment input</description>
+		<state min="50" max="300" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48510" advanced="true">
+		<item-type>Number</item-type>
+		<label>External adjustment with room sensor S5</label>
+		<description>Room temperature setting when closing the external adjustment input</description>
+		<state min="50" max="300" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48569" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Climate system 5 accessory</label>
+		<description>Activates the climate system 5 accessory</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-48570" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Climate system 6 accessory</label>
+		<description>Activates the climate system 6 accessory</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-48571" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Climate system 7 accessory</label>
+		<description>Activates the climate system 7 accessory</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-48572" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Climate system 8 accessory</label>
+		<description>Activates the climate system 8 accessory</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-48573" advanced="true">
+		<item-type>Number</item-type>
+		<label>Climate system 8 mixing valve amp.</label>
+		<description>Mixing valve amplification for extra climate systems</description>
+		<state min="1" max="100" step="1" pattern="%.1f" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48574" advanced="true">
+		<item-type>Number</item-type>
+		<label>Climate system 7 mixing valve amp.</label>
+		<description>Mixing valve amplification for extra climate systems</description>
+		<state min="1" max="100" step="1" pattern="%.1f" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48575" advanced="true">
+		<item-type>Number</item-type>
+		<label>Climate system 6 mixing valve amp.</label>
+		<description>Mixing valve amplification for extra climate systems</description>
+		<state min="1" max="100" step="1" pattern="%.1f" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48576" advanced="true">
+		<item-type>Number</item-type>
+		<label>Climate system 5 mixing valve amp.</label>
+		<description>Mixing valve amplification for extra climate systems</description>
+		<state min="1" max="100" step="1" pattern="%.1f" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48577" advanced="true">
+		<item-type>Number</item-type>
+		<label>Climate system 8 shunt wait</label>
+		<description>Wait time between changes of the shunt in extra climate systems</description>
+		<state min="10" max="300" step="1" pattern="%.1f secs" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48578" advanced="true">
+		<item-type>Number</item-type>
+		<label>Climate system 7 shunt wait</label>
+		<description>Wait time between changes of the shunt in extra climate systems</description>
+		<state min="10" max="300" step="1" pattern="%.1f secs" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48579" advanced="true">
+		<item-type>Number</item-type>
+		<label>Climate system 6 shunt wait</label>
+		<description>Wait time between changes of the shunt in extra climate systems</description>
+		<state min="10" max="300" step="1" pattern="%.1f secs" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48580" advanced="true">
+		<item-type>Number</item-type>
+		<label>Climate system 5 shunt wait</label>
+		<description>Wait time between changes of the shunt in extra climate systems</description>
+		<state min="10" max="300" step="1" pattern="%.1f secs" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48675" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Use room sensor S8</label>
+		<description>When activated the system uses the room sensor</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-48676" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Use room sensor S7</label>
+		<description>When activated the system uses the room sensor</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-48677" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Use room sensor S6</label>
+		<description>When activated the system uses the room sensor</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-48678" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Use room sensor S5</label>
+		<description>When activated the system uses the room sensor</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-48680" advanced="true">
+		<item-type>Number</item-type>
+		<label>Room sensor setpoint S8</label>
+		<description>Sets the room temperature setpoint for the system</description>
+		<state min="50" max="300" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48681" advanced="true">
+		<item-type>Number</item-type>
+		<label>Room sensor setpoint S7</label>
+		<description>Sets the room temperature setpoint for the system</description>
+		<state min="50" max="300" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48682" advanced="true">
+		<item-type>Number</item-type>
+		<label>Room sensor setpoint S6</label>
+		<description>Sets the room temperature setpoint for the system</description>
+		<state min="50" max="300" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48683" advanced="true">
+		<item-type>Number</item-type>
+		<label>Room sensor setpoint S5</label>
+		<description>Sets the room temperature setpoint for the system</description>
+		<state min="50" max="300" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48685" advanced="true">
+		<item-type>Number</item-type>
+		<label>Room sensor factor S8</label>
+		<description>Setting of how much the difference between set and actual room temperature should affect the supply temperature.</description>
+		<state min="0" max="60" step="1" pattern="%.1f" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48686" advanced="true">
+		<item-type>Number</item-type>
+		<label>Room sensor factor S7</label>
+		<description>Setting of how much the difference between set and actual room temperature should affect the supply temperature.</description>
+		<state min="0" max="60" step="1" pattern="%.1f" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48687" advanced="true">
+		<item-type>Number</item-type>
+		<label>Room sensor factor S6</label>
+		<description>Setting of how much the difference between set and actual room temperature should affect the supply temperature.</description>
+		<state min="0" max="60" step="1" pattern="%.1f" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48688" advanced="true">
+		<item-type>Number</item-type>
+		<label>Room sensor factor S5</label>
+		<description>Setting of how much the difference between set and actual room temperature should affect the supply temperature.</description>
+		<state min="0" max="60" step="1" pattern="%.1f" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48732" advanced="true">
+		<item-type>Number</item-type>
+		<label>Cool offset S8</label>
+		<description>Offset of the cool curve, see manual for more information </description>
+		<state min="-10" max="10" step="1" pattern="%d  " readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48733" advanced="true">
+		<item-type>Number</item-type>
+		<label>Cool offset S7</label>
+		<description>Offset of the cool curve, see manual for more information </description>
+		<state min="-10" max="10" step="1" pattern="%d  " readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48734" advanced="true">
+		<item-type>Number</item-type>
+		<label>Cool offset S6</label>
+		<description>Offset of the cool curve, see manual for more information </description>
+		<state min="-10" max="10" step="1" pattern="%d  " readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48735" advanced="true">
+		<item-type>Number</item-type>
+		<label>Cool offset S5</label>
+		<description>Offset of the cool curve, see manual for more information </description>
+		<state min="-10" max="10" step="1" pattern="%d  " readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48736" advanced="true">
+		<item-type>Number</item-type>
+		<label>Cool offset S4</label>
+		<description>Offset of the cool curve, see manual for more information </description>
+		<state min="-10" max="10" step="1" pattern="%d  " readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48737" advanced="true">
+		<item-type>Number</item-type>
+		<label>Cool offset S3</label>
+		<description>Offset of the cool curve, see manual for more information </description>
+		<state min="-10" max="10" step="1" pattern="%d  " readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48738" advanced="true">
+		<item-type>Number</item-type>
+		<label>Cool offset S2</label>
+		<description>Offset of the cool curve, see manual for more information </description>
+		<state min="-10" max="10" step="1" pattern="%d  " readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48739" advanced="true">
+		<item-type>Number</item-type>
+		<label>Cool offset S1</label>
+		<description>Offset of the cool curve, see manual for more information </description>
+		<state min="-10" max="10" step="1" pattern="%d  " readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48755" advanced="true">
+		<item-type>Number</item-type>
+		<label>Transformer ratio</label>
+		<description>Ratio of the current measurement transformers</description>
+		<state min="300" max="2500" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48794" advanced="true">
+		<item-type>Number</item-type>
+		<label>RH set value</label>
+		<description>RH set value</description>
+		<state min="30" max="90" step="1" pattern="%d %" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48810" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Prevent humidity S8 </label>
+		<description> </description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-48811" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Prevent humidity S7</label>
+		<description> </description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-48812" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Prevent humidity S6</label>
+		<description> </description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-48813" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Prevent humidity S5</label>
+		<description> </description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-48814" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Prevent humidity S4</label>
+		<description> </description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-48815" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Prevent humidity S3</label>
+		<description> </description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-48816" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Prevent humidity S2</label>
+		<description> </description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-48817" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Prevent humidity S1</label>
+		<description> </description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-48889" advanced="true">
+		<item-type>Switch</item-type>
+		<label>MODBUS40 Disable LOG.SET</label>
+		<description>If set, the system will ignore the existing LOG.SET on the USB stick.1=ignore LOG.SET,0=use LOG.SET</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-48926" advanced="true">
+		<item-type>Number</item-type>
+		<label>Humidity factor</label>
+		<description>Setting of how much the difference between set and actual room humidity should affect the supply temperature.</description>
+		<state min="5" max="100" step="1" pattern="%.1f" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48927" advanced="true">
+		<item-type>Number</item-type>
+		<label>Humidity cool factor</label>
+		<description>Setting of how much the difference between set and actual room humidity should affect the supply temperature in cooling mode.</description>
+		<state min="0" max="255" step="1" pattern="%.1f" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48930" advanced="true">
+		<item-type>Switch</item-type>
+		<label>EME10 Activated</label>
+		<description>0=not activated, 1=activated</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-48931" advanced="true">
+		<item-type>Switch</item-type>
+		<label>EME PV Panel Affect Heating</label>
+		<description>0=not affecting, 1=affecting</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-48932" advanced="true">
+		<item-type>Switch</item-type>
+		<label>EME PV Panel Affect Hot Water</label>
+		<description>0=not affecting, 1=affecting</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-48968" advanced="true">
+		<item-type>Number</item-type>
+		<label>FLM 1 set point, cooling</label>
+		<description>Set point, cooling, when using FLM cooling</description>
+		<state min="50" max="400" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-48970" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Outdoor Air Mixing function</label>
+		<description>Activates the Outdoor Air Mixing function.</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-48976" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Smart home room control</label>
+		<description></description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-49289" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Ground water pump speed control </label>
+		<description> </description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-49297" advanced="true">
+		<item-type>Switch</item-type>
+		<label>EME20 Activated</label>
+		<description>0=not activated, 1=activated</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-49298" advanced="true">
+		<item-type>String</item-type>
+		<label>EME PV Panel Affect Pool</label>
+		<description>0=not affecting, 1=affecting</description>
+		<state min="0" max="255" step="1" pattern="%d" readOnly="false">
+			<options>
+				<option value="0">not affecting</option>
+				<option value="1">affecting</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="f470-49358" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Night cooling</label>
+		<description>If the fan should have a higher speed when there is a high room temp and a low outdoor temp.</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-49359" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Night cooling</label>
+		<description>If the fan should have a higher speed when there is a high room temp and a low outdoor temp.</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-49360" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Night cooling</label>
+		<description>If the fan should have a higher speed when there is a high room temp and a low outdoor temp.</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="f470-49361" advanced="true">
+		<item-type>Number</item-type>
+		<label>Start room temp. night cooling</label>
+		<description></description>
+		<state min="20" max="30" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-49362" advanced="true">
+		<item-type>Number</item-type>
+		<label>Start room temp. night cooling</label>
+		<description></description>
+		<state min="20" max="30" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-49363" advanced="true">
+		<item-type>Number</item-type>
+		<label>Start room temp. night cooling</label>
+		<description></description>
+		<state min="20" max="30" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-49364" advanced="true">
+		<item-type>Number</item-type>
+		<label>Night Cooling Min. diff.</label>
+		<description>Minimum difference between room temp and outdoor temp to start night cooling</description>
+		<state min="3" max="10" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-49365" advanced="true">
+		<item-type>Number</item-type>
+		<label>Night Cooling Min. diff.</label>
+		<description>Minimum difference between room temp and outdoor temp to start night cooling</description>
+		<state min="3" max="10" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-49366" advanced="true">
+		<item-type>Number</item-type>
+		<label>Night Cooling Min. diff.</label>
+		<description>Minimum difference between room temp and outdoor temp to start night cooling</description>
+		<state min="3" max="10" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f470-49431" advanced="true">
+		<item-type>Number</item-type>
+		<label>Stop Temperature Supply Air Heating</label>
+		<description>Stop temperature for supply air heating</description>
+		<state min="100" max="400" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+
+</thing:thing-descriptions>
