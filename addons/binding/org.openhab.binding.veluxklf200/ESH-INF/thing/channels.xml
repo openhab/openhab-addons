@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="veluxklf200"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 org.eclipse.smarthome.thing-description.xsd">
+
+	<channel-type id="connection_status">
+		<item-type>Switch</item-type>
+		<label>Connected</label>
+		<description>Indicates whether or not the connection to the KLF200 is active.</description>
+		<category>Switch</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="scene_trigger">
+		<item-type>Switch</item-type>
+		<label>Execute</label>
+		<description>Allows execution of a predefined scene.</description>
+		<category>Switch</category>
+		<state readOnly="false"></state>
+	</channel-type>
+
+	<channel-type id="blind-control">
+		<item-type>Rollershutter</item-type>
+		<label>Control</label>
+		<description>Device control (Up, Down, closure 0-100%)</description>
+	</channel-type>
+
+</thing:thing-descriptions>

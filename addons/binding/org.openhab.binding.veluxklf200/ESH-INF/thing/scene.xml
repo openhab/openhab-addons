@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="veluxklf200"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="velux_scene">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="klf200-bridge" />
+		</supported-bridge-type-refs>
+
+		<label>Velux Scene</label>
+		<description>Scene configured on the KLF200 bridge.</description>
+
+		<channels>
+			<channel id="trigger_scene" typeId="scene_trigger">
+				<label>Execute Scene</label>
+				<description>Executes this scene.</description>
+			</channel>
+		</channels>
+	</thing-type>
+</thing:thing-descriptions>

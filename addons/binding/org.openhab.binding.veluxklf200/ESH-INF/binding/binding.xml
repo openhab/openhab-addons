@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="veluxklf200" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+
+	<name>Velux KLF200 (For v2 Firmware)</name>
+	<description>This binding enables control of Velux devices that are associated with a KLF200 unit. The binding enables full control of individual devices as well as scenes.</description>
+	<author>mkf</author>
+
+</binding:binding>

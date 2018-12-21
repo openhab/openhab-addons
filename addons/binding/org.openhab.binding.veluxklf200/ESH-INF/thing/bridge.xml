@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="veluxklf200"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 org.eclipse.smarthome.thing-description.xsd">
+
+	<bridge-type id="klf200-bridge">
+		<label>Velux KLF200 Bridge</label>
+		<description>This bridge connects to a Velux KLF200 device running firmware version 2.x.</description>
+		<channels>
+			<channel id="connection_status" typeId="connection_status">
+				<label>Connected</label>
+				<description>Indicates whether or not the connection to the KLF200 is active.</description>
+			</channel>
+		</channels>
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<label>IP / Hostname</label>
+				<description>The IP address or Hostname of the KLF200 that you want to connect to.</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Note, if you have not set the password, by default it is the wlan password printed on the underside of
+					the KLF200.</description>
+			</parameter>
+			<parameter name="port" type="integer" required="true">
+				<label>Socket Port</label>
+				<description>The port that the unit is listening on. By default, 51200.</description>
+				<default>51200</default>
+			</parameter>
+			<parameter name="refresh" type="integer" required="true">
+				<label>Refresh Period</label>
+				<description>Frequency (in minutes) of the refresh interval.</description>
+				<default>5</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>
