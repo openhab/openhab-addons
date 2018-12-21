@@ -20,10 +20,14 @@ public class GroheOndusBindingConstants {
     private static final String BINDING_ID = "groheondus";
 
     public static final ThingTypeUID THING_TYPE_BRIDGE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
-    public static final ThingTypeUID THING_TYPE_APPLIANCE = new ThingTypeUID(BINDING_ID, "appliance");
+    public static final ThingTypeUID THING_TYPE_SENSEGUARD = new ThingTypeUID(BINDING_ID, "senseguard");
+    public static final ThingTypeUID THING_TYPE_SENSE = new ThingTypeUID(BINDING_ID, "sense");
 
     public static final String CHANNEL_NAME = "name";
     public static final String CHANNEL_PRESSURE = "pressure";
-    public static final String CHANNEL_TEMPERATURE = "temperature";
+    public static final String CHANNEL_TEMPERATURE_GUARD = "temperature_guard";
     public static final String CHANNEL_VALVE_OPEN = "valve_open";
+    public static final String CHANNEL_TEMPERATURE = "temperature";
+    public static final String CHANNEL_HUMIDITY = "humidity";
+    public static final String CHANNEL_BATTERY = "battery";
 }

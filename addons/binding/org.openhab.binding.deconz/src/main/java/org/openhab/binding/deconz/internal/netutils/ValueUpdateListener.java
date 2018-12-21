@@ -21,8 +21,8 @@ public interface ValueUpdateListener {
     /**
      * A sensor state was updated.
      *
-     * @param id The sensor ID (API endpoint)
+     * @param sensorID The sensor ID (API endpoint)
      * @param newState The new state
      */
-    void valueUpdated(String id, SensorState newState);
+    void websocketUpdate(String sensorID, SensorState newState);
 }

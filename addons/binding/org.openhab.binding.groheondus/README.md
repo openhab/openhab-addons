@@ -10,7 +10,8 @@ This binding should support all appliances from GROHE, however, only the GROHE S
 | Thing type               | Name                     |
 |--------------------------|--------------------------|
 | account                  | GROHE ONDUS Account      |
-| appliance                | GROHE appliance          |
+| senseguard               | GROHE SENSE Guard device |
+| sense                    | GROHE SENSE device       |
 
 ## Discovery
 
@@ -32,7 +33,7 @@ Both parameters, `username` as well as `password`, are required arguments and re
 
 ### Appliance
 
-The `groheondus:appliance` thing is used to retrieve information of a specific appliance from GROHE.
+The `groheondus:sense` and `groheondus:senseguard` things are used to retrieve information of a specific appliance from GROHE.
 This appliance needs to be connected with your GROHE ONDUS account as configured in the corresponding Account Bridge.
 The appliance needs to be configured with the unique appliance ID (with the `applianceId` configuration) as well as the `roomId`
 and the `locationId`. Once the account bridge is configured, the appliances in your account will be discovered as Appliance things.
@@ -43,16 +44,27 @@ and the `locationId`. Once the account bridge is configured, the appliances in y
 | roomId                   | ''                       | ID of the room the appliance is in                    |
 | locationId               | ''                       | ID of the location (building) the appliance is in     |
 | pollingInterval          | Retrieved from API,      | Interval in seconds to get new data from the API      |
-|                          | usually 900              |                                                       |
+|                          | usually 900              | The `sense` thing uses 900 by default               |
 
 #### Channels
+
+##### senseguard
 
 | Channel                  | Type                     | Description                                           |
 |--------------------------|--------------------------|-------------------------------------------------------|
 | name                     | String                   | The name of the appliance                             |
 | pressure                 | Number:Pressure          | The pressure of your water supply                     |
-| temperature              | Number:Temperature       | The ambient temperature of the appliance              |
+| temperature_guard        | Number:Temperature       | The ambient temperature of the appliance              |
 | valve_open               | Switch                   | Valve switch                                          |
+
+##### sense
+
+| Channel                  | Type                     | Description                                           |
+|--------------------------|--------------------------|-------------------------------------------------------|
+| name                     | String                   | The name of the appliance                             |
+| humidity                 | Number:Dimensionless     | The humidity measured by the appliance                |
+| temperature              | Number:Temperature       | The ambient temperature of the appliance              |
+| battery                  | Number                   | The battery level of the appliance                    |
 
 ## Full Example
 
@@ -60,15 +72,20 @@ Things file:
 
 ````
 Bridge groheondus:account:account1 [ username="user@example.com", password="YourStrongPasswordHere!" ] {
-    groheondus:appliance:550e8400-e29b-11d4-a716-446655440000 [ applianceId="550e8400-e29b-11d4-a716-446655440000", roomId=456, locationId=123 ]
+    groheondus:senseguard:550e8400-e29b-11d4-a716-446655440000 [ applianceId="550e8400-e29b-11d4-a716-446655440000", roomId=456, locationId=123 ]
+    groheondus:sense:550e8400-e29b-11d4-a716-446655440000 [ applianceId="444e8400-e29b-11d4-a716-446655440000", roomId=456, locationId=123 ]
 }
 ````
 
 Items file:
 
 ````
-String Name "Appliance Name" {channel="groheondus:appliance:groheondus:appliance:550e8400-e29b-11d4-a716-446655440000:name"}
-Number:Pressure Pressure "Pressure [%.1f %unit%]" {channel="groheondus:appliance:groheondus:appliance:550e8400-e29b-11d4-a716-446655440000:pressure"}
-Number:Temperature Temperature "Temperature [%.1f %unit%]" {channel="groheondus:appliance:groheondus:appliance:550e8400-e29b-11d4-a716-446655440000:temperature"}
+String Name_Sense_Guard "Appliance Name" {channel="groheondus:senseguard:groheondus:appliance:550e8400-e29b-11d4-a716-446655440000:name"}
+Number:Pressure Pressure_Sense_Guard "Pressure [%.1f %unit%]" {channel="groheondus:senseguard:groheondus:appliance:550e8400-e29b-11d4-a716-446655440000:pressure"}
+Number:Temperature Temperature_Sense_Guard "Temperature [%.1f %unit%]" {channel="groheondus:senseguard:groheondus:appliance:550e8400-e29b-11d4-a716-446655440000:temperature_guard"}
+
+String Name_Sense "Temperature [%.1f %unit%]" {channel="groheondus:sense:groheondus:appliance:444e8400-e29b-11d4-a716-446655440000:name"}
+Number:Temperature Temperature_Sense "Temperature [%.1f %unit%]" {channel="groheondus:sense:groheondus:appliance:444e8400-e29b-11d4-a716-446655440000:temperature"}
+Number Humidity_Sense "Humidity [%.1f %unit%]" {channel="groheondus:sense:groheondus:appliance:444e8400-e29b-11d4-a716-446655440000:humidity"}
 ````
 
