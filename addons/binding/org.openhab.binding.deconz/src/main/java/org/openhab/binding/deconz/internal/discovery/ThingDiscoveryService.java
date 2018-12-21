@@ -37,10 +37,9 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements T
     private @NonNullByDefault({}) DeconzBridgeHandler handler;
 
     public ThingDiscoveryService() {
-        super(Stream
-                .of(BindingConstants.THING_TYPE_PRESENCE_SENSOR, BindingConstants.THING_TYPE_POWER_SENSOR,
-                        BindingConstants.THING_TYPE_DAYLIGHT_SENSOR, BindingConstants.THING_TYPE_SWITCH)
-                .collect(Collectors.toSet()), 0, true);
+        super(Stream.of(BindingConstants.THING_TYPE_PRESENCE_SENSOR, BindingConstants.THING_TYPE_POWER_SENSOR,
+                BindingConstants.THING_TYPE_DAYLIGHT_SENSOR, BindingConstants.THING_TYPE_SWITCH,
+                BindingConstants.THING_TYPE_OPENCLOSE_SENSOR).collect(Collectors.toSet()), 0, true);
     }
 
     /**
@@ -54,7 +53,7 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements T
     /**
      * Add a sensor device to the discovery inbox.
      *
-     * @param sensor The sensor description
+     * @param sensor    The sensor description
      * @param bridgeUID The bridge UID
      */
     private void addDevice(String sensorID, SensorMessage sensor) {
@@ -71,6 +70,8 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements T
             thingTypeUID = BindingConstants.THING_TYPE_LIGHT_SENSOR;
         } else if (sensor.type.contains("ZHATemperature")) { // ZHATemperature
             thingTypeUID = BindingConstants.THING_TYPE_TEMPERATURE_SENSOR;
+        } else if (sensor.type.contains("ZHAOpenClose")) { // ZHATemperature
+            thingTypeUID = BindingConstants.THING_TYPE_OPENCLOSE_SENSOR;
         } else {
             return;
         }
