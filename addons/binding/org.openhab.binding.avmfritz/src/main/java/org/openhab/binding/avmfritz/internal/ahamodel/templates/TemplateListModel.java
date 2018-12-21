@@ -8,7 +8,8 @@
  */
 package org.openhab.binding.avmfritz.internal.ahamodel.templates;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -26,11 +27,11 @@ public class TemplateListModel {
     private String version;
 
     @XmlElement(name = "template")
-    private ArrayList<TemplateModel> templates;
+    private List<TemplateModel> templates;
 
-    public ArrayList<TemplateModel> getTemplates() {
+    public List<TemplateModel> getTemplates() {
         if (templates == null) {
-            templates = new ArrayList<>();
+            templates = Collections.emptyList();
         }
         return templates;
     }

@@ -206,7 +206,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
      *
      * @param templateList list of template models
      */
-    public void addTemplateList(ArrayList<TemplateModel> templateList) {
+    public void addTemplateList(List<TemplateModel> templateList) {
         List<StateOption> options = new ArrayList<>();
         for (TemplateModel template : templateList) {
             logger.debug("Process template model: {}", template);
@@ -220,7 +220,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
      *
      * @param deviceList list of device models
      */
-    public void addDeviceList(ArrayList<AVMFritzBaseModel> deviceList) {
+    public void addDeviceList(List<AVMFritzBaseModel> deviceList) {
         for (Thing thing : getThing().getThings()) {
             AVMFritzBaseThingHandler handler = (AVMFritzBaseThingHandler) thing.getHandler();
             if (handler != null) {

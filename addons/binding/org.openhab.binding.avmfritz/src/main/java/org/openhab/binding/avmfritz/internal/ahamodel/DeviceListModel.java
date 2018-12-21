@@ -8,7 +8,8 @@
  */
 package org.openhab.binding.avmfritz.internal.ahamodel;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -79,16 +80,16 @@ public class DeviceListModel {
 
     @XmlElements({ @XmlElement(name = "device", type = DeviceModel.class),
             @XmlElement(name = "group", type = GroupModel.class) })
-    private ArrayList<AVMFritzBaseModel> devices;
+    private List<AVMFritzBaseModel> devices;
 
-    public ArrayList<AVMFritzBaseModel> getDevicelist() {
-        if (this.devices == null) {
-            this.devices = new ArrayList<>();
+    public List<AVMFritzBaseModel> getDevicelist() {
+        if (devices == null) {
+            devices = Collections.emptyList();
         }
         return devices;
     }
 
-    public void setDevicelist(ArrayList<AVMFritzBaseModel> devicelist) {
+    public void setDevicelist(List<AVMFritzBaseModel> devicelist) {
         this.devices = devicelist;
     }
 

@@ -8,7 +8,8 @@
  */
 package org.openhab.binding.avmfritz.internal.ahamodel.templates;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -24,11 +25,11 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class DeviceListModel {
 
     @XmlElement(name = "device")
-    private ArrayList<DeviceModel> devices;
+    private List<DeviceModel> devices;
 
-    public ArrayList<DeviceModel> getDevices() {
+    public List<DeviceModel> getDevices() {
         if (devices == null) {
-            devices = new ArrayList<>();
+            devices = Collections.emptyList();
         }
         return devices;
     }

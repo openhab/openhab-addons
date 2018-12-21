@@ -10,7 +10,7 @@ package org.openhab.binding.avmfritz.internal.handler;
 
 import static org.openhab.binding.avmfritz.internal.BindingConstants.*;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -69,7 +69,7 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler {
     }
 
     @Override
-    public void addDeviceList(ArrayList<AVMFritzBaseModel> devicelist) {
+    public void addDeviceList(List<AVMFritzBaseModel> devicelist) {
         Optional<AVMFritzBaseModel> optionalDevice = devicelist.stream()
                 .filter(it -> it.getIdentifier().equals(getIdentifier())).findFirst();
         if (optionalDevice.isPresent()) {
