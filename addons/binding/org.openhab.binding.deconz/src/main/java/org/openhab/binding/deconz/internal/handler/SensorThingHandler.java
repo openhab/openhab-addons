@@ -243,7 +243,7 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
                 break;
             case BindingConstants.CHANNEL_TEMPERATURE:
                 if (temperature != null) {
-                    updateState(channelID, new QuantityType<Temperature>(temperature, SIUnits.CELSIUS));
+                    updateState(channelID, new QuantityType<Temperature>(temperature / 100, SIUnits.CELSIUS));
                 }
                 break;
             case BindingConstants.CHANNEL_PRESENCE:
