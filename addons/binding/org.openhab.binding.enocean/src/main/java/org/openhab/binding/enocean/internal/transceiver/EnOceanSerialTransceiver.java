@@ -58,8 +58,13 @@ public class EnOceanSerialTransceiver extends EnOceanTransceiver implements Seri
         serialPort = id.open(EnOceanBindingConstants.BINDING_ID, 1000);
         serialPort.setSerialPortParams(ENOCEAN_DEFAULT_BAUD, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
                 SerialPort.PARITY_NONE);
-        serialPort.enableReceiveThreshold(1);
-        serialPort.enableReceiveTimeout(100); // In ms. Small values mean faster shutdown but more cpu usage.
+
+        try {
+            serialPort.enableReceiveThreshold(1);
+            serialPort.enableReceiveTimeout(100); // In ms. Small values mean faster shutdown but more cpu usage.
+        } catch (UnsupportedCommOperationException e) {
+            // rfc connections do not allow a ReceiveThreshold
+        }
 
         inputStream = serialPort.getInputStream();
         outputStream = serialPort.getOutputStream();

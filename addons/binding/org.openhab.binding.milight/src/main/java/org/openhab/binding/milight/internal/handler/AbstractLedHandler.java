@@ -298,7 +298,7 @@ public abstract class AbstractLedHandler extends BaseThingHandler implements Led
      * @param h The bridge handler
      */
     public void configUpdated(AbstractBridgeHandler h, InetAddress address) {
-        this.port = h.port;
+        this.port = h.config.port;
         this.address = address;
         this.socket = h.socket;
         this.delayTimeMS = h.config.delayTime;

@@ -104,7 +104,6 @@ public class MilightV2RGBHandler extends AbstractLedHandler {
 
     @Override
     public void changeSaturation(int relativeSaturation, MilightThingState state) {
-
     }
 
     @Override
