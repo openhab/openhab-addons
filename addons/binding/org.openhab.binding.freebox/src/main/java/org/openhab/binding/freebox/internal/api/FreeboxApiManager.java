@@ -465,7 +465,7 @@ public class FreeboxApiManager {
 
     private String encodeUrl(String url) throws FreeboxException {
         try {
-            return URLEncoder.encode(url, "UTF-8");
+            return URLEncoder.encode(url, StandardCharsets.UTF_8.name());
         } catch (UnsupportedEncodingException e) {
             throw new FreeboxException("Encoding the URL \"" + url + "\" in UTF-8 failed", e);
         }
@@ -488,9 +488,8 @@ public class FreeboxApiManager {
             byte[] hexBytes = new Hex().encode(rawHmac);
 
             // Covert array of Hex bytes to a String
-            return new String(hexBytes, "UTF-8");
-        } catch (IllegalArgumentException | NoSuchAlgorithmException | InvalidKeyException | IllegalStateException
-                | UnsupportedEncodingException e) {
+            return new String(hexBytes, StandardCharsets.UTF_8);
+        } catch (IllegalArgumentException | NoSuchAlgorithmException | InvalidKeyException | IllegalStateException e) {
             throw new FreeboxException("Computing the hmac-sha1 of the challenge and the app token failed", e);
         }
     }
