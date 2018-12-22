@@ -196,7 +196,7 @@
 	</thing-type>
 
 	<channel-type id="open">
-		<item-type>Switch</item-type>
+		<item-type>Contact</item-type>
 		<label>Open/Close</label>
 		<description>Open/Close detected</description>
 		<state readOnly="true"></state>

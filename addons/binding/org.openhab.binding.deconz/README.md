@@ -84,7 +84,7 @@ Overview of provided channels for `openclosesensor`:
 
 | Channel ID                |  Description                       | Read/Write | Values               |
 | :------------------------ | :----------------------------------|:----------:|:--------------------:|
-| open                  | Switch type                        |r           | ON/OFF for close/open |
+| open                  | Contact type                        |r           | ON/OFF for close/open |
 
 ## Full Example
 
