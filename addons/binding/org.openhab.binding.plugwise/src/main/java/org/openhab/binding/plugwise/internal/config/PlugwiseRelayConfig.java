@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.plugwise.internal.config;
 
-import static com.google.common.base.CaseFormat.*;
+import static org.openhab.binding.plugwise.internal.PlugwiseUtils.*;
 import static org.openhab.binding.plugwise.internal.config.PlugwiseRelayConfig.PowerStateChanging.COMMAND_SWITCHING;
 
 import java.time.Duration;
@@ -32,7 +32,7 @@ public class PlugwiseRelayConfig {
     }
 
     private String macAddress = "";
-    private String powerStateChanging = UPPER_UNDERSCORE.to(LOWER_CAMEL, COMMAND_SWITCHING.name());
+    private String powerStateChanging = upperUnderscoreToLowerCamel(COMMAND_SWITCHING.name());
     private boolean suppliesPower = false;
     private int measurementInterval = 60; // minutes
     private boolean temporarilyNotInNetwork = false;
@@ -43,7 +43,7 @@ public class PlugwiseRelayConfig {
     }
 
     public PowerStateChanging getPowerStateChanging() {
-        return PowerStateChanging.valueOf(LOWER_CAMEL.to(UPPER_UNDERSCORE, powerStateChanging));
+        return PowerStateChanging.valueOf(lowerCamelToUpperUnderscore(powerStateChanging));
     }
 
     public boolean isSuppliesPower() {

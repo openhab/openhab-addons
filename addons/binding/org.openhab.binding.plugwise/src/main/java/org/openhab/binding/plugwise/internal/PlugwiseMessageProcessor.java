@@ -11,6 +11,7 @@ package org.openhab.binding.plugwise.internal;
 import static org.openhab.binding.plugwise.internal.PlugwiseCommunicationContext.*;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.TooManyListenersException;
@@ -20,16 +21,15 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.io.transport.serial.SerialPort;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEventListener;
 import org.openhab.binding.plugwise.internal.protocol.AcknowledgementMessage;
 import org.openhab.binding.plugwise.internal.protocol.Message;
 import org.openhab.binding.plugwise.internal.protocol.MessageFactory;
 import org.openhab.binding.plugwise.internal.protocol.field.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gnu.io.SerialPort;
-import gnu.io.SerialPortEvent;
-import gnu.io.SerialPortEventListener;
 
 /**
  * Processes messages received from the Plugwise Stick using a serial connection.
@@ -172,6 +172,7 @@ public class PlugwiseMessageProcessor implements SerialPortEventListener {
         }
     }
 
+    @SuppressWarnings("resource")
     @Override
     public void serialEvent(@Nullable SerialPortEvent event) {
         if (event != null && event.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
@@ -183,9 +184,15 @@ public class PlugwiseMessageProcessor implements SerialPortEventListener {
             }
 
             try {
+                InputStream inputStream = serialPort.getInputStream();
+                if (inputStream == null) {
+                    logger.debug("Failed to read available data from null inputStream");
+                    return;
+                }
+
                 // Read data from serial device
-                while (serialPort.getInputStream().available() > 0) {
-                    int currentByte = serialPort.getInputStream().read();
+                while (inputStream.available() > 0) {
+                    int currentByte = inputStream.read();
                     // Plugwise sends ASCII data, but for some unknown reason we sometimes get data with unsigned
                     // byte value >127 which in itself is very strange. We filter these out for the time being
                     if (currentByte < 128) {
@@ -207,6 +214,7 @@ public class PlugwiseMessageProcessor implements SerialPortEventListener {
         }
     }
 
+    @SuppressWarnings("resource")
     public void start() throws PlugwiseInitializationException {
         SerialPort serialPort = context.getSerialPort();
         if (serialPort == null) {
@@ -223,6 +231,7 @@ public class PlugwiseMessageProcessor implements SerialPortEventListener {
         thread.start();
     }
 
+    @SuppressWarnings("resource")
     public void stop() {
         PlugwiseUtils.stopBackgroundThread(thread);
 
