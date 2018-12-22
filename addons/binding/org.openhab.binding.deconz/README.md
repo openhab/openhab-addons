@@ -21,6 +21,7 @@ These things are supported:
 | `lightsensor`       | A light sensor                  | `lightlux`                 |
 | `temperaturesensor`| A temperature sensor            | `temperature`              |
 | `daylightsensor`    | The deCONZ artificial daylight sensor | `value`,`light`     |
+| `openclosesensor`    | Any open/close sensor | `open`     |
 
 ## Discovery
 
@@ -79,6 +80,12 @@ Overview of provided channels for `daylightsensor`:
 | value                     |A number that represents the sun position: Dawn is around 130, sunrise at 140, sunset at 190, and dusk at 210   |r| Number value             |
 | light                     |A light level                       |r           | Daylight,Sunset,Dark |
 
+Overview of provided channels for `openclosesensor`:
+
+| Channel ID                |  Description                       | Read/Write | Values               |
+| :------------------------ | :----------------------------------|:----------:|:--------------------:|
+| open                  | Contact type                        |r           | ON/OFF for close/open |
+
 ## Full Example
 
 ### Things file ###
@@ -87,6 +94,7 @@ Overview of provided channels for `daylightsensor`:
 Bridge deconz:deconz:homeserver [ host="192.168.1.3", apikey="ABCDEFGHIJ" ] {
     presencesensor livingroom-presence          [ id="1" ]
     temperaturesensor livingroom-temperature    [ id="2" ]
+    openclosesensor livingroom-window           [ id="3" ]
 }
 ```
 
@@ -95,5 +103,7 @@ Bridge deconz:deconz:homeserver [ host="192.168.1.3", apikey="ABCDEFGHIJ" ] {
 ```
 Switch  Livingroom_Presence     "Presence: [%s]"          {channel="deconz:presencesensor:homeserver:livingroom-presence:presence"}
 Number  Livingroom_Temperature  "Temperature: [%.1f °C]"  {channel="deconz:temperaturesensor:homeserver:livingroom-temperature:temperature"}
+Switch  Livingroom_Window       "Window: [%s]"            {channel="deconz:presencesensor:homeserver:livingroom-window:open"}
+
 ```
 

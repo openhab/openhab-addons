@@ -39,10 +39,9 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.deconz")
 @NonNullByDefault
 public class HandlerFactory extends BaseThingHandlerFactory {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
-            .of(BRIDGE_TYPE, THING_TYPE_PRESENCE_SENSOR, THING_TYPE_DAYLIGHT_SENSOR, THING_TYPE_POWER_SENSOR,
-                    THING_TYPE_LIGHT_SENSOR, THING_TYPE_TEMPERATURE_SENSOR, THING_TYPE_SWITCH)
-            .collect(Collectors.toSet());
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream.of(BRIDGE_TYPE,
+            THING_TYPE_PRESENCE_SENSOR, THING_TYPE_DAYLIGHT_SENSOR, THING_TYPE_POWER_SENSOR, THING_TYPE_LIGHT_SENSOR,
+            THING_TYPE_TEMPERATURE_SENSOR, THING_TYPE_SWITCH, THING_TYPE_OPENCLOSE_SENSOR).collect(Collectors.toSet());
 
     private @NonNullByDefault({}) WebSocketFactory webSocketFactory;
     private @NonNullByDefault({}) HttpClientFactory httpClientFactory;
