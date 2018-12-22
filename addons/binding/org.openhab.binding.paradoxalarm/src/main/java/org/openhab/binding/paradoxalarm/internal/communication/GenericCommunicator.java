@@ -103,11 +103,10 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
         // 1: Login to module request (IP150 only)
         ParadoxIPPacket ipPacket = new ParadoxIPPacket(password, false).setCommand(HeaderCommand.CONNECT_TO_IP_MODULE);
         sendPacket(ipPacket);
-        byte[] sendPacket = receivePacket();
-        if (sendPacket[4] == 0x38) {
-            logger.debug("Login OK");
-        } else {
-            logger.debug("Login failed");
+        byte[] loginPacketResponse = receivePacket();
+        if (!isInialLoginSuccessful(loginPacketResponse)) {
+            // logoutSequence();
+            return;
         }
 
         logger.debug("Step2");
@@ -164,16 +163,49 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
         sendPacket(step7);
         byte[] finalResponse = receivePacket();
         if ((finalResponse[16] & 0xF0) == 0x10) {
-            logger.info("SUCCESSFUL LOGON");
+            logger.info("Successful logon to the panel.");
             isOnline = true;
         } else {
-            logger.error("LOGON FAILURE");
+            logger.error("Logon to panel failure.");
             logoutSequence();
         }
         Thread.sleep(300);
         // TODO check why after a short sleep, a 37 bytes packet is received after logon
         // ! ! !
         receivePacket();
+    }
+
+    protected boolean isInialLoginSuccessful(byte[] loginPacketResponse) {
+        byte payloadResponseByte = loginPacketResponse[16];
+
+        byte headerResponseByte = loginPacketResponse[4];
+        switch (headerResponseByte) {
+            case 0x38:
+            case 0x39:
+                if (payloadResponseByte == 0x00) {
+                    logger.info("Login: Initial login - OK");
+                    return true;
+                }
+            case 0x30:
+                logger.error("Login: Initial login failed - Incorrect password");
+                break;
+            case 0x78:
+            case 0x79:
+                logger.error("Login: IP module is busy");
+                break;
+        }
+
+        switch (payloadResponseByte) {
+            case 0x01:
+                logger.error("Login: Invalid password");
+            case 0x02:
+            case 0x04:
+                logger.error("Login: User already connected");
+            default:
+                logger.error("Login: Connection refused");
+
+        }
+        return false;
     }
 
     @Override
@@ -202,7 +234,9 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
                 byte[] result = new byte[256];
                 rx.read(result);
                 ParadoxUtil.printPacket("RX:", result);
-                return Arrays.copyOfRange(result, 0, result[1] + 16);
+                if (result[1] > 0 && result[1] + 16 < 256) {
+                    return Arrays.copyOfRange(result, 0, result[1] + 16);
+                }
             } catch (IOException e) {
                 logger.error("Unable to retrieve data from RX. {}", e.getMessage());
                 Thread.sleep(200);
