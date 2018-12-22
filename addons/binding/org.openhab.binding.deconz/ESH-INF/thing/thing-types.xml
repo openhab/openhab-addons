@@ -67,78 +67,78 @@
 		<description>Current power usage in Watts</description>
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
-	
-    <thing-type id="switch">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="deconz" />
-        </supported-bridge-type-refs>
-        <label>Switch/Button</label>
-        <description>A switch or button</description>
-        <channels>
-            <channel typeId="buttonevent" id="buttonevent"></channel>
-        </channels>
-        <config-description>
-            <parameter name="id" type="text" required="true">
-                <label>Sensor ID</label>
-                <description>The deCONZ bridge assigns an integer number ID to each sensor.</description>
-            </parameter>
-        </config-description>
-    </thing-type>
 
-    <channel-type id="buttonevent">
-        <kind>Trigger</kind>
-        <label>Button trigger</label>
-        <description>This channel is triggered on a button event. The trigger payload consists of the button event number.</description>
-        <event></event>
-    </channel-type>
-    
-    <thing-type id="lightsensor">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="deconz" />
-        </supported-bridge-type-refs>
-        <label>Light sensor</label>
-        <description>A light sensor</description>
-        <channels>
-            <channel typeId="lightlux" id="lightlux"></channel>
-        </channels>
-        <config-description>
-            <parameter name="id" type="text" required="true">
-                <label>Sensor ID</label>
-                <description>The deCONZ bridge assigns an integer number ID to each sensor.</description>
-            </parameter>
-        </config-description>
-    </thing-type>
-    
-    <channel-type id="lightlux">
-        <item-type>Number:Illuminance</item-type>
-        <label>Illuminance</label>
-        <description>Current light illuminance in Lux</description>
-        <state readOnly="true" pattern="%.1f %unit%"></state>
-    </channel-type>
-    
-    <thing-type id="temperaturesensor">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="deconz" />
-        </supported-bridge-type-refs>
-        <label>Temperature sensor</label>
-        <description>A temperature sensor</description>
-        <channels>
-            <channel typeId="temperature" id="temperature"></channel>
-        </channels>
-        <config-description>
-            <parameter name="id" type="text" required="true">
-                <label>Sensor ID</label>
-                <description>The deCONZ bridge assigns an integer number ID to each sensor.</description>
-            </parameter>
-        </config-description>
-    </thing-type>
-    
-    <channel-type id="temperature">
-        <item-type>Number:Temperature</item-type>
-        <label>Temperature</label>
-        <description>Current temperature</description>
-        <state readOnly="true" pattern="%.1f %unit%"></state>
-    </channel-type>
+	<thing-type id="switch">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="deconz" />
+		</supported-bridge-type-refs>
+		<label>Switch/Button</label>
+		<description>A switch or button</description>
+		<channels>
+			<channel typeId="buttonevent" id="buttonevent"></channel>
+		</channels>
+		<config-description>
+			<parameter name="id" type="text" required="true">
+				<label>Sensor ID</label>
+				<description>The deCONZ bridge assigns an integer number ID to each sensor.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="buttonevent">
+		<kind>Trigger</kind>
+		<label>Button trigger</label>
+		<description>This channel is triggered on a button event. The trigger payload consists of the button event number.</description>
+		<event></event>
+	</channel-type>
+
+	<thing-type id="lightsensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="deconz" />
+		</supported-bridge-type-refs>
+		<label>Light sensor</label>
+		<description>A light sensor</description>
+		<channels>
+			<channel typeId="lightlux" id="lightlux"></channel>
+		</channels>
+		<config-description>
+			<parameter name="id" type="text" required="true">
+				<label>Sensor ID</label>
+				<description>The deCONZ bridge assigns an integer number ID to each sensor.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="lightlux">
+		<item-type>Number:Illuminance</item-type>
+		<label>Illuminance</label>
+		<description>Current light illuminance in Lux</description>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<thing-type id="temperaturesensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="deconz" />
+		</supported-bridge-type-refs>
+		<label>Temperature sensor</label>
+		<description>A temperature sensor</description>
+		<channels>
+			<channel typeId="temperature" id="temperature"></channel>
+		</channels>
+		<config-description>
+			<parameter name="id" type="text" required="true">
+				<label>Sensor ID</label>
+				<description>The deCONZ bridge assigns an integer number ID to each sensor.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Current temperature</description>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
 
 	<thing-type id="daylightsensor">
 		<supported-bridge-type-refs>
@@ -177,4 +177,29 @@
 			</options>
 		</state>
 	</channel-type>
+
+	<thing-type id="openclosesensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="deconz" />
+		</supported-bridge-type-refs>
+		<label>Open/Close sensor</label>
+		<description>A open/close sensor</description>
+		<channels>
+			<channel typeId="open" id="open"></channel>
+		</channels>
+		<config-description>
+			<parameter name="id" type="text" required="true">
+				<label>Sensor ID</label>
+				<description>The deCONZ bridge assigns an integer number ID to each sensor.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="open">
+		<item-type>Contact</item-type>
+		<label>Open/Close</label>
+		<description>Open/Close detected</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
 </thing:thing-descriptions>

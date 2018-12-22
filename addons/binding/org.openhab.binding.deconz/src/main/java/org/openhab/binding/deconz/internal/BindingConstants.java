@@ -29,6 +29,7 @@ public class BindingConstants {
     public static final ThingTypeUID THING_TYPE_SWITCH = new ThingTypeUID(BINDING_ID, "switch");
     public static final ThingTypeUID THING_TYPE_LIGHT_SENSOR = new ThingTypeUID(BINDING_ID, "lightsensor");
     public static final ThingTypeUID THING_TYPE_TEMPERATURE_SENSOR = new ThingTypeUID(BINDING_ID, "temperaturesensor");
+    public static final ThingTypeUID THING_TYPE_OPENCLOSE_SENSOR = new ThingTypeUID(BINDING_ID, "openclosesensor");
 
     // List of all Channel ids
     public static final String CHANNEL_PRESENCE = "presence";
@@ -38,6 +39,7 @@ public class BindingConstants {
     public static final String CHANNEL_DAYLIGHT = "light";
     public static final String CHANNEL_LIGHT_LUX = "lightlux";
     public static final String CHANNEL_BUTTONEVENT = "buttonevent";
+    public static final String CHANNEL_OPENCLOSE = "open";
 
     // Thing configuration
     public static final String CONFIG_HOST = "host";
