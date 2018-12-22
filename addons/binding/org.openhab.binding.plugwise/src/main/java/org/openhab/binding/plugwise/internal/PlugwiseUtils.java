@@ -17,6 +17,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.GregorianCalendar;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.WordUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
@@ -73,6 +75,10 @@ public final class PlugwiseUtils {
         }
     }
 
+    public static String lowerCamelToUpperUnderscore(String text) {
+        return text.replaceAll("([a-z])([A-Z]+)", "$1_$2").toUpperCase();
+    }
+
     public static <T extends Comparable<T>> T minComparable(T first, T second) {
         return first.compareTo(second) <= 0 ? first : second;
     }
@@ -90,6 +96,11 @@ public final class PlugwiseUtils {
                 Thread.interrupted();
             }
         }
+    }
+
+    public static String upperUnderscoreToLowerCamel(String text) {
+        String upperCamel = StringUtils.remove(WordUtils.capitalizeFully(text, new char[] { '_' }), "_");
+        return upperCamel.substring(0, 1).toLowerCase() + upperCamel.substring(1);
     }
 
     @SuppressWarnings("null")

@@ -8,12 +8,14 @@
  */
 package org.openhab.binding.plugwise.internal;
 
+import static java.util.stream.Collectors.*;
+
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import com.google.common.collect.Sets;
 
 /**
  * The {@link PlugwiseBinding} class defines common constants, which are used across the whole binding.
@@ -59,8 +61,9 @@ public class PlugwiseBindingConstants {
     public static final ThingTypeUID THING_TYPE_STICK = new ThingTypeUID(BINDING_ID, "stick");
     public static final ThingTypeUID THING_TYPE_SWITCH = new ThingTypeUID(BINDING_ID, "switch");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_CIRCLE,
-            THING_TYPE_CIRCLE_PLUS, THING_TYPE_SCAN, THING_TYPE_SENSE, THING_TYPE_STEALTH, THING_TYPE_STICK,
-            THING_TYPE_SWITCH);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
+            .of(THING_TYPE_CIRCLE, THING_TYPE_CIRCLE_PLUS, THING_TYPE_SCAN, THING_TYPE_SENSE, THING_TYPE_STEALTH,
+                    THING_TYPE_STICK, THING_TYPE_SWITCH)
+            .collect(collectingAndThen(toSet(), Collections::unmodifiableSet));
 
 }

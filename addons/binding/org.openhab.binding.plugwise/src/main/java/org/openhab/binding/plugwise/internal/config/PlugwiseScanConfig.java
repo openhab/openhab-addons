@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.plugwise.internal.config;
 
-import static com.google.common.base.CaseFormat.*;
+import static org.openhab.binding.plugwise.internal.PlugwiseUtils.*;
 import static org.openhab.binding.plugwise.internal.protocol.field.Sensitivity.MEDIUM;
 
 import java.time.Duration;
@@ -26,7 +26,7 @@ import org.openhab.binding.plugwise.internal.protocol.field.Sensitivity;
 public class PlugwiseScanConfig {
 
     private String macAddress = "";
-    private String sensitivity = UPPER_UNDERSCORE.to(LOWER_CAMEL, MEDIUM.name());
+    private String sensitivity = upperUnderscoreToLowerCamel(MEDIUM.name());
     private int switchOffDelay = 5; // minutes
     private boolean daylightOverride = false;
     private int wakeupInterval = 1440; // minutes (1 day)
@@ -39,7 +39,7 @@ public class PlugwiseScanConfig {
     }
 
     public Sensitivity getSensitivity() {
-        return Sensitivity.valueOf(LOWER_CAMEL.to(UPPER_UNDERSCORE, sensitivity));
+        return Sensitivity.valueOf(lowerCamelToUpperUnderscore(sensitivity));
     }
 
     public Duration getSwitchOffDelay() {

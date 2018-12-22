@@ -12,7 +12,7 @@ import static org.openhab.binding.plugwise.internal.PlugwiseBindingConstants.THI
 import static org.openhab.binding.plugwise.internal.protocol.field.DeviceType.STICK;
 
 import java.io.IOException;
-import java.util.Enumeration;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -27,10 +27,9 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
-import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
-import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.plugwise.internal.config.PlugwiseStickConfig;
 import org.openhab.binding.plugwise.internal.listener.PlugwiseMessageListener;
 import org.openhab.binding.plugwise.internal.protocol.InformationRequestMessage;
@@ -43,12 +42,9 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Sets;
-
-import gnu.io.CommPortIdentifier;
 
 /**
  * Discovers Stick devices by periodically sending a {@link NetworkStatusRequestMessage} to unused serial ports.
@@ -57,10 +53,9 @@ import gnu.io.CommPortIdentifier;
  */
 @NonNullByDefault
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.plugwise")
-public class PlugwiseStickDiscoveryService extends AbstractDiscoveryService
-        implements ExtendedDiscoveryService, PlugwiseMessageListener {
+public class PlugwiseStickDiscoveryService extends AbstractDiscoveryService implements PlugwiseMessageListener {
 
-    private static final Set<ThingTypeUID> DISCOVERED_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_STICK);
+    private static final Set<ThingTypeUID> DISCOVERED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_STICK);
 
     private static final int DISCOVERY_INTERVAL = 180;
     private static final int SCAN_TIMEOUT = 5;
@@ -68,8 +63,8 @@ public class PlugwiseStickDiscoveryService extends AbstractDiscoveryService
     private final Logger logger = LoggerFactory.getLogger(PlugwiseStickDiscoveryService.class);
     private final PlugwiseCommunicationHandler communicationHandler = new PlugwiseCommunicationHandler();
 
-    private @Nullable DiscoveryServiceCallback discoveryServiceCallback;
     private @Nullable ScheduledFuture<?> discoveryJob;
+    private @NonNullByDefault({}) SerialPortManager serialPortManager;
 
     private boolean discovering;
     private final ReentrantLock discoveryLock = new ReentrantLock();
@@ -90,6 +85,7 @@ public class PlugwiseStickDiscoveryService extends AbstractDiscoveryService
     public void activate() {
         super.activate(new HashMap<>());
         communicationHandler.addMessageListener(this);
+        communicationHandler.setSerialPortManager(serialPortManager);
     }
 
     private DiscoveryResult createDiscoveryResult(MACAddress macAddress, Map<String, String> properties) {
@@ -112,18 +108,8 @@ public class PlugwiseStickDiscoveryService extends AbstractDiscoveryService
     }
 
     private void discoverNewStickDetails(MACAddress macAddress) {
-        if (!isAlreadyDiscovered(macAddress)) {
-            logger.debug("Discovered new Stick ({})", macAddress);
-            sendMessage(new InformationRequestMessage(macAddress));
-        } else {
-            try {
-                discoveryLock.lock();
-                logger.debug("Already discovered Stick ({})", macAddress);
-                continueDiscovery.signalAll();
-            } finally {
-                discoveryLock.unlock();
-            }
-        }
+        logger.debug("Discovered new Stick ({})", macAddress);
+        sendMessage(new InformationRequestMessage(macAddress));
     }
 
     private void discoverStick(String serialPort) {
@@ -160,16 +146,10 @@ public class PlugwiseStickDiscoveryService extends AbstractDiscoveryService
         } else {
             discovering = true;
 
-            @SuppressWarnings("unchecked")
-            Enumeration<CommPortIdentifier> portIdentifiers = CommPortIdentifier.getPortIdentifiers();
-
-            while (discovering && portIdentifiers.hasMoreElements()) {
-                CommPortIdentifier portIdentifier = portIdentifiers.nextElement();
-                if (portIdentifier.getPortType() == CommPortIdentifier.PORT_SERIAL
-                        && !portIdentifier.isCurrentlyOwned()) {
-                    discoverStick(portIdentifier.getName());
-                }
-            }
+            serialPortManager.getIdentifiers().filter(identifier -> !identifier.isCurrentlyOwned())
+                    .forEach(identifier -> {
+                        discoverStick(identifier.getName());
+                    });
 
             discovering = false;
             logger.debug("Finished discovering Sticks on serial ports");
@@ -211,23 +191,6 @@ public class PlugwiseStickDiscoveryService extends AbstractDiscoveryService
         }
     }
 
-    private boolean isAlreadyDiscovered(MACAddress macAddress) {
-        ThingUID thingUID = new ThingUID(THING_TYPE_STICK, macAddress.toString());
-        DiscoveryServiceCallback callback = discoveryServiceCallback;
-        if (callback == null) {
-            logger.debug("Assuming Stick ({}) has not yet been discovered (callback null)", macAddress);
-            return false;
-        } else if (callback.getExistingDiscoveryResult(thingUID) != null) {
-            logger.debug("Stick ({}) has existing discovery result: {}", macAddress, thingUID);
-            return true;
-        } else if (callback.getExistingThing(thingUID) != null) {
-            logger.debug("Stick ({}) has existing thing: {}", macAddress, thingUID);
-            return true;
-        }
-        logger.debug("Stick ({}) has not yet been discovered", macAddress);
-        return false;
-    }
-
     @Modified
     @Override
     protected void modified(@Nullable Map<String, @Nullable Object> configProperties) {
@@ -248,9 +211,13 @@ public class PlugwiseStickDiscoveryService extends AbstractDiscoveryService
         }
     }
 
-    @Override
-    public void setDiscoveryServiceCallback(DiscoveryServiceCallback discoveryServiceCallback) {
-        this.discoveryServiceCallback = discoveryServiceCallback;
+    @Reference
+    protected void setSerialPortManager(SerialPortManager serialPortManager) {
+        this.serialPortManager = serialPortManager;
+    }
+
+    protected void unsetSerialPortManager(SerialPortManager serialPortManager) {
+        this.serialPortManager = null;
     }
 
     @Override

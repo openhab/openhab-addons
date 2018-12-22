@@ -10,25 +10,25 @@ package org.openhab.binding.plugwise.internal;
 
 import java.io.IOException;
 import java.util.Comparator;
-import java.util.Enumeration;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.io.transport.serial.PortInUseException;
+import org.eclipse.smarthome.io.transport.serial.SerialPort;
+import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
+import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
 import org.openhab.binding.plugwise.internal.config.PlugwiseStickConfig;
 import org.openhab.binding.plugwise.internal.protocol.AcknowledgementMessage;
 import org.openhab.binding.plugwise.internal.protocol.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gnu.io.CommPortIdentifier;
-import gnu.io.PortInUseException;
-import gnu.io.SerialPort;
-import gnu.io.UnsupportedCommOperationException;
 
 /**
  * The communication context used by the {@link PlugwiseMessageSender} and {@link PlugwiseMessageProcessor} for sending
@@ -79,6 +79,7 @@ public class PlugwiseCommunicationContext {
     private final PlugwiseFilteredMessageListenerList filteredListeners = new PlugwiseFilteredMessageListenerList();
 
     private PlugwiseStickConfig configuration = new PlugwiseStickConfig();
+    private @Nullable SerialPortManager serialPortManager;
     private @Nullable SerialPort serialPort;
 
     public void clearQueues() {
@@ -103,29 +104,25 @@ public class PlugwiseCommunicationContext {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private CommPortIdentifier findSerialPortIdentifier() throws PlugwiseInitializationException {
-        Enumeration<CommPortIdentifier> portList = CommPortIdentifier.getPortIdentifiers();
-        while (portList.hasMoreElements()) {
-            CommPortIdentifier identifier = portList.nextElement();
-            if (identifier.getPortType() == CommPortIdentifier.PORT_SERIAL
-                    && identifier.getName().equals(configuration.getSerialPort())) {
-                logger.debug("Serial port '{}' has been found", configuration.getSerialPort());
-                return identifier;
-            }
+    private SerialPortIdentifier findSerialPortIdentifier() throws PlugwiseInitializationException {
+        SerialPortManager localSerialPortManager = serialPortManager;
+        if (localSerialPortManager == null) {
+            throw new PlugwiseInitializationException("serialPortManager is null");
+        }
+
+        SerialPortIdentifier identifier = localSerialPortManager.getIdentifier(configuration.getSerialPort());
+        if (identifier != null) {
+            logger.debug("Serial port '{}' has been found", configuration.getSerialPort());
+            return identifier;
         }
 
         // Build exception message when port not found
-        StringBuilder sb = new StringBuilder();
-        portList = CommPortIdentifier.getPortIdentifiers();
-        while (portList.hasMoreElements()) {
-            CommPortIdentifier id = portList.nextElement();
-            if (id.getPortType() == CommPortIdentifier.PORT_SERIAL) {
-                sb.append(String.format("%s%n", id.getName()));
-            }
-        }
-        throw new PlugwiseInitializationException(String.format(
-                "Serial port '%s' could not be found. Available ports are:%n%s", configuration.getSerialPort(), sb));
+        String availablePorts = localSerialPortManager.getIdentifiers().map(id -> id.getName())
+                .collect(Collectors.joining(System.lineSeparator()));
+
+        throw new PlugwiseInitializationException(
+                String.format("Serial port '%s' could not be found. Available ports are:%n%s",
+                        configuration.getSerialPort(), availablePorts));
     }
 
     public BlockingQueue<@Nullable AcknowledgementMessage> getAcknowledgedQueue() {
@@ -181,6 +178,10 @@ public class PlugwiseCommunicationContext {
 
     public void setConfiguration(PlugwiseStickConfig configuration) {
         this.configuration = configuration;
+    }
+
+    public void setSerialPortManager(SerialPortManager serialPortManager) {
+        this.serialPortManager = serialPortManager;
     }
 
 }
