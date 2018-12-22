@@ -43,6 +43,11 @@ available *Channels*, so that linked Items are automatically exposed with this s
 
 You can tag items manually though as well.
 
+You can also tag groups so that they're exposed as a device.
+Be aware that you need to add the base type to the group as well (Switch, Dimmer or Color) in order for groups to be exposed as devices, as shown in this example:
+
+`Group:Switch ExampleGroup "Example Group" ["Lighting"]`
+
 ## Exposed names
 
 Your items labels are used for exposing! The default naming schema in Paper UI
