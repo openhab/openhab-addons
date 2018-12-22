@@ -8,8 +8,10 @@
  */
 package org.openhab.binding.plugwise.internal;
 
+import static java.util.stream.Collectors.*;
 import static org.openhab.binding.plugwise.internal.PlugwiseBindingConstants.*;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -24,8 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
-import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
@@ -43,8 +44,6 @@ import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Sets;
-
 /**
  * Discovers Plugwise devices by periodically reading the Circle+ node/MAC table with {@link RoleCallRequestMessage}s.
  * Sleeping end devices are discovered when they announce being awake with a {@link AnnounceAwakeRequestMessage}. To
@@ -54,7 +53,7 @@ import com.google.common.collect.Sets;
  */
 @NonNullByDefault
 public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
-        implements ExtendedDiscoveryService, PlugwiseMessageListener, PlugwiseStickStatusListener {
+        implements PlugwiseMessageListener, PlugwiseStickStatusListener {
 
     private static class CurrentRoleCall {
         private boolean isRoleCalling;
@@ -79,8 +78,9 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
         }
     }
 
-    private static final Set<ThingTypeUID> DISCOVERED_THING_TYPES_UIDS = Sets.difference(SUPPORTED_THING_TYPES_UIDS,
-            Sets.newHashSet(THING_TYPE_STICK));
+    private static final Set<ThingTypeUID> DISCOVERED_THING_TYPES_UIDS = SUPPORTED_THING_TYPES_UIDS.stream()
+            .filter(thingTypeUID -> !thingTypeUID.equals(THING_TYPE_STICK))
+            .collect(collectingAndThen(toSet(), Collections::unmodifiableSet));
 
     private static final int MIN_NODE_ID = 0;
     private static final int MAX_NODE_ID = 63;
@@ -94,7 +94,6 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
     private final Logger logger = LoggerFactory.getLogger(PlugwiseThingDiscoveryService.class);
 
     private final PlugwiseStickHandler stickHandler;
-    private @Nullable DiscoveryServiceCallback discoveryServiceCallback;
 
     private @Nullable ScheduledFuture<?> discoveryJob;
     private @Nullable ScheduledFuture<?> watchJob;
@@ -238,22 +237,11 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
     }
 
     private boolean isAlreadyDiscovered(MACAddress macAddress) {
-        DiscoveryServiceCallback callback = discoveryServiceCallback;
-        for (ThingTypeUID thingTypeUID : DISCOVERED_THING_TYPES_UIDS) {
-            ThingUID thingUID = new ThingUID(thingTypeUID, macAddress.toString());
-            if (callback == null) {
-                logger.debug("Assuming Node ({}) has not yet been discovered (callback null)", macAddress);
-                return false;
-            } else if (callback.getExistingDiscoveryResult(thingUID) != null) {
-                logger.debug("Node ({}) has existing discovery result: {}", macAddress, thingUID);
-                return true;
-            } else if (callback.getExistingThing(thingUID) != null) {
-                logger.debug("Node ({}) has existing thing: {}", macAddress, thingUID);
-                return true;
-            }
+        Thing thing = stickHandler.getThingByMAC(macAddress);
+        if (thing != null) {
+            logger.debug("Node ({}) has existing thing: {}", macAddress, thing.getUID());
         }
-        logger.debug("Node ({}) has not yet been discovered", macAddress);
-        return false;
+        return thing != null;
     }
 
     /**
@@ -280,11 +268,6 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
 
     private void sendMessage(Message message) {
         stickHandler.sendMessage(message, PlugwiseMessagePriority.UPDATE_AND_DISCOVERY);
-    }
-
-    @Override
-    public void setDiscoveryServiceCallback(DiscoveryServiceCallback discoveryServiceCallback) {
-        this.discoveryServiceCallback = discoveryServiceCallback;
     }
 
     @Override
