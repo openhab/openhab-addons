@@ -10,7 +10,7 @@ The Solar-Log is exposed as one thing with a number of channels that can be used
 
 You can either configure the Thing via the openHAB UI or via a `*.things` file, according to the following example:
 
-`Thing solarlog:meter:pv "Solar-Log 300" @ "Utility Room" [ url="http://solar-log" refreshInterval=15]`
+`Thing solarlog:meter:pv "Solar-Log 300" @ "Utility Room" [ url="http://solar-log", refreshInterval=15]`
 
 The parameters to be used are simple:
 
