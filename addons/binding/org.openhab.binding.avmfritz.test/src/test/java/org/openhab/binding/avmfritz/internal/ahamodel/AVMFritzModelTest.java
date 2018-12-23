@@ -14,6 +14,7 @@ package org.openhab.binding.avmfritz.internal.ahamodel;
 
 import static org.junit.Assert.*;
 import static org.openhab.binding.avmfritz.internal.BindingConstants.*;
+import static org.openhab.binding.avmfritz.internal.ahamodel.HeatingModel.BATTERY_OFF;
 
 import java.io.StringReader;
 import java.math.BigDecimal;
@@ -56,6 +57,7 @@ public class AVMFritzModelTest {
                     "<device identifier=\"08761 0000439\" id=\"40\" functionbitmask=\"1280\" fwversion=\"03.86\" manufacturer=\"AVM\" productname=\"FRITZ!DECT Repeater 100\"><present>1</present><name>FRITZ!DECT Repeater 100 #5</name><temperature><celsius>230</celsius><offset>0</offset></temperature></device>" +
                     "<device identifier=\"11934 0059978-1\" id=\"2000\" functionbitmask=\"8208\" fwversion=\"0.0\" manufacturer=\"0x0feb\" productname=\"HAN-FUN\"><present>0</present><name>HAN-FUN #2: Unit #2</name><etsiunitinfo><etsideviceid>406</etsideviceid><unittype>514</unittype><interfaces>256</interfaces></etsiunitinfo><alert><state>1</state></alert></device>" +
                     "<device identifier=\"11934 0059979-1\" id=\"2001\" functionbitmask=\"8200\" fwversion=\"0.0\" manufacturer=\"0x0feb\" productname=\"HAN-FUN\"><present>0</present><name>HAN-FUN #2: Unit #2</name><etsiunitinfo><etsideviceid>412</etsideviceid><unittype>273</unittype><interfaces>772</interfaces></etsiunitinfo><button><lastpressedtimestamp>1529590797</lastpressedtimestamp></button></device>" +
+                    "<device identifier=\"13096 0007307\" id=\"29\" functionbitmask=\"32\" fwversion=\"04.90\" manufacturer=\"AVM\" productname=\"FRITZ!DECT 400\"><present>1</present><name>FRITZ!DECT 400 #14</name><battery>100</battery><batterylow>0</batterylow><button identifier=\"13096 0007307-0\" id=\"5000\"><name>FRITZ!DECT 400 #14: kurz</name><lastpressedtimestamp>1549195586</lastpressedtimestamp></button><button identifier=\"13096 0007307-9\" id=\"5001\"><name>FRITZ!DECT 400 #14: lang</name><lastpressedtimestamp>1549195595</lastpressedtimestamp></button></device>" +
                 "</devicelist>";
         //@formatter:off
 
@@ -70,7 +72,7 @@ public class AVMFritzModelTest {
     @Test
     public void validateDeviceListModel() {
         assertNotNull(devices);
-        assertEquals(11, devices.getDevicelist().size());
+        assertEquals(12, devices.getDevicelist().size());
         assertEquals("1", devices.getXmlApiVersion());
     }
 
@@ -90,7 +92,7 @@ public class AVMFritzModelTest {
         assertEquals(1, device.getPresent());
         assertEquals("FRITZ!DECT Repeater 100 #5", device.getName());
 
-        assertFalse(device.isButton());
+        assertFalse(device.isHANFUNButton());
         assertFalse(device.isAlarmSensor());
         assertTrue(device.isDectRepeater());
         assertFalse(device.isSwitchableOutlet());
@@ -125,7 +127,7 @@ public class AVMFritzModelTest {
         assertEquals(1, device.getPresent());
         assertEquals("FRITZ!DECT 200 #1", device.getName());
 
-        assertFalse(device.isButton());
+        assertFalse(device.isHANFUNButton());
         assertFalse(device.isAlarmSensor());
         assertFalse(device.isDectRepeater());
         assertTrue(device.isSwitchableOutlet());
@@ -164,7 +166,7 @@ public class AVMFritzModelTest {
         assertEquals(1, device.getPresent());
         assertEquals("FRITZ!DECT 210 #8", device.getName());
 
-        assertFalse(device.isButton());
+        assertFalse(device.isHANFUNButton());
         assertFalse(device.isAlarmSensor());
         assertFalse(device.isDectRepeater());
         assertTrue(device.isSwitchableOutlet());
@@ -203,7 +205,7 @@ public class AVMFritzModelTest {
         assertEquals(0, device.getPresent());
         assertEquals("FRITZ!DECT 300 #1", device.getName());
 
-        assertFalse(device.isButton());
+        assertFalse(device.isHANFUNButton());
         assertFalse(device.isAlarmSensor());
         assertFalse(device.isDectRepeater());
         assertFalse(device.isSwitchableOutlet());
@@ -238,7 +240,7 @@ public class AVMFritzModelTest {
         assertEquals(0, device.getPresent());
         assertEquals("FRITZ!DECT 301 #1", device.getName());
 
-        assertFalse(device.isButton());
+        assertFalse(device.isHANFUNButton());
         assertFalse(device.isAlarmSensor());
         assertFalse(device.isDectRepeater());
         assertFalse(device.isSwitchableOutlet());
@@ -258,6 +260,52 @@ public class AVMFritzModelTest {
     }
 
     @Test
+    public void validateDECT400Model() {
+        Optional<AVMFritzBaseModel> optionalDevice = findModelByIdentifier("130960007307");
+        assertTrue(optionalDevice.isPresent());
+        assertTrue(optionalDevice.get() instanceof DeviceModel);
+
+        DeviceModel device = (DeviceModel) optionalDevice.get();
+        assertEquals("FRITZ!DECT 400", device.getProductName());
+        assertEquals("130960007307", device.getIdentifier());
+        assertEquals("29", device.getDeviceId());
+        assertEquals("04.90", device.getFirmwareVersion());
+        assertEquals("AVM", device.getManufacturer());
+
+        assertEquals(1, device.getPresent());
+        assertEquals("FRITZ!DECT 400 #14", device.getName());
+
+        assertFalse(device.isHANFUNButton());
+        assertFalse(device.isAlarmSensor());
+        assertTrue(device.isButton());
+        assertFalse(device.isDectRepeater());
+        assertFalse(device.isSwitchableOutlet());
+        assertFalse(device.isTempSensor());
+        assertFalse(device.isPowermeter());
+        assertFalse(device.isHeatingThermostat());
+
+        assertEquals(new BigDecimal("100"), device.getBattery());
+        assertEquals(BATTERY_OFF, device.getBatterylow());
+
+        assertFalse(device.getButtons().isEmpty());
+        assertEquals(device.getButtons().size(), 2);
+        assertEquals("FRITZ!DECT 400 #14: kurz", device.getButtons().get(0).getName());
+        assertEquals(1549195586, device.getButtons().get(0).getLastpressedtimestamp());
+        assertEquals("FRITZ!DECT 400 #14: lang", device.getButtons().get(1).getName());
+        assertEquals(1549195595, device.getButtons().get(1).getLastpressedtimestamp());
+
+        assertNull(device.getAlert());
+
+        assertNull(device.getSwitch());
+
+        assertNull(device.getTemperature());
+
+        assertNull(device.getPowermeter());
+
+        assertNull(device.getHkr());
+    }
+
+    @Test
     public void validateCometDECTModel() {
         Optional<AVMFritzBaseModel> optionalDevice = findModel("Comet DECT");
         assertTrue(optionalDevice.isPresent());
@@ -273,7 +321,7 @@ public class AVMFritzModelTest {
         assertEquals(0, device.getPresent());
         assertEquals("Comet DECT #1", device.getName());
 
-        assertFalse(device.isButton());
+        assertFalse(device.isHANFUNButton());
         assertFalse(device.isAlarmSensor());
         assertFalse(device.isDectRepeater());
         assertFalse(device.isSwitchableOutlet());
@@ -308,7 +356,7 @@ public class AVMFritzModelTest {
         assertEquals(1, device.getPresent());
         assertEquals("FRITZ!Powerline 546E #1", device.getName());
 
-        assertFalse(device.isButton());
+        assertFalse(device.isHANFUNButton());
         assertFalse(device.isAlarmSensor());
         assertFalse(device.isDectRepeater());
         assertTrue(device.isSwitchableOutlet());
@@ -345,7 +393,7 @@ public class AVMFritzModelTest {
         assertEquals(0, device.getPresent());
         assertEquals("HAN-FUN #2: Unit #2", device.getName());
 
-        assertFalse(device.isButton());
+        assertFalse(device.isHANFUNButton());
         assertTrue(device.isAlarmSensor());
         assertFalse(device.isDectRepeater());
         assertFalse(device.isSwitchableOutlet());
@@ -353,7 +401,7 @@ public class AVMFritzModelTest {
         assertFalse(device.isPowermeter());
         assertFalse(device.isHeatingThermostat());
 
-        assertNull(device.getButton());
+        assertTrue(device.getButtons().isEmpty());
 
         assertNotNull(device.getAlert());
         assertEquals(BigDecimal.ONE, device.getAlert().getState());
@@ -383,7 +431,7 @@ public class AVMFritzModelTest {
         assertEquals(0, device.getPresent());
         assertEquals("HAN-FUN #2: Unit #2", device.getName());
 
-        assertTrue(device.isButton());
+        assertTrue(device.isHANFUNButton());
         assertFalse(device.isAlarmSensor());
         assertFalse(device.isDectRepeater());
         assertFalse(device.isSwitchableOutlet());
@@ -391,8 +439,9 @@ public class AVMFritzModelTest {
         assertFalse(device.isPowermeter());
         assertFalse(device.isHeatingThermostat());
 
-        assertNotNull(device.getButton());
-        assertEquals(1529590797, device.getButton().getLastpressedtimestamp());
+        assertFalse(device.getButtons().isEmpty());
+        assertEquals(device.getButtons().size(), 1);
+        assertEquals(1529590797, device.getButtons().get(0).getLastpressedtimestamp());
 
         assertNull(device.getAlert());
 
@@ -421,7 +470,7 @@ public class AVMFritzModelTest {
         assertEquals(1, group.getPresent());
         assertEquals("Schlafzimmer", group.getName());
 
-        assertFalse(group.isButton());
+        assertFalse(group.isHANFUNButton());
         assertFalse(group.isAlarmSensor());
         assertFalse(group.isDectRepeater());
         assertFalse(group.isSwitchableOutlet());
@@ -456,7 +505,7 @@ public class AVMFritzModelTest {
         assertEquals(1, group.getPresent());
         assertEquals("Schlafzimmer", group.getName());
 
-        assertFalse(group.isButton());
+        assertFalse(group.isHANFUNButton());
         assertFalse(group.isAlarmSensor());
         assertFalse(group.isDectRepeater());
         assertTrue(group.isSwitchableOutlet());
@@ -504,7 +553,7 @@ public class AVMFritzModelTest {
         assertEquals(BigDecimal.ONE, model.getLock());
         assertEquals(BigDecimal.ONE, model.getDevicelock());
         assertEquals(new BigDecimal("100"), model.getBattery());
-        assertEquals(HeatingModel.BATTERY_OFF, model.getBatterylow());
+        assertEquals(BATTERY_OFF, model.getBatterylow());
         assertEquals(MODE_AUTO, model.getMode());
         assertEquals(MODE_COMFORT, model.getRadiatorMode());
 

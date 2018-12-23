@@ -13,7 +13,7 @@
 package org.openhab.binding.avmfritz.internal.handler;
 
 import static org.eclipse.smarthome.core.library.unit.SIUnits.CELSIUS;
-import static org.eclipse.smarthome.core.thing.CommonTriggerEvents.PRESSED;
+import static org.eclipse.smarthome.core.thing.CommonTriggerEvents.*;
 import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
 import static org.openhab.binding.avmfritz.internal.BindingConstants.*;
 import static org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel.ETSUnitInfoModel.*;
@@ -60,6 +60,7 @@ import org.openhab.binding.avmfritz.internal.AVMFritzDynamicStateDescriptionProv
 import org.openhab.binding.avmfritz.internal.BindingConstants;
 import org.openhab.binding.avmfritz.internal.ahamodel.AVMFritzBaseModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.AlertModel;
+import org.openhab.binding.avmfritz.internal.ahamodel.ButtonModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.GroupModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.SwitchModel;
@@ -340,21 +341,53 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
                     AlertModel.ON.equals(((DeviceModel) device).getAlert().getState()) ? OpenClosedType.OPEN
                             : OpenClosedType.CLOSED);
         }
-        if (device instanceof DeviceModel && device.isButton() && ((DeviceModel) device).getButton() != null) {
-            if (((DeviceModel) device).getButton().getLastpressedtimestamp() == 0) {
-                updateThingChannelState(thing, CHANNEL_LAST_CHANGE, UnDefType.UNDEF);
-            } else {
-                ZoneId zoneId = ZoneId.systemDefault();
-                ZonedDateTime timestamp = ZonedDateTime.ofInstant(
-                        Instant.ofEpochSecond(((DeviceModel) device).getButton().getLastpressedtimestamp()), zoneId);
-                Instant then = timestamp.toInstant();
-                ZonedDateTime now = ZonedDateTime.now(zoneId);
-                Instant someSecondsEarlier = now.minusSeconds(refreshInterval).toInstant();
-                if (then.isAfter(someSecondsEarlier) && then.isBefore(now.toInstant())) {
-                    triggerThingChannel(thing, CHANNEL_PRESS, PRESSED);
-                }
-                updateThingChannelState(thing, CHANNEL_LAST_CHANGE, new DateTimeType(timestamp));
+        if (device instanceof DeviceModel && device.isHANFUNButton()) {
+            List<ButtonModel> buttons = ((DeviceModel) device).getButtons();
+            if (buttons.size() > 0) {
+                updateButton(thing, buttons.get(0), PRESSED);
             }
+        }
+        if (device instanceof DeviceModel && device.isButton()) {
+            updateThingChannelState(thing, CHANNEL_BATTERY,
+                    device.getBattery() != null ? new DecimalType(device.getBattery()) : UnDefType.UNDEF);
+            updateThingChannelState(thing, CHANNEL_BATTERY_LOW,
+                    device.getBatterylow() != null
+                            ? (BATTERY_ON.equals(device.getBatterylow()) ? OnOffType.ON : OnOffType.OFF)
+                            : UnDefType.UNDEF);
+            updateShortLongPressButton(thing, ((DeviceModel) device).getButtons());
+        }
+    }
+
+    private void updateShortLongPressButton(Thing thing, List<ButtonModel> buttons) {
+        ButtonModel shortPressButton = buttons.size() > 0 ? buttons.get(0) : null;
+        ButtonModel longPressButton = buttons.size() > 1 ? buttons.get(1) : null;
+        ButtonModel lastPressedButton = shortPressButton != null
+                ? (longPressButton != null
+                        ? (shortPressButton.getLastpressedtimestamp() > longPressButton.getLastpressedtimestamp()
+                                ? shortPressButton
+                                : longPressButton)
+                        : shortPressButton)
+                : longPressButton;
+        if (lastPressedButton != null) {
+            updateButton(thing, lastPressedButton,
+                    lastPressedButton.equals(shortPressButton) ? SHORT_PRESSED : LONG_PRESSED);
+        }
+    }
+
+    private void updateButton(Thing thing, ButtonModel button, String event) {
+        if (button.getLastpressedtimestamp() == 0) {
+            updateThingChannelState(thing, CHANNEL_LAST_CHANGE, UnDefType.UNDEF);
+        } else {
+            ZoneId zoneId = ZoneId.systemDefault();
+            ZonedDateTime timestamp = ZonedDateTime.ofInstant(Instant.ofEpochSecond(button.getLastpressedtimestamp()),
+                    zoneId);
+            Instant then = timestamp.toInstant();
+            ZonedDateTime now = ZonedDateTime.now(zoneId);
+            Instant someSecondsEarlier = now.minusSeconds(refreshInterval).toInstant();
+            if (then.isAfter(someSecondsEarlier) && then.isBefore(now.toInstant())) {
+                triggerThingChannel(thing, CHANNEL_PRESS, event);
+            }
+            updateThingChannelState(thing, CHANNEL_LAST_CHANGE, new DateTimeType(timestamp));
         }
     }
 

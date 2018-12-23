@@ -93,8 +93,8 @@ public class DeviceListModel {
         return devices;
     }
 
-    public void setDevicelist(List<AVMFritzBaseModel> devicelist) {
-        this.devices = devicelist;
+    public void setDevicelist(List<AVMFritzBaseModel> devices) {
+        this.devices = devices;
     }
 
     public String getXmlApiVersion() {
