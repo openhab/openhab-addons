@@ -9,6 +9,7 @@
 package org.openhab.binding.avmfritz.internal.handler;
 
 import static org.eclipse.smarthome.core.library.unit.SIUnits.CELSIUS;
+import static org.eclipse.smarthome.core.thing.CommonTriggerEvents.PRESSED;
 import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
 import static org.openhab.binding.avmfritz.internal.BindingConstants.*;
 import static org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel.ETSUnitInfo.*;
@@ -305,7 +306,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
                 ZonedDateTime now = ZonedDateTime.now(zoneId);
                 Instant someSecondsEarlier = now.minusSeconds(refreshInterval).toInstant();
                 if (then.isAfter(someSecondsEarlier) && then.isBefore(now.toInstant())) {
-                    triggerThingChannel(thing, CHANNEL_PRESS);
+                    triggerThingChannel(thing, CHANNEL_PRESS, PRESSED);
                 }
                 updateThingChannelState(thing, CHANNEL_LAST_CHANGE, new DateTimeType(timestamp));
             }
@@ -337,11 +338,12 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
      *
      * @param thing Thing which channels should be triggered.
      * @param channelId ID of the channel to be triggered.
+     * @param event Event to emit
      */
-    private void triggerThingChannel(Thing thing, String channelId) {
+    private void triggerThingChannel(Thing thing, String channelId, String event) {
         Channel channel = thing.getChannel(channelId);
         if (channel != null) {
-            triggerChannel(channel.getUID());
+            triggerChannel(channel.getUID(), event);
         } else {
             logger.debug("Channel '{}' in thing '{}' does not exist.", channelId, thing.getUID());
         }

@@ -210,7 +210,7 @@
 		<description>HAN-FUN switch (e.g. SmartHome Wandtaster).</description>
 
 		<channels>
-			<channel id="press" typeId="system.trigger">
+			<channel id="press" typeId="system.rawbutton">
 				<label>Button press</label>
 				<description>Triggered when a button was pressed.</description>
 			</channel>
