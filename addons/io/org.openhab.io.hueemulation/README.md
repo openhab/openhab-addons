@@ -6,6 +6,10 @@ any Hue compatible application.
 Because Amazon Echo and Google Home control openHAB locally this way, it is a fast and reliable way
 to voice control your installation. See the Troubleshoot section down below though.
 
+## Installation
+
+This Binding is located under the MISC tab.
+
 ## Discovery:
 
 As soon as the binding is enabled, it will announce the presence of an (emulated) HUE bridge of the second generation (square bridge).
