@@ -18,7 +18,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class HeatSetpointStatus {
 
-    @SerializedName("targetTemperature")
+    @SerializedName("targetHeatTemperature")
     private double targetTemperature;
 
     @SerializedName("setpointMode")
