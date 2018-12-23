@@ -39,6 +39,8 @@ public class EnOceanUsbSerialDiscoveryParticipant implements UsbSerialDiscoveryP
 
     public static final int ENOCEAN_USB300_DONGLE_VENDOR_ID = 0x0403;
     public static final int ENOCEAN_USB300_DONGLE_PRODUCT_ID = 0x6001;
+    public static final String ENOCEAN_USB300_DONGLE_MANUFACTURER = "EnOcean GmbH";
+    public static final String ENOCEAN_USB300_DONGLE_PRODUCT = "usb 300";
     public static final String ENOCEAN_USB300_DONGLE_DEFAULT_LABEL = "Enocean USB300 Dongle";
 
     @Override
@@ -76,7 +78,11 @@ public class EnOceanUsbSerialDiscoveryParticipant implements UsbSerialDiscoveryP
 
     private boolean isEnoceanUSB300Dongle(UsbSerialDeviceInformation deviceInformation) {
         return deviceInformation.getVendorId() == ENOCEAN_USB300_DONGLE_VENDOR_ID
-                && deviceInformation.getProductId() == ENOCEAN_USB300_DONGLE_PRODUCT_ID;
+                && deviceInformation.getProductId() == ENOCEAN_USB300_DONGLE_PRODUCT_ID
+                && deviceInformation.getManufacturer() != null
+                && deviceInformation.getManufacturer().equalsIgnoreCase(ENOCEAN_USB300_DONGLE_MANUFACTURER)
+                && deviceInformation.getProduct() != null
+                && deviceInformation.getProduct().toLowerCase().contains(ENOCEAN_USB300_DONGLE_PRODUCT);
     }
 
     private @Nullable String createEnoceanUSB300DongleLabel(UsbSerialDeviceInformation deviceInformation) {
