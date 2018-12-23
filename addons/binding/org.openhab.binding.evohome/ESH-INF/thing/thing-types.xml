@@ -29,7 +29,7 @@
 		<channels>
 			<channel id="Temperature" typeId="temperature" />
 			<channel id="SetPointStatus" typeId="setpointstatus" />
-            <channel id="SetPoint" typeId="setpoint" /> 
+		<channel id="SetPoint" typeId="setpoint" /> 
 		</channels>
 		<config-description>	  
 			<parameter name="id" type="text" required="true" readOnly="true">

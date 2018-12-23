@@ -29,7 +29,7 @@ public class ZoneStatus {
     @SerializedName("temperatureStatus")
     private TemperatureStatus temperature;
 
-    @SerializedName("heatSetpointStatus")
+    @SerializedName("setpointStatus")
     private HeatSetpointStatus heatSetpoint;
 
     @SerializedName("activeFaults")
