@@ -23,7 +23,7 @@ The binding has only one configuration parameter, which is only required if the 
 
 | Name    | Description                                                          |
 |---------|----------------------------------------------------------------------|
-| LocalIP | This is the local IP of your openHAB host on the network. (Optional) |
+| localIP | This is the local IP of your openHAB host on the network. (Optional) |
 
 If LocalIP is not set, the binding will use openHAB's primary IP address, which may be configured under network settings.
 
