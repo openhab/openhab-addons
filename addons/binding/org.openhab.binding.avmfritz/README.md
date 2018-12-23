@@ -126,9 +126,11 @@ If correct credentials are set in the bridge configuration, connected AHA device
 
 ### Triggers
 
-| Channel Type ID | Item Type | Description                          | Available on thing                                      |
-|-----------------|-----------|--------------------------------------|---------------------------------------------------------|
-| press           | Trigger   | Dispatched when a button is pressed. | HAN-FUN switch (e.g. SmartHome Wandtaster) - FRITZ!OS 7 |
+| Channel Type ID | Item Type | Description                                            | Available on thing                                      |
+|-----------------|-----------|--------------------------------------------------------|---------------------------------------------------------|
+| press           | Trigger   | Dispatches a `PRESSED` event when a button is pressed. | HAN-FUN switch (e.g. SmartHome Wandtaster) - FRITZ!OS 7 |
+
+The trigger channel `press` is of type `system.rawbutton` to allow the usage of the `rawbutton-toggle-switch` profile.
 
 ## Full Example
 
