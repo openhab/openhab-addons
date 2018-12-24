@@ -76,6 +76,7 @@
 		<description>A switch or button</description>
 		<channels>
 			<channel typeId="buttonevent" id="buttonevent"></channel>
+			<channel typeId="button" id="button"></channel>
 		</channels>
 		<config-description>
 			<parameter name="id" type="text" required="true">
@@ -91,7 +92,14 @@
 		<description>This channel is triggered on a button event. The trigger payload consists of the button event number.</description>
 		<event></event>
 	</channel-type>
-
+	
+	<channel-type id="button">
+		<item-type>Number</item-type>
+		<label>Button</label>
+		<description>The Button that was last pressed on the switch.</description>
+		<state readOnly="true" pattern="%d"></state>
+	</channel-type>
+	
 	<thing-type id="lightsensor">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="deconz" />
@@ -137,7 +145,31 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Current temperature</description>
-		<state readOnly="true" pattern="%.1f %unit%"></state>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
+	</channel-type>
+	
+	<thing-type id="humiditysensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="deconz" />
+		</supported-bridge-type-refs>
+		<label>Humidity sensor</label>
+		<description>A humidity sensor</description>
+		<channels>
+			<channel typeId="humidity" id="humidity"></channel>
+		</channels>
+		<config-description>
+			<parameter name="id" type="text" required="true">
+				<label>Sensor ID</label>
+				<description>The deCONZ bridge assigns an integer number ID to each sensor.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	
+	<channel-type id="humidity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<description>Current humidity</description>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 
 	<thing-type id="daylightsensor">
