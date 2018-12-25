@@ -17,9 +17,9 @@ import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Calendar;
+import java.time.ZonedDateTime;
+import java.time.ZoneId;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -117,56 +117,61 @@ public class FeedHandler extends BaseThingHandler {
 
     private void publishChannelIfLinked(ChannelUID channelUID) {
         String channelID = channelUID.getId();
-        if (currentFeedState != null) {
-            if (isLinked(channelID)) {
-                State state = null;
-                switch (channelID) {
-                    case CHANNEL_LATEST_TITLE:
-                        String title = getLatestEntry(currentFeedState).getTitle();
-                        state = new StringType(getValueSafely(title));
-                        break;
-                    case CHANNEL_LATEST_DESCRIPTION:
-                        String description = getLatestEntry(currentFeedState).getDescription().getValue();
-                        state = new StringType(getValueSafely(description));
-                        break;
-                    case CHANNEL_LATEST_PUBLISHED_DATE:
-                        Date date = getLatestEntry(currentFeedState).getPublishedDate();
-                        Calendar calender = new GregorianCalendar();
-                        calender.setTime(date);
-                        state = new DateTimeType(calender);
-                        break;
-                    case CHANNEL_AUTHOR:
-                        String author = currentFeedState.getAuthor();
-                        state = new StringType(getValueSafely(author));
-                        break;
-                    case CHANNEL_DESCRIPTION:
-                        String channelDescription = currentFeedState.getDescription();
-                        state = new StringType(getValueSafely(channelDescription));
-                        break;
-                    case CHANNEL_TITLE:
-                        String channelTitle = currentFeedState.getTitle();
-                        state = new StringType(getValueSafely(channelTitle));
-                        break;
-                    case CHANNEL_LAST_UPDATE:
-                        Date pubDate = currentFeedState.getPublishedDate();
-                        Calendar calendar = new GregorianCalendar();
-                        calendar.setTime(pubDate);
-                        state = new DateTimeType(calendar);
-                        break;
-                    case CHANNEL_NUMBER_OF_ENTRIES:
-                        int numberOfEntries = currentFeedState.getEntries().size();
-                        state = new DecimalType(numberOfEntries);
-                        break;
-                }
-                if (state != null) {
-                    updateState(channelID, state);
-                } else {
-                    logger.debug("Can not update channel with ID : {} - channel name might be wrong!", channelID);
-                }
-            }
-        } else {
+
+        if (currentFeedState == null) {
             // This will happen if the binding could not download data from the server
-            logger.info("Can not update channel with ID: {}, no data has been downloaded from the server!", channelID);
+            logger.info("Cannot update channel with ID {}; no data has been downloaded from the server!", channelID);
+            return;
+        }
+
+        if (!isLinked(channelUID)) {
+            return;
+        }
+
+        State state = null;
+        switch (channelID) {
+            case CHANNEL_LATEST_TITLE:
+                String title = getLatestEntry(currentFeedState).getTitle();
+                state = new StringType(getValueSafely(title));
+                break;
+            case CHANNEL_LATEST_DESCRIPTION:
+                String description = getLatestEntry(currentFeedState).getDescription().getValue();
+                state = new StringType(getValueSafely(description));
+                break;
+            case CHANNEL_LATEST_PUBLISHED_DATE:
+            case CHANNEL_LAST_UPDATE:
+                Date date = getLatestEntry(currentFeedState).getPublishedDate();
+                if (date == null) {
+                    logger.debug("Cannot update date channel. No date found in feed.");
+                    return;
+                }
+                ZonedDateTime zdt = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+                state = new DateTimeType(zdt);
+                break;
+            case CHANNEL_AUTHOR:
+                String author = currentFeedState.getAuthor();
+                state = new StringType(getValueSafely(author));
+                break;
+            case CHANNEL_DESCRIPTION:
+                String channelDescription = currentFeedState.getDescription();
+                state = new StringType(getValueSafely(channelDescription));
+                break;
+            case CHANNEL_TITLE:
+                String channelTitle = currentFeedState.getTitle();
+                state = new StringType(getValueSafely(channelTitle));
+                break;
+            case CHANNEL_NUMBER_OF_ENTRIES:
+                int numberOfEntries = currentFeedState.getEntries().size();
+                state = new DecimalType(numberOfEntries);
+                break;
+            default:
+                logger.debug("Unrecognized channel: {}", channelID);
+        }
+
+        if (state != null) {
+            updateState(channelID, state);
+        } else {
+            logger.debug("Cannot update channel with ID {}", channelID);
         }
     }
 
