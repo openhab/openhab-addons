@@ -17,9 +17,9 @@ import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Calendar;
+import java.time.ZonedDateTime;
+import java.time.ZoneId;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -124,7 +124,7 @@ public class FeedHandler extends BaseThingHandler {
             return;
         }
 
-        if (!isLinked(channelID)) {
+        if (!isLinked(channelUID)) {
             return;
         }
 
@@ -145,9 +145,8 @@ public class FeedHandler extends BaseThingHandler {
                     logger.debug("Cannot update date channel. No date found in feed.");
                     return;
                 }
-                Calendar calendar = new GregorianCalendar();
-                calendar.setTime(date);
-                state = new DateTimeType(calendar);
+                ZonedDateTime zdt = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+                state = new DateTimeType(zdt);
                 break;
             case CHANNEL_AUTHOR:
                 String author = currentFeedState.getAuthor();
