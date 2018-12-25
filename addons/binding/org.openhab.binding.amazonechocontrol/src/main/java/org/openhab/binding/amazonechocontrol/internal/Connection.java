@@ -888,7 +888,7 @@ public class Connection {
     public JsonPlaylists getPlaylists(Device device) throws IOException, URISyntaxException {
         String json = makeRequestAndReturnString(
                 alexaServer + "/api/cloudplayer/playlists?deviceSerialNumber=" + device.serialNumber + "&deviceType="
-                        + device.deviceType + "&mediaOwnerCustomerId=" + device.deviceOwnerCustomerId);
+                        + device.deviceType + "&mediaOwnerCustomerId=" + this.accountCustomerId);
         JsonPlaylists playlists = parseJson(json, JsonPlaylists.class);
         return playlists;
     }
@@ -965,7 +965,7 @@ public class Connection {
             makeRequest("POST",
                     alexaServer + "/api/tunein/queue-and-play?deviceSerialNumber=" + device.serialNumber
                             + "&deviceType=" + device.deviceType + "&guideId=" + stationId
-                            + "&contentType=station&callSign=&mediaOwnerCustomerId=" + device.deviceOwnerCustomerId,
+                            + "&contentType=station&callSign=&mediaOwnerCustomerId=" + this.accountCustomerId,
                     "", true, true, null);
         }
     }
@@ -977,8 +977,8 @@ public class Connection {
             String command = "{\"trackId\":\"" + trackId + "\",\"playQueuePrime\":true}";
             makeRequest("POST",
                     alexaServer + "/api/cloudplayer/queue-and-play?deviceSerialNumber=" + device.serialNumber
-                            + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId="
-                            + device.deviceOwnerCustomerId + "&shuffle=false",
+                            + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId=" + this.accountCustomerId
+                            + "&shuffle=false",
                     command, true, true, null);
         }
     }
@@ -991,8 +991,8 @@ public class Connection {
             String command = "{\"playlistId\":\"" + playListId + "\",\"playQueuePrime\":true}";
             makeRequest("POST",
                     alexaServer + "/api/cloudplayer/queue-and-play?deviceSerialNumber=" + device.serialNumber
-                            + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId="
-                            + device.deviceOwnerCustomerId + "&shuffle=false",
+                            + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId=" + this.accountCustomerId
+                            + "&shuffle=false",
                     command, true, true, null);
         }
     }
