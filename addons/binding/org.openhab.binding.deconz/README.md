@@ -71,7 +71,7 @@ The devices support some of the following channels:
 | humidity          | Number:Dimensionless  | R             | Current humidity in %                                                     | humidityesensor   |
 | open              | Contact               | R             | Status of contacts: `OPEN`; `CLOSED`                                      | openclosesensor   |
 | light             | String                | R             | Light level: `Daylight`,`Sunset`,`Dark`                                   | daylightsensor    |
-| value             | Number                | R             | Sun position: `130` = dawn; `140` = sunrise, `190` = sunset, `210` = dusk | daylightsensor    |
+| value             | Number                | R             | Sun position: `130` = dawn; `140` = sunrise; `190` = sunset; `210` = dusk | daylightsensor    |
 
 ### Trigger Channels
 
@@ -93,6 +93,7 @@ Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ] {
     temperaturesensor   livingroom-temperature  "Livingroom Temperature"    [ id="2" ]
     humidityesensor     livingroom-humidity     "Livingroom Humidity"       [ id="3" ]
     openclosesensor     livingroom-window       "Livingroom Window"         [ id="4" ]
+	switch              livingroom-hue-tap      "Livingroom Hue Tap"        [ id="5" ]
 }
 ```
 
@@ -110,7 +111,7 @@ Contact                 Livingroom_Window       "Window Livingroom [%s]"        
  ```php
 rule "example trigger rule"
 when
-    Channel "deconz:switch:button3:buttonevent" triggered 3
+    Channel "deconz:switch:livingroom-hue-tap:buttonevent" triggered 34   // Hue Tap Button 1 pressed
 then
     ...
 end
