@@ -31,31 +31,35 @@ Sensors, switches are discovered as soon as a `deconz` bridge Thing comes online
 
 ## Thing Configuration
 
-The deCONZ bridge requires the IP address as a configuration value in order for the binding to know where to access it.
-In the thing file, this looks e.g. like
-
-```
-Bridge deconz:deconz:homeserver [ host="192.168.0.10" ]
-```
-
-You need to authorize 3rd party applications in deCONZ for the bridge thing to successfully connect. After that an api key to authenticate against the bridge is automatically generated.
-Please note that the generated key cannot be written automatically to the `.thing` file, and has to be set manually. Otherwise, a new api key is generated every time the binding is started.
-The generated key can be queried from the configuration using the openHAB console. To do this log into the [console](https://www.openhab.org/docs/administration/console.html) and use the command `things show` to display the configuration parameters, e.g:
-```
-things show deconz:deconz:homeserver
-```
-
-Afterwards the key has to be inserted in the `.thing` file as `apikey` configuration value, e.g.:
-```
-Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ]
-```
-
-These configuration values need to be provided:
+These configuration parameters are available:
 
 | Parameter | Description                                                   | Type      | Default   |
 | :-------- | :------------------------------------------------------------ | :-------: | :-------: |
 | host      | Host address (hostname/ip:port) of deCONZ interface           | string    | n/a       |
 | apikey    | Authorization API key (optional, can be filled automatically) | string    | n/a       |
+
+The deCONZ bridge requires the IP address or hostname as a configuration value in order for the binding to know where to access it.
+
+The API key is an optional value. If a deCONZ API key is available because it has already been created manually, it can also be entered as a configuration value. Otherwise the field can be left empty and the binding will generate the key automatically. For this process the deCONZ bridge must be unlocked in the deCONZ software so that third party applications can register. [See deCONZ documentation](http://dresden-elektronik.github.io/deconz-rest-doc/getting_started/#unlock-the-gateway)
+
+### Textual Thing Configuration - Retrieving an API Key
+
+If you use the textual configuration, the thing file without an API key will look like this, for example:
+
+```
+Bridge deconz:deconz:homeserver [ host="192.168.0.10" ]
+```
+
+In this case, the API key is generated automatically as described above (the brdige has to be unlocked). Please note that the generated key cannot be written automatically to the `.thing` file, and has to be set manually.
+The generated key can be queried from the configuration using the openHAB console. To do this log into the [console](https://www.openhab.org/docs/administration/console.html) and use the command `things show` to display the configuration parameters, e.g:
+```
+things show deconz:deconz:homeserver
+```
+
+Afterwards the displayed API key has to be inserted in the `.thing` file as `apikey` configuration value, e.g.:
+```
+Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ]
+```
 
 ## Channels
 
@@ -108,7 +112,7 @@ Contact                 Livingroom_Window       "Window Livingroom [%s]"        
 
 ### Events
 
- ```php
+```php
 rule "example trigger rule"
 when
     Channel "deconz:switch:livingroom-hue-tap:buttonevent" triggered 34   // Hue Tap Button 1 pressed
