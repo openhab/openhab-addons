@@ -121,7 +121,6 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
             config.apikey = response[0].success.username;
             Configuration configuration = editConfiguration();
             configuration.put(BindingConstants.CONFIG_APIKEY, config.apikey);
-            logger.info("deCONZ api key: " + config.apikey);
             updateConfiguration(configuration);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Waiting for configuration");
             requestFullState();

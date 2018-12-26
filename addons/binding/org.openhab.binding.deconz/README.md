@@ -40,7 +40,12 @@ Bridge deconz:deconz:homeserver [ host="192.168.0.10" ]
 
 You need to authorize 3rd party applications in deCONZ for the bridge thing to successfully connect. After that an api key to authenticate against the bridge is automatically generated.
 Please note that the generated key cannot be written automatically to the `.thing` file, and has to be set manually. Otherwise, a new api key is generated every time the binding is started.
-The generated key can be found in the log files and has to be set using the `apikey` configuration value, e.g.:
+The generated key can be queried from the configuration using the openHAB console. To do this log into the [console](https://www.openhab.org/docs/administration/console.html) and use the command `things show` to display the configuration parameters, e.g:
+```
+things show deconz:deconz:homeserver
+```
+
+Afterwards the key has to be inserted in the `.thing` file as `apikey` configuration value, e.g.:
 ```
 Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ]
 ```
