@@ -46,6 +46,8 @@ public class DeviceFactory {
                 return new CtBulbDevice(id);
             case stripe:
                 return new PitayaDevice(id);
+            case desklamp:
+                return new DesklampDevice(id);
             default:
                 return null;
         }
@@ -75,6 +77,9 @@ public class DeviceFactory {
                 break;
             case stripe:
                 device = new PitayaDevice(bulbInfo.get("id"));
+                break;
+            case desklamp:
+                device = new DesklampDevice(bulbInfo.get("id"));
                 break;
             default:
                 return null;
