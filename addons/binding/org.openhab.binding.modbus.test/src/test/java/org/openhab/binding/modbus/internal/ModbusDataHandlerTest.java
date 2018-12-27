@@ -1179,6 +1179,7 @@ public class ModbusDataHandlerTest extends JavaTest {
         testInitGeneric(ModbusReadFunctionCode.READ_COILS, dataConfig, status -> {
             assertThat(status.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
             assertThat(status.getStatusDetail(), is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR)));
+            assertThat(status.getDescription(), is(not(equalTo(null))));
         });
     }
 
