@@ -34,6 +34,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.xmltv.internal.configuration.XmlChannelConfiguration;
@@ -57,12 +58,9 @@ public class ChannelHandler extends BaseThingHandler {
     @NonNullByDefault({})
     private ScheduledFuture<?> globalJob;
 
-    @Nullable
-    private MediaChannel mediaChannel;
-    @Nullable
-    private RawType mediaIcon = new RawType(new byte[0], RawType.DEFAULT_MIME_TYPE);
-    @Nullable
-    private RawType programIcon = new RawType(new byte[0], RawType.DEFAULT_MIME_TYPE);
+    private @Nullable MediaChannel mediaChannel;
+    private @Nullable RawType mediaIcon = new RawType(new byte[0], RawType.DEFAULT_MIME_TYPE);
+    private @Nullable RawType programmeIcon = new RawType(new byte[0], RawType.DEFAULT_MIME_TYPE);
 
     public List<Programme> programmes = new ArrayList<>();
 
@@ -83,10 +81,10 @@ public class ChannelHandler extends BaseThingHandler {
                 }
                 if (programmes.size() == 0) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                            "No programs to come in the current XML file for this channel");
+                            "No programmes to come in the current XML file for this channel");
                 } else if (Instant.now().isAfter(programmes.get(0).getProgrammeStop())) {
                     programmes.remove(0);
-                    programIcon = downloadIcon(programmes.get(0).getIcons());
+                    programmeIcon = downloadIcon(programmes.get(0).getIcons());
                 }
 
                 getThing().getChannels().forEach(channel -> updateChannel(channel.getUID()));
@@ -98,27 +96,32 @@ public class ChannelHandler extends BaseThingHandler {
     private void refreshProgramList() {
         Bridge bridge = getBridge();
         if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
-            Tv tv = ((XmlTVHandler) bridge.getHandler()).getXmlFile();
-            if (tv != null) {
-                String channelId = (String) getConfig().get(XmlChannelConfiguration.CHANNEL_ID);
+            XmlTVHandler handler = (XmlTVHandler) bridge.getHandler();
+            if (handler != null) {
+                Tv tv = handler.getXmlFile();
+                if (tv != null) {
+                    String channelId = (String) getConfig().get(XmlChannelConfiguration.CHANNEL_ID);
 
-                if (mediaChannel == null) {
-                    Optional<MediaChannel> channel = tv.getMediaChannels().stream()
-                            .filter(mediaChannel -> mediaChannel.getId().equals(channelId)).findFirst();
-                    if (channel.isPresent()) {
-                        mediaChannel = channel.get();
-                        mediaIcon = downloadIcon(mediaChannel.getIcons());
+                    if (mediaChannel == null) {
+                        Optional<MediaChannel> channel = tv.getMediaChannels().stream()
+                                .filter(mediaChannel -> mediaChannel.getId().equals(channelId)).findFirst();
+                        if (channel.isPresent()) {
+                            mediaChannel = channel.get();
+                            mediaIcon = downloadIcon(mediaChannel.getIcons());
+                        }
                     }
+
+                    programmes.clear();
+                    tv.getProgrammes().stream().filter(
+                            p -> p.getChannel().equals(channelId) && p.getProgrammeStop().isAfter(Instant.now()))
+                            .forEach(p -> programmes.add(p));
+
+                    updateStatus(ThingStatus.ONLINE);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "No file available");
                 }
-
-                programmes.clear();
-                tv.getProgrammes().stream()
-                        .filter(p -> p.getChannel().equals(channelId) && p.getProgrammeStop().isAfter(Instant.now()))
-                        .forEach(p -> programmes.add(p));
-
-                updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "No file available");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
@@ -135,7 +138,10 @@ public class ChannelHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // TODO Auto-generated method stub
+        logger.debug("handleCommand {} for {}", command, channelUID.getAsString());
+        if (command == RefreshType.REFRESH) {
+            refreshProgramList();
+        }
     }
 
     /**
@@ -148,63 +154,69 @@ public class ChannelHandler extends BaseThingHandler {
         String[] uidElements = channelUID.getId().split("#");
         if (uidElements.length == 2) {
             int target = GROUP_NEXT_PROGRAM.equals(uidElements[0]) ? 1 : 0;
-            Programme programme = programmes.get(target);
+            if (programmes.size() > target) {
+                Programme programme = programmes.get(target);
 
-            switch (uidElements[1]) {
-                case CHANNEL_ICON:
-                    updateState(channelUID,
-                            GROUP_CHANNEL_PROPERTIES.equals(uidElements[0])
-                                    ? mediaIcon != null ? mediaIcon : UnDefType.NULL
-                                    : programIcon != null ? programIcon : UnDefType.NULL);
-                    break;
-                case CHANNEL_CHANNEL_URL:
-                    updateState(channelUID,
-                            mediaChannel != null ? new StringType(mediaChannel.getIcons().get(0).getSrc())
-                                    : UnDefType.NULL);
-                    break;
-                case CHANNEL_PROGRAM_START:
-                    Instant is = programme.getProgrammeStart();
-                    ZonedDateTime zds = ZonedDateTime.ofInstant(is, ZoneId.systemDefault());
-                    updateState(channelUID, new DateTimeType(zds));
-                    break;
-                case CHANNEL_PROGRAM_END:
-                    ZonedDateTime zde = ZonedDateTime.ofInstant(programme.getProgrammeStop(), ZoneId.systemDefault());
-                    updateState(channelUID, new DateTimeType(zde));
-                    break;
-                case CHANNEL_PROGRAM_TITLE:
-                    updateState(channelUID, new StringType(programme.getTitles().get(0).getValue()));
-                    break;
-                case CHANNEL_PROGRAM_CATEGORY:
-                    updateState(channelUID, new StringType(programme.getCategories().get(0).getValue()));
-                    break;
-                case CHANNEL_PROGRAM_ICON:
-                    List<Icon> icons = programme.getIcons();
-                    updateState(channelUID, icons.size() > 0 ? new StringType(icons.get(0).getSrc()) : UnDefType.NULL);
-                    break;
-                case CHANNEL_PROGRAM_ELAPSED:
-                    updateState(channelUID, getDurationInSeconds(programme.getProgrammeStart(), Instant.now()));
-                    break;
-                case CHANNEL_PROGRAM_REMAINING:
-                    updateState(channelUID, getDurationInSeconds(Instant.now(), programme.getProgrammeStop()));
-                    break;
-                case CHANNEL_PROGRAM_TIMELEFT:
-                    updateState(channelUID, getDurationInSeconds(Instant.now(), programme.getProgrammeStart()));
-                    break;
-                case CHANNEL_PROGRAM_PROGRESS:
-                    Duration totalLength = Duration.between(programme.getProgrammeStart(),
-                            programme.getProgrammeStop());
-                    Duration elapsed1 = Duration.between(programme.getProgrammeStart(), Instant.now());
+                switch (uidElements[1]) {
+                    case CHANNEL_ICON:
+                        updateState(channelUID,
+                                GROUP_CHANNEL_PROPERTIES.equals(uidElements[0])
+                                        ? mediaIcon != null ? mediaIcon : UnDefType.NULL
+                                        : programmeIcon != null ? programmeIcon : UnDefType.NULL);
+                        break;
+                    case CHANNEL_CHANNEL_URL:
+                        updateState(channelUID,
+                                mediaChannel != null ? new StringType(mediaChannel.getIcons().get(0).getSrc())
+                                        : UnDefType.NULL);
+                        break;
+                    case CHANNEL_PROGRAM_START:
+                        Instant is = programme.getProgrammeStart();
+                        ZonedDateTime zds = ZonedDateTime.ofInstant(is, ZoneId.systemDefault());
+                        updateState(channelUID, new DateTimeType(zds));
+                        break;
+                    case CHANNEL_PROGRAM_END:
+                        ZonedDateTime zde = ZonedDateTime.ofInstant(programme.getProgrammeStop(),
+                                ZoneId.systemDefault());
+                        updateState(channelUID, new DateTimeType(zde));
+                        break;
+                    case CHANNEL_PROGRAM_TITLE:
+                        updateState(channelUID, new StringType(programme.getTitles().get(0).getValue()));
+                        break;
+                    case CHANNEL_PROGRAM_CATEGORY:
+                        updateState(channelUID, new StringType(programme.getCategories().get(0).getValue()));
+                        break;
+                    case CHANNEL_PROGRAM_ICON:
+                        List<Icon> icons = programme.getIcons();
+                        updateState(channelUID,
+                                icons.size() > 0 ? new StringType(icons.get(0).getSrc()) : UnDefType.NULL);
+                        break;
+                    case CHANNEL_PROGRAM_ELAPSED:
+                        updateState(channelUID, getDurationInSeconds(programme.getProgrammeStart(), Instant.now()));
+                        break;
+                    case CHANNEL_PROGRAM_REMAINING:
+                        updateState(channelUID, getDurationInSeconds(Instant.now(), programme.getProgrammeStop()));
+                        break;
+                    case CHANNEL_PROGRAM_TIMELEFT:
+                        updateState(channelUID, getDurationInSeconds(Instant.now(), programme.getProgrammeStart()));
+                        break;
+                    case CHANNEL_PROGRAM_PROGRESS:
+                        Duration totalLength = Duration.between(programme.getProgrammeStart(),
+                                programme.getProgrammeStop());
+                        Duration elapsed1 = Duration.between(programme.getProgrammeStart(), Instant.now());
 
-                    long secondsElapsed1 = elapsed1.toMillis() / 1000;
-                    long secondsLength = totalLength.toMillis() / 1000;
+                        long secondsElapsed1 = elapsed1.toMillis() / 1000;
+                        long secondsLength = totalLength.toMillis() / 1000;
 
-                    double progress = 100.0 * secondsElapsed1 / secondsLength;
-                    if (progress > 100 || progress < 0) {
-                        logger.warn("Outstanding process");
-                    }
-                    updateState(channelUID, new QuantityType<>(progress, SmartHomeUnits.PERCENT));
+                        double progress = 100.0 * secondsElapsed1 / secondsLength;
+                        if (progress > 100 || progress < 0) {
+                            logger.warn("Outstanding process");
+                        }
+                        updateState(channelUID, new QuantityType<>(progress, SmartHomeUnits.PERCENT));
 
-                    break;
+                        break;
+                }
+            } else {
+                logger.warn("Not enough programmes in XML file, think to refresh it");
             }
         }
     }

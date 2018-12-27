@@ -23,7 +23,7 @@ Once the XmlTV bridge to a file is created, you can add all known channels by se
 | Configuration Parameter | Required | Description                                                       | Default |
 |-------------------------|----------|-------------------------------------------------------------------|---------|
 | channelId               | X        | Id of the channel as presented in the XmlTV file.                 |         |
-| offset                  | X        | Offset applied to program times (forward or backward (in minutes) | 0       |
+| offset                  | X        | Offset applied to programme times (forward or backward (minutes)  | 0       |
 | refresh                 | X        | refresh interval in seconds                                       | 60      |
 
 ## Channels
@@ -33,7 +33,7 @@ Once the XmlTV bridge to a file is created, you can add all known channels by se
 | iconUrl         | String               | Channel Icon URL                    |
 | icon            | Image                | Icon of the channel                 |
 
-### Current program (currentprog) channels group
+### Current programme (currentprog) channels group
 
 | Channel Type ID | Item Type            | Description                                   |
 |-----------------|----------------------|-----------------------------------------------|
@@ -41,22 +41,22 @@ Once the XmlTV bridge to a file is created, you can add all known channels by se
 | progEnd         | DateTime             | Program End Time                              |
 | progTitle       | String               | Program Title.                                |
 | progCategory    | String               | Program Category.                             |
-| progIcon        | String               | URL to an image of the program.               |
-| icon            | Image                | Icon of the program                           |
-| elapsedTime     | Number:Time          | Current time of currently playing program     |
-| remainingTime   | Number:Time          | Time remaining until end of the program       |
-| progress        | Number:Dimensionless | Relative progression of the current program   |
+| progIcon        | String               | URL to an image of the programme.             |
+| icon            | Image                | Icon of the programme                         |
+| elapsedTime     | Number:Time          | Current time of currently playing programme   |
+| remainingTime   | Number:Time          | Time remaining until end of the programme     |
+| progress        | Number:Dimensionless | Relative progression of the current programme |
 
-### Next program (nextprog) channels group
+### Next programme (nextprog) channels group
 
 | Channel Type ID | Item Type            | Description                                   |
 |-----------------|----------------------|-----------------------------------------------|
 | progStart       | DateTime             | Program Start Time                            |
-| timeLeft        | Number:Time          | Time left before program start                |
+| timeLeft        | Number:Time          | Time left before programme start              |
 | progEnd         | DateTime             | Program End Time                              |
 | progTitle       | String               | Program Title.                                |
 | progCategory    | String               | Program Category.                             |
-| progIcon        | String               | URL to an image of the program.               |
+| progIcon        | String               | URL to an image of the programme.             |
 
 ## Full Example
 

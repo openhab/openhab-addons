@@ -11,6 +11,8 @@ Bundle-Version: 2.4.0.qualifier
 Import-Package: 
  javax.measure,
  javax.xml.bind,
+ javax.xml.bind.annotation,
+ javax.xml.bind.annotation.adapters,
  javax.xml.stream,
  javax.xml.transform,
  org.eclipse.jdt.annotation;resolution:=optional,
