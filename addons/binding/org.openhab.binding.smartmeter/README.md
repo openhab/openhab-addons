@@ -24,8 +24,6 @@ The smartmeter thing requires the serial port where the meter device is connecte
 | `baudrateChangeDelay` | Delay of baudrate change in ms | USB to serial converters often require a delay of up to 250ms after the ACK before changing baudrate (only relevant for 'C' mode) | no | 0 |
 | `baudrate` | (initial) Baudrate | The baudrate of the serial port. If set to 'auto', it will be negotiated with the meter. The default is 300 baud for modes A, B, and C and 2400 baud for mode D, and 9600 baud for SML. | no | AUTO |
 
-The default is 300 baud for modes A, B, and C and 2400 baud for mode D
-
 ## Channels
 
 All available OBIS codes which are read out from the device are created as channels.
