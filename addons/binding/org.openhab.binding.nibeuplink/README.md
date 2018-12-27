@@ -2,7 +2,7 @@
 
 The NibeUplink binding is used to get "live data" from from Nibe heat pumps without plugging any custom devices into your heat pump.
 This avoids the risk of losing your warranty. Instead data is retrieved from Nibe Uplink. This binding should in general be compatible with heat pump models that support Nibe Uplink.
-In general read access is supported for all channels. Write access is only supported for a small subset of channels.
+In general read access is supported for all channels. Write access is only supported for a small subset of channels. Write access will only be available with a paid subscription for "manage" at NibeUplink.
 
 ## Supported Things
 
