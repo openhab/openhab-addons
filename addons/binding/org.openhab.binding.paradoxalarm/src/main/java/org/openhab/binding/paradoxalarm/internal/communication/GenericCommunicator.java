@@ -31,7 +31,10 @@ import org.slf4j.LoggerFactory;
  */
 public class GenericCommunicator implements IParadoxGenericCommunicator {
 
+    private static final int SOCKET_TIMEOUT = 4000;
+
     protected static Logger logger = LoggerFactory.getLogger(GenericCommunicator.class);
+
     protected Socket socket;
     protected DataOutputStream tx;
     protected DataInputStream rx;
@@ -57,14 +60,14 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
 
     private void reinitializeSocket() throws UnknownHostException, IOException {
         socket = new Socket(ipAddress, tcpPort);
-        socket.setSoTimeout(4000);
+        socket.setSoTimeout(SOCKET_TIMEOUT);
         tx = new DataOutputStream(socket.getOutputStream());
         rx = new DataInputStream(socket.getInputStream());
     }
 
     @Override
     public synchronized void close() {
-        logger.info("Closing communication to Paradox system");
+        logger.info("Stopping communication to Paradox system");
         try {
             tx.close();
             rx.close();
@@ -228,8 +231,8 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
         tx.write(packet);
     }
 
-    protected byte[] receivePacket() throws InterruptedException {
-        for (int retryCounter = 0; retryCounter < 3; retryCounter++) {
+    protected byte[] receivePacket() throws InterruptedException, IOException {
+        for (int retryCounter = 1; retryCounter <= 3; retryCounter++) {
             try {
                 byte[] result = new byte[256];
                 rx.read(result);
@@ -240,12 +243,12 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
             } catch (IOException e) {
                 logger.error("Unable to retrieve data from RX. {}", e.getMessage());
                 Thread.sleep(200);
-                if (retryCounter < 2) {
-                    logger.info("Attempting one more time");
+                if (retryCounter <= 3) {
+                    logger.info("That was {} attempt.", retryCounter);
                 }
             }
         }
-        return new byte[0];
+        throw new IOException("Unable to read from socket after max retries.");
     }
 
     private byte[] generateInitializationRequest(byte[] initializationMessage, byte[] pcPassword) {

@@ -19,6 +19,7 @@ import org.openhab.binding.paradoxalarm.internal.communication.messages.HeaderMe
 import org.openhab.binding.paradoxalarm.internal.communication.messages.IPPacketPayload;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.ParadoxIPPacket;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.RamRequestPayload;
+import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxBindingException;
 import org.openhab.binding.paradoxalarm.internal.model.ZoneStateFlags;
 import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
 import org.slf4j.Logger;
@@ -169,16 +170,18 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
     }
 
     @Override
-    public void refreshMemoryMap() throws Exception {
-        if (isOnline()) {
+    public void refreshMemoryMap() throws ParadoxBindingException, IOException, InterruptedException {
+        if (isOnline) {
             for (int i = 1, j = 0; i <= 16; i++, j++) {
                 logger.trace("Reading memory page number: {}", i);
                 memoryMap.updateElement(j, readRAMBlock(i));
             }
+        } else {
+            logger.error("Unable to refresh memory map. Communicator is offline");
         }
     }
 
-    public byte[] readRAMBlock(int blockNo) throws Exception {
+    private byte[] readRAMBlock(int blockNo) throws ParadoxBindingException, IOException, InterruptedException {
         if (isOnline) {
             return readRAM(blockNo, (byte) 64);
         } else {
@@ -186,7 +189,8 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
         }
     }
 
-    public byte[] readRAM(int blockNo, byte bytesToRead) throws Exception {
+    private byte[] readRAM(int blockNo, byte bytesToRead)
+            throws ParadoxBindingException, IOException, InterruptedException {
         IPPacketPayload payload = new RamRequestPayload(blockNo, bytesToRead);
         return readMemory(payload);
     }
@@ -200,7 +204,7 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
         return readMemory(payload);
     }
 
-    private byte[] readMemory(IPPacketPayload payload) throws Exception {
+    private byte[] readMemory(IPPacketPayload payload) throws IOException, InterruptedException {
         ParadoxIPPacket readEpromIPPacket = new ParadoxIPPacket(payload)
                 .setMessageType(HeaderMessageType.SERIAL_PASSTHRU_REQUEST).setUnknown0((byte) 0x14);
 
@@ -208,15 +212,15 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
         return receivePacket((byte) 0x5);
     }
 
-    /// <summary>
-    /// This method reads data from the IP150 module. It can return multiple
-    /// responses
-    /// e.g. a live event is combined with another response.
-    /// </summary>
-    /// <param name="networkStream">The open active TCP/IP stream.</param>
-    /// <param name="command">A panel command, e.g. 0x5 (read memory)</param>
-    /// <returns>An array of an array of the raw bytes received from the TCP/IP
-    /// stream.</returns>
+    /**
+     * This method reads data from the IP150 module. It can return multiple
+     * responses
+     * e.g. a live event is combined with another response.
+     * The open active TCP/IP stream.
+     * A panel command, e.g. 0x5 (read memory
+     * An array of an array of the raw bytes received from the TCP/IP
+     * stream.
+     */
     private byte[] receivePacket(byte command) throws IOException, InterruptedException {
         if (command > 0xF) {
             command = ParadoxUtil.getHighNibble(command);

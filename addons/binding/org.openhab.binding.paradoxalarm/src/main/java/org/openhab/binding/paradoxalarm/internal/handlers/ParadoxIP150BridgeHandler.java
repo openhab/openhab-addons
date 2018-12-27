@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.paradoxalarm.internal.handlers;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -29,6 +30,7 @@ import org.openhab.binding.paradoxalarm.internal.communication.GenericCommunicat
 import org.openhab.binding.paradoxalarm.internal.communication.IParadoxCommunicator;
 import org.openhab.binding.paradoxalarm.internal.communication.IParadoxGenericCommunicator;
 import org.openhab.binding.paradoxalarm.internal.communication.ParadoxCommunicatorFactory;
+import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxBindingException;
 import org.openhab.binding.paradoxalarm.internal.model.PanelType;
 import org.openhab.binding.paradoxalarm.internal.model.RawStructuredDataCache;
 import org.slf4j.Logger;
@@ -41,6 +43,8 @@ import org.slf4j.LoggerFactory;
  * @author Konstantin_Polihronov - Initial contribution
  */
 public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
+
+    private static final String RESET = "RESET";
 
     private static final int INITIAL_SCHEDULE_DELAY = 15;
 
@@ -139,8 +143,15 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
                 }
             }
             announceUpdateToHandlers();
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.error("Communicator cannot refresh cached memory map. Exception: {}", e);
+            logger.info("Will attempt to reinitialize communicator.");
+            @SuppressWarnings("null")
+            ChannelUID uid = getThing().getChannel(ParadoxAlarmBindingConstants.IP150_COMMUNICATION_COMMAND_CHANNEL_UID)
+                    .getUID();
+            handleCommand(uid, new StringType(RESET));
+        } catch (InterruptedException | ParadoxBindingException e) {
+            logger.error("Exception while refreshing memory map in communicator. {}", e);
         }
     }
 
@@ -175,7 +186,7 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
             logger.debug("Command is instance of {}", command.getClass());
             if (command instanceof StringType) {
                 String commandAsString = command.toFullString();
-                if (commandAsString.equals("RESET")) {
+                if (commandAsString.equals(RESET)) {
                     try {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                                 "Bringing bridge offline due to reinitialization of communicator.");
