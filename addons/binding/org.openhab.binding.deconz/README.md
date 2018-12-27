@@ -20,7 +20,7 @@ These things are supported:
 | Switch                            | ZHASwitch                         | `switch`              | `button`,`buttonevent`    |
 | Light sensor                      | ZHALightLevel                     | `lightsensor`         | `lightlux`                |
 | Temperature sensor                | ZHATemperature                    | `temperaturesensor`   | `temperature`             |
-| Humidity sensor                   | ZHAHumidity                       | `humidityesensor`     | `humidity`                |
+| Humidity sensor                   | ZHAHumidity                       | `humiditysensor`      | `humidity`                |
 | Open/close sensor                 | ZHAOpenClose                      | `openclosesensor`     | `open`                    |
 | deCONZ artificial daylight sensor | Deconz specific: simulated sensor | `daylightsensor`      | `value`,`light`           |
 
@@ -72,7 +72,7 @@ The devices support some of the following channels:
 | button            | Number                | R             | Last pressed button id on a switch                                        | switch            |
 | lightlux          | Number:Illuminance    | R             | Current light illuminance in Lux                                          | lightsensor       |
 | temperature       | Number:Temperature    | R             | Current temperature in ˚C                                                 | temperaturesensor |
-| humidity          | Number:Dimensionless  | R             | Current humidity in %                                                     | humidityesensor   |
+| humidity          | Number:Dimensionless  | R             | Current humidity in %                                                     | humiditysensor    |
 | open              | Contact               | R             | Status of contacts: `OPEN`; `CLOSED`                                      | openclosesensor   |
 | light             | String                | R             | Light level: `Daylight`,`Sunset`,`Dark`                                   | daylightsensor    |
 | value             | Number                | R             | Sun position: `130` = dawn; `140` = sunrise; `190` = sunset; `210` = dusk | daylightsensor    |
@@ -95,7 +95,7 @@ The dimmer switch additionally supports a trigger channel.
 Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ] {
     presencesensor      livingroom-presence     "Livingroom Presence"       [ id="1" ]
     temperaturesensor   livingroom-temperature  "Livingroom Temperature"    [ id="2" ]
-    humidityesensor     livingroom-humidity     "Livingroom Humidity"       [ id="3" ]
+    humiditysensor      livingroom-humidity     "Livingroom Humidity"       [ id="3" ]
     openclosesensor     livingroom-window       "Livingroom Window"         [ id="4" ]
 	switch              livingroom-hue-tap      "Livingroom Hue Tap"        [ id="5" ]
 }
