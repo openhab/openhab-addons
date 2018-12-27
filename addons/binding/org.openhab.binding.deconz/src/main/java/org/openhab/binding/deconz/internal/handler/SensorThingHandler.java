@@ -265,20 +265,21 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
                     updateState(channelID, new DecimalType(status));
                 }
                 break;
-            case BindingConstants.CHANNEL_BUTTON:
-                if (buttonevent != null) {
-                    updateState(channelID, new DecimalType(buttonevent));
-                }
-                break;
             case BindingConstants.CHANNEL_OPENCLOSE:
                 if (open != null) {
                     updateState(channelID, open ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
                 }
                 break;
-        }
-
-        if (buttonevent != null) {
-            triggerChannel(BindingConstants.CHANNEL_BUTTONEVENT, String.valueOf(buttonevent));
+            case BindingConstants.CHANNEL_BUTTON:
+                if (buttonevent != null) {
+                    updateState(channelID, new DecimalType(buttonevent));
+                }
+                break;
+            case BindingConstants.CHANNEL_BUTTONEVENT:
+                if (buttonevent != null) {
+                    triggerChannel(BindingConstants.CHANNEL_BUTTONEVENT, String.valueOf(buttonevent));
+                }
+                break;
         }
     }
 
