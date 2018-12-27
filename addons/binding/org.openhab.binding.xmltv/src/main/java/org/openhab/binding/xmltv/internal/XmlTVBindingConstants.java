@@ -32,24 +32,24 @@ public class XmlTVBindingConstants {
     public static final ThingTypeUID XMLTV_CHANNEL_THING_TYPE = new ThingTypeUID(BINDING_ID, "Channel");
 
     // Channel groups
-    public static final String GROUP_CURRENT_PROGRAM = "currentprog";
-    public static final String GROUP_NEXT_PROGRAM = "nextprog";
+    public static final String GROUP_CURRENT_PROGRAMME = "currentprog";
+    public static final String GROUP_NEXT_PROGRAMME = "nextprog";
     public static final String GROUP_CHANNEL_PROPERTIES = "channelprops";
 
     // List of all Channel ids
     public static final String CHANNEL_CHANNEL_URL = "iconUrl";
     public static final String CHANNEL_ICON = "icon";
 
-    public static final String CHANNEL_PROGRAM_START = "progStart";
-    public static final String CHANNEL_PROGRAM_END = "progEnd";
-    public static final String CHANNEL_PROGRAM_TITLE = "progTitle";
-    public static final String CHANNEL_PROGRAM_CATEGORY = "progCategory";
-    public static final String CHANNEL_PROGRAM_ICON = "progIcon";
+    public static final String CHANNEL_PROGRAMME_START = "progStart";
+    public static final String CHANNEL_PROGRAMME_END = "progEnd";
+    public static final String CHANNEL_PROGRAMME_TITLE = "progTitle";
+    public static final String CHANNEL_PROGRAMME_CATEGORY = "progCategory";
+    public static final String CHANNEL_PROGRAMME_ICON = "progIcon";
 
-    public static final String CHANNEL_PROGRAM_ELAPSED = "elapsedTime";
-    public static final String CHANNEL_PROGRAM_REMAINING = "remainingTime";
-    public static final String CHANNEL_PROGRAM_PROGRESS = "progress";
-    public static final String CHANNEL_PROGRAM_TIMELEFT = "timeLeft";
+    public static final String CHANNEL_PROGRAMME_ELAPSED = "elapsedTime";
+    public static final String CHANNEL_PROGRAMME_REMAINING = "remainingTime";
+    public static final String CHANNEL_PROGRAMME_PROGRESS = "progress";
+    public static final String CHANNEL_PROGRAMME_TIMELEFT = "timeLeft";
 
     // Supported Thing types
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections

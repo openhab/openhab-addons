@@ -153,7 +153,7 @@ public class ChannelHandler extends BaseThingHandler {
     private void updateChannel(ChannelUID channelUID) {
         String[] uidElements = channelUID.getId().split("#");
         if (uidElements.length == 2) {
-            int target = GROUP_NEXT_PROGRAM.equals(uidElements[0]) ? 1 : 0;
+            int target = GROUP_NEXT_PROGRAMME.equals(uidElements[0]) ? 1 : 0;
             if (programmes.size() > target) {
                 Programme programme = programmes.get(target);
 
@@ -169,37 +169,37 @@ public class ChannelHandler extends BaseThingHandler {
                                 mediaChannel != null ? new StringType(mediaChannel.getIcons().get(0).getSrc())
                                         : UnDefType.NULL);
                         break;
-                    case CHANNEL_PROGRAM_START:
+                    case CHANNEL_PROGRAMME_START:
                         Instant is = programme.getProgrammeStart();
                         ZonedDateTime zds = ZonedDateTime.ofInstant(is, ZoneId.systemDefault());
                         updateState(channelUID, new DateTimeType(zds));
                         break;
-                    case CHANNEL_PROGRAM_END:
+                    case CHANNEL_PROGRAMME_END:
                         ZonedDateTime zde = ZonedDateTime.ofInstant(programme.getProgrammeStop(),
                                 ZoneId.systemDefault());
                         updateState(channelUID, new DateTimeType(zde));
                         break;
-                    case CHANNEL_PROGRAM_TITLE:
+                    case CHANNEL_PROGRAMME_TITLE:
                         updateState(channelUID, new StringType(programme.getTitles().get(0).getValue()));
                         break;
-                    case CHANNEL_PROGRAM_CATEGORY:
+                    case CHANNEL_PROGRAMME_CATEGORY:
                         updateState(channelUID, new StringType(programme.getCategories().get(0).getValue()));
                         break;
-                    case CHANNEL_PROGRAM_ICON:
+                    case CHANNEL_PROGRAMME_ICON:
                         List<Icon> icons = programme.getIcons();
                         updateState(channelUID,
                                 icons.size() > 0 ? new StringType(icons.get(0).getSrc()) : UnDefType.NULL);
                         break;
-                    case CHANNEL_PROGRAM_ELAPSED:
+                    case CHANNEL_PROGRAMME_ELAPSED:
                         updateState(channelUID, getDurationInSeconds(programme.getProgrammeStart(), Instant.now()));
                         break;
-                    case CHANNEL_PROGRAM_REMAINING:
+                    case CHANNEL_PROGRAMME_REMAINING:
                         updateState(channelUID, getDurationInSeconds(Instant.now(), programme.getProgrammeStop()));
                         break;
-                    case CHANNEL_PROGRAM_TIMELEFT:
+                    case CHANNEL_PROGRAMME_TIMELEFT:
                         updateState(channelUID, getDurationInSeconds(Instant.now(), programme.getProgrammeStart()));
                         break;
-                    case CHANNEL_PROGRAM_PROGRESS:
+                    case CHANNEL_PROGRAMME_PROGRESS:
                         Duration totalLength = Duration.between(programme.getProgrammeStart(),
                                 programme.getProgrammeStop());
                         Duration elapsed1 = Duration.between(programme.getProgrammeStart(), Instant.now());
