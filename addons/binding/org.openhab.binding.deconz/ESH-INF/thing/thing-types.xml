@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="deconz"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="deconz" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
@@ -24,7 +23,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="deconz" />
 		</supported-bridge-type-refs>
-		  Presence Sensor</label>
+		<label>Presence Sensor</label>
 		<description>A Presence sensor</description>
 		<channels>
 			<channel typeId="presence" id="presence"></channel>
@@ -92,14 +91,14 @@
 		<description>This channel is triggered on a button event. The trigger payload consists of the button event number.</description>
 		<event></event>
 	</channel-type>
-	
+
 	<channel-type id="button">
 		<item-type>Number</item-type>
 		<label>Button</label>
 		<description>The Button that was last pressed on the switch.</description>
 		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
-	
+
 	<thing-type id="lightsensor">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="deconz" />
@@ -147,7 +146,7 @@
 		<description>Current temperature</description>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
-	
+
 	<thing-type id="humiditysensor">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="deconz" />
@@ -164,7 +163,7 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-	
+
 	<channel-type id="humidity">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
