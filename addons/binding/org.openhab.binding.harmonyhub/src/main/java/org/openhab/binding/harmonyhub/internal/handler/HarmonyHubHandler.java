@@ -77,6 +77,8 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
     private static final long CONFIG_CACHE_TIME = TimeUnit.MINUTES.toMillis(1);
     private static final int RETRY_TIME = 60;
     private static final int HEARTBEAT_INTERVAL = 30;
+    // Websocket will timeout after 60 seconds, pick a sensible max under this,
+    private static final int HEARTBEAT_INTERVAL_MAX = 50;
 
     private List<HubStatusListener> listeners = new CopyOnWriteArrayList<>();
 
@@ -178,7 +180,8 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
     private synchronized void connect() {
         disconnectFromHub();
 
-        heartBeatInterval = config.heartBeatInterval > 0 ? config.heartBeatInterval : HEARTBEAT_INTERVAL;
+        heartBeatInterval = Math.min(config.heartBeatInterval > 0 ? config.heartBeatInterval : HEARTBEAT_INTERVAL,
+                HEARTBEAT_INTERVAL_MAX);
 
         String host = config.host;
 
