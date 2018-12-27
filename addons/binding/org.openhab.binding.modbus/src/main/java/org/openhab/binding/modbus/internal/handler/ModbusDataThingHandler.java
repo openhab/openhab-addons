@@ -868,10 +868,6 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         updateStatusIfChanged(status, ThingStatusDetail.NONE, null);
     }
 
-    private void updateStatusIfChanged(ThingStatus status, ThingStatusDetail statusDetail) {
-        updateStatusIfChanged(status, statusDetail, null);
-    }
-
     private void updateStatusIfChanged(ThingStatus status, ThingStatusDetail statusDetail,
             @Nullable String description) {
         ThingStatusInfo newStatusInfo = new ThingStatusInfo(status, statusDetail, description);
