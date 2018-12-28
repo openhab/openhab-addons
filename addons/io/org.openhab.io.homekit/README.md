@@ -88,19 +88,33 @@ Number DownstairsThermostatTargetTemperature "Downstairs Thermostat Target Tempe
 String DownstairsThermostatHeatingCoolingMode "Downstairs Thermostat Heating/Cooling Mode" (gDownstairsThermostat) [ "homekit:HeatingCoolingMode" ]
 ```
 
+## Common Problems
+
+### OpenHab2 Homekit hub shows up when I manually scan for devices, but Home app repots "can’t connect to device"
+
+If you see this error in the Home app, and don't see any log messages, it could be because your IP address is networkInterface is misconfigured.
+The OpenHab2 Homekit hub is advertised via mDNS.
+If you register an IP address that isn't reachable from your phone (such as `localhost`, `0.0.0.0`, `127.0.0.1`, etc.), then Home will be unable to reach OpenHab2.
+
 ## Additional Notes
 
 HomeKit allows only a single pairing to be established with the bridge.
 This pairing is normally shared across devices via iCloud.
 If you need to establish a new pairing, you'll need to clear the existing pairings.
 To do this, you can issue the command ```smarthome:homekit clearPairings``` from the OSGi console.
+After doing this, you may need to remove the file `/var/lib/openhab2/jsondb/homekit.json` and restart OpenHab2.
 
 HomeKit requires a unique identifier for each accessory advertised by the bridge.
 This unique identifier is hashed from the Item's name.
 For that reason, it is important that the name of your Items exposed to HomeKit remain consistent.
 
 If you encounter any issues with the add-on and need support, it may be important to get detailed logs of your device's communication with openHAB.
-In order to get logs from the underlying library used to implement the HomeKit protocol, enable trace logging using the following command:
+In order to get logs from the underlying library used to implement the HomeKit protocol, enable trace logging using the following commands at [the console](https://www.openhab.org/docs/administration/console.html):
 
-```openhab> log:set TRACE com.beowulfe.hap```
+
+
+```
+openhab> log:set TRACE com.beowulfe.hap
+openhab> log:tail com.beowulfe.hap
+```
 
