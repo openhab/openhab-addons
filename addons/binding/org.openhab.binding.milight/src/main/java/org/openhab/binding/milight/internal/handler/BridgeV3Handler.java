@@ -119,7 +119,7 @@ public class BridgeV3Handler extends AbstractBridgeHandler {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Bridge did not respond!");
                         timeoutsCounter = 0;
                     } else {
-                        socket.setSoTimeout(300);
+                        socket.setSoTimeout(1000);
                         ++timeoutsCounter;
                         socket.send(discoverPacketV3);
                     }
