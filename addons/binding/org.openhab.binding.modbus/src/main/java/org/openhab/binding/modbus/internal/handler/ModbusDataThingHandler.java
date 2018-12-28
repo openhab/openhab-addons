@@ -45,6 +45,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
@@ -868,10 +869,6 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         updateStatusIfChanged(status, ThingStatusDetail.NONE, null);
     }
 
-    private void updateStatusIfChanged(ThingStatus status, ThingStatusDetail statusDetail) {
-        updateStatusIfChanged(status, statusDetail, null);
-    }
-
     private void updateStatusIfChanged(ThingStatus status, ThingStatusDetail statusDetail,
             @Nullable String description) {
         ThingStatusInfo newStatusInfo = new ThingStatusInfo(status, statusDetail, description);
@@ -880,7 +877,26 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         if (statusInfo.getStatus() == ThingStatus.UNKNOWN || !statusInfo.equals(newStatusInfo) || intervalElapsed) {
             statusInfo = newStatusInfo;
             lastStatusInfoUpdate = LocalDateTime.now();
-            updateStatus(status, statusDetail);
+            updateStatus(newStatusInfo);
+        }
+    }
+
+    /**
+     * Update status using pre-constructed ThingStatusInfo
+     *
+     * Implementation adapted from BaseThingHandler updateStatus implementations
+     *
+     * @param statusInfo new status info
+     */
+    protected void updateStatus(ThingStatusInfo statusInfo) {
+        synchronized (this) {
+            ThingHandlerCallback callback = getCallback();
+            if (callback != null) {
+                callback.statusUpdated(this.thing, statusInfo);
+            } else {
+                logger.warn("Handler {} tried updating the thing status although the handler was already disposed.",
+                        this.getClass().getSimpleName());
+            }
         }
     }
 
