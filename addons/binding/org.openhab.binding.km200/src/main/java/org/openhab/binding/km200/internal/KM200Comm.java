@@ -9,18 +9,18 @@
 
 package org.openhab.binding.km200.internal;
 
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.BytesContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * The KM200Comm class does the communication to the device and does any encryption/decryption/converting jobs
@@ -30,16 +30,14 @@ import org.slf4j.LoggerFactory;
 public class KM200Comm<KM200BindingProvider> {
 
     private final Logger logger = LoggerFactory.getLogger(KM200Comm.class);
-    private HttpClient client;
+    private HttpClient httpClient;
     private final KM200Device remoteDevice;
     private Integer maxNbrRepeats;
 
-    public KM200Comm(KM200Device device) {
+    public KM200Comm(KM200Device device, HttpClient httpClient) {
         this.remoteDevice = device;
         maxNbrRepeats = Integer.valueOf(10);
-        if (client == null) {
-            client = new HttpClient();
-        }
+        this.httpClient = httpClient;
     }
 
     /**
@@ -63,10 +61,9 @@ public class KM200Comm<KM200BindingProvider> {
         try {
 
             // Create an instance of HttpClient.
-            client.start();
             for (int i = 0; i < maxNbrRepeats.intValue() && statusCode != HttpStatus.OK_200; i++) {
 
-                contentresponse = client.newRequest(remoteDevice.getIP4Address() + service, 80)
+                contentresponse = httpClient.newRequest(remoteDevice.getIP4Address() + service, 80)
                         .scheme("http")
                         .agent("TeleHeater/2.2.3")
                         .accept("application/json")
@@ -80,12 +77,11 @@ public class KM200Comm<KM200BindingProvider> {
                 // Release the connection.
                 switch (statusCode) {
                     case HttpStatus.OK_200:
-                        remoteDevice.setCharSet("UTF-8");
+                        remoteDevice.setCharSet(StandardCharsets.UTF_8.name());
                         responseBodyB64 = contentresponse.getContent();
                         break;
                     case HttpStatus.INTERNAL_SERVER_ERROR_500:
                         /* Unknown problem with the device, wait and try again */
-                        client.stop();
                         logger.debug("HTTP GET failed: 500, internal server error, repeating.. ");
                         Thread.sleep(100L * i + 1);
                         continue;
@@ -96,62 +92,45 @@ public class KM200Comm<KM200BindingProvider> {
                         break;
                     case HttpStatus.NOT_FOUND_404:
                         /* Should only happen on discovery */
-                        client.stop();
                         responseBodyB64 = null;
                         break;
                     default:
                         logger.debug("HTTP GET failed: {}", contentresponse.getReason());
-                        client.stop();
                         responseBodyB64 = null;
                         break;
                 }
             }
         } catch (InterruptedException e) {
             logger.debug("Sleep was interrupted: {}", e.getMessage());
-        } catch (IOException e) {
-            logger.debug("Fatal transport error: {}", e.getMessage());
         } catch (TimeoutException e) {
-            logger.error("Call to " + remoteDevice.getIP4Address() + service + " timed out. ", e);
-        } catch (Exception e) {
-            logger.error("Error while starting/stopping the httpclient. ", e);
-        } finally {
-            // Release the connection.
-            if (contentresponse != null) {
-                try {
-                    client.stop();
-                } catch (Exception e) {
-                    logger.error("Error while stopping the httpclient. ", e);
-                }
-            }
+            logger.debug("Call to " + remoteDevice.getIP4Address() + service + " timed out. ", e);
+        } catch (ExecutionException e) {
+            logger.debug("Fatal transport error: {}", e.getMessage());
         }
         return responseBodyB64;
-
     }
 
     /**
      * This function does the SEND http communication to the device
      */
     public Integer sendDataToService(String service, byte[] data) {
-        // Create an instance of HttpClient.
         int rCode = 0;
         ContentResponse contentResponse = null;
 
         logger.debug("Starting send connection...");
         try {
-            client.start();
             for (int i = 0; i < maxNbrRepeats.intValue() && rCode != HttpStatus.NO_CONTENT_204; i++) {
 
                 // Create a method instance.
-                contentResponse = client.newRequest("http://" + remoteDevice.getIP4Address() + service)
+                contentResponse = httpClient.newRequest("http://" + remoteDevice.getIP4Address() + service)
                         .method(HttpMethod.POST)
                         .agent("TeleHeater/2.2.3")
                         .accept("application/json")
                         .content(new BytesContentProvider(data))
-                        .timeout(5000, TimeUnit.SECONDS)
+                        .timeout(5, TimeUnit.SECONDS)
                         .send();
 
                 rCode = contentResponse.getStatus();
-                client.stop();
                 switch (rCode) {
                     case HttpStatus.NO_CONTENT_204: // The default return value
                         break;
@@ -166,23 +145,15 @@ public class KM200Comm<KM200BindingProvider> {
                         break;
                 }
             }
-        } catch (IOException e) {
-            logger.debug("Failed to send data {}", e);
         } catch (InterruptedException e) {
             logger.debug("Sleep was interrupted: {}", e.getMessage());
-        } catch (Exception e) {
-            logger.error("Error while starting/stopping the httpclient. ", e);
-        } finally {
-            // Release the connection.
-            if (contentResponse != null) {
-                try {
-                    client.stop();
-                } catch (Exception e) {
-                    logger.error("Error while stopping the httpclient. ", e);
-                }
-            }
-            logger.debug("Returncode: {}", rCode);
-            return rCode;
+        } catch (ExecutionException e) {
+            logger.debug("Fatal transport error: {}", e.getMessage());
+        } catch (TimeoutException e) {
+            logger.debug("Call to "+remoteDevice.getIP4Address() + service+ " timed out.");
         }
+        logger.debug("Returncode: {}", rCode);
+        return rCode;
+
     }
 }
