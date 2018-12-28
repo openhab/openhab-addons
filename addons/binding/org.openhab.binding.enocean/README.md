@@ -229,13 +229,13 @@ end
 
 ```xtend
 Bridge enocean:bridge:gtwy "EnOcean Gateway" [ path="/dev/ttyAMA0" ] {
-   Thing rockerSwitch rs01 "Rocker" @ "Kitchen" [ enoceanID="aabbcc01", receivingEEPId="F6_02_01" ]
-   Thing mechanicalHandle mh01 "Door handle" @ "Living room" [ enoceanID="aabbcc02", receivingEEPId="F6_10_00" ]
-   Thing roomOperatingPanel p01 "Panel" @ "Floor" [ enoceanID="aabbcc03", receivingEEPId="A5_10_06" ]
-   Thing centralCommand cc01 "Light" @ "Kitchen" [ enoceanID="aabbcc04", senderIdOffset=1, sendingEEPId="A5_38_08_01", receivingEEPId="F6_00_00", broadcastMessages=true, suppressRepeating=false ]
-   Thing centralCommand cc02 "Dimmer" @ "Living room" [ enoceanID="aabbcc05", senderIdOffset=2, sendingEEPId="A5_38_08_02", receivingEEPId="A5_38_08_02", broadcastMessages=true, suppressRepeating=false ]
-   Thing rollershutter r01 "Rollershutter" @ "Kitchen" [ enoceanID="aabbcc06", senderIdOffset=3, sendingEEPId="A5_3F_7F_EltakoFSB", receivingEEPId="A5_3F_7F_EltakoFSB", broadcastMessages=true, suppressRepeating=false ] {Channels: Type rollershutter:rollershutter [shutTime=25]}
-   Thing measurementSwitch ms01 "TV Smart Plug" @ "Living room" [ enoceanID="aabbcc07", senderIdOffset=4, sendingEEPId="D2_01_09", broadcastMessages=false, receivingEEPId="D2_01_09","A5_12_01", suppressRepeating=false, pollingInterval=300]
+   Thing rockerSwitch rs01 "Rocker" @ "Kitchen" [ enoceanId="aabbcc01", receivingEEPId="F6_02_01" ]
+   Thing mechanicalHandle mh01 "Door handle" @ "Living room" [ enoceanId="aabbcc02", receivingEEPId="F6_10_00" ]
+   Thing roomOperatingPanel p01 "Panel" @ "Floor" [ enoceanId="aabbcc03", receivingEEPId="A5_10_06" ]
+   Thing centralCommand cc01 "Light" @ "Kitchen" [ enoceanId="aabbcc04", senderIdOffset=1, sendingEEPId="A5_38_08_01", receivingEEPId="F6_00_00", broadcastMessages=true, suppressRepeating=false ]
+   Thing centralCommand cc02 "Dimmer" @ "Living room" [ enoceanId="aabbcc05", senderIdOffset=2, sendingEEPId="A5_38_08_02", receivingEEPId="A5_38_08_02", broadcastMessages=true, suppressRepeating=false ]
+   Thing rollershutter r01 "Rollershutter" @ "Kitchen" [ enoceanId="aabbcc06", senderIdOffset=3, sendingEEPId="A5_3F_7F_EltakoFSB", receivingEEPId="A5_3F_7F_EltakoFSB", broadcastMessages=true, suppressRepeating=false ] {Channels: Type rollershutter:rollershutter [shutTime=25]}
+   Thing measurementSwitch ms01 "TV Smart Plug" @ "Living room" [ enoceanId="aabbcc07", senderIdOffset=4, sendingEEPId="D2_01_09", broadcastMessages=false, receivingEEPId="D2_01_09","A5_12_01", suppressRepeating=false, pollingInterval=300]
    Thing classicDevice cd01 "Garage_Light" @ "Garage" [ 
         senderIdOffset=5, 
         sendingEEPId="F6_02_01", 
