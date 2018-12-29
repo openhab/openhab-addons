@@ -160,7 +160,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
             arpPingState = "Disabled";
             arpPingMethod = null;
         } else if (destination == null || !(destination instanceof Inet4Address)) {
-            arpPingState = "Destination is IPv4";
+            arpPingState = "Destination is not a valid IPv4 address";
             arpPingMethod = null;
         } else {
             arpPingMethod = networkUtils.determineNativeARPpingMethod(arpPingUtilPath);
