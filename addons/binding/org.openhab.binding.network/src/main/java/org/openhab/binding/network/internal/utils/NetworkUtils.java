@@ -204,7 +204,10 @@ public class NetworkUtils {
         if (StringUtils.isBlank(result)) {
             return ArpPingUtilEnum.UNKNOWN_TOOL;
         } else if (result.contains("Thomas Habets")) {
-            if (result.matches("(.*)w sec(\\s*)Specify a timeout(.*)")) {
+            // The content of result is a multi line string. matches() returns true, when the whole
+            // string matches against the regex, thus we need to switch to DOTALL mode by using (?s)
+            // inside the regex.
+            if (result.matches("(?s)(.*)w sec(\\s*)Specify a timeout(.*)")) {
                 return ArpPingUtilEnum.THOMAS_HABERT_ARPING;
             } else {
                 return ArpPingUtilEnum.THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT;
