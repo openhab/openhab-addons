@@ -159,11 +159,38 @@ public class PresenceDetection implements IPRequestReceivedCallback {
         if (!enable || StringUtils.isBlank(arpPingUtilPath)) {
             arpPingState = "Disabled";
             arpPingMethod = null;
+            logger.trace("arpPingState: {}", arpPingState);
+            logger.trace("ARP ping is disabled!");
         } else if (destination == null || !(destination instanceof Inet4Address)) {
             arpPingState = "Destination is not a valid IPv4 address";
             arpPingMethod = null;
+            logger.trace("arpPingState: {}", arpPingState);
+            logger.trace("ARP ping is disabled!");
         } else {
             arpPingMethod = networkUtils.determineNativeARPpingMethod(arpPingUtilPath);
+        }
+        // Set arp_state, which gets displayed in the thing configuration of paperui/habmin
+        switch (arpPingMethod) {
+            case UNKNOWN_TOOL: {
+                arpPingState = "Unknown arping tool";
+                logger.trace("Unknown arping tool without output for --help parameter: {}", arpPingUtilPath);
+                break;
+            }
+            case THOMAS_HABERT_ARPING: {
+                arpPingState = "arping tool by Thomas Habets with timeout";
+                logger.trace("arping tool by Thomas Habets detected: {}", arpPingUtilPath);
+                break;
+            }
+            case THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT: {
+                arpPingState = "arping tool by Thomas Habets without timeout";
+                logger.trace("arping tool by Thomas Habets without timeout support: {}", arpPingUtilPath);
+                break;
+            }
+            case IPUTILS_ARPING: {
+                arpPingState = "ipuitls-arping tool";
+                logger.trace("iputils-arping tool detected: {}", arpPingUtilPath);
+                break;
+            }
         }
     }
 
