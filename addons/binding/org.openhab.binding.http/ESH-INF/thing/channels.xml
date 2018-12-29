@@ -7,13 +7,13 @@
 	<channel-type id="state-color">
 		<item-type>Color</item-type>
 		<label>Color</label>
-		<description>Current color of the device</description>
+		<description>Current color</description>
 		<config-description-ref uri="thing-type:http:config-all"/>
 	</channel-type>
 	<channel-type id="state-contact">
 		<item-type>Contact</item-type>
 		<label>Contact</label>
-		<description>Current contact state of the device</description>
+		<description>Current open/closed contact state</description>
 		<state readOnly="true"/>
 		<config-description-ref uri="thing-type:http:config-stateonly"/>
 	</channel-type>

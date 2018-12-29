@@ -8,9 +8,7 @@ This binding supports a single thing type: `http`.
 
 ## Channels
 
-There are no built-in channels; instead channels are added dynamically by
-the user.  Each channel can be configured with different URLs to fetch and
-update state.
+There are no built-in channels; instead channels are added dynamically by the user.  Each channel can be configured with different URLs to fetch and update state.
 
 These channel types are supported:
 
@@ -31,7 +29,7 @@ These channel types are supported:
   
 Configuration is as follows.
 
-### State Configiration
+### State Configuration
 
 | Parameter              | Name                          | Description                                                                                    | Default Value |
 |------------------------|-------------------------------|------------------------------------------------------------------------------------------------|---------------|
@@ -67,9 +65,7 @@ The expected State values differ depending on Thing type:
 | commandRequestTransform  | Command Request Transformation  | A transformation rule used to transform the command before it is sent to the Command URL. |                           |
 | commandResponseTransform | Command Response Transformation | A transformation rule used to transform the HTTP response from the Command URL.           |                           |
 
-If `commandMethod` is set to POST, the command to be sent will be provided
-in the entity body of the request.  If set to GET, the command can be
-interpolated into the `commandUrl` by specifying a `%s` somewhere in the URL.
+If `commandMethod` is set to POST, the command to be sent will be provided in the entity body of the request.  If set to GET, the command can be interpolated into the `commandUrl` by specifying a `%s` somewhere in the URL.
 
 The expected Command values differ depending on Channel type:
 
@@ -83,10 +79,7 @@ The expected Command values differ depending on Channel type:
 
 ## Full Example
 
-Say we have a building with a door security system that allows you to send a
-HTTP request to unlock the door, and also has a camera that exports a JPEG
-image to the HTTP server every few seconds.  We could represent that as
-follows:
+Say we have a building with a door security system that allows you to send a HTTP request to unlock the door, and also has a camera that exports a JPEG image to the HTTP server every few seconds.  We could represent that as follows:
 
 Things:
 
@@ -109,7 +102,7 @@ Sitemap:
 
 ```
 Frame label="Front Door" {
-    Swith item=Open Door
-    Image item=Exterior Camera
+    Switch item=DoorOpen label="Open Door"
+    Image item=Image1 label="Exterior Camera"
 }
 ```
