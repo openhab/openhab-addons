@@ -4,7 +4,7 @@
 		xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="endpoint" extensible="color,contact,datetime,percent,image,location,number,player,rollershutter,string,onoff">
+	<thing-type id="endpoint" extensible="color,contact,datetime,dimmer,image,location,number,player,rollershutter,string,switch">
 		<label>HTTP Endpoint</label>
 		<description>A Thing that can be observed and/or controlled with HTTP requests.</description>
 	</thing-type>

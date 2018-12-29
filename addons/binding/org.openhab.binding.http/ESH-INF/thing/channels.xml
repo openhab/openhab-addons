@@ -23,7 +23,7 @@
 		<description>Current date and/or time</description>
 		<config-description-ref uri="thing-type:http:config-all"/>
 	</channel-type>
-	<channel-type id="percent">
+	<channel-type id="dimmer">
 		<item-type>Dimmer</item-type>
 		<label>Dimmer</label>
 		<description>Current level of the dimmer</description>
@@ -67,7 +67,7 @@
 		<description>String value</description>
 		<config-description-ref uri="thing-type:http:config-all"/>
 	</channel-type>
-	<channel-type id="onoff">
+	<channel-type id="switch">
 		<item-type>Switch</item-type>
 		<label>Switch</label>
 		<description>Current state of the switch</description>

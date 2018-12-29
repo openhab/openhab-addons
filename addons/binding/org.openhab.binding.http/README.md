@@ -84,7 +84,7 @@ Say we have a building with a door security system that allows you to send a HTT
 Things:
 
 ```
-Thing http:endpoint:front_door_switch {
+Thing http:endpoint:front_door {
     Channels:
         Type switch : door_open "Door Open" [ stateUrl="https://example.com/door_open" commandMethod="POST" commandUrl="https://example.com/door_open" ]
         Type image : door_camera "Door Camera" [ stateUrl="https://example.com/door_camera.jpg" refreshInterval="5000" ]
@@ -94,8 +94,8 @@ Thing http:endpoint:front_door_switch {
 Items:
 
 ```
-Switch DoorOpen { channel="http:front_door_switch:door_open" }
-Image Image1 { channel="http:front_door:door_camera" }
+Switch DoorOpen { channel="http:endpoint:front_door:door_open" }
+Image Image1 { channel="http:endpoint:front_door:door_camera" }
 ```
 
 Sitemap:

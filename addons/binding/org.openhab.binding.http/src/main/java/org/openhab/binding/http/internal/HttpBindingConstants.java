@@ -49,13 +49,13 @@ public class HttpBindingConstants {
         channelStateTypes.put("color", Arrays.asList(HSBType.class, PercentType.class, OnOffType.class));
         channelStateTypes.put("contact", Collections.singletonList(OpenClosedType.class));
         channelStateTypes.put("datetime", Collections.singletonList(DateTimeType.class));
-        channelStateTypes.put("percent", Arrays.asList(PercentType.class, OnOffType.class));
+        channelStateTypes.put("dimmer", Arrays.asList(PercentType.class, OnOffType.class));
         channelStateTypes.put("location", Collections.singletonList(PointType.class));
         channelStateTypes.put("number", Arrays.asList(QuantityType.class, DecimalType.class));
         channelStateTypes.put("player", Arrays.asList(PlayPauseType.class, RewindFastforwardType.class));
         channelStateTypes.put("rollershutter", Arrays.asList(PercentType.class, UpDownType.class));
         channelStateTypes.put("string", Collections.singletonList(StringType.class));
-        channelStateTypes.put("onoff", Collections.singletonList(OnOffType.class));
+        channelStateTypes.put("switch", Collections.singletonList(OnOffType.class));
         CHANNEL_STATE_TYPES = Collections.unmodifiableMap(channelStateTypes);
     }
 
