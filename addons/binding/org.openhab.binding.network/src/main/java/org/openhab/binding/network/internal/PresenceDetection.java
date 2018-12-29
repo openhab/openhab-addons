@@ -159,13 +159,12 @@ public class PresenceDetection implements IPRequestReceivedCallback {
         if (!enable || StringUtils.isBlank(arpPingUtilPath)) {
             arpPingState = "Disabled";
             arpPingMethod = null;
-            return;
         } else if (destination == null || !(destination instanceof Inet4Address)) {
             arpPingState = "Destination is IPv4";
             arpPingMethod = null;
-            return;
+        } else {
+            arpPingMethod = networkUtils.determineNativeARPpingMethod(arpPingUtilPath);
         }
-        arpPingMethod = networkUtils.determineNativeARPpingMethod(arpPingUtilPath);
     }
 
     public String getArpPingState() {
