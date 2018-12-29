@@ -4,70 +4,70 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<channel-type id="state-color">
+	<channel-type id="color">
 		<item-type>Color</item-type>
 		<label>Color</label>
 		<description>Current color</description>
 		<config-description-ref uri="thing-type:http:config-all"/>
 	</channel-type>
-	<channel-type id="state-contact">
+	<channel-type id="contact">
 		<item-type>Contact</item-type>
 		<label>Contact</label>
 		<description>Current open/closed contact state</description>
 		<state readOnly="true"/>
 		<config-description-ref uri="thing-type:http:config-stateonly"/>
 	</channel-type>
-	<channel-type id="state-datetime">
+	<channel-type id="datetime">
 		<item-type>DateTime</item-type>
 		<label>Date/Time</label>
 		<description>Current date and/or time</description>
 		<config-description-ref uri="thing-type:http:config-all"/>
 	</channel-type>
-	<channel-type id="state-percent">
+	<channel-type id="percent">
 		<item-type>Dimmer</item-type>
 		<label>Dimmer</label>
 		<description>Current level of the dimmer</description>
 		<state min="0" max="100" step="1"/>
 		<config-description-ref uri="thing-type:http:config-all"/>
 	</channel-type>
-	<channel-type id="state-image">
+	<channel-type id="image">
 		<item-type>Image</item-type>
 		<label>Image</label>
 		<description>Current image to display</description>
 		<state readOnly="true"/>
 		<config-description-ref uri="thing-type:http:config-stateonly"/>
 	</channel-type>
-	<channel-type id="state-location">
+	<channel-type id="location">
 		<item-type>Location</item-type>
 		<label>Location</label>
 		<description>Current GPS coordinates as Latitude,Longitude,Altitude</description>
 		<config-description-ref uri="thing-type:http:config-all"/>
 	</channel-type>
-	<channel-type id="state-number">
+	<channel-type id="number">
 		<item-type>Number</item-type>
 		<label>Number</label>
 		<description>Current decimal value</description>
 		<config-description-ref uri="thing-type:http:config-all"/>
 	</channel-type>
-	<channel-type id="state-player">
+	<channel-type id="player">
 		<item-type>Player</item-type>
 		<label>Controls</label>
 		<description>Player controls</description>
 		<config-description-ref uri="thing-type:http:config-all"/>
 	</channel-type>
-	<channel-type id="state-rollershutter">
+	<channel-type id="rollershutter">
 		<item-type>Rollershutter</item-type>
 		<label>Controls</label>
 		<description>Roller shutter controls</description>
 		<config-description-ref uri="thing-type:http:config-all"/>
 	</channel-type>
-	<channel-type id="state-string">
+	<channel-type id="string">
 		<item-type>String</item-type>
 		<label>String</label>
 		<description>String value</description>
 		<config-description-ref uri="thing-type:http:config-all"/>
 	</channel-type>
-	<channel-type id="state-onoff">
+	<channel-type id="onoff">
 		<item-type>Switch</item-type>
 		<label>Switch</label>
 		<description>Current state of the switch</description>

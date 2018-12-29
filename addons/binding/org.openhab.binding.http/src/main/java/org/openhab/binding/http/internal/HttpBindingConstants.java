@@ -41,21 +41,21 @@ public class HttpBindingConstants {
 
     static final ThingTypeUID THING_TYPE_HTTP = new ThingTypeUID(BINDING_ID, "http");
 
-    static final String CHANNEL_TYPE_ID_IMAGE = "state-image";
+    static final String CHANNEL_TYPE_ID_IMAGE = "image";
 
     static final Map<String, List<Class<? extends State>>> CHANNEL_STATE_TYPES;
     static {
         final Map<String, List<Class<? extends State>>> channelStateTypes = new HashMap<>();
-        channelStateTypes.put("state-color", Arrays.asList(HSBType.class, PercentType.class, OnOffType.class));
-        channelStateTypes.put("state-contact", Collections.singletonList(OpenClosedType.class));
-        channelStateTypes.put("state-datetime", Collections.singletonList(DateTimeType.class));
-        channelStateTypes.put("state-percent", Arrays.asList(PercentType.class, OnOffType.class));
-        channelStateTypes.put("state-location", Collections.singletonList(PointType.class));
-        channelStateTypes.put("state-number", Arrays.asList(QuantityType.class, DecimalType.class));
-        channelStateTypes.put("state-player", Arrays.asList(PlayPauseType.class, RewindFastforwardType.class));
-        channelStateTypes.put("state-rollershutter", Arrays.asList(PercentType.class, UpDownType.class));
-        channelStateTypes.put("state-string", Collections.singletonList(StringType.class));
-        channelStateTypes.put("state-onoff", Collections.singletonList(OnOffType.class));
+        channelStateTypes.put("color", Arrays.asList(HSBType.class, PercentType.class, OnOffType.class));
+        channelStateTypes.put("contact", Collections.singletonList(OpenClosedType.class));
+        channelStateTypes.put("datetime", Collections.singletonList(DateTimeType.class));
+        channelStateTypes.put("percent", Arrays.asList(PercentType.class, OnOffType.class));
+        channelStateTypes.put("location", Collections.singletonList(PointType.class));
+        channelStateTypes.put("number", Arrays.asList(QuantityType.class, DecimalType.class));
+        channelStateTypes.put("player", Arrays.asList(PlayPauseType.class, RewindFastforwardType.class));
+        channelStateTypes.put("rollershutter", Arrays.asList(PercentType.class, UpDownType.class));
+        channelStateTypes.put("string", Collections.singletonList(StringType.class));
+        channelStateTypes.put("onoff", Collections.singletonList(OnOffType.class));
         CHANNEL_STATE_TYPES = Collections.unmodifiableMap(channelStateTypes);
     }
 
