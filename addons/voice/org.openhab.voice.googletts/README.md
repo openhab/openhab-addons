@@ -1,10 +1,12 @@
 # Google Cloud Text-to-Speech
 
-Google Cloud TTS Service uses Google's Cloud Text-to-Speech API to convert text or Speech Synthesis Markup Language 
+Google Cloud TTS Service uses the none-free Google Cloud Text-to-Speech API to convert text or Speech Synthesis Markup Language 
 (SSML) input into audio data of natural human speech. 
 It provides 30 voices, available in multiple languages and variants and applies DeepMind’s groundbreaking research in 
 WaveNet and Google’s powerful neural networks. 
 The implementation caches the converted texts to reduce the load on the API and make the conversion faster.
+Be aware, that using this service may incur cost on your Google Cloud account.
+You can find pricing information on the [documentation page](https://cloud.google.com/text-to-speech/#pricing-summary).
 
 ## Table of Contents
 
