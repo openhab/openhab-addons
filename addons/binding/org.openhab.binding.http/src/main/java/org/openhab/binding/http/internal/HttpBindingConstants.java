@@ -39,7 +39,7 @@ import java.util.Map;
 public class HttpBindingConstants {
     private static final String BINDING_ID = "http";
 
-    static final ThingTypeUID THING_TYPE_HTTP = new ThingTypeUID(BINDING_ID, "http");
+    static final ThingTypeUID THING_TYPE_HTTP = new ThingTypeUID(BINDING_ID, "endpoint");
 
     static final String CHANNEL_TYPE_ID_IMAGE = "image";
 

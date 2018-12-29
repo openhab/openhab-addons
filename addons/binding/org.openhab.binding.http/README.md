@@ -4,7 +4,7 @@ This binding can be used to make HTTP requests to fetch and update device state.
 
 ## Supported Things
 
-This binding supports a single thing type: `http`.
+This binding supports a single thing type: `endpooint`.
 
 ## Channels
 
@@ -84,7 +84,7 @@ Say we have a building with a door security system that allows you to send a HTT
 Things:
 
 ```
-Thing http:http:front_door_switch {
+Thing http:endpoint:front_door_switch {
     Channels:
         Type switch : door_open "Door Open" [ stateUrl="https://example.com/door_open" commandMethod="POST" commandUrl="https://example.com/door_open" ]
         Type image : door_camera "Door Camera" [ stateUrl="https://example.com/door_camera.jpg" refreshInterval="5000" ]
