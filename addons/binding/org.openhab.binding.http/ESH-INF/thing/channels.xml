@@ -21,8 +21,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date/Time</label>
 		<description>Current date and/or time</description>
-		<state readOnly="true"/>
-		<config-description-ref uri="thing-type:http:config-stateonly"/>
+		<config-description-ref uri="thing-type:http:config-all"/>
 	</channel-type>
 	<channel-type id="state-percent">
 		<item-type>Dimmer</item-type>
@@ -42,8 +41,7 @@
 		<item-type>Location</item-type>
 		<label>Location</label>
 		<description>Current GPS coordinates as Latitude,Longitude,Altitude</description>
-		<state readOnly="true"/>
-		<config-description-ref uri="thing-type:http:config-stateonly"/>
+		<config-description-ref uri="thing-type:http:config-all"/>
 	</channel-type>
 	<channel-type id="state-number">
 		<item-type>Number</item-type>

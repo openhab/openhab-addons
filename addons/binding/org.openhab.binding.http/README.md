@@ -18,10 +18,10 @@ These channel types are supported:
 |-----------------|---------------|-----------|
 | `color`         | Color         | no        |
 | `contact`       | Contact       | yes       |
-| `datetime`      | DateTime      | yes       |
+| `datetime`      | DateTime      | no        |
 | `dimmer`        | Dimmer        | no        |
 | `image`         | Image         | yes       |
-| `location`      | Location      | yes       |
+| `location`      | Location      | no        |
 | `number`        | Number        | no        |
 | `player`        | Player        | no        |
 | `rollershutter` | Rollershutter | no        |
