@@ -133,13 +133,16 @@ Switching via openHAB activates the switch directly.
 
 ### RE270K AC750 Wi-Fi Range Extender with Smart Plug
 
-* Switch On/Off
+* Switch On/Off (readonly)
 * Wi-Fi signal strength (rssi)
 
 ### RE370K AC1200 Wi-Fi Range Extender with Smart Plug
 
-* Switch On/Off
+* Switch On/Off (readonly)
 * Wi-Fi signal strength (rssi)
+
+It's not possible to set the switch state on the Range Extender.
+This is because it's not known what command to send to the device to make this possible.
 
 ## Prerequisites
 
