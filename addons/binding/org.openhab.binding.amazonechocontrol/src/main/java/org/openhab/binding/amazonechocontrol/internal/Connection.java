@@ -393,6 +393,7 @@ public class Connection {
                 }
             }
         } catch (URISyntaxException | IOException | ConnectionException e) {
+            logger.debug("Getting account customer Id failed {}", e);
         }
         return loginTime;
     }
@@ -886,9 +887,10 @@ public class Connection {
     }
 
     public JsonPlaylists getPlaylists(Device device) throws IOException, URISyntaxException {
-        String json = makeRequestAndReturnString(
-                alexaServer + "/api/cloudplayer/playlists?deviceSerialNumber=" + device.serialNumber + "&deviceType="
-                        + device.deviceType + "&mediaOwnerCustomerId=" + this.accountCustomerId);
+        String json = makeRequestAndReturnString(alexaServer + "/api/cloudplayer/playlists?deviceSerialNumber="
+                + device.serialNumber + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId="
+                + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
+                        : this.accountCustomerId));
         JsonPlaylists playlists = parseJson(json, JsonPlaylists.class);
         return playlists;
     }
@@ -965,7 +967,9 @@ public class Connection {
             makeRequest("POST",
                     alexaServer + "/api/tunein/queue-and-play?deviceSerialNumber=" + device.serialNumber
                             + "&deviceType=" + device.deviceType + "&guideId=" + stationId
-                            + "&contentType=station&callSign=&mediaOwnerCustomerId=" + this.accountCustomerId,
+                            + "&contentType=station&callSign=&mediaOwnerCustomerId="
+                            + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
+                                    : this.accountCustomerId),
                     "", true, true, null);
         }
     }
@@ -977,7 +981,9 @@ public class Connection {
             String command = "{\"trackId\":\"" + trackId + "\",\"playQueuePrime\":true}";
             makeRequest("POST",
                     alexaServer + "/api/cloudplayer/queue-and-play?deviceSerialNumber=" + device.serialNumber
-                            + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId=" + this.accountCustomerId
+                            + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId="
+                            + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
+                                    : this.accountCustomerId)
                             + "&shuffle=false",
                     command, true, true, null);
         }
@@ -991,7 +997,9 @@ public class Connection {
             String command = "{\"playlistId\":\"" + playListId + "\",\"playQueuePrime\":true}";
             makeRequest("POST",
                     alexaServer + "/api/cloudplayer/queue-and-play?deviceSerialNumber=" + device.serialNumber
-                            + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId=" + this.accountCustomerId
+                            + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId="
+                            + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
+                                    : this.accountCustomerId)
                             + "&shuffle=false",
                     command, true, true, null);
         }

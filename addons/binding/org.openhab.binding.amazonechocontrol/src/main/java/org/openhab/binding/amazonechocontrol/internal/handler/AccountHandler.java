@@ -398,7 +398,6 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                 JsonBluetoothStates states = null;
                 List<JsonMusicProvider> musicProviders = null;
                 if (currentConnection.getIsLoggedIn()) {
-
                     // update notification states
                     deviceNotificationStates = currentConnection.getDeviceNotificationStates();
 
@@ -409,18 +408,19 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                     states = currentConnection.getBluetoothConnectionStates();
 
                     // update music providers
-                    try {
-                        if (currentConnection.getIsLoggedIn()) {
+                    if (currentConnection.getIsLoggedIn()) {
+                        try {
                             musicProviders = currentConnection.getMusicProviders();
+                        } catch (HttpException | JsonSyntaxException | ConnectionException e) {
+                            logger.debug("Update music provider failed {}", e);
                         }
-                    } catch (HttpException | JsonSyntaxException | ConnectionException e) {
-                        logger.debug("Update music provider failed {}", e);
                     }
                 }
                 // forward device information to echo handler
                 for (EchoHandler child : echoHandlers) {
                     Device device = findDeviceJson(child);
 
+                    @Nullable
                     JsonNotificationSound[] notificationSounds = null;
                     JsonPlaylists playlists = null;
                     if (device != null && currentConnection.getIsLoggedIn()) {

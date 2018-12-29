@@ -715,7 +715,8 @@ public class EchoHandler extends BaseThingHandler {
     public void updateState(AccountHandler accountHandler, @Nullable Device device,
             @Nullable BluetoothState bluetoothState, @Nullable DeviceNotificationState deviceNotificationState,
             @Nullable AscendingAlarmModel ascendingAlarmModel, @Nullable JsonPlaylists playlists,
-            JsonNotificationSound @Nullable [] alarmSounds, @Nullable List<JsonMusicProvider> musicProviders) {
+            @Nullable JsonNotificationSound @Nullable [] alarmSounds,
+            @Nullable List<JsonMusicProvider> musicProviders) {
         try {
             if (deviceNotificationState != null) {
                 noticationVolumeLevel = deviceNotificationState.volumeLevel;
