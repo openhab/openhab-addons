@@ -71,8 +71,10 @@ public class OmnilinkBindingConstants {
     public final static String CHANNEL_EVENT_LOG = "last_log";
 
     // buttons
-
     public final static String CHANNEL_BUTTON_PRESS = "press";
+
+    // locks
+    public final static String CHANNEL_LOCK_SWITCH = "switch";
 
     // thermostats
     public final static String CHANNEL_THERMO_FREEZE_ALARM = "freeze_alarm";
@@ -139,6 +141,7 @@ public class OmnilinkBindingConstants {
     public final static ThingTypeUID THING_TYPE_OMNI_AREA = new ThingTypeUID(BINDING_ID, "area");
     public final static ThingTypeUID THING_TYPE_LUMINA_AREA = new ThingTypeUID(BINDING_ID, "lumina_area");
     public final static ThingTypeUID THING_TYPE_ZONE = new ThingTypeUID(BINDING_ID, "zone");
+    public final static ThingTypeUID THING_TYPE_LOCK = new ThingTypeUID(BINDING_ID, "lock");
     public final static ThingTypeUID THING_TYPE_UNIT_UPB = new ThingTypeUID(BINDING_ID, "upb");
     public final static ThingTypeUID THING_TYPE_UNIT = new ThingTypeUID(BINDING_ID, "unit");
     public final static ThingTypeUID THING_TYPE_FLAG = new ThingTypeUID(BINDING_ID, "flag");

@@ -40,6 +40,7 @@ import com.digitaldan.jomnilinkII.MessageTypes.properties.AudioSourceProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.AudioZoneProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.AuxSensorProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.ButtonProperties;
+import com.digitaldan.jomnilinkII.MessageTypes.properties.LockProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.ThermostatProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.UnitProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.ZoneProperties;
@@ -87,6 +88,7 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
             discoverAudioSources();
             discoverTempSensors();
             discoverHumiditySensors();
+            discoverLocks();
         } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
             logger.debug("Received error during discovery", e);
         }
@@ -128,6 +130,27 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
                         .build();
                 thingDiscovered(discoveryResult);
             }
+        }
+    }
+
+    private void discoverLocks()
+            throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
+
+        ObjectPropertyRequest<LockProperties> objectPropertyRequest = ObjectPropertyRequest
+                .builder(bridgeHandler, ObjectPropertyRequests.LOCK).selectNamed().build();
+
+        for (LockProperties objectProperties : objectPropertyRequest) {
+
+            ThingUID thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_LOCK,
+                    Integer.toString(objectProperties.getNumber()));
+
+            Map<String, Object> properties = new HashMap<>();
+            properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER, objectProperties.getNumber());
+            properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NAME, objectProperties.getName());
+
+            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                    .withBridge(this.bridgeHandler.getThing().getUID()).withLabel(objectProperties.getName()).build();
+            thingDiscovered(discoveryResult);
         }
     }
 
