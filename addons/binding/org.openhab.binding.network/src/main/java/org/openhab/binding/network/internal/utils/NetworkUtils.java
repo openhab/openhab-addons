@@ -205,6 +205,7 @@ public class NetworkUtils {
      */
     public ArpPingUtilEnum determineNativeARPpingMethod(String arpToolPath) {
         String result = ExecUtil.executeCommandLineAndWaitResponse(arpToolPath + " --help", 100);
+        logger.trace("Determining arping tool: {}", arpToolPath);
         if (StringUtils.isBlank(result)) {
             return ArpPingUtilEnum.UNKNOWN_TOOL;
         } else if (result.contains("Thomas Habets")) {
@@ -327,9 +328,28 @@ public class NetworkUtils {
                     interfaceName, ipV4address).start();
         }
 
+        int retval = proc.waitFor();
         // The return code is 0 for a successful ping. 1 if device didn't respond and 2 if there is another error like
         // network interface not ready.
-        return proc.waitFor() == 0;
+        switch (retval) {
+          case 0: {
+            logger.trace("Received ARP ping reply from {}", ipV4address);
+            break;
+          }
+          case 1: {
+            logger.trace("Failed to receive ARP ping reply from {}", ipV4address);
+            break;
+          }
+          case 2: {
+            logger.trace("Received error from arping for {} using interface {}", ipV4address, interfaceName);
+            break;
+          }
+          default: {
+            logger.trace("Unexpected error from arping for {} using interface {}", ipV4address, interfaceName);
+            break;
+          }
+        }
+        return retval == 0;
     }
 
     /**
