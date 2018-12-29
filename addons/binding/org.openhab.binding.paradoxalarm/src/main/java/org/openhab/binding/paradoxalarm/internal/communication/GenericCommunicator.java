@@ -186,26 +186,26 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
             case 0x38:
             case 0x39:
                 if (payloadResponseByte == 0x00) {
-                    logger.info("Login: Initial login - OK");
+                    logger.info("Login - Login to IP150 - OK");
                     return true;
                 }
             case 0x30:
-                logger.error("Login: Initial login failed - Incorrect password");
+                logger.error("Login - Login to IP150 failed - Incorrect password");
                 break;
             case 0x78:
             case 0x79:
-                logger.error("Login: IP module is busy");
+                logger.error("Login - IP module is busy");
                 break;
         }
 
         switch (payloadResponseByte) {
             case 0x01:
-                logger.error("Login: Invalid password");
+                logger.error("Login - Invalid password");
             case 0x02:
             case 0x04:
-                logger.error("Login: User already connected");
+                logger.error("Login - User already connected");
             default:
-                logger.error("Login: Connection refused");
+                logger.error("Login - Connection refused");
 
         }
         return false;
@@ -241,14 +241,14 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
                     return Arrays.copyOfRange(result, 0, result[1] + 16);
                 }
             } catch (IOException e) {
-                logger.error("Unable to retrieve data from RX. {}", e.getMessage());
+                logger.debug("Unable to retrieve data from RX. {}", e.getMessage());
                 Thread.sleep(200);
                 if (retryCounter <= 3) {
-                    logger.info("That was {} attempt.", retryCounter);
+                    logger.debug("That was {} attempt.", retryCounter);
                 }
             }
         }
-        throw new IOException("Unable to read from socket after max retries.");
+        throw new IOException("Unable to read from socket or received data is wrong.");
     }
 
     private byte[] generateInitializationRequest(byte[] initializationMessage, byte[] pcPassword) {

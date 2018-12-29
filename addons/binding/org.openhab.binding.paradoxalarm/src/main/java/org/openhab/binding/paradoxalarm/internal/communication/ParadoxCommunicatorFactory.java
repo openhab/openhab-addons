@@ -45,7 +45,7 @@ public class ParadoxCommunicatorFactory {
             case EVO48:
             case EVO192:
             case EVOHD:
-                logger.info("Creating new communicator for Paradox {} system", panelType);
+                logger.debug("Creating new communicator for Paradox {} system", panelType);
                 return new EvoCommunicator(ipAddress, tcpPort, ip150Password, pcPassword);
             default:
                 throw new ParadoxBindingException("Unsupported panel type: " + panelType);

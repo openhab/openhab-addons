@@ -47,12 +47,14 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
     private static final String RESET = "RESET";
 
     private static final int INITIAL_SCHEDULE_DELAY = 15;
+    private static final int FAILED_READ_ATTEMPTS_TRESHOLD = 10;
 
     private final static Logger logger = LoggerFactory.getLogger(ParadoxIP150BridgeHandler.class);
 
     private static IParadoxCommunicator communicator;
     private static ParadoxIP150BridgeConfiguration config;
     private @Nullable ScheduledFuture<?> refreshCacheUpdateSchedule;
+    private int failedReadAttempts;
 
     public ParadoxIP150BridgeHandler(Bridge bridge) throws Exception {
         super(bridge);
@@ -63,15 +65,18 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
         logger.info("Communicator handler created successfully");
     }
 
-    private static IParadoxCommunicator initializeCommunicator() throws Exception {
+    private IParadoxCommunicator initializeCommunicator() throws Exception {
         synchronized (ParadoxIP150BridgeHandler.class) {
             String ipAddress = config.getIpAddress();
             int tcpPort = config.getPort();
             String ip150Password = config.getIp150Password();
             String pcPassword = config.getPcPassword();
+
+            logger.info("Phase1 - Identify communicator");
             IParadoxGenericCommunicator initialCommunicator = new GenericCommunicator(ipAddress, tcpPort, ip150Password,
                     pcPassword);
             byte[] panelInfoBytes = initialCommunicator.getPanelInfoBytes();
+
             PanelType panelType = PanelType.parsePanelType(panelInfoBytes);
             logger.info("Found {} panel type.", panelType);
             initialCommunicator.close();
@@ -84,10 +89,10 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
                 panelTypeStr = config.getPanelType();
             }
 
+            logger.info("Phase2 - Creating communicator for panel {}", panelType);
             ParadoxCommunicatorFactory factory = new ParadoxCommunicatorFactory(ipAddress, tcpPort, ip150Password,
                     pcPassword);
-            IParadoxCommunicator communicator = factory.createCommunicator(panelTypeStr);
-            return communicator;
+            return factory.createCommunicator(panelTypeStr);
         }
     }
 
@@ -142,16 +147,33 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
                     cache.setZoneLabels(communicator.readZoneLabels());
                 }
             }
+
             announceUpdateToHandlers();
+
+            if (failedReadAttempts > 0) {
+                logger.info("Successfully refreshed memory map after {} failed attempts.", failedReadAttempts);
+                failedReadAttempts = 0;
+            }
+
         } catch (IOException e) {
-            logger.error("Communicator cannot refresh cached memory map. Exception: {}", e);
+            handleSocketReadError(e);
+        } catch (InterruptedException | ParadoxBindingException e) {
+            logger.error("Exception while refreshing memory map in communicator. {}", e);
+        }
+    }
+
+    private void handleSocketReadError(IOException e) {
+        failedReadAttempts++;
+        logger.error("Communicator cannot refresh cached memory map. Attempt: {}, IOException msg: {}",
+                failedReadAttempts, e.getMessage());
+        logger.debug("Stack trace: {}", e);
+
+        if (failedReadAttempts == FAILED_READ_ATTEMPTS_TRESHOLD) {
             logger.info("Will attempt to reinitialize communicator.");
             @SuppressWarnings("null")
             ChannelUID uid = getThing().getChannel(ParadoxAlarmBindingConstants.IP150_COMMUNICATION_COMMAND_CHANNEL_UID)
                     .getUID();
             handleCommand(uid, new StringType(RESET));
-        } catch (InterruptedException | ParadoxBindingException e) {
-            logger.error("Exception while refreshing memory map in communicator. {}", e);
         }
     }
 
@@ -168,7 +190,7 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    public static IParadoxCommunicator reinitializeCommunicator() throws Exception {
+    public IParadoxCommunicator reinitializeCommunicator() throws Exception {
         synchronized (ParadoxIP150BridgeHandler.class) {
             if (communicator != null) {
                 communicator.close();
