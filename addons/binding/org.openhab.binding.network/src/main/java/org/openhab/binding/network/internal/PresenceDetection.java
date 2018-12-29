@@ -447,8 +447,8 @@ public class PresenceDetection implements IPRequestReceivedCallback {
      */
     protected void performARPping(String interfaceName) {
         try {
-            logger.trace("Perform ARP ping presence detection for {} on interface: {}", hostname, interfaceName);
             if (iosDevice) {
+                logger.trace("Wake up iOS device before ARP ping for {} on interface: {}", hostname, interfaceName);
                 networkUtils.wakeUpIOS(destination);
                 Thread.sleep(50);
             }
@@ -460,7 +460,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
                 updateListener.partialDetectionResult(v);
             }
         } catch (IOException e) {
-            logger.trace("Failed to execute an arp ping for ip {}", hostname, e);
+            logger.debug("Failed to execute an arp ping for ip {}", hostname, e);
         } catch (InterruptedException ignored) {
             // This can be ignored, the thread will end anyway
         }
