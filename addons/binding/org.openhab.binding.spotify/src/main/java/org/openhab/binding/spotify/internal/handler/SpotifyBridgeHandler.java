@@ -92,6 +92,8 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     private static final long PROGRESS_STEP_MS = TimeUnit.SECONDS.toMillis(PROGRESS_STEP_S);
 
     private final Logger logger = LoggerFactory.getLogger(SpotifyBridgeHandler.class);
+    // Object to synchronize poll status on
+    private final Object pollSynchronization = new Object();
     private final ProgressUpdater progressUpdater = new ProgressUpdater();
     private final AlbumUpdater albumUpdater = new AlbumUpdater();
     private final OAuthFactory oAuthFactory;
@@ -172,6 +174,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
                     && oAuthService.getAccessTokenResponse().getAccessToken() != null
                     && oAuthService.getAccessTokenResponse().getRefreshToken() != null;
         } catch (OAuthException | IOException | OAuthResponseException | RuntimeException e) {
+            logger.debug("Exception checking authorization: ", e);
             return false;
         }
     }
@@ -217,12 +220,10 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
             startPolling();
             return user;
         } catch (RuntimeException | OAuthException | IOException e) {
-            logger.debug("Authorize failed: ", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-            throw new SpotifyException(e.getMessage());
+            throw new SpotifyException(e.getMessage(), e);
         } catch (OAuthResponseException e) {
-            logger.debug("Authorize failed: ", e);
-            throw new SpotifyAuthorizationException(e.getMessage());
+            throw new SpotifyAuthorizationException(e.getMessage(), e);
         }
     }
 
@@ -273,10 +274,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         try {
             final boolean pollingNotRunning = pollingFuture == null || pollingFuture.isCancelled();
 
-            playingContextCache.invalidateValue();
-            playlistCache.invalidateValue();
-            devicesCache.invalidateValue();
-
+            expireCache();
             if (pollStatus() && pollingNotRunning) {
                 startPolling();
             }
@@ -292,12 +290,16 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     private synchronized void startPolling() {
         cancelSchedulers();
         if (active) {
-            playingContextCache.invalidateValue();
-            playlistCache.invalidateValue();
-            devicesCache.invalidateValue();
+            expireCache();
             pollingFuture = scheduler.scheduleWithFixedDelay(this::pollStatus, 0, configuration.refreshPeriod,
                     TimeUnit.SECONDS);
         }
+    }
+
+    private void expireCache() {
+        playingContextCache.invalidateValue();
+        playlistCache.invalidateValue();
+        devicesCache.invalidateValue();
     }
 
     /**
@@ -306,7 +308,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
      * @return true if method completed without errors.
      */
     private boolean pollStatus() {
-        synchronized (scheduler) {
+        synchronized (pollSynchronization) {
             try {
                 // Collect devices and populate selection with available devices.
                 final List<Device> ld = devicesCache.getValue();

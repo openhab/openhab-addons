@@ -33,7 +33,7 @@ public class SpotifyBindingConstants {
     public static final String SPOTIFY_API_URL = "https://api.spotify.com/v1/me";
     public static final String SPOTIFY_API_PLAYER_URL = SPOTIFY_API_URL + "/player";
 
-    // Authorization related Serlvet and resources aliases.
+    // Authorization related Servlet and resources aliases.
     public static final String SPOTIFY_ALIAS = "/connectspotify";
     public static final String SPOTIFY_IMG_ALIAS = "/img";
 

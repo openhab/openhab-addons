@@ -125,6 +125,7 @@ public class SpotifyAuthServlet extends HttpServlet {
                     replaceMap.put(KEY_AUTHORIZED_USER, String.format(HTML_USER_AUTHORIZED,
                             spotifyAuthService.authorize(servletBaseURL, reqState, reqCode)));
                 } catch (RuntimeException e) {
+                    logger.debug("Exception during authorizaton: ", e);
                     replaceMap.put(KEY_ERROR, String.format(HTML_ERROR, e.getMessage()));
                 }
             }
@@ -132,7 +133,7 @@ public class SpotifyAuthServlet extends HttpServlet {
     }
 
     /**
-     * Formats the HTML of all available Spotify Brige Players and returns it as a String
+     * Formats the HTML of all available Spotify Bridge Players and returns it as a String
      *
      * @param playerTemplate The player template to format the player values in
      * @param servletBaseURL the redirect_uri to be used in the authorization url created on the authorization button.

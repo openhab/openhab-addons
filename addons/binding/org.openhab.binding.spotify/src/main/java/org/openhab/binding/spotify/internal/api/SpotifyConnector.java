@@ -243,7 +243,6 @@ class SpotifyConnector {
                     } else if (object.has("error_description")) {
                         final String errorDescription = object.get("error_description").getAsString();
 
-                        logger.debug("Authorization error: {}", errorDescription);
                         throw new SpotifyAuthorizationException(errorDescription);
                     }
                 }

@@ -57,6 +57,9 @@ public class SpotifyApi {
     private static final char AMP = '&';
     private static final char QSM = '?';
     private static final CurrentlyPlayingContext EMPTY_CURRENTLYPLAYINGCONTEXT = new CurrentlyPlayingContext();
+    private static final String PLAY_TRACK_URIS = "{\"uris\":[%s],\"offset\":{\"position\":0}}";
+    private static final String PLAY_TRACK_CONTEXT_URI = "{\"context_uri\":\"%s\",\"offset\":{\"position\":0}}";
+    private static final String TRANSFER_PLAY = "{\"device_ids\":[\"%s\"],\"play\":%b}";
 
     private final Logger logger = LoggerFactory.getLogger(SpotifyApi.class);
 
@@ -95,12 +98,10 @@ public class SpotifyApi {
         final String url = "play" + optionalDeviceId(deviceId, QSM);
         final String play;
         if (trackId.contains(":track:")) {
-            final String jsonRequest = "{\"uris\":[%s],\"offset\":{\"position\":0}}";
-            play = String.format(jsonRequest, Arrays.asList(trackId.split(",")).stream().map(t -> '"' + t + '"')
+            play = String.format(PLAY_TRACK_URIS, Arrays.asList(trackId.split(",")).stream().map(t -> '"' + t + '"')
                     .collect(Collectors.joining(",")));
         } else {
-            final String jsonRequest = "{\"context_uri\":\"%s\",\"offset\":{\"position\":0}}";
-            play = String.format(jsonRequest, trackId);
+            play = String.format(PLAY_TRACK_CONTEXT_URI, trackId);
         }
         requestPlayer(PUT, url, play);
     }
@@ -121,7 +122,7 @@ public class SpotifyApi {
      * @param play if true transfers and starts to play, else transfers but pauses.
      */
     public void transferPlay(String deviceId, boolean play) {
-        requestPlayer(PUT, "", String.format("{\"device_ids\":[\"%s\"],\"play\":%b}", deviceId, play));
+        requestPlayer(PUT, "", String.format(TRANSFER_PLAY, deviceId, play));
     }
 
     /**
@@ -269,25 +270,28 @@ public class SpotifyApi {
         final Function<HttpClient, Request> call = httpClient -> httpClient.newRequest(url).method(method)
                 .header("Accept", CONTENT_TYPE).content(new StringContentProvider(requestData), CONTENT_TYPE);
         try {
-            try {
-                final AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
-                final String accessToken = accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();
+            final AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
+            final String accessToken = accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();
 
-                if (accessToken == null || accessToken.isEmpty()) {
-                    throw new SpotifyAuthorizationException("No spotify accesstoken. Is this thing authorized?");
-                } else {
-                    return connector.request(call, BEARER + accessToken);
-                }
-            } catch (SpotifyTokenExpiredException e) {
-                // Retry with new access token
-                return connector.request(call, BEARER + oAuthClientService.refreshToken().getAccessToken());
+            if (accessToken == null || accessToken.isEmpty()) {
+                throw new SpotifyAuthorizationException("No spotify accesstoken. Is this thing authorized?");
+            } else {
+                return requestWithRetry(call, accessToken);
             }
         } catch (IOException e) {
-            logger.debug("Request failed to during refresh token: ", e);
-            throw new SpotifyException(e.getMessage());
+            throw new SpotifyException(e.getMessage(), e);
         } catch (OAuthException | OAuthResponseException e) {
-            logger.debug("Request authorization failed to during refresh token: ", e);
-            throw new SpotifyAuthorizationException(e.getMessage());
+            throw new SpotifyAuthorizationException(e.getMessage(), e);
+        }
+    }
+
+    private ContentResponse requestWithRetry(final Function<HttpClient, Request> call, final String accessToken)
+            throws OAuthException, IOException, OAuthResponseException {
+        try {
+            return connector.request(call, BEARER + accessToken);
+        } catch (SpotifyTokenExpiredException e) {
+            // Retry with new access token
+            return connector.request(call, BEARER + oAuthClientService.refreshToken().getAccessToken());
         }
     }
 }

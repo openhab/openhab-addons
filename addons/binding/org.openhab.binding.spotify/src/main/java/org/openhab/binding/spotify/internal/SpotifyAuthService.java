@@ -160,9 +160,9 @@ public class SpotifyAuthService {
      * @return the {@link SpotifyAccountHandler} matching the thing UID or null
      */
     private @Nullable SpotifyAccountHandler getSpotifyAuthListener(String thingUID) {
-        final Optional<SpotifyAccountHandler> listener = handlers.stream().filter(l -> l.equalsThingUID(thingUID))
+        final Optional<SpotifyAccountHandler> maybeListener = handlers.stream().filter(l -> l.equalsThingUID(thingUID))
                 .findFirst();
-        return listener.isPresent() ? listener.get() : null;
+        return maybeListener.isPresent() ? maybeListener.get() : null;
     }
 
     @Reference

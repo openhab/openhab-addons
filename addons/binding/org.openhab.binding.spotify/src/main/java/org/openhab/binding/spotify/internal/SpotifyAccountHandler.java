@@ -25,17 +25,17 @@ public interface SpotifyAccountHandler {
     /**
      * @return The {@link ThingUID} associated with this Spotify Account Handler
      */
-    public ThingUID getUID();
+    ThingUID getUID();
 
     /**
      * @return The label of the Spotify Bridge associated with this Spotify Account Handler
      */
-    public String getLabel();
+    String getLabel();
 
     /**
      * @return The Spotify user name associated with this Spotify Account Handler
      */
-    public String getUser();
+    String getUser();
 
     /**
      * @return Returns true if the Spotify Bridge is authorized.
@@ -45,12 +45,12 @@ public interface SpotifyAccountHandler {
     /**
      * @return List of Spotify devices associated with this Spotify Account Handler
      */
-    public List<Device> listDevices();
+    List<Device> listDevices();
 
     /**
      * @return Returns true if the device is online
      */
-    public boolean isOnline();
+    boolean isOnline();
 
     /**
      * Calls Spotify Api to obtain refresh and access tokens and persist data with Thing.

@@ -25,4 +25,15 @@ public class SpotifyAuthorizationException extends RuntimeException {
     public SpotifyAuthorizationException(String message) {
         super(message);
     }
+
+    /**
+     * Constructor.
+     *
+     * @param message Spotify error message
+     * @param exception Original cause of this exception
+     */
+    public SpotifyAuthorizationException(String message, Throwable exception) {
+        super(message, exception);
+    }
+
 }
