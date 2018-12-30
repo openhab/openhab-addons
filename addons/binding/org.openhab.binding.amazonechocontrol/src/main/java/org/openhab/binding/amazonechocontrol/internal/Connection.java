@@ -419,7 +419,7 @@ public class Connection {
             }
         }
 
-        Scanner inputScanner = StringUtils.isEmpty(charSet) ? new Scanner(readerStream)
+        Scanner inputScanner = StringUtils.isEmpty(charSet) ? new Scanner(readerStream, "UTF-8")
                 : new Scanner(readerStream, charSet);
         Scanner scannerWithoutDelimiter = inputScanner.useDelimiter("\\A");
         String result = scannerWithoutDelimiter.hasNext() ? scannerWithoutDelimiter.next() : null;
