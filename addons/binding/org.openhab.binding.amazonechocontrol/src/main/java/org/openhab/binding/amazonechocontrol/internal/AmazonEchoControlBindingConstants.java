@@ -45,6 +45,9 @@ public class AmazonEchoControlBindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_PLAYER = "player";
     public static final String CHANNEL_VOLUME = "volume";
+    public static final String CHANNEL_EQUALIZER_TREBLE = "equalizerTreble";
+    public static final String CHANNEL_EQUALIZER_MIDRANGE = "equalizerMidrange";
+    public static final String CHANNEL_EQUALIZER_BASS = "equalizerBass";
     public static final String CHANNEL_ERROR = "error";
     public static final String CHANNEL_SHUFFLE = "shuffle";
     public static final String CHANNEL_LOOP = "loop";

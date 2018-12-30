@@ -19,6 +19,9 @@
 			<channel id="mediaProgressTime" typeId="mediaProgressTime" />
 			<channel id="mediaLength" typeId="mediaLength" />
 			<channel id="volume" typeId="volume" />
+            <channel id="equalizerTreble" typeId="equalizerTreble" />
+			<channel id="equalizerMidrange" typeId="equalizerMidrange" />
+            <channel id="equalizerBass" typeId="equalizerBass" />
 			<channel id="shuffle" typeId="shuffle" />
 			<channel id="imageUrl" typeId="imageUrl" />
 			<channel id="title" typeId="title" />
@@ -65,6 +68,9 @@
 			<channel id="mediaProgressTime" typeId="mediaProgressTime" />
 			<channel id="mediaLength" typeId="mediaLength" />
 			<channel id="volume" typeId="volume" />
+            <channel id="equalizerTreble" typeId="equalizerTreble" />
+            <channel id="equalizerMidrange" typeId="equalizerMidrange" />
+            <channel id="equalizerBass" typeId="equalizerBass" />
 			<channel id="shuffle" typeId="shuffle" />
 			<channel id="imageUrl" typeId="imageUrl" />
 			<channel id="title" typeId="title" />
@@ -111,6 +117,9 @@
 			<channel id="mediaProgressTime" typeId="mediaProgressTime" />
 			<channel id="mediaLength" typeId="mediaLength" />
 			<channel id="volume" typeId="volume" />
+            <channel id="equalizerTreble" typeId="equalizerTreble" />
+            <channel id="equalizerMidrange" typeId="equalizerMidrange" />
+            <channel id="equalizerBass" typeId="equalizerBass" />
 			<channel id="shuffle" typeId="shuffle" />
 			<channel id="imageUrl" typeId="imageUrl" />
 			<channel id="title" typeId="title" />
@@ -315,6 +324,24 @@
 		<item-type>Dimmer</item-type>
 		<label>Volume</label>
 		<description>Volume of the sound</description>
+	</channel-type>
+	<channel-type id="equalizerTreble">
+		<item-type>Number</item-type>
+		<label>Treble</label>
+		<description>Equalizer Treble</description>
+		<state min="-6" max="6" step="1"></state>
+	</channel-type>
+	<channel-type id="equalizerMidrange">
+		<item-type>Number</item-type>
+		<label>Midrange</label>
+		<description>Equalizer Midrange</description>
+		<state min="-6" max="6" step="1"></state>
+	</channel-type>
+	<channel-type id="equalizerBass">
+		<item-type>Number</item-type>
+		<label>Bass</label>
+		<description>Equalizer Bass</description>
+		<state min="-6" max="6" step="1"></state>
 	</channel-type>
 	<channel-type id="musicProviderId">
 		<item-type>String</item-type>

@@ -12,6 +12,7 @@ import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBi
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +44,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
+import org.openhab.binding.amazonechocontrol.internal.ConnectionException;
 import org.openhab.binding.amazonechocontrol.internal.HttpException;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity.Description;
@@ -53,6 +55,7 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates.
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonCommandPayloadPushVolumeChange;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDeviceNotificationState.DeviceNotificationState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonEqualizer;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMediaState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMediaState.QueueEntry;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMusicProvider;
@@ -82,6 +85,7 @@ public class EchoHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(EchoHandler.class);
     private Gson gson = new Gson();
     private @Nullable Device device;
+    private HashSet<String> capabilities = new HashSet<String>();
     private @Nullable AccountHandler account;
     private @Nullable ScheduledFuture<?> updateStateJob;
     private @Nullable ScheduledFuture<?> ignoreVolumeChange;
@@ -96,6 +100,7 @@ public class EchoHandler extends BaseThingHandler {
     private boolean isPaused = false;
     private int lastKnownVolume = 25;
     private int textToSpeechVolume = 0;
+    private @Nullable JsonEqualizer lastKnownEqualizer = null;
     private @Nullable BluetoothState bluetoothState;
     private boolean disableUpdate = false;
     private boolean updateRemind = true;
@@ -145,6 +150,15 @@ public class EchoHandler extends BaseThingHandler {
             return false;
         }
         this.device = device;
+        String[] capabilities = device.capabilities;
+        if (capabilities != null) {
+            this.capabilities.clear();
+            for (String capability : capabilities) {
+                if (capability != null) {
+                    this.capabilities.add(capability);
+                }
+            }
+        }
         if (!device.online) {
             updateStatus(ThingStatus.OFFLINE);
             return false;
@@ -360,6 +374,42 @@ public class EchoHandler extends BaseThingHandler {
                 }
 
             }
+            // equalizer commands
+            if (channelId.equals(CHANNEL_EQUALIZER_BASS) || channelId.equals(CHANNEL_EQUALIZER_MIDRANGE)
+                    || channelId.equals(CHANNEL_EQUALIZER_TREBLE)) {
+                if (command instanceof RefreshType) {
+                    this.lastKnownEqualizer = null;
+                }
+                if (command instanceof DecimalType) {
+                    DecimalType value = (DecimalType) command;
+                    if (this.lastKnownEqualizer == null) {
+                        updateEqualizerState();
+                    }
+                    JsonEqualizer lastKnownEqualizer = this.lastKnownEqualizer;
+                    if (lastKnownEqualizer != null) {
+                        JsonEqualizer newEqualizerSetting = lastKnownEqualizer.createClone();
+                        if (channelId.equals(CHANNEL_EQUALIZER_BASS)) {
+                            newEqualizerSetting.bass = value.intValue();
+                        }
+                        if (channelId.equals(CHANNEL_EQUALIZER_MIDRANGE)) {
+                            newEqualizerSetting.mid = value.intValue();
+                        }
+                        if (channelId.equals(CHANNEL_EQUALIZER_TREBLE)) {
+                            newEqualizerSetting.treble = value.intValue();
+                        }
+                        try {
+                            connection.SetEqualizer(device, newEqualizerSetting);
+                            waitForUpdate = -1;
+                        } catch (HttpException | IOException | ConnectionException e) {
+                            logger.debug("Update equalizer failed {}", e);
+                            this.lastKnownEqualizer = null;
+                            waitForUpdate = 1000;
+                        }
+
+                    }
+                }
+            }
+
             // shuffle command
             if (channelId.equals(CHANNEL_SHUFFLE)) {
                 if (command instanceof OnOffType) {
@@ -748,6 +798,10 @@ public class EchoHandler extends BaseThingHandler {
                 return;
             }
 
+            if (this.lastKnownEqualizer == null) {
+                updateEqualizerState();
+            }
+
             PlayerInfo playerInfo = null;
             Provider provider = null;
             InfoText infoText = null;
@@ -1046,6 +1100,44 @@ public class EchoHandler extends BaseThingHandler {
         }
     }
 
+    private void updateEqualizerState() {
+        if (!this.capabilities.contains("SOUND_SETTINGS")) {
+            return;
+        }
+
+        Connection connection = findConnection();
+        if (connection == null) {
+            return;
+        }
+        Device device = findDevice();
+        if (device == null) {
+            return;
+        }
+        Integer bass;
+        Integer midrange;
+        Integer treble;
+        try {
+            JsonEqualizer equalizer = connection.getEqualizer(device);
+            bass = equalizer.bass;
+            midrange = equalizer.mid;
+            treble = equalizer.treble;
+            this.lastKnownEqualizer = equalizer;
+        } catch (IOException | URISyntaxException | ConnectionException e) {
+            logger.debug("Get equalizer failes {}", e);
+            return;
+        }
+        if (bass != null) {
+            updateState(CHANNEL_EQUALIZER_BASS, new DecimalType(bass));
+        }
+        if (midrange != null) {
+            updateState(CHANNEL_EQUALIZER_MIDRANGE, new DecimalType(midrange));
+        }
+        if (treble != null) {
+            updateState(CHANNEL_EQUALIZER_TREBLE, new DecimalType(treble));
+        }
+
+    }
+
     private void updateMediaProgress() {
         updateMediaProgress(false);
     }
@@ -1127,7 +1219,7 @@ public class EchoHandler extends BaseThingHandler {
                 }
                 break;
             case "PUSH_EQUALIZER_STATE_CHANGE":
-                // Currently ignored
+                updateEqualizerState();
                 break;
             default:
                 AccountHandler account = this.account;

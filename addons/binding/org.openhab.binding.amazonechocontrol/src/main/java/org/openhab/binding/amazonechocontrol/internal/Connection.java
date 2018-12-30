@@ -61,6 +61,7 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDeviceNotificati
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonEnabledFeeds;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonEqualizer;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonExchangeTokenResponse;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonExchangeTokenResponse.Cookie;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonFeed;
@@ -419,7 +420,7 @@ public class Connection {
             }
         }
 
-        Scanner inputScanner = StringUtils.isEmpty(charSet) ? new Scanner(readerStream)
+        Scanner inputScanner = StringUtils.isEmpty(charSet) ? new Scanner(readerStream, "UTF-8")
                 : new Scanner(readerStream, charSet);
         Scanner scannerWithoutDelimiter = inputScanner.useDelimiter("\\A");
         String result = scannerWithoutDelimiter.hasNext() ? scannerWithoutDelimiter.next() : null;
@@ -1359,5 +1360,17 @@ public class Connection {
 
         String postData = gson.toJson(startRoutineRequest);
         makeRequest("POST", alexaServer + "/api/behaviors/preview", postData, true, true, null);
+    }
+
+    public JsonEqualizer getEqualizer(Device device) throws IOException, URISyntaxException {
+        String json = makeRequestAndReturnString(
+                alexaServer + "/api/equalizer/" + device.serialNumber + "/" + device.deviceType);
+        return parseJson(json, JsonEqualizer.class);
+    }
+
+    public void SetEqualizer(Device device, JsonEqualizer settings) throws IOException, URISyntaxException {
+        String postData = gson.toJson(settings);
+        makeRequest("POST", alexaServer + "/api/equalizer/" + device.serialNumber + "/" + device.deviceType, postData,
+                true, true, null);
     }
 }

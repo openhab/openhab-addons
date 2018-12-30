@@ -23,6 +23,7 @@ It provides features to control and view the current state of echo devices:
 - start playing music by providing the voice command as text (Works with all music providers)
 - get last spoken voice command
 - change the volume of the alarm
+- change the equalizer settings
 
 Some ideas what you can do in your home by using rules and other openHAB controlled devices:
 
@@ -37,6 +38,7 @@ Some ideas what you can do in your home by using rules and other openHAB control
 - Have different flash briefing in the morning and evening
 - Let alexa say 'welcome' to you if you open the door
 - Implement own handling for voice commands in a rule
+- Change the equalizer settings depending on the bluetooth connection
 
 ## Note
 
@@ -100,6 +102,9 @@ It will be configured at runtime by using the save channel to store the current 
 |-----------------------|-------------|-------------|------------|------------------------------------------------------------------------------------------
 | player                | Player      | R/W         | echo, echoshow, echospot, wha | Control the music player e.g. pause/continue/next track/previous track                                                                                                
 | volume                | Dimmer      | R/W         | echo, echoshow, echospot      | Control the volume                                                                                            
+| equalizerTreble       | Number      | R/W         | echo, echoshow, echospot      | Control the treble (value from -6 to 6)                                                                                            
+| equalizerMidrange     | Number      | R/W         | echo, echoshow, echospot      | Control the midrange (value from -6 to 6)                                                                                            
+| equalizerBass         | Number      | R/W         | echo, echoshow, echospot      | Control the bass (value from -6 to 6)                                                                                            
 | shuffle               | Switch      | R/W         | echo, echoshow, echospot, wha | Shuffle play if applicable, e.g. playing a playlist     
 | imageUrl              | String      | R           | echo, echoshow, echospot, wha | Url of the album image or radio station logo     
 | title                 | String      | R           | echo, echoshow, echospot, wha | Title of the current media     
@@ -169,6 +174,9 @@ Group Alexa_Living_Room <player>
 // Player control
 Player Echo_Living_Room_Player                "Player"                                (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:player"}
 Dimmer Echo_Living_Room_Volume                "Volume [%.0f %%]" <soundvolume>        (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:volume"}
+Number Echo_Living_Room_Treble                "Treble"                                (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:equalizerTreble"}
+Number Echo_Living_Room_Midrange              "Midrange"                              (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:equalizerMidrange"}
+Number Echo_Living_Room_Bass                  "Bass"                                  (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:equalizerBass"}
 Switch Echo_Living_Room_Shuffle               "Shuffle"                               (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:shuffle"}
 
 // Media channels
@@ -232,6 +240,10 @@ sitemap amazonechocontrol label="Echo Devices"
         Frame label="Alexa" {
             Default   item=Echo_Living_Room_Player
             Slider    item=Echo_Living_Room_Volume
+            Setpoint  item=Echo_Living_Room_Volume   minValue=0  maxValue=100 step=5
+            Setpoint  item=Echo_Living_Room_Treble   minValue=-6 maxValue=6   step=1
+            Setpoint  item=Echo_Living_Room_Midrange minValue=-6 maxValue=6   step=1
+            Setpoint  item=Echo_Living_Room_Bass     minValue=-6 maxValue=6   step=1
             Slider    item=Echo_Living_Room_MediaProgress
             Text      item=Echo_Living_Room_MediaProgressTime
             Text      item=Echo_Living_Room_MediaLength
