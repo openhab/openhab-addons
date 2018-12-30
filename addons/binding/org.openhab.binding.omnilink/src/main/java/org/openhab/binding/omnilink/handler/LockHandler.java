@@ -59,7 +59,7 @@ public class LockHandler extends AbstractOmnilinkStatusHandler<AccessControlRead
 
     @Override
     public void updateChannels(AccessControlReaderLockStatus status) {
-        logger.debug("Procesing status update{}", status);
+        logger.debug("Procesing status update {}", status);
         updateState(OmnilinkBindingConstants.CHANNEL_LOCK_SWITCH, status.isLocked() ? OnOffType.ON : OnOffType.OFF);
 
     }
