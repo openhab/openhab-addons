@@ -8,7 +8,11 @@
  */
 package org.openhab.binding.km200.internal;
 
-import com.google.common.collect.Sets;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -30,10 +34,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.Set;
+import com.google.common.collect.Sets;
 
 /**
  * The {@link KM200HandlerFactory} is responsible for creating things and thing
