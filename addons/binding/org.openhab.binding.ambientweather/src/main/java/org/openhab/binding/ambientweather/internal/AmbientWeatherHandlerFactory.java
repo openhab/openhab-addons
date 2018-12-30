@@ -36,7 +36,7 @@ public class AmbientWeatherHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(AmbientWeatherHandlerFactory.class);
 
     // Needed for converting UTC time to local time
-    TimeZoneProvider timeZoneProvider;
+    private TimeZoneProvider timeZoneProvider;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
