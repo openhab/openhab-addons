@@ -5,7 +5,7 @@ Bundle-Name: openHAB Max! Binding Tests
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.max.test;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.4.0.qualifier
+Bundle-Version: 2.5.0.qualifier
 Fragment-Host: org.openhab.binding.max
 Import-Package: 
  org.eclipse.jdt.annotation;resolution:=optional,

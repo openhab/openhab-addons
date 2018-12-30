@@ -1,6 +1,6 @@
 # SmartMeter Binding
 
-The Smartreader binding is able to read SML messages (PUSH) and supports IEC 62056-21 modes A,B,C (PULL) and D (PUSH).
+This binding retrieves and reads SML messages (PUSH) and supports IEC 62056-21 modes A,B,C (PULL) and D (PUSH).
 
 
 ## Supported Things
@@ -23,8 +23,6 @@ The smartmeter thing requires the serial port where the meter device is connecte
 | `mode` | The protocol mode to use | Can be 'SML' (PUSH mode), 'ABC' (PULL)or D (PUSH) | no | SML |
 | `baudrateChangeDelay` | Delay of baudrate change in ms | USB to serial converters often require a delay of up to 250ms after the ACK before changing baudrate (only relevant for 'C' mode) | no | 0 |
 | `baudrate` | (initial) Baudrate | The baudrate of the serial port. If set to 'auto', it will be negotiated with the meter. The default is 300 baud for modes A, B, and C and 2400 baud for mode D, and 9600 baud for SML. | no | AUTO |
-
-The default is 300 baud for modes A, B, and C and 2400 baud for mode D
 
 ## Channels
 

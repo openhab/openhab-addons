@@ -7,11 +7,8 @@ Bundle-Name: Plugwise Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.plugwise;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.4.0.qualifier
+Bundle-Version: 2.5.0.qualifier
 Import-Package: 
- com.google.common.base,
- com.google.common.collect,
- gnu.io,
  javax.measure.quantity,
  org.apache.commons.io,
  org.apache.commons.lang,
@@ -26,6 +23,7 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.io.transport.serial,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

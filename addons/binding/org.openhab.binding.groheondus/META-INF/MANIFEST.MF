@@ -1,12 +1,13 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.groheondus
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: ., lib/ondus-api-0.0.2.jar
+Bundle-ClassPath: ., lib/ondus-api-0.0.4.jar
 Bundle-ManifestVersion: 2
 Bundle-Name: GROHE ONDUS Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.groheondus;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.4.0.qualifier
+Bundle-Version: 2.5.0.qualifier
 Import-Package: 
  javax.measure,
  org.eclipse.jdt.annotation;resolution:=optional,

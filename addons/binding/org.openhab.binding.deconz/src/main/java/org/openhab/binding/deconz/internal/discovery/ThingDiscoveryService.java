@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.deconz.internal.discovery;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -35,14 +33,13 @@ import org.openhab.binding.deconz.internal.handler.DeconzBridgeHandler;
  */
 @NonNullByDefault
 public class ThingDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
-    private final List<DiscoveryResult> results = new ArrayList<>();
+
     private @NonNullByDefault({}) DeconzBridgeHandler handler;
 
     public ThingDiscoveryService() {
-        super(Stream
-                .of(BindingConstants.THING_TYPE_PRESENCE_SENSOR, BindingConstants.THING_TYPE_POWER_SENSOR,
-                        BindingConstants.THING_TYPE_DAYLIGHT_SENSOR, BindingConstants.THING_TYPE_SWITCH)
-                .collect(Collectors.toSet()), 0, true);
+        super(Stream.of(BindingConstants.THING_TYPE_PRESENCE_SENSOR, BindingConstants.THING_TYPE_POWER_SENSOR,
+                BindingConstants.THING_TYPE_DAYLIGHT_SENSOR, BindingConstants.THING_TYPE_SWITCH,
+                BindingConstants.THING_TYPE_OPENCLOSE_SENSOR).collect(Collectors.toSet()), 0, true);
     }
 
     /**
@@ -56,7 +53,7 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements T
     /**
      * Add a sensor device to the discovery inbox.
      *
-     * @param sensor The sensor description
+     * @param sensor    The sensor description
      * @param bridgeUID The bridge UID
      */
     private void addDevice(String sensorID, SensorMessage sensor) {
@@ -73,6 +70,8 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements T
             thingTypeUID = BindingConstants.THING_TYPE_LIGHT_SENSOR;
         } else if (sensor.type.contains("ZHATemperature")) { // ZHATemperature
             thingTypeUID = BindingConstants.THING_TYPE_TEMPERATURE_SENSOR;
+        } else if (sensor.type.contains("ZHAOpenClose")) { // ZHATemperature
+            thingTypeUID = BindingConstants.THING_TYPE_OPENCLOSE_SENSOR;
         } else {
             return;
         }
@@ -83,7 +82,6 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements T
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withBridge(handler.getThing().getUID())
                 .withLabel(sensor.name + " (" + sensor.manufacturername + ")").withProperty("id", sensorID)
                 .withProperty("uid", sensor.uniqueid).withRepresentationProperty("uid").build();
-        results.add(discoveryResult);
         thingDiscovered(discoveryResult);
     }
 

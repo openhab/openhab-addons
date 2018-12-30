@@ -31,10 +31,12 @@ public class PLCPulseConfiguration extends PLCMemoryConfiguration {
      * @return Observed Siemens LOGO! block name or memory address
      */
     public String getObservedBlock() {
-        if (observe == null) {
-            observe = getBlockName();
+        String result = observe;
+        if (result == null) {
+            result = getBlockName();
+            observe = result;
         }
-        return observe;
+        return result;
     }
 
     /**
@@ -52,10 +54,12 @@ public class PLCPulseConfiguration extends PLCMemoryConfiguration {
     }
 
     public String getObservedBlockKind() {
-        if (observe == null) {
-            observe = getBlockName();
+        String result = observe;
+        if (result == null) {
+            result = getBlockName();
+            observe = result;
         }
-        return getBlockKind(observe);
+        return getBlockKind(result);
     }
 
     public Integer getPulseLength() {

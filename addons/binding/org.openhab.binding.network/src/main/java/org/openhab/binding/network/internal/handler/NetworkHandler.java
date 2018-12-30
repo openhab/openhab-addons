@@ -11,10 +11,13 @@ package org.openhab.binding.network.internal.handler;
 import static org.openhab.binding.network.internal.NetworkBindingConstants.*;
 
 import java.net.UnknownHostException;
-import java.util.Calendar;
+import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.Collections;
+import java.util.Map;
+import java.util.TimeZone;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -32,7 +35,6 @@ import org.openhab.binding.network.internal.NetworkHandlerConfiguration;
 import org.openhab.binding.network.internal.PresenceDetection;
 import org.openhab.binding.network.internal.PresenceDetectionListener;
 import org.openhab.binding.network.internal.PresenceDetectionValue;
-import org.openhab.binding.network.internal.utils.NetworkUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,13 +42,13 @@ import org.slf4j.LoggerFactory;
  * This handler is handling the CHANNEL_ONLINE (boolean) and CHANNEL_TIME (time in ms)
  * commands and is starting a {@see NetworkService} instance for the configured device.
  *
- * @author Marc Mettke
- * @author David Graeff
+ * @author Marc Mettke - Initial contribution
+ * @author David Graeff - Rewritten
  */
+@NonNullByDefault
 public class NetworkHandler extends BaseThingHandler implements PresenceDetectionListener {
     private final Logger logger = LoggerFactory.getLogger(NetworkHandler.class);
-    private PresenceDetection presenceDetection;
-    NetworkUtils networkUtils = new NetworkUtils();
+    private @NonNullByDefault({}) PresenceDetection presenceDetection;
 
     private boolean isTCPServiceDevice;
     private NetworkBindingConfiguration configuration;
@@ -55,13 +57,12 @@ public class NetworkHandler extends BaseThingHandler implements PresenceDetectio
     int retries;
     // Retry counter. Will be reset as soon as a device presence detection succeed.
     private int retryCounter = 0;
-    private NetworkHandlerConfiguration handlerConfiguration;
+    private NetworkHandlerConfiguration handlerConfiguration = new NetworkHandlerConfiguration();
 
     /**
      * Do not call this directly, but use the {@see NetworkHandlerBuilder} instead.
      */
-    public NetworkHandler(@NonNull Thing thing, boolean isTCPServiceDevice,
-            @NonNull NetworkBindingConfiguration configuration) {
+    public NetworkHandler(Thing thing, boolean isTCPServiceDevice, NetworkBindingConfiguration configuration) {
         super(thing);
         this.isTCPServiceDevice = isTCPServiceDevice;
         this.configuration = configuration;
@@ -87,9 +88,9 @@ public class NetworkHandler extends BaseThingHandler implements PresenceDetectio
                 break;
             case CHANNEL_LASTSEEN:
                 if (presenceDetection.getLastSeen() > 0) {
-                    Calendar c = Calendar.getInstance();
-                    c.setTimeInMillis(presenceDetection.getLastSeen());
-                    updateState(CHANNEL_LASTSEEN, new DateTimeType(c));
+                    Instant instant = Instant.ofEpochMilli(presenceDetection.getLastSeen());
+                    updateState(CHANNEL_LASTSEEN, new DateTimeType(
+                            ZonedDateTime.ofInstant(instant, TimeZone.getDefault().toZoneId()).withFixedOffsetZone()));
                 } else {
                     updateState(CHANNEL_LASTSEEN, UnDefType.UNDEF);
                 }
@@ -130,17 +131,20 @@ public class NetworkHandler extends BaseThingHandler implements PresenceDetectio
         }
 
         if (value.isReachable()) {
-            Calendar c = Calendar.getInstance();
-            c.setTimeInMillis(presenceDetection.getLastSeen());
-            updateState(CHANNEL_LASTSEEN, new DateTimeType(c));
+            Instant instant = Instant.ofEpochMilli(presenceDetection.getLastSeen());
+            updateState(CHANNEL_LASTSEEN, new DateTimeType(
+                    ZonedDateTime.ofInstant(instant, TimeZone.getDefault().toZoneId()).withFixedOffsetZone()));
         }
 
-        updateProperty(NetworkBindingConstants.PROPERTY_PRESENCE_DETECTION_TYPE, value.getSuccessfulDetectionTypes());
+        updateNetworkProperties();
     }
 
     @Override
     public void dispose() {
-        presenceDetection.stopAutomaticRefresh();
+        PresenceDetection detection = presenceDetection;
+        if (detection != null) {
+            detection.stopAutomaticRefresh();
+        }
         presenceDetection = null;
     }
 
@@ -161,12 +165,13 @@ public class NetworkHandler extends BaseThingHandler implements PresenceDetectio
         }
 
         if (isTCPServiceDevice) {
-            if (handlerConfiguration.port == null) {
+            Integer port = handlerConfiguration.port;
+            if (port == null) {
                 logger.error("You need to configure the port for a service device");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No port configured!");
                 return;
             }
-            presenceDetection.setServicePorts(Collections.singleton(handlerConfiguration.port.intValue()));
+            presenceDetection.setServicePorts(Collections.singleton(port));
         } else {
             // It does not harm to send an additional UDP packet to a device,
             // therefore we assume all ping devices are iOS devices. If this
@@ -186,14 +191,18 @@ public class NetworkHandler extends BaseThingHandler implements PresenceDetectio
         updateStatus(ThingStatus.ONLINE);
         presenceDetection.startAutomaticRefresh(scheduler);
 
+        updateNetworkProperties();
+    }
+
+    private void updateNetworkProperties() {
         // Update properties (after startAutomaticRefresh, to get the correct dhcp state)
-        updateProperty(NetworkBindingConstants.PROPERTY_ARP_STATE,
-                presenceDetection.arpPingMethod() != null ? presenceDetection.arpPingMethod().name() : "Disabled");
-        updateProperty(NetworkBindingConstants.PROPERTY_ICMP_STATE,
-                presenceDetection.getPingMethod() != null ? presenceDetection.getPingMethod().name() : "Disabled");
-        updateProperty(NetworkBindingConstants.PROPERTY_PRESENCE_DETECTION_TYPE, "");
-        updateProperty(NetworkBindingConstants.PROPERTY_IOS_WAKEUP, presenceDetection.isIOSdevice() ? "On" : "Off");
-        updateProperty(NetworkBindingConstants.PROPERTY_DHCP_STATE, presenceDetection.getDhcpState());
+        Map<String, String> properties = editProperties();
+        properties.put(NetworkBindingConstants.PROPERTY_ARP_STATE, presenceDetection.getArpPingState());
+        properties.put(NetworkBindingConstants.PROPERTY_ICMP_STATE, presenceDetection.getIPPingState());
+        properties.put(NetworkBindingConstants.PROPERTY_PRESENCE_DETECTION_TYPE, "");
+        properties.put(NetworkBindingConstants.PROPERTY_IOS_WAKEUP, presenceDetection.isIOSdevice() ? "Yes" : "No");
+        properties.put(NetworkBindingConstants.PROPERTY_DHCP_STATE, presenceDetection.getDhcpState());
+        updateProperties(properties);
     }
 
     // Create a new network service and apply all configurations.

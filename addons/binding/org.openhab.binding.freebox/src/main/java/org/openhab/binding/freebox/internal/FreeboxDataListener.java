@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.matmaul.freeboxos.airmedia.AirMediaReceiver;
-import org.matmaul.freeboxos.lan.LanHostsConfig;
+import org.openhab.binding.freebox.internal.api.model.FreeboxAirMediaReceiver;
+import org.openhab.binding.freebox.internal.api.model.FreeboxLanHost;
 
 /**
  * The {@link FreeboxDataListener} is notified by the bridge thing handler
@@ -21,6 +21,7 @@ import org.matmaul.freeboxos.lan.LanHostsConfig;
  *
  * @author Laurent Garnier - Initial contribution
  * @author Laurent Garnier - add discovery configuration
+ * @author Laurent Garnier - use new internal classes
  */
 public interface FreeboxDataListener {
 
@@ -36,8 +37,9 @@ public interface FreeboxDataListener {
      * from the Freebox server.
      *
      * @param bridge the Freebox server bridge.
-     * @param hostsConfig the LAN data received from the Freebox server.
+     * @param lanHosts the LAN data received from the Freebox server.
      * @param airPlayDevices the list of AirPlay devices received from the Freebox server.
      */
-    public void onDataFetched(ThingUID bridge, LanHostsConfig hostsConfig, List<AirMediaReceiver> airPlayDevices);
+    public void onDataFetched(ThingUID bridge, List<FreeboxLanHost> lanHosts,
+            List<FreeboxAirMediaReceiver> airPlayDevices);
 }

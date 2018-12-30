@@ -19,11 +19,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -172,7 +174,9 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
                     }
 
                     // Initial data
-                    valueUpdated(config.id, newState.state);
+                    for (Channel channel : thing.getChannels()) {
+                        valueUpdated(channel.getUID().getId(), newState.state);
+                    }
 
                     // Real-time data
                     webSocketConnection.registerValueListener(config.id, this);
@@ -200,18 +204,18 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
         }
     }
 
-    @Override
-    public void valueUpdated(String id, SensorState state) {
+    public void valueUpdated(String channelID, SensorState state) {
         this.state = state;
 
         Integer buttonevent = state.buttonevent;
         Integer status = state.status;
         Boolean presence = state.presence;
+        Boolean open = state.open;
         Integer power = state.power;
         Integer lux = state.lux;
         Float temperature = state.temperature;
 
-        switch (id) {
+        switch (channelID) {
             case BindingConstants.CHANNEL_DAYLIGHT:
                 if (state.dark != null) {
                     boolean dark = state.dark;
@@ -231,33 +235,45 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
                 break;
             case BindingConstants.CHANNEL_POWER:
                 if (power != null) {
-                    updateState(id, new QuantityType<Energy>(power, SmartHomeUnits.WATT_HOUR));
+                    updateState(channelID, new QuantityType<Energy>(power, SmartHomeUnits.WATT_HOUR));
                 }
                 break;
             case BindingConstants.CHANNEL_LIGHT_LUX:
                 if (lux != null) {
-                    updateState(id, new QuantityType<Illuminance>(lux, SmartHomeUnits.LUX));
+                    updateState(channelID, new QuantityType<Illuminance>(lux, SmartHomeUnits.LUX));
                 }
                 break;
             case BindingConstants.CHANNEL_TEMPERATURE:
                 if (temperature != null) {
-                    updateState(id, new QuantityType<Temperature>(temperature, SIUnits.CELSIUS));
+                    updateState(channelID, new QuantityType<Temperature>(temperature / 100, SIUnits.CELSIUS));
                 }
                 break;
             case BindingConstants.CHANNEL_PRESENCE:
                 if (presence != null) {
-                    updateState(id, OnOffType.from(presence));
+                    updateState(channelID, OnOffType.from(presence));
                 }
                 break;
             case BindingConstants.CHANNEL_VALUE:
                 if (status != null) {
-                    updateState(id, new DecimalType(status));
+                    updateState(channelID, new DecimalType(status));
+                }
+                break;
+            case BindingConstants.CHANNEL_OPENCLOSE:
+                if (open != null) {
+                    updateState(channelID, open ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
                 }
                 break;
         }
 
         if (buttonevent != null) {
             triggerChannel(BindingConstants.CHANNEL_BUTTONEVENT, String.valueOf(buttonevent));
+        }
+    }
+
+    @Override
+    public void websocketUpdate(String sensorID, SensorState newState) {
+        for (Channel channel : thing.getChannels()) {
+            valueUpdated(channel.getUID().getId(), newState);
         }
     }
 }

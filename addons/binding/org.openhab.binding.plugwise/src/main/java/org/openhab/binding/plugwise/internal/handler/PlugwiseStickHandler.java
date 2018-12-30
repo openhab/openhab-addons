@@ -9,6 +9,7 @@
 package org.openhab.binding.plugwise.internal.handler;
 
 import static org.eclipse.smarthome.core.thing.ThingStatus.*;
+import static org.openhab.binding.plugwise.internal.PlugwiseBindingConstants.CONFIG_PROPERTY_MAC_ADDRESS;
 import static org.openhab.binding.plugwise.internal.protocol.field.DeviceType.STICK;
 
 import java.io.IOException;
@@ -21,10 +22,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.plugwise.internal.PlugwiseCommunicationHandler;
 import org.openhab.binding.plugwise.internal.PlugwiseDeviceTask;
 import org.openhab.binding.plugwise.internal.PlugwiseInitializationException;
@@ -78,6 +81,7 @@ public class PlugwiseStickHandler extends BaseBridgeHandler implements PlugwiseM
 
     private final Logger logger = LoggerFactory.getLogger(PlugwiseStickHandler.class);
     private final PlugwiseCommunicationHandler communicationHandler = new PlugwiseCommunicationHandler();
+    private final SerialPortManager serialPortManager;
     private final List<PlugwiseStickStatusListener> statusListeners = new CopyOnWriteArrayList<>();
 
     private @NonNullByDefault({}) PlugwiseStickConfig configuration;
@@ -85,8 +89,9 @@ public class PlugwiseStickHandler extends BaseBridgeHandler implements PlugwiseM
     private @Nullable MACAddress circlePlusMAC;
     private @Nullable MACAddress stickMAC;
 
-    public PlugwiseStickHandler(Bridge bridge) {
+    public PlugwiseStickHandler(Bridge bridge, SerialPortManager serialPortManager) {
         super(bridge);
+        this.serialPortManager = serialPortManager;
     }
 
     public void addMessageListener(PlugwiseMessageListener listener) {
@@ -115,6 +120,17 @@ public class PlugwiseStickHandler extends BaseBridgeHandler implements PlugwiseM
 
     public @Nullable MACAddress getStickMAC() {
         return stickMAC;
+    }
+
+    public @Nullable Thing getThingByMAC(MACAddress macAddress) {
+        for (Thing thing : getThing().getThings()) {
+            String thingMAC = (String) thing.getConfiguration().get(CONFIG_PROPERTY_MAC_ADDRESS);
+            if (thingMAC != null && macAddress.equals(new MACAddress(thingMAC))) {
+                return thing;
+            }
+        }
+
+        return null;
     }
 
     private void handleAcknowledgement(AcknowledgementMessage acknowledge) {
@@ -171,6 +187,7 @@ public class PlugwiseStickHandler extends BaseBridgeHandler implements PlugwiseM
     public void initialize() {
         configuration = getConfigAs(PlugwiseStickConfig.class);
         communicationHandler.setConfiguration(configuration);
+        communicationHandler.setSerialPortManager(serialPortManager);
         communicationHandler.addMessageListener(this);
 
         try {

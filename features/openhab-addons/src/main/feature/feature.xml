@@ -257,6 +257,12 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.keba/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-km200" description="KM200 Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-mdns</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.km200/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-knx" description="KNX Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-serial</feature>
@@ -631,6 +637,11 @@
     <feature name="openhab-binding-tplinksmarthome" description="TP-Link Smart Home Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.tplinksmarthome/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-binding-unifi" description="UniFi Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.unifi/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-urtsi" description="Somfy URTSI II Binding" version="${project.version}">

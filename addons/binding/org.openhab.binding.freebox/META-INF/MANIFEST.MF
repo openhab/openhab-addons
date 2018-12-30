@@ -1,24 +1,16 @@
 Manifest-Version: 1.0
 Automatic-Module-Name: org.openhab.binding.freebox
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: 
- .,
- lib/json-simple-1.1.1.jar,
- lib/httpmime-4.3.1.jar,
- lib/freeboxos-client-0.4.2.jar,
- lib/jackson-core-asl-1.9.13.jar,
- lib/jackson-mapper-asl-1.9.13.jar,
- lib/httpclient-4.3.1.jar,
- lib/httpcore-4.3.jar
+Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
 Bundle-Name: Freebox Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.freebox;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.4.0.qualifier
+Bundle-Version: 2.5.0.qualifier
 Import-Package: 
- com.google.common.base,
- com.google.common.collect,
+ com.google.gson,
+ com.google.gson.annotations,
  javax.jmdns,
  javax.net,
  javax.net.ssl,
@@ -26,6 +18,7 @@ Import-Package:
  org.apache.commons.lang,
  org.apache.commons.logging,
  org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.jetty.client,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.config.discovery.mdns,

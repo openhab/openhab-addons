@@ -21,6 +21,8 @@
 			<property name="assigned_name"/>
 		</properties>
 
+		<representation-property>host</representation-property>
+
 		<config-description>
 			<parameter name="host" type="text" required="true">
 				<context>network-address</context>
@@ -79,6 +81,8 @@
 			<channel-group typeId="playback_channels" id="playback_channels"/>
 			<channel-group typeId="navigation_channels" id="navigation_channels"/>
 		</channel-groups>
+
+		<representation-property>zone</representation-property>
 
 		<config-description>
 			<parameter name="zone" type="text" required="true">

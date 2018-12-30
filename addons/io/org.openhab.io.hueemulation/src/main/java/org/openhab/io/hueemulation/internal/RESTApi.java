@@ -22,8 +22,6 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.events.EventPublisher;
@@ -38,6 +36,7 @@ import org.openhab.io.hueemulation.internal.dto.changerequest.HueChangeRequest;
 import org.openhab.io.hueemulation.internal.dto.changerequest.HueCreateUser;
 import org.openhab.io.hueemulation.internal.dto.response.HueResponse;
 import org.openhab.io.hueemulation.internal.dto.response.HueResponse.HueErrorMessage;
+import org.openhab.io.hueemulation.internal.dto.response.HueSuccessCreateGroup;
 import org.openhab.io.hueemulation.internal.dto.response.HueSuccessResponseCreateUser;
 import org.openhab.io.hueemulation.internal.dto.response.HueSuccessResponseStartSearchLights;
 import org.openhab.io.hueemulation.internal.dto.response.HueSuccessResponseStateChanged;
@@ -64,6 +63,13 @@ public class RESTApi {
     private final ConfigManagement configManagement;
     private @NonNullByDefault({}) EventPublisher eventPublisher;
 
+    public static enum HttpMethod {
+        GET,
+        POST,
+        PUT,
+        DELETE
+    }
+
     public RESTApi(HueDataStore ds, UserManagement userManagement, ConfigManagement configManagement, Gson gson) {
         this.ds = ds;
         this.userManagement = userManagement;
@@ -88,56 +94,56 @@ public class RESTApi {
 
     /**
      * Handles /api and forwards any deeper path
+     *
+     * @param isDebug
      */
     @SuppressWarnings("null")
-    public int handle(HttpServletRequest req, Writer out, Path path) throws IOException {
+    public int handle(HttpMethod method, String body, Writer out, Path path, boolean isDebug)
+            throws IOException, JsonParseException {
         if (!"api".equals(path.getName(0).toString())) {
             return 404;
         }
 
         if (path.getNameCount() == 1) { // request for API key
-            if (!"POST".equals(req.getMethod())) {
+            if (method != HttpMethod.POST) {
                 return 405;
             }
-            if (ds.config.linkbutton) {
-                final HueCreateUser userRequest;
-                try {
-                    userRequest = gson.fromJson(req.getReader(), HueCreateUser.class);
-                } catch (JsonParseException e) {
-                    return 400;
-                }
-                if (userRequest == null || userRequest.devicetype == null || userRequest.devicetype.isEmpty()) {
-                    return 400;
-                }
-
-                String apiKey = userRequest.username;
-                if (apiKey == null || apiKey.length() == 0) {
-                    apiKey = UUID.randomUUID().toString();
-                }
-                userManagement.addUser(apiKey, userRequest.devicetype);
-
-                try (JsonWriter writer = new JsonWriter(out)) {
-                    HueSuccessResponseCreateUser h = new HueSuccessResponseCreateUser(userRequest.username);
-                    gson.toJson(Collections.singleton(new HueResponse(h)), new TypeToken<List<?>>() {
-                    }.getType(), writer);
-                }
-                return 200;
-            } else {
+            if (!ds.config.linkbutton) {
                 return 10403;
             }
+
+            final HueCreateUser userRequest;
+            userRequest = gson.fromJson(body, HueCreateUser.class);
+            if (userRequest.devicetype == null || userRequest.devicetype.isEmpty()) {
+                throw new JsonParseException("devicetype not given");
+            }
+
+            String apiKey = userRequest.username;
+            if (apiKey == null || apiKey.length() == 0) {
+                apiKey = UUID.randomUUID().toString();
+            }
+            userManagement.addUser(apiKey, userRequest.devicetype);
+
+            try (JsonWriter writer = new JsonWriter(out)) {
+                HueSuccessResponseCreateUser h = new HueSuccessResponseCreateUser(apiKey);
+                gson.toJson(Collections.singleton(new HueResponse(h)), new TypeToken<List<?>>() {
+                }.getType(), writer);
+            }
+            return 200;
         }
 
         updateDataStore();
 
         Path userPath = remaining(path);
 
-        return handleUser(req, out, userPath.getName(0).toString(), remaining(userPath));
+        return handleUser(method, body, out, userPath.getName(0).toString(), remaining(userPath), path, isDebug);
     }
 
     /**
      * Handles /api/config and /api/{user-name} and forwards any deeper path
      */
-    public int handleUser(HttpServletRequest req, Writer out, String userName, Path remainingPath) throws IOException {
+    public int handleUser(HttpMethod method, String body, Writer out, String userName, Path remainingPath, Path fullURI,
+            boolean isDebug) throws IOException, JsonParseException {
 
         if ("config".equals(userName)) { // Reduced config
             try (JsonWriter writer = new JsonWriter(out)) {
@@ -156,11 +162,12 @@ public class RESTApi {
         }
 
         if (remainingPath.getNameCount() == 0) { /** /api/{username} */
-            if (req.getMethod().equals("GET")) {
-                out.write(gson.toJson(ds));
-                return 200;
-            } else {
-                return 405;
+            switch (method) {
+                case GET:
+                    out.write(gson.toJson(ds));
+                    return 200;
+                default:
+                    return 405;
             }
 
         }
@@ -169,11 +176,11 @@ public class RESTApi {
 
         switch (function) {
             case "lights":
-                return handleLights(req, out, remaining(remainingPath));
+                return handleLights(method, body, out, remaining(remainingPath), fullURI, isDebug);
             case "groups":
-                return handleGroups(req, out, remaining(remainingPath));
+                return handleGroups(method, body, out, remaining(remainingPath));
             case "config":
-                return handleConfig(req, out, remaining(remainingPath), userName);
+                return handleConfig(method, body, out, remaining(remainingPath), userName);
             default:
                 return 404;
         }
@@ -183,89 +190,100 @@ public class RESTApi {
      * Handles /api/{user-name}/config and /api/{user-name}/config/whitelist
      * The own whitelisted user can remove itself with a DELETE
      */
-    public int handleConfig(HttpServletRequest req, Writer out, Path remainingPath, String authorizedUser)
-            throws IOException {
+    public int handleConfig(HttpMethod method, String body, Writer out, Path remainingPath, String authorizedUser)
+            throws IOException, JsonParseException {
         if (remainingPath.getNameCount() == 0) {
-            if (req.getMethod().equals("GET")) {
-                out.write(gson.toJson(ds.config));
-                return 200;
-            } else if (req.getMethod().equals("PUT")) {
-                final HueChangeRequest changes;
-                try {
-                    changes = gson.fromJson(req.getReader(), HueChangeRequest.class);
-                } catch (com.google.gson.JsonParseException e) {
-                    return 400;
-                }
-                if (changes.devicename != null) {
-                    ds.config.devicename = changes.devicename;
-                }
-                if (changes.dhcp != null) {
-                    ds.config.dhcp = changes.dhcp;
-                }
-                if (changes.linkbutton != null) {
-                    ds.config.linkbutton = changes.linkbutton;
-                    configManagement.checkPairingTimeout();
-                }
-                configManagement.writeToFile();
-                return 200;
-            } else {
-                return 405;
+            switch (method) {
+                case GET:
+                    out.write(gson.toJson(ds.config));
+                    return 200;
+                case PUT:
+                    final HueChangeRequest changes;
+                    changes = gson.fromJson(body, HueChangeRequest.class);
+                    if (changes.devicename != null) {
+                        ds.config.devicename = changes.devicename;
+                    }
+                    if (changes.dhcp != null) {
+                        ds.config.dhcp = changes.dhcp;
+                    }
+                    if (changes.linkbutton != null) {
+                        ds.config.linkbutton = changes.linkbutton;
+                        configManagement.checkPairingTimeout();
+                    }
+                    configManagement.writeToFile();
+                    return 200;
+                default:
+                    return 405;
             }
         } else if (remainingPath.getNameCount() >= 1 && "whitelist".equals(remainingPath.getName(0).toString())) {
-            return handleConfigWhitelist(req, out, remaining(remainingPath), authorizedUser);
+            return handleConfigWhitelist(method, out, remaining(remainingPath), authorizedUser);
         } else {
             return 404;
         }
     }
 
-    public int handleConfigWhitelist(HttpServletRequest req, Writer out, Path remainingPath, String authorizedUser)
+    public int handleConfigWhitelist(HttpMethod method, Writer out, Path remainingPath, String authorizedUser)
             throws IOException {
-        if (remainingPath.getNameCount() == 0) {
-            if (req.getMethod().equals("GET")) {
-                out.write(gson.toJson(ds.config.whitelist));
-                return 200;
-            } else {
-                return 405;
-            }
-        } else if (remainingPath.getNameCount() == 1) {
-            String username = remainingPath.getName(0).toString();
-            if (req.getMethod().equals("GET")) {
-                ds.config.whitelist.get(username);
-                out.write(gson.toJson(ds.config.whitelist));
-                return 200;
-            } else if (req.getMethod().equals("DELETE")) {
-                // Only own user can be removed
-                if (username.equals(authorizedUser)) {
-                    userManagement.removeUser(authorizedUser);
-                    return 200;
-                } else {
-                    return 403;
+        switch (remainingPath.getNameCount()) {
+            case 0:
+                switch (method) {
+                    case GET:
+                        out.write(gson.toJson(ds.config.whitelist));
+                        return 200;
+                    default:
+                        return 405;
                 }
-            } else {
+            case 1:
+                String username = remainingPath.getName(0).toString();
+                switch (method) {
+                    case GET:
+                        ds.config.whitelist.get(username);
+                        out.write(gson.toJson(ds.config.whitelist));
+                        return 200;
+                    case DELETE:
+                        // Only own user can be removed
+                        if (username.equals(authorizedUser)) {
+                            userManagement.removeUser(authorizedUser);
+                            return 200;
+                        } else {
+                            return 403;
+                        }
+                    default:
+                        return 405;
+                }
+            default:
                 return 405;
-            }
-        } else {
-            return 405;
         }
     }
 
     @SuppressWarnings({ "null", "unused" })
-    public int handleLights(HttpServletRequest req, Writer out, Path remainingPath) throws IOException {
+    public int handleLights(HttpMethod method, String body, Writer out, Path remainingPath, Path fullURI,
+            boolean isDebug) throws IOException, JsonParseException {
         /** /api/{username}/lights */
         if (remainingPath.getNameCount() == 0) {
-            if (req.getMethod().equals("GET")) { // Return complete object
-                out.write(gson.toJson(ds.lights));
-                return 200;
-            } else if (req.getMethod().equals("POST")) { // Starts a search for new lights
-                try (JsonWriter writer = new JsonWriter(out)) {
-                    List<HueResponse> responses = new ArrayList<>();
-                    responses.add(new HueResponse(new HueSuccessResponseStartSearchLights()));
-                    gson.toJson(responses, new TypeToken<List<?>>() {
-                    }.getType(), writer);
-                }
-                return 200;
-            } else {
-                return 405;
+            switch (method) {
+                case GET:
+                    if (isDebug) {
+                        out.write("Exposed lights:\n\n");
+                        for (HueDevice hueDevice : ds.lights.values()) {
+                            out.write(hueDevice.toString());
+                            out.write("\n");
+                        }
+                    } else {
+                        ds.lights.values().forEach(v -> v.updateState());
+                        out.write(gson.toJson(ds.lights));
+                    }
+                    return 200;
+                case POST:
+                    try (JsonWriter writer = new JsonWriter(out)) {
+                        List<HueResponse> responses = new ArrayList<>();
+                        responses.add(new HueResponse(new HueSuccessResponseStartSearchLights()));
+                        gson.toJson(responses, new TypeToken<List<?>>() {
+                        }.getType(), writer);
+                    }
+                    return 200;
+                default:
+                    return 405;
             }
         }
 
@@ -273,11 +291,12 @@ public class RESTApi {
 
         /** /api/{username}/lights/new */
         if ("new".equals(id)) {
-            if (req.getMethod().equals("GET")) {
-                out.write(gson.toJson(new HueNewLights()));
-                return 200;
-            } else {
-                return 405;
+            switch (method) {
+                case GET:
+                    out.write(gson.toJson(new HueNewLights()));
+                    return 200;
+                default:
+                    return 405;
             }
         }
 
@@ -295,16 +314,17 @@ public class RESTApi {
 
         /** /api/{username}/lights/{id} */
         if (remainingPath.getNameCount() == 1) {
+            hueDevice.updateState();
             out.write(gson.toJson(hueDevice));
             return 200;
         }
 
         if (remainingPath.getNameCount() == 2) {
-            // Only lights allowed for /state so far
-            if (req.getMethod().equals("PUT")) {
-                return handleLightChangeState(req, out, hueID, hueDevice);
-            } else {
-                return 405;
+            switch (method) {
+                case PUT:
+                    return handleLightChangeState(fullURI, method, body, out, hueID, hueDevice);
+                default:
+                    return 405;
             }
         }
 
@@ -312,14 +332,24 @@ public class RESTApi {
     }
 
     @SuppressWarnings({ "null", "unused" })
-    public int handleGroups(HttpServletRequest req, Writer out, Path remainingPath) throws IOException {
+    public int handleGroups(HttpMethod method, String body, Writer out, Path remainingPath) throws IOException {
         /** /api/{username}/groups */
         if (remainingPath.getNameCount() == 0) {
-            if (req.getMethod().equals("GET")) { // Return complete object
-                out.write(gson.toJson(ds.groups));
-                return 200;
-            } else {
-                return 405;
+            switch (method) {
+                case GET:
+                    out.write(gson.toJson(ds.groups));
+                    return 200;
+                case POST:
+                    int hueid = ds.generateNextGroupHueID();
+                    try (JsonWriter writer = new JsonWriter(out)) {
+                        List<HueResponse> responses = new ArrayList<>();
+                        responses.add(new HueResponse(new HueSuccessCreateGroup(hueid)));
+                        gson.toJson(responses, new TypeToken<List<?>>() {
+                        }.getType(), writer);
+                    }
+                    return 200;
+                default:
+                    return 405;
             }
         }
 
@@ -350,17 +380,14 @@ public class RESTApi {
      * Enpoint: /api/{username}/lights/{id}/state
      */
     @SuppressWarnings({ "null", "unused" })
-    private int handleLightChangeState(HttpServletRequest req, Writer out, int hueID, HueDevice hueDevice)
-            throws IOException {
-        HueStateChange state;
-        try {
-            state = gson.fromJson(req.getReader(), HueStateChange.class);
-        } catch (com.google.gson.JsonParseException e) {
-            return 400;
-        }
+    private int handleLightChangeState(Path fullURI, HttpMethod method, String body, Writer out, int hueID,
+            HueDevice hueDevice) throws IOException, JsonParseException {
+        HueStateChange state = gson.fromJson(body, HueStateChange.class);
         if (state == null) {
-            return 400;
+            throw new JsonParseException("No state change data received!");
         }
+
+        // logger.debug("Received state change: {}", gson.toJson(state));
 
         // Apply new state and collect success, error items
         Map<String, Object> successApplied = new TreeMap<>();
@@ -376,8 +403,7 @@ public class RESTApi {
         // Generate the response. The response consists of a list with an entry each for all
         // submitted change requests. If for example "on" and "bri" was send, 2 entries in the response are
         // expected.
-        final Path path = Paths.get(req.getRequestURI());
-        Path contextPath = path.subpath(2, path.getNameCount() - 1);
+        Path contextPath = fullURI.subpath(2, fullURI.getNameCount() - 1);
         List<HueResponse> responses = new ArrayList<>();
         successApplied.forEach((t, v) -> {
             responses.add(new HueResponse(new HueSuccessResponseStateChanged(contextPath.resolve(t).toString(), v)));

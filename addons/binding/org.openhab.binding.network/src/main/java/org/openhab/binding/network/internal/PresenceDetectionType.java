@@ -8,12 +8,15 @@
  */
 package org.openhab.binding.network.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * All the supported presence detection types of this binding.
  * Used by {@see PresenceDetectionValue}.
  *
- * @author David Graeff
+ * @author David Graeff - Initial contribution
  */
+@NonNullByDefault
 public enum PresenceDetectionType {
     ARP_PING,
     ICMP_PING,

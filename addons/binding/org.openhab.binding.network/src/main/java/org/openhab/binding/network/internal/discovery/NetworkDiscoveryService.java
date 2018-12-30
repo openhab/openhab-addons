@@ -22,6 +22,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -44,9 +46,10 @@ import org.slf4j.LoggerFactory;
  * the current Network. It uses every Network Interface which is connected to a network.
  * It tries common TCP ports to connect to, ICMP pings and ARP pings.
  *
- * @author David Graeff - Rewritten
  * @author Marc Mettke - Initial contribution
+ * @author David Graeff - Rewritten
  */
+@NonNullByDefault
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.network")
 public class NetworkDiscoveryService extends AbstractDiscoveryService implements PresenceDetectionListener {
     static final int PING_TIMEOUT_IN_MS = 500;
@@ -57,12 +60,12 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     // TCP port 548 (Apple Filing Protocol (AFP))
     // TCP port 554 (Windows share / Linux samba)
     // TCP port 1025 (Xbox / MS-RPC)
-    private Set<Integer> tcp_service_ports = Collections
+    private Set<Integer> tcpServicePorts = Collections
             .unmodifiableSet(Stream.of(80, 548, 554, 1025).collect(Collectors.toSet()));
-    private Integer scannedIPcount;
-    private ExecutorService executorService = null;
+    private Integer scannedIPcount = 0;
+    private @Nullable ExecutorService executorService = null;
     private final NetworkBindingConfiguration configuration = new NetworkBindingConfiguration();
-    NetworkUtils networkUtils = new NetworkUtils();
+    private final NetworkUtils networkUtils = new NetworkUtils();
 
     public NetworkDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, (int) Math.round(
@@ -72,14 +75,14 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
 
     @Override
     @Activate
-    public void activate(Map<String, Object> config) {
+    public void activate(@Nullable Map<String, @Nullable Object> config) {
         super.activate(config);
         modified(config);
     };
 
     @Override
     @Modified
-    protected void modified(Map<String, Object> config) {
+    protected void modified(@Nullable Map<String, @Nullable Object> config) {
         super.modified(config);
         // We update instead of replace the configuration object, so that if the user updates the
         // configuration, the values are automatically available in all handlers. Because they all
@@ -115,7 +118,8 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
      */
     @Override
     protected void startScan() {
-        if (executorService != null) {
+        final ExecutorService service = executorService;
+        if (service == null) {
             return;
         }
         removeOlderResults(getTimestampOfLastScan(), null);
@@ -140,9 +144,9 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
             s.setUseIcmpPing(true);
             s.setUseArpPing(true, configuration.arpPingToolPath);
             // TCP devices
-            s.setServicePorts(tcp_service_ports);
+            s.setServicePorts(tcpServicePorts);
 
-            executorService.execute(() -> {
+            service.execute(() -> {
                 Thread.currentThread().setName("Discovery thread " + ip);
                 s.performPresenceDetection(true);
                 synchronized (scannedIPcount) {
@@ -159,16 +163,17 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     @Override
     protected synchronized void stopScan() {
         super.stopScan();
-        if (executorService == null) {
+        final ExecutorService service = executorService;
+        if (service == null) {
             return;
         }
 
         try {
-            executorService.awaitTermination(PING_TIMEOUT_IN_MS, TimeUnit.MILLISECONDS);
+            service.awaitTermination(PING_TIMEOUT_IN_MS, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // Reset interrupt flag
         }
-        executorService.shutdown();
+        service.shutdown();
         executorService = null;
     }
 

@@ -39,15 +39,15 @@ public class HueStateBulb extends HueStatePlug {
      * Create a hue state with the given brightness percentage
      *
      * @param brightness Brightness percentage
-     * @param on         On value
+     * @param on On value
      */
     public HueStateBulb(PercentType brightness, boolean on) {
         super(on);
-        this.bri = brightness.intValue() * MAX_BRI / 100;
+        this.bri = (int) (brightness.intValue() * MAX_BRI / 100.0 + 0.5);
     }
 
     @Override
     public String toString() {
-        return "[on: " + on + " bri: " + bri + " reachable: " + reachable;
+        return "on: " + on + ", brightness: " + bri + ", reachable: " + reachable;
     }
 }

@@ -232,7 +232,7 @@ public class MilightBridgeDiscovery extends AbstractDiscoveryService implements 
             datagramSocket = new DatagramSocket(null);
             datagramSocket.setBroadcast(true);
             datagramSocket.setReuseAddress(true);
-            datagramSocket.bind(new InetSocketAddress(receivePort));
+            datagramSocket.bind(null);
         } catch (SocketException e) {
             logger.error("Opening a socket for the milight discovery service failed. {}", e.getLocalizedMessage());
             return;

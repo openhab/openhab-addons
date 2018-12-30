@@ -30,5 +30,11 @@
 			<description>Location of the region center</description>
 			<advanced>false</advanced>
 		</parameter>
+		<parameter name="accuracyThreshold" type="decimal" required="true" min="0">
+			<label>Accuracy Threshold</label>
+			<description>Location accuracy threshold in m or yd (0 to disable)</description>
+			<default>0</default>
+			<advanced>false</advanced>
+		</parameter>
 	</config-description>
 </config-description:config-descriptions>

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="unifi"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="controller">
+
+		<label>UniFi Controller</label>
+		<description>A UniFi controller.</description>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>Hostname</label>
+				<description>Hostname of IP address of the UniFi Controller</description>
+				<default>unifi</default>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="port" type="integer" max="65535" min="1" required="false">
+				<label>Port</label>
+				<description>Port of the UniFi Controller</description>
+				<default>8443</default>
+			</parameter>
+			<parameter name="username" type="text" required="true">
+				<label>Username</label>
+				<description>The username to access the UniFi Controller.</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>The password to access the UniFi Controller.</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="refresh" type="integer" required="false">
+				<label>Refresh Interval</label>
+				<description>The refresh interval in seconds to poll the UniFi controller</description>
+				<default>10</default>
+			</parameter>
+		</config-description>
+
+	</bridge-type>
+
+	<!-- <thing-type id="wiredClient"> .. coming soon .. </thing-type> -->
+
+	<thing-type id="wirelessClient">
+
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller" />
+		</supported-bridge-type-refs>
+		<label>UniFi Wireless Client</label>
+		<description>A wireless client connected to a UniFi wireless network</description>
+
+		<channels>
+			<!-- common wired + wireless client channels -->
+			<channel id="online" typeId="online" />
+			<channel id="site" typeId="site" />
+			<channel id="macAddress" typeId="macAddress" />
+			<channel id="ipAddress" typeId="ipAddress" />
+			<channel id="uptime" typeId="uptime" />
+			<channel id="lastSeen" typeId="lastSeen" />
+			<!-- additional wireless client channels -->
+			<channel id="ap" typeId="ap" />
+			<channel id="essid" typeId="essid" />
+			<channel id="rssi" typeId="rssi" />
+		</channels>
+
+		<representation-property>cid</representation-property>
+
+		<config-description>
+			<parameter name="cid" type="text" required="true">
+				<label>Client ID</label>
+				<description>The MAC address, IP address, hostname or alias of the client</description>
+			</parameter>
+			<parameter name="site" type="text" required="false">
+				<label>Site</label>
+				<description>The site where the client should be found (optional)</description>
+			</parameter>
+			<parameter name="considerHome" type="integer" required="false">
+				<label>Consider Home Interval</label>
+				<description>The interval in seconds to consider the client as home</description>
+				<default>180</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="online">
+		<item-type>Switch</item-type>
+		<label>Online</label>
+		<description>Online status of the wireless client</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="site">
+		<item-type>String</item-type>
+		<label>Site Name</label>
+		<description>UniFi Site the client is associated with</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="macAddress">
+		<item-type>String</item-type>
+		<label>MAC Address</label>
+		<description>MAC address of the client</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="ipAddress">
+		<item-type>String</item-type>
+		<label>IP Address</label>
+		<description>IP address of the client</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="uptime">
+		<item-type>Number</item-type>
+		<label>Uptime</label>
+		<description>Uptime of the client (in seconds)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="lastSeen">
+		<item-type>DateTime</item-type>
+		<label>Last Seen</label>
+		<description>Timestamp of when the client was last seen</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="ap">
+		<item-type>String</item-type>
+		<label>Access Point</label>
+		<description>Access Point the wireless client is connected to</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="essid">
+		<item-type>String</item-type>
+		<label>Wireless Network</label>
+		<description>Wireless Network (ESSID) the wireless client is connected to</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="rssi">
+		<item-type>Number</item-type>
+		<label>Received Signal Strength Indicator</label>
+		<description>Received Signal Strength Indicator (RSSI) of the wireless client</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+</thing:thing-descriptions>

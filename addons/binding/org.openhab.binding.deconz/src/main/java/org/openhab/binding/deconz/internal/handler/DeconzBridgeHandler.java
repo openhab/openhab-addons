@@ -111,6 +111,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                     "Allow authentification for 3rd party apps. Trying again in " + String.valueOf(POLL_FREQUENCY_SEC)
                             + " seconds");
+            stopTimer();
             scheduledFuture = scheduler.schedule(() -> requestApiKey(), POLL_FREQUENCY_SEC, TimeUnit.SECONDS);
         } else if (r.getResponseCode() == 200) {
             ApiKeyMessage[] response = gson.fromJson(r.getBody(), ApiKeyMessage[].class);
@@ -216,6 +217,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
         if (host.indexOf(':') > 0) {
             host = host.substring(0, host.indexOf(':'));
         }
+        stopTimer();
         scheduledFuture = scheduler.scheduleWithFixedDelay(this::startWebsocket, POLL_FREQUENCY_SEC, POLL_FREQUENCY_SEC,
                 TimeUnit.SECONDS);
 

@@ -10,7 +10,8 @@ package org.openhab.binding.network.internal.handler;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -33,7 +34,6 @@ import org.openhab.binding.network.internal.NetworkBindingConfiguration;
 import org.openhab.binding.network.internal.NetworkBindingConstants;
 import org.openhab.binding.network.internal.PresenceDetection;
 import org.openhab.binding.network.internal.PresenceDetectionValue;
-import org.openhab.binding.network.internal.handler.NetworkHandler;
 
 /**
  * Tests cases for {@link NetworkHandler}.
@@ -71,7 +71,7 @@ public class NetworkHandlerTest {
         });
         PresenceDetection presenceDetection = spy(new PresenceDetection(handler, 2000));
         // Mock start/stop automatic refresh
-        doNothing().when(presenceDetection).startAutomaticRefresh(anyObject());
+        doNothing().when(presenceDetection).startAutomaticRefresh(any());
         doNothing().when(presenceDetection).stopAutomaticRefresh();
 
         handler.initialize(presenceDetection);
@@ -116,7 +116,7 @@ public class NetworkHandlerTest {
         });
         PresenceDetection presenceDetection = spy(new PresenceDetection(handler, 2000));
         // Mock start/stop automatic refresh
-        doNothing().when(presenceDetection).startAutomaticRefresh(anyObject());
+        doNothing().when(presenceDetection).startAutomaticRefresh(any());
         doNothing().when(presenceDetection).stopAutomaticRefresh();
 
         handler.initialize(presenceDetection);
@@ -142,7 +142,6 @@ public class NetworkHandlerTest {
         // Final result affects the LASTSEEN channel
         when(value.isFinished()).thenReturn(true);
         handler.finalDetectionResult(value);
-        verify(callback).stateUpdated(eq(new ChannelUID(thingUID, NetworkBindingConstants.CHANNEL_LASTSEEN)),
-                anyObject());
+        verify(callback).stateUpdated(eq(new ChannelUID(thingUID, NetworkBindingConstants.CHANNEL_LASTSEEN)), any());
     }
 }

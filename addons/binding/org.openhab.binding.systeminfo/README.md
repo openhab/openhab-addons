@@ -56,8 +56,8 @@ The thing has two configuration parameters:
 That means that by default configuration:
 
 *   channels with priority set to 'High' are updated every second
-*   channels with priority set to 'Medium' - every minute
-*   channels with priority set to 'Low' only at initializing or at Refresh command.
+*   channels with priority set to 'Medium' are updated every minute
+*   channels with priority set to 'Low' are updated only at initialization or at Refresh command.
 
 For more info see [channel configuration](#channel-configuration)
 
@@ -69,36 +69,36 @@ In the list below, you can find, how are channel group and channels id`s related
 **thing** `computer`
 
 *   **group** `memory`
-     **channel** `available, total, used, availablePercent, usedPercent`
+  * **channel** `available, total, used, availablePercent, usedPercent`
 *   **group** `swap`
-     **channel** `available, total, used, availablePercent, usedPercent`
+  * **channel** `available, total, used, availablePercent, usedPercent`
 *   **group** `storage` (deviceIndex)
-     **channel** `available, total, used, availablePercent, usedPercent, name, description, type`
+  * **channel** `available, total, used, availablePercent, usedPercent, name, description, type`
 *   **group** `drive` (deviceIndex)
-     **channel** `name, model, serial`
+  * **channel** `name, model, serial`
 *   **group** `display` (deviceIndex)
-     **channel** `information`
+  * **channel** `information`
 *   **group** `battery` (deviceIndex)
-     **channel** `name, remainingCapacity, remainingTime`
+  * **channel** `name, remainingCapacity, remainingTime`
 *   **group** `cpu`
-     **channel** `name, description, load, load1, load5, load15, uptime`
+  * **channel** `name, description, load, load1, load5, load15, uptime`
 *   **group** `sensors`
-     **channel** `cpuTemp, cpuVoltage, fanSpeed`
+  * **channel** `cpuTemp, cpuVoltage, fanSpeed`
 *   **group** `network` (deviceIndex)
-     **channel** `ip, mac, networkDisplayName, networkName, packetsSent, packetsReceived, dataSent, dataReceived`
+  * **channel** `ip, mac, networkDisplayName, networkName, packetsSent, packetsReceived, dataSent, dataReceived`
 *   **group** `process` (pid)
-     **channel** `load, used, name, threads, path`
+  * **channel** `load, used, name, threads, path`
 
-The groups marked with "deviceIndex" may have device index attached to the Channel Group.
+The groups marked with "(deviceIndex)" may have device index attached to the Channel Group.
 
--   channel ::= chnanel_group & (deviceIndex) & # channel_id
+-   channel ::= channel_group & (deviceIndex) & # channel_id
 -   deviceIndex ::= number > 0
 -   (e.g. *storage1#available*)
 
 The group `process` is using a configuration parameter "pid" instead of "deviceIndex".
-This makes possible to changed the tracked process at runtime.
+This makes it possible to change the tracked process at runtime.
 
-The binding uses this index to get information about a specific device from a list of devices (e.g on a single computer could be installed several local disks with names C:\, D:\, E:\ - the first will have deviceIndex=0, the second deviceIndex=1 ant etc).
+The binding uses this index to get information about a specific device from a list of devices (e.g on a single computer several local disks could be installed with names C:\, D:\, E:\ - the first will have deviceIndex=0, the second deviceIndex=1 etc).
 If device with this index is not existing, the binding will display an error message on the console.
 
 Unfortunately this feature can't be used at the moment without manually adding these new channel groups to the thing description (located in ESH-INF/thing/computer.xml).
@@ -124,11 +124,11 @@ The binding introduces the following channels:
 | serial             | The serial number of the device                                  | String              | Low              | True     |
 | description        | Description of the device                                        | String              | Low              | True     |
 | type               | Storage type                                                     | String              | Low              | True     |
-| cpuTemp            | CPU Temperature in Celsius degrees                               | Number              | High             | True     |
+| cpuTemp            | CPU Temperature in degrees Celsius                               | Number              | High             | True     |
 | cpuVoltage         | CPU Voltage in V                                                 | Number              | Medium           | True     |
 | fanSpeed           | Fan speed in rpm                                                 | Number              | Medium           | True     |
 | remainingTime      | Remaining time in minutes                                        | Number              | Medium           | False    |
-| remainingCapacity  | Remaining capacity in percents                                   | Number              | Medium           | False    |
+| remainingCapacity  | Remaining capacity in %                                          | Number              | Medium           | False    |
 | information        | Product, manufacturer, SN, width and height of the display in cm | String              | Low              | True     |
 | ip                 | Host IP address of the network                                   | String              | Low              | False    |
 | mac                | MAC address                                                      | String              | Low              | True     |
@@ -201,8 +201,8 @@ String Network_IP                   { channel="systeminfo:computer:work:network#
 String Network_Mac                  { channel="systeminfo:computer:work:network#mac" }
 Number Network_DataSent             { channel="systeminfo:computer:work:network#dataSent" }
 Number Network_DataRecevied         { channel="systeminfo:computer:work:network#dataReceived" }
-Number Network_PacketsSent         { channel="systeminfo:computer:work:network#packetsSent" }
-Number Network_PacketsRecevied     { channel="systeminfo:computer:work:network#packetsReceived" }
+Number Network_PacketsSent          { channel="systeminfo:computer:work:network#packetsSent" }
+Number Network_PacketsRecevied      { channel="systeminfo:computer:work:network#packetsReceived" }
 
 /* CPU information*/
 String CPU_Name                     { channel="systeminfo:computer:work:cpu#name" }
@@ -262,4 +262,76 @@ Number Process_used                  { channel="systeminfo:computer:work:process
 String Process_name                  { channel="systeminfo:computer:work:process#name" }
 Number Process_threads               { channel="systeminfo:computer:work:process#threads" }
 String Process_path                  { channel="systeminfo:computer:work:process#path" }
+```
+Sitemap:
+```
+    Frame label=Admin {
+        Text label="SystemInfo" {
+            Text label="Network Information" {
+                Default item=Network_AdapterName
+                Default item=Network_Name
+                Default item=Network_IP
+                Default item=Network_Mac
+                Default item=Network_DataSent
+                Default item=Network_DataRecevied
+                Default item=Network_PacketsSent
+                Default item=Network_PacketsRecevied
+            }
+            Text label="CPU information" {
+                Default item=CPU_Name
+                Default item=CPU_Description
+                Default item=CPU_Load
+                Default item=CPU_Load1
+                Default item=CPU_Load5
+                Default item=CPU_Load15
+                Default item=CPU_Threads
+                Default item=CPU_Uptime
+            }
+            Text label="Drive information" {
+                Default item=Drive_Name
+                Default item=Drive_Model
+                Default item=Drive_Serial
+            }
+            Text label="Storage Information" {
+                Default item=Storage_Name
+                Default item=Storage_Type
+                Default item=Storage_Description
+                Default item=Storage_Available
+                Default item=Storage_Used
+                Default item=Storage_Total
+                Default item=Storage_Available_Percent
+                Default item=Storage_Used_Percent
+            }
+            Text label="Memory Information" {
+                Default item=Memory_Available
+                Default item=Memory_Used
+                Default item=Memory_Total
+                Default item=Memory_Available_Percent
+                Default item=Memory_Used_Percent
+            }
+            Text label="Swap Memory Information" {
+                Default item=Swap_Available
+                Default item=Swap_Used
+                Default item=Swap_Total
+                Default item=Swap_Available_Percent
+                Default item=Swap_Used_Percent
+            }
+            Text label="Battery&Display&Sensor Information" {
+                Default item=Battery_Name
+                Default item=Battery_RemainingCapacity
+                Default item=Battery_RemainingTime
+                Default item=Display_Description
+                Default item=Sensor_CPUTemp
+                Default item=Sensor_CPUVoltage
+                Default item=Sensor_FanSpeed
+            }
+            Text label="Process Information" {
+                Default item=Process_load
+                Default item=Process_used
+                Default item=Process_name
+                Default item=Process_threads
+                Default item=Process_path
+            }
+        }
+    }
 ```

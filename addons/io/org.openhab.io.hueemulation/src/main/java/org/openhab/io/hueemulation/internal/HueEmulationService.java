@@ -42,6 +42,7 @@ import org.eclipse.smarthome.core.service.ReadyMarker;
 import org.eclipse.smarthome.core.service.ReadyService;
 import org.eclipse.smarthome.core.service.ReadyService.ReadyTracker;
 import org.eclipse.smarthome.core.storage.StorageService;
+import org.openhab.io.hueemulation.internal.RESTApi.HttpMethod;
 import org.openhab.io.hueemulation.internal.dto.HueDataStore;
 import org.openhab.io.hueemulation.internal.dto.HueGroup;
 import org.openhab.io.hueemulation.internal.dto.response.HueResponse;
@@ -62,6 +63,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonWriter;
 
@@ -102,7 +104,6 @@ public class HueEmulationService implements ReadyTracker {
 
     //// Required services ////
     private @NonNullByDefault({}) HttpService httpService;
-    private @NonNullByDefault({}) ItemRegistry itemRegistry;
     private @NonNullByDefault({}) NetworkAddressService networkAddressService;
     private @NonNullByDefault({}) ReadyService readyService;
     protected @NonNullByDefault({}) HueEmulationUpnpServer discovery;
@@ -127,6 +128,9 @@ public class HueEmulationService implements ReadyTracker {
         protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
             Utils.setHeaders(resp);
             final Path path = Paths.get(req.getRequestURI());
+            final boolean isDebug = "debug=true".equals(req.getQueryString());
+            String postBody;
+            final HttpMethod method;
 
             try (PrintWriter httpOut = resp.getWriter()) {
                 // UPNP discovery document
@@ -137,36 +141,59 @@ public class HueEmulationService implements ReadyTracker {
 
                 StringWriter out = new StringWriter();
 
-                resp.setContentType("application/json");
-                int statuscode = 0;
+                if (!isDebug) {
+                    resp.setContentType("application/json");
+                } else {
+                    resp.setContentType("text/plain");
+                }
+
                 try {
-                    statuscode = restAPI.handle(req, out, path);
-                } catch (IllegalStateException e) {
-                    logger.warn("Unexpected multiple stream access", e);
-                    resp.setStatus(500);
-                    httpOut.print("Unexpected multiple stream access");
+                    method = Enum.valueOf(HttpMethod.class, req.getMethod());
+                } catch (IllegalArgumentException e) {
+                    resp.setStatus(405);
+                    apiServerError(req, out, HueResponse.METHOD_NOT_ALLOWED,
+                            req.getMethod() + " not allowed for this resource");
+                    httpOut.print(out.toString());
                     return;
                 }
-                switch (statuscode) {
-                    case 400:
-                        apiServerError(req, out, HueResponse.INVALID_JSON, "body contains invalid JSON");
-                        break;
-                    case 10403: // Fake status code -> translate to real one
-                        statuscode = 403;
-                        apiServerError(req, out, HueResponse.LINK_BUTTON_NOT_PRESSED, "link button not pressed");
-                        break;
-                    case 403:
-                        logger.debug("Unauthorized access to {} from {}:{}!\n", req.getRequestURI(),
-                                req.getRemoteAddr(), req.getRemotePort());
-                        apiServerError(req, out, HueResponse.UNAUTHORIZED, "Not Authorized");
-                        break;
-                    case 404:
-                        apiServerError(req, out, HueResponse.NOT_AVAILABLE, "Hue resource not available");
-                        break;
-                    case 405:
-                        apiServerError(req, out, HueResponse.METHOD_NOT_ALLOWED,
-                                req.getMethod() + " not allowed for this resource");
-                        break;
+
+                if (method == HttpMethod.POST || method == HttpMethod.PUT) {
+                    try {
+                        postBody = req.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+                    } catch (IllegalStateException e) {
+                        apiServerError(req, out, HueResponse.INTERNAL_ERROR,
+                                "Could not read http body. Jetty failure.");
+                        resp.setStatus(500);
+                        return;
+                    }
+                } else {
+                    postBody = "";
+                }
+
+                int statuscode = 0;
+                try {
+                    statuscode = restAPI.handle(method, postBody, out, path, isDebug);
+                    switch (statuscode) {
+                        case 10403: // Fake status code -> translate to real one
+                            statuscode = 403;
+                            apiServerError(req, out, HueResponse.LINK_BUTTON_NOT_PRESSED, "link button not pressed");
+                            break;
+                        case 403:
+                            logger.debug("Unauthorized access to {} from {}:{}!\n", req.getRequestURI(),
+                                    req.getRemoteAddr(), req.getRemotePort());
+                            apiServerError(req, out, HueResponse.UNAUTHORIZED, "Not Authorized");
+                            break;
+                        case 404:
+                            apiServerError(req, out, HueResponse.NOT_AVAILABLE, "Hue resource not available");
+                            break;
+                        case 405:
+                            apiServerError(req, out, HueResponse.METHOD_NOT_ALLOWED,
+                                    req.getMethod() + " not allowed for this resource");
+                            break;
+                    }
+                } catch (JsonParseException e) {
+                    statuscode = 400;
+                    apiServerError(req, out, HueResponse.INVALID_JSON, "Invalid request: " + e.getMessage());
                 }
 
                 resp.setStatus(statuscode);
@@ -235,7 +262,7 @@ public class HueEmulationService implements ReadyTracker {
     protected void deactivate() {
         readyService.unregisterTracker(this);
         configManagement.stopPairingTimeoutThread();
-        lightItems.close(itemRegistry);
+        lightItems.close();
         userManagement.writeToFile();
         configManagement.writeToFile();
 
@@ -275,8 +302,6 @@ public class HueEmulationService implements ReadyTracker {
             logger.debug("Hue Emulation: Cannot register /description.xml");
         }
 
-        lightItems.fetchItemsAndWatchRegistry(itemRegistry);
-
         configManagement.checkPairingTimeout();
         restartDiscovery();
 
@@ -314,11 +339,11 @@ public class HueEmulationService implements ReadyTracker {
 
     @Reference
     protected void setItemRegistry(ItemRegistry itemRegistry) {
-        this.itemRegistry = itemRegistry;
+        lightItems.setItemRegistry(itemRegistry);
     }
 
     protected void unsetItemRegistry(ItemRegistry itemRegistry) {
-        this.itemRegistry = null;
+        lightItems.setItemRegistry(null);
     }
 
     @Reference
@@ -341,9 +366,10 @@ public class HueEmulationService implements ReadyTracker {
 
     @Reference(policy = ReferencePolicy.DYNAMIC)
     protected void setStorageService(StorageService storageService) {
-        userManagement.loadUsersFromFile(storageService.getStorage("hue.emulation.users"));
-        lightItems.loadMappingFromFile(storageService.getStorage("hue.emulation.lights"));
-        configManagement.loadConfigFromFile(storageService.getStorage("hue.emulation.config"));
+        ClassLoader loader = this.getClass().getClassLoader();
+        userManagement.loadUsersFromFile(storageService.getStorage("hue.emulation.users", loader));
+        lightItems.loadMappingFromFile(storageService.getStorage("hue.emulation.lights", loader));
+        configManagement.loadConfigFromFile(storageService.getStorage("hue.emulation.config", loader));
     }
 
     protected void unsetStorageService(StorageService storageService) {

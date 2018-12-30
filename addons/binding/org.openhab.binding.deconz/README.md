@@ -13,7 +13,7 @@ which makes the lights and plugs available.
 There is one bridge (`deconz`) that manages the connection to the deCONZ software instance.
 These things are supported:
 
-| Think name            | Description                     | Channels                    |
+| Thing name            | Description                     | Channels                    |
 | :-------------------- |:--------------------------------|:---------------------------:|
 | `presencesensor`    | Any presence sensor             | `presence`                 |
 | `powersensor`       | Any power sensor                | `power`                    |
@@ -21,6 +21,7 @@ These things are supported:
 | `lightsensor`       | A light sensor                  | `lightlux`                 |
 | `temperaturesensor`| A temperature sensor            | `temperature`              |
 | `daylightsensor`    | The deCONZ artificial daylight sensor | `value`,`light`     |
+| `openclosesensor`    | Any open/close sensor | `open`     |
 
 ## Discovery
 
@@ -37,7 +38,7 @@ These configuration values need to be provided:
 
 | Config                | Description                                           | Type  | Default |
 | :-------------------- |:------------------------------------------------------|:-----:|:-------:|
-| ip                    | Host address (hostname/ip:port) of deCONZ interface   |string | n/a     |
+| host                  | Host address (hostname/ip:port) of deCONZ interface   |string | n/a     |
 | apikey                | Authorization API key (optional, can be filled automatically) |string | n/a     |
 
 ## Channels
@@ -46,7 +47,7 @@ Overview of provided channels for `presencesensor`:
 
 | Channel ID                |  Description                       | Read/Write | Values               |
 | :------------------------ | :----------------------------------|:----------:|:--------------------:|
-| presence                  | Contact type                       |r           | OPEN/CLOSE for presence/no-presence |
+| presence                  | Switch type                        |r           | ON/OFF for presence/no-presence |
 
 Overview of provided channels for `powersensor`:
 
@@ -79,19 +80,30 @@ Overview of provided channels for `daylightsensor`:
 | value                     |A number that represents the sun position: Dawn is around 130, sunrise at 140, sunset at 190, and dusk at 210   |r| Number value             |
 | light                     |A light level                       |r           | Daylight,Sunset,Dark |
 
+Overview of provided channels for `openclosesensor`:
+
+| Channel ID                |  Description                       | Read/Write | Values               |
+| :------------------------ | :----------------------------------|:----------:|:--------------------:|
+| open                  | Contact type                        |r           | ON/OFF for close/open |
+
 ## Full Example
 
 ### Things file ###
 
 ```
-Bridge deconz:deconz:homeserver [ ip="192.168.1.3" ] {
-    presencesensor livingroom  [ ]
+Bridge deconz:deconz:homeserver [ host="192.168.1.3", apikey="ABCDEFGHIJ" ] {
+    presencesensor livingroom-presence          [ id="1" ]
+    temperaturesensor livingroom-temperature    [ id="2" ]
+    openclosesensor livingroom-window           [ id="3" ]
 }
 ```
 
 ### Items file ###
 
 ```
-Contact presence                   "Current state: [%s]"   {channel="deconz:deconz:presencesensor:presence"}
+Switch  Livingroom_Presence     "Presence: [%s]"          {channel="deconz:presencesensor:homeserver:livingroom-presence:presence"}
+Number  Livingroom_Temperature  "Temperature: [%.1f °C]"  {channel="deconz:temperaturesensor:homeserver:livingroom-temperature:temperature"}
+Switch  Livingroom_Window       "Window: [%s]"            {channel="deconz:presencesensor:homeserver:livingroom-window:open"}
+
 ```
 
