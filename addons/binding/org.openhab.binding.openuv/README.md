@@ -5,7 +5,10 @@ This binding uses the [OpenUV Index API service](https://www.openuv.io/) for pro
 To use this binding, you first need to [register and get your API token](https://www.openuv.io/auth/google).
 
 ## Binding Installation
-This binding can be installed via the Add-ons section of the Paper UI. Go to Bindings and search for `OpenUV`. Click on install. 
+
+This binding can be installed via the Add-ons section of the Paper UI. 
+
+Go to Bindings and search for `OpenUV`. Click on install. 
 
 ## Discovery
 
