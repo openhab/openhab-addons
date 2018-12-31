@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="deconz"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="deconz" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
@@ -24,7 +23,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="deconz" />
 		</supported-bridge-type-refs>
-		<label>Presence sensor</label>
+		<label>Presence Sensor</label>
 		<description>A Presence sensor</description>
 		<channels>
 			<channel typeId="presence" id="presence"></channel>
@@ -48,7 +47,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="deconz" />
 		</supported-bridge-type-refs>
-		<label>Power sensor</label>
+		<label>Power Sensor</label>
 		<description>A power sensor</description>
 		<channels>
 			<channel typeId="power" id="power"></channel>
@@ -76,6 +75,7 @@
 		<description>A switch or button</description>
 		<channels>
 			<channel typeId="buttonevent" id="buttonevent"></channel>
+			<channel typeId="button" id="button"></channel>
 		</channels>
 		<config-description>
 			<parameter name="id" type="text" required="true">
@@ -87,16 +87,23 @@
 
 	<channel-type id="buttonevent">
 		<kind>Trigger</kind>
-		<label>Button trigger</label>
+		<label>Button Trigger</label>
 		<description>This channel is triggered on a button event. The trigger payload consists of the button event number.</description>
 		<event></event>
+	</channel-type>
+
+	<channel-type id="button">
+		<item-type>Number</item-type>
+		<label>Button</label>
+		<description>The Button that was last pressed on the switch.</description>
+		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
 
 	<thing-type id="lightsensor">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="deconz" />
 		</supported-bridge-type-refs>
-		<label>Light sensor</label>
+		<label>Light Sensor</label>
 		<description>A light sensor</description>
 		<channels>
 			<channel typeId="lightlux" id="lightlux"></channel>
@@ -120,7 +127,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="deconz" />
 		</supported-bridge-type-refs>
-		<label>Temperature sensor</label>
+		<label>Temperature Sensor</label>
 		<description>A temperature sensor</description>
 		<channels>
 			<channel typeId="temperature" id="temperature"></channel>
@@ -137,14 +144,38 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Current temperature</description>
-		<state readOnly="true" pattern="%.1f %unit%"></state>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
+	</channel-type>
+
+	<thing-type id="humiditysensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="deconz" />
+		</supported-bridge-type-refs>
+		<label>Humidity Sensor</label>
+		<description>A humidity sensor</description>
+		<channels>
+			<channel typeId="humidity" id="humidity"></channel>
+		</channels>
+		<config-description>
+			<parameter name="id" type="text" required="true">
+				<label>Sensor ID</label>
+				<description>The deCONZ bridge assigns an integer number ID to each sensor.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="humidity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<description>Current humidity</description>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 
 	<thing-type id="daylightsensor">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="deconz" />
 		</supported-bridge-type-refs>
-		<label>Daylight sensor</label>
+		<label>Daylight Sensor</label>
 		<description>A daylight sensor</description>
 		<channels>
 			<channel typeId="value" id="value"></channel>
@@ -160,7 +191,7 @@
 
 	<channel-type id="value">
 		<item-type>Number</item-type>
-		<label>Daylight value</label>
+		<label>Daylight Value</label>
 		<description>Dawn is around 130, sunrise at 140, sunset at 190, and dusk at 210</description>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -182,7 +213,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="deconz" />
 		</supported-bridge-type-refs>
-		<label>Open/Close sensor</label>
+		<label>Open/Close Sensor</label>
 		<description>A open/close sensor</description>
 		<channels>
 			<channel typeId="open" id="open"></channel>

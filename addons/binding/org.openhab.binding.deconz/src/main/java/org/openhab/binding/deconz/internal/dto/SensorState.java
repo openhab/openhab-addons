@@ -30,6 +30,8 @@ public class SensorState {
     public @Nullable Integer lux;
     /** Temperature sensors provide a degrees value. */
     public @Nullable Float temperature;
+    /** Humidity sensors provide a percent value. */
+    public @Nullable Float humidity;
     /** OpenClose sensors provide a boolean value. */
     public @Nullable Boolean open;
     /** fire sensors provide a boolean value. */

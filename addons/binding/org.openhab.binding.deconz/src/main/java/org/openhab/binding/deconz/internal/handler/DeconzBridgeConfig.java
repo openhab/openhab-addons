@@ -20,5 +20,5 @@ import org.eclipse.jdt.annotation.Nullable;
 public class DeconzBridgeConfig {
     public String host = "";
     public @Nullable String apikey;
-    int timeout = 1000;
+    int timeout = 2000;
 }
