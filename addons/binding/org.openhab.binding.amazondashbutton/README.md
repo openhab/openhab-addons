@@ -53,6 +53,7 @@ If you need mulitple capabilities (like "cap_net_bind_service" for the Network b
 ```shell
 sudo setcap 'cap_net_raw,cap_net_admin=+eip cap_net_bind_service=+ep' $(realpath /usr/bin/java)
 ```
+You need to restart OpenHAB for the caps change to take effect.
 
 ### Installing WinPcap on Windows
 
