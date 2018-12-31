@@ -117,7 +117,7 @@ Linux has three different tools:
 *   arping of the ip-utils (Ubuntu/Debian: `apt-get install iputils-arping`)
 *   arping by Thomas Habets (Ubuntu/Debian: `apt-get install arping`)
 
-arping by Thomas Habets runs on Windows and MacOS as well.
+arping by Thomas Habets runs on Windows and MacOS as well. However versions older than 2.18 do not support an advantageous parameter combination (-C 1 -w <timeout>), thus making iputils-arping the preffered solution for raspbian/openHABian.
 
 Make sure the tool is available in the PATH, or in the same path as the openHAB executable.
 
