@@ -102,6 +102,34 @@ public class LightItemsTest {
     }
 
     @Test
+    public void addGroupWithoutTypeByTag() throws IOException {
+        GroupItem item = new GroupItem("group1", null);
+        item.addTag("Switchable");
+
+        lightItems.added(item);
+
+        HueDevice device = ds.lights.get(lightItems.itemUIDtoHueID.get("group1"));
+        assertThat(device.item, is(item));
+        assertThat(device.state, is(instanceOf(HueStatePlug.class)));
+        assertThat(ds.groups.get(lightItems.itemUIDtoHueID.get("group1")).groupItem, is(item));
+    }
+
+    @Test
+    public void removeGroupWithoutTypeAndTag() throws IOException {
+        String groupName = "group1";
+        GroupItem item = new GroupItem(groupName, null);
+        item.addTag("Switchable");
+        lightItems.added(item);
+        Integer hueId = lightItems.itemUIDtoHueID.get(groupName);
+
+        lightItems.updated(item, new GroupItem(groupName, null));
+
+        assertThat(lightItems.itemUIDtoHueID.get(groupName), nullValue());
+        assertThat(ds.lights.get(hueId), nullValue());
+        assertThat(ds.groups.get(hueId), nullValue());
+    }
+
+    @Test
     public void updateSwitchable() throws IOException {
         SwitchItem item = new SwitchItem("switch1");
         item.setLabel("labelOld");
