@@ -121,7 +121,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
         clientVersion = StringUtils.substringBefore(context.getBundle().getVersion().toString(), ".qualifier");
         localPort = HttpServiceUtil.getHttpServicePort(context);
         if (localPort == -1) {
-            logger.warn("openHAB Cloud connector not started, since no local HTTP port could be determined");
+            logger.info("openHAB Cloud connector not started, since no local HTTP port could be determined");
         } else {
             logger.debug("openHAB Cloud connector activated");
             checkJavaVersion();
@@ -137,7 +137,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
             try {
                 Integer uVersion = Integer.valueOf(update);
                 if (uVersion < 101) {
-                    logger.warn(
+                    logger.info(
                             "You are running Java {} - the openhab Cloud connection requires at least Java 1.8.0_101, if your cloud server uses Let's Encrypt certificates!",
                             version);
                 }
@@ -234,9 +234,9 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
             IOUtils.write(content, new FileOutputStream(file));
             logger.debug("Created file '{}' with content '{}'", file.getAbsolutePath(), content);
         } catch (FileNotFoundException e) {
-            logger.error("Couldn't create file '{}'.", file.getPath(), e);
+            logger.debug("Couldn't create file '{}'.", file.getPath(), e);
         } catch (IOException e) {
-            logger.error("Couldn't write to file '{}'.", file.getPath(), e);
+            logger.debug("Couldn't write to file '{}'.", file.getPath(), e);
         }
     }
 
@@ -290,17 +290,17 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
                             logger.debug("Received command '{}' for item '{}'", commandString, itemName);
                             this.eventPublisher.post(ItemEventFactory.createCommandEvent(itemName, command));
                         } else {
-                            logger.warn("Received invalid command '{}' for item '{}'", commandString, itemName);
+                            logger.debug("Received invalid command '{}' for item '{}'", commandString, itemName);
                         }
                     }
                 } else {
-                    logger.warn("Received command '{}' for non-existent item '{}'", commandString, itemName);
+                    logger.debug("Received command '{}' for non-existent item '{}'", commandString, itemName);
                 }
             } else {
                 return;
             }
         } catch (ItemNotFoundException e) {
-            logger.warn("Received command for a non-existent item '{}'", itemName);
+            logger.debug("Received command for a non-existent item '{}'", itemName);
         }
     }
 
