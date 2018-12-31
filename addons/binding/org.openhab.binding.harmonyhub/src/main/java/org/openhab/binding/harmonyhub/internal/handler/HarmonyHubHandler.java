@@ -228,7 +228,9 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
                             setOfflineAndReconnect("Getting config failed: " + e.getMessage());
                             return null;
                         });
-
+                localClient.getCurrentActivity().thenAccept(activity -> {
+                    updateState(activity);
+                });
             }
 
             @Override
