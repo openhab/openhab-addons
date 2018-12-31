@@ -25,6 +25,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -54,6 +55,7 @@ import com.google.common.net.InetAddresses;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
+
 /**
  * The {@link KM200GatewayHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -71,18 +73,24 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
 
     private List<KM200GatewayStatusListener> listeners = new CopyOnWriteArrayList<KM200GatewayStatusListener>();
 
+    /**
+     * shared instance of HTTP client for (a)synchronous calls
+     */
+    private HttpClient httpClient;
+
     private ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
     private final KM200Device remoteDevice;
     private final KM200DataHandler dataHandler;
     private int readDelay;
     private int refreshInterval;
 
-    public KM200GatewayHandler(Bridge bridge) {
+    public KM200GatewayHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
+        this.httpClient = httpClient;
         refreshInterval = 120;
         readDelay = 100;
         updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.CONFIGURATION_PENDING);
-        remoteDevice = new KM200Device();
+        remoteDevice = new KM200Device(httpClient);
         dataHandler = new KM200DataHandler(remoteDevice);
     }
 
