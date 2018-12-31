@@ -14,11 +14,11 @@ import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.Base64;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,12 +71,16 @@ public class KM200Cryption {
         String retString = null;
         byte[] decodedB64 = null;
 
-        decodedB64 = Base64.decodeBase64(encoded);
+
+        // MimeDecoder was the only working decoder.
+        decodedB64 = Base64.getMimeDecoder().decode(encoded);
+
         try {
             /* Check whether the length of the decryptData is NOT multiplies of 16 */
             if ((decodedB64.length & 0xF) != 0) {
                 /* Return the data */
                 retString = new String(decodedB64, remoteDevice.getCharSet());
+                logger.debug("Did NOT decrypt message");
                 return retString;
             }
             // --- create cipher
@@ -105,7 +109,7 @@ public class KM200Cryption {
             logger.debug("Add Padding, encrypt AES and B64..");
             byte[] encryptedData = cipher.doFinal(addZeroPadding(bdata, bsize, remoteDevice.getCharSet()));
             try {
-                return (Base64.encodeBase64(encryptedData));
+                return (Base64.getMimeEncoder().encode(encryptedData));
             } catch (IllegalArgumentException e) {
                 logger.info("Base64encoding not possible: {}", e.getMessage());
             }

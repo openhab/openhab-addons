@@ -13,6 +13,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -22,6 +23,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.km200.handler.KM200GatewayHandler;
 import org.openhab.binding.km200.handler.KM200ThingHandler;
 import org.openhab.binding.km200.internal.discovery.KM200GatewayDiscoveryService;
@@ -52,6 +54,11 @@ public class KM200HandlerFactory extends BaseThingHandlerFactory {
 
     private KM200ChannelTypeProvider channelTypeProvider;
 
+    /**
+     * shared instance of HTTP client for asynchronous calls
+     */
+    private HttpClient httpClient;
+
     @Reference
     protected void setChannelTypeProvider(KM200ChannelTypeProvider channelTypeProvider) {
         this.channelTypeProvider = channelTypeProvider;
@@ -59,6 +66,15 @@ public class KM200HandlerFactory extends BaseThingHandlerFactory {
 
     protected void unsetChannelTypeProvider(KM200ChannelTypeProvider channelTypeProvider) {
         this.channelTypeProvider = null;
+    }
+
+    @Reference
+    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
+
+    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
+        this.httpClient = null;
     }
 
     @Override
@@ -78,7 +94,7 @@ public class KM200HandlerFactory extends BaseThingHandlerFactory {
         logger.debug("Create thing handler for: {}", thingTypeUID.getAsString());
         if (KM200GatewayHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             logger.debug("It's a gataway: {}", thingTypeUID.getAsString());
-            KM200GatewayHandler gatewayHandler = new KM200GatewayHandler((Bridge) thing);
+            KM200GatewayHandler gatewayHandler = new KM200GatewayHandler((Bridge) thing, httpClient);
             registerKM200GatewayDiscoveryService(gatewayHandler);
             return gatewayHandler;
         } else if (KM200ThingHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
