@@ -10,6 +10,7 @@ package org.openhab.binding.deconz.internal.handler;
 
 import java.util.Map;
 
+import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Energy;
 import javax.measure.quantity.Illuminance;
 import javax.measure.quantity.Temperature;
@@ -214,6 +215,7 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
         Integer power = state.power;
         Integer lux = state.lux;
         Float temperature = state.temperature;
+        Float humidity = state.humidity;
 
         switch (channelID) {
             case BindingConstants.CHANNEL_DAYLIGHT:
@@ -248,6 +250,11 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
                     updateState(channelID, new QuantityType<Temperature>(temperature / 100, SIUnits.CELSIUS));
                 }
                 break;
+            case BindingConstants.CHANNEL_HUMIDITY:
+                if (humidity != null) {
+                    updateState(channelID, new QuantityType<Dimensionless>(humidity / 100, SmartHomeUnits.PERCENT));
+                }
+                break;
             case BindingConstants.CHANNEL_PRESENCE:
                 if (presence != null) {
                     updateState(channelID, OnOffType.from(presence));
@@ -263,10 +270,16 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
                     updateState(channelID, open ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
                 }
                 break;
-        }
-
-        if (buttonevent != null) {
-            triggerChannel(BindingConstants.CHANNEL_BUTTONEVENT, String.valueOf(buttonevent));
+            case BindingConstants.CHANNEL_BUTTON:
+                if (buttonevent != null) {
+                    updateState(channelID, new DecimalType(buttonevent));
+                }
+                break;
+            case BindingConstants.CHANNEL_BUTTONEVENT:
+                if (buttonevent != null) {
+                    triggerChannel(BindingConstants.CHANNEL_BUTTONEVENT, String.valueOf(buttonevent));
+                }
+                break;
         }
     }
 
