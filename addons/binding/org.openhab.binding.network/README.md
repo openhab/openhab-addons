@@ -158,7 +158,7 @@ Things support the following channels:
 | latency         | Number    | This channel indicates the ping latency in milliseconds. May be 0 if no time is known      |
 
 ## Examples
-
+### Standard network device (e.g. a computer)
 demo.things:
 
 ```xtend
@@ -182,4 +182,13 @@ sitemap demo label="Main Menu"
 		Text item=MyDeviceResponseTime label="Device Response Time [%s]"
 	}
 }
+```
+
+### Mobile phones
+The following examples can be used to detect the presence mobile phones in your network. Because of the complex power saving mechanisms in mobile phone operating systems, the parameters given in these examples might need tuning for reliable detection of the devices. Especially for iPhones, which have aggressive power saving mechanisms. They are intended to serve as a starting point:
+
+mobilePhones.things:
+```xtend
+Thing network:pingdevice:androidPhone  "An Android phone"  [ hostname="192.168.100.10", retry=12, timeout=5000, refreshInterval=60000 ]
+Thing network:pingdevice:iPhone        "An iOS/iPhone"     [ hostname="192.168.100.20", retry=20, timeout=5000, refreshInterval=60000 ]
 ```
