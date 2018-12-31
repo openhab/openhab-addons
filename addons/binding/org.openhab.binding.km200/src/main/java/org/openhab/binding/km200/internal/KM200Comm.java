@@ -9,20 +9,18 @@
 
 package org.openhab.binding.km200.internal;
 
-import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.util.BytesContentProvider;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.io.ByteStreams;
 
 /**
  * The KM200Comm class does the communication to the device and does any encryption/decryption/converting jobs
@@ -32,21 +30,18 @@ import com.google.common.io.ByteStreams;
 public class KM200Comm<KM200BindingProvider> {
 
     private final Logger logger = LoggerFactory.getLogger(KM200Comm.class);
-    private HttpClient client;
+    private HttpClient httpClient;
     private final KM200Device remoteDevice;
     private Integer maxNbrRepeats;
 
-    public KM200Comm(KM200Device device) {
+    public KM200Comm(KM200Device device, HttpClient httpClient) {
         this.remoteDevice = device;
         maxNbrRepeats = Integer.valueOf(10);
-        if (client == null) {
-            client = new HttpClient();
-        }
+        this.httpClient = httpClient;
     }
 
     /**
      * This function sets the maximum number of repeats.
-     *
      */
     public void setMaxNbrRepeats(Integer maxNbrRepeats) {
         this.maxNbrRepeats = maxNbrRepeats;
@@ -54,122 +49,111 @@ public class KM200Comm<KM200BindingProvider> {
 
     /**
      * This function does the GET http communication to the device
-     *
      */
     public byte[] getDataFromService(String service) {
         byte[] responseBodyB64 = null;
         int statusCode = 0;
-        GetMethod method = null;
-        // Create an instance of HttpClient.
-        synchronized (client) {
-            logger.debug("Starting receive connection...");
-            try {
-                for (int i = 0; i < maxNbrRepeats.intValue() && statusCode != HttpStatus.SC_OK; i++) {
-                    // Create a method instance.
-                    method = new GetMethod("http://" + remoteDevice.getIP4Address() + service);
 
-                    // Provide custom retry handler is necessary
-                    method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER,
-                            new DefaultHttpMethodRetryHandler(3, false));
-                    // Set the right header
-                    method.setRequestHeader("Accept", "application/json");
-                    method.addRequestHeader("User-Agent", "TeleHeater/2.2.3");
-                    // Execute the method.
-                    statusCode = client.executeMethod(method);
-                    // Release the connection.
-                    switch (statusCode) {
-                        case HttpStatus.SC_OK:
-                            remoteDevice.setCharSet(method.getResponseCharSet());
-                            responseBodyB64 = ByteStreams.toByteArray(method.getResponseBodyAsStream());
-                            break;
-                        case HttpStatus.SC_INTERNAL_SERVER_ERROR:
-                            /* Unknown problem with the device, wait and try again */
-                            method.releaseConnection();
-                            logger.debug("HTTP GET failed: 500, internal server error, repeating.. ");
-                            Thread.sleep(100L * i + 1);
-                            continue;
-                        case HttpStatus.SC_FORBIDDEN:
-                            /* Service is available but not readable, return a byte array with a size of 1 as code */
-                            byte[] serviceIsProtected = new byte[1];
-                            responseBodyB64 = serviceIsProtected;
-                            break;
-                        case HttpStatus.SC_NOT_FOUND:
-                            /* Should only happen on discovery */
-                            method.releaseConnection();
-                            responseBodyB64 = null;
-                            break;
-                        default:
-                            logger.debug("HTTP GET failed: {}", method.getStatusLine());
-                            method.releaseConnection();
-                            responseBodyB64 = null;
-                            break;
-                    }
-                }
-            } catch (HttpException e) {
-                logger.debug("Fatal protocol violation: {}", e.getMessage());
-            } catch (InterruptedException e) {
-                logger.debug("Sleep was interrupted: {}", e.getMessage());
-            } catch (IOException e) {
-                logger.debug("Fatal transport error: {}", e.getMessage());
-            } finally {
+        ContentResponse contentresponse = null;
+
+        logger.debug("Starting receive connection...");
+
+        try {
+
+            // Create an instance of HttpClient.
+            for (int i = 0; i < maxNbrRepeats.intValue() && statusCode != HttpStatus.OK_200; i++) {
+
+                contentresponse = httpClient.newRequest(remoteDevice.getIP4Address() + service, 80)
+                        .scheme("http")
+                        .agent("TeleHeater/2.2.3")
+                        .accept("application/json")
+                        .method(HttpMethod.GET)
+                        .timeout(5, TimeUnit.SECONDS)
+                        .send();
+
+                // Execute the method.
+                statusCode = contentresponse.getStatus();
+
                 // Release the connection.
-                if (method != null) {
-                    method.releaseConnection();
+                switch (statusCode) {
+                    case HttpStatus.OK_200:
+                        remoteDevice.setCharSet(StandardCharsets.UTF_8.name());
+                        responseBodyB64 = contentresponse.getContent();
+                        break;
+                    case HttpStatus.INTERNAL_SERVER_ERROR_500:
+                        /* Unknown problem with the device, wait and try again */
+                        logger.debug("HTTP GET failed: 500, internal server error, repeating.. ");
+                        Thread.sleep(100L * i + 1);
+                        continue;
+                    case HttpStatus.FORBIDDEN_403:
+                        /* Service is available but not readable, return a byte array with a size of 1 as code */
+                        byte[] serviceIsProtected = new byte[1];
+                        responseBodyB64 = serviceIsProtected;
+                        break;
+                    case HttpStatus.NOT_FOUND_404:
+                        /* Should only happen on discovery */
+                        responseBodyB64 = null;
+                        break;
+                    default:
+                        logger.debug("HTTP GET failed: {}", contentresponse.getReason());
+                        responseBodyB64 = null;
+                        break;
                 }
             }
-            return responseBodyB64;
+        } catch (InterruptedException e) {
+            logger.debug("Sleep was interrupted: {}", e.getMessage());
+        } catch (TimeoutException e) {
+            logger.debug("Call to " + remoteDevice.getIP4Address() + service + " timed out. ", e);
+        } catch (ExecutionException e) {
+            logger.debug("Fatal transport error: {}", e.getMessage());
         }
+        return responseBodyB64;
     }
 
     /**
      * This function does the SEND http communication to the device
-     *
      */
     public Integer sendDataToService(String service, byte[] data) {
-        // Create an instance of HttpClient.
         int rCode = 0;
-        PostMethod method = null;
-        synchronized (client) {
-            logger.debug("Starting send connection...");
-            try {
-                for (int i = 0; i < maxNbrRepeats.intValue() && rCode != HttpStatus.SC_NO_CONTENT; i++) {
-                    // Create a method instance.
-                    method = new PostMethod("http://" + remoteDevice.getIP4Address() + service);
-                    // Provide custom retry handler is necessary
-                    method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER,
-                            new DefaultHttpMethodRetryHandler(3, false));
-                    // Set the right header
-                    method.setRequestHeader("Accept", "application/json");
-                    method.addRequestHeader("User-Agent", "TeleHeater/2.2.3");
-                    method.setRequestEntity(new ByteArrayRequestEntity(data));
-                    rCode = client.executeMethod(method);
-                    method.releaseConnection();
-                    switch (rCode) {
-                        case HttpStatus.SC_NO_CONTENT: // The default return value
-                            break;
-                        case HttpStatus.SC_LOCKED:
-                            /* Unknown problem with the device, wait and try again */
-                            logger.debug("HTTP POST failed: 423, locked, repeating.. ");
-                            Thread.sleep(1000L * i + 1);
-                            continue;
-                        default:
-                            logger.debug("HTTP POST failed: {}", method.getStatusLine());
-                            rCode = 0;
-                            break;
-                    }
-                }
-            } catch (IOException e) {
-                logger.debug("Failed to send data {}", e);
-            } catch (InterruptedException e) {
-                logger.debug("Sleep was interrupted: {}", e.getMessage());
-            } finally {
-                // Release the connection.
-                if (method != null) {
-                    method.releaseConnection();
+        ContentResponse contentResponse = null;
+
+        logger.debug("Starting send connection...");
+        try {
+            for (int i = 0; i < maxNbrRepeats.intValue() && rCode != HttpStatus.NO_CONTENT_204; i++) {
+
+                // Create a method instance.
+                contentResponse = httpClient.newRequest("http://" + remoteDevice.getIP4Address() + service)
+                        .method(HttpMethod.POST)
+                        .agent("TeleHeater/2.2.3")
+                        .accept("application/json")
+                        .content(new BytesContentProvider(data))
+                        .timeout(5, TimeUnit.SECONDS)
+                        .send();
+
+                rCode = contentResponse.getStatus();
+                switch (rCode) {
+                    case HttpStatus.NO_CONTENT_204: // The default return value
+                        break;
+                    case HttpStatus.LOCKED_423:
+                        /* Unknown problem with the device, wait and try again */
+                        logger.debug("HTTP POST failed: 423, locked, repeating.. ");
+                        Thread.sleep(1000L * i + 1);
+                        continue;
+                    default:
+                        logger.debug("HTTP POST failed: {}", contentResponse.getReason());
+                        rCode = 0;
+                        break;
                 }
             }
-            logger.debug("Returncode: {}", rCode);
-            return rCode;
+        } catch (InterruptedException e) {
+            logger.debug("Sleep was interrupted: {}", e.getMessage());
+        } catch (ExecutionException e) {
+            logger.debug("Fatal transport error: {}", e.getMessage());
+        } catch (TimeoutException e) {
+            logger.debug("Call to "+remoteDevice.getIP4Address() + service+ " timed out.");
         }
+        logger.debug("Returncode: {}", rCode);
+        return rCode;
+
     }
 }
