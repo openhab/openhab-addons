@@ -24,10 +24,10 @@ Install [OwnTracks for Android](https://play.google.com/store/apps/details?id=or
 Go to Preferences/Connection and set:
 
 * **Mode** - select Private HTTP
-* **Host** - **https://<your.ip.address>/gpstracker/owntracks**
+* **Host** - **https://<your.ip.address>/gpstracker/owntracks** or **https://home.myopenhab.org/gpstracker/owntracks**
 * **Identification**
   * Turn Authentication ON
-  * Set username and password to be able to reach your openHAB server
+  * Set username and password to be able to reach your openHAB server (myopenhab.org credential, if choosen as URL)
   * Device ID is not important. Set it to e.g. phone
   * Tracker ID - This id identifies the tracker as a thing. I use initials here.
 
