@@ -28,7 +28,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openhab.io.hueemulation.internal.dto.HueDataStore;
 import org.openhab.io.hueemulation.internal.dto.HueDevice;
-import org.openhab.io.hueemulation.internal.dto.HueGroup;
 import org.openhab.io.hueemulation.internal.dto.HueStatePlug;
 
 import com.google.gson.Gson;
@@ -106,29 +105,28 @@ public class LightItemsTest {
     public void addGroupWithoutTypeByTag() throws IOException {
         GroupItem item = new GroupItem("group1", null);
         item.addTag("Switchable");
+
         lightItems.added(item);
+
         HueDevice device = ds.lights.get(lightItems.itemUIDtoHueID.get("group1"));
         assertThat(device.item, is(item));
         assertThat(device.state, is(instanceOf(HueStatePlug.class)));
-        HueGroup group = ds.groups.get(lightItems.itemUIDtoHueID.get("group1"));
-        assertThat(group.groupItem, is(item));
+        assertThat(ds.groups.get(lightItems.itemUIDtoHueID.get("group1")).groupItem, is(item));
     }
 
     @Test
     public void removeGroupWithoutTypeAndTag() throws IOException {
-        GroupItem item = new GroupItem("group1", null);
+        String groupName = "group1";
+        GroupItem item = new GroupItem(groupName, null);
         item.addTag("Switchable");
         lightItems.added(item);
-        Integer hueId = lightItems.itemUIDtoHueID.get("group1");
-        GroupItem newItem = new GroupItem("group1", null);
+        Integer hueId = lightItems.itemUIDtoHueID.get(groupName);
 
-        lightItems.updated(item, newItem);
+        lightItems.updated(item, new GroupItem(groupName, null));
 
-        assertThat(lightItems.itemUIDtoHueID.get("group1"), nullValue());
-        HueDevice device = ds.lights.get(hueId);
-        assertThat(device, nullValue());
-        HueGroup group = ds.groups.get(hueId);
-        assertThat(group, nullValue());
+        assertThat(lightItems.itemUIDtoHueID.get(groupName), nullValue());
+        assertThat(ds.lights.get(hueId), nullValue());
+        assertThat(ds.groups.get(hueId), nullValue());
     }
 
     @Test
