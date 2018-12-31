@@ -209,10 +209,8 @@ public class HueDevice {
         Command command = null;
         if (newState.on != null) {
             try {
-                if (as(HueStatePlug.class).on != newState.on) {
-                    as(HueStatePlug.class).on = newState.on;
-                    command = OnOffType.from(newState.on);
-                }
+                as(HueStatePlug.class).on = newState.on;
+                command = OnOffType.from(newState.on);
                 successApplied.put("on", newState.on);
             } catch (ClassCastException e) {
                 errorApplied.add("on");
@@ -221,10 +219,8 @@ public class HueDevice {
 
         if (newState.bri != null) {
             try {
-                if (as(HueStateBulb.class).bri != newState.bri) {
-                    as(HueStateBulb.class).bri = newState.bri;
-                    command = new PercentType((int) (newState.bri * 100.0 / HueStateBulb.MAX_BRI + 0.5));
-                }
+                as(HueStateBulb.class).bri = newState.bri;
+                command = new PercentType((int) (newState.bri * 100.0 / HueStateBulb.MAX_BRI + 0.5));
                 successApplied.put("bri", newState.bri);
             } catch (ClassCastException e) {
                 errorApplied.add("bri");
@@ -315,11 +311,9 @@ public class HueDevice {
                 // Adjusting the color temperature implies setting the mode to ct
                 if (state instanceof HueStateColorBulb) {
                     HueStateColorBulb c = as(HueStateColorBulb.class);
-                    if (c.colormode != ColorMode.ct || c.sat > 0) {
-                        c.sat = 0;
-                        c.colormode = ColorMode.ct;
-                        command = c.toHSBType();
-                    }
+                    c.sat = 0;
+                    c.colormode = ColorMode.ct;
+                    command = c.toHSBType();
                 }
                 successApplied.put("colormode", ColorMode.ct);
                 successApplied.put("sat", 0);
