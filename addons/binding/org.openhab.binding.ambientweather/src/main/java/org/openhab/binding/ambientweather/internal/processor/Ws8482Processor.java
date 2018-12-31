@@ -59,15 +59,6 @@ public class Ws8482Processor extends AbstractProcessor {
     private static final String TEMPERATURE7 = CHGRP_REMOTE_SENSOR_7 + "#" + CH_TEMPERATURE;
     private static final String HUMIDITY7 = CHGRP_REMOTE_SENSOR_7 + "#" + CH_HUMIDITY;
     private static final String BATTERY_INDICATOR_7 = CHGRP_REMOTE_SENSOR_7 + "#" + CH_BATTERY_INDICATOR;
-    private static final String TEMPERATURE8 = CHGRP_REMOTE_SENSOR_8 + "#" + CH_TEMPERATURE;
-    private static final String HUMIDITY8 = CHGRP_REMOTE_SENSOR_8 + "#" + CH_HUMIDITY;
-    private static final String BATTERY_INDICATOR_8 = CHGRP_REMOTE_SENSOR_8 + "#" + CH_BATTERY_INDICATOR;
-    private static final String TEMPERATURE9 = CHGRP_REMOTE_SENSOR_9 + "#" + CH_TEMPERATURE;
-    private static final String HUMIDITY9 = CHGRP_REMOTE_SENSOR_9 + "#" + CH_HUMIDITY;
-    private static final String BATTERY_INDICATOR_9 = CHGRP_REMOTE_SENSOR_9 + "#" + CH_BATTERY_INDICATOR;
-    private static final String TEMPERATURE10 = CHGRP_REMOTE_SENSOR_10 + "#" + CH_TEMPERATURE;
-    private static final String HUMIDITY10 = CHGRP_REMOTE_SENSOR_10 + "#" + CH_HUMIDITY;
-    private static final String BATTERY_INDICATOR_10 = CHGRP_REMOTE_SENSOR_10 + "#" + CH_BATTERY_INDICATOR;
 
     @Override
     public void processInfoUpdate(AmbientWeatherStationHandler handler, String station, String name, String location) {
@@ -129,21 +120,6 @@ public class Ws8482Processor extends AbstractProcessor {
                 handler.updateChannel(TEMPERATURE7, new DecimalType(remoteSensor.getTemperature()));
                 handler.updateChannel(HUMIDITY7, new DecimalType(remoteSensor.getHumidity()));
                 handler.updateChannel(BATTERY_INDICATOR_7, new StringType(remoteSensor.getBattery()));
-            }
-            if (remoteSensor.remoteSensor8Exists()) {
-                handler.updateChannel(TEMPERATURE8, new DecimalType(remoteSensor.getTemperature()));
-                handler.updateChannel(HUMIDITY8, new DecimalType(remoteSensor.getHumidity()));
-                handler.updateChannel(BATTERY_INDICATOR_8, new StringType(remoteSensor.getBattery()));
-            }
-            if (remoteSensor.remoteSensor9Exists()) {
-                handler.updateChannel(TEMPERATURE9, new DecimalType(remoteSensor.getTemperature()));
-                handler.updateChannel(HUMIDITY9, new DecimalType(remoteSensor.getHumidity()));
-                handler.updateChannel(BATTERY_INDICATOR_9, new StringType(remoteSensor.getBattery()));
-            }
-            if (remoteSensor.remoteSensor10Exists()) {
-                handler.updateChannel(TEMPERATURE10, new DecimalType(remoteSensor.getTemperature()));
-                handler.updateChannel(HUMIDITY10, new DecimalType(remoteSensor.getHumidity()));
-                handler.updateChannel(BATTERY_INDICATOR_10, new StringType(remoteSensor.getBattery()));
             }
         } catch (JsonSyntaxException e) {
             logger.info("Station {}: Data event cannot be parsed: {}", station, e.getMessage());

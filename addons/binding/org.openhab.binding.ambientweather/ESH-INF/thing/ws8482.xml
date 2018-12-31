@@ -48,18 +48,6 @@
 				<label>Remote Sensor 7</label>
 				<description></description>
 			</channel-group>
-			<channel-group id="remoteSensor8" typeId="remoteSensor">
-				<label>Remote Sensor 8</label>
-				<description></description>
-			</channel-group>
-			<channel-group id="remoteSensor9" typeId="remoteSensor">
-				<label>Remote Sensor 9</label>
-				<description></description>
-			</channel-group>
-			<channel-group id="remoteSensor10" typeId="remoteSensor">
-				<label>Remote Sensor 10</label>
-				<description></description>
-			</channel-group>
 		</channel-groups>
 		<config-description-ref uri="thing-type:ambientweather:station" />
 	</thing-type>
