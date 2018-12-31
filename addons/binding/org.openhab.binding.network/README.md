@@ -119,7 +119,11 @@ Linux has three different tools:
 
 arping by Thomas Habets runs on Windows and MacOS as well. However versions older than 2.18 do not support an advantageous parameter combination (-C 1 -w <timeout>), thus making iputils-arping the preffered solution for raspbian/openHABian.
 
-Make sure the tool is available in the PATH, or in the same path as the openHAB executable.
+Make sure the tool is available in the PATH, or in the same path as the openHAB executable. When openHAB is running on Linux the environment variables, including PATH, can be displayed with the following command line:
+
+```
+cat /proc/$(ps -ax -o pid,user,command | grep -e '^[0-9]*[[:space:]]*openhab.*/usr/bin/java.*-Dopenhab.*$' | cut -f 1 -d ' ')/environ
+```
 
 On Linux and MacOS elevated access permissions may be needed, for instance by making the executable a suid executable (`chmod u+s /usr/sbin/arping`).
 Just test the executable on the command line; if `sudo` is required, grant elevated permissions.
