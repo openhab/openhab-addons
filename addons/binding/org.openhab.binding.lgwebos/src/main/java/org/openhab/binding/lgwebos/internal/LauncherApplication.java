@@ -46,14 +46,14 @@ public class LauncherApplication extends BaseChannelHandler<Launcher.AppInfoList
     public void onDeviceReady(@NonNull ConnectableDevice device, @NonNull String channelId,
             @NonNull LGWebOSHandler handler) {
         super.onDeviceReady(device, channelId, handler);
-        if (device.hasCapability(Launcher.Application_List)) {
+        if (hasCapability(device, logger, Launcher.Application_List)) {
 
             final Launcher control = getControl(device);
             control.getAppList(new Launcher.AppListListener() {
 
                 @Override
                 public void onError(ServiceCommandError error) {
-                    logger.warn("error requesting application list: {}.", error.getMessage());
+                    logger.warn("Error requesting application list: {}.", error.getMessage());
                 }
 
                 @Override
@@ -83,7 +83,7 @@ public class LauncherApplication extends BaseChannelHandler<Launcher.AppInfoList
         if (device == null) {
             return;
         }
-        if (device.hasCapability(Launcher.Application)) {
+        if (hasCapability(device, logger, Launcher.Application)) {
             final String value = command.toString();
             final Launcher control = getControl(device);
             List<AppInfo> appInfos = applicationListCache.get(device.getId());
@@ -103,7 +103,7 @@ public class LauncherApplication extends BaseChannelHandler<Launcher.AppInfoList
     @Override
     protected Optional<ServiceSubscription<Launcher.AppInfoListener>> getSubscription(ConnectableDevice device,
             String channelId, LGWebOSHandler handler) {
-        if (device.hasCapability(Launcher.RunningApp_Subscribe)) {
+        if (hasCapability(device, logger, Launcher.RunningApp_Subscribe)) {
             logger.debug("Channel '{}' is subscribed for 'RunningApp' change updates from the tv.", channelId);
             return Optional.of(getControl(device).subscribeRunningApp(new Launcher.AppInfoListener() {
 

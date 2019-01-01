@@ -44,18 +44,18 @@ public class VolumeControlMute extends BaseChannelHandler<MuteListener, Object> 
             return;
         }
         if (OnOffType.ON == command || OnOffType.OFF == command) {
-            if (device.hasCapabilities(VolumeControl.Mute_Set)) {
+            if (hasCapability(device, logger, VolumeControl.Mute_Set)) {
                 getControl(device).setMute(OnOffType.ON == command, getDefaultResponseListener());
             }
         } else {
-            logger.warn("Only accept OnOffType");
+            logger.warn("Only accept OnOffType. Type was {}.", command.getClass());
         }
     }
 
     @Override
     protected Optional<ServiceSubscription<MuteListener>> getSubscription(ConnectableDevice device, String channelId,
             LGWebOSHandler handler) {
-        if (device.hasCapability(VolumeControl.Mute_Subscribe)) {
+        if (hasCapability(device, logger, VolumeControl.Mute_Subscribe)) {
             return Optional.of(getControl(device).subscribeMute(new MuteListener() {
 
                 @Override

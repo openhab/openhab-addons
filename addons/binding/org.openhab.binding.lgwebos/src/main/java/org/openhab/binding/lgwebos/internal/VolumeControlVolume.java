@@ -55,31 +55,30 @@ public class VolumeControlVolume extends BaseChannelHandler<VolumeListener, Obje
             percent = new PercentType(((StringType) command).toString());
         }
         if (percent != null) {
-            if (device.hasCapabilities(VolumeControl.Volume_Set)) {
+            if (hasCapability(device, logger, VolumeControl.Volume_Set)) {
                 getControl(device).setVolume(percent.floatValue() / 100.0f, getDefaultResponseListener());
             }
         } else if (IncreaseDecreaseType.INCREASE == command) {
-            if (device.hasCapabilities(VolumeControl.Volume_Up_Down)) {
+            if (hasCapability(device, logger, VolumeControl.Volume_Up_Down)) {
                 getControl(device).volumeUp(getDefaultResponseListener());
             }
         } else if (IncreaseDecreaseType.DECREASE == command) {
-            if (device.hasCapabilities(VolumeControl.Volume_Up_Down)) {
+            if (hasCapability(device, logger, VolumeControl.Volume_Up_Down)) {
                 getControl(device).volumeDown(getDefaultResponseListener());
             }
         } else if (OnOffType.OFF == command || OnOffType.ON == command) {
-            if (device.hasCapabilities(VolumeControl.Mute_Set)) {
+            if (hasCapability(device, logger, VolumeControl.Mute_Set)) {
                 getControl(device).setMute(OnOffType.OFF == command, getDefaultResponseListener());
             }
         } else {
-            logger.warn("Only accept PercentType, DecimalType, StringType command. Command was {}({}).", command,
-                    command.getClass());
+            logger.warn("Only accept PercentType, DecimalType, StringType command. Type was {}.", command.getClass());
         }
     }
 
     @Override
     protected Optional<ServiceSubscription<VolumeListener>> getSubscription(ConnectableDevice device, String channelUID,
             LGWebOSHandler handler) {
-        if (device.hasCapability(VolumeControl.Volume_Subscribe)) {
+        if (hasCapability(device, logger, VolumeControl.Volume_Subscribe)) {
             return Optional.of(getControl(device).subscribeVolume(new VolumeListener() {
 
                 @Override
