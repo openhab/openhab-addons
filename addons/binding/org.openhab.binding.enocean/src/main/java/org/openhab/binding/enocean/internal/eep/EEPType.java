@@ -46,6 +46,7 @@ import org.openhab.binding.enocean.internal.eep.A5_02.A5_02_20;
 import org.openhab.binding.enocean.internal.eep.A5_02.A5_02_30;
 import org.openhab.binding.enocean.internal.eep.A5_04.A5_04_01;
 import org.openhab.binding.enocean.internal.eep.A5_04.A5_04_02;
+import org.openhab.binding.enocean.internal.eep.A5_04.A5_04_02_Eltako;
 import org.openhab.binding.enocean.internal.eep.A5_04.A5_04_03;
 import org.openhab.binding.enocean.internal.eep.A5_08.A5_08_01;
 import org.openhab.binding.enocean.internal.eep.A5_08.A5_08_01_FXBH;
@@ -229,6 +230,9 @@ public enum EEPType {
             THING_TYPE_TEMPERATUREHUMIDITYSENSOR, CHANNEL_TEMPERATURE, CHANNEL_HUMIDITY, CHANNEL_RECEIVINGSTATE),
     TemperatureHumiditySensor_A5_04_02(RORG._4BS, 0x04, 0x02, false, A5_04_02.class,
             THING_TYPE_TEMPERATUREHUMIDITYSENSOR, CHANNEL_TEMPERATURE, CHANNEL_HUMIDITY, CHANNEL_RECEIVINGSTATE),
+    TemperatureHumiditySensor_A5_04_02_Eltako(RORG._4BS, 0x04, 0x02, false, "ELTAKO", ELTAKOID, A5_04_02_Eltako.class,
+            THING_TYPE_TEMPERATUREHUMIDITYSENSOR, CHANNEL_TEMPERATURE, CHANNEL_HUMIDITY, CHANNEL_BATTERY_VOLTAGE,
+            CHANNEL_RECEIVINGSTATE),
     TemperatureHumiditySensor_A5_04_03(RORG._4BS, 0x04, 0x03, false, A5_04_03.class,
             THING_TYPE_TEMPERATUREHUMIDITYSENSOR, CHANNEL_TEMPERATURE, CHANNEL_HUMIDITY, CHANNEL_RECEIVINGSTATE),
 
