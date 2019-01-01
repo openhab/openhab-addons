@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
@@ -34,9 +35,10 @@ import com.connectsdk.service.sessions.LaunchSession;
  *
  * @author Sebastian Prehn - initial contribution
  */
+@NonNullByDefault
 public class LauncherApplication extends BaseChannelHandler<Launcher.AppInfoListener, LaunchSession> {
     private final Logger logger = LoggerFactory.getLogger(LauncherApplication.class);
-    private final Map<String, List<AppInfo>> applicationListCache = new HashMap<>();
+    private final Map<String, @Nullable List<AppInfo>> applicationListCache = new HashMap<>();
 
     private Launcher getControl(final ConnectableDevice device) {
         return device.getCapability(Launcher.class);
@@ -52,11 +54,12 @@ public class LauncherApplication extends BaseChannelHandler<Launcher.AppInfoList
             control.getAppList(new Launcher.AppListListener() {
 
                 @Override
-                public void onError(ServiceCommandError error) {
-                    logger.warn("Error requesting application list: {}.", error.getMessage());
+                public void onError(@Nullable ServiceCommandError error) {
+                    logger.warn("Error requesting application list: {}.", error == null ? "" : error.getMessage());
                 }
 
                 @Override
+                @NonNullByDefault({})
                 public void onSuccess(List<AppInfo> appInfos) {
                     if (logger.isDebugEnabled()) {
                         for (AppInfo a : appInfos) {
@@ -108,14 +111,17 @@ public class LauncherApplication extends BaseChannelHandler<Launcher.AppInfoList
             return Optional.of(getControl(device).subscribeRunningApp(new Launcher.AppInfoListener() {
 
                 @Override
-                public void onError(ServiceCommandError error) {
-                    logger.debug("{} {} {}", error.getCode(), error.getPayload(), error.getMessage());
-                    handler.postUpdate(channelId, UnDefType.UNDEF);
+                public void onError(@Nullable ServiceCommandError error) {
+                    logger.warn("error listening to application changes: {}.", error == null ? "" : error.getMessage());
                 }
 
                 @Override
-                public void onSuccess(AppInfo appInfo) {
-                    handler.postUpdate(channelId, new StringType(appInfo.getId()));
+                public void onSuccess(@Nullable AppInfo appInfo) {
+                    if (appInfo == null) {
+                        handler.postUpdate(channelId, UnDefType.UNDEF);
+                    } else {
+                        handler.postUpdate(channelId, new StringType(appInfo.getId()));
+                    }
                 }
             }));
         } else {

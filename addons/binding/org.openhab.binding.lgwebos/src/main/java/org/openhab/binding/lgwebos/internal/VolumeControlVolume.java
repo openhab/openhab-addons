@@ -10,6 +10,7 @@ package org.openhab.binding.lgwebos.internal;
 
 import java.util.Optional;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
@@ -33,6 +34,7 @@ import com.connectsdk.service.command.ServiceSubscription;
  *
  * @author Sebastian Prehn - initial contribution
  */
+@NonNullByDefault
 public class VolumeControlVolume extends BaseChannelHandler<VolumeListener, Object> {
     private final Logger logger = LoggerFactory.getLogger(VolumeControlVolume.class);
 
@@ -82,13 +84,15 @@ public class VolumeControlVolume extends BaseChannelHandler<VolumeListener, Obje
             return Optional.of(getControl(device).subscribeVolume(new VolumeListener() {
 
                 @Override
-                public void onError(ServiceCommandError error) {
-                    logger.debug("{} {} {}", error.getCode(), error.getPayload(), error.getMessage());
+                public void onError(@Nullable ServiceCommandError error) {
+                    logger.warn("Error in listening to volume changes: {}.", error == null ? "" : error.getMessage());
                 }
 
                 @Override
-                public void onSuccess(Float value) {
-                    handler.postUpdate(channelUID, new PercentType(Math.round(value * 100)));
+                public void onSuccess(@Nullable Float value) {
+                    if (value != null) {
+                        handler.postUpdate(channelUID, new PercentType(Math.round(value * 100)));
+                    }
                 }
             }));
         } else {

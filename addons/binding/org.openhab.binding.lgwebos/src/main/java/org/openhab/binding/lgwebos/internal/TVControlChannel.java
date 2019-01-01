@@ -14,10 +14,10 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.lgwebos.handler.LGWebOSHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,9 +35,10 @@ import com.connectsdk.service.command.ServiceSubscription;
  *
  * @author Sebastian Prehn - initial contribution
  */
+@NonNullByDefault
 public class TVControlChannel extends BaseChannelHandler<ChannelListener, Object> {
     private final Logger logger = LoggerFactory.getLogger(TVControlChannel.class);
-    private final Map<String, List<ChannelInfo>> channelListCache = new HashMap<>();
+    private final Map<String, @Nullable List<ChannelInfo>> channelListCache = new HashMap<>();
 
     private TVControl getControl(ConnectableDevice device) {
         return device.getCapability(TVControl.class);
@@ -53,10 +54,11 @@ public class TVControlChannel extends BaseChannelHandler<ChannelListener, Object
             control.getChannelList(new TVControl.ChannelListListener() {
                 @Override
                 public void onError(@Nullable ServiceCommandError error) {
-                    logger.warn("error requesting channel list: {}.", error.getMessage());
+                    logger.warn("error requesting channel list: {}.", error == null ? "" : error.getMessage());
                 }
 
                 @Override
+                @NonNullByDefault({})
                 public void onSuccess(List<ChannelInfo> channels) {
                     if (logger.isDebugEnabled()) {
                         channels.forEach(c -> logger.debug("Channel {} - {}", c.getNumber(), c.getName()));
@@ -107,12 +109,14 @@ public class TVControlChannel extends BaseChannelHandler<ChannelListener, Object
 
                 @Override
                 public void onError(@Nullable ServiceCommandError error) {
-                    logger.debug("error: {} {} {}", error.getCode(), error.getPayload(), error.getMessage());
-                    handler.postUpdate(channelId, UnDefType.UNDEF);
+                    logger.warn("error in listening to channel changes: {}.", error == null ? "" : error.getMessage());
                 }
 
                 @Override
                 public void onSuccess(@Nullable ChannelInfo channelInfo) {
+                    if (channelInfo == null) {
+                        return;
+                    }
                     handler.postUpdate(channelId, new DecimalType(channelInfo.getNumber()));
                 }
             }));

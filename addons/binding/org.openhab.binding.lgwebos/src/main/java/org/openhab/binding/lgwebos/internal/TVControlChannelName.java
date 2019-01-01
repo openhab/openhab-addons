@@ -14,7 +14,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.lgwebos.handler.LGWebOSHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,12 +53,15 @@ public class TVControlChannelName extends BaseChannelHandler<ChannelListener, Ob
 
                 @Override
                 public void onError(@Nullable ServiceCommandError error) {
-                    logger.debug("{} {} {}", error.getCode(), error.getPayload(), error.getMessage());
-                    handler.postUpdate(channelId, UnDefType.UNDEF);
+                    logger.warn("error in listening to channel name changes: {}.",
+                            error == null ? "" : error.getMessage());
                 }
 
                 @Override
                 public void onSuccess(@Nullable ChannelInfo channelInfo) {
+                    if (channelInfo == null) {
+                        return;
+                    }
                     handler.postUpdate(channelId, new StringType(channelInfo.getName()));
                 }
             }));

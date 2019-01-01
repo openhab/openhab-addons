@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.lgwebos.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
@@ -28,6 +29,7 @@ import com.connectsdk.service.capability.PlaylistControl;
  *
  * @author Sebastian Prehn - initial contribution
  */
+@NonNullByDefault
 public class MediaControlPlayer extends BaseChannelHandler<PlayStateListener, Object> {
     private final Logger logger = LoggerFactory.getLogger(MediaControlPlayer.class);
 
