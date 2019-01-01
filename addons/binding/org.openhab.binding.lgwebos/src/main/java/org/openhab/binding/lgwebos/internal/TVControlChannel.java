@@ -8,12 +8,14 @@
  */
 package org.openhab.binding.lgwebos.internal;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.lgwebos.handler.LGWebOSHandler;
@@ -35,27 +37,18 @@ import com.connectsdk.service.command.ServiceSubscription;
  */
 public class TVControlChannel extends BaseChannelHandler<ChannelListener, Object> {
     private final Logger logger = LoggerFactory.getLogger(TVControlChannel.class);
+    private final Map<String, List<ChannelInfo>> channelListCache = new HashMap<>();
 
     private TVControl getControl(ConnectableDevice device) {
         return device.getCapability(TVControl.class);
     }
 
     @Override
-    public void onReceiveCommand(@Nullable ConnectableDevice device, String channelId, LGWebOSHandler handler,
-            Command command) {
-        if (device == null) {
-            return;
-        }
-        if (IncreaseDecreaseType.INCREASE == command) {
-            if (device.hasCapabilities(TVControl.Channel_Up)) {
-                getControl(device).channelUp(getDefaultResponseListener());
-            }
-        } else if (IncreaseDecreaseType.DECREASE == command) {
-            if (device.hasCapabilities(TVControl.Channel_Down)) {
-                getControl(device).channelDown(getDefaultResponseListener());
-            }
-        } else if (device.hasCapabilities(TVControl.Channel_List, TVControl.Channel_Set)) {
-            final String value = command.toString();
+    public void onDeviceReady(@NonNull ConnectableDevice device, @NonNull String channelId,
+            @NonNull LGWebOSHandler handler) {
+        super.onDeviceReady(device, channelId, handler);
+
+        if (device.hasCapabilities(TVControl.Channel_List)) {
             final TVControl control = getControl(device);
             control.getChannelList(new TVControl.ChannelListListener() {
                 @Override
@@ -68,15 +61,41 @@ public class TVControlChannel extends BaseChannelHandler<ChannelListener, Object
                     if (logger.isDebugEnabled()) {
                         channels.forEach(c -> logger.debug("Channel {} - {}", c.getNumber(), c.getName()));
                     }
-                    Optional<ChannelInfo> channelInfo = channels.stream().filter(c -> c.getNumber().equals(value))
-                            .findFirst();
-                    if (channelInfo.isPresent()) {
-                        control.setChannel(channelInfo.get(), getDefaultResponseListener());
-                    } else {
-                        logger.warn("TV does not have a channel: {}.", value);
-                    }
+                    channelListCache.put(device.getId(), channels);
                 }
             });
+        }
+
+    }
+
+    @Override
+    public void onDeviceRemoved(@NonNull ConnectableDevice device, @NonNull String channelId,
+            @NonNull LGWebOSHandler handler) {
+        super.onDeviceRemoved(device, channelId, handler);
+        channelListCache.remove(device.getId());
+    }
+
+    @Override
+    public void onReceiveCommand(@Nullable ConnectableDevice device, String channelId, LGWebOSHandler handler,
+            Command command) {
+        if (device == null) {
+            return;
+        }
+        if (device.hasCapability(TVControl.Channel_Set)) {
+            final String value = command.toString();
+            final TVControl control = getControl(device);
+            List<ChannelInfo> channels = channelListCache.get(device.getId());
+            if (channels == null) {
+                logger.warn("No channel list cached for this device {}, ignoring command.", device.getId());
+            } else {
+                Optional<ChannelInfo> channelInfo = channels.stream().filter(c -> c.getNumber().equals(value))
+                        .findFirst();
+                if (channelInfo.isPresent()) {
+                    control.setChannel(channelInfo.get(), getDefaultResponseListener());
+                } else {
+                    logger.warn("TV does not have a channel: {}.", value);
+                }
+            }
         }
     }
 
