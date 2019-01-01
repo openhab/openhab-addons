@@ -158,3 +158,17 @@ Example of a toast message.
 ```
 LG_TV0_Toast.sendCommand("Hello World")
 ```
+
+## Troubleshooting
+
+In case of issues you may find it helpful to enable debug level logging and check you log file. Log into openHAB console and enable debug logging for this binding:
+
+```
+log:set debug org.openhab.binding.lgwebos
+```
+
+Additional logs are available from the underlying library:
+
+```
+log:set debug com.connectsdk
+```
