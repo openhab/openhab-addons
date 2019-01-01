@@ -112,7 +112,7 @@ public class LauncherApplication extends BaseChannelHandler<Launcher.AppInfoList
 
                 @Override
                 public void onError(@Nullable ServiceCommandError error) {
-                    logger.warn("error listening to application changes: {}.", error == null ? "" : error.getMessage());
+                    logger.warn("Error listening to application changes: {}.", error == null ? "" : error.getMessage());
                 }
 
                 @Override
