@@ -44,6 +44,8 @@ This binding uses the same API as the Web-Browser-Based Alexa site (alexa.amazon
 In other words, it simulates a user which is using the web page.
 Unfortunately, the binding can get broken if Amazon change the web site.
 
+This binding requires the OpenHAB skill to be enabled in the Alexa app.
+
 The binding is tested with amazon.de, amazon.fr, amazon.com and amazon.co.uk accounts, but should also work with all others. 
 
 ## Supported Things
