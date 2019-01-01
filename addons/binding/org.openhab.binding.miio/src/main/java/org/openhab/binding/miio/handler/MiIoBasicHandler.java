@@ -176,6 +176,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     logger.trace("Available entries: {} : {}", a, actions.get(a).getCommand());
                 }
             }
+            updateDataCache.invalidateValue();
             updateData();
         } else
 
