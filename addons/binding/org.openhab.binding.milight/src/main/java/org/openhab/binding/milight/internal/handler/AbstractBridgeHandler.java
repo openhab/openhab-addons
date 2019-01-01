@@ -37,9 +37,11 @@ public abstract class AbstractBridgeHandler extends BaseBridgeHandler {
     protected BridgeHandlerConfig config = new BridgeHandlerConfig();
     protected @Nullable InetAddress address;
     protected @NonNullByDefault({}) DatagramSocket socket;
+    protected int bridgeOffset;
 
-    public AbstractBridgeHandler(Bridge bridge) {
+    public AbstractBridgeHandler(Bridge bridge, int bridgeOffset) {
         super(bridge);
+        this.bridgeOffset = bridgeOffset;
     }
 
     @Override
