@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.XmlElement;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
- * See {@link DevicelistModel}.
+ * See {@link DeviceListModel}.
  *
  * In the functionbitmask element value the following bits are used:
  *
