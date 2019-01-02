@@ -486,13 +486,11 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
             logger.debug("Cannot handle command '{}' because connection is missing", command);
             return;
         }
-        switch (channelId) {
-            case CHANNEL_APPLY_TEMPLATE:
-                if (command instanceof StringType) {
-                    fritzBox.applyTemplate(command.toString());
-                }
-                updateState(CHANNEL_APPLY_TEMPLATE, UnDefType.UNDEF);
-                break;
+        if (CHANNEL_APPLY_TEMPLATE.equals(channelId)) {
+            if (command instanceof StringType) {
+                fritzBox.applyTemplate(command.toString());
+            }
+            updateState(CHANNEL_APPLY_TEMPLATE, UnDefType.UNDEF);
         }
     }
 
