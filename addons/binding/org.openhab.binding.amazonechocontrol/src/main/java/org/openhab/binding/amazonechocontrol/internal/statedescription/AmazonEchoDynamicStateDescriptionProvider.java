@@ -173,8 +173,9 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
             options.add(new StateOption("", ""));
 
             for (JsonNotificationSound notificationSound : notificationSounds) {
-                if (notificationSound.folder == null && notificationSound.providerId != null
-                        && notificationSound.id != null && notificationSound.displayName != null) {
+                if (notificationSound != null && notificationSound.folder == null
+                        && notificationSound.providerId != null && notificationSound.id != null
+                        && notificationSound.displayName != null) {
                     String providerSoundId = notificationSound.providerId + ":" + notificationSound.id;
                     options.add(new StateOption(providerSoundId, notificationSound.displayName));
                 }
