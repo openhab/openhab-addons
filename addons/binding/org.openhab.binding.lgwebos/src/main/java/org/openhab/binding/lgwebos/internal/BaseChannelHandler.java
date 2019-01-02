@@ -46,7 +46,7 @@ abstract class BaseChannelHandler<T, R> implements ChannelHandler {
     };
 
     // IP to Subscriptions map
-    private Map<String, @Nullable ServiceSubscription<T>> subscriptions = new ConcurrentHashMap<>();
+    private Map<String, ServiceSubscription<T>> subscriptions = new ConcurrentHashMap<>();
 
     @Override
     public void onDeviceReady(ConnectableDevice device, String channelId, LGWebOSHandler handler) {
@@ -104,14 +104,14 @@ abstract class BaseChannelHandler<T, R> implements ChannelHandler {
      * A convenience method that calls device.hasCapability, but logs a message if the result is false.
      *
      * @param device the webos tv
-     * @param logger logger of the actual implementation to ensure the user can relate the channel
      * @param capability the capability to check
      *
      */
-    protected boolean hasCapability(ConnectableDevice device, Logger logger, String capability) {
+    protected boolean hasCapability(ConnectableDevice device, String capability) {
         boolean result = device.hasCapability(capability);
         if (!result) {
-            logger.debug("Device {} does not have capability {}", device.getFriendlyName(), capability);
+            logger.debug("Device {} does not have capability {} as required by handler {}", device.getFriendlyName(),
+                    capability, this.getClass().getName());
         }
         return result;
     }

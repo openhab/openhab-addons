@@ -12,8 +12,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.lgwebos.handler.LGWebOSHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.connectsdk.device.ConnectableDevice;
 import com.connectsdk.service.capability.MediaControl;
@@ -25,7 +23,6 @@ import com.connectsdk.service.capability.MediaControl;
  */
 @NonNullByDefault
 public class MediaControlStop extends BaseChannelHandler<Void, Object> {
-    private final Logger logger = LoggerFactory.getLogger(MediaControlStop.class);
 
     private MediaControl getControl(ConnectableDevice device) {
         return device.getCapability(MediaControl.class);
@@ -37,7 +34,7 @@ public class MediaControlStop extends BaseChannelHandler<Void, Object> {
         if (device == null) {
             return;
         }
-        if (hasCapability(device, logger, MediaControl.Stop)) {
+        if (hasCapability(device, MediaControl.Stop)) {
             getControl(device).stop(getDefaultResponseListener());
         }
     }

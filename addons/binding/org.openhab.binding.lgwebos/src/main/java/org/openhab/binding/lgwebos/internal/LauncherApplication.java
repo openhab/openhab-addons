@@ -38,7 +38,7 @@ import com.connectsdk.service.sessions.LaunchSession;
 @NonNullByDefault
 public class LauncherApplication extends BaseChannelHandler<Launcher.AppInfoListener, LaunchSession> {
     private final Logger logger = LoggerFactory.getLogger(LauncherApplication.class);
-    private final Map<String, @Nullable List<AppInfo>> applicationListCache = new HashMap<>();
+    private final Map<String, List<AppInfo>> applicationListCache = new HashMap<>();
 
     private Launcher getControl(final ConnectableDevice device) {
         return device.getCapability(Launcher.class);
@@ -48,7 +48,7 @@ public class LauncherApplication extends BaseChannelHandler<Launcher.AppInfoList
     public void onDeviceReady(@NonNull ConnectableDevice device, @NonNull String channelId,
             @NonNull LGWebOSHandler handler) {
         super.onDeviceReady(device, channelId, handler);
-        if (hasCapability(device, logger, Launcher.Application_List)) {
+        if (hasCapability(device, Launcher.Application_List)) {
 
             final Launcher control = getControl(device);
             control.getAppList(new Launcher.AppListListener() {
@@ -86,7 +86,7 @@ public class LauncherApplication extends BaseChannelHandler<Launcher.AppInfoList
         if (device == null) {
             return;
         }
-        if (hasCapability(device, logger, Launcher.Application)) {
+        if (hasCapability(device, Launcher.Application)) {
             final String value = command.toString();
             final Launcher control = getControl(device);
             List<AppInfo> appInfos = applicationListCache.get(device.getId());
@@ -106,7 +106,7 @@ public class LauncherApplication extends BaseChannelHandler<Launcher.AppInfoList
     @Override
     protected Optional<ServiceSubscription<Launcher.AppInfoListener>> getSubscription(ConnectableDevice device,
             String channelId, LGWebOSHandler handler) {
-        if (hasCapability(device, logger, Launcher.RunningApp_Subscribe)) {
+        if (hasCapability(device, Launcher.RunningApp_Subscribe)) {
             logger.debug("Channel '{}' is subscribed for 'RunningApp' change updates from the tv.", channelId);
             return Optional.of(getControl(device).subscribeRunningApp(new Launcher.AppInfoListener() {
 

@@ -57,19 +57,19 @@ public class VolumeControlVolume extends BaseChannelHandler<VolumeListener, Obje
             percent = new PercentType(((StringType) command).toString());
         }
         if (percent != null) {
-            if (hasCapability(device, logger, VolumeControl.Volume_Set)) {
+            if (hasCapability(device, VolumeControl.Volume_Set)) {
                 getControl(device).setVolume(percent.floatValue() / 100.0f, getDefaultResponseListener());
             }
         } else if (IncreaseDecreaseType.INCREASE == command) {
-            if (hasCapability(device, logger, VolumeControl.Volume_Up_Down)) {
+            if (hasCapability(device, VolumeControl.Volume_Up_Down)) {
                 getControl(device).volumeUp(getDefaultResponseListener());
             }
         } else if (IncreaseDecreaseType.DECREASE == command) {
-            if (hasCapability(device, logger, VolumeControl.Volume_Up_Down)) {
+            if (hasCapability(device, VolumeControl.Volume_Up_Down)) {
                 getControl(device).volumeDown(getDefaultResponseListener());
             }
         } else if (OnOffType.OFF == command || OnOffType.ON == command) {
-            if (hasCapability(device, logger, VolumeControl.Mute_Set)) {
+            if (hasCapability(device, VolumeControl.Mute_Set)) {
                 getControl(device).setMute(OnOffType.OFF == command, getDefaultResponseListener());
             }
         } else {
@@ -80,7 +80,7 @@ public class VolumeControlVolume extends BaseChannelHandler<VolumeListener, Obje
     @Override
     protected Optional<ServiceSubscription<VolumeListener>> getSubscription(ConnectableDevice device, String channelUID,
             LGWebOSHandler handler) {
-        if (hasCapability(device, logger, VolumeControl.Volume_Subscribe)) {
+        if (hasCapability(device, VolumeControl.Volume_Subscribe)) {
             return Optional.of(getControl(device).subscribeVolume(new VolumeListener() {
 
                 @Override

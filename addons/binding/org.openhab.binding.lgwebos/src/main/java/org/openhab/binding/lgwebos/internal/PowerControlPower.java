@@ -47,11 +47,11 @@ public class PowerControlPower extends BaseChannelHandler<Void, Object> {
         }
 
         if (OnOffType.ON == command) {
-            if (hasCapability(device, logger, PowerControl.On)) {
+            if (hasCapability(device, PowerControl.On)) {
                 getControl(device).powerOn(getDefaultResponseListener());
             }
         } else if (OnOffType.OFF == command) {
-            if (hasCapability(device, logger, PowerControl.Off)) {
+            if (hasCapability(device, PowerControl.Off)) {
                 getControl(device).powerOff(getDefaultResponseListener());
             }
         } else {

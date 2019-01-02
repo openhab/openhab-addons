@@ -46,7 +46,7 @@ public class ToastControlToast extends BaseChannelHandler<Void, Object> {
         if (device == null) {
             return;
         }
-        if (hasCapability(device, logger, ToastControl.Show_Toast)) {
+        if (hasCapability(device, ToastControl.Show_Toast)) {
             final String value = command.toString();
             final ToastControl control = getControl(device);
             try {

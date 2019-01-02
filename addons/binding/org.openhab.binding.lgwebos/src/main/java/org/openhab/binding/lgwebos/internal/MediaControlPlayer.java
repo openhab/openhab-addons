@@ -48,27 +48,27 @@ public class MediaControlPlayer extends BaseChannelHandler<PlayStateListener, Ob
             return;
         }
         if (NextPreviousType.NEXT == command) {
-            if (hasCapability(device, logger, PlaylistControl.Next)) {
+            if (hasCapability(device, PlaylistControl.Next)) {
                 getPlayListControl(device).next(getDefaultResponseListener());
             }
         } else if (NextPreviousType.PREVIOUS == command) {
-            if (hasCapability(device, logger, PlaylistControl.Previous)) {
+            if (hasCapability(device, PlaylistControl.Previous)) {
                 getPlayListControl(device).previous(getDefaultResponseListener());
             }
         } else if (PlayPauseType.PLAY == command) {
-            if (hasCapability(device, logger, MediaControl.Play)) {
+            if (hasCapability(device, MediaControl.Play)) {
                 getMediaControl(device).play(getDefaultResponseListener());
             }
         } else if (PlayPauseType.PAUSE == command) {
-            if (hasCapability(device, logger, MediaControl.Pause)) {
+            if (hasCapability(device, MediaControl.Pause)) {
                 getMediaControl(device).pause(getDefaultResponseListener());
             }
         } else if (RewindFastforwardType.FASTFORWARD == command) {
-            if (hasCapability(device, logger, MediaControl.FastForward)) {
+            if (hasCapability(device, MediaControl.FastForward)) {
                 getMediaControl(device).fastForward(getDefaultResponseListener());
             }
         } else if (RewindFastforwardType.REWIND == command) {
-            if (hasCapability(device, logger, MediaControl.Rewind)) {
+            if (hasCapability(device, MediaControl.Rewind)) {
                 getMediaControl(device).rewind(getDefaultResponseListener());
             }
         } else {

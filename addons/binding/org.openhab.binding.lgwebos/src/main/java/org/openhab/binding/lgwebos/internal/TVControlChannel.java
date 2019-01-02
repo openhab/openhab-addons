@@ -83,7 +83,7 @@ public class TVControlChannel extends BaseChannelHandler<ChannelListener, Object
         if (device == null) {
             return;
         }
-        if (hasCapability(device, logger, TVControl.Channel_Set)) {
+        if (hasCapability(device, TVControl.Channel_Set)) {
             final String value = command.toString();
             final TVControl control = getControl(device);
             List<ChannelInfo> channels = channelListCache.get(device.getId());
@@ -104,7 +104,7 @@ public class TVControlChannel extends BaseChannelHandler<ChannelListener, Object
     @Override
     protected Optional<ServiceSubscription<ChannelListener>> getSubscription(ConnectableDevice device, String channelId,
             LGWebOSHandler handler) {
-        if (hasCapability(device, logger, TVControl.Channel_Subscribe)) {
+        if (hasCapability(device, TVControl.Channel_Subscribe)) {
             return Optional.of(getControl(device).subscribeCurrentChannel(new ChannelListener() {
 
                 @Override
