@@ -294,7 +294,7 @@ public class FritzAhaWebInterface {
         return postExchange;
     }
 
-    public FritzAhaContentExchange applyTempalte(String ain) {
+    public FritzAhaContentExchange applyTemplate(String ain) {
         FritzAhaApplyTemplateCallback callback = new FritzAhaApplyTemplateCallback(this, ain);
         return asyncGet(callback);
     }

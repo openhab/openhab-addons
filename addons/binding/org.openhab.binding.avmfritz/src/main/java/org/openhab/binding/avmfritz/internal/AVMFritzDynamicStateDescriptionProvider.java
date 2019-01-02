@@ -26,13 +26,12 @@ import org.osgi.service.component.annotations.Deactivate;
 /**
  * Dynamic provider of state options while leaving other state description fields as original.
  *
- * @author Gregory Moyer - Initial contribution
- * @author Christoph Weitkamp - Adapted to AVM FRITZ! binding
+ * @author Christoph Weitkamp - Initial contribution
  */
 @Component(service = { DynamicStateDescriptionProvider.class, AVMFritzDynamicStateDescriptionProvider.class })
 @NonNullByDefault
 public class AVMFritzDynamicStateDescriptionProvider implements DynamicStateDescriptionProvider {
-    private final Map<ChannelUID, @Nullable List<StateOption>> channelOptionsMap = new ConcurrentHashMap<>();
+    private final Map<ChannelUID, List<StateOption>> channelOptionsMap = new ConcurrentHashMap<>();
 
     public void setStateOptions(ChannelUID channelUID, List<StateOption> options) {
         channelOptionsMap.put(channelUID, options);

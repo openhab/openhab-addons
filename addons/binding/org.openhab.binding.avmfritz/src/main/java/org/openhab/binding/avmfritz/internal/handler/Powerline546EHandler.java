@@ -157,7 +157,7 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler {
                 break;
             case CHANNEL_APPLY_TEMPLATE:
                 if (command instanceof StringType) {
-                    fritzBox.applyTempalte(command.toString());
+                    fritzBox.applyTemplate(command.toString());
                 }
                 updateState(CHANNEL_APPLY_TEMPLATE, UnDefType.UNDEF);
                 break;

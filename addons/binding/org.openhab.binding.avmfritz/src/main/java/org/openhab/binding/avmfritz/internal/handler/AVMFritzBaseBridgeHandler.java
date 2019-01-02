@@ -489,7 +489,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
         switch (channelId) {
             case CHANNEL_APPLY_TEMPLATE:
                 if (command instanceof StringType) {
-                    fritzBox.applyTempalte(command.toString());
+                    fritzBox.applyTemplate(command.toString());
                 }
                 updateState(CHANNEL_APPLY_TEMPLATE, UnDefType.UNDEF);
                 break;
