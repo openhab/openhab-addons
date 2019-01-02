@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.avmfritz.internal.ahamodel;
+package org.openhab.binding.avmfritz.internal.ahamodel.templates;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -18,22 +18,18 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  *
  * @author Christoph Weitkamp - Initial contribution
  */
-@XmlRootElement(name = "button")
-@XmlType(propOrder = { "lastpressedtimestamp" })
-public class ButtonModel {
+@XmlType(name = "device")
+public class DeviceModel {
 
-    private int lastpressedtimestamp;
+    @XmlAttribute(name = "identifier")
+    private String identifier;
 
-    public int getLastpressedtimestamp() {
-        return lastpressedtimestamp;
-    }
-
-    public void setLastpressedtimestamp(int lastpressedtimestamp) {
-        this.lastpressedtimestamp = lastpressedtimestamp;
+    public String getIdentifier() {
+        return identifier != null ? identifier.replace(" ", "") : null;
     }
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("lastpressedtimestamp", getLastpressedtimestamp()).toString();
+        return new ToStringBuilder(this).append("identifier", getIdentifier()).toString();
     }
 }

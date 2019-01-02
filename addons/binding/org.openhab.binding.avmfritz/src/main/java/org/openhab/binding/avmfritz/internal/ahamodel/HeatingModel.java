@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
- * See {@link DevicelistModel}.
+ * See {@link DeviceListModel}.
  *
  * @author Christoph Weitkamp - Initial contribution
  * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet DECT
@@ -51,7 +51,7 @@ public class HeatingModel {
     private BigDecimal batterylow;
     private BigDecimal windowopenactiv;
     private BigDecimal battery;
-    private Nextchange nextchange;
+    private NextChangeModel nextchange;
     private BigDecimal summeractive;
     private BigDecimal holidayactive;
 
@@ -165,11 +165,11 @@ public class HeatingModel {
         this.battery = battery;
     }
 
-    public Nextchange getNextchange() {
+    public NextChangeModel getNextchange() {
         return nextchange;
     }
 
-    public void setNextchange(Nextchange nextchange) {
+    public void setNextchange(NextChangeModel nextchange) {
         this.nextchange = nextchange;
     }
 
@@ -250,7 +250,7 @@ public class HeatingModel {
     }
 
     @XmlType(propOrder = { "endperiod", "tchange" })
-    public static class Nextchange {
+    public static class NextChangeModel {
         private int endperiod;
         private BigDecimal tchange;
 
