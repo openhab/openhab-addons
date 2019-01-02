@@ -504,6 +504,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
 
     @Override
     public void dhcpRequestReceived(String ipAddress) {
+        logger.trace("DHCP request for {} received.", ipAddress);
         PresenceDetectionValue v = updateReachableValue(PresenceDetectionType.DHCP_REQUEST, 0);
         updateListener.partialDetectionResult(v);
     }
