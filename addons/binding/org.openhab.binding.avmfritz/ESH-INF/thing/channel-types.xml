@@ -4,6 +4,14 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
+	<!-- Channel definitions of FRITZ!Box -->
+	<channel-type id="apply_template" advanced="true">
+		<item-type>String</item-type>
+		<label>Apply Template</label>
+		<description>Apply template for device(s).</description>
+		<state pattern="%s" />
+	</channel-type>
+
 	<!-- Channel definitions of all FRITZ! devices -->
 	<channel-type id="mode">
 		<item-type>String</item-type>

@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
- * See {@link DevicelistModel}.
+ * See {@link DeviceListModel}.
  *
  * @author Robert Bausdorf - Initial contribution
  * @author Christoph Weitkamp - Added channel 'voltage'

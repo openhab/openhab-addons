@@ -28,6 +28,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.openhab.binding.avmfritz.internal.AVMFritzDynamicStateDescriptionProvider;
 
 /**
  * Tests for {@link AVMFritzThingHandlerOSGiTest}.
@@ -64,7 +65,7 @@ public abstract class AVMFritzThingHandlerOSGiTest extends JavaOSGiTest {
 
         ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
 
-        bridgeHandler = new BoxHandler(bridge, httpClient);
+        bridgeHandler = new BoxHandler(bridge, httpClient, new AVMFritzDynamicStateDescriptionProvider());
         assertNotNull(bridgeHandler);
 
         bridgeHandler.setCallback(callback);

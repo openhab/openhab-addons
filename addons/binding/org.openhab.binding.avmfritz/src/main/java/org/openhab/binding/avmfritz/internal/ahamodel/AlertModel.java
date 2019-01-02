@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
- * See {@link DevicelistModel}.
+ * See {@link DeviceListModel}.
  *
  * @author Christoph Weitkamp - Initial contribution
  */
