@@ -83,6 +83,7 @@ public class BindingConstants {
     public static final String CHANNEL_MODE = "mode";
     public static final String CHANNEL_LOCKED = "locked";
     public static final String CHANNEL_DEVICE_LOCKED = "device_locked";
+    public static final String CHANNEL_APPLY_TEMPLATE = "apply_template";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_ENERGY = "energy";
     public static final String CHANNEL_POWER = "power";

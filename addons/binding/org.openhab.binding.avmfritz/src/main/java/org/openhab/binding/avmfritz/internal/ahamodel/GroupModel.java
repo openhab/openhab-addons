@@ -20,13 +20,13 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @XmlType(name = "group")
 public class GroupModel extends AVMFritzBaseModel {
 
-    private Groupinfo groupinfo;
+    private GroupInfoModel groupinfo;
 
-    public Groupinfo getGroupinfo() {
+    public GroupInfoModel getGroupinfo() {
         return groupinfo;
     }
 
-    public void setGroupinfo(Groupinfo groupinfo) {
+    public void setGroupinfo(GroupInfoModel groupinfo) {
         this.groupinfo = groupinfo;
     }
 
@@ -36,8 +36,7 @@ public class GroupModel extends AVMFritzBaseModel {
     }
 
     @XmlType(propOrder = { "masterdeviceid", "members" })
-    public static class Groupinfo {
-
+    public static class GroupInfoModel {
         private String masterdeviceid;
         private String members;
 
