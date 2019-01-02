@@ -15,6 +15,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -200,7 +201,7 @@ public class AccountServlet extends HttpServlet {
             if (name.equals("failedSignInCount")) {
                 value = "ape:AA==";
             }
-            postDataBuilder.append(URLEncoder.encode(value, "UTF-8"));
+            postDataBuilder.append(URLEncoder.encode(value, StandardCharsets.UTF_8.name()));
         }
 
         uri = req.getRequestURI();
