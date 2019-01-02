@@ -30,7 +30,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingActions;
 import org.eclipse.smarthome.core.thing.binding.ThingActionsScope;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.lgwebos.handler.LGWebOSHandler;
-import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,10 +51,9 @@ import com.connectsdk.service.command.ServiceCommandError;
  * @author Sebastian Prehn - Initial contribution
  */
 @ThingActionsScope(name = "lgwebos")
-@Component()
 @NonNullByDefault
-public class ActionService implements ThingActions {
-    private final Logger logger = LoggerFactory.getLogger(ActionService.class);
+public class LGWebOSActions implements ThingActions {
+    private final Logger logger = LoggerFactory.getLogger(LGWebOSActions.class);
     private @Nullable LGWebOSHandler handler;
 
     @Override
@@ -84,7 +82,7 @@ public class ActionService implements ThingActions {
     public void showToast(
             @ActionInput(name = "text", label = "@text/actionShowToastInputTextLabel", description = "@text/actionShowToastInputTextDesc") String text)
             throws IOException {
-        showToast(ActionService.class.getResource("/openhab-logo-square.png").toString(), text);
+        showToast(LGWebOSActions.class.getResource("/openhab-logo-square.png").toString(), text);
     }
 
     @RuleAction(label = "@text/actionShowToastWithIconLabel", description = "@text/actionShowToastWithIconLabel")

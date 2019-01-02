@@ -36,7 +36,7 @@ import org.openhab.binding.lgwebos.internal.TVControlChannelName;
 import org.openhab.binding.lgwebos.internal.ToastControlToast;
 import org.openhab.binding.lgwebos.internal.VolumeControlMute;
 import org.openhab.binding.lgwebos.internal.VolumeControlVolume;
-import org.openhab.binding.lgwebos.internal.action.ActionService;
+import org.openhab.binding.lgwebos.internal.action.LGWebOSActions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -247,6 +247,6 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(ActionService.class);
+        return Collections.singleton(LGWebOSActions.class);
     }
 }
