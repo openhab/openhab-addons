@@ -30,7 +30,9 @@ If LocalIP is not set, the binding will use openHAB's primary IP address, which 
 ## Discovery
 
 TVs are auto discovered through SSDP in the local network.
-The binding broadcasts a search message via UDP on the network.
+The binding broadcasts a search message via UDP on the network in order to discover and monitor availability of the TV.
+
+Please note, that if you are runnin openHAB in a docker container you need to use macvlan or host networking for this binding to work.
 
 ## Thing Configuration
 
@@ -157,6 +159,162 @@ Example of a toast message.
 
 ```
 LG_TV0_Toast.sendCommand("Hello World")
+```
+
+## Rule Actions
+
+Multiple actions are supported by this binding. In classic rules these are accessible as shown in this example (adjust getActions with your ThingId):
+
+Example
+
+```
+ val actions = getActions("lgwebos","lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46")
+ if(null === actions) {
+        logInfo("actions", "Actions not found, check thing ID")
+        return
+ }
+ ```
+
+### showToast(text)
+
+Sends a toast message to a WebOS device with openHab icon.
+
+Parameters:
+| Name    | Description                                                          |
+|---------|----------------------------------------------------------------------|
+| text    | The text to display                                                  |
+
+Example:
+
+```
+actions.showToast("Hello World")
+```
+
+### showToast(icon, text)
+
+Sends a toast message to a WebOS device with custom icon.
+
+Parameters:
+| Name    | Description                                                          |
+|---------|----------------------------------------------------------------------|
+| icon    | The URL to the icon to display                                       |
+| text    | The text to display                                                  |
+
+Example:
+
+```
+actions.showToast("http://localhost:8080/icon/energy?format=png","Hello World")
+```
+
+### launchBrowser(url)
+
+Opens the given URL in the TV's browser application.
+
+Parameters:
+| Name    | Description                                                          |
+|---------|----------------------------------------------------------------------|
+| url     | The URL to open                                                      |
+
+Example:
+
+```
+actions.launchBrowser("https://www.openhab.org")
+```
+
+### List<Application> getApplications()
+
+Returns a list of Applications supported by this TV.
+
+Application Properties
+| Name    | Description                                                          |
+|---------|----------------------------------------------------------------------|
+| id      | The Application ID, which serves as parameter appId in other methods.|
+| name    | Human readable name                                                  |
+
+Example:
+
+```
+val apps = actions.getApplications
+apps.forEach[a| logInfo("action",a.toString)]
+```
+
+### launchApplication(appId)
+
+Opens the application with given Application ID.
+
+Parameters:
+| Name    | Description                                                                    |
+|---------|--------------------------------------------------------------------------------|
+| appId   | The Application ID. getApplications provides available apps and their appIds.  |
+
+Examples:
+
+```
+actions.launchApplication("com.webos.app.tvguide") // TV Guide
+actions.launchApplication("com.webos.app.livetv") // TV
+actions.launchApplication("com.webos.app.hdmi1") // HDMI1
+actions.launchApplication("com.webos.app.hdmi2") // HDMI2
+actions.launchApplication("com.webos.app.hdmi3") // HDMI3
+```
+
+### launchApplicationWithParam(appId, param)
+
+Opens the application with given Application ID and passes an additional parameter.
+
+Parameters:
+| Name    | Description                                                                   |
+|---------|-------------------------------------------------------------------------------|
+| appId   | The Application ID. getApplications provides available apps and their appIds. |
+| param   | The parameter to hand over to the application  |
+
+### sendText(text)
+
+Sends a text input to a WebOS device.
+
+Parameters:
+| Name    | Description                                                          |
+|---------|----------------------------------------------------------------------|
+| text    | The text to input  |
+
+Example:
+
+```
+actions.sendText("Some text")
+```
+
+### sendButton(button)
+
+Sends a button press event to a WebOS device.
+
+Parameters:
+| Name    | Description                                                            |
+|---------|------------------------------------------------------------------------|
+| button  | Can be one of UP, DOWN, LEFT, RIGHT, BACK, DELETE, ENTER, HOME, or OK  |
+
+Example:
+
+```
+actions.sendButton("OK")
+```
+
+### increaseChannel()
+
+TV will switch one channel up in the current channel list.
+
+Example:
+
+```
+actions.increaseChannel
+```
+
+### decreaseChannel()
+
+TV will switch one channel down in the current channel list.
+
+Example:
+
+```
+actions.decreaseChannel
 ```
 
 ## Troubleshooting

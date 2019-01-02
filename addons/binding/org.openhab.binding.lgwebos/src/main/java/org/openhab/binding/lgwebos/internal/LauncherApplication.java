@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -38,7 +37,7 @@ import com.connectsdk.service.sessions.LaunchSession;
 @NonNullByDefault
 public class LauncherApplication extends BaseChannelHandler<Launcher.AppInfoListener, LaunchSession> {
     private final Logger logger = LoggerFactory.getLogger(LauncherApplication.class);
-    private final Map<String, @Nullable List<AppInfo>> applicationListCache = new HashMap<>();
+    private final Map<String, List<AppInfo>> applicationListCache = new HashMap<>();
 
     private Launcher getControl(final ConnectableDevice device) {
         return device.getCapability(Launcher.class);
@@ -105,12 +104,12 @@ public class LauncherApplication extends BaseChannelHandler<Launcher.AppInfoList
     protected Optional<ServiceSubscription<Launcher.AppInfoListener>> getSubscription(ConnectableDevice device,
             String channelId, LGWebOSHandler handler) {
         if (hasCapability(device, Launcher.RunningApp_Subscribe)) {
-            logger.debug("Channel '{}' is subscribed for 'RunningApp' change updates from the tv.", channelId);
             return Optional.of(getControl(device).subscribeRunningApp(new Launcher.AppInfoListener() {
 
                 @Override
                 public void onError(@Nullable ServiceCommandError error) {
-                    logger.debug("Error in listening to application changes: {}.", error == null ? "" : error.getMessage());
+                    logger.debug("Error in listening to application changes: {}.",
+                            error == null ? "" : error.getMessage());
                 }
 
                 @Override
@@ -125,5 +124,9 @@ public class LauncherApplication extends BaseChannelHandler<Launcher.AppInfoList
         } else {
             return Optional.empty();
         }
+    }
+
+    public List<AppInfo> getAppInfos(ConnectableDevice device) {
+        return applicationListCache.get(device.getId());
     }
 }

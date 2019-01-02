@@ -40,7 +40,6 @@ public class TVControlChannel extends BaseChannelHandler<ChannelListener, Object
     private final Logger logger = LoggerFactory.getLogger(TVControlChannel.class);
     private final Map<String, List<ChannelInfo>> channelListCache = new HashMap<>();
 
-
     private TVControl getControl(ConnectableDevice device) {
         return device.getCapability(TVControl.class);
     }

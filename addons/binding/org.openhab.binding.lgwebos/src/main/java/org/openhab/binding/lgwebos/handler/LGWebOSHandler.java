@@ -63,6 +63,8 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
     private final Map<String, ChannelHandler> channelHandlers;
     private String deviceId;
 
+    private LauncherApplication appLauncher = new LauncherApplication();
+
     public LGWebOSHandler(@NonNull Thing thing, DiscoveryManager discoveryManager) {
         super(thing);
         this.discoveryManager = discoveryManager;
@@ -72,11 +74,15 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
         handlers.put(CHANNEL_MUTE, new VolumeControlMute());
         handlers.put(CHANNEL_CHANNEL, new TVControlChannel());
         handlers.put(CHANNEL_CHANNEL_NAME, new TVControlChannelName());
-        handlers.put(CHANNEL_APP_LAUNCHER, new LauncherApplication());
+        handlers.put(CHANNEL_APP_LAUNCHER, appLauncher);
         handlers.put(CHANNEL_MEDIA_STOP, new MediaControlStop());
         handlers.put(CHANNEL_TOAST, new ToastControlToast());
         handlers.put(CHANNEL_MEDIA_PLAYER, new MediaControlPlayer());
         channelHandlers = Collections.unmodifiableMap(handlers);
+    }
+
+    public LauncherApplication getLauncherApplication() {
+        return appLauncher;
     }
 
     @Override

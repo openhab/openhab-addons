@@ -15,6 +15,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,6 +27,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.automation.annotation.ActionInput;
 import org.eclipse.smarthome.automation.annotation.RuleAction;
+import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.ThingActions;
 import org.eclipse.smarthome.core.thing.binding.ThingActionsScope;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
@@ -105,35 +107,60 @@ public class LGWebOSActions implements ThingActions {
         getControl(Launcher.class).ifPresent(control -> control.launchBrowser(url, createResponseListener()));
     }
 
+    private List<AppInfo> getAppInfos() {
+        LGWebOSHandler lgWebOSHandler = this.handler;
+        if (lgWebOSHandler == null) {
+            throw new IllegalStateException(
+                    "ThingHandler must be set before any action may be invoked on LGWebOSActions.");
+        }
+
+        final Optional<ConnectableDevice> connectableDevice = lgWebOSHandler.getDevice();
+        if (!connectableDevice.isPresent()) {
+            logger.warn("Device not present.");
+            return Collections.emptyList();
+        }
+        ConnectableDevice device = connectableDevice.get();
+
+        List<AppInfo> appInfos = lgWebOSHandler.getLauncherApplication().getAppInfos(device);
+        if (appInfos == null) {
+            logger.warn("No application list cached for {}, ignoring command.", lgWebOSHandler.getThing().getLabel());
+            return Collections.emptyList();
+        }
+        return appInfos;
+    }
+
+    public List<Application> getApplications() {
+        return getAppInfos().stream().map(appInfo -> new Application(appInfo.getId(), appInfo.getName()))
+                .collect(Collectors.toList());
+    }
+
     @RuleAction(label = "@text/actionLaunchApplicationLabel", description = "@text/actionLaunchApplicationDesc")
     public void launchApplication(
             @ActionInput(name = "appId", label = "@text/actionLaunchApplicationInputAppIDLabel", description = "@text/actionLaunchApplicationInputAppIDDesc") String appId) {
-        getControl(Launcher.class).ifPresent(control -> control.launchApp(appId, createResponseListener()));
+        List<AppInfo> appInfos = getAppInfos();
+        getControl(Launcher.class).ifPresent(control -> {
+            Optional<AppInfo> appInfo = appInfos.stream().filter(a -> a.getId().equals(appId)).findFirst();
+            if (appInfo.isPresent()) {
+                control.launchApp(appId, createResponseListener());
+            } else {
+                logger.warn("TV does not support any app with id: {}.", appId);
+            }
+        });
     }
 
     @RuleAction(label = "@text/actionLaunchApplicationWithParamLabel", description = "@text/actionLaunchApplicationWithParamDesc")
-    public void launchApplicationWithParam(
+    public void launchApplication(
             @ActionInput(name = "appId", label = "@text/actionLaunchApplicationInputAppIDLabel", description = "@text/actionLaunchApplicationInputAppIDDesc") String appId,
             @ActionInput(name = "param", label = "@text/actionLaunchApplicationInputParamLabel", description = "@text/actionLaunchApplicationInputParamDesc") Object param) {
-        getControl(Launcher.class).ifPresent(control -> control.getAppList(
-
-                new Launcher.AppListListener() {
-                    @Override
-                    public void onError(@Nullable ServiceCommandError error) {
-                        logger.warn("error requesting application list: {}.", error == null ? "" : error.getMessage());
-                    }
-
-                    @Override
-                    @NonNullByDefault({})
-                    public void onSuccess(List<AppInfo> appInfos) {
-                        Optional<AppInfo> appInfo = appInfos.stream().filter(a -> a.getId().equals(appId)).findFirst();
-                        if (appInfo.isPresent()) {
-                            control.launchAppWithInfo(appInfo.get(), param, createResponseListener());
-                        } else {
-                            logger.warn("TV does not support any app with id: {}.", appId);
-                        }
-                    }
-                }));
+        List<AppInfo> appInfos = getAppInfos();
+        getControl(Launcher.class).ifPresent(control -> {
+            Optional<AppInfo> appInfo = appInfos.stream().filter(a -> a.getId().equals(appId)).findFirst();
+            if (appInfo.isPresent()) {
+                control.launchAppWithInfo(appInfo.get(), param, createResponseListener());
+            } else {
+                logger.warn("TV does not support any app with id: {}.", appId);
+            }
+        });
     }
 
     @RuleAction(label = "@text/actionSendTextLabel", description = "@text/actionSendTextDesc")
@@ -194,18 +221,25 @@ public class LGWebOSActions implements ThingActions {
     private <C extends @Nullable CapabilityMethods> Optional<C> getControl(Class<C> clazz) {
         LGWebOSHandler lgWebOSHandler = this.handler;
         if (lgWebOSHandler == null) {
-            logger.warn("LGWebOS ThingHandler is null.");
+            throw new IllegalStateException(
+                    "ThingHandler must be set before any action may be invoked on LGWebOSActions.");
+        }
+
+        ThingStatus status = lgWebOSHandler.getThing().getStatus();
+        if (!ThingStatus.ONLINE.equals(status)) {
+            logger.info("Device not online.");
             return Optional.empty();
         }
+
         final Optional<ConnectableDevice> connectableDevice = lgWebOSHandler.getDevice();
         if (!connectableDevice.isPresent()) {
-            logger.warn("Device not online.");
+            logger.warn("Device not present.");
             return Optional.empty();
         }
 
         C control = connectableDevice.get().getCapability(clazz);
         if (control == null) {
-            logger.warn("Device does not have the ability: {}", clazz.getName());
+            logger.warn("Device does not have the ability: {}.", clazz.getName());
             return Optional.empty();
         }
         return Optional.of(control);
@@ -244,17 +278,33 @@ public class LGWebOSActions implements ThingActions {
         }
     }
 
-    public static void launchBrowser(@Nullable ThingActions actions, String url) throws IOException {
+    public static void launchBrowser(@Nullable ThingActions actions, String url) {
         if (actions instanceof LGWebOSActions) {
-            ((LGWebOSActions) actions).showToast(url);
+            ((LGWebOSActions) actions).launchBrowser(url);
         } else {
             throw new IllegalArgumentException("Instance is not an LGWebOSActions class.");
         }
     }
 
-    public static void launchApplication(@Nullable ThingActions actions, String appId) throws IOException {
+    public static List<Application> getApplications(@Nullable ThingActions actions) {
         if (actions instanceof LGWebOSActions) {
-            ((LGWebOSActions) actions).showToast(appId);
+            return ((LGWebOSActions) actions).getApplications();
+        } else {
+            throw new IllegalArgumentException("Instance is not an LGWebOSActions class.");
+        }
+    }
+
+    public static void launchApplication(@Nullable ThingActions actions, String appId) {
+        if (actions instanceof LGWebOSActions) {
+            ((LGWebOSActions) actions).launchApplication(appId);
+        } else {
+            throw new IllegalArgumentException("Instance is not an LGWebOSActions class.");
+        }
+    }
+
+    public static void launchApplication(@Nullable ThingActions actions, String appId, String param) {
+        if (actions instanceof LGWebOSActions) {
+            ((LGWebOSActions) actions).launchApplication(appId, param);
         } else {
             throw new IllegalArgumentException("Instance is not an LGWebOSActions class.");
         }
@@ -270,7 +320,7 @@ public class LGWebOSActions implements ThingActions {
 
     public static void sendButton(@Nullable ThingActions actions, String button) {
         if (actions instanceof LGWebOSActions) {
-            ((LGWebOSActions) actions).sendText(button);
+            ((LGWebOSActions) actions).sendButton(button);
         } else {
             throw new IllegalArgumentException("Instance is not an LGWebOSActions class.");
         }
