@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.amazondashbutton.internal.handler;
 
+import static org.eclipse.smarthome.core.thing.CommonTriggerEvents.PRESSED;
 import static org.openhab.binding.amazondashbutton.internal.AmazonDashButtonBindingConstants.PRESS;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -63,13 +64,11 @@ public class AmazonDashButtonHandler extends BaseThingHandler implements PcapNet
 
             packetCapturingService = new PacketCapturingService(pcapNetworkInterface);
             boolean capturingStarted = packetCapturingService.startCapturing(new PacketCapturingHandler() {
-
                 @Override
                 public void packetCaptured(MacAddress macAddress) {
                     long now = System.currentTimeMillis();
                     if (lastCommandHandled + packetInterval < now) {
-                        ChannelUID pressChannel = new ChannelUID(getThing().getUID(), PRESS);
-                        triggerChannel(pressChannel);
+                        triggerChannel(PRESS, PRESSED);
                         lastCommandHandled = now;
                     }
                 }
