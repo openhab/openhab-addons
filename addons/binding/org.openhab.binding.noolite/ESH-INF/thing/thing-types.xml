@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="noolite" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="devices">
+
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridgeMTRF64" />
+		</supported-bridge-type-refs>
+
+		<label>Noolite Channel</label>
+		<description>Sample thing for noolite Binding</description>
+
+		<channels>
+			<channel id="switch" typeId="switch" />
+			<channel id="temperature" typeId="temperature"></channel>
+			<channel id="humidity" typeId="humidity"></channel>
+			 <channel id="battery" typeId="battery"></channel>
+			 <channel id="sensortype" typeId="sensortype"></channel>
+			 <channel id="bindchannel" typeId="bindchannel"></channel>
+		</channels>
+		<config-description>
+			<parameter name="port" type="integer" required="true" min="1" max="99">
+				<context>Channel address</context>
+				<label>Channel Addreess</label>
+				<description>Select channel for noolite device</description>
+				<default>99</default>
+			</parameter>
+			
+			<parameter name="type" type="text">
+                <label>Type</label>
+                <description>Select type of noolite device</description>
+                <default>1</default>
+                <options>
+                    <option value="0">Noolite TX</option>
+                    <option value="1">Noolite RX</option>
+                    <option value="2">Noolite F TX</option>
+                    <option value="3">Noolite F RX</option>
+                    <option value="4">Service</option>
+                </options>
+            </parameter> 
+		</config-description>
+	</thing-type>
+
+
+
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Input</label>
+		<description>Port set as input signal for switch using</description>
+	</channel-type>
+	<channel-type id="temperature">
+        <item-type>Number</item-type>
+        <label>Temperature DHT</label>
+        <description>Temperature from DHT sensor</description>
+        <state readOnly="true" pattern="%.1f °C"></state>
+    </channel-type>
+    <channel-type id="humidity">
+        <item-type>Number</item-type>
+        <label>Humidity DHT</label>
+        <description>Humidity from DHT sensor</description>
+        <state readOnly="true" pattern="%.1f"></state>
+    </channel-type>
+    <channel-type id="battery">
+        <item-type>String</item-type>
+        <label>Battery state</label>
+        <description></description>
+        <state readOnly="true" pattern="%s"></state>
+    </channel-type>
+    <channel-type id="sensortype">
+        <item-type>String</item-type>
+        <label>Sensor type</label>
+        <description></description>
+        <state readOnly="true" pattern="%s"></state>
+    </channel-type>
+    <channel-type id="bindchannel">
+        <item-type>Number</item-type>
+        <label>Bind number</label>
+        <description></description>
+         <state readOnly="false" pattern="%f"></state>
+    </channel-type>
+
+</thing:thing-descriptions>
