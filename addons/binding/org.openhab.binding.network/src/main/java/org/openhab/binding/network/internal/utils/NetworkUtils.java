@@ -36,6 +36,8 @@ import org.apache.commons.net.util.SubnetUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.net.exec.ExecUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Network utility functions for pinging and for determining all interfaces and assigned IP addresses.
@@ -44,6 +46,8 @@ import org.eclipse.smarthome.io.net.exec.ExecUtil;
  */
 @NonNullByDefault
 public class NetworkUtils {
+    private final Logger logger = LoggerFactory.getLogger(NetworkUtils.class);
+
     /**
      * Gets every IPv4 Address on each Interface except the loopback
      * The Address format is ip/subnet
