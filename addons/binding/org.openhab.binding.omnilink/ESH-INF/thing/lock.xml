@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="omnilink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+    <thing-type id="lock">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="controller" />
+        </supported-bridge-type-refs>
+        <label>Lock</label>
+        <description>Lock controlled Omnilink</description>
+        <channels>
+            <channel id="switch" typeId="lock_switch" />
+        </channels>
+        <properties>
+            <property name="name" />
+        </properties>
+        <config-description>
+            <parameter name="number" type="integer" required="true">
+                <label>Lock Number</label>
+                <description>Lock number</description>
+            </parameter>
+        </config-description>
+    </thing-type>
+	
+	<!-- Lock Channels -->
+    <channel-type id="lock_switch">
+        <item-type>Switch</item-type>
+        <label>On/Off</label>
+        <description>Lock or unlock the lock</description>
+        <category>Switch</category>
+    </channel-type>
+ 
+</thing:thing-descriptions>

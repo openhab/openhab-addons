@@ -51,6 +51,7 @@ import com.digitaldan.jomnilinkII.MessageTypes.SystemFeatures;
 import com.digitaldan.jomnilinkII.MessageTypes.SystemFormats;
 import com.digitaldan.jomnilinkII.MessageTypes.SystemInformation;
 import com.digitaldan.jomnilinkII.MessageTypes.SystemStatus;
+import com.digitaldan.jomnilinkII.MessageTypes.statuses.AccessControlReaderLockStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.AreaStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.AudioZoneStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.AuxSensorStatus;
@@ -286,6 +287,11 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                 logger.debug("AreaStatus: Mode={}", areaStatus.getMode());
                 theThing.map(Thing::getHandler)
                         .ifPresent(theHandler -> ((AreaHandler) theHandler).updateChannels(areaStatus));
+            } else if (status instanceof AccessControlReaderLockStatus) {
+                AccessControlReaderLockStatus lockStatus = (AccessControlReaderLockStatus) status;
+                Optional<Thing> theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_LOCK, status.getNumber());
+                theThing.map(Thing::getHandler)
+                        .ifPresent(theHandler -> ((LockHandler) theHandler).updateChannels(lockStatus));
             } else if (status instanceof ExtendedThermostatStatus) {
                 ExtendedThermostatStatus thermostatStatus = (ExtendedThermostatStatus) status;
                 Optional<Thing> theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_THERMOSTAT,
