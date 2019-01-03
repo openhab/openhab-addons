@@ -27,6 +27,7 @@ This binding can discover the supported Onkyo AV Receivers. At the moment only t
 -   TX-NR646
 -   TX-NR656
 -   TX-NR676
+-   TX-NR686
 -   TX-NR708
 -   TX-NR717
 -   TX-NR727
