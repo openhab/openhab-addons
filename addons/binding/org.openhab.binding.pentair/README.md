@@ -96,6 +96,14 @@ Pentair things support a variety of channels as seen below in the following tabl
 | aux5            | Switch     | Aux5 mode
 | aux6            | Switch     | Aux6 mode
 | aux7            | Switch     | Aux7 mode
+| feature1        | Switch     | Feature1 mode
+| feature2        | Switch     | Feature2 mode
+| feature3        | Switch     | Feature3 mode
+| feature4        | Switch     | Feature4 mode
+| feature5        | Switch     | Feature5 mode
+| feature6        | Switch     | Feature6 mode
+| feature7        | Switch     | Feature7 mode
+| feature8        | Switch     | Feature8 mode
 | IntelliChlor    | |
 | saltoutput      | Number     | Current salt output % (readonly)
 | salinity        | Number     | Salinity (ppm) (readonly)
@@ -136,6 +144,7 @@ The following is an example of an item file (pentair.items):
     Switch Mode_Aux5                "Aux5 Mode"                                   (gPool)  { channel = "pentair:easytouch:1:main:aux5" }
     Switch Mode_Aux6                "Aux6 Mode"                                   (gPool)  { channel = "pentair:easytouch:1:main:aux6" }
     Switch Mode_Aux7                "Aux7 Mode"                                   (gPool)  { channel = "pentair:easytouch:1:main:aux7" }
+    Switch Mode_Spillway            "Spillway Mode"                               (gPool)  { channel = "pentair:easytouch:1:main:feature1" }
     
     Number SaltOutput               "Salt Output [%d%%]"                          (gPool)  { channel = "pentair:intellichlor:1:ic40:saltoutput" }
     Number Salinity                 "Salinity [%d ppm]"                           (gPool)  { channel = "pentair:intellichlor:1:ic40:salinity" }
