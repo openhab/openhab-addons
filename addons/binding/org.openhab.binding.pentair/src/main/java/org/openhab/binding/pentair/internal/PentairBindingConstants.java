@@ -70,6 +70,15 @@ public class PentairBindingConstants {
     public static final String EASYTOUCH_AUX6 = "aux6";
     public static final String EASYTOUCH_AUX7 = "aux7";
 
+    public static final String EASYTOUCH_FEATURE1 = "feature1";
+    public static final String EASYTOUCH_FEATURE2 = "feature2";
+    public static final String EASYTOUCH_FEATURE3 = "feature3";
+    public static final String EASYTOUCH_FEATURE4 = "feature4";
+    public static final String EASYTOUCH_FEATURE5 = "feature5";
+    public static final String EASYTOUCH_FEATURE6 = "feature6";
+    public static final String EASYTOUCH_FEATURE7 = "feature7";
+    public static final String EASYTOUCH_FEATURE8 = "feature8";
+
     public static final String INTELLICHLOR_SALTOUTPUT = "saltoutput";
     public static final String INTELLICHLOR_SALINITY = "salinity";
 
