@@ -8,6 +8,10 @@
  */
 package org.openhab.binding.draytonwiser.handler;
 
+import static org.eclipse.smarthome.core.library.unit.SIUnits.CELSIUS;
+
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -62,8 +66,11 @@ public class RoomHandler extends DraytonWiserThingHandler {
         }
 
         if (channelUID.getId().equals(DraytonWiserBindingConstants.CHANNEL_CURRENT_SETPOINT)) {
-            int newSetPoint = Math.round((Float.parseFloat(command.toString()) * 10));
-            setSetPoint(newSetPoint);
+            if (command instanceof QuantityType) {
+                int newSetPoint = (int) Math
+                        .round(((QuantityType<Temperature>) command).toUnit(CELSIUS).doubleValue() * 10);
+                setSetPoint(newSetPoint);
+            }
         }
 
         if (channelUID.getId().equals(DraytonWiserBindingConstants.CHANNEL_MANUAL_MODE_STATE)) {
