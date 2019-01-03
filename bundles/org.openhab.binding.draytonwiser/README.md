@@ -181,16 +181,16 @@ The `id`, `Type`, `CurrentSetPoint`, `NextEventTime` and `NextEventSetpoint` sho
 ### .things file
 
 ```
-Bridge draytonwiser:heathub:HeatHub [ ADDR="192.168.1.X", refresh=60, secret="secret from hub" ]
+Bridge draytonwiser:heathub:HeatHub [ networkAddress="192.168.1.X", refresh=60, secret="secret from hub", awaySetPoint=10 ]
 {
-	boiler-controller controller
-	room livingroom	[ name="Living Room" ]
-	room bathroom	[ name="Bathroom" ]
-	room bedroom	[ name="Bedroom" ]
-	roomstat livingroomstat [ serialNumber="ABCDEF1234" ]
-	itrv livingroomtrv [ serialNumber="ABCDEF1235" ]
+	boiler-controller controller     "Controller"
+	room              livingroom     "Living Room"            [ name="Living Room" ]
+	room              bathroom       "Bathroom"               [ name="Bathroom" ]
+	room              bedroom        "Bedroom"                [ name="Bedroom" ]
+	roomstat          livingroomstat "Living Room Thermostat" [ serialNumber="ABCDEF1234" ]
+	itrv              livingroomtrv  "Living Room - TRV"      [ serialNumber="ABCDEF1235" ]
 	hotwater hotwater
-   smart-plug tvplug [ serialNumber="ABCDEF1236" ]
+    smart-plug tvplug [ serialNumber="ABCDEF1236" ]
 }
 ```
 
@@ -198,21 +198,57 @@ The `name` corresponds to the room name configured in the Wiser App.
 It is not case sensitive.
 The `serialNumber` corresponds to the device serial number which can be found on a sticker inside the battery compartment of the Smart Valves/TRVs, and behind the wall mount of the Room Thermostats.
 
+### .items file
+
+```
+Switch Heating_Override      "Heating Override"    <fire>   (gHouse)    { channel="draytonwiser:boiler-controller:HeatHub:controller:heatingOverride" }
+Number Heating_Demand      "Heating Demand [%.0f %%]"    <heating>   (gHouse)    { channel="draytonwiser:boiler-controller:HeatHub:controller:heatChannel1Demand" }
+Switch Heating_Requesting_Heat      "Heating On"    <fire>   (gHouse)    { channel="draytonwiser:boiler-controller:HeatHub:controller:heatChannel1DemandState" }
+Switch Heating_Away_Mode      "Away Mode"    <vacation>   (gHouse)    { channel="draytonwiser:boiler-controller:HeatHub:controller:awayModeState" }
+Switch Heating_Eco_Mode      "Eco Mode"    <climate>   (gHouse)    { channel="draytonwiser:boiler-controller:HeatHub:controller:ecoModeState" }
+
+/* Heating */
+Switch Heating_GF_Living      "Heating"    <fire>   (GF_Living, Heating)    ["Heat Request"] { channel="draytonwiser:room:HeatHub:livingroom:heatRequest" }
+
+/* Indoor Temperatures */
+Number:Temperature livingroom_temperature    "Temperature [%.1f °C]" <temperature> (GF_Living, Temperature)    ["Temperature"] {channel="draytonwiser:room:HeatHub:livingroom:currentTemperature"}
+
+/* Setpoint Temperatures */
+Number:Temperature livingroom_setpoint    "Set Point [%.1f °C]" <temperature> (GF_Living)    ["Set Point"] {channel="draytonwiser:room:HeatHub:livingroom:currentSetPoint"}
+
+/* Heat Demand */
+Number livingroom_heatdemand    "Heat Demand [%.0f %%]" <heating> (GF_Living)    ["Heat Demand"] {channel="draytonwiser:room:HeatHub:livingroom:currentDemand"}
+
+/* Manual Mode */
+Switch ManualMode_GF_Living      "Manual Mode"    <switch>   (GF_Living)    ["Manual Mode"] { channel="draytonwiser:room:HeatHub:livingroom:manualModeState" }
+
+/* Boost Mode */
+Switch BoostMode_GF_Living      "Boosted"    <fire>   (GF_Living)    ["Boost Mode"] { channel="draytonwiser:room:HeatHub:livingroom:roomBoosted" }
+
+/* Boost Duration */
+Number BoostDuration_GF_Living      "Boost For[]"    <text>   (GF_Living)    ["Boost Duration"] { channel="draytonwiser:room:HeatHub:livingroom:roomBoostDuration" }
+
+/* Boost Remaining */
+Number BoostRemaining_GF_Living      "Boost Remaining"    <text>   (GF_Living)    ["Boost Remaining"] { channel="draytonwiser:room:HeatHub:livingroom:roomBoostRemaining" }
+
+/* Humidity */
+Number livingroom_humidity  "Humidity [%.0f %%]" <humidity> (GF_Living) ["Humidity"] {channel="draytonwiser:room:HeatHub:livingroom:currentHumidity"}
+
+
+```
+
 ### Sitemap
 
 ```
-Text item=draytonwiser_room_WiserHeatXXXXXX_livingroom_heatRequest label="Heating" icon="fire" {
-            Text item=draytonwiser_room_WiserHeatXXXXXX_livingroom_currentTemperature label="Temperature [%.1f °C]" icon="temperature"
-            Setpoint item=draytonwiser_room_WiserHeatXXXXXX_livingroom_currentSetPoint label="Target Temperature [%.1f °C]" icon="temperature" step=0.5 minValue=16 maxValue=25
-            Text item=draytonwiser_room_WiserHeatXXXXXX_livingroom_currentHumidity label="Humidity [%.0f %%]" icon="humidity"
-            Text item=draytonwiser_room_WiserHeatXXXXX_livingroom_currentDemand label="Heating Power [%.0f %%]" icon="heating"
-            Switch item=draytonwiser_room_WiserHeatXXXXXX_livingroom_manualModeState label="Manual Mode" icon="switch"
-			Switch item=draytonwiser_room_WiserHeatXXXXXX_livingroom_roomBoostDuration label="Boost heating[]" mappings=[0="Off", 0.5="0.5 h", 1="1 h", 2="2 h", 3="3 h"] icon="radiator"
-			Text item=draytonwiser_room_WiserHeatXXXXXX_livingroom_roomBoosted label="Heating Boosted" icon="fire"
-            Text item=draytonwiser_room_WiserHeatXXXXXX_livingroom_roomBoostRemaining label="Boost Remaining [%.0f minutes]" icon="time"
-            Text item=draytonwiser_roomstat_WiserHeatXXXXXX_000XXXXXXXXXXXXXX_currentBatteryLevel label="Thermostat Battery" icon="batterylevel"
-            Text item=draytonwiser_roomstat_WiserHeatXXXXXX_000XXXXXXXXXXXXX_currentSignalStrength label="Thermostat Signal Strength" icon="network"
-            Text item=draytonwiser_itrv_WiserHeatXXXXXX_000XXXXXXXXXXXXX_currentBatteryLevel label="Radiator Battery" icon="batterylevel"
-            Text item=draytonwiser_itrv_WiserHeatXXXXXX_000XXXXXXXXXXXXX_currentSignalStrength label="Radiator Signal Strength" icon="network"
-        }
+Text label="Living Room" icon="sofa" {
+				Text item=livingroom_temperature
+				Setpoint item=livingroom_setpoint step=0.5
+				Text item=livingroom_humidity
+				Text item=Heating_GF_Living
+				Text item=livingroom_heatdemand
+				Switch item=ManualMode_GF_Living
+				Text item=BoostMode_GF_Living
+				Switch item=BoostDuration_GF_Living icon="time" mappings=[0="0", 0.5="0.5", 1="1", 2="2", 3="3"]
+				Text item=BoostRemaining_GF_Living icon="time"
+			}
 ```
