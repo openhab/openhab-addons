@@ -68,6 +68,12 @@
 		<label>Dimmer</label>
 		<description>Dimmer</description>
 		<category>DimmableLight</category>
+        <config-description>
+            <parameter name="rampingTime" type="integer">
+                <label>Ramping time</label>
+                <description>Ramping Time (in seconds), 0 = no ramping, 1..255 = seconds to 100% </description>
+            </parameter>
+        </config-description>
 	</channel-type>
 
 	<channel-type id="temperature">
