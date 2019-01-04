@@ -137,19 +137,31 @@ public class Commands {
     /**
      * Returns the json response of the set_switch_state command to the data object.
      *
-     * @param setSwitchStateResponse the json string
+     * @param switchStateResponse the json string
      * @return The data object containing the state data from the json string
      */
     public SetSwitchState setSwitchStateResponse(String switchStateResponse) {
         return gsonWithExpose.fromJson(switchStateResponse, SetSwitchState.class);
     }
 
+    /**
+     * Returns the json for the set_brightness command to set the brightness value.
+     *
+     * @param brightness the brightness value to set
+     * @return The json string of the command to send to the device
+     */
     public String setDimmerBrightness(int brightness) {
         SetBrightness setBrightness = new SetBrightness();
         setBrightness.setBrightness(brightness);
         return gsonWithExpose.toJson(setBrightness);
     }
 
+    /**
+     * Returns the json response of the set_brightness command to the data object.
+     *
+     * @param dimmerBrightnessResponse the json string
+     * @return The data object containing the state data from the json string
+     */
     public HasErrorResponse setDimmerBrightnessResponse(String dimmerBrightnessResponse) {
         return gsonWithExpose.fromJson(dimmerBrightnessResponse, SetBrightness.class);
     }

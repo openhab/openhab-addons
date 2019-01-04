@@ -5,7 +5,7 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="hs220">
-		<label>HS210</label>
+		<label>HS220</label>
 		<description>TP-Link HS220 Smart Wi-Fi Light Switch, Dimmer</description>
 		<category>WallSwitch</category>
 
