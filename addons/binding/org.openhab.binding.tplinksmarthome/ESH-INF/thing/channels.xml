@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="tplinksmarthome" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="tplinksmarthome"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
@@ -9,6 +10,13 @@
 		<label>Switch</label>
 		<description>Switch the Smart Home device on or off.</description>
 		<category>Switch</category>
+	</channel-type>
+	<channel-type id="switchReadonly">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Shows the switch state of the Smart Home device.</description>
+		<category>Switch</category>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="led" advanced="true">
 		<item-type>Switch</item-type>
