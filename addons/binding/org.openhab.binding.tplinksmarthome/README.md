@@ -120,23 +120,29 @@ Switching, Brightness and Color is done using the `color` channel.
 ### HS220 Smart Wi-Fi Light Switch, Dimmer
 
 * Switch On/Off
-* Brightness
+* Adjust the brightness
 * Wi-Fi signal strength (rssi)
 
-The default refresh is set to 1 second. So it polls the switch for status changes.
+Use the brightness channel on the HS220 with a Switch item can be used to switch the device on and off.
+It won't change the brightness value.
+
+The default refresh for switch devices is set to 1 second. So it polls the switch for status changes.
 If you don't use the switch manually often, you can set it to a higher refresh.
 The refresh is only relevant to detect manual using the switch.
 Switching via openHAB activates the switch directly.
 
 ### RE270K AC750 Wi-Fi Range Extender with Smart Plug
 
-* Switch On/Off
+* Switch On/Off (readonly)
 * Wi-Fi signal strength (rssi)
 
 ### RE370K AC1200 Wi-Fi Range Extender with Smart Plug
 
-* Switch On/Off
+* Switch On/Off (readonly)
 * Wi-Fi signal strength (rssi)
+
+It's not possible to set the switch state on the Range Extender.
+This is because it's not known what command to send to the device to make this possible.
 
 ## Prerequisites
 
@@ -177,17 +183,17 @@ Either `deviceId` or `ipAddress` must be set.
 
 All devices support some of the following channels:
 
-| Channel Type ID  | Item Type | Description                                    | Thing types supporting this channel                             |
-|------------------|-----------|------------------------------------------------|-----------------------------------------------------------------|
-| switch           | Switch    | Switch the Smart Home device on or off.        | KP100, HS100, HS105, HS110, HS200, HS210, HS220, RE270K, RE370K |
-| brightness       | Dimmer    | Set the brightness of Smart Home device.       | KB100, LB100, LB110, LB120, LB200, HS220                        |
-| colorTemperature | Dimmer    | Set the color temperature of Smart Home light. | KB130, LB120, LB130, LB230                                      |
-| color            | Color     | Set the color of the Smart Home light.         | KB130, LB130, LB230                                             |
-| power            | Number    | Actual energy usage in Watt.                   | HS110, LBxxx                                                    |
-| eneryUsage       | Number    | Energy Usage in kWh.                           | HS110                                                           |
-| current          | Number    | Actual current usage in Ampere.                | HS110                                                           |
-| voltage          | Number    | Actual voltage usage in Volt.                  | HS110                                                           |
-| rssi             | Number    | Wi-Fi signal strength indicator in dBm.        | All                                                             |
+| Channel Type ID  | Item Type | Description                                        | Thing types supporting this channel                      |
+|------------------|-----------|----------------------------------------------------|----------------------------------------------------------|
+| switch           | Switch    | Switch the Smart Home device on or off.            | KP100, HS100, HS105, HS110, HS200, HS210, RE270K, RE370K |
+| brightness       | Dimmer    | Set the brightness of Smart Home device or dimmer. | HS220, KB100, LB100, LB110, LB120, LB200, HS220          |
+| colorTemperature | Dimmer    | Set the color temperature of Smart Home light.     | KB130, LB120, LB130, LB230                               |
+| color            | Color     | Set the color of the Smart Home light.             | KB130, LB130, LB230                                      |
+| power            | Number    | Actual energy usage in Watt.                       | HS110, LBxxx                                             |
+| eneryUsage       | Number    | Energy Usage in kWh.                               | HS110                                                    |
+| current          | Number    | Actual current usage in Ampere.                    | HS110                                                    |
+| voltage          | Number    | Actual voltage usage in Volt.                      | HS110                                                    |
+| rssi             | Number    | Wi-Fi signal strength indicator in dBm.            | All                                                      |
 
 ## Full Example
 

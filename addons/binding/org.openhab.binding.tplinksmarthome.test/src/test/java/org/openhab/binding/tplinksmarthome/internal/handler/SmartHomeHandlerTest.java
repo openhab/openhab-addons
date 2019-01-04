@@ -100,6 +100,7 @@ public class SmartHomeHandlerTest {
 
     @Test
     public void testHandleCommandRefreshType() {
+        handler.initialize();
         assertHandleCommandRefreshType(-53);
     }
 
@@ -107,6 +108,7 @@ public class SmartHomeHandlerTest {
     public void testHandleCommandRefreshTypeRangeExtender() throws IOException {
         when(connection.sendCommand(Commands.getSysinfo()))
                 .thenReturn(ModelTestUtil.readJson("rangeextender_get_sysinfo_response"));
+        handler.initialize();
         assertHandleCommandRefreshType(-70);
     }
 
