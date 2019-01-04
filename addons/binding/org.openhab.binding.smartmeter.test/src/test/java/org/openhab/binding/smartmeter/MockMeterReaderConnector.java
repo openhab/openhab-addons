@@ -40,7 +40,14 @@ public class MockMeterReaderConnector extends ConnectorBase<Object> {
 
     @Override
     protected Object readNext(byte[] initMessage) throws IOException {
-        return readNextSupplier.get();
+        try {
+            return readNextSupplier.get();
+        } catch (RuntimeException e) {
+            if (e.getCause() instanceof IOException) {
+                throw (IOException) e.getCause();
+            }
+            throw e;
+        }
     }
 
     @Override
