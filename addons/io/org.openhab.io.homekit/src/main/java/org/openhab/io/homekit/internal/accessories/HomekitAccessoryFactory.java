@@ -29,6 +29,15 @@ public class HomekitAccessoryFactory {
     public static HomekitAccessory create(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws Exception {
         switch (taggedItem.getDeviceType()) {
+            case LEAK_SENSOR:
+                return new HomekitLeakSensorImpl(taggedItem, itemRegistry, updater);
+
+            case VALVE:
+                return new HomekitValveImpl(taggedItem, itemRegistry, updater);
+
+            case MOTION_SENSOR:
+                return new HomekitMotionSensorImpl(taggedItem, itemRegistry, updater);
+
             case LIGHTBULB:
                 return new HomekitLightbulbImpl(taggedItem, itemRegistry, updater);
 

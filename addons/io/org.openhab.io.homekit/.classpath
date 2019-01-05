@@ -3,7 +3,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src/main/java"/>
-	<classpathentry exported="true" kind="lib" path="lib/com.beowulfe.hap.hap-1.1.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/com.nimbusds.srp6a-1.5.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/io.netty.netty-all-4.0.32.Final.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/javax.json.javax.json-api-1.0.jar"/>
@@ -11,5 +10,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/org.bouncycastle.bcprov-jdk15on-1.51.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/org.glassfish.javax.json-1.0.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/org.zeromq.curve25519-java-0.1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/hap-1.1.5-SNAPSHOT.jar" sourcepath="lib/hap-1.1.5-SNAPSHOT-sources.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
