@@ -45,6 +45,9 @@ public class HomekitAccessoryFactory {
 
             case HUMIDITY_SENSOR:
                 return new HomekitHumiditySensorImpl(taggedItem, itemRegistry, updater);
+
+            case CONTACT_SENSOR:
+                return new HomekitContactSensorImpl(taggedItem, itemRegistry, updater);
         }
 
         throw new Exception("Unknown homekit type: " + taggedItem.getDeviceType());
