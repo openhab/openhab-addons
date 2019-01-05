@@ -153,7 +153,7 @@ public class OnkyoAlbumArt {
                         int bodyLength = data.length;
                         int i = new String(data).indexOf("image/");
                         if (i > 0) {
-                            while (i < bodyLength && data[i] != '\r') {
+                            while (i < bodyLength && (data[i] != '\r' && data[i] != '\n')) {
                                 i++;
                             }
                             while (i < bodyLength && (data[i] == '\r' || data[i] == '\n')) {
