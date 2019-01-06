@@ -13,7 +13,8 @@ import static org.openhab.binding.gruenbecksoftener.SoftenerBindingConstants.THI
 import java.util.Collections;
 import java.util.Set;
 
-import org.eclipse.smarthome.core.items.ItemFactory;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -30,12 +31,12 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Matthias Steigenberger - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.gruenbecksoftener")
 public class SoftenerHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SOFTENER);
-    private ItemFactory itemFactory;
-    private ChannelTypeRegistry channelTypeRegistry;
+    private @NonNullByDefault({}) ChannelTypeRegistry channelTypeRegistry;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -43,21 +44,20 @@ public class SoftenerHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Reference
-    public void setItemFactory(ItemFactory itemFactory) {
-        this.itemFactory = itemFactory;
-    }
-
-    @Reference
     public void setChannelTypeRegistry(ChannelTypeRegistry channelTypeRegistry) {
         this.channelTypeRegistry = channelTypeRegistry;
     }
 
+    public void unsetChannelTypeRegistry(ChannelTypeRegistry channelTypeRegistry) {
+        this.channelTypeRegistry = null;
+    }
+
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_SOFTENER)) {
-            return new SoftenerThingHandler(thing, itemFactory, channelTypeRegistry);
+            return new SoftenerThingHandler(thing, channelTypeRegistry);
         }
 
         return null;

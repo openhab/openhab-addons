@@ -2,12 +2,11 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry kind="src" path="src/main/java"/>
-	<classpathentry kind="src" path="src/main/java-extern"/>
-	<classpathentry kind="src" path="src/test/java"/>
-	<classpathentry exported="true" kind="lib" path="lib/jsml.jar" sourcepath="C:/Users/MATTHI~1/AppData/Local/Temp/.org.sf.feeling.decompiler1541328702186/source/jsml-1.1.2-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/j62056.jar" sourcepath="C:/Users/MATTHI~1/AppData/Local/Temp/.org.sf.feeling.decompiler1541855256679/source/j62056-2.1.0-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/rxjava-2.2.3.jar" sourcepath="C:/Users/MATTHI~1/AppData/Local/Temp/.org.sf.feeling.decompiler1541328702186/source/rxjava-2.2.3-sources.jar"/>
+	<classpathentry kind="src" path="src/main/java/"/>
+	<classpathentry kind="src" path="src/main/java-extern/"/>
+	<classpathentry exported="true" kind="lib" path="lib/jsml.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/j62056.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/rxjava-2.2.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/reactive-streams-1.0.2.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

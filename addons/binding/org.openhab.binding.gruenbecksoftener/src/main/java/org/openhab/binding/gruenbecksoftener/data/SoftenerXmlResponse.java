@@ -17,26 +17,25 @@ import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.w3c.dom.Element;
 
 /**
- * The {@link AirQualitiyJsonResponse} is the Java class used to map the XML
+ * The {@link SoftenerXmlResponse} is the Java class used to map the XML
  * response to the gruenbeck softener request.
  *
  * @author Matthias Steigenberger - Initial contribution
  */
 @XmlRootElement(name = "data")
+@NonNullByDefault
 public class SoftenerXmlResponse {
 
     @XmlElement
-    private String code;
+    private @NonNullByDefault({}) String code;
 
     // @XmlJavaTypeAdapter(SoftenerDataXmlAdapter.class)
     @XmlAnyElement
-    public Element[] data;
-
-    public SoftenerXmlResponse() {
-    }
+    public @NonNullByDefault({}) Element[] data;
 
     public String getCode() {
         return code;

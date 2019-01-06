@@ -6,7 +6,7 @@ Bundle-Name: Gruenbeck Softener Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.gruenbecksoftener;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.4.0.qualifier
+Bundle-Version: 2.5.0.qualifier
 Export-Package: 
  org.openhab.binding.gruenbecksoftener,
  org.openhab.binding.gruenbecksoftener.data,
@@ -14,9 +14,6 @@ Export-Package:
 Import-Package: 
  javax.measure,
  javax.measure.quantity,
- org.apache.commons.httpclient,
- org.apache.commons.httpclient.methods,
- org.apache.commons.httpclient.params,
  org.apache.commons.io,
  org.apache.commons.lang,
  org.eclipse.jdt.annotation;resolution:=optional,
@@ -44,3 +41,4 @@ Import-Package:
  org.openhab.binding.gruenbecksoftener.handler,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
+Automatic-Module-Name: org.openhab.binding.gruenbecksoftener

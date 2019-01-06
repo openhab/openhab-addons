@@ -1,13 +1,27 @@
+/**
+ * Copyright (c) 2010-2018 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.gruenbecksoftener.data;
 
-import org.openhab.binding.gruenbecksoftener.handler.SoftenerDataType;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
+/**
+ * The POJO which holds the data for reading out a specific value.
+ *
+ * @author Matthias Steigenberger - Initial contribution
+ *
+ */
+@NonNullByDefault
 public class SoftenerInputData {
 
-    private String datapointId;
-    private SoftenerDataType datatype;
-    private String code;
-    private String group;
+    private @NonNullByDefault({}) String datapointId;
+    private @NonNullByDefault({}) String code;
+    private @NonNullByDefault({}) String group;
 
     public String getDatapointId() {
         return datapointId;
@@ -15,14 +29,6 @@ public class SoftenerInputData {
 
     public void setDatapointId(String datapointId) {
         this.datapointId = datapointId;
-    }
-
-    public SoftenerDataType getDatatype() {
-        return datatype;
-    }
-
-    public void setDatatype(SoftenerDataType datatype) {
-        this.datatype = datatype;
     }
 
     public String getCode() {

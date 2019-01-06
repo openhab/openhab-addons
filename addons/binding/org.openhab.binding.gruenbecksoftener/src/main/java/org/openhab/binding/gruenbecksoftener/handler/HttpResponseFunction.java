@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2010-2018 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.gruenbecksoftener.handler;
 
 import java.io.IOException;
@@ -13,6 +21,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -24,6 +33,13 @@ import org.openhab.binding.gruenbecksoftener.internal.SoftenerConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The {@link ResponseFunction} which reads/writes the values through HTTP.
+ *
+ * @author Matthias Steigenberger - Initial contribution
+ *
+ */
+@NonNullByDefault
 public class HttpResponseFunction implements ResponseFunction {
 
     private final Logger logger = LoggerFactory.getLogger(HttpResponseFunction.class);
@@ -49,7 +65,7 @@ public class HttpResponseFunction implements ResponseFunction {
                             .collect(Collectors.joining("|"));
                     String request = "id=624";
                     String code = entry.getKey();
-                    if (code != null && !code.isEmpty()) {
+                    if (!code.isEmpty()) {
                         request += "&code=" + code;
                     }
                     String body = request + "&show=" + show + "~";
@@ -61,11 +77,11 @@ public class HttpResponseFunction implements ResponseFunction {
 
                         response.accept(responseConsumer.apply(httpResponse.getContentAsString()));
                     } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                        throw new RuntimeException(e);
+                        throw new IllegalStateException("Failed to read out the values with request: " + body, e);
                     }
                 });
             } catch (Exception e) {
-                throw new RuntimeException("Failed to start HTTP client", e);
+                throw new IllegalStateException("Failed to start HTTP client", e);
             } finally {
                 try {
                     client.stop();
@@ -111,7 +127,7 @@ public class HttpResponseFunction implements ResponseFunction {
             // "edit=D_C_1_1>2&id=2003&show=D_C_4_1|D_C_4_3|D_C_1_1|D_C_4_2|D_C_5_1|D_C_6_1|D_C_8_1|D_C_8_2|D_D_1|D_E_1|D_Y_9|D_Y_9_8|D_Y_9_24|D_C_7_1~");
             String body = "edit=" + edit.getDatapointId() + ">" + edit.getValue() + "&id=624&show="
                     + edit.getDatapointId() + "~";
-            body += edit.getCode() != null ? ("&code=" + edit.getCode()) : "";
+            body += !edit.getCode().isEmpty() ? ("&code=" + edit.getCode()) : "";
             ContentResponse response;
             try {
                 response = postMethod.content(
