@@ -63,7 +63,7 @@ public class EEPFactory {
     }
 
     public static EEP buildEEPFromTeachInERP1(ERP1Message msg) {
-        if (!msg.getIsTeachIn()) {
+        if (!msg.getIsTeachIn() && !(msg.getRORG() == RORG.RPS)) {
             return null;
         }
 
