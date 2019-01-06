@@ -1,5 +1,9 @@
 # Changes
 
+## 2.4.0-homekit-2
+
+Merge in [Epike's WindowCovering patch](https://github.com/epike/openhab2-addons/commit/8a9ca1b2d22f8a8b589dd9e3106ba618471511ab). The more-generic, Apple Homekit friendly label WindowCovering is used rather than Blinds. Users upgrading from Epike's patch should update their labels (Don't include both labels simultaneously, as `Blinds` is still supported, while deprecated).
+
 ## 2.4.0-homekit-1
 
 Pre-release which contains several improvements for the 2.4.0 Homekit plugin. Supports the following new devices:

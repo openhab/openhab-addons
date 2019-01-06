@@ -63,7 +63,8 @@ public class HomekitAccessoryFactory {
                 return new HomekitContactSensorImpl(taggedItem, itemRegistry, updater);
 
             case BLINDS:
-                return new HomekitBlindsImpl(taggedItem, itemRegistry, updater);
+            case WINDOW_COVERING:
+                return new HomekitWindowCoveringImpl(taggedItem, itemRegistry, updater);
         }
 
         throw new IllegalArgumentException("Unknown homekit type: " + taggedItem.getDeviceType());

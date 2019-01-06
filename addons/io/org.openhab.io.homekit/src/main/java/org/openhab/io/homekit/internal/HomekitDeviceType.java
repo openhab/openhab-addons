@@ -34,6 +34,8 @@ public enum HomekitDeviceType {
     VALVE("Valve"),
     LEAK_SENSOR("LeakSensor"),
     MOTION_SENSOR("MotionSensor"),
+    WINDOW_COVERING("WindowCovering"),
+    @Deprecated()
     BLINDS("Blinds");
 
     private static final Map<String, HomekitDeviceType> TAG_MAP = new HashMap<>();

@@ -12,9 +12,9 @@ import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
 import com.beowulfe.hap.accessories.WindowCovering;
 import com.beowulfe.hap.accessories.properties.WindowCoveringPositionState;
 
-public class HomekitBlindsImpl extends AbstractHomekitAccessoryImpl<RollershutterItem> implements WindowCovering {
+public class HomekitWindowCoveringImpl extends AbstractHomekitAccessoryImpl<RollershutterItem> implements WindowCovering {
 
-    public HomekitBlindsImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry, HomekitAccessoryUpdater updater) {
+    public HomekitWindowCoveringImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry, HomekitAccessoryUpdater updater) {
         super(taggedItem, itemRegistry, updater, RollershutterItem.class);
     }
 
