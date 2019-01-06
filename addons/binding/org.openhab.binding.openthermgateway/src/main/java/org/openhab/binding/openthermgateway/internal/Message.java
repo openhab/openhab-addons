@@ -74,11 +74,26 @@ public class Message {
     }
 
     public float getFloat() {
+        // f8.8, two's complement
+
         String data = getData(ByteType.Both);
 
-        int value = parseSignedInteger(data);
+        long value = Long.parseLong(data, 16);
 
-        // Floats are defined as f8.8, two's complement, divide by 256
+        // left padded with zeros
+        String binary = String.format("%16s", Long.toBinaryString(value)).replace(' ', '0');
+
+        if (binary.charAt(0) == '1') {
+            // negative value
+
+            String inverted = invertBinary(binary);
+
+            value = Long.parseLong(inverted, 2);
+            value = value + 1;
+            value = value * -1;
+        }
+
+        // divide by 2^8 = 256
         return (float) value / 256;
     }
 
@@ -184,4 +199,14 @@ public class Message {
         return result;
     }
 
+    private String invertBinary(String value) {
+        // There is probably a better solution, but for now this works
+        String result = value;
+
+        result = result.replace('1', 'X');
+        result = result.replace('0', '1');
+        result = result.replace('X', '0');
+
+        return result;
+    }
 }
