@@ -11,6 +11,7 @@ package org.openhab.binding.sensebox.internal.handler;
 import static org.eclipse.smarthome.core.library.unit.MetricPrefix.HECTO;
 import static org.openhab.binding.sensebox.internal.SenseBoxBindingConstants.*;
 
+import java.lang.IllegalStateException;
 import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -284,16 +285,22 @@ public class SenseBoxHandler extends BaseThingHandler {
                                 result = new QuantityType<>(bd, SmartHomeUnits.IRRADIANCE);
                                 break;
                             default:
-                                logger.info("    Could not determine unit for '{}', using default", data.getUnit());
+                                // The data provider might have configured some unknown unit, accept at least the measurement
+                                logger.debug("Could not determine unit for '{}', using default", data.getUnit());
                                 result = new QuantityType<>(bd, SmartHomeUnits.ONE);
                         }
-                    } catch (java.lang.IllegalStateException ise) {
+                    } catch (IllegalStateException ise) {
                         // java.lang.IllegalStateException: Error invoking #valueOf(String) on class 'org.eclipse.smarthome.core.library.types.QuantityType' with value '0.00 μg/m³'.
-                        logger.error("Could not create measured quantity", ise);
+
+                        // The root exception is an IllegalArgumentException from Quantities.getQuantitiy(), if the uom
+                        // library cannot parse the unit description
+                        // Caused by: java.lang.IllegalArgumentException: μg not recognized (in 5.90 μg/m³ at index 5)
+                        // at tec.uom.se.quantity.Quantities.getQuantity(Quantities.java:80) ~[?:?]
+                        logger.warn("Could not create measured quantity", ise);
                         result = new QuantityType<>(bd, SmartHomeUnits.ONE);
                     }
 
-                    logger.debug("    State: '{}'", result);
+                    logger.debug("State: '{}'", result);
                 }
             }
         }
