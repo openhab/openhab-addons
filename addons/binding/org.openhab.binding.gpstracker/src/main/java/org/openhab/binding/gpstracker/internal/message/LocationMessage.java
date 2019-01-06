@@ -113,4 +113,15 @@ public class LocationMessage {
     public BigDecimal getGpsAccuracy() {
         return gpsAccuracy;
     }
+
+    @Override
+    public String toString() {
+        return "LocationMessage [" + (type != null ? "type=" + type + ", " : "")
+                + (trackerId != null ? "trackerId=" + trackerId + ", " : "")
+                + (latitude != null ? "latitude=" + latitude + ", " : "")
+                + (longitude != null ? "longitude=" + longitude + ", " : "")
+                + (gpsAccuracy != null ? "gpsAccuracy=" + gpsAccuracy + ", " : "")
+                + (batteryLevel != null ? "batteryLevel=" + batteryLevel + ", " : "")
+                + (timestampMillis != null ? "timestampMillis=" + timestampMillis : "") + "]";
+    }
 }

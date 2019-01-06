@@ -297,9 +297,9 @@ public class TrackerHandler extends BaseThingHandler {
 
     private void updateDistanceChannelFromMessage(LocationMessage message, Channel c) {
         Configuration currentConfig = c.getConfiguration();
-        //convert into meters which is the unit of the threshold
-        double accuracyThreshold = convertToMeters(ConfigHelper.getAccuracyThreshold(currentConfig));
-        if (accuracyThreshold > message.getGpsAccuracy().doubleValue() || accuracyThreshold == 0) {
+        // convert into meters which is the unit of the threshold
+        Double accuracyThreshold = convertToMeters(ConfigHelper.getAccuracyThreshold(currentConfig));
+        if (accuracyThreshold > message.getGpsAccuracy().doubleValue() || accuracyThreshold.intValue() == 0) {
             if (accuracyThreshold > 0) {
                 logger.debug("Location accuracy is below required threshold: {}<{}", message.getGpsAccuracy(),
                         accuracyThreshold);
