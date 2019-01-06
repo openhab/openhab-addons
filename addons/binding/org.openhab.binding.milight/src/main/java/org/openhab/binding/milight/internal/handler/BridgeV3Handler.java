@@ -38,8 +38,8 @@ public class BridgeV3Handler extends AbstractBridgeHandler {
     protected final DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
     private boolean running = false;
 
-    public BridgeV3Handler(Bridge bridge) {
-        super(bridge);
+    public BridgeV3Handler(Bridge bridge, int bridgeOffset) {
+        super(bridge, bridgeOffset);
         discoverPacketV3 = new DatagramPacket(MilightBindingConstants.DISCOVER_MSG_V3,
                 MilightBindingConstants.DISCOVER_MSG_V3.length);
     }
