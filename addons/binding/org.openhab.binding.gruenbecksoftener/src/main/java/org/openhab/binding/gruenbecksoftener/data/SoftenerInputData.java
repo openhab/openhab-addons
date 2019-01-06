@@ -1,4 +1,6 @@
-package org.openhab.binding.gruenbecksoftener.handler;
+package org.openhab.binding.gruenbecksoftener.data;
+
+import org.openhab.binding.gruenbecksoftener.handler.SoftenerDataType;
 
 public class SoftenerInputData {
 

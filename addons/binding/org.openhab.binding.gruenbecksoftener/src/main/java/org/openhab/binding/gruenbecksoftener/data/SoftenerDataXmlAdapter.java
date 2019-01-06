@@ -1,4 +1,4 @@
-package org.openhab.binding.gruenbecksoftener.json;
+package org.openhab.binding.gruenbecksoftener.data;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package org.openhab.binding.gruenbecksoftener.json;
+package org.openhab.binding.gruenbecksoftener.data;
 
 import javax.xml.bind.annotation.XmlAnyElement;
 

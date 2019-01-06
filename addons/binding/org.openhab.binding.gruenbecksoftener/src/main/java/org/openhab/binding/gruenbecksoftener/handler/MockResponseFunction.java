@@ -7,9 +7,10 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.apache.commons.httpclient.HttpException;
+import org.openhab.binding.gruenbecksoftener.data.SoftenerEditData;
+import org.openhab.binding.gruenbecksoftener.data.SoftenerInputData;
+import org.openhab.binding.gruenbecksoftener.data.SoftenerXmlResponse;
 import org.openhab.binding.gruenbecksoftener.internal.SoftenerConfiguration;
-import org.openhab.binding.gruenbecksoftener.json.SoftenerEditData;
-import org.openhab.binding.gruenbecksoftener.json.SoftenerXmlResponse;
 
 public class MockResponseFunction implements ResponseFunction {
 

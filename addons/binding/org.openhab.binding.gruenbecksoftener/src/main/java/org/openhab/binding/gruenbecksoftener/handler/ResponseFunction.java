@@ -6,10 +6,10 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import org.apache.commons.httpclient.HttpException;
+import org.openhab.binding.gruenbecksoftener.data.SoftenerEditData;
+import org.openhab.binding.gruenbecksoftener.data.SoftenerInputData;
+import org.openhab.binding.gruenbecksoftener.data.SoftenerXmlResponse;
 import org.openhab.binding.gruenbecksoftener.internal.SoftenerConfiguration;
-import org.openhab.binding.gruenbecksoftener.json.SoftenerEditData;
-import org.openhab.binding.gruenbecksoftener.json.SoftenerXmlResponse;
 
 public interface ResponseFunction {
 
@@ -17,5 +17,5 @@ public interface ResponseFunction {
             Function<String, SoftenerXmlResponse> responseConsumer, Consumer<SoftenerXmlResponse> response);
 
     public SoftenerXmlResponse editParameter(SoftenerConfiguration config, SoftenerEditData edit,
-            Function<String, SoftenerXmlResponse> responseConsumer) throws HttpException, IOException;
+            Function<String, SoftenerXmlResponse> responseConsumer) throws IOException;
 }

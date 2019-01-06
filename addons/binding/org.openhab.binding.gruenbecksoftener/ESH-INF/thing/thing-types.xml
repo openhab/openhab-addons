@@ -15,6 +15,8 @@
 			<channel-group typeId="actuals" id="actuals"></channel-group>
 			<channel-group typeId="settings" id="settings"></channel-group>
 			<channel-group typeId="email" id="email"></channel-group>
+			<channel-group typeId="network" id="network"></channel-group>
+			<channel-group typeId="consumption" id="consumption"></channel-group>
 		</channel-groups>
 
 		<config-description>
@@ -92,32 +94,86 @@
 					<property name="code">245</property>
 				</properties>
 			</channel>
-			<channel id="D_Y_3_1" typeId="D_Y_3_1">
-				<properties>
-					<property name="code">245</property>
-				</properties>
-			</channel>
+			
 		</channels>
 	</channel-group-type>
 
-	<channel-type id="D_D_1">
+    <channel-group-type id="network">
+        <label>Network status</label>
+        <channels>
+            <channel id="D_C_3_6_1" typeId="D_C_3_6_1" />
+            <channel id="D_C_3_6_2" typeId="D_C_3_6_2" />
+            <channel id="D_C_3_6_3" typeId="D_C_3_6_3" />
+            <channel id="D_C_3_6_4" typeId="D_C_3_6_4" />
+            <channel id="D_C_3_6_5" typeId="D_C_3_6_5" />
+            <channel id="D_C_3_7_1" typeId="D_C_3_7_1" />
+            <channel id="D_C_3_7_2" typeId="D_C_3_7_2" />
+            <channel id="D_C_3_7_3" typeId="D_C_3_7_3" />
+        </channels>
+    </channel-group-type>
+    
+    
+    <channel-group-type id="consumption">
+        <label>Water-/Salt consumptions</label>
+        <channels>
+            <channel id="D_Y_1" typeId="D_Y_1"/>
+            <channel id="D_Y_2_1" typeId="D_Y_2_1"/>
+            <channel id="D_Y_2_2" typeId="D_Y_2_2"/>
+            <channel id="D_Y_2_3" typeId="D_Y_2_3"/>
+            <channel id="D_Y_2_4" typeId="D_Y_2_4"/>
+            <channel id="D_Y_2_5" typeId="D_Y_2_5"/>
+            <channel id="D_Y_2_6" typeId="D_Y_2_6"/>
+            <channel id="D_Y_2_7" typeId="D_Y_2_7"/>
+            <channel id="D_Y_2_8" typeId="D_Y_2_8"/>
+            <channel id="D_Y_2_9" typeId="D_Y_2_9"/>
+            <channel id="D_Y_2_10" typeId="D_Y_2_10"/>
+            <channel id="D_Y_2_11" typeId="D_Y_2_11"/>
+            <channel id="D_Y_2_12" typeId="D_Y_2_12"/>
+            <channel id="D_Y_2_13" typeId="D_Y_2_13"/>
+            <channel id="D_Y_2_14" typeId="D_Y_2_14"/>
+            <channel id="D_Y_2_15" typeId="D_Y_2_15"/>
+            <channel id="D_Y_2_16" typeId="D_Y_2_16"/>
+            <channel id="D_Y_2_17" typeId="D_Y_2_17"/>
+            <channel id="D_Y_2_18" typeId="D_Y_2_18"/>
+            <channel id="D_Y_2_19" typeId="D_Y_2_19"/>
+            <channel id="D_Y_2_20" typeId="D_Y_2_20"/>
+            <channel id="D_Y_2_21" typeId="D_Y_2_21"/>
+            <channel id="D_Y_2_22" typeId="D_Y_2_22"/>
+            <channel id="D_Y_2_23" typeId="D_Y_2_23"/>
+            <channel id="D_Y_2_24" typeId="D_Y_2_24"/>
+            <channel id="D_Y_2_25" typeId="D_Y_2_25"/>
+            <channel id="D_Y_2_26" typeId="D_Y_2_26"/>
+            <channel id="D_Y_2_27" typeId="D_Y_2_27"/>
+            <channel id="D_Y_3" typeId="D_Y_3"/>
+            <channel id="D_Y_3_1" typeId="D_Y_3_1"/>
+            <channel id="D_Y_3_2" typeId="D_Y_3_2"/>
+            <channel id="D_Y_3_3" typeId="D_Y_3_3"/>
+            <channel id="D_Y_3_4" typeId="D_Y_3_4"/>
+            <channel id="D_Y_3_5" typeId="D_Y_3_5"/>
+            <channel id="D_Y_3_6" typeId="D_Y_3_6"/>
+            <channel id="D_Y_3_7" typeId="D_Y_3_7"/>
+            <channel id="D_Y_3_8" typeId="D_Y_3_8"/>
+            <channel id="D_Y_3_9" typeId="D_Y_3_9"/>
+            <channel id="D_Y_3_10" typeId="D_Y_3_10"/>
+            <channel id="D_Y_3_11" typeId="D_Y_3_11"/>
+            <channel id="D_Y_3_12" typeId="D_Y_3_12"/>
+            <channel id="D_Y_3_13" typeId="D_Y_3_13"/>
+            <channel id="D_Y_3_14" typeId="D_Y_3_14"/>
+        </channels>
+    </channel-group-type>
+    
+    <channel-type id="D_D_1">
 		<item-type>Number:AmountOfSubstance</item-type>
 		<label>Rohwasserhärte</label>
 		<description>Rohwasserhärte</description>
-		<tags>
-            <tag>hardnessunit</tag>
-        </tags>
-		<state pattern="%.1f %unit%" />
+		<state pattern="%.1f °dH" />
 	</channel-type>
 
 	<channel-type id="D_D_2">
 		<item-type>Number:AmountOfSubstance</item-type>
 		<label>Sollwert Weichwasserhärte</label>
 		<description>Sollwert Weichwasserhärte</description>
-		<tags>
-			<tag>hardnessunit</tag>
-		</tags>
-		<state pattern="%.1f %unit%" />
+		<state pattern="%.1f °dH" />
 	</channel-type>
 
 	<channel-type id="D_A_4_1">
@@ -249,7 +305,7 @@
 
 	<channel-type id="D_C_6_1">
 		<item-type>Number</item-type>
-		<label>Display</label>
+		<label>Display aktiv in Standby</label>
 		<description>Aktives Display im Standby</description>
 		<state>
 			<options>
@@ -261,9 +317,9 @@
 
 	<channel-type id="D_C_7_1">
 		<item-type>Number:Time</item-type>
-		<label>Display</label>
-		<description>Aktives Display im Standby</description>
-		<state pattern="%d Day" />
+		<label>Service Intervalldauer</label>
+		<description>Service Intervalldauer</description>
+		<state pattern="%d d" />
 	</channel-type>
 
 	<channel-type id="D_C_8_1">
@@ -297,6 +353,9 @@
 		<item-type>String</item-type>
 		<label>E-Mail Adresse 1</label>
 		<description>E-Mail Adresse 1 für Weiterleitung Meldung/Störung(Base64 verschl.)</description>
+		<tags>
+            <tag>base64</tag>
+        </tags>
 		<state pattern="%s" />
 	</channel-type>
 
@@ -304,21 +363,27 @@
 		<item-type>String</item-type>
 		<label>E-Mail Adresse 2</label>
 		<description>E-Mail Adresse 2 für Weiterleitung Meldung/Störung(Base64 verschl.)</description>
-		<state pattern="%s" />
+		<tags>
+            <tag>base64</tag>
+        </tags><state pattern="%s" />
 	</channel-type>
 
 	<channel-type id="D_Y_8_1_3">
 		<item-type>String</item-type>
 		<label>E-Mail Adresse 3</label>
 		<description>E-Mail Adresse 3 für Weiterleitung Meldung/Störung(Base64 verschl.)</description>
-		<state pattern="%s" />
+		<tags>
+            <tag>base64</tag>
+        </tags><state pattern="%s" />
 	</channel-type>
 
 	<channel-type id="D_Y_8_2">
 		<item-type>String</item-type>
 		<label>SMTP Server</label>
 		<description>SMTP Server für E-Mail Versand</description>
-		<state pattern="%s" />
+		<tags>
+            <tag>base64</tag>
+        </tags><state pattern="%s" />
 	</channel-type>
 
 	<channel-type id="D_Y_8_2">
@@ -332,35 +397,46 @@
 		<item-type>String</item-type>
 		<label>Benutzername</label>
 		<description>Benutzername für E-Mail Versand</description>
-		<state pattern="%s" />
+		<tags>
+            <tag>base64</tag>
+        </tags><state pattern="%s" />
 	</channel-type>
 
 	<channel-type id="D_Y_8_5">
 		<item-type>String</item-type>
 		<label>Passwort</label>
 		<description>Passwort für E-Mail Versand</description>
-		<state pattern="%s" />
+		<tags>
+            <tag>base64</tag>
+        </tags><state pattern="%s" />
 	</channel-type>
 
 	<channel-type id="D_Y_8_6">
 		<item-type>String</item-type>
 		<label>E-Mail Adresse</label>
 		<description>E-Mail Adresse</description>
-		<state pattern="%s" />
+		<tags>
+            <tag>base64</tag>
+        </tags><state pattern="%s" />
 	</channel-type>
 
 	<channel-type id="D_Y_8_7">
 		<item-type>String</item-type>
 		<label>Telefonnummer</label>
 		<description>Telefonnummer</description>
-		<state pattern="%s" />
+		<tags>
+            <tag>base64</tag>
+        </tags><state pattern="%s" />
 	</channel-type>
 
 	<channel-type id="D_Y_8_8">
 		<item-type>String</item-type>
 		<label>Nachname</label>
 		<description>Nachname</description>
-		<state pattern="%s" />
+		<tags>
+            <tag>base64</tag>
+        </tags>
+        <state pattern="%s" />
 	</channel-type>
 
 	<channel-type id="D_Y_8_9">
@@ -388,14 +464,14 @@
 		<item-type>Number:AmountOfSubstance</item-type>
 		<label>Gesamtdurchfluss</label>
 		<description>Gesamtdurchfluss der Anlage</description>
-		<state readOnly="true" pattern="%.1f m3/h" />
+		<state readOnly="true" pattern="%.1f m^3/h" />
 	</channel-type>
 
 	<channel-type id="D_A_2_3">
 		<item-type>Number:Time</item-type>
 		<label>Salzreichweite</label>
 		<description>Salzreichweite in Tagen</description>
-		<state readOnly="true" pattern="%d Day" />
+		<state readOnly="true" pattern="%d d" />
 	</channel-type>
 
 	<channel-type id="D_A_1_6">
@@ -416,26 +492,337 @@
 		<item-type>Number:Volume</item-type>
 		<label>Zähler Weichwassermenge</label>
 		<description>Zähler Weichwassermenge</description>
-		<state readOnly="true" pattern="%.1f m3" />
+		<state readOnly="true" pattern="%.1f m^3" />
 	</channel-type>
 
 	<channel-type id="D_A_2_2">
 		<item-type>Number:Time</item-type>
-		<label>Nächste Regeneration</label>
-		<description>Tage bis zur nächsten Regeneration</description>
-		<state readOnly="true" pattern="%d Day" />
+		<label>Nächste Wartung</label>
+		<description>Tage bis zur nächsten Wartung</description>
+		<state readOnly="true" pattern="%d d" />
 	</channel-type>
 
-
-
+<!-- Netzwerkstatus WLAN -->
+    <channel-type id="D_C_3_6_1">
+        <item-type>String</item-type>
+        <label>IP-Address</label>
+        <description>WLAN IP-Address</description>
+        <state readOnly="true" pattern="%s" />
+    </channel-type>
+    <channel-type id="D_C_3_6_2">
+        <item-type>String</item-type>
+        <label>Default Gateway</label>
+        <description>WLAN Default Gateway</description>
+        <state readOnly="true" pattern="%s" />
+    </channel-type>
+    <channel-type id="D_C_3_6_3">
+        <item-type>String</item-type>
+        <label>Primary DNS</label>
+        <description>WLAN Primary DNS</description>
+        <state readOnly="true" pattern="%s" />
+    </channel-type>
+    <channel-type id="D_C_3_6_4">
+        <item-type>String</item-type>
+        <label>Secondary DNS</label>
+        <description>WLAN Secondary DNS</description>
+        <state readOnly="true" pattern="%s" />
+    </channel-type>
+    <channel-type id="D_C_3_6_5">
+        <item-type>Number</item-type>
+        <label>WLAN State</label>
+        <description>WLAN State</description>
+        <state readOnly="true">
+            <options>
+                <option value="0">disconnected</option>
+                <option value="1">connected</option>
+            </options>
+        </state>
+    </channel-type>
+    <channel-type id="D_C_3_7_1">
+        <item-type>String</item-type>
+        <label>Access Point IP</label>
+        <description>Access Point IP-Address</description>
+        <state readOnly="true" pattern="%s" />
+    </channel-type>
+    <channel-type id="D_C_3_7_2">
+        <item-type>String</item-type>
+        <label>Access Point SSID</label>
+        <description>Access Point SSID</description>
+        <state readOnly="true" pattern="%s" />
+    </channel-type>
+    <channel-type id="D_C_3_7_3">
+        <item-type>Number</item-type>
+        <label>Access Point State</label>
+        <description>Access Point State</description>
+        <state readOnly="true">
+            <options>
+                <option value="0">disconnected</option>
+                <option value="1">connected</option>
+            </options>
+        </state>
+    </channel-type>
+    
+<!-- Verbrauchswerte -->
+    <channel-type id="D_Y_1">
+        <item-type>Number:Volume</item-type>
+        <label>Waterconsumption yesterday</label>
+        <description>Waterconsumption yesterday</description>
+        <state readOnly="true" pattern="%.1f l" />
+    </channel-type>
+    <channel-type id="D_Y_2_1">
+        <item-type>Number:Volume</item-type>
+        <label>Waterconsumption yesterday</label>
+        <description>Waterconsumption yesterday</description>
+        <state readOnly="true" pattern="%.1f l" />
+    </channel-type>
+    <channel-type id="D_Y_2_2">
+        <item-type>Number:Volume</item-type>
+        <label>Waterconsumption 2 days ago</label>
+        <description>Waterconsumption 2 days ago</description>
+        <state readOnly="true" pattern="%.1f l" />
+    </channel-type>
+    <channel-type id="D_Y_2_3">
+        <item-type>Number:Volume</item-type>
+        <label>Waterconsumption 3 days ago</label>
+        <description>Waterconsumption 3 days ago</description>
+        <state readOnly="true" pattern="%.1f l" />
+    </channel-type>
+    <channel-type id="D_Y_2_4">
+        <item-type>Number:Volume</item-type>
+        <label>Waterconsumption 4 days ago</label>
+        <description>Waterconsumption 4 days ago</description>
+        <state readOnly="true" pattern="%.1f l" />
+    </channel-type>
+    <channel-type id="D_Y_2_5">
+        <item-type>Number:Volume</item-type>
+        <label>Waterconsumption 5 days ago</label>
+        <description>Waterconsumption 5 days ago</description>
+        <state readOnly="true" pattern="%.1f l" />
+    </channel-type>
+    <channel-type id="D_Y_2_6">
+        <item-type>Number:Volume</item-type>
+        <label>Waterconsumption 6 days ago</label>
+        <description>Waterconsumption 6 days ago</description>
+        <state readOnly="true" pattern="%.1f l" />
+    </channel-type>
+    <channel-type id="D_Y_2_7">
+        <item-type>Number:Volume</item-type>
+        <label>Waterconsumption 7 days ago</label>
+        <description>Waterconsumption 7 days ago</description>
+        <state readOnly="true" pattern="%.1f l" />
+    </channel-type>
+    <channel-type id="D_Y_2_8">
+        <item-type>Number:Volume</item-type>
+        <label>Waterconsumption 8 days ago</label>
+        <description>Waterconsumption 8 days ago</description>
+        <state readOnly="true" pattern="%.1f l" />
+    </channel-type>
+    <channel-type id="D_Y_2_9">
+        <item-type>Number:Volume</item-type>
+        <label>Waterconsumption 9 days ago</label>
+        <description>Waterconsumption 9 days ago</description>
+        <state readOnly="true" pattern="%.1f l" />
+    </channel-type>
+    <channel-type id="D_Y_2_10">
+        <item-type>Number:Volume</item-type>
+        <label>Waterconsumption 10 days ago</label>
+        <description>Waterconsumption 10 days ago</description>
+        <state readOnly="true" pattern="%.1f l" />
+    </channel-type>
+    <channel-type id="D_Y_2_11">
+        <item-type>Number:Volume</item-type>
+        <label>Waterconsumption 11 days ago</label>
+        <description>Waterconsumption 11 days ago</description>
+        <state readOnly="true" pattern="%.1f l" />
+    </channel-type>
+    <channel-type id="D_Y_2_12">
+        <item-type>Number:Volume</item-type>
+        <label>Waterconsumption 12 days ago</label>
+        <description>Waterconsumption 12 days ago</description>
+        <state readOnly="true" pattern="%.1f l" />
+    </channel-type>
+    <channel-type id="D_Y_2_13">
+        <item-type>Number:Volume</item-type>
+        <label>Waterconsumption 13 days ago</label>
+        <description>Waterconsumption 13 days ago</description>
+        <state readOnly="true" pattern="%.1f l" />
+    </channel-type>
+    <channel-type id="D_Y_2_14">
+        <item-type>Number:Volume</item-type>
+        <label>Waterconsumption 14 days ago</label>
+        <description>Waterconsumption 14 days ago</description>
+        <state readOnly="true" pattern="%.1f l" />
+    </channel-type>
+    <channel-type id="D_Y_2_15">
+        <item-type>Number:Volume</item-type>
+        <label>Waterconsumption 15 days ago</label>
+        <description>Waterconsumption 15 days ago</description>
+        <state readOnly="true" pattern="%.1f l" />
+    </channel-type>
+    <channel-type id="D_Y_2_16">
+        <item-type>Number:Volume</item-type>
+        <label>Waterconsumption 16 days ago</label>
+        <description>Waterconsumption 16 days ago</description>
+        <state readOnly="true" pattern="%.1f l" />
+    </channel-type>
+    <channel-type id="D_Y_2_17">
+        <item-type>Number:Volume</item-type>
+        <label>Waterconsumption 17 days ago</label>
+        <description>Waterconsumption 17 days ago</description>
+        <state readOnly="true" pattern="%.1f l" />
+    </channel-type>
+    <channel-type id="D_Y_2_18">
+        <item-type>Number:Volume</item-type>
+        <label>Waterconsumption 18 days ago</label>
+        <description>Waterconsumption 18 days ago</description>
+        <state readOnly="true" pattern="%.1f l" />
+    </channel-type>
+    <channel-type id="D_Y_2_19">
+        <item-type>Number:Volume</item-type>
+        <label>Waterconsumption 19 days ago</label>
+        <description>Waterconsumption 19 days ago</description>
+        <state readOnly="true" pattern="%.1f l" />
+    </channel-type>
+    <channel-type id="D_Y_2_20">
+        <item-type>Number:Volume</item-type>
+        <label>Waterconsumption 20 days ago</label>
+        <description>Waterconsumption 20 days ago</description>
+        <state readOnly="true" pattern="%.1f l" />
+    </channel-type>
+    <channel-type id="D_Y_2_21">
+        <item-type>Number:Volume</item-type>
+        <label>Waterconsumption 21 days ago</label>
+        <description>Waterconsumption 21 days ago</description>
+        <state readOnly="true" pattern="%.1f l" />
+    </channel-type>
+    <channel-type id="D_Y_2_22">
+        <item-type>Number:Volume</item-type>
+        <label>Waterconsumption 22 days ago</label>
+        <description>Waterconsumption 22 days ago</description>
+        <state readOnly="true" pattern="%.1f l" />
+    </channel-type>
+    <channel-type id="D_Y_2_23">
+        <item-type>Number:Volume</item-type>
+        <label>Waterconsumption 23 days ago</label>
+        <description>Waterconsumption 23 days ago</description>
+        <state readOnly="true" pattern="%.1f l" />
+    </channel-type>
+    <channel-type id="D_Y_2_24">
+        <item-type>Number:Volume</item-type>
+        <label>Waterconsumption 24 days ago</label>
+        <description>Waterconsumption 24 days ago</description>
+        <state readOnly="true" pattern="%.1f l" />
+    </channel-type>
+    <channel-type id="D_Y_2_25">
+        <item-type>Number:Volume</item-type>
+        <label>Waterconsumption 25 days ago</label>
+        <description>Waterconsumption 25 days ago</description>
+        <state readOnly="true" pattern="%.1f l" />
+    </channel-type>
+    <channel-type id="D_Y_2_26">
+        <item-type>Number:Volume</item-type>
+        <label>Waterconsumption 26 days ago</label>
+        <description>Waterconsumption 26 days ago</description>
+        <state readOnly="true" pattern="%.1f l" />
+    </channel-type>
+    <channel-type id="D_Y_2_27">
+        <item-type>Number:Volume</item-type>
+        <label>Waterconsumption 27 days ago</label>
+        <description>Waterconsumption 27 days ago</description>
+        <state readOnly="true" pattern="%.1f l" />
+    </channel-type>
+    
+    <channel-type id="D_Y_3">
+        <item-type>Number:Mass</item-type>
+        <label>Yearly salt consumption</label>
+        <description>Yearly salt consumption </description>
+        <state readOnly="true" pattern="%.1f kg" />
+    </channel-type>
+    
 	<channel-type id="D_Y_3_1">
 		<item-type>Number:Mass</item-type>
-		<label>Salzverbrauch gestern</label>
-		<description>Salzverbrauch gestern</description>
-		<state readOnly="true" pattern="%.1f m3" />
+		<label>Salt consumption yesterday</label>
+		<description>Salt consumption yesterday</description>
+		<state readOnly="true" pattern="%.1f kg" />
 	</channel-type>
-
-
+    <channel-type id="D_Y_3_2">
+        <item-type>Number:Mass</item-type>
+        <label>Salt consumption 2 days ago</label>
+        <description>Salt consumption 2 days ago</description>
+        <state readOnly="true" pattern="%.1f kg" />
+    </channel-type>
+    <channel-type id="D_Y_3_3">
+        <item-type>Number:Mass</item-type>
+        <label>Salt consumption 3 days ago</label>
+        <description>Salt consumption 3 days ago</description>
+        <state readOnly="true" pattern="%.1f kg" />
+    </channel-type>
+    <channel-type id="D_Y_3_4">
+        <item-type>Number:Mass</item-type>
+        <label>Salt consumption 4 days ago</label>
+        <description>Salt consumption 4 days ago</description>
+        <state readOnly="true" pattern="%.1f kg" />
+    </channel-type>
+    <channel-type id="D_Y_3_5">
+        <item-type>Number:Mass</item-type>
+        <label>Salt consumption 5 days ago</label>
+        <description>Salt consumption 5 days ago</description>
+        <state readOnly="true" pattern="%.1f kg" />
+    </channel-type>
+    <channel-type id="D_Y_3_6">
+        <item-type>Number:Mass</item-type>
+        <label>Salt consumption 6 days ago</label>
+        <description>Salt consumption 6 days ago</description>
+        <state readOnly="true" pattern="%.1f kg" />
+    </channel-type>
+    <channel-type id="D_Y_3_7">
+        <item-type>Number:Mass</item-type>
+        <label>Salt consumption 7 days ago</label>
+        <description>Salt consumption 7 days ago</description>
+        <state readOnly="true" pattern="%.1f kg" />
+    </channel-type>
+    <channel-type id="D_Y_3_8">
+        <item-type>Number:Mass</item-type>
+        <label>Salt consumption 8 days ago</label>
+        <description>Salt consumption 8 days ago</description>
+        <state readOnly="true" pattern="%.1f kg" />
+    </channel-type>
+    <channel-type id="D_Y_3_9">
+        <item-type>Number:Mass</item-type>
+        <label>Salt consumption 9 days ago</label>
+        <description>Salt consumption 9 days ago</description>
+        <state readOnly="true" pattern="%.1f kg" />
+    </channel-type>
+    <channel-type id="D_Y_3_10">
+        <item-type>Number:Mass</item-type>
+        <label>Salt consumption 10 days ago</label>
+        <description>Salt consumption 10 days ago</description>
+        <state readOnly="true" pattern="%.1f kg" />
+    </channel-type>
+    <channel-type id="D_Y_3_11">
+        <item-type>Number:Mass</item-type>
+        <label>Salt consumption 11 days ago</label>
+        <description>Salt consumption 11 days ago</description>
+        <state readOnly="true" pattern="%.1f kg" />
+    </channel-type>
+    <channel-type id="D_Y_3_12">
+        <item-type>Number:Mass</item-type>
+        <label>Salt consumption 12 days ago</label>
+        <description>Salt consumption 12 days ago</description>
+        <state readOnly="true" pattern="%.1f kg" />
+    </channel-type>
+    <channel-type id="D_Y_3_13">
+        <item-type>Number:Mass</item-type>
+        <label>Salt consumption 13 days ago</label>
+        <description>Salt consumption 13 days ago</description>
+        <state readOnly="true" pattern="%.1f kg" />
+    </channel-type>
+    <channel-type id="D_Y_3_14">
+        <item-type>Number:Mass</item-type>
+        <label>Salt consumption 14 days ago</label>
+        <description>Salt consumption 14 days ago</description>
+        <state readOnly="true" pattern="%.1f kg" />
+    </channel-type>
 
 
 </thing:thing-descriptions>

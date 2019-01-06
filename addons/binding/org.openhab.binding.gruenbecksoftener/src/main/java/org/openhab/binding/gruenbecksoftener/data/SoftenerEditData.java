@@ -1,9 +1,10 @@
-package org.openhab.binding.gruenbecksoftener.json;
+package org.openhab.binding.gruenbecksoftener.data;
 
 public class SoftenerEditData {
 
     private String datapointId;
     private String value;
+    private String code;
 
     public String getDatapointId() {
         return datapointId;
@@ -19,6 +20,14 @@ public class SoftenerEditData {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
 }

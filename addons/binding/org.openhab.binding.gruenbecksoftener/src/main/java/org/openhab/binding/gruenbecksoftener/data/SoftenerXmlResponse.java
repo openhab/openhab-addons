@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.gruenbecksoftener.json;
+package org.openhab.binding.gruenbecksoftener.data;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -47,6 +47,11 @@ public class SoftenerXmlResponse {
             return Arrays.stream(data).collect(Collectors.toMap(Element::getLocalName, Element::getTextContent));
         }
         return new HashMap<>();
+    }
+
+    @Override
+    public String toString() {
+        return "code=" + code + ", data=" + getData() + "";
     }
 
 }

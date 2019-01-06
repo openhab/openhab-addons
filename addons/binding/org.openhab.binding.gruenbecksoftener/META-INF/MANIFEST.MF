@@ -9,12 +9,9 @@ Bundle-Vendor: openHAB
 Bundle-Version: 2.4.0.qualifier
 Export-Package: 
  org.openhab.binding.gruenbecksoftener,
- org.openhab.binding.gruenbecksoftener.handler,
- org.openhab.binding.gruenbecksoftener.json
+ org.openhab.binding.gruenbecksoftener.data,
+ org.openhab.binding.gruenbecksoftener.handler
 Import-Package: 
- com.google.common.collect,
- com.google.gson,
- com.google.gson.annotations,
  javax.measure,
  javax.measure.quantity,
  org.apache.commons.httpclient,
@@ -23,6 +20,11 @@ Import-Package:
  org.apache.commons.io,
  org.apache.commons.lang,
  org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.jetty.client,
+ org.eclipse.jetty.client.api,
+ org.eclipse.jetty.client.http,
+ org.eclipse.jetty.client.util,
+ org.eclipse.jetty.util.component,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.i18n,
@@ -36,8 +38,9 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.core.types.util,
  org.openhab.binding.gruenbecksoftener,
+ org.openhab.binding.gruenbecksoftener.data,
  org.openhab.binding.gruenbecksoftener.handler,
- org.openhab.binding.gruenbecksoftener.json,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
