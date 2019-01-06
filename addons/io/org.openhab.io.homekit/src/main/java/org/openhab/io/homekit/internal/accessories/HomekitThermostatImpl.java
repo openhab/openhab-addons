@@ -102,28 +102,23 @@ class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<Grou
         Item item = getItemRegistry().get(heatingCoolingModeItemName);
         State state = item.getState();
         ThermostatMode mode;
-        if (state != null) {
-            String stringValue = state.toString();
 
-            if (stringValue.equals(settings.getThermostatCoolMode())) {
-                mode = ThermostatMode.COOL;
-            } else if (stringValue.equals(settings.getThermostatHeatMode())) {
-                mode = ThermostatMode.HEAT;
-            } else if (stringValue.equals(settings.getThermostatAutoMode())) {
-                mode = ThermostatMode.AUTO;
-            } else if (stringValue.equals(settings.getThermostatOffMode())) {
-                mode = ThermostatMode.OFF;
-            } else if (stringValue.equals("UNDEF") || stringValue.equals("NULL")) {
-                logger.debug("Heating cooling target mode not available. Relaying value of OFF to Homekit");
-                mode = ThermostatMode.OFF;
-            } else {
-                logger.error(
-                        "Unrecognized heating cooling target mode: {}. Expected cool, heat, auto, or off strings in value.",
-                        stringValue);
-                mode = ThermostatMode.OFF;
-            }
+        String stringValue = state.toString();
+        if (stringValue.equalsIgnoreCase(settings.getThermostatCoolMode())) {
+            mode = ThermostatMode.COOL;
+        } else if (stringValue.equalsIgnoreCase(settings.getThermostatHeatMode())) {
+            mode = ThermostatMode.HEAT;
+        } else if (stringValue.equalsIgnoreCase(settings.getThermostatAutoMode())) {
+            mode = ThermostatMode.AUTO;
+        } else if (stringValue.equalsIgnoreCase(settings.getThermostatOffMode())) {
+            mode = ThermostatMode.OFF;
+        } else if (stringValue.equals("UNDEF") || stringValue.equals("NULL")) {
+            logger.debug("Heating cooling target mode not available. Relaying value of OFF to Homekit");
+            mode = ThermostatMode.OFF;
         } else {
-            logger.info("Heating cooling target mode not available. Relaying value of OFF to Homekit");
+            logger.error("Unrecognized heating cooling target mode: {}. Expected {}, {}, {}, or {} strings in value.",
+                    stringValue, settings.getThermostatCoolMode(), settings.getThermostatHeatMode(),
+                    settings.getThermostatAutoMode(), settings.getThermostatOffMode());
             mode = ThermostatMode.OFF;
         }
         return CompletableFuture.completedFuture(mode);
