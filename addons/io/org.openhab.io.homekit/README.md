@@ -75,6 +75,9 @@ A full list of supported accessory types can be found in the table below.
 |                       | CurrentTemperature            | Number                    | The current temperature, same as above                                                                                                                                                                                                        |
 |                       | homekit:HeatingCoolingMode    | String                    | Indicates the current mode of the device: OFF, AUTO, HEAT, COOL. The string's value must match those defined in the thermostat*Mode properties. This is a HomeKit-specific term and therefore the tags needs to be prefixed with "homekit:"   |
 |                       | TargetTemperature             | Number                    | A target temperature that will engage the thermostat's heating and cooling actions as necessary, depending on the heatingCoolingMode                                                                                                          |
+| LeakSensor            |                               | Switch                    | Leak sensor. ON state means flood detected. |
+| MotionSensor          |                               | Switch                    | Motion sensor. ON state means motion detected. |
+| Valve                 |                               | Switch                    | Simple open/close valve. Assumes liquid is flowing when valve is open. |
 
 See the sample below for example items:
 
@@ -86,6 +89,10 @@ Group gDownstairsThermostat "Downstairs Thermostat" (gFF) [ "Thermostat" ]
 Number DownstairsThermostatCurrentTemp "Downstairs Thermostat Current Temperature" (gDownstairsThermostat) [ "CurrentTemperature" ]
 Number DownstairsThermostatTargetTemperature "Downstairs Thermostat Target Temperature" (gDownstairsThermostat) [ "TargetTemperature" ]
 String DownstairsThermostatHeatingCoolingMode "Downstairs Thermostat Heating/Cooling Mode" (gDownstairsThermostat) [ "homekit:HeatingCoolingMode" ]
+
+Switch Hallway_MotionSensor "Hallway Motion Sensor" [ "MotionSensor" ]
+Switch MasterBath_Toilet_LeakSensor "Master Bath Toilet Flood" ["LeakSensor"]
+Switch WaterMain_Valve "Water Main Valve" ["Valve"]
 ```
 
 ## Common Problems
