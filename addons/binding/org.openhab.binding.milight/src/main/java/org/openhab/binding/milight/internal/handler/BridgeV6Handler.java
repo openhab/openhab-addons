@@ -42,8 +42,8 @@ public class BridgeV6Handler extends AbstractBridgeHandler implements ISessionSt
     private String offlineReason = "";
     private @Nullable ScheduledFuture<?> scheduledFuture;
 
-    public BridgeV6Handler(Bridge bridge) {
-        super(bridge);
+    public BridgeV6Handler(Bridge bridge, int bridgeOffset) {
+        super(bridge, bridgeOffset);
     }
 
     /**
@@ -127,8 +127,9 @@ public class BridgeV6Handler extends AbstractBridgeHandler implements ISessionSt
             default:
                 // Delay putting the session offline
                 offlineReason = state.name();
-                scheduledFuture = scheduler.schedule(() -> updateStatus(ThingStatus.OFFLINE,
-                        ThingStatusDetail.CONFIGURATION_PENDING, offlineReason), 1000, TimeUnit.MILLISECONDS);
+                scheduledFuture = scheduler.schedule(
+                        () -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, offlineReason),
+                        1000, TimeUnit.MILLISECONDS);
                 break;
         }
     }
