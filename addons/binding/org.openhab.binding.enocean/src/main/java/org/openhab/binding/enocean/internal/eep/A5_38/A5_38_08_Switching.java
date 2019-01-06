@@ -8,13 +8,10 @@
  */
 package org.openhab.binding.enocean.internal.eep.A5_38;
 
-import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.CHANNEL_GENERAL_SWITCHING;
-
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 
@@ -45,20 +42,5 @@ public class A5_38_08_Switching extends _4BSMessage {
         } else {
             setData(CommandId, Zero, Zero, (byte) (TeachInBit | SwitchOff));
         }
-    }
-
-    private State getSwitch() {
-        return getBit(getDB_0Value(), 0) ? OnOffType.ON : OnOffType.OFF;
-    }
-
-    @Override
-    protected State convertToStateImpl(String channelId, String channelTypeId, State currentState,
-            Configuration config) {
-        switch (channelId) {
-            case CHANNEL_GENERAL_SWITCHING:
-                return getSwitch();
-        }
-
-        return UnDefType.UNDEF;
     }
 }
