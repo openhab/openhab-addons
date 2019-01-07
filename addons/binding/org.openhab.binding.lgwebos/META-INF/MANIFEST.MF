@@ -32,6 +32,7 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.openhab.binding.lgwebos.action,
  org.openhab.binding.lgwebos.handler,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
