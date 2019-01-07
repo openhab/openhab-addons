@@ -123,6 +123,7 @@ public class Connection {
     private @Nullable Date verifyTime;
     private long renewTime = 0;
     private @Nullable String deviceName;
+    private @Nullable String accountCustomerId;
 
     private final Gson gson = new Gson();
     private final Gson gsonWithNullSerialization;
@@ -235,7 +236,7 @@ public class Connection {
             return "";
         }
         StringBuilder builder = new StringBuilder();
-        builder.append("5\n"); // version
+        builder.append("6\n"); // version
         builder.append(frc);
         builder.append("\n");
         builder.append(serial);
@@ -247,6 +248,8 @@ public class Connection {
         builder.append(amazonSite);
         builder.append("\n");
         builder.append(deviceName);
+        builder.append("\n");
+        builder.append(accountCustomerId);
         builder.append("\n");
         builder.append(loginTime.getTime());
         builder.append("\n");
@@ -315,10 +318,11 @@ public class Connection {
         Scanner scanner = new Scanner(data);
         String version = scanner.nextLine();
         // check if serialize version
-        if (!version.equals("5")) {
+        if (!version.equals("5") && !version.equals("6")) {
             scanner.close();
             return null;
         }
+        int intVersion = Integer.parseInt(version);
 
         frc = scanner.nextLine();
         serial = scanner.nextLine();
@@ -333,6 +337,14 @@ public class Connection {
         setAmazonSite(domain);
 
         deviceName = scanner.nextLine();
+
+        if (intVersion > 5) {
+            String accountCustomerId = scanner.nextLine();
+            if (!StringUtils.equals(accountCustomerId, "null")) {
+                this.accountCustomerId = accountCustomerId;
+            }
+        }
+
         Date loginTime = new Date(Long.parseLong(scanner.nextLine()));
         CookieStore cookieStore = cookieManager.getCookieStore();
         cookieStore.removeAll();
@@ -358,8 +370,30 @@ public class Connection {
         scanner.close();
         try {
             checkRenewSession();
-        } catch (URISyntaxException | IOException | ConnectionException e) {
 
+            if (StringUtils.isEmpty(this.accountCustomerId)) {
+                List<Device> devices = this.getDeviceList();
+                for (Device device : devices) {
+                    if (StringUtils.equals(device.serialNumber, this.serial)) {
+                        this.accountCustomerId = device.deviceOwnerCustomerId;
+                        break;
+                    }
+                }
+                if (StringUtils.isEmpty(this.accountCustomerId)) {
+                    for (Device device : devices) {
+                        if (StringUtils.equals(device.accountName, "This Device")) {
+                            this.accountCustomerId = device.deviceOwnerCustomerId;
+                            String serial = device.serialNumber;
+                            if (serial != null) {
+                                this.serial = serial;
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        } catch (URISyntaxException | IOException | ConnectionException e) {
+            logger.debug("Getting account customer Id failed {}", e);
         }
         return loginTime;
     }
@@ -385,7 +419,7 @@ public class Connection {
             }
         }
 
-        Scanner inputScanner = StringUtils.isEmpty(charSet) ? new Scanner(readerStream)
+        Scanner inputScanner = StringUtils.isEmpty(charSet) ? new Scanner(readerStream, StandardCharsets.UTF_8.name())
                 : new Scanner(readerStream, charSet);
         Scanner scannerWithoutDelimiter = inputScanner.useDelimiter("\\A");
         String result = scannerWithoutDelimiter.hasNext() ? scannerWithoutDelimiter.next() : null;
@@ -561,8 +595,8 @@ public class Connection {
         String[] pairs = query.split("&");
         for (String pair : pairs) {
             int idx = pair.indexOf("=");
-            queryParameters.put(URLDecoder.decode(pair.substring(0, idx), "UTF-8"),
-                    URLDecoder.decode(pair.substring(idx + 1), "UTF-8"));
+            queryParameters.put(URLDecoder.decode(pair.substring(0, idx), StandardCharsets.UTF_8.name()),
+                    URLDecoder.decode(pair.substring(idx + 1), StandardCharsets.UTF_8.name()));
         }
         String accessToken = queryParameters.get("openid.oa2.access_token");
 
@@ -690,7 +724,7 @@ public class Connection {
     public boolean checkRenewSession() throws UnknownHostException, URISyntaxException, IOException {
         if (System.currentTimeMillis() >= this.renewTime) {
             String renewTokenPostData = "app_name=Amazon%20Alexa&app_version=2.2.223830.0&di.sdk.version=6.10.0&source_token="
-                    + URLEncoder.encode(refreshToken, "UTF-8")
+                    + URLEncoder.encode(refreshToken, StandardCharsets.UTF_8.name())
                     + "&package_name=com.amazon.echo&di.hw.version=iPhone&platform=iOS&requested_token_type=access_token&source_token_type=refresh_token&di.os.name=iOS&di.os.version=11.4.1&current_version=6.10.0";
             String renewTokenRepsonseJson = makeRequestAndReturnString("POST", "https://api.amazon.com/auth/token",
                     renewTokenPostData, false, null);
@@ -853,9 +887,10 @@ public class Connection {
     }
 
     public JsonPlaylists getPlaylists(Device device) throws IOException, URISyntaxException {
-        String json = makeRequestAndReturnString(
-                alexaServer + "/api/cloudplayer/playlists?deviceSerialNumber=" + device.serialNumber + "&deviceType="
-                        + device.deviceType + "&mediaOwnerCustomerId=" + device.deviceOwnerCustomerId);
+        String json = makeRequestAndReturnString(alexaServer + "/api/cloudplayer/playlists?deviceSerialNumber="
+                + device.serialNumber + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId="
+                + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
+                        : this.accountCustomerId));
         JsonPlaylists playlists = parseJson(json, JsonPlaylists.class);
         return playlists;
     }
@@ -932,7 +967,9 @@ public class Connection {
             makeRequest("POST",
                     alexaServer + "/api/tunein/queue-and-play?deviceSerialNumber=" + device.serialNumber
                             + "&deviceType=" + device.deviceType + "&guideId=" + stationId
-                            + "&contentType=station&callSign=&mediaOwnerCustomerId=" + device.deviceOwnerCustomerId,
+                            + "&contentType=station&callSign=&mediaOwnerCustomerId="
+                            + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
+                                    : this.accountCustomerId),
                     "", true, true, null);
         }
     }
@@ -945,7 +982,9 @@ public class Connection {
             makeRequest("POST",
                     alexaServer + "/api/cloudplayer/queue-and-play?deviceSerialNumber=" + device.serialNumber
                             + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId="
-                            + device.deviceOwnerCustomerId + "&shuffle=false",
+                            + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
+                                    : this.accountCustomerId)
+                            + "&shuffle=false",
                     command, true, true, null);
         }
     }
@@ -959,7 +998,9 @@ public class Connection {
             makeRequest("POST",
                     alexaServer + "/api/cloudplayer/queue-and-play?deviceSerialNumber=" + device.serialNumber
                             + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId="
-                            + device.deviceOwnerCustomerId + "&shuffle=false",
+                            + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
+                                    : this.accountCustomerId)
+                            + "&shuffle=false",
                     command, true, true, null);
         }
     }
@@ -1083,7 +1124,9 @@ public class Connection {
             operationPayload.addProperty("deviceType", device.deviceType);
             operationPayload.addProperty("deviceSerialNumber", device.serialNumber);
             operationPayload.addProperty("locale", "");
-            operationPayload.addProperty("customerId", device.deviceOwnerCustomerId);
+            operationPayload.addProperty("customerId",
+                    StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
+                            : this.accountCustomerId);
         }
         if (parameters != null) {
             for (String key : parameters.keySet()) {
@@ -1153,7 +1196,10 @@ public class Connection {
 
             // "customerId": "ALEXA_CUSTOMER_ID"
             String customerId = "\"customerId\":\"ALEXA_CUSTOMER_ID\"";
-            String newCustomerId = "\"customerId\":\"" + device.deviceOwnerCustomerId + "\"";
+            String newCustomerId = "\"customerId\":\""
+                    + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
+                            : this.accountCustomerId)
+                    + "\"";
             sequenceJson = sequenceJson.replace(customerId.subSequence(0, customerId.length()),
                     newCustomerId.subSequence(0, newCustomerId.length()));
 

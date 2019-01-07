@@ -13,6 +13,7 @@ import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBi
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -54,6 +55,7 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDeviceNotificati
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMediaState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMediaState.QueueEntry;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMusicProvider;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationResponse;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationSound;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayerState;
@@ -63,6 +65,7 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayerState.Play
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayerState.PlayerInfo.Progress;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayerState.PlayerInfo.Provider;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayerState.PlayerInfo.Volume;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlaylists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,6 +106,9 @@ public class EchoHandler extends BaseThingHandler {
     private boolean updateStartCommand = true;
     private @Nullable Integer noticationVolumeLevel;
     private @Nullable Boolean ascendingAlarm;
+    private @Nullable JsonPlaylists playLists;
+    private @Nullable JsonNotificationSound @Nullable [] alarmSounds;
+    private @Nullable List<JsonMusicProvider> musicProviders;
 
     private @Nullable JsonNotificationResponse currentNotification;
     private @Nullable ScheduledFuture<?> currentNotifcationUpdateTimer;
@@ -171,7 +177,19 @@ public class EchoHandler extends BaseThingHandler {
         return this.bluetoothState;
     }
 
-    public @Nullable Connection findConnection() {
+    public @Nullable JsonPlaylists findPlaylists() {
+        return this.playLists;
+    }
+
+    public @Nullable JsonNotificationSound @Nullable [] findAlarmSounds() {
+        return this.alarmSounds;
+    }
+
+    public @Nullable List<JsonMusicProvider> findMusicProviders() {
+        return this.musicProviders;
+    }
+
+    private @Nullable Connection findConnection() {
         AccountHandler accountHandler = this.account;
         if (accountHandler != null) {
             return accountHandler.findConnection();
@@ -610,7 +628,7 @@ public class EchoHandler extends BaseThingHandler {
 
                 }
                 this.disableUpdate = false;
-                updateState(account, device, state, null, null);
+                updateState(account, device, state, null, null, null, null, null);
             };
             if (command instanceof RefreshType) {
                 waitForUpdate = 0;
@@ -696,7 +714,9 @@ public class EchoHandler extends BaseThingHandler {
 
     public void updateState(AccountHandler accountHandler, @Nullable Device device,
             @Nullable BluetoothState bluetoothState, @Nullable DeviceNotificationState deviceNotificationState,
-            @Nullable AscendingAlarmModel ascendingAlarmModel) {
+            @Nullable AscendingAlarmModel ascendingAlarmModel, @Nullable JsonPlaylists playlists,
+            @Nullable JsonNotificationSound @Nullable [] alarmSounds,
+            @Nullable List<JsonMusicProvider> musicProviders) {
         try {
             if (deviceNotificationState != null) {
                 noticationVolumeLevel = deviceNotificationState.volumeLevel;
@@ -704,12 +724,22 @@ public class EchoHandler extends BaseThingHandler {
             if (ascendingAlarmModel != null) {
                 ascendingAlarm = ascendingAlarmModel.ascendingAlarmEnabled;
             }
+            if (playlists != null) {
+                this.playLists = playlists;
+            }
+            if (alarmSounds != null) {
+                this.alarmSounds = alarmSounds;
+            }
+            if (musicProviders != null) {
+                this.musicProviders = musicProviders;
+            }
             if (!setDeviceAndUpdateThingState(accountHandler, device, null)) {
                 return;
             }
             if (device == null) {
                 return;
             }
+
             if (this.disableUpdate) {
                 return;
             }
@@ -1103,7 +1133,7 @@ public class EchoHandler extends BaseThingHandler {
                 AccountHandler account = this.account;
                 Device device = this.device;
                 if (account != null && device != null) {
-                    updateState(account, device, null, null, null);
+                    updateState(account, device, null, null, null, null, null, null);
                 }
         }
     }
