@@ -44,7 +44,7 @@ This binding uses the same API as the Web-Browser-Based Alexa site (alexa.amazon
 In other words, it simulates a user which is using the web page.
 Unfortunately, the binding can get broken if Amazon change the web site.
 
-The binding is tested with amazon.de, amazon.fr, amazon.com and amazon.co.uk accounts, but should also work with all others. 
+The binding is tested with amazon.de, amazon.fr, amazon.it, amazon.com and amazon.co.uk accounts, but should also work with all others. 
 
 ## Supported Things
 
