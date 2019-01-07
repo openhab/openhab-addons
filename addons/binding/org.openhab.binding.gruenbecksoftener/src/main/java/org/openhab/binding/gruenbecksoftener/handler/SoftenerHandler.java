@@ -14,10 +14,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -36,6 +38,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SoftenerHandler {
+
+    private static final int MAX_ITEMS_TO_READ = 20;
 
     private final Logger logger = LoggerFactory.getLogger(SoftenerHandler.class);
 
@@ -75,11 +79,11 @@ public class SoftenerHandler {
             runnable = () -> {
                 lastRun = System.currentTimeMillis();
                 try {
-                    responseFunction.accept(config, inputData.get());
-                    // // Request new softener data
-                    // // Group the data to collect at once by the group
-                    // inputData.get().collect(Collectors.groupingBy(SoftenerInputData::getGroup)).entrySet().stream()
-                    // .forEach(input -> responseFunction.accept(config, input.getValue().stream()));
+                    // Request new softener data
+                    // Read only #MAX_ITEMS_TO_READ as the softener would otherwise be unresponsive
+                    AtomicInteger counter = new AtomicInteger(0);
+                    inputData.get().collect(Collectors.groupingBy(it -> counter.getAndIncrement() / MAX_ITEMS_TO_READ))
+                            .values().stream().forEach(input -> responseFunction.accept(config, input.stream()));
 
                 } catch (Exception e) {
                     logger.error("Exception occurred during execution: {}", e.getMessage(), e);

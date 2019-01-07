@@ -41,6 +41,11 @@ public class SoftenerXmlResponse {
         return code;
     }
 
+    /**
+     * Gets the id of the datapoint mapped to the value which was returned from the device.
+     * 
+     * @return a map with id -> value.
+     */
     public Map<String, String> getData() {
         if (data != null) {
             return Arrays.stream(data).collect(Collectors.toMap(Element::getLocalName, Element::getTextContent));

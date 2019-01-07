@@ -94,7 +94,7 @@
 					<property name="code">245</property>
 				</properties>
 			</channel>
-			
+			<channel id="D_Y_5" typeId="D_Y_5"/>
 		</channels>
 	</channel-group-type>
 
@@ -159,6 +159,21 @@
 			<channel id="D_Y_3_12" typeId="D_Y_3_12"/>
 			<channel id="D_Y_3_13" typeId="D_Y_3_13"/>
 			<channel id="D_Y_3_14" typeId="D_Y_3_14"/>
+			
+			<channel id="D_A_3_2_1" typeId="D_A_3_2_1"/>
+			<channel id="D_A_3_2_2" typeId="D_A_3_2_2"/>
+			<channel id="D_A_3_2_3" typeId="D_A_3_2_3"/>
+			<channel id="D_A_3_2_4" typeId="D_A_3_2_4"/>
+			<channel id="D_A_3_2_5" typeId="D_A_3_2_5"/>
+			<channel id="D_A_3_2_6" typeId="D_A_3_2_6"/>
+			<channel id="D_A_3_2_7" typeId="D_A_3_2_7"/>
+			<channel id="D_A_3_2_8" typeId="D_A_3_2_8"/>
+			<channel id="D_A_3_2_9" typeId="D_A_3_2_9"/>
+			<channel id="D_A_3_2_10" typeId="D_A_3_2_10"/>
+			<channel id="D_A_3_2_11" typeId="D_A_3_2_11"/>
+			<channel id="D_A_3_2_12" typeId="D_A_3_2_12"/>
+			<channel id="D_A_3_2_13" typeId="D_A_3_2_13"/>
+			<channel id="D_A_3_2_14" typeId="D_A_3_2_14"/>
 		</channels>
 	</channel-group-type>
 	
@@ -824,6 +839,111 @@
 		<state readOnly="true" pattern="%.1f kg" />
 	</channel-type>
 
-
+    <channel-type id="D_A_3_2_1">
+        <item-type>Number</item-type>
+        <label>Last regeneration value</label>
+        <description>Last regeneration value</description>
+        <state readOnly="true" pattern="%d %%" />
+    </channel-type>
+    <channel-type id="D_A_3_2_2">
+        <item-type>Number</item-type>
+        <label>Regeneration value 2 days ago</label>
+        <description>Regeneration value 2 days ago</description>
+        <state readOnly="true" pattern="%d %%" />
+    </channel-type>
+    <channel-type id="D_A_3_2_3">
+        <item-type>Number</item-type>
+        <label>Regeneration value 3 days ago</label>
+        <description>Regeneration value 3 days ago</description>
+        <state readOnly="true" pattern="%d %%" />
+    </channel-type>
+    <channel-type id="D_A_3_2_4">
+        <item-type>Number</item-type>
+        <label>Regeneration value 4 days ago</label>
+        <description>Regeneration value 4 days ago</description>
+        <state readOnly="true" pattern="%d %%" />
+    </channel-type>
+    <channel-type id="D_A_3_2_4">
+        <item-type>Number</item-type>
+        <label>Regeneration value 4 days ago</label>
+        <description>Regeneration value 4 days ago</description>
+        <state readOnly="true" pattern="%d %%" />
+    </channel-type>
+    <channel-type id="D_A_3_2_5">
+        <item-type>Number</item-type>
+        <label>Regeneration value 5 days ago</label>
+        <description>Regeneration value 5 days ago</description>
+        <state readOnly="true" pattern="%d %%" />
+    </channel-type>
+    <channel-type id="D_A_3_2_6">
+        <item-type>Number</item-type>
+        <label>Regeneration value 6 days ago</label>
+        <description>Regeneration value 6 days ago</description>
+        <state readOnly="true" pattern="%d %%" />
+    </channel-type>
+    <channel-type id="D_A_3_2_7">
+        <item-type>Number</item-type>
+        <label>Regeneration value 7 days ago</label>
+        <description>Regeneration value 7 days ago</description>
+        <state readOnly="true" pattern="%d %%" />
+    </channel-type>
+    <channel-type id="D_A_3_2_8">
+        <item-type>Number</item-type>
+        <label>Regeneration value 8 days ago</label>
+        <description>Regeneration value 8 days ago</description>
+        <state readOnly="true" pattern="%d %%" />
+    </channel-type>
+    <channel-type id="D_A_3_2_9">
+        <item-type>Number</item-type>
+        <label>Regeneration value 9 days ago</label>
+        <description>Regeneration value 9 days ago</description>
+        <state readOnly="true" pattern="%d %%" />
+    </channel-type>
+    <channel-type id="D_A_3_2_10">
+        <item-type>Number</item-type>
+        <label>Regeneration value 10 days ago</label>
+        <description>Regeneration value 10 days ago</description>
+        <state readOnly="true" pattern="%d %%" />
+    </channel-type>
+    <channel-type id="D_A_3_2_11">
+        <item-type>Number</item-type>
+        <label>Regeneration value 11 days ago</label>
+        <description>Regeneration value 11 days ago</description>
+        <state readOnly="true" pattern="%d %%" />
+    </channel-type>
+    <channel-type id="D_A_3_2_12">
+        <item-type>Number</item-type>
+        <label>Regeneration value 12 days ago</label>
+        <description>Regeneration value 12 days ago</description>
+        <state readOnly="true" pattern="%d %%" />
+    </channel-type>
+    <channel-type id="D_A_3_2_13">
+        <item-type>Number</item-type>
+        <label>Regeneration value 13 days ago</label>
+        <description>Regeneration value 13 days ago</description>
+        <state readOnly="true" pattern="%d %%" />
+    </channel-type>
+    <channel-type id="D_A_3_2_14">
+        <item-type>Number</item-type>
+        <label>Regeneration value 14 days ago</label>
+        <description>Regeneration value 14 days ago</description>
+        <state readOnly="true" pattern="%d %%" />
+    </channel-type>
+    
+    <channel-type id="D_Y_5">
+        <item-type>Number</item-type>
+        <label>Current regeneration step</label>
+        <description>Current regeneration step</description>
+        <state readOnly="true">
+            <options>
+                <option value="0">No regeneration</option>
+                <option value="1">Filling brine tank</option>
+                <option value="2">Salting</option>
+                <option value="3">Displacing</option>
+                <option value="4">Backwashing</option>
+                <option value="1">Initial filtrate</option>
+            </options>
+        </state>
+    </channel-type>
 </thing:thing-descriptions>
 

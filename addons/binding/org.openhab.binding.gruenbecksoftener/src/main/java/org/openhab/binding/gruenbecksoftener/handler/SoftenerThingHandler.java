@@ -139,7 +139,9 @@ public class SoftenerThingHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            updateChannel(channelUID, softenerResponse);
+            if (softenerResponse != null) {
+                updateChannel(channelUID, softenerResponse);
+            }
         } else {
             Channel channel = getThing().getChannel(channelUID.getId());
             if (channel == null) {
