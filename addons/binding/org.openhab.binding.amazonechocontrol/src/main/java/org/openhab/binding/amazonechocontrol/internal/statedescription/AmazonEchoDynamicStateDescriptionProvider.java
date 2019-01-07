@@ -10,8 +10,6 @@ package org.openhab.binding.amazonechocontrol.internal.statedescription;
 
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.*;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,8 +28,6 @@ import org.eclipse.smarthome.core.thing.type.DynamicStateDescriptionProvider;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
-import org.openhab.binding.amazonechocontrol.internal.ConnectionException;
-import org.openhab.binding.amazonechocontrol.internal.HttpException;
 import org.openhab.binding.amazonechocontrol.internal.handler.AccountHandler;
 import org.openhab.binding.amazonechocontrol.internal.handler.EchoHandler;
 import org.openhab.binding.amazonechocontrol.internal.handler.FlashBriefingProfileHandler;
@@ -46,10 +42,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.gson.JsonSyntaxException;
 
 /**
  * Dynamic channel state description provider.
@@ -61,7 +53,6 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDescriptionProvider {
 
-    private final Logger logger = LoggerFactory.getLogger(AmazonEchoDynamicStateDescriptionProvider.class);
     private @Nullable ThingRegistry thingRegistry;
 
     @Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.DYNAMIC)
@@ -142,21 +133,12 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
             if (handler == null) {
                 return originalStateDescription;
             }
-            Connection connection = handler.findConnection();
-            if (connection == null) {
+
+            JsonPlaylists playLists = handler.findPlaylists();
+            if (playLists == null) {
                 return originalStateDescription;
             }
-            Device device = handler.findDevice();
-            if (device == null) {
-                return originalStateDescription;
-            }
-            JsonPlaylists playLists;
-            try {
-                playLists = connection.getPlaylists(device);
-            } catch (IOException | HttpException | URISyntaxException | JsonSyntaxException | ConnectionException e) {
-                logger.warn("Get playlist failed: {}", e);
-                return originalStateDescription;
-            }
+
             ArrayList<StateOption> options = new ArrayList<>();
             options.add(new StateOption("", ""));
             @Nullable
@@ -181,28 +163,19 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
             if (handler == null) {
                 return originalStateDescription;
             }
-            Connection connection = handler.findConnection();
-            if (connection == null) {
-                return originalStateDescription;
-            }
-            Device device = handler.findDevice();
-            if (device == null) {
+
+            JsonNotificationSound[] notificationSounds = handler.findAlarmSounds();
+            if (notificationSounds == null) {
                 return originalStateDescription;
             }
 
-            JsonNotificationSound[] notificationSounds;
-            try {
-                notificationSounds = connection.getNotificationSounds(device);
-            } catch (IOException | HttpException | URISyntaxException | JsonSyntaxException | ConnectionException e) {
-                logger.warn("Get notification sounds failed: {}", e);
-                return originalStateDescription;
-            }
             ArrayList<StateOption> options = new ArrayList<>();
             options.add(new StateOption("", ""));
 
             for (JsonNotificationSound notificationSound : notificationSounds) {
-                if (notificationSound.folder == null && notificationSound.providerId != null
-                        && notificationSound.id != null && notificationSound.displayName != null) {
+                if (notificationSound != null && notificationSound.folder == null
+                        && notificationSound.providerId != null && notificationSound.id != null
+                        && notificationSound.displayName != null) {
                     String providerSoundId = notificationSound.providerId + ":" + notificationSound.id;
                     options.add(new StateOption(providerSoundId, notificationSound.displayName));
                 }
@@ -241,11 +214,10 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
             if (handler == null) {
                 return originalStateDescription;
             }
-            Connection connection = handler.findConnection();
-            if (connection == null) {
+            List<JsonMusicProvider> musicProviders = handler.findMusicProviders();
+            if (musicProviders == null) {
                 return originalStateDescription;
             }
-            List<JsonMusicProvider> musicProviders = connection.getMusicProviders();
 
             ArrayList<StateOption> options = new ArrayList<>();
             for (JsonMusicProvider musicProvider : musicProviders) {
