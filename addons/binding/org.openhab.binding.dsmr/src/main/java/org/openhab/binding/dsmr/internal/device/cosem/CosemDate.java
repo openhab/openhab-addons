@@ -99,8 +99,7 @@ class CosemDate extends CosemValueDescriptor<DateTimeType> {
                 LocalDateTime localDateTime = LocalDateTime.parse(m.group(1), cosemDateFormat.formatter);
                 return new DateTimeType(ZonedDateTime.of(localDateTime, ZoneId.systemDefault()));
             }
-            logger.debug("{} does not match pattern: {}", cosemValue, cosemDateFormat.pattern);
         }
-        throw new ParseException("value: " + cosemValue + " is not a known CosemDate string", 0);
+        throw new ParseException("Cosem value: '" + cosemValue + "' is not a known CosemDate string", 0);
     }
 }
