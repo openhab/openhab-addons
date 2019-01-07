@@ -83,7 +83,7 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
         }
 
         state.buttonevent = null;
-        valueUpdated(channelUID.getId(), state);
+        valueUpdated(channelUID.getId(), state, false);
     }
 
     @Override
@@ -176,7 +176,7 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
 
                     // Initial data
                     for (Channel channel : thing.getChannels()) {
-                        valueUpdated(channel.getUID().getId(), newState.state);
+                        valueUpdated(channel.getUID().getId(), newState.state, true);
                     }
 
                     // Real-time data
@@ -205,7 +205,7 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
         }
     }
 
-    public void valueUpdated(String channelID, SensorState state) {
+    public void valueUpdated(String channelID, SensorState state, boolean initializing) {
         this.state = state;
 
         Integer buttonevent = state.buttonevent;
@@ -276,7 +276,7 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
                 }
                 break;
             case BindingConstants.CHANNEL_BUTTONEVENT:
-                if (buttonevent != null) {
+                if (buttonevent != null && !initializing) {
                     triggerChannel(BindingConstants.CHANNEL_BUTTONEVENT, String.valueOf(buttonevent));
                 }
                 break;
@@ -286,7 +286,7 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
     @Override
     public void websocketUpdate(String sensorID, SensorState newState) {
         for (Channel channel : thing.getChannels()) {
-            valueUpdated(channel.getUID().getId(), newState);
+            valueUpdated(channel.getUID().getId(), newState, false);
         }
     }
 }
