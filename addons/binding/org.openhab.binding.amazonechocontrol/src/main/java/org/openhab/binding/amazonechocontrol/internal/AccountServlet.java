@@ -15,9 +15,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.ServletException;
@@ -168,7 +170,12 @@ public class AccountServlet extends HttpServlet {
             String getUrl = "https://alexa." + connection.getAmazonSite() + "/"
                     + uri.substring(PROXY_URI_PART.length());
 
-            this.handleProxyRequest(connection, resp, verb, getUrl, null, null, connection.getAmazonSite());
+            String postData = null;
+            if (verb == "POST" || verb == "PUT") {
+                postData = req.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+            }
+
+            this.handleProxyRequest(connection, resp, verb, getUrl, null, postData, true, connection.getAmazonSite());
             return;
         }
 
@@ -194,7 +201,7 @@ public class AccountServlet extends HttpServlet {
             if (name.equals("failedSignInCount")) {
                 value = "ape:AA==";
             }
-            postDataBuilder.append(URLEncoder.encode(value, "UTF-8"));
+            postDataBuilder.append(URLEncoder.encode(value, StandardCharsets.UTF_8.name()));
         }
 
         uri = req.getRequestURI();
@@ -215,7 +222,7 @@ public class AccountServlet extends HttpServlet {
         }
         String referer = "https://www." + site;
         String postData = postDataBuilder.toString();
-        handleProxyRequest(connection, resp, "POST", postUrl, referer, postData, site);
+        handleProxyRequest(connection, resp, "POST", postUrl, referer, postData, false, site);
     }
 
     @Override
@@ -241,7 +248,7 @@ public class AccountServlet extends HttpServlet {
                 String getUrl = "https://www." + connection.getAmazonSite() + "/"
                         + uri.substring(FORWARD_URI_PART.length());
 
-                this.handleProxyRequest(connection, resp, "GET", getUrl, null, null, connection.getAmazonSite());
+                this.handleProxyRequest(connection, resp, "GET", getUrl, null, null, false, connection.getAmazonSite());
                 return;
             }
 
@@ -256,7 +263,7 @@ public class AccountServlet extends HttpServlet {
                 String getUrl = "https://alexa." + connection.getAmazonSite() + "/"
                         + uri.substring(PROXY_URI_PART.length());
 
-                this.handleProxyRequest(connection, resp, "GET", getUrl, null, null, connection.getAmazonSite());
+                this.handleProxyRequest(connection, resp, "GET", getUrl, null, null, false, connection.getAmazonSite());
                 return;
             }
 
@@ -583,7 +590,7 @@ public class AccountServlet extends HttpServlet {
     }
 
     void handleProxyRequest(Connection connection, HttpServletResponse resp, String verb, String url,
-            @Nullable String referer, @Nullable String postData, String site) throws IOException {
+            @Nullable String referer, @Nullable String postData, boolean json, String site) throws IOException {
         HttpsURLConnection urlConnection;
         try {
             Map<String, String> headers = null;
@@ -592,7 +599,7 @@ public class AccountServlet extends HttpServlet {
                 headers.put("Referer", referer);
             }
 
-            urlConnection = connection.makeRequest(verb, url, postData, false, false, headers);
+            urlConnection = connection.makeRequest(verb, url, postData, json, false, headers);
             if (urlConnection.getResponseCode() == 302) {
                 {
                     String location = urlConnection.getHeaderField("location");

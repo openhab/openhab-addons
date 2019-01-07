@@ -53,6 +53,9 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonCommandPayloadPu
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDeviceNotificationState.DeviceNotificationState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonFeed;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMusicProvider;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationSound;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlaylists;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPushCommand;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonWakeWords.WakeWord;
 import org.osgi.service.http.HttpService;
@@ -390,27 +393,51 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                 updateDeviceList();
                 updateFlashBriefingHandlers();
 
-                // update notification states
                 DeviceNotificationState[] deviceNotificationStates = null;
-                if (currentConnection.getIsLoggedIn()) {
-                    deviceNotificationStates = currentConnection.getDeviceNotificationStates();
-                }
-
-                // update ascending alarm
                 AscendingAlarmModel[] ascendingAlarmModels = null;
-                if (currentConnection.getIsLoggedIn()) {
-                    ascendingAlarmModels = currentConnection.getAscendingAlarm();
-                }
-
-                // update bluetooth states
                 JsonBluetoothStates states = null;
+                List<JsonMusicProvider> musicProviders = null;
                 if (currentConnection.getIsLoggedIn()) {
-                    states = currentConnection.getBluetoothConnectionStates();
-                }
+                    // update notification states
+                    deviceNotificationStates = currentConnection.getDeviceNotificationStates();
 
+                    // update ascending alarm
+                    ascendingAlarmModels = currentConnection.getAscendingAlarm();
+
+                    // update bluetooth states
+                    states = currentConnection.getBluetoothConnectionStates();
+
+                    // update music providers
+                    if (currentConnection.getIsLoggedIn()) {
+                        try {
+                            musicProviders = currentConnection.getMusicProviders();
+                        } catch (HttpException | JsonSyntaxException | ConnectionException e) {
+                            logger.debug("Update music provider failed {}", e);
+                        }
+                    }
+                }
                 // forward device information to echo handler
                 for (EchoHandler child : echoHandlers) {
                     Device device = findDeviceJson(child);
+
+                    @Nullable
+                    JsonNotificationSound[] notificationSounds = null;
+                    JsonPlaylists playlists = null;
+                    if (device != null && currentConnection.getIsLoggedIn()) {
+                        // update notification sounds
+                        try {
+                            notificationSounds = currentConnection.getNotificationSounds(device);
+                        } catch (IOException | HttpException | JsonSyntaxException | ConnectionException e) {
+                            logger.debug("Update notification sounds failed {}", e);
+                        }
+                        // update playlists
+                        try {
+                            playlists = currentConnection.getPlaylists(device);
+                        } catch (IOException | HttpException | JsonSyntaxException | ConnectionException e) {
+                            logger.debug("Update playlist failed {}", e);
+                        }
+                    }
+
                     BluetoothState state = null;
                     if (states != null) {
                         state = states.findStateByDevice(device);
@@ -436,7 +463,8 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                             }
                         }
                     }
-                    child.updateState(this, device, state, deviceNotificationState, ascendingAlarmModel);
+                    child.updateState(this, device, state, deviceNotificationState, ascendingAlarmModel, playlists,
+                            notificationSounds, musicProviders);
                 }
 
                 // update account state
