@@ -33,6 +33,7 @@ public class P1TelegramParserTest {
     @Parameters(name = "{0}")
     public static final List<Object[]> data() {
         return Arrays.asList(new Object[][] {
+            { "ace4000", 57, },
             { "dsmr_40", 39, },
             { "dsmr_42", 39, },
             { "dsmr_50", 41, },
@@ -55,6 +56,6 @@ public class P1TelegramParserTest {
     public void testParsing() {
         P1Telegram telegram = TelegramReaderUtil.readTelegram(telegramName, TelegramState.OK);
         assertEquals("Expected number of objects", numberOfCosemObjects,
-                telegram.getCosemObjects().stream().mapToInt(o -> o.getCosemValues().size()).sum());
+            telegram.getCosemObjects().stream().mapToInt(o -> o.getCosemValues().size()).sum());
     }
 }
