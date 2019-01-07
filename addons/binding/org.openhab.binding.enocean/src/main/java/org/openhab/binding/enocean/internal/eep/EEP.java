@@ -18,8 +18,11 @@ import java.util.Arrays;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
@@ -96,8 +99,23 @@ public abstract class EEP {
                     String.format("Channel %s(%s) is not supported", channelId, channelTypeId));
         }
 
-        if (channelTypeId.equals(CHANNEL_RECEIVINGSTATE)) {
-            return convertToReceivingState();
+        switch (channelTypeId) {
+            case CHANNEL_RECEIVINGSTATE:
+                return convertToReceivingState();
+            case CHANNEL_RSSI:
+                if (this.optionalData == null || this.optionalData.length < 6) {
+                    return UnDefType.UNDEF;
+                }
+
+                return new QuantityType<>((this.optionalData[5] & 0xFF) * -1, SmartHomeUnits.ONE);
+            case CHANNEL_REPEATCOUNT:
+                if (this.optionalData == null || this.optionalData.length < 6) {
+                    return UnDefType.UNDEF;
+                }
+
+                return new QuantityType<>(this.status & 0b1111, SmartHomeUnits.ONE);
+            case CHANNEL_LASTRECEIVED:
+                return new DateTimeType();
         }
 
         return convertToStateImpl(channelId, channelTypeId, currentState, config);

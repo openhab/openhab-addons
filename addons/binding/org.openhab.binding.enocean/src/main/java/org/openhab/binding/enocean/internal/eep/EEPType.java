@@ -480,6 +480,15 @@ public enum EEPType {
             this.channelIdsWithConfig.put(id, new Configuration());
             this.supportedChannels.put(id, CHANNELID2CHANNELDESCRIPTION.get(id));
         }
+
+        this.channelIdsWithConfig.put(CHANNEL_RSSI, new Configuration());
+        this.supportedChannels.put(CHANNEL_RSSI, CHANNELID2CHANNELDESCRIPTION.get(CHANNEL_RSSI));
+
+        this.channelIdsWithConfig.put(CHANNEL_REPEATCOUNT, new Configuration());
+        this.supportedChannels.put(CHANNEL_REPEATCOUNT, CHANNELID2CHANNELDESCRIPTION.get(CHANNEL_REPEATCOUNT));
+
+        this.channelIdsWithConfig.put(CHANNEL_LASTRECEIVED, new Configuration());
+        this.supportedChannels.put(CHANNEL_LASTRECEIVED, CHANNELID2CHANNELDESCRIPTION.get(CHANNEL_LASTRECEIVED));
     }
 
     EEPType(RORG rorg, int func, int type, boolean supportsRefresh, String manufactorSuffix, int manufId,
@@ -499,6 +508,15 @@ public enum EEPType {
         for (String id : channelConfigs.keySet()) {
             this.supportedChannels.put(id, CHANNELID2CHANNELDESCRIPTION.get(id));
         }
+
+        this.channelIdsWithConfig.put(CHANNEL_RSSI, new Configuration());
+        this.supportedChannels.put(CHANNEL_RSSI, CHANNELID2CHANNELDESCRIPTION.get(CHANNEL_RSSI));
+
+        this.channelIdsWithConfig.put(CHANNEL_REPEATCOUNT, new Configuration());
+        this.supportedChannels.put(CHANNEL_REPEATCOUNT, CHANNELID2CHANNELDESCRIPTION.get(CHANNEL_REPEATCOUNT));
+
+        this.channelIdsWithConfig.put(CHANNEL_LASTRECEIVED, new Configuration());
+        this.supportedChannels.put(CHANNEL_LASTRECEIVED, CHANNELID2CHANNELDESCRIPTION.get(CHANNEL_LASTRECEIVED));
     }
 
     public Class<? extends EEP> getEEPClass() {
