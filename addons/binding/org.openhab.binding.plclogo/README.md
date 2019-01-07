@@ -126,7 +126,8 @@ Follow block names are allowed for datetime things:
 | Word  | `VW[0-849]` | `VW[0-849]` |
 
 If parameter `type` is `"date"`, then the binding will try to interpret incoming data as calendar date.
-If `type` is set to `"time"`, then incoming data will be tried to interpret as time of day.
+The time this case will be taken from openHAB host. If `type` is set to `"time"`, then incoming data
+will be tried to interpret as time of day. The date this case will be taken from openHAB host.
 
 ### Pulse Things
 
@@ -152,6 +153,12 @@ Follow observed block names are allowed for pulse things:
 | Bit   | `M[1-27]`         | `M[1-64]`         |
 | Bit   |                   | `NI[1-64]`        |
 | Bit   |                   | `NQ[1-64]`        |
+
+If `observe` is not set or set equal `block`, simply pulse with length `pulse` milliseconds is send
+to `block`. If `observe` is set and differ from `block`, binding will wait for value change on `observe`
+and send then a pulse with length `pulse` milliseconds to block. Please note, update rate for change
+detection depends on bridge refresh value. For both use cases: if `block` was `0` then `1` is send and
+vice versa. Attention: sometimes PaperUI fails to update the state of items properly.
 
 ## Channels
 
@@ -225,18 +232,12 @@ Dependent on configured LOGO! PLC and thing kind, follow channels are available:
 | `VW[0-849]`       | `value` | `value` | `Number` |
 | `VD[0-847]`       | `value` | `value` | `Number` |
 
-### Datime
+### DateTime
 
-Format pattern depends for datetime channels is
+Format pattern depends for date/time channels is
 
 ```
 channel="plclogo:datetime:<DeviceId>:<ThingId>:<date/time>"
-```
-
-Additionally raw block data is provided via `value` channel
-
-```
-channel="plclogo:datetime:<DeviceId>:<ThingId>:value"
 ```
 
 Dependent on configured LOGO! PLC and thing kind, follow channels are available:
@@ -244,9 +245,16 @@ Dependent on configured LOGO! PLC and thing kind, follow channels are available:
 | Kind        | `0BA7`  | `0BA8`  | Item       |
 | ----------- | :-----: | :-----: | ---------- |
 | `VW[0-849]` | `date`  | `date`  | `DateTime` |
-| `VW[0-849]` | `value` | `value` | `Number`   |
 | `VW[0-849]` | `time`  | `time`  | `DateTime` |
 | `VW[0-849]` | `value` | `value` | `Number`   |
+
+Channel `date` is available, if thing is configured as `"date"`. Is thing configured
+as `"time"`, then channel `time` is provided. Raw block data is provided via `value`
+channel, independed from thing configuration:
+
+```
+channel="plclogo:datetime:<DeviceId>:<ThingId>:value"
+```
 
 ### Pulse
 
