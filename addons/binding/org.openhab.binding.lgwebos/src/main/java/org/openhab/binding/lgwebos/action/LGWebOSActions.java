@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.lgwebos.internal.action;
+package org.openhab.binding.lgwebos.action;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -224,5 +224,71 @@ public class LGWebOSActions implements ThingActions {
                 logger.debug("Response: {}", object == null ? "OK" : object.toString());
             }
         };
+    }
+
+    // delegation methods for "legacy" rule support
+
+    public static void showToast(@Nullable ThingActions actions, String text) throws IOException {
+        if (actions instanceof LGWebOSActions) {
+            ((LGWebOSActions) actions).showToast(text);
+        } else {
+            throw new IllegalArgumentException("Instance is not an LGWebOSActions class.");
+        }
+    }
+
+    public static void showToast(@Nullable ThingActions actions, String icon, String text) throws IOException {
+        if (actions instanceof LGWebOSActions) {
+            ((LGWebOSActions) actions).showToast(icon, text);
+        } else {
+            throw new IllegalArgumentException("Instance is not an LGWebOSActions class.");
+        }
+    }
+
+    public static void launchBrowser(@Nullable ThingActions actions, String url) throws IOException {
+        if (actions instanceof LGWebOSActions) {
+            ((LGWebOSActions) actions).showToast(url);
+        } else {
+            throw new IllegalArgumentException("Instance is not an LGWebOSActions class.");
+        }
+    }
+
+    public static void launchApplication(@Nullable ThingActions actions, String appId) throws IOException {
+        if (actions instanceof LGWebOSActions) {
+            ((LGWebOSActions) actions).showToast(appId);
+        } else {
+            throw new IllegalArgumentException("Instance is not an LGWebOSActions class.");
+        }
+    }
+
+    public static void sendText(@Nullable ThingActions actions, String text) {
+        if (actions instanceof LGWebOSActions) {
+            ((LGWebOSActions) actions).sendText(text);
+        } else {
+            throw new IllegalArgumentException("Instance is not an LGWebOSActions class.");
+        }
+    }
+
+    public static void sendButton(@Nullable ThingActions actions, String button) {
+        if (actions instanceof LGWebOSActions) {
+            ((LGWebOSActions) actions).sendText(button);
+        } else {
+            throw new IllegalArgumentException("Instance is not an LGWebOSActions class.");
+        }
+    }
+
+    public static void increaseChannel(@Nullable ThingActions actions) {
+        if (actions instanceof LGWebOSActions) {
+            ((LGWebOSActions) actions).increaseChannel();
+        } else {
+            throw new IllegalArgumentException("Instance is not an LGWebOSActions class.");
+        }
+    }
+
+    public static void decreaseChannel(@Nullable ThingActions actions) {
+        if (actions instanceof LGWebOSActions) {
+            ((LGWebOSActions) actions).decreaseChannel();
+        } else {
+            throw new IllegalArgumentException("Instance is not an LGWebOSActions class.");
+        }
     }
 }

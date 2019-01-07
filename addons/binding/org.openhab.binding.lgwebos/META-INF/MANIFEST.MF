@@ -12,6 +12,7 @@ Bundle-SymbolicName: org.openhab.binding.lgwebos;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
 Export-Package: 
+ org.openhab.binding.lgwebos.action,
  org.openhab.binding.lgwebos.handler
 Import-Package: 
  javax.jmdns,
