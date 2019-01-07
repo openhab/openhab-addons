@@ -14,6 +14,7 @@ package org.openhab.binding.neato.internal.config;
  * @author Jeff Lauterbach - Initial Contribution
  */
 public class NeatoAccountConfig {
+
     private String email;
     private String password;
 

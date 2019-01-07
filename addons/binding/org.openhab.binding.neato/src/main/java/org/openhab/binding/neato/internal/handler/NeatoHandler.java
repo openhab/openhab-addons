@@ -14,6 +14,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -25,7 +26,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.neato.internal.CouldNotFindRobotException;
-import org.openhab.binding.neato.internal.NeatoBindingConstants;
 import org.openhab.binding.neato.internal.NeatoCommunicationException;
 import org.openhab.binding.neato.internal.NeatoRobot;
 import org.openhab.binding.neato.internal.classes.Cleaning;
@@ -46,6 +46,8 @@ public class NeatoHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(NeatoHandler.class);
 
+    private static final long INITIAL_DELAY_IN_SECONDS = 15;
+
     private NeatoRobot mrRobot;
 
     private int refreshTime;
@@ -56,12 +58,13 @@ public class NeatoHandler extends BaseThingHandler {
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
+    public void handleCommand(@NonNull ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            refreshStateAndUpdate();
-        }
-        if (channelUID.getId().equals(NeatoBindingConstants.COMMAND)) {
+            scheduler.schedule(this::refreshStateAndUpdate, INITIAL_DELAY_IN_SECONDS, TimeUnit.SECONDS);
+        } else if (channelUID.getId().equals(COMMAND)) {
             sendCommandToRobot(command);
+        } else {
+            logger.debug("Command {} is not supported for channel: {}.", command, channelUID.getId());
         }
     }
 
@@ -78,20 +81,11 @@ public class NeatoHandler extends BaseThingHandler {
     }
 
     @Override
-    public void dispose() {
-        logger.debug("Running dispose()");
-        if (this.refreshTask != null) {
-            this.refreshTask.cancel(true);
-            this.refreshTask = null;
-        }
-    }
-
-    @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
         logger.debug("Will boot up Neato Vacuum Cleaner binding!");
 
-        NeatoRobotConfig config = getThing().getConfiguration().as(NeatoRobotConfig.class);
+        NeatoRobotConfig config = getConfigAs(NeatoRobotConfig.class);
 
         logger.debug("Neato Robot Config: {}", config);
 
@@ -107,24 +101,37 @@ public class NeatoHandler extends BaseThingHandler {
         startAutomaticRefresh();
     }
 
+    @Override
+    public void dispose() {
+        logger.debug("Dispose Neato handler '{}'.", getThing().getUID());
+        if (refreshTask != null && !refreshTask.isCancelled()) {
+            logger.debug("Stop refresh job.");
+            if (refreshTask.cancel(true)) {
+                refreshTask = null;
+            }
+        }
+    }
+
     public void refreshStateAndUpdate() {
-        try {
-            mrRobot.sendGetState();
-            updateStatus(ThingStatus.ONLINE);
+        if (refreshTask == null || refreshTask.isCancelled()) {
+            try {
+                mrRobot.sendGetState();
+                updateStatus(ThingStatus.ONLINE);
 
-            mrRobot.sendGetGeneralInfo();
+                mrRobot.sendGetGeneralInfo();
 
-            publishChannels();
-        } catch (NeatoCommunicationException | CouldNotFindRobotException e) {
-            logger.debug("Error when refreshing state.", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                publishChannels();
+            } catch (NeatoCommunicationException | CouldNotFindRobotException e) {
+                logger.debug("Error when refreshing state.", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
         }
     }
 
     private void startAutomaticRefresh() {
         Runnable refresher = () -> refreshStateAndUpdate();
 
-        this.refreshTask = scheduler.scheduleWithFixedDelay(refresher, 0, refreshTime, TimeUnit.SECONDS);
+        refreshTask = scheduler.scheduleWithFixedDelay(refresher, 0, refreshTime, TimeUnit.SECONDS);
         logger.debug("Start automatic refresh at {} seconds", refreshTime);
     }
 
