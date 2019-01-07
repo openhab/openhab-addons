@@ -13,9 +13,11 @@
 package org.openhab.io.homekit.internal.accessories;
 
 import java.math.BigDecimal;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.smarthome.core.items.GenericItem;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.items.GroupItem;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.ItemRegistry;
@@ -25,6 +27,7 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 import org.slf4j.Logger;
@@ -46,61 +49,49 @@ import com.beowulfe.hap.accessories.thermostat.BasicThermostat;
  *
  * @author Andy Lintner - Initial contribution
  */
-class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<GroupItem>
-        implements BasicThermostat, GroupedAccessory {
+class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<GroupItem> implements BasicThermostat {
 
-    private final String groupName;
     private final HomekitSettings settings;
-    private String currentTemperatureItemName;
-    private String heatingCoolingModeItemName;
-    private String targetTemperatureItemName;
+    @NonNull
+    private NumberItem currentTemperatureItem;
+    @NonNull
+    private StringItem heatingCoolingModeItem;
+    @NonNull
+    private NumberItem targetTemperatureItem;
 
     private Logger logger = LoggerFactory.getLogger(HomekitThermostatImpl.class);
 
     public HomekitThermostatImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) {
+            HomekitAccessoryUpdater updater, HomekitSettings settings, Item currentTemperatureItem,
+            Map<HomekitCharacteristicType, Item> characteristicItems) throws IncompleteAccessoryException {
         super(taggedItem, itemRegistry, updater, settings, GroupItem.class);
-        this.groupName = taggedItem.getItem().getName();
         this.settings = settings;
-    }
+        this.currentTemperatureItem = (NumberItem) currentTemperatureItem;
 
-    @Override
-    public String getGroupName() {
-        return groupName;
-    }
+        this.heatingCoolingModeItem = Optional
+                .ofNullable(characteristicItems.get(HomekitCharacteristicType.HEATING_COOLING_MODE))
+                .map(m -> (StringItem) m)
+                .orElseThrow(() -> new IncompleteAccessoryException(HomekitCharacteristicType.HEATING_COOLING_MODE));
 
-    @Override
-    public void addCharacteristic(HomekitTaggedItem item) {
-        switch (item.getCharacteristicType()) {
-            case CURRENT_TEMPERATURE:
-                currentTemperatureItemName = item.getItem().getName();
-                break;
-
-            case HEATING_COOLING_MODE:
-                heatingCoolingModeItemName = item.getItem().getName();
-                break;
-
-            case TARGET_TEMPERATURE:
-                targetTemperatureItemName = item.getItem().getName();
-                break;
-
-            default:
-                logger.error("Unrecognized thermostat characteristic: {}", item.getCharacteristicType().name());
-                break;
-
+        Optional<Item> targetTempItem = Optional
+                .ofNullable(characteristicItems.get(HomekitCharacteristicType.TARGET_TEMPERATURE));
+        if (!targetTempItem.isPresent()) {
+            targetTempItem = Optional
+                    .ofNullable(characteristicItems.get(HomekitCharacteristicType.OLD_TARGET_TEMPERATURE));
         }
-    }
 
-    @Override
-    public boolean isComplete() {
-        return targetTemperatureItemName != null && currentTemperatureItemName != null
-                && heatingCoolingModeItemName != null;
+        this.targetTemperatureItem = targetTempItem.map(m -> (NumberItem) m)
+                .orElseThrow(() -> new IncompleteAccessoryException(HomekitCharacteristicType.TARGET_TEMPERATURE));
+
+        characteristicItems.entrySet().stream().forEach(entry -> {
+            logger.error("Item {} has unrecognized thermostat characteristic: {}", entry.getValue().getName(),
+                    entry.getKey());
+        });
     }
 
     @Override
     public CompletableFuture<ThermostatMode> getCurrentMode() {
-        Item item = getItemRegistry().get(heatingCoolingModeItemName);
-        State state = item.getState();
+        State state = heatingCoolingModeItem.getState();
         ThermostatMode mode;
 
         String stringValue = state.toString();
@@ -126,8 +117,7 @@ class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<Grou
 
     @Override
     public CompletableFuture<Double> getCurrentTemperature() {
-        Item item = getItemRegistry().get(currentTemperatureItemName);
-        DecimalType state = item.getStateAs(DecimalType.class);
+        DecimalType state = currentTemperatureItem.getStateAs(DecimalType.class);
         if (state == null) {
             return CompletableFuture.completedFuture(null);
         }
@@ -141,16 +131,11 @@ class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<Grou
 
     @Override
     public CompletableFuture<Double> getTargetTemperature() {
-        if (targetTemperatureItemName != null) {
-            Item item = getItemRegistry().get(targetTemperatureItemName);
-            DecimalType state = item.getStateAs(DecimalType.class);
-            if (state == null) {
-                return CompletableFuture.completedFuture(null);
-            }
-            return CompletableFuture.completedFuture(convertToCelsius(state.doubleValue()));
-        } else {
+        DecimalType state = targetTemperatureItem.getStateAs(DecimalType.class);
+        if (state == null) {
             return CompletableFuture.completedFuture(null);
         }
+        return CompletableFuture.completedFuture(convertToCelsius(state.doubleValue()));
     }
 
     @Override
@@ -173,66 +158,51 @@ class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<Grou
                 modeString = settings.getThermostatOffMode();
                 break;
         }
-        StringItem item = getGenericItem(heatingCoolingModeItemName);
-        item.send(new StringType(modeString));
+        heatingCoolingModeItem.send(new StringType(modeString));
     }
 
     @Override
     public void setTargetTemperature(Double value) throws Exception {
-        NumberItem item = getGenericItem(targetTemperatureItemName);
-        item.send(new DecimalType(BigDecimal.valueOf(convertFromCelsius(value))));
+        targetTemperatureItem.send(new DecimalType(BigDecimal.valueOf(convertFromCelsius(value))));
     }
 
     @Override
     public void subscribeCurrentMode(HomekitCharacteristicChangeCallback callback) {
-        getUpdater().subscribe(getGenericItem(heatingCoolingModeItemName), callback);
+        getUpdater().subscribe(heatingCoolingModeItem, callback);
     }
 
     @Override
     public void subscribeCurrentTemperature(HomekitCharacteristicChangeCallback callback) {
-        getUpdater().subscribe(getGenericItem(currentTemperatureItemName), callback);
+        getUpdater().subscribe(currentTemperatureItem, callback);
     }
 
     @Override
     public void subscribeTargetMode(HomekitCharacteristicChangeCallback callback) {
-        getUpdater().subscribe(getGenericItem(heatingCoolingModeItemName), callback);
+        getUpdater().subscribe(heatingCoolingModeItem, callback);
     }
 
     @Override
     public void subscribeTargetTemperature(HomekitCharacteristicChangeCallback callback) {
-        getUpdater().subscribe(getGenericItem(targetTemperatureItemName), callback);
+        getUpdater().subscribe(targetTemperatureItem, callback);
     }
 
     @Override
     public void unsubscribeCurrentMode() {
-        getUpdater().unsubscribe(getGenericItem(heatingCoolingModeItemName));
+        getUpdater().unsubscribe(heatingCoolingModeItem);
     }
 
     @Override
     public void unsubscribeCurrentTemperature() {
-        getUpdater().unsubscribe(getGenericItem(currentTemperatureItemName));
+        getUpdater().unsubscribe(currentTemperatureItem);
     }
 
     @Override
     public void unsubscribeTargetMode() {
-        getUpdater().unsubscribe(getGenericItem(heatingCoolingModeItemName));
+        getUpdater().unsubscribe(heatingCoolingModeItem);
     }
 
     @Override
     public void unsubscribeTargetTemperature() {
-        getUpdater().unsubscribe(getGenericItem(targetTemperatureItemName));
+        getUpdater().unsubscribe(targetTemperatureItem);
     }
-
-    @SuppressWarnings("unchecked")
-    private <T extends GenericItem> T getGenericItem(String name) {
-        Item item = getItemRegistry().get(name);
-        if (item == null) {
-            return null;
-        }
-        if (!(item instanceof GenericItem)) {
-            throw new IllegalStateException("Expected GenericItem, found " + item.getClass().getCanonicalName());
-        }
-        return (T) item;
-    }
-
 }

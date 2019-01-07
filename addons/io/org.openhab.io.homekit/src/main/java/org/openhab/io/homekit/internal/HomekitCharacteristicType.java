@@ -22,9 +22,13 @@ import java.util.Map;
  * @author Andy Lintner - Initial contribution
  */
 public enum HomekitCharacteristicType {
-
-    CURRENT_TEMPERATURE("CurrentTemperature"),
-    TARGET_TEMPERATURE("TargetTemperature"),
+    /*
+     * It is illegal to have a characteristic type also be a device type
+     */
+    TARGET_TEMPERATURE("homekit:TargetTemperature"),
+    @Deprecated()
+    OLD_TARGET_TEMPERATURE("TargetTemperature"),
+    BATTERY_STATUS("homekit:BatteryStatus"),
     HEATING_COOLING_MODE("homekit:HeatingCoolingMode");
 
     private static final Map<String, HomekitCharacteristicType> TAG_MAP = new HashMap<>();
@@ -39,6 +43,10 @@ public enum HomekitCharacteristicType {
 
     private HomekitCharacteristicType(String tag) {
         this.tag = tag;
+    }
+
+    public String getTag() {
+        return tag;
     }
 
     public static HomekitCharacteristicType valueOfTag(String tag) {

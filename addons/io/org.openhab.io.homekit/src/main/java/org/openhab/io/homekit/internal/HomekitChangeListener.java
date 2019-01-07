@@ -36,17 +36,16 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
     private Logger logger = LoggerFactory.getLogger(HomekitChangeListener.class);
     private final HomekitAccessoryRegistry accessoryRegistry = new HomekitAccessoryRegistry();
     private HomekitSettings settings;
+    boolean initialized = false;
 
     @Override
     public synchronized void added(Item item) {
         HomekitTaggedItem taggedItem = new HomekitTaggedItem(item, itemRegistry);
-        if (taggedItem.isTagged()) {
-            if (taggedItem.isRootDevice()) {
-                createRootDevice(taggedItem);
-            }
-            if (taggedItem.isCharacteristic()) {
-                createCharacteristic(taggedItem);
-            }
+        if (taggedItem.isMemberOfAccessoryGroup()) {
+            // Update the root item as the member characteristics are modified.
+            updated(taggedItem.getRootDeviceGroupItem(), taggedItem.getRootDeviceGroupItem());
+        } else if (taggedItem.isAccessory()) {
+            createRootAccessory(taggedItem);
         }
     }
 
@@ -58,7 +57,10 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
     @Override
     public synchronized void removed(Item item) {
         HomekitTaggedItem taggedItem = new HomekitTaggedItem(item, itemRegistry);
-        if (taggedItem.isTagged()) {
+        if (taggedItem.isMemberOfAccessoryGroup()) {
+            // Process the root item as modified.
+            updated(taggedItem.getRootDeviceGroupItem(), taggedItem.getRootDeviceGroupItem());
+        } else {
             accessoryRegistry.remove(taggedItem);
         }
     }
@@ -79,8 +81,24 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
 
     public synchronized void setItemRegistry(ItemRegistry itemRegistry) {
         this.itemRegistry = itemRegistry;
-        itemRegistry.addRegistryChangeListener(this);
-        itemRegistry.getAll().forEach(item -> added(item));
+        maybeInitialize();
+    }
+
+    /**
+     * Call after itemRegistry and settings are specified to initialize homekit devices
+     */
+    private void maybeInitialize() {
+        if (initialized) {
+            return;
+        }
+        if (this.itemRegistry != null && this.settings != null) {
+            initialized = true;
+            itemRegistry.addRegistryChangeListener(this);
+            itemRegistry.getAll().stream().map(item -> new HomekitTaggedItem(item, itemRegistry))
+                    .filter(taggedItem -> taggedItem.isAccessory())
+                    .filter(taggedItem -> !taggedItem.isMemberOfAccessoryGroup())
+                    .forEach(rootTaggedItem -> createRootAccessory(rootTaggedItem));
+        }
     }
 
     public void setUpdater(HomekitAccessoryUpdater updater) {
@@ -89,6 +107,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
 
     public void setSettings(HomekitSettings settings) {
         this.settings = settings;
+        maybeInitialize();
     }
 
     public void stop() {
@@ -97,19 +116,18 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         }
     }
 
-    private void createRootDevice(HomekitTaggedItem taggedItem) {
+    private void createRootAccessory(HomekitTaggedItem taggedItem) {
         try {
+            if (taggedItem.isMemberOfAccessoryGroup()) {
+                throw new RuntimeException(
+                        "Bug! Cannot add as a root accessory if it is a member of a group! " + taggedItem.getName());
+            }
             logger.debug("Adding homekit device {}", taggedItem.getItem().getName());
-            accessoryRegistry
-                    .addRootDevice(HomekitAccessoryFactory.create(taggedItem, itemRegistry, updater, settings));
+            accessoryRegistry.addRootDevice(taggedItem.getName(),
+                    HomekitAccessoryFactory.create(taggedItem, itemRegistry, updater, settings));
             logger.debug("Added homekit device {}", taggedItem.getItem().getName());
         } catch (Exception e) {
             logger.error("Could not add device: {}", e.getMessage(), e);
         }
-    }
-
-    private void createCharacteristic(HomekitTaggedItem taggedItem) {
-        logger.debug("Adding grouped homekit characteristic {}", taggedItem.getItem().getName());
-        accessoryRegistry.addCharacteristic(taggedItem);
     }
 }
