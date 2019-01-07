@@ -17,7 +17,7 @@ The binding will then create things for each module discovered which can be adde
 
 The binding attempts to discover The Konnected Alarm Panels via the UPnP service.
 The auto-discovery service of the binding will detect the ip address and port of the Konnected Alarm Panel.  
-The binding will attempt to obtain the ip address of your openHAB server as configrued in the OSGI framework.  However, if it is unable to determine the ip address it will also attempt to use the network address service to obtain the ip address and port.
+The binding will attempt to obtain the ip address of your openHAB server as configured in the OSGI framework.  However, if it is unable to determine the ip address it will also attempt to use the network address service to obtain the ip address and port.
 In addition you can also turn off discovery which when this setting is synced to the module will cause the device to no longer respond to UPnP requests as documented. https://help.konnected.io/support/solutions/articles/32000023968-disabling-device-discovery
 Please use this setting with caution and do not disable until a static ip address has been provided for your Konnected Alarm Panel via DHCP, router or otherwise.
 The blink setting will disable the transmission LED on the Konnected Alarm Panel.
