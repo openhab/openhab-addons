@@ -14,10 +14,6 @@ package org.openhab.binding.regoheatpump.internal.rego6xx;
  * @author Boris Krivonog - Initial contribution
  */
 class ValueConverter {
-    public static Double toDouble(short value) {
-        return value / 10.0;
-    }
-
     public static byte[] shortToSevenBitFormat(short value) {
         byte b1 = (byte) ((value & 0xC000) >> 14);
         byte b2 = (byte) ((value & 0x3F80) >> 7);

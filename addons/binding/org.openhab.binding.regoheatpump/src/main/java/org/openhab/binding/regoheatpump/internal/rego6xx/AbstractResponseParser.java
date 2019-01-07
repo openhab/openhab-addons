@@ -35,7 +35,8 @@ abstract class AbstractResponseParser<T> implements ResponseParser<T> {
             throw new Rego6xxProtocolException("Invalid header " + HexUtils.bytesToHex(buffer));
         }
 
-        if (Checksum.calculate(buffer, 1, responseLength() - 2) != buffer[responseLength() - 1]) {
+        if (responseLength() > 1
+                && Checksum.calculate(buffer, 1, responseLength() - 2) != buffer[responseLength() - 1]) {
             throw new Rego6xxProtocolException("Invalid crc - " + HexUtils.bytesToHex(buffer));
         }
 
