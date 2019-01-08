@@ -421,9 +421,10 @@ public abstract class EnOceanTransceiver {
 
     public void addPacketListener(ESP3PacketListener listener) {
 
-        listeners.computeIfAbsent(listener.getSenderIdToListenTo(), k -> new HashSet<ESP3PacketListener>())
-                .add(listener);
-        logger.debug("Listener added: {}", listener.getSenderIdToListenTo());
+        if (listeners.computeIfAbsent(listener.getSenderIdToListenTo(), k -> new HashSet<ESP3PacketListener>())
+                .add(listener)) {
+            logger.debug("Listener added: {}", listener.getSenderIdToListenTo());
+        }
     }
 
     public void removePacketListener(ESP3PacketListener listener) {
