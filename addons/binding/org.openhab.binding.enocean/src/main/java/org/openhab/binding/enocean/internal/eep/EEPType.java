@@ -48,6 +48,9 @@ import org.openhab.binding.enocean.internal.eep.A5_04.A5_04_01;
 import org.openhab.binding.enocean.internal.eep.A5_04.A5_04_02;
 import org.openhab.binding.enocean.internal.eep.A5_04.A5_04_02_Eltako;
 import org.openhab.binding.enocean.internal.eep.A5_04.A5_04_03;
+import org.openhab.binding.enocean.internal.eep.A5_07.A5_07_01;
+import org.openhab.binding.enocean.internal.eep.A5_07.A5_07_02;
+import org.openhab.binding.enocean.internal.eep.A5_07.A5_07_03;
 import org.openhab.binding.enocean.internal.eep.A5_08.A5_08_01;
 import org.openhab.binding.enocean.internal.eep.A5_08.A5_08_01_FXBH;
 import org.openhab.binding.enocean.internal.eep.A5_08.A5_08_02;
@@ -235,6 +238,13 @@ public enum EEPType {
             CHANNEL_RECEIVINGSTATE),
     TemperatureHumiditySensor_A5_04_03(RORG._4BS, 0x04, 0x03, false, A5_04_03.class,
             THING_TYPE_TEMPERATUREHUMIDITYSENSOR, CHANNEL_TEMPERATURE, CHANNEL_HUMIDITY, CHANNEL_RECEIVINGSTATE),
+
+    OCCUPANCYSENSOR_A5_07_01(RORG._4BS, 0x07, 0x01, false, A5_07_01.class, THING_TYPE_OCCUPANCYSENSOR,
+            CHANNEL_MOTIONDETECTION, CHANNEL_BATTERY_VOLTAGE, CHANNEL_RECEIVINGSTATE),
+    OCCUPANCYSENSOR_A5_07_02(RORG._4BS, 0x07, 0x02, false, A5_07_02.class, THING_TYPE_OCCUPANCYSENSOR,
+            CHANNEL_MOTIONDETECTION, CHANNEL_BATTERY_VOLTAGE, CHANNEL_RECEIVINGSTATE),
+    OCCUPANCYSENSOR_A5_07_03(RORG._4BS, 0x07, 0x02, false, A5_07_03.class, THING_TYPE_OCCUPANCYSENSOR,
+            CHANNEL_ILLUMINATION, CHANNEL_MOTIONDETECTION, CHANNEL_BATTERY_VOLTAGE, CHANNEL_RECEIVINGSTATE),
 
     LightTemperatureOccupancySensor_A5_08_01(RORG._4BS, 0x08, 0x01, false, A5_08_01.class,
             THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR, CHANNEL_TEMPERATURE, CHANNEL_MOTIONDETECTION,
