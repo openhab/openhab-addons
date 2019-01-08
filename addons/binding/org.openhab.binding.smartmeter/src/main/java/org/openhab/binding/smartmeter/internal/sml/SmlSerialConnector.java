@@ -111,6 +111,12 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
             try {
                 serialPort.setSerialPortParams(baudrateToUse, serialParameter.getDatabits(),
                         serialParameter.getStopbits(), serialParameter.getParity());
+                serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT);
+                try {
+                    serialPort.enableReceiveTimeout(100);
+                } catch (UnsupportedCommOperationException e) {
+                    // doesn't matter (rfc2217 is not supporting this)
+                }
             } catch (UnsupportedCommOperationException e) {
                 throw new IOException(MessageFormat.format(
                         "Error at SerialConnector.openConnection: unable to set serial port parameters for port {0}.",
