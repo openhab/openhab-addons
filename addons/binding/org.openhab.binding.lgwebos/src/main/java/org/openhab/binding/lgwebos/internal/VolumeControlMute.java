@@ -60,7 +60,7 @@ public class VolumeControlMute extends BaseChannelHandler<MuteListener, Object> 
 
                 @Override
                 public void onError(@Nullable ServiceCommandError error) {
-                    logger.warn("Error in listening to mute changes: {}.", error == null ? "" : error.getMessage());
+                    logger.debug("Error in listening to mute changes: {}.", error == null ? "" : error.getMessage());
                 }
 
                 @Override

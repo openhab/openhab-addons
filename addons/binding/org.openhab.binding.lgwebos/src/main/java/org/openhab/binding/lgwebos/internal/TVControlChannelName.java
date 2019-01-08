@@ -53,7 +53,7 @@ public class TVControlChannelName extends BaseChannelHandler<ChannelListener, Ob
 
                 @Override
                 public void onError(@Nullable ServiceCommandError error) {
-                    logger.warn("Error in listening to channel name changes: {}.",
+                    logger.debug("Error in listening to channel name changes: {}.",
                             error == null ? "" : error.getMessage());
                 }
 

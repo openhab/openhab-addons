@@ -85,7 +85,7 @@ public class VolumeControlVolume extends BaseChannelHandler<VolumeListener, Obje
 
                 @Override
                 public void onError(@Nullable ServiceCommandError error) {
-                    logger.warn("Error in listening to volume changes: {}.", error == null ? "" : error.getMessage());
+                    logger.debug("Error in listening to volume changes: {}.", error == null ? "" : error.getMessage());
                 }
 
                 @Override

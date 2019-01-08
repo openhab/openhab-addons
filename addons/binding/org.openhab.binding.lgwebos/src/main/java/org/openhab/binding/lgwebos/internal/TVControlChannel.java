@@ -109,7 +109,7 @@ public class TVControlChannel extends BaseChannelHandler<ChannelListener, Object
 
                 @Override
                 public void onError(@Nullable ServiceCommandError error) {
-                    logger.warn("Error in listening to channel changes: {}.", error == null ? "" : error.getMessage());
+                    logger.debug("Error in listening to channel changes: {}.", error == null ? "" : error.getMessage());
                 }
 
                 @Override
