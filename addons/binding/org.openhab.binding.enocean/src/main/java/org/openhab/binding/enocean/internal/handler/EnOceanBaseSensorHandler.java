@@ -42,10 +42,11 @@ import org.openhab.binding.enocean.internal.transceiver.ESP3PacketListener;
 public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements ESP3PacketListener {
 
     // List of all thing types which support receiving of eep messages
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>(Arrays.asList(
-            THING_TYPE_ROOMOPERATINGPANEL, THING_TYPE_MECHANICALHANDLE, THING_TYPE_CONTACT,
-            THING_TYPE_TEMPERATURESENSOR, THING_TYPE_TEMPERATUREHUMIDITYSENSOR, THING_TYPE_ROCKERSWITCH,
-            THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR, THING_TYPE_PUSHBUTTON, THING_TYPE_AUTOMATEDMETERSENSOR));
+    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>(
+            Arrays.asList(THING_TYPE_ROOMOPERATINGPANEL, THING_TYPE_MECHANICALHANDLE, THING_TYPE_CONTACT,
+                    THING_TYPE_TEMPERATURESENSOR, THING_TYPE_TEMPERATUREHUMIDITYSENSOR, THING_TYPE_ROCKERSWITCH,
+                    THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR, THING_TYPE_PUSHBUTTON,
+                    THING_TYPE_AUTOMATEDMETERSENSOR));
 
     protected Hashtable<RORG, EEPType> receivingEEPTypes = null;
 
