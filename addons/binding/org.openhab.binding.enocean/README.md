@@ -60,6 +60,7 @@ Hence if your device supports one of the following EEPs the chances are good tha
 | contact                         | D5-00       | 0x01          | contact                      | Eltako FTK                     | Discovery |
 | temperatureSensor               | A5-02       | 0x01-30       | temperature                  | Thermokon SR65                 | Discovery |
 | temperatureHumiditySensor       | A5-04       | 0x01-03       | humidity, temperature        | Eltako FTSB                    | Discovery |
+| occupancySensor                 | A5-07       | 0x01-03       | illumination, batteryVoltage,<br/>motionDetection | NodON PIR-2-1-01 | Discovery |
 | lightTemperatureOccupancySensor | A5-08       | 0x01-03       | illumination, temperature,<br/>occupancy, motionDetection | Eltako FABH | Discovery |
 | roomOperatingPanel              | A5-10       | 0x01-23       | temperature, setPoint, fanSpeedStage,<br/>occupancy           | Thermokon SR04 | Discovery |
 | automatedMeterSensor            | A5-12       | 0x00-03       | counter, currentNumber, instantpower,<br/>totalusage, amrLitre, amrCubicMetre | FWZ12 | Discovery |
@@ -141,6 +142,8 @@ If you change the SenderId of your thing, you have to pair again the thing with 
 | temperatureSensor               | receivingEEPId    |                             | A5_02_01-0B, A5_02_10-1B, A5_02_20, A5_02_30 |
 |                                 | enoceanId         | | |
 | temperatureHumiditySensor       | receivingEEPId    |                             | A5_04_01-03 |
+|                                 | enoceanId         | | |
+| occupancySensor                 | receivingEEPId    |                             | A5_07_01-03 |
 |                                 | enoceanId         | | |
 | lightTemperatureOccupancySensor | receivingEEPId    |                             | A5_08_01-03, A5_08_01_FXBH |
 |                                 | enoceanId         | | |
