@@ -28,7 +28,7 @@ public class A5_14_01_ELTAKO extends _4BSMessage {
         super(packet);
     }
 
-    private State getBatteryStorage() {
+    private State getEnergyStorage() {
         int db3 = getDB_3Value();
 
         double voltage = db3 / 51.0; // 0..255 = 0.0..5.0V
@@ -48,8 +48,8 @@ public class A5_14_01_ELTAKO extends _4BSMessage {
     protected State convertToStateImpl(String channelId, String channelTypeId, State currentState,
             Configuration config) {
         switch (channelId) {
-            case CHANNEL_BATTERY_STORAGE:
-                return getBatteryStorage();
+            case CHANNEL_ENERGY_STORAGE:
+                return getEnergyStorage();
             case CHANNEL_BATTERY_VOLTAGE:
                 return getBatteryVoltage();
         }

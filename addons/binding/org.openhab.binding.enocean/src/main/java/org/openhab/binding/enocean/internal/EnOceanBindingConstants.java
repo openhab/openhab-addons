@@ -108,7 +108,7 @@ public class EnOceanBindingConstants {
     public final static String CHANNEL_INSTANTLITRE = "amrLitre";
     public final static String CHANNEL_TOTALCUBICMETRE = "amrCubicMetre";
     public final static String CHANNEL_BATTERY_VOLTAGE = "batteryVoltage";
-    public final static String CHANNEL_BATTERY_STORAGE = "batteryStorage";
+    public final static String CHANNEL_ENERGY_STORAGE = "energyStorage";
 
     public final static String CHANNEL_AUTOOFF = "autoOFF";
     public final static String CHANNEL_DELAYRADIOOFF = "delayRadioOFF";

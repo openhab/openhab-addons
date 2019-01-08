@@ -155,10 +155,10 @@
         <state pattern="%f %unit%" readOnly="true" />
     </channel-type>
 	
-    <channel-type id="batteryStorage">
+    <channel-type id="energyStorage">
         <item-type>Number:ElectricPotential</item-type>
-        <label>Battery Storage</label>
-        <description>Storage of the battery</description>
+        <label>Energy Storage</label>
+        <description>?</description>
         <state pattern="%f %unit%" readOnly="true" />
     </channel-type>
 
