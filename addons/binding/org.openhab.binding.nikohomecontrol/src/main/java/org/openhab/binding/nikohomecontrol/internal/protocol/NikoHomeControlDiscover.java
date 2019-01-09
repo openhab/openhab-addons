@@ -17,6 +17,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,13 +32,26 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mark Herwege - Initial Contribution
  */
+/**
+ * @author Mark Herwege - Initial Contribution
+ *
+ */
+@NonNullByDefault
 public final class NikoHomeControlDiscover {
 
     private final Logger logger = LoggerFactory.getLogger(NikoHomeControlDiscover.class);
 
     private InetAddress addr;
-    private String nhcBridgeId;
+    private String nhcBridgeId = "";
+    private boolean isNhcII;
 
+    /**
+     * Discover a Niko Home Control IP interface by broadcasting UDP packet 0x44 to port 10000. The IP interface will
+     * reply. The address of the IP interface is than derived from that response.
+     *
+     * @param broadcast Broadcast address of the network
+     * @throws IOException
+     */
     public NikoHomeControlDiscover(String broadcast) throws IOException {
         final byte[] discoverBuffer = { (byte) 0x44 };
         final InetAddress broadcastAddr = InetAddress.getByName(broadcast);
@@ -52,9 +66,15 @@ public final class NikoHomeControlDiscover {
             datagramSocket.setBroadcast(true);
             datagramSocket.setSoTimeout(500);
             datagramSocket.send(discoveryPacket);
-            datagramSocket.receive(packet);
+            while (true) {
+                datagramSocket.receive(packet);
+                if (isNhc(packet)) {
+                    break;
+                }
+            }
             this.addr = packet.getAddress();
             setNhcBridgeId(packet);
+            setIsNhcII(packet);
             logger.debug("Niko Home Control: IP address is {}, unique ID is {}", this.addr, this.nhcBridgeId);
         }
     }
@@ -74,6 +94,20 @@ public final class NikoHomeControlDiscover {
     }
 
     /**
+     * Check if the UDP packet comes from a Niko Home Control controller. The response should start with 0x44.
+     *
+     * @param packet
+     * @return true if packet is from a Niko Home Control controller
+     */
+    private boolean isNhc(DatagramPacket packet) {
+        byte[] packetData = packet.getData();
+        if ((packet.getLength() > 2) && (packetData[0] == 0x44)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Retrieves a unique ID from the returned datagram packet received after sending the UDP discovery message.
      *
      * @param packet
@@ -87,5 +121,30 @@ public final class NikoHomeControlDiscover {
             sb.append(String.format("%02x", packetData[i]));
         }
         this.nhcBridgeId = sb.toString();
+    }
+
+    /**
+     * Checks if this is a NHC II Connected Controller
+     *
+     * @param packet
+     */
+    private void setIsNhcII(DatagramPacket packet) {
+        byte[] packetData = packet.getData();
+        int packetLength = packet.getLength();
+        // The 16th byte in the packet is 2 for a NHC II Connected Controller
+        if ((packetLength >= 16) && (packetData[15] >= 2)) {
+            this.isNhcII = true;
+        } else {
+            this.isNhcII = false;
+        }
+    }
+
+    /**
+     * Test if the installation is a Niko Home Control II installation
+     *
+     * @return true if this is a Niko Home Control II installation
+     */
+    public boolean isNhcII() {
+        return isNhcII;
     }
 }
