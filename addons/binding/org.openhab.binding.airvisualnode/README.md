@@ -40,7 +40,7 @@ The binding supports the following channels:
 | co2             | Number:Dimensionless  | CO2 level, ppm              |
 | humidity        | Number:Dimensionless  | Relative humidity, %        |
 | aqi             | Number:Dimensionless  | Air Quality Index (US)      |
-| pm_25           | Number:Density        | PM2.5 level, μg/m³          |
+| pm_25           | Number:Density        | PM2.5 level, µg/m³          |
 | temperature     | Number:Temperature    | Temperature                 |
 | used_memory     | Number                | Used memory                 |
 | timestamp       | DateTime              | Timestamp                   |
