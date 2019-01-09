@@ -11,7 +11,6 @@ package org.openhab.binding.sensebox.internal.handler;
 import static org.eclipse.smarthome.core.library.unit.MetricPrefix.HECTO;
 import static org.openhab.binding.sensebox.internal.SenseBoxBindingConstants.*;
 
-import java.lang.IllegalStateException;
 import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -255,49 +254,36 @@ public class SenseBoxHandler extends BaseThingHandler {
                     logger.debug("About to determine quantity for {} / {}", data.getLastMeasurement().getValue(), data.getUnit());
                     BigDecimal bd = new BigDecimal(data.getLastMeasurement().getValue());
 
-                    try {
-                        switch (data.getUnit()) {
-                            case "%":
-                                result = new QuantityType<>(bd, SmartHomeUnits.ONE);
-                                break;
-                            case "°C":
-                                result = new QuantityType<>(bd, SIUnits.CELSIUS);
-                                break;
-                            case "Pa":
-                                result = new QuantityType<>(bd, SIUnits.PASCAL);
-                                break;
-                            case "hPa":
-                                if (BigDecimal.valueOf(10000l).compareTo(bd) < 0) {
-                                    // Some stations report measurements in Pascal, but send 'hPa' as units...
-                                    bd = bd.divide(ONEHUNDRED);
-                                }
-                                result = new QuantityType<>(bd, HECTO(SIUnits.PASCAL));
-                                break;
-                            case "lx":
-                                result = new QuantityType<>(bd, SmartHomeUnits.LUX);
-                                break;
-                            case "µg/m³":
-                                // result = new QuantityType<>(bd, SmartHomeUnits.MICROGRAM_PER_CUBICMETRE);
-                                result = new QuantityType<>(bd, SmartHomeUnits.KILOGRAM_PER_CUBICMETRE);
-                                break;
-                            case "μW/cm²":
-                                // result = new QuantityType<>(bd, SmartHomeUnits.MICROWATT_PER_SQUARE_CENTIMETRE);
-                                result = new QuantityType<>(bd, SmartHomeUnits.IRRADIANCE);
-                                break;
-                            default:
-                                // The data provider might have configured some unknown unit, accept at least the measurement
-                                logger.debug("Could not determine unit for '{}', using default", data.getUnit());
-                                result = new QuantityType<>(bd, SmartHomeUnits.ONE);
-                        }
-                    } catch (IllegalStateException ise) {
-                        // java.lang.IllegalStateException: Error invoking #valueOf(String) on class 'org.eclipse.smarthome.core.library.types.QuantityType' with value '0.00 μg/m³'.
-
-                        // The root exception is an IllegalArgumentException from Quantities.getQuantitiy(), if the uom
-                        // library cannot parse the unit description
-                        // Caused by: java.lang.IllegalArgumentException: μg not recognized (in 5.90 μg/m³ at index 5)
-                        // at tec.uom.se.quantity.Quantities.getQuantity(Quantities.java:80) ~[?:?]
-                        logger.warn("Could not create measured quantity", ise);
-                        result = new QuantityType<>(bd, SmartHomeUnits.ONE);
+                    switch (data.getUnit()) {
+                        case "%":
+                            result = new QuantityType<>(bd, SmartHomeUnits.ONE);
+                            break;
+                        case "°C":
+                            result = new QuantityType<>(bd, SIUnits.CELSIUS);
+                            break;
+                        case "Pa":
+                            result = new QuantityType<>(bd, SIUnits.PASCAL);
+                            break;
+                        case "hPa":
+                            if (BigDecimal.valueOf(10000l).compareTo(bd) < 0) {
+                                // Some stations report measurements in Pascal, but send 'hPa' as units...
+                                bd = bd.divide(ONEHUNDRED);
+                            }
+                            result = new QuantityType<>(bd, HECTO(SIUnits.PASCAL));
+                            break;
+                        case "lx":
+                            result = new QuantityType<>(bd, SmartHomeUnits.LUX);
+                            break;
+                        case "\u00b5g/m³":
+                            result = new QuantityType<>(bd, SmartHomeUnits.MICROGRAM_PER_CUBICMETRE);
+                            break;
+                        case "\u00b5W/cm²":
+                            result = new QuantityType<>(bd, SmartHomeUnits.MICROWATT_PER_SQUARE_CENTIMETRE);
+                            break;
+                        default:
+                            // The data provider might have configured some unknown unit, accept at least the measurement
+                            logger.debug("Could not determine unit for '{}', using default", data.getUnit());
+                            result = new QuantityType<>(bd, SmartHomeUnits.ONE);
                     }
 
                     logger.debug("State: '{}'", result);
