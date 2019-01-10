@@ -33,7 +33,7 @@ If LocalIP is not set, the binding will use openHAB's primary IP address, which 
 TVs are auto discovered through SSDP in the local network.
 The binding broadcasts a search message via UDP on the network in order to discover and monitor availability of the TV.
 
-Please note, that if you are runnin openHAB in a docker container you need to use macvlan or host networking for this binding to work.
+Please note, that if you are running openHAB in a docker container you need to use macvlan or host networking for this binding to work.
 
 ## Thing Configuration
 
