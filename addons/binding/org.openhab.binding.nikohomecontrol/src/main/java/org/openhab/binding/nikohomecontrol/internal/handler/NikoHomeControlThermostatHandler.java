@@ -134,8 +134,6 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
 
             case CHANNEL_MODE:
                 if (command instanceof DecimalType) {
-                    // first reset the overrule
-                    // nhcThermostat.executeOverruletime(0);
                     nhcThermostat.executeMode(((DecimalType) command).intValue());
                 }
                 updateStatus(ThingStatus.ONLINE);
@@ -146,7 +144,7 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
                 if (command instanceof QuantityType) {
                     setpoint = ((QuantityType<Temperature>) command).toUnit(CELSIUS);
                     // Always set the new setpoint temperature as an overrule
-                    // If no overrule time is given yet, set the overrule to the configuration parameter
+                    // If no overrule time is given yet, set the overrule time to the configuration parameter
                     int time = nhcThermostat.getOverruletime();
                     if (time <= 0) {
                         time = ((Number) this.getConfig().get(CONFIG_OVERRULETIME)).intValue();

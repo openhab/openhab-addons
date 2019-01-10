@@ -507,19 +507,19 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
         int mode = IntStream.range(0, THERMOSTATMODES.length).filter(i -> THERMOSTATMODES[i].equals(modeString))
                 .findFirst().orElse(0);
 
-        int measured = (int) (ambientTemperatureProperty.isPresent()
-                ? Double.valueOf(ambientTemperatureProperty.get().ambientTemperature) * 10
-                : thermostat.getMeasured());
-        int setpoint = (int) (setpointTemperatureProperty.isPresent()
-                ? Double.valueOf(setpointTemperatureProperty.get().setpointTemperature) * 10
-                : thermostat.getSetpoint());
+        int measured = ambientTemperatureProperty.isPresent()
+                ? Math.round(Float.valueOf(ambientTemperatureProperty.get().ambientTemperature) * 10)
+                : thermostat.getMeasured();
+        int setpoint = setpointTemperatureProperty.isPresent()
+                ? Math.round(Float.valueOf(setpointTemperatureProperty.get().setpointTemperature) * 10)
+                : thermostat.getSetpoint();
 
         int overrule = 0;
         int overruletime = 0;
         if (overruleActiveProperty.isPresent() && "True".equals(overruleActiveProperty.get().overruleActive)) {
-            overrule = (int) (overruleSetpointProperty.isPresent()
-                    ? Double.valueOf(overruleSetpointProperty.get().overruleSetpoint) * 10
-                    : 0);
+            overrule = overruleSetpointProperty.isPresent()
+                    ? Math.round(Float.valueOf(overruleSetpointProperty.get().overruleSetpoint) * 10)
+                    : 0;
             overruletime = overruleTimeProperty.isPresent() ? Integer.valueOf(overruleTimeProperty.get().overruleTime)
                     : 0;
         }
@@ -624,9 +624,13 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
         NhcProperty property = device.new NhcProperty();
         device.properties.add(property);
 
-        property.overruleActive = "True";
-        property.overruleSetpoint = String.valueOf(overruleTemp);
-        property.overruleTime = String.valueOf(overruleTime);
+        if (overruleTime > 0) {
+            property.overruleActive = "True";
+            property.overruleSetpoint = String.valueOf(overruleTemp);
+            property.overruleTime = String.valueOf(overruleTime);
+        } else {
+            property.overruleActive = "False";
+        }
 
         String topic = profileUuid + "/control/devices/cmd";
         String gsonMessage = gson.toJson(message);
@@ -658,26 +662,33 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
     @Override
     public void processMessage(String topic, byte[] payload) {
         String message = new String(payload);
-        logger.trace("Niko Home Control: received topic {}, payload {}", topic, message);
         if ("public/system/evt".equals(topic) || (profileUuid + "/system/evt").equals(topic)) {
+            logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
             timePublishEvt(message);
         } else if ("public/system/rsp".equals(topic)) {
+            logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
             systeminfoPublishRsp(message);
         } else if ("public/authentication/rsp".equals(topic)) {
+            logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
             profilesListRsp(message);
             startProfileCommunication();
         } else if ((profileUuid + "/notifications/evt").equals(topic)) {
+            logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
             notificationsEvt(message);
         } else if ((profileUuid + "/control/devices/evt").equals(topic)) {
+            logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
             devicesStatusEvt(message);
         } else if ((profileUuid + "/control/devices/rsp").equals(topic)) {
+            logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
             devicesListRsp(message);
         } else if ((profileUuid + "/authentication/rsp").equals(topic)) {
+            logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
             servicesListRsp(message);
         } else if ((profileUuid + "/locations/rsp").equals(topic)) {
+            logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
             locationsListRsp(message);
         } else {
-            logger.trace("Niko Home Control: not acted on message topic {}, payload {}", topic, message);
+            logger.trace("Niko Home Control: not acted on received message topic {}, payload {}", topic, message);
         }
     }
 

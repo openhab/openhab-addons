@@ -211,7 +211,11 @@ public abstract class NhcThermostat {
      * @return the overrule temperature in 0.1°C multiples
      */
     public Integer getOverrule() {
-        return overrule;
+        if (overrule > 0) {
+            return overrule;
+        } else {
+            return setpoint;
+        }
     }
 
     private void setOverrule(Integer overrule) {
