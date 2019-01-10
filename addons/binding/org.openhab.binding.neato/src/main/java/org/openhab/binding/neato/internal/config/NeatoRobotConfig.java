@@ -16,15 +16,15 @@ package org.openhab.binding.neato.internal.config;
  */
 public class NeatoRobotConfig {
 
-    private int refresh;
+    private Integer refresh;
     private String secret;
     private String serial;
 
-    public int getRefresh() {
+    public Integer getRefresh() {
         return refresh;
     }
 
-    public void setRefresh(int refresh) {
+    public void setRefresh(Integer refresh) {
         this.refresh = refresh;
     }
 

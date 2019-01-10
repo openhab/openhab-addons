@@ -50,7 +50,7 @@ public class NeatoHandler extends BaseThingHandler {
 
     private NeatoRobot mrRobot;
 
-    private int refreshTime;
+    private Integer refreshTime;
     private ScheduledFuture<?> refreshTask;
 
     public NeatoHandler(Thing thing) {
@@ -60,7 +60,7 @@ public class NeatoHandler extends BaseThingHandler {
     @Override
     public void handleCommand(@NonNull ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            scheduler.schedule(this::refreshStateAndUpdate, INITIAL_DELAY_IN_SECONDS, TimeUnit.SECONDS);
+            refreshStateAndUpdate();
         } else if (channelUID.getId().equals(COMMAND)) {
             sendCommandToRobot(command);
         } else {
@@ -78,6 +78,15 @@ public class NeatoHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         this.refreshStateAndUpdate();
+    }
+
+    @Override
+    public void dispose() {
+        logger.debug("Running dispose()");
+        if (refreshTask != null) {
+            refreshTask.cancel(true);
+            refreshTask = null;
+        }
     }
 
     @Override
