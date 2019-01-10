@@ -31,17 +31,21 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.ThingActions;
 import org.eclipse.smarthome.core.thing.binding.ThingActionsScope;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.openhab.binding.lgwebos.handler.LGWebOSHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.connectsdk.core.AppInfo;
+import com.connectsdk.core.TextInputStatusInfo;
 import com.connectsdk.device.ConnectableDevice;
 import com.connectsdk.service.capability.CapabilityMethods;
 import com.connectsdk.service.capability.KeyControl;
 import com.connectsdk.service.capability.Launcher;
 import com.connectsdk.service.capability.TVControl;
 import com.connectsdk.service.capability.TextInputControl;
+import com.connectsdk.service.capability.TextInputControl.TextInputStatusListener;
 import com.connectsdk.service.capability.ToastControl;
 import com.connectsdk.service.capability.listeners.ResponseListener;
 import com.connectsdk.service.command.ServiceCommandError;
@@ -56,6 +60,7 @@ import com.connectsdk.service.command.ServiceCommandError;
 @NonNullByDefault
 public class LGWebOSActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(LGWebOSActions.class);
+    private final TextInputStatusListener textInputListener = createTextInputStatusListener();
     private @Nullable LGWebOSHandler handler;
 
     @Override
@@ -148,15 +153,22 @@ public class LGWebOSActions implements ThingActions {
         });
     }
 
-    @RuleAction(label = "@text/actionLaunchApplicationWithParamLabel", description = "@text/actionLaunchApplicationWithParamDesc")
+    @RuleAction(label = "@text/actionLaunchApplicationWithParamsLabel", description = "@text/actionLaunchApplicationWithParamsDesc")
     public void launchApplication(
             @ActionInput(name = "appId", label = "@text/actionLaunchApplicationInputAppIDLabel", description = "@text/actionLaunchApplicationInputAppIDDesc") String appId,
-            @ActionInput(name = "param", label = "@text/actionLaunchApplicationInputParamLabel", description = "@text/actionLaunchApplicationInputParamDesc") Object param) {
+            @ActionInput(name = "params", label = "@text/actionLaunchApplicationInputParamsLabel", description = "@text/actionLaunchApplicationInputParamsDesc") Object params) {
+        JSONObject parameters;
+        try {
+            parameters = new JSONObject(params);
+        } catch (JSONException ex) {
+            logger.warn("Parameters value ({}) is not in a valid JSON format. {}", params, ex.getMessage());
+            return;
+        }
         List<AppInfo> appInfos = getAppInfos();
         getControl(Launcher.class).ifPresent(control -> {
             Optional<AppInfo> appInfo = appInfos.stream().filter(a -> a.getId().equals(appId)).findFirst();
             if (appInfo.isPresent()) {
-                control.launchAppWithInfo(appInfo.get(), param, createResponseListener());
+                control.launchAppWithInfo(appInfo.get(), parameters, createResponseListener());
             } else {
                 logger.warn("TV does not support any app with id: {}.", appId);
             }
@@ -166,7 +178,10 @@ public class LGWebOSActions implements ThingActions {
     @RuleAction(label = "@text/actionSendTextLabel", description = "@text/actionSendTextDesc")
     public void sendText(
             @ActionInput(name = "text", label = "@text/actionSendTextInputTextLabel", description = "@text/actionSendTextInputTextDesc") String text) {
-        getControl(TextInputControl.class).ifPresent(control -> control.sendText(text));
+        getControl(TextInputControl.class).ifPresent(control -> {
+            control.subscribeTextInputStatus(textInputListener);
+            control.sendText(text);
+        });
     }
 
     @RuleAction(label = "@text/actionSendButtonLabel", description = "@text/actionSendButtonDesc")
@@ -190,10 +205,16 @@ public class LGWebOSActions implements ThingActions {
                     getControl(KeyControl.class).ifPresent(control -> control.back(createResponseListener()));
                     break;
                 case DELETE:
-                    getControl(TextInputControl.class).ifPresent(control -> control.sendDelete());
+                    getControl(TextInputControl.class).ifPresent(control -> {
+                        control.subscribeTextInputStatus(textInputListener);
+                        control.sendDelete();
+                    });
                     break;
                 case ENTER:
-                    getControl(TextInputControl.class).ifPresent(control -> control.sendEnter());
+                    getControl(TextInputControl.class).ifPresent(control -> {
+                        control.subscribeTextInputStatus(textInputListener);
+                        control.sendEnter();
+                    });
                     break;
                 case HOME:
                     getControl(KeyControl.class).ifPresent(control -> control.home(createResponseListener()));
@@ -243,6 +264,21 @@ public class LGWebOSActions implements ThingActions {
             return Optional.empty();
         }
         return Optional.of(control);
+    }
+
+    private TextInputStatusListener createTextInputStatusListener() {
+        return new TextInputStatusListener() {
+
+            @Override
+            public void onError(@Nullable ServiceCommandError error) {
+                logger.warn("Response: {}", error == null ? "" : error.getMessage());
+            }
+
+            @Override
+            public void onSuccess(@Nullable TextInputStatusInfo info) {
+                logger.debug("Response: {}", info == null ? "OK" : info.getRawData());
+            }
+        };
     }
 
     private <O> ResponseListener<O> createResponseListener() {

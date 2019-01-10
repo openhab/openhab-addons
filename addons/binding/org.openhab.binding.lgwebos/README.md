@@ -15,7 +15,8 @@ The TV must be connected to the same network as openHAB.
 Under network settings allow "LG CONNECT APPS" to connect.
 
 Note: Under general settings allow mobile applications to turn on the TV, if this option is available.
-In combination with the wake on LAN binding this will allow you to start the TV via openHAB.
+On newer models this setting may also be called "Mobile TV On > Turn On Via WiFi".
+In combination with the wake on LAN binding this will allow you to start the TV via openHAB. Please see demo.items and demo.rules example below.
 
 ## Binding Configuration
 
@@ -257,7 +258,7 @@ actions.launchApplication("com.webos.app.hdmi2") // HDMI2
 actions.launchApplication("com.webos.app.hdmi3") // HDMI3
 ```
 
-### launchApplicationWithParam(appId, param)
+### launchApplication(appId, params)
 
 Opens the application with given Application ID and passes an additional parameter.
 
@@ -265,7 +266,15 @@ Parameters:
 | Name    | Description                                                                   |
 |---------|-------------------------------------------------------------------------------|
 | appId   | The Application ID. getApplications provides available apps and their appIds. |
-| param   | The parameter to hand over to the application  |
+| params  | The parameters to hand over to the application in JSON format                 |
+
+Examples:
+
+```
+actions.launchApplication("appId","{\"key\":\"value\"}")
+```
+
+(Unfortunately, there is currently no information on supported parameters per application available.)
 
 ### sendText(text)
 
