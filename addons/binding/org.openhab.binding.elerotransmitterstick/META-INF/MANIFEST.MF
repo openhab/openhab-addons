@@ -1,8 +1,7 @@
 Manifest-Version: 1.0
 Automatic-Module-Name: org.openhab.binding.elerotransmitterstick
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: .,
- lib/commons-codec-1.8.jar
+Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
 Bundle-Name: EleroTransmitterStick Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
@@ -21,6 +20,7 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.core.util,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.elerotransmitterstick.internal.stick;
 
-import org.apache.commons.codec.binary.Hex;
+import org.eclipse.smarthome.core.util.HexUtils;
 
 /**
  * @author Volker Bier - Initial contribution
@@ -52,7 +52,7 @@ public class CommandPacket {
 
     @Override
     public String toString() {
-        return Hex.encodeHexString(data);
+        return HexUtils.bytesToHex(data);
     }
 
 }
