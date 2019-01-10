@@ -34,7 +34,7 @@ public class MediaControlStop extends BaseChannelHandler<Void, Object> {
         if (device == null) {
             return;
         }
-        if (device.hasCapabilities(MediaControl.Stop)) {
+        if (hasCapability(device, MediaControl.Stop)) {
             getControl(device).stop(getDefaultResponseListener());
         }
     }
