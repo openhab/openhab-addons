@@ -46,15 +46,18 @@ public class PowerControlPower extends BaseChannelHandler<Void, Object> {
             return;
         }
 
-        if (OnOffType.ON == command || OnOffType.OFF == command) {
-            if (OnOffType.ON == command && device.hasCapabilities(PowerControl.On)) {
+        if (OnOffType.ON == command) {
+            if (hasCapability(device, PowerControl.On)) {
                 getControl(device).powerOn(getDefaultResponseListener());
-            } else if (OnOffType.OFF == command && device.hasCapabilities(PowerControl.Off)) {
+            }
+        } else if (OnOffType.OFF == command) {
+            if (hasCapability(device, PowerControl.Off)) {
                 getControl(device).powerOff(getDefaultResponseListener());
             }
         } else {
-            logger.warn("Only accept OnOffType");
+            logger.warn("Only accept OnOffType. Type was {}.", command.getClass());
         }
+
     }
 
     @Override
