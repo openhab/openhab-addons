@@ -23,7 +23,7 @@ The binding has only one configuration parameter, which is only required if the 
 
 | Name    | Description                                                          |
 |---------|----------------------------------------------------------------------|
-| LocalIP | This is the local IP of your openHAB host on the network. (Optional) |
+| localIP | This is the local IP of your openHAB host on the network. (Optional) |
 
 If LocalIP is not set, the binding will use openHAB's primary IP address, which may be configured under network settings.
 
@@ -157,4 +157,18 @@ Example of a toast message.
 
 ```
 LG_TV0_Toast.sendCommand("Hello World")
+```
+
+## Troubleshooting
+
+In case of issues you may find it helpful to enable debug level logging and check you log file. Log into openHAB console and enable debug logging for this binding:
+
+```
+log:set debug org.openhab.binding.lgwebos
+```
+
+Additional logs are available from the underlying library:
+
+```
+log:set debug com.connectsdk
 ```
