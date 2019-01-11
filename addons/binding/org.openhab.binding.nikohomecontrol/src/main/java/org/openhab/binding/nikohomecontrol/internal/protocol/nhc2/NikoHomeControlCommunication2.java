@@ -597,11 +597,14 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
         param.devices.add(device);
         device.uuid = thermostatId;
         device.properties = new ArrayList<>();
-        NhcProperty property = device.new NhcProperty();
-        device.properties.add(property);
 
-        property.overruleActive = "False";
-        property.program = mode;
+        NhcProperty overruleActiveProp = device.new NhcProperty();
+        device.properties.add(overruleActiveProp);
+        overruleActiveProp.overruleActive = "False";
+
+        NhcProperty program = device.new NhcProperty();
+        device.properties.add(program);
+        program.program = mode;
 
         String topic = profileUuid + "/control/devices/cmd";
         String gsonMessage = gson.toJson(message);
@@ -621,15 +624,23 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
         param.devices.add(device);
         device.uuid = thermostatId;
         device.properties = new ArrayList<>();
-        NhcProperty property = device.new NhcProperty();
-        device.properties.add(property);
 
         if (overruleTime > 0) {
-            property.overruleActive = "True";
-            property.overruleSetpoint = String.valueOf(overruleTemp);
-            property.overruleTime = String.valueOf(overruleTime);
+            NhcProperty overruleActiveProp = device.new NhcProperty();
+            overruleActiveProp.overruleActive = "True";
+            device.properties.add(overruleActiveProp);
+
+            NhcProperty overruleSetpointProp = device.new NhcProperty();
+            overruleSetpointProp.overruleSetpoint = String.valueOf(overruleTemp);
+            device.properties.add(overruleSetpointProp);
+
+            NhcProperty overruleTimeProp = device.new NhcProperty();
+            overruleTimeProp.overruleTime = String.valueOf(overruleTime);
+            device.properties.add(overruleTimeProp);
         } else {
-            property.overruleActive = "False";
+            NhcProperty overruleActiveProp = device.new NhcProperty();
+            overruleActiveProp.overruleActive = "False";
+            device.properties.add(overruleActiveProp);
         }
 
         String topic = profileUuid + "/control/devices/cmd";
@@ -662,9 +673,10 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
     @Override
     public void processMessage(String topic, byte[] payload) {
         String message = new String(payload);
-        if ("public/system/evt".equals(topic) || (profileUuid + "/system/evt").equals(topic)) {
-            logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
+        if ("public/system/evt".equals(topic)) {
             timePublishEvt(message);
+        } else if ((profileUuid + "/system/evt").equals(topic)) {
+            // ignore
         } else if ("public/system/rsp".equals(topic)) {
             logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
             systeminfoPublishRsp(message);

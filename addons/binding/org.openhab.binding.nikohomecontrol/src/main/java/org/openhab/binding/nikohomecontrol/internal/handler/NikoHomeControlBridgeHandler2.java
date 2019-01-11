@@ -10,8 +10,6 @@ package org.openhab.binding.nikohomecontrol.internal.handler;
 
 import static org.openhab.binding.nikohomecontrol.internal.NikoHomeControlBindingConstants.*;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.security.cert.CertificateException;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +17,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
@@ -37,8 +36,11 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
 
     private final Logger logger = LoggerFactory.getLogger(NikoHomeControlBridgeHandler2.class);
 
-    public NikoHomeControlBridgeHandler2(Bridge nikoHomeControlBridge) {
+    NetworkAddressService networkAddressService;
+
+    public NikoHomeControlBridgeHandler2(Bridge nikoHomeControlBridge, NetworkAddressService networkAddressService) {
         super(nikoHomeControlBridge);
+        this.networkAddressService = networkAddressService;
     }
 
     @Override
@@ -60,13 +62,9 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
             return;
         }
 
-        InetAddress addr = null;
-        try {
-            addr = InetAddress.getLocalHost();
-        } catch (UnknownHostException ignore) {
-        }
-        String addrString = (addr == null) ? "hostunknown" : addr.getHostAddress().replace(".", "_");
-        String clientId = addrString + "-" + thing.getUID().toString().replace(":", "_");
+        String addr = networkAddressService.getPrimaryIpv4HostAddress();
+        addr = (addr == null) ? "unknown" : addr.replace(".", "_");
+        String clientId = addr + "-" + thing.getUID().toString().replace(":", "_");
         String userDataFolder = ConfigConstants.getUserDataFolder();
         // to remove after testing
         logger.debug("Niko Home Control: clientid {}, userdata folder {}", clientId, userDataFolder);

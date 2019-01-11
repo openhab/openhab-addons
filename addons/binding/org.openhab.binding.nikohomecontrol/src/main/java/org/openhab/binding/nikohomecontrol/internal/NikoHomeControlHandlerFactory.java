@@ -21,6 +21,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -36,6 +37,7 @@ import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlBridg
 import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlThermostatHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link NikoHomeControlHandlerFactory} is responsible for creating things and thing
@@ -47,6 +49,9 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.nikohomecontrol")
 @NonNullByDefault
 public class NikoHomeControlHandlerFactory extends BaseThingHandlerFactory {
+
+    @NonNullByDefault({})
+    private NetworkAddressService networkAddressService;
 
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
@@ -60,7 +65,7 @@ public class NikoHomeControlHandlerFactory extends BaseThingHandlerFactory {
         if (BRIDGE_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
             NikoHomeControlBridgeHandler handler;
             if (BRIDGEII_THING_TYPE.equals(thing.getThingTypeUID())) {
-                handler = new NikoHomeControlBridgeHandler2((Bridge) thing);
+                handler = new NikoHomeControlBridgeHandler2((Bridge) thing, networkAddressService);
             } else {
                 handler = new NikoHomeControlBridgeHandler1((Bridge) thing);
             }
@@ -96,5 +101,14 @@ public class NikoHomeControlHandlerFactory extends BaseThingHandlerFactory {
                 }
             }
         }
+    }
+
+    @Reference
+    protected void setNetworkAddressService(NetworkAddressService networkAddressService) {
+        this.networkAddressService = networkAddressService;
+    }
+
+    protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
+        this.networkAddressService = null;
     }
 }
