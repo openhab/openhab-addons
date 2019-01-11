@@ -356,12 +356,16 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
             if ("action".equals(device.type)) {
                 ActionType actionType = ActionType.GENERIC;
                 switch (device.model) {
-                    case "comfort":
                     case "generic":
+                    case "simulation":
+                    case "comfort":
+                    case "alarms":
                     case "alloff":
                         actionType = ActionType.TRIGGER;
                         break;
                     case "light":
+                    case "socket":
+                    case "switched-generic":
                         actionType = ActionType.RELAY;
                         break;
                     case "dimmer":
