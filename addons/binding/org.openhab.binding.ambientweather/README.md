@@ -86,7 +86,9 @@ The following channels are supported by the binding. Note that specific weather 
 | remoteSensor\<1-10\>         | batteryIndicator                | String                  | Battery indicator                                             |
 | remoteSensor\<1-10\>         | co2                             | Number:Dimensionless    | Carbon Dioxide level                                          |
 | remoteSensor\<1-10\>         | relay                           | Switch                  | Relay                                                         |
-| remoteSensor\<1-10\>         | soilMoisture                    | Number:Dimensionless    | Soil moisture level                                           |
+| remoteSensor\<1-10\>         | soilTemperature                 | Number:Temperature      | Soil temperature                                              |
+| remoteSensor\<1-10\>         | soilMoisture                    | Number:Dimensionless    | Soil moisture                                                 |
+| remoteSensor\<1-10\>         | soilMoistureLevel               | String                  | Soil moisture level (VERY DRY ... VERY WET)                   |
 
 ## Example
 
@@ -152,6 +154,11 @@ String WS8482_StationBattery "Station Battery [MAP(ambient-battery.map):%s]" { c
 Number:Temperature WS8482_RemoteTemperature "Remote Temperature [%.1f %unit%]" { channel="ambientweather:ws8482:ws8482:remoteSensor1#temperature" }
 Number:Dimensionless WS8482_RemoteHumidity "Remote Humidity [%.1f %%]" { channel="ambientweather:ws8482:ws8482:remoteSensor1#relativeHumidity" }
 String WS8482_RemoteBattery "Remote Battery [MAP(ambient-battery.map):%s]" { channel="ambientweather:ws8482:ws8482:remoteSensor1#batteryIndicator" }
+
+Number:Temperature WS8482_SoilTemperature "Soil Temperature [%.1f %unit%]" { channel="ambientweather:ws8482:ws8482:remoteSensor2#soilTemperature" }
+Number:Dimensionless WS8482_SoilMoisture "Soil Moisture [%.1f %%]" { channel="ambientweather:ws8482:ws8482:remoteSensor2#soilMoisture" }
+String WS8482_SoilMoistureLevel "Soil Moisture Level [%s]" { channel="ambientweather:ws8482:ws8482:remoteSensor2#soilMoistureLevel" }
+String WS8482_SoilSensorBattery "Remote Battery [MAP(ambient-battery.map):%s]" { channel="ambientweather:ws8482:ws8482:remoteSensor2#batteryIndicator" }
 ```
 
 ### Transforms

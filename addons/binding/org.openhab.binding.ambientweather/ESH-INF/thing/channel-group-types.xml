@@ -20,6 +20,9 @@
 		<channels>
 			<channel id="temperature" typeId="temperature" />
 			<channel id="relativeHumidity" typeId="relativeHumidity" />
+			<channel id="soilTemperature" typeId="soilTemperature" />
+			<channel id="soilMoisture" typeId="soilMoisture" />
+			<channel id="soilMoistureLevel" typeId="soilMoistureLevel" />
 			<channel id="batteryIndicator" typeId="batteryIndicator" />
 		</channels>
 	</channel-group-type>

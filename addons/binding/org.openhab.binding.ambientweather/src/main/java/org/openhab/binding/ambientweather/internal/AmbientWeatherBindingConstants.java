@@ -62,16 +62,7 @@ public class AmbientWeatherBindingConstants {
     // Channel groups used across weather station types
     public static final String CHGRP_STATION = "station";
     public static final String CHGRP_INDOOR_SENSOR = "indoorSensor";
-    public static final String CHGRP_REMOTE_SENSOR_1 = "remoteSensor1";
-    public static final String CHGRP_REMOTE_SENSOR_2 = "remoteSensor2";
-    public static final String CHGRP_REMOTE_SENSOR_3 = "remoteSensor3";
-    public static final String CHGRP_REMOTE_SENSOR_4 = "remoteSensor4";
-    public static final String CHGRP_REMOTE_SENSOR_5 = "remoteSensor5";
-    public static final String CHGRP_REMOTE_SENSOR_6 = "remoteSensor6";
-    public static final String CHGRP_REMOTE_SENSOR_7 = "remoteSensor7";
-    public static final String CHGRP_REMOTE_SENSOR_8 = "remoteSensor8";
-    public static final String CHGRP_REMOTE_SENSOR_9 = "remoteSensor9";
-    public static final String CHGRP_REMOTE_SENSOR_10 = "remoteSensor10";
+    public static final String CHGRP_REMOTE_SENSOR = "remoteSensor";
 
     // Channels Ids for data returned by the ambientweather.net API
     public static final String CH_NAME = "name";
@@ -104,6 +95,7 @@ public class AmbientWeatherBindingConstants {
     public static final String CH_SOLAR_RADIATION = "solarRadiation";
     public static final String CH_UV_INDEX = "uvIndex";
     public static final String CH_CO2 = "co2";
+    public static final String CH_SOIL_TEMPERATURE = "soilTemperature";
     public static final String CH_SOIL_MOISTURE = "soilMoisture";
     public static final String CH_RELAY = "relay";
 
@@ -111,6 +103,7 @@ public class AmbientWeatherBindingConstants {
     public static final String CH_PRESSURE_TREND = "pressureTrend";
     public static final String CH_WIND_DIRECTION = "windDirection";
     public static final String CH_UV_DANGER = "uvDanger";
+    public static final String CH_SOIL_MOISTURE_LEVEL = "soilMoistureLevel";
 
     // Bridge configuration parameters
     public static final String CONFIG_API_KEY = "apiKey";

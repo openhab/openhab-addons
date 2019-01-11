@@ -258,4 +258,32 @@ public class EventDataJson {
     public String relay8;
     public String relay9;
     public String relay10;
+
+    /*
+     * Soil temperature from remote sensors 1-10
+     */
+    public double soiltemp1;
+    public double soiltemp2;
+    public double soiltemp3;
+    public double soiltemp4;
+    public double soiltemp5;
+    public double soiltemp6;
+    public double soiltemp7;
+    public double soiltemp8;
+    public double soiltemp9;
+    public double soiltemp10;
+
+    /*
+     * Soil moisture from remote sensors 1-10
+     */
+    public double soilhum1;
+    public double soilhum2;
+    public double soilhum3;
+    public double soilhum4;
+    public double soilhum5;
+    public double soilhum6;
+    public double soilhum7;
+    public double soilhum8;
+    public double soilhum9;
+    public double soilhum10;
 }

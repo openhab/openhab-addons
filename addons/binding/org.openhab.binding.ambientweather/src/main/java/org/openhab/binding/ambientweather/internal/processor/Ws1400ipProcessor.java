@@ -61,30 +61,6 @@ public class Ws1400ipProcessor extends AbstractProcessor {
     private static final String INDOOR_TEMPERATURE = CHGRP_INDOOR_SENSOR + "#" + CH_TEMPERATURE;
     private static final String INDOOR_HUMIDITY = CHGRP_INDOOR_SENSOR + "#" + CH_HUMIDITY;
     private static final String INDOOR_BATTERY_INDICATOR = CHGRP_INDOOR_SENSOR + "#" + CH_BATTERY_INDICATOR;
-    private static final String TEMPERATURE1 = CHGRP_REMOTE_SENSOR_1 + "#" + CH_TEMPERATURE;
-    private static final String HUMIDITY1 = CHGRP_REMOTE_SENSOR_1 + "#" + CH_HUMIDITY;
-    private static final String BATTERY_INDICATOR_1 = CHGRP_REMOTE_SENSOR_1 + "#" + CH_BATTERY_INDICATOR;
-    private static final String TEMPERATURE2 = CHGRP_REMOTE_SENSOR_2 + "#" + CH_TEMPERATURE;
-    private static final String HUMIDITY2 = CHGRP_REMOTE_SENSOR_2 + "#" + CH_HUMIDITY;
-    private static final String BATTERY_INDICATOR_2 = CHGRP_REMOTE_SENSOR_2 + "#" + CH_BATTERY_INDICATOR;
-    private static final String TEMPERATURE3 = CHGRP_REMOTE_SENSOR_3 + "#" + CH_TEMPERATURE;
-    private static final String HUMIDITY3 = CHGRP_REMOTE_SENSOR_3 + "#" + CH_HUMIDITY;
-    private static final String BATTERY_INDICATOR_3 = CHGRP_REMOTE_SENSOR_3 + "#" + CH_BATTERY_INDICATOR;
-    private static final String TEMPERATURE4 = CHGRP_REMOTE_SENSOR_4 + "#" + CH_TEMPERATURE;
-    private static final String HUMIDITY4 = CHGRP_REMOTE_SENSOR_4 + "#" + CH_HUMIDITY;
-    private static final String BATTERY_INDICATOR_4 = CHGRP_REMOTE_SENSOR_4 + "#" + CH_BATTERY_INDICATOR;
-    private static final String TEMPERATURE5 = CHGRP_REMOTE_SENSOR_5 + "#" + CH_TEMPERATURE;
-    private static final String HUMIDITY5 = CHGRP_REMOTE_SENSOR_5 + "#" + CH_HUMIDITY;
-    private static final String BATTERY_INDICATOR_5 = CHGRP_REMOTE_SENSOR_5 + "#" + CH_BATTERY_INDICATOR;
-    private static final String TEMPERATURE6 = CHGRP_REMOTE_SENSOR_6 + "#" + CH_TEMPERATURE;
-    private static final String HUMIDITY6 = CHGRP_REMOTE_SENSOR_6 + "#" + CH_HUMIDITY;
-    private static final String BATTERY_INDICATOR_6 = CHGRP_REMOTE_SENSOR_6 + "#" + CH_BATTERY_INDICATOR;
-    private static final String TEMPERATURE7 = CHGRP_REMOTE_SENSOR_7 + "#" + CH_TEMPERATURE;
-    private static final String HUMIDITY7 = CHGRP_REMOTE_SENSOR_7 + "#" + CH_HUMIDITY;
-    private static final String BATTERY_INDICATOR_7 = CHGRP_REMOTE_SENSOR_7 + "#" + CH_BATTERY_INDICATOR;
-    private static final String TEMPERATURE8 = CHGRP_REMOTE_SENSOR_8 + "#" + CH_TEMPERATURE;
-    private static final String HUMIDITY8 = CHGRP_REMOTE_SENSOR_8 + "#" + CH_HUMIDITY;
-    private static final String BATTERY_INDICATOR_8 = CHGRP_REMOTE_SENSOR_8 + "#" + CH_BATTERY_INDICATOR;
 
     // Calculated channels
     private static final String UV_DANGER = CHGRP_WS1400IP + "#" + CH_UV_DANGER;
@@ -93,6 +69,11 @@ public class Ws1400ipProcessor extends AbstractProcessor {
 
     // Used to calculate barometric pressure trend
     private PressureTrend pressureTrend = new PressureTrend();
+
+    public Ws1400ipProcessor() {
+        // Set the number of remote sensor channels supported by this station
+        remoteSensor.setNumberOfSensors(8);
+    }
 
     @Override
     public void processInfoUpdate(AmbientWeatherStationHandler handler, String station, String name, String location) {
@@ -132,61 +113,20 @@ public class Ws1400ipProcessor extends AbstractProcessor {
             handler.updateChannel(RAIN_TOTAL, new DecimalType(data.totalrainin));
             handler.updateChannel(RAIN_EVENT, new DecimalType(data.eventrainin));
             handler.updateChannel(RAIN_LAST_TIME, getLocalDateTimeType(data.lastRain, handler.getZoneId()));
+
+            // Update channels for the indoor sensor
             handler.updateChannel(INDOOR_TEMPERATURE, new DecimalType(data.tempinf));
             handler.updateChannel(INDOOR_HUMIDITY, new DecimalType(data.humidityin));
             handler.updateChannel(INDOOR_BATTERY_INDICATOR, new StringType(data.battin));
 
-            // Calculated channels
+            // Update the calculated channels
             pressureTrend.put(new Double(data.baromrelin));
             handler.updateChannel(PRESSURE_TREND, pressureTrend.getPressureTrend());
             handler.updateChannel(UV_DANGER, new StringType(convertUVIndexToString(data.uv)));
             handler.updateChannel(WIND_DIRECTION, new StringType(convertWindDirectionToString(data.winddir)));
 
-            // Update the remote sensor channels. Since the JSON object doesn't include an indicator,
-            // it's necessary to explicitly look for the existence of the remote sensor fields.
-            // This would be easier if the remote sensor data was a JSON array.
-            remoteSensor.setData(jsonData);
-
-            if (remoteSensor.remoteSensor1Exists()) {
-                handler.updateChannel(TEMPERATURE1, new DecimalType(remoteSensor.getTemperature()));
-                handler.updateChannel(HUMIDITY1, new DecimalType(remoteSensor.getHumidity()));
-                handler.updateChannel(BATTERY_INDICATOR_1, new StringType(remoteSensor.getBattery()));
-            }
-            if (remoteSensor.remoteSensor2Exists()) {
-                handler.updateChannel(TEMPERATURE2, new DecimalType(remoteSensor.getTemperature()));
-                handler.updateChannel(HUMIDITY2, new DecimalType(remoteSensor.getHumidity()));
-                handler.updateChannel(BATTERY_INDICATOR_2, new StringType(remoteSensor.getBattery()));
-            }
-            if (remoteSensor.remoteSensor3Exists()) {
-                handler.updateChannel(TEMPERATURE3, new DecimalType(remoteSensor.getTemperature()));
-                handler.updateChannel(HUMIDITY3, new DecimalType(remoteSensor.getHumidity()));
-                handler.updateChannel(BATTERY_INDICATOR_3, new StringType(remoteSensor.getBattery()));
-            }
-            if (remoteSensor.remoteSensor4Exists()) {
-                handler.updateChannel(TEMPERATURE4, new DecimalType(remoteSensor.getTemperature()));
-                handler.updateChannel(HUMIDITY4, new DecimalType(remoteSensor.getHumidity()));
-                handler.updateChannel(BATTERY_INDICATOR_4, new StringType(remoteSensor.getBattery()));
-            }
-            if (remoteSensor.remoteSensor5Exists()) {
-                handler.updateChannel(TEMPERATURE5, new DecimalType(remoteSensor.getTemperature()));
-                handler.updateChannel(HUMIDITY5, new DecimalType(remoteSensor.getHumidity()));
-                handler.updateChannel(BATTERY_INDICATOR_5, new StringType(remoteSensor.getBattery()));
-            }
-            if (remoteSensor.remoteSensor6Exists()) {
-                handler.updateChannel(TEMPERATURE6, new DecimalType(remoteSensor.getTemperature()));
-                handler.updateChannel(HUMIDITY6, new DecimalType(remoteSensor.getHumidity()));
-                handler.updateChannel(BATTERY_INDICATOR_6, new StringType(remoteSensor.getBattery()));
-            }
-            if (remoteSensor.remoteSensor7Exists()) {
-                handler.updateChannel(TEMPERATURE7, new DecimalType(remoteSensor.getTemperature()));
-                handler.updateChannel(HUMIDITY7, new DecimalType(remoteSensor.getHumidity()));
-                handler.updateChannel(BATTERY_INDICATOR_7, new StringType(remoteSensor.getBattery()));
-            }
-            if (remoteSensor.remoteSensor8Exists()) {
-                handler.updateChannel(TEMPERATURE8, new DecimalType(remoteSensor.getTemperature()));
-                handler.updateChannel(HUMIDITY8, new DecimalType(remoteSensor.getHumidity()));
-                handler.updateChannel(BATTERY_INDICATOR_8, new StringType(remoteSensor.getBattery()));
-            }
+            // Update channels for the remote sensors
+            remoteSensor.updateChannels(handler, jsonData);
         } catch (JsonSyntaxException e) {
             logger.info("Station {}: Data event cannot be parsed: {}", station, e.getMessage());
             return;

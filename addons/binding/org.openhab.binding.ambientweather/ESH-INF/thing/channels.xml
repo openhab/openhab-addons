@@ -268,12 +268,28 @@
 		<state readOnly="true" pattern="%s" />
 	</channel-type>
 
+	<channel-type id="soilTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Soil Temperature</label>
+		<description>Temperature of the soil</description>
+		<category>Sensor</category>
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%" />
+	</channel-type>
+
 	<channel-type id="soilMoisture">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Soil Moisture</label>
 		<description>Amount of moisture in the soil</description>
 		<category>Sensor</category>
-		<state readOnly="true" min="0" max="100" pattern="%d %unit%" />
+		<state readOnly="true" min="0" max="100" pattern="%d" />
+	</channel-type>
+
+	<channel-type id="soilMoistureLevel">
+		<item-type>String</item-type>
+		<label>Soil Moisture Level</label>
+		<description>Soil moisture level from Very Dry to Very Wet</description>
+		<category>Sensor</category>
+		<state readOnly="true" pattern="%s" />
 	</channel-type>
 
 	<channel-type id="co2">
