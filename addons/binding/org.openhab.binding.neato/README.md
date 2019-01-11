@@ -77,7 +77,7 @@ Below you will find examples of the necessary files:
     Switch FannDammIsScheduled  "Scheduled [%s]" (GNeato) { channel = "neato:vacuumcleaner:fanndamm:is-scheduled" }
     Switch FannDammIsCharging  "Is Charging [%s]" <heating> (GNeato) { channel = "neato:vacuumcleaner:fanndamm:is-charging" }
     String FannDammCategory  "Cleaning Category [MAP(neato-sv.map):%s]" (GNeato)  { channel = "neato:vacuumcleaner:fanndamm:cleaning-category" }
-    String FannDammMode  "Cleaning Mode [MAP(neato-sv.map):%s]" (GNeato) { channel = "neato:vacuumcleaner:fanndamm:bcleaning-mode" }
+    String FannDammMode  "Cleaning Mode [MAP(neato-sv.map):%s]" (GNeato) { channel = "neato:vacuumcleaner:fanndamm:cleaning-mode" }
     String FannDammModifier  "Cleaning Modifier [MAP(neato-sv.map):%s]" (GNeato) { channel = "neato:vacuumcleaner:fanndamm:cleaning-modifier" }
     Number FannDammSpotWidth  "SpotWidth [%.0f]" <niveau> (GNeato) { channel = "neato:vacuumcleaner:fanndamm:cleaning-spotwidth" }
     Number FannDammSpotHeight  "SpotHeight [%.0f]" <niveau> (GNeato)  { channel = "neato:vacuumcleaner:fanndamm:cleaning-spotheight" }
