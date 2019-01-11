@@ -17,13 +17,16 @@ import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
+import com.beowulfe.hap.accessories.BatteryStatusAccessory;
 import com.beowulfe.hap.accessories.LeakSensor;
 
 /**
  *
  * @author Tim Harper - Initial implementation
  */
-public class HomekitLeakSensorImpl extends AbstractHomekitAccessoryImpl<SwitchItem> implements LeakSensor {
+public class HomekitLeakSensorImpl extends AbstractHomekitAccessoryImpl<SwitchItem>
+        implements LeakSensor, BatteryStatusAccessory {
+
     public HomekitLeakSensorImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
             HomekitAccessoryUpdater updater) {
         super(taggedItem, itemRegistry, updater, SwitchItem.class);
@@ -46,5 +49,22 @@ public class HomekitLeakSensorImpl extends AbstractHomekitAccessoryImpl<SwitchIt
     @Override
     public void unsubscribeLeakDetected() {
         getUpdater().unsubscribe(getItem());
+    }
+
+    @Override
+    public CompletableFuture<Boolean> getLowBatteryState() {
+        return CompletableFuture.completedFuture(false);
+    }
+
+    @Override
+    public void subscribeLowBatteryState(HomekitCharacteristicChangeCallback callback) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void unsubscribeLowBatteryState() {
+        // TODO Auto-generated method stub
+
     }
 }

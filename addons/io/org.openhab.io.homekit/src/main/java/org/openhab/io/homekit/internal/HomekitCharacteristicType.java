@@ -25,6 +25,7 @@ public enum HomekitCharacteristicType {
     /*
      * It is illegal to have a characteristic type also be a device type
      */
+    BATTERY_LEVEL("homekit:BatteryLevel"),
     TARGET_TEMPERATURE("homekit:TargetTemperature"),
     @Deprecated()
     OLD_TARGET_TEMPERATURE("TargetTemperature"),

@@ -40,7 +40,7 @@ class HomekitAccessoryRegistry {
     public synchronized void remove(HomekitTaggedItem taggedItem) {
         if (createdAccessories.containsKey(taggedItem.getName())) {
             HomekitAccessory accessory = createdAccessories.remove(taggedItem.getName());
-            logger.debug("Removed accessory {}", accessory.getId());
+            logger.debug("Removed accessory {} for taggedItem {}", accessory.getId(), taggedItem.getName());
             bridge.removeAccessory(accessory);
         }
     }
@@ -57,7 +57,7 @@ class HomekitAccessoryRegistry {
         createdAccessories.values().forEach(accessory -> bridge.addAccessory(accessory));
     }
 
-    public synchronized void addRootDevice(String itemName, HomekitAccessory accessory) {
+    public synchronized void addRootAccessory(String itemName, HomekitAccessory accessory) {
         createdAccessories.put(itemName, accessory);
         createdIds.add(accessory.getId());
         if (bridge != null) {
