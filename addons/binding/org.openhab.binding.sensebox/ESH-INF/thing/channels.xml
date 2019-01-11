@@ -18,7 +18,7 @@
 		<description>Measurements as fetched from the API</description>
 		<channels>
 			<channel id="uvIntensity" typeId="uvIntensity"/>
-			<channel id="luminance" typeId="luminance"/>
+			<channel id="illuminance" typeId="illuminance"/>
 			<channel id="pressure" typeId="pressure"/>
 			<channel id="humidity" typeId="humidity"/>
 			<channel id="temperature" typeId="temperature"/>
@@ -32,7 +32,7 @@
 		<description>Timestamps when a measurement was last reported</description>
 		<channels>
 			<channel id="uvIntensityLastReported" typeId="uvIntensityLastReported"/>
-			<channel id="luminanceLastReported" typeId="luminanceLastReported"/>
+			<channel id="illuminanceLastReported" typeId="illuminanceLastReported"/>
 			<channel id="pressureLastReported" typeId="pressureLastReported"/>
 			<channel id="humidityLastReported" typeId="humidityLastReported"/>
 			<channel id="temperatureLastReported" typeId="temperatureLastReported"/>
@@ -46,21 +46,20 @@
 		<item-type>Location</item-type>
 		<label>Location</label>
 		<description>Location of the device</description>
-		<state readOnly="true" pattern="%2$s°N,%3$s°W, %1$s m"/>
+		<state readOnly="true" pattern="%2$s°N, %3$s°W, %1$s m"/>
 	</channel-type>
 
 	<!--
 		"title": "UV-Intensität",
-		"unit": "μW/cm²",
+		"unit": "µW/cm²",
 		"sensorType": "VEML6070",
 	-->
 	<channel-type id="uvIntensity">
-		<item-type>Number</item-type>
+		<item-type>Number:Intensity</item-type>
 		<label>UV Intensity</label>
-		<description>Current UV intensity in μW/cm²</description>
-		<category>Luminance</category>
-		<state readOnly="true" pattern="%.1f μW/cm²"></state>
-	</channel-type>	
+		<description>Current UV intensity</description>
+		<state readOnly="true" pattern="%.2f µW/cm²"></state>
+	</channel-type>
 
 	<channel-type id="uvIntensityLastReported" advanced="true">
 		<item-type>DateTime</item-type>
@@ -74,17 +73,16 @@
 		"unit": "lx",
 		"sensorType": "TSL45315",
 	-->
-	<channel-type id="luminance">
-		<item-type>Number</item-type>
-		<label>Luminance</label>
-		<description>Current luminance in Lux</description>
-		<category>Luminance</category>
-		<state readOnly="true" pattern="%.1f lx"></state>
+	<channel-type id="illuminance">
+		<item-type>Number:Illuminance</item-type>
+		<label>Illuminance</label>
+		<description>Current illuminance</description>
+		<state readOnly="true" pattern="%.2f lx"></state>
 	</channel-type>
 
-	<channel-type id="luminanceLastReported" advanced="true">
+	<channel-type id="illuminanceLastReported" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Luminance Measurement Time</label>
+		<label>Illuminance Measurement Time</label>
 		<description>Timestamp when data was measured</description>
 		<state readOnly="true"/>
 	</channel-type>
@@ -95,11 +93,11 @@
 		"sensorType": "BMP280",
 	-->
 	<channel-type id="pressure">
-		<item-type>Number</item-type>
+		<item-type>Number:Pressure</item-type>
 		<label>Pressure</label>
-		<description>Current pressure in hPa</description>
+		<description>Current pressure</description>
 		<category>Pressure</category>
-		<state readOnly="true" pattern="%.1f hPa"></state>
+		<state readOnly="true" pattern="%.2f hPa"></state>
 	</channel-type>
 
 	<channel-type id="pressureLastReported" advanced="true">
@@ -115,11 +113,11 @@
 		"sensorType": "HDC1008",
 	-->
 	<channel-type id="humidity">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
-		<description>Current humidity in %</description>
+		<description>Current humidity</description>
 		<category>Humidity</category>
-		<state readOnly="true" pattern="%d %%">
+		<state readOnly="true" pattern="%2f %%">
 		</state>
 	</channel-type>
 
@@ -136,11 +134,11 @@
 		"sensorType": "HDC1008",
 	-->
 	<channel-type id="temperature">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Current temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f °C">
+		<state readOnly="true" pattern="%.2f °C">
 		</state>
 	</channel-type>
 
@@ -157,11 +155,10 @@
 		"sensorType": "SDS 011",
 	-->
 	<channel-type id="particulateMatter2dot5">
-		<item-type>Number</item-type>
+		<item-type>Number:Density</item-type>
 		<label>Particulate Matter - PM2.5</label>
-		<description>Current amount of particles less than 2.5 µm in diameter</description>
-		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f µg/m³">
+		<description>Current density of particles less than 2.5 µm in diameter</description>
+		<state readOnly="true" pattern="%.2f µg/m³">
 		</state>
 	</channel-type>
 
@@ -178,11 +175,10 @@
 		"sensorType": "SDS 011",
 	-->
 	<channel-type id="particulateMatter10">
-		<item-type>Number</item-type>
+		<item-type>Number:Density</item-type>
 		<label>Particulate Matter - PM10</label>
-		<description>Current amount of particles less than 10 µm in diameter</description>
-		<category>particulateMatter10</category>
-		<state readOnly="true" pattern="%.1f µg/m³">
+		<description>Current density of particles less than 10 µm in diameter</description>
+		<state readOnly="true" pattern="%.2f µg/m³">
 		</state>
 	</channel-type>
 

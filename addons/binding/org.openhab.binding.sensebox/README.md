@@ -37,60 +37,63 @@ Thing sensebox:box:home [ senseBoxId = "foothesmurfingbar", refreshInterval = 60
 In the table is shown more detailed information about each Channel type.
 The binding introduces the following channels:
 
-| Channel ID                                      | Channel Description                                         | Supported item type | Advanced |
-|-------------------------------------------------|-------------------------------------------------------------|---------------------|----------|
-| descriptors#location                            | Location of the box                                         | Point               | False    |
-| measurements#uvIntensity                        | Intensity of Ultraviolet radiation                          | Number              | False    |
-| measurements#luminance                          | Illuminance                                                 | Number              | False    |
-| measurements#pressure                           | Air pressure                                                | Number              | False    |
-| measurements#humidity                           | Humidity                                                    | Number              | False    |
-| measurements#temperature                        | Temperature                                                 | Number              | False    |
-| measurements#particulateMatter2dot5             | Particulate Matter 2.5 µm in diameter                       | Number              | False    |
-| measurements#particulateMatter10                | Temperature Matter 10 µm in diameter                        | Number              | False    |
-| lastReported#uvIntensityLastReported            | The timestamp when uv radiation intensity was last reported | DateTime            | True     |
-| lastReported#luminanceLastReported              | The timestamp when illuminance was last reported            | DateTime            | True     |
-| lastReported#pressureLastReported               | The timestamp when pressure was last reported               | DateTime            | True     |
-| lastReported#humidityLastReported               | The timestamp when humidity was last reported               | DateTime            | True     |
-| lastReported#temperatureLastReported            | The timestamp when temperature was last reported            | DateTime            | True     |
-| lastReported#particulateMatter2dot5LastReported | The timestamp when particulate matter 2.5 was last reported | DateTime            | True     |
-| lastReported#particulateMatter10LastReported    | The timestamp when particulate matter 10 was last reported  | DateTime            | True     |
+| Channel ID                                      | Channel Description                                         | Supported item type  | Advanced |
+|-------------------------------------------------|-------------------------------------------------------------|----------------------|----------|
+| descriptors#location                            | Location of the box                                         | Point                | False    |
+| measurements#uvIntensity                        | Intensity of Ultraviolet radiation                          | Number:Intensity     | False    |
+| measurements#illuminance                        | Illuminance                                                 | Number:Illuminance   | False    |
+| measurements#pressure                           | Air pressure                                                | Number:Pressure      | False    |
+| measurements#humidity                           | Humidity                                                    | Number:Dimensionless | False    |
+| measurements#temperature                        | Temperature                                                 | Number:Temperature   | False    |
+| measurements#particulateMatter2dot5             | Particulate Matter 2.5 µm in diameter                       | Number:Density       | False    |
+| measurements#particulateMatter10                | Temperature Matter 10 µm in diameter                        | Number:Density       | False    |
+| lastReported#uvIntensityLastReported            | The timestamp when uv radiation intensity was last reported | DateTime             | True     |
+| lastReported#illuminanceLastReported            | The timestamp when illuminance was last reported            | DateTime             | True     |
+| lastReported#pressureLastReported               | The timestamp when pressure was last reported               | DateTime             | True     |
+| lastReported#humidityLastReported               | The timestamp when humidity was last reported               | DateTime             | True     |
+| lastReported#temperatureLastReported            | The timestamp when temperature was last reported            | DateTime             | True     |
+| lastReported#particulateMatter2dot5LastReported | The timestamp when particulate matter 2.5 was last reported | DateTime             | True     |
+| lastReported#particulateMatter10LastReported    | The timestamp when particulate matter 10 was last reported  | DateTime             | True     |
 
 Channels starting with "descriptors" are defined on the API server.
 
 ## Example
 
+The Temperature and Pressure items are defined two times, one with the native unit and one with a localized unit.
+This is to show an example of using Units of Measurements to display data without explicit recalculation is rules.
+
 sensebox.things:
 
 ```
-Thing sensebox:box:zugspitze [ senseBoxId = "578cf2ccccff9d1000bd9198", refreshInterval = 900 ]
+Thing sensebox:box:davos [ senseBoxId = "5b94a2c97c51910019097f14", refreshInterval = 900 ]
 ```
 
 sensebox.items:
 
 ```
-Location Zugspitze_Location                                                               (Zugspitze)                { channel="sensebox:box:zugspitze:descriptors#location" }
+Location             Davos_Location      "Davos Location"                                       { channel = "sensebox:box:davos:descriptors#location" }
 
-Number  Zugspitze_Humidity         "Zugspitze Humidity [%.1f %%]"         <humidity>      (Zugspitze, Weather)       { channel="sensebox:box:zugspitze:measurements#humidity" }
-Number  Zugspitze_Luminance        "Zugspitze Light Level [%.1f lx]"      <light>         (Zugspitze, Weather)       { channel="sensebox:box:zugspitze:measurements#luminance" }
-Number  Zugspitze_Pressure         "Zugspitze Pressure [%.1f hPa]"        <pressure>      (Zugspitze, Weather)       { channel="sensebox:box:zugspitze:measurements#pressure" }
-Number  Zugspitze_Temperature      "Zugspitze Temperature [%.1f °C]"      <temperature>   (Zugspitze, Weather)       { channel="sensebox:box:zugspitze:measurements#temperature" }
-Number  Zugspitze_UVIntensity      "Zugspitze UvIntensity [%.1f μW/cm²]"  <light>         (Zugspitze, Weather)       { channel="sensebox:box:zugspitze:measurements#uvIntensity" }
-Number  Zugspitze_PM2dot5          "Zugspitze PM2.5 [%.1f µg/m³]"                         (Zugspitze, Weather)       { channel="sensebox:box:zugspitze:measurements#particulateMatter2dot5" }
-Number  Zugspitze_PM10             "Zugspitze PM10 [%.1f µg/m³]"                          (Zugspitze, Weather)       { channel="sensebox:box:zugspitze:measurements#particulateMatter10" }
+Number:Intensity     Davos_UVIntensity   "Davos UvIntensity [%.2f %unit%]"      <light>         { channel = "sensebox:box:davos:measurements#uvIntensity" }
+Number:Illuminance   Davos_Illuminance   "Davos Light Level [%.2f %unit%]"      <light>         { channel = "sensebox:box:davos:measurements#illuminance" }
+Number:Pressure      Davos_Pressure      "Davos Pressure [%.2f %unit%]"         <pressure>      { channel = "sensebox:box:davos:measurements#pressure" }
+Number:Dimensionless Davos_Humidity      "Davos Humidity [%.2f %%]"             <humidity>      { channel = "sensebox:box:davos:measurements#humidity" }
+Number:Temperature   Davos_Temperature   "Davos Temperature [%.2f %unit%]"      <temperature>   { channel = "sensebox:box:davos:measurements#temperature" }
+Number:Density       Davos_PM2dot5       "Davos PM2.5 [%.2f %unit%]"                            { channel = "sensebox:box:davos:measurements#particulateMatter2dot5" }
+Number:Density       Davos_PM10          "Davos PM10 [%.2f %unit%]"                             { channel = "sensebox:box:davos:measurements#particulateMatter10" }
 ```
 
 sensebox.sitemap:
 
 ```
-sitemap sensebox label="SenseBox Zugspitze" {
-	Text item=Zugspitze_Temperature
-	Text item=Zugspitze_Pressure
-	Text item=Zugspitze_Humidity
-	Text item=Zugspitze_Luminance
-	Text item=Zugspitze_UVIntensity
-	Text item=Zugspitze_PM2dot5
-	Text item=Zugspitze_PM10
-	Mapview item=Zugspitze_Location height=10
+sitemap sensebox label="SenseBox Davos" {
+    Text item=Davos_Temperature
+    Text item=Davos_Pressure
+    Text item=Davos_Humidity
+    Text item=Davos_Luminance
+    Text item=Davos_UVIntensity
+    Text item=Davos_PM2dot5
+    Text item=Davos_PM10
+    Mapview item=Davos_Location height=10
 }
 ```
 
