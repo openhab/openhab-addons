@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.lgwebos.internal;
 
-import static org.openhab.binding.lgwebos.LGWebOSBindingConstants.*;
+import static org.openhab.binding.lgwebos.internal.LGWebOSBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
