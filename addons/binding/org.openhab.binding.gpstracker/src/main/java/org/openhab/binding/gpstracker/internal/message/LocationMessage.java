@@ -8,15 +8,16 @@
  */
 package org.openhab.binding.gpstracker.internal.message;
 
-import com.google.gson.annotations.SerializedName;
-import org.eclipse.smarthome.core.library.types.DateTimeType;
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.PointType;
-
 import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
+
+import org.eclipse.smarthome.core.library.types.DateTimeType;
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.PointType;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link LocationMessage} is a POJO for location messages sent bz trackers.
@@ -24,6 +25,7 @@ import java.util.Date;
  * @author Gabor Bicskei - Initial contribution
  */
 public class LocationMessage {
+
     /**
      * Message type
      */
@@ -77,7 +79,7 @@ public class LocationMessage {
      */
     public DateTimeType getTimestamp() {
         if (timestampMillis != null) {
-            ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(new Date(timestampMillis*1000).toInstant(),
+            ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(new Date(timestampMillis * 1000).toInstant(),
                     ZoneId.systemDefault());
             return new DateTimeType(zonedDateTime);
         }
@@ -110,5 +112,16 @@ public class LocationMessage {
 
     public BigDecimal getGpsAccuracy() {
         return gpsAccuracy;
+    }
+
+    @Override
+    public String toString() {
+        return "LocationMessage [" + (type != null ? "type=" + type + ", " : "")
+                + (trackerId != null ? "trackerId=" + trackerId + ", " : "")
+                + (latitude != null ? "latitude=" + latitude + ", " : "")
+                + (longitude != null ? "longitude=" + longitude + ", " : "")
+                + (gpsAccuracy != null ? "gpsAccuracy=" + gpsAccuracy + ", " : "")
+                + (batteryLevel != null ? "batteryLevel=" + batteryLevel + ", " : "")
+                + (timestampMillis != null ? "timestampMillis=" + timestampMillis : "") + "]";
     }
 }
