@@ -39,7 +39,7 @@ public class MilightV6RGBCWWWHandler extends AbstractLedV6Handler {
 
     @Override
     public void whiteMode(MilightThingState state) {
-        sendRepeatableCat(ProtocolConstants.CAT_POWER_MODE, 5, state.colorTemperature);
+        sendRepeatableCat(ProtocolConstants.CAT_WHITEMODE, 5, state.colorTemperature);
     }
 
     @Override
