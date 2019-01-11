@@ -139,10 +139,10 @@ public class MilightV3WhiteHandler extends AbstractLedV3Handler {
         } else {
             oldLevel = (int) Math.ceil((state.brightness * BRIGHTNESS_LEVELS) / 100.0);
             skipFirst = true;
-        }
 
-        if (newLevel == oldLevel) {
-            return;
+            if (newLevel == oldLevel) {
+                return;
+            }
         }
 
         final int repeatCount = Math.abs(newLevel - oldLevel);

@@ -35,6 +35,7 @@ public abstract class ProtocolConstants {
     public static final int CAT_COLOR_SET = 12;
     public static final int CAT_POWER_MODE = 13;
     public static final int CAT_TEMPERATURE_SET = 14;
+    public static final int CAT_WHITEMODE = 17;
     public static final int CAT_MODE_SET = 18;
     public static final int CAT_SPEED_CHANGE = 19;
     public static final int CAT_LINK = 20;

@@ -40,7 +40,7 @@ public class MilightV6RGBIBOXHandler extends AbstractLedV6Handler {
 
     @Override
     public void whiteMode(MilightThingState state) {
-        sendRepeatableCat(ProtocolConstants.CAT_POWER_MODE, 3, 5);
+        sendRepeatableCat(ProtocolConstants.CAT_WHITEMODE, 3, 5);
     }
 
     @Override
