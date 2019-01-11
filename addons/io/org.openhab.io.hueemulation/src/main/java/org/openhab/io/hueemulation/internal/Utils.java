@@ -47,6 +47,9 @@ public class Utils {
         final byte[] mac;
         try {
             networkInterface = NetworkInterface.getByInetAddress(address);
+            if (networkInterface == null) {
+                return "00:00:88:00:bb:ee";
+            }
             mac = networkInterface.getHardwareAddress();
             if (mac == null) {
                 return "00:00:88:00:bb:ee";
