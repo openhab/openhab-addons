@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -45,8 +44,7 @@ public class LauncherApplication extends BaseChannelHandler<Launcher.AppInfoList
     }
 
     @Override
-    public void onDeviceReady(@NonNull ConnectableDevice device, @NonNull String channelId,
-            @NonNull LGWebOSHandler handler) {
+    public void onDeviceReady(ConnectableDevice device, String channelId, LGWebOSHandler handler) {
         super.onDeviceReady(device, channelId, handler);
         if (hasCapability(device, Launcher.Application_List)) {
 
@@ -74,8 +72,7 @@ public class LauncherApplication extends BaseChannelHandler<Launcher.AppInfoList
     }
 
     @Override
-    public void onDeviceRemoved(@NonNull ConnectableDevice device, @NonNull String channelId,
-            @NonNull LGWebOSHandler handler) {
+    public void onDeviceRemoved(ConnectableDevice device, String channelId, LGWebOSHandler handler) {
         super.onDeviceRemoved(device, channelId, handler);
         applicationListCache.remove(device.getId());
     }
@@ -107,12 +104,12 @@ public class LauncherApplication extends BaseChannelHandler<Launcher.AppInfoList
     protected Optional<ServiceSubscription<Launcher.AppInfoListener>> getSubscription(ConnectableDevice device,
             String channelId, LGWebOSHandler handler) {
         if (hasCapability(device, Launcher.RunningApp_Subscribe)) {
-            logger.debug("Channel '{}' is subscribed for 'RunningApp' change updates from the tv.", channelId);
             return Optional.of(getControl(device).subscribeRunningApp(new Launcher.AppInfoListener() {
 
                 @Override
                 public void onError(@Nullable ServiceCommandError error) {
-                    logger.debug("Error in listening to application changes: {}.", error == null ? "" : error.getMessage());
+                    logger.debug("Error in listening to application changes: {}.",
+                            error == null ? "" : error.getMessage());
                 }
 
                 @Override
@@ -127,5 +124,9 @@ public class LauncherApplication extends BaseChannelHandler<Launcher.AppInfoList
         } else {
             return Optional.empty();
         }
+    }
+
+    public List<AppInfo> getAppInfos(ConnectableDevice device) {
+        return applicationListCache.get(device.getId());
     }
 }

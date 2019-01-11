@@ -89,7 +89,6 @@ abstract class BaseChannelHandler<T, R> implements ChannelHandler {
     @Override
     public final synchronized void removeAnySubscription(ConnectableDevice device) {
         ServiceSubscription<T> l = subscriptions.remove(device.getIpAddress());
-
         if (l != null) {
             l.unsubscribe();
             logger.debug("Unsubscribed {} on IP: {}", this.getClass().getName(), device.getIpAddress());

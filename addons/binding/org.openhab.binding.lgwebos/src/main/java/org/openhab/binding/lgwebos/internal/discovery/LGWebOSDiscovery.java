@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.lgwebos.internal.discovery;
 
-import static org.openhab.binding.lgwebos.LGWebOSBindingConstants.*;
+import static org.openhab.binding.lgwebos.internal.LGWebOSBindingConstants.*;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -25,7 +25,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.lgwebos.LGWebOSBindingConstants;
+import org.openhab.binding.lgwebos.internal.LGWebOSBindingConstants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
