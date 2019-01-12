@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -26,6 +26,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.neato.internal.CouldNotFindRobotException;
+import org.openhab.binding.neato.internal.NeatoBindingConstants;
 import org.openhab.binding.neato.internal.NeatoCommunicationException;
 import org.openhab.binding.neato.internal.NeatoRobot;
 import org.openhab.binding.neato.internal.classes.Cleaning;
@@ -46,11 +47,9 @@ public class NeatoHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(NeatoHandler.class);
 
-    private static final long INITIAL_DELAY_IN_SECONDS = 15;
-
     private NeatoRobot mrRobot;
 
-    private Integer refreshTime;
+    private int refreshTime;
     private ScheduledFuture<?> refreshTask;
 
     public NeatoHandler(Thing thing) {
@@ -61,10 +60,8 @@ public class NeatoHandler extends BaseThingHandler {
     public void handleCommand(@NonNull ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             refreshStateAndUpdate();
-        } else if (channelUID.getId().equals(COMMAND)) {
+        } else if (channelUID.getId().equals(NeatoBindingConstants.COMMAND)) {
             sendCommandToRobot(command);
-        } else {
-            logger.debug("Command {} is not supported for channel: {}.", command, channelUID.getId());
         }
     }
 
@@ -83,9 +80,9 @@ public class NeatoHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         logger.debug("Running dispose()");
-        if (refreshTask != null) {
-            refreshTask.cancel(true);
-            refreshTask = null;
+        if (this.refreshTask != null) {
+            this.refreshTask.cancel(true);
+            this.refreshTask = null;
         }
     }
 
@@ -94,7 +91,7 @@ public class NeatoHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
         logger.debug("Will boot up Neato Vacuum Cleaner binding!");
 
-        NeatoRobotConfig config = getConfigAs(NeatoRobotConfig.class);
+        NeatoRobotConfig config = getThing().getConfiguration().as(NeatoRobotConfig.class);
 
         logger.debug("Neato Robot Config: {}", config);
 
@@ -110,19 +107,8 @@ public class NeatoHandler extends BaseThingHandler {
         startAutomaticRefresh();
     }
 
-    @Override
-    public void dispose() {
-        logger.debug("Dispose Neato handler '{}'.", getThing().getUID());
-        if (refreshTask != null && !refreshTask.isCancelled()) {
-            logger.debug("Stop refresh job.");
-            if (refreshTask.cancel(true)) {
-                refreshTask = null;
-            }
-        }
-    }
-
     public void refreshStateAndUpdate() {
-        if (refreshTask == null || refreshTask.isCancelled()) {
+        if (mrRobot != null) {
             try {
                 mrRobot.sendGetState();
                 updateStatus(ThingStatus.ONLINE);
@@ -140,7 +126,7 @@ public class NeatoHandler extends BaseThingHandler {
     private void startAutomaticRefresh() {
         Runnable refresher = () -> refreshStateAndUpdate();
 
-        refreshTask = scheduler.scheduleWithFixedDelay(refresher, 0, refreshTime, TimeUnit.SECONDS);
+        this.refreshTask = scheduler.scheduleWithFixedDelay(refresher, 0, refreshTime, TimeUnit.SECONDS);
         logger.debug("Start automatic refresh at {} seconds", refreshTime);
     }
 

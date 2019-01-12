@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,15 +16,15 @@ package org.openhab.binding.neato.internal.config;
  */
 public class NeatoRobotConfig {
 
-    private Integer refresh;
+    private int refresh;
     private String secret;
     private String serial;
 
-    public Integer getRefresh() {
+    public int getRefresh() {
         return refresh;
     }
 
-    public void setRefresh(Integer refresh) {
+    public void setRefresh(int refresh) {
         this.refresh = refresh;
     }
 
