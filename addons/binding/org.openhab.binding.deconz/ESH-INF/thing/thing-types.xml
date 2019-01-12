@@ -61,11 +61,36 @@
 	</thing-type>
 
 	<channel-type id="power">
-		<item-type>Number:Energy</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Power</label>
-		<description>Current power usage in Watts</description>
+		<description>Current power usage</description>
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
+	
+	<thing-type id="consumptionsensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="deconz" />
+		</supported-bridge-type-refs>
+		<label>Consumption Sensor</label>
+		<description>A consumption sensor</description>
+		<channels>
+			<channel typeId="consumption" id="consumption"></channel>
+			<channel typeId="last_updated" id="last_updated"></channel>
+		</channels>
+		<config-description>
+			<parameter name="id" type="text" required="true">
+				<label>Sensor ID</label>
+				<description>The deCONZ bridge assigns an integer number ID to each sensor.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="consumption">
+		<item-type>Number:Energy</item-type>
+		<label>Consumption</label>
+		<description>Current consumption</description>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>	
 
 	<thing-type id="switch">
 		<supported-bridge-type-refs>
@@ -119,7 +144,7 @@
 	<channel-type id="lightlux">
 		<item-type>Number:Illuminance</item-type>
 		<label>Illuminance</label>
-		<description>Current light illuminance in Lux</description>
+		<description>Current light illuminance</description>
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 
@@ -169,6 +194,31 @@
 		<label>Humidity</label>
 		<description>Current humidity</description>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
+	</channel-type>
+	
+	<thing-type id="pressuresensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="deconz" />
+		</supported-bridge-type-refs>
+		<label>Pressure Sensor</label>
+		<description>A pressure senor</description>
+		<channels>
+			<channel typeId="pressure" id="pressure"></channel>
+			<channel typeId="last_updated" id="last_updated"></channel>
+		</channels>
+		<config-description>
+			<parameter name="id" type="text" required="true">
+				<label>Sensor ID</label>
+				<description>The deCONZ bridge assigns an integer number ID to each sensor.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	
+	<channel-type id="pressure">
+		<item-type>Number:Pressure</item-type>
+		<label>Pressure</label>
+		<description>Current pressure</description>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 
 	<thing-type id="daylightsensor">

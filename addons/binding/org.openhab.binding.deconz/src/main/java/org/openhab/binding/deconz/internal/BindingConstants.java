@@ -25,19 +25,23 @@ public class BindingConstants {
     public static final ThingTypeUID BRIDGE_TYPE = new ThingTypeUID(BINDING_ID, "deconz");
     public static final ThingTypeUID THING_TYPE_PRESENCE_SENSOR = new ThingTypeUID(BINDING_ID, "presencesensor");
     public static final ThingTypeUID THING_TYPE_POWER_SENSOR = new ThingTypeUID(BINDING_ID, "powersensor");
+    public static final ThingTypeUID THING_TYPE_CONSUMPTION_SENSOR = new ThingTypeUID(BINDING_ID, "consumptionsensor");
     public static final ThingTypeUID THING_TYPE_DAYLIGHT_SENSOR = new ThingTypeUID(BINDING_ID, "daylightsensor");
     public static final ThingTypeUID THING_TYPE_SWITCH = new ThingTypeUID(BINDING_ID, "switch");
     public static final ThingTypeUID THING_TYPE_LIGHT_SENSOR = new ThingTypeUID(BINDING_ID, "lightsensor");
     public static final ThingTypeUID THING_TYPE_TEMPERATURE_SENSOR = new ThingTypeUID(BINDING_ID, "temperaturesensor");
     public static final ThingTypeUID THING_TYPE_HUMIDITY_SENSOR = new ThingTypeUID(BINDING_ID, "humiditysensor");
+    public static final ThingTypeUID THING_TYPE_PRESSURE_SENSOR = new ThingTypeUID(BINDING_ID, "pressuresensor");
     public static final ThingTypeUID THING_TYPE_OPENCLOSE_SENSOR = new ThingTypeUID(BINDING_ID, "openclosesensor");
 
     // List of all Channel ids
     public static final String CHANNEL_PRESENCE = "presence";
     public static final String CHANNEL_POWER = "power";
+    public static final String CHANNEL_CONSUMPTION = "consumption";
     public static final String CHANNEL_VALUE = "value";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_HUMIDITY = "humidity";
+    public static final String CHANNEL_PRESSURE = "pressure";
     public static final String CHANNEL_DAYLIGHT = "light";
     public static final String CHANNEL_LIGHT_LUX = "lightlux";
     public static final String CHANNEL_BUTTON = "button";

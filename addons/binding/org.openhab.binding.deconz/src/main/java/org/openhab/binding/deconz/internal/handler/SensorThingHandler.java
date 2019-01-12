@@ -8,11 +8,15 @@
  */
 package org.openhab.binding.deconz.internal.handler;
 
+import static org.eclipse.smarthome.core.library.unit.MetricPrefix.HECTO;
+
 import java.util.Map;
 
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Energy;
 import javax.measure.quantity.Illuminance;
+import javax.measure.quantity.Power;
+import javax.measure.quantity.Pressure;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -213,9 +217,11 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
         Boolean presence = state.presence;
         Boolean open = state.open;
         Integer power = state.power;
+        Integer consumption = state.consumption;
         Integer lux = state.lux;
         Float temperature = state.temperature;
         Float humidity = state.humidity;
+        Integer pressure = state.pressure;
 
         switch (channelID) {
             case BindingConstants.CHANNEL_DAYLIGHT:
@@ -237,7 +243,12 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
                 break;
             case BindingConstants.CHANNEL_POWER:
                 if (power != null) {
-                    updateState(channelID, new QuantityType<Energy>(power, SmartHomeUnits.WATT_HOUR));
+                    updateState(channelID, new QuantityType<Power>(power, SmartHomeUnits.WATT));
+                }
+                break;
+            case BindingConstants.CHANNEL_CONSUMPTION:
+                if (consumption != null) {
+                    updateState(channelID, new QuantityType<Energy>(consumption, SmartHomeUnits.WATT_HOUR));
                 }
                 break;
             case BindingConstants.CHANNEL_LIGHT_LUX:
@@ -253,6 +264,11 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
             case BindingConstants.CHANNEL_HUMIDITY:
                 if (humidity != null) {
                     updateState(channelID, new QuantityType<Dimensionless>(humidity / 100, SmartHomeUnits.PERCENT));
+                }
+                break;
+            case BindingConstants.CHANNEL_PRESSURE:
+                if (pressure != null) {
+                    updateState(channelID, new QuantityType<Pressure>(pressure, HECTO(SIUnits.PASCAL)));
                 }
                 break;
             case BindingConstants.CHANNEL_PRESENCE:
