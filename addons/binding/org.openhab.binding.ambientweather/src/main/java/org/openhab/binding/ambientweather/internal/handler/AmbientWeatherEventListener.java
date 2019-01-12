@@ -341,7 +341,6 @@ public class AmbientWeatherEventListener {
      * Resubscribe when a handler is initialized
      */
     public synchronized void resubscribe() {
-        logger.debug("Listener: Resubscribing to events");
         sendUnsubscribe();
         sendSubscribe();
     }

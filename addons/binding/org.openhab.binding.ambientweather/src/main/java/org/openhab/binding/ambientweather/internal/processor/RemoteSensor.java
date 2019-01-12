@@ -15,8 +15,10 @@ import java.io.StringReader;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.ImperialUnits;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.openhab.binding.ambientweather.internal.handler.AmbientWeatherStationHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,20 +73,20 @@ public class RemoteSensor {
                 String name = reader.nextName();
                 if (("temp" + sensorNumber + "f").equals(name)) {
                     handler.updateChannel(CHGRP_REMOTE_SENSOR + sensorNumber + "#" + CH_TEMPERATURE,
-                            new DecimalType(reader.nextDouble()));
+                            new QuantityType<>(reader.nextDouble(), ImperialUnits.FAHRENHEIT));
                 } else if (("humidity" + sensorNumber).equals(name)) {
                     handler.updateChannel(CHGRP_REMOTE_SENSOR + sensorNumber + "#" + CH_HUMIDITY,
-                            new DecimalType(reader.nextDouble()));
+                            new QuantityType<>(reader.nextDouble(), SmartHomeUnits.PERCENT));
                 } else if (("soiltemp" + sensorNumber).equals(name)) {
                     handler.updateChannel(CHGRP_REMOTE_SENSOR + sensorNumber + "#" + CH_SOIL_TEMPERATURE,
-                            new DecimalType(reader.nextDouble()));
+                            new QuantityType<>(reader.nextDouble(), ImperialUnits.FAHRENHEIT));
                 } else if (("soilhum" + sensorNumber).equals(name)) {
                     double soilMoisture = reader.nextDouble();
                     handler.updateChannel(CHGRP_REMOTE_SENSOR + sensorNumber + "#" + CH_SOIL_MOISTURE,
-                            new DecimalType(soilMoisture));
+                            new QuantityType<>(soilMoisture, SmartHomeUnits.PERCENT));
                     handler.updateChannel(CHGRP_REMOTE_SENSOR + sensorNumber + "#" + CH_SOIL_MOISTURE_LEVEL,
                             new StringType(convertSoilMoistureToString(soilMoisture)));
-                } else if (("battery" + sensorNumber).equals(name)) {
+                } else if (("batt" + sensorNumber).equals(name)) {
                     handler.updateChannel(CHGRP_REMOTE_SENSOR + sensorNumber + "#" + CH_BATTERY_INDICATOR,
                             new StringType(reader.nextString()));
                 } else {
@@ -112,9 +114,9 @@ public class RemoteSensor {
             result = "VERY DRY";
         } else if (soilMoisture >= 33.0 && soilMoisture < 60.0) {
             result = "DRY";
-        } else if (soilMoisture >= 60.0 && soilMoisture <= 80.0) {
+        } else if (soilMoisture >= 60.0 && soilMoisture < 80.0) {
             result = "MOIST";
-        } else if (soilMoisture >= 80.0 && soilMoisture <= 93.0) {
+        } else if (soilMoisture >= 80.0 && soilMoisture < 93.0) {
             result = "WET";
         } else if (soilMoisture >= 93.0 && soilMoisture <= 100.0) {
             result = "VERY WET";

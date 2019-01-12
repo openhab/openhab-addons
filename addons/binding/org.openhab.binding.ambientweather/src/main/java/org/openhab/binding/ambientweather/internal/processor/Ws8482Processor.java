@@ -11,8 +11,10 @@ package org.openhab.binding.ambientweather.internal.processor;
 import static org.openhab.binding.ambientweather.internal.AmbientWeatherBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.ImperialUnits;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.openhab.binding.ambientweather.internal.handler.AmbientWeatherStationHandler;
 import org.openhab.binding.ambientweather.internal.json.EventDataJson;
 
@@ -29,14 +31,6 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class Ws8482Processor extends AbstractProcessor {
-    // Define the channels we will update
-    private static final String NAME = CHGRP_STATION + "#" + CH_NAME;
-    private static final String LOCATION = CHGRP_STATION + "#" + CH_LOCATION;
-
-    private static final String OBSERVATION_TIME = CHGRP_WS8482 + "#" + CH_OBSERVATION_TIME;
-    private static final String TEMPERATURE = CHGRP_WS8482 + "#" + CH_TEMPERATURE;
-    private static final String HUMIDITY = CHGRP_WS8482 + "#" + CH_HUMIDITY;
-    private static final String BATTERY_INDICATOR = CHGRP_WS8482 + "#" + CH_BATTERY_INDICATOR;
 
     public Ws8482Processor() {
         // Set the number of remote sensor channels supported by this station
@@ -47,8 +41,8 @@ public class Ws8482Processor extends AbstractProcessor {
     public void processInfoUpdate(AmbientWeatherStationHandler handler, String station, String name, String location) {
         // Update name and location channels
         logger.debug("Station {}: Updating station information channels", station);
-        handler.updateChannel(NAME, new StringType(name));
-        handler.updateChannel(LOCATION, new StringType(location));
+        handler.updateChannel(CHGRP_STATION + "#" + CH_NAME, new StringType(name));
+        handler.updateChannel(CHGRP_STATION + "#" + CH_LOCATION, new StringType(location));
     }
 
     @Override
@@ -56,13 +50,16 @@ public class Ws8482Processor extends AbstractProcessor {
         Gson gson = new Gson();
         try {
             EventDataJson data = gson.fromJson(jsonData, EventDataJson.class);
-
             logger.debug("Station {}: Updating weather data channels", station);
+
             // Update the weather data channels for the WS-8482
-            handler.updateChannel(OBSERVATION_TIME, getLocalDateTimeType(data.date, handler.getZoneId()));
-            handler.updateChannel(TEMPERATURE, new DecimalType(data.tempinf));
-            handler.updateChannel(HUMIDITY, new DecimalType(data.humidityin));
-            handler.updateChannel(BATTERY_INDICATOR, new StringType(data.battout));
+            handler.updateChannel(CHGRP_WS8482 + "#" + CH_OBSERVATION_TIME,
+                    getLocalDateTimeType(data.date, handler.getZoneId()));
+            handler.updateChannel(CHGRP_WS8482 + "#" + CH_TEMPERATURE,
+                    new QuantityType<>(data.tempinf, ImperialUnits.FAHRENHEIT));
+            handler.updateChannel(CHGRP_WS8482 + "#" + CH_HUMIDITY,
+                    new QuantityType<>(data.humidityin, SmartHomeUnits.PERCENT));
+            handler.updateChannel(CHGRP_WS8482 + "#" + CH_BATTERY_INDICATOR, new StringType(data.battout));
 
             // Update the remote sensor channels
             remoteSensor.updateChannels(handler, jsonData);
