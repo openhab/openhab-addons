@@ -24,7 +24,7 @@ import org.openhab.binding.ihc.internal.ws.http.IhcHttpsClient;
 public abstract class IhcBaseService extends IhcHttpsClient {
 
     // @formatter:off
-    protected final static String EMPTY_QUERY =
+    protected static final String EMPTY_QUERY =
               "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
             + "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">\n"
             + " <soapenv:Body>\n"

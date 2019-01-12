@@ -33,7 +33,7 @@ import org.xml.sax.SAXException;
  * @author Pauli Anttila - Initial contribution
  */
 public class ProjectFileUtils {
-    private final static Logger LOGGER = LoggerFactory.getLogger(ProjectFileUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProjectFileUtils.class);
 
     public static Document readProjectFileFromFile(String path) {
         File fXmlFile = new File(path);
@@ -111,7 +111,7 @@ public class ProjectFileUtils {
             Element element = (Element) nodes.item(i);
 
             int typedefId = Integer.parseInt(element.getAttribute("id").replace("_0x", ""), 16);
-            String enum_name = element.getAttribute("name");
+            String enumName = element.getAttribute("name");
 
             ArrayList<IhcEnumValue> enumValues = new ArrayList<IhcEnumValue>();
 
@@ -125,7 +125,7 @@ public class ProjectFileUtils {
                 enumValues.add(enumVal);
             }
 
-            LOGGER.debug("Enum values found: typedefId={}, name={}: {}", typedefId, enum_name, enumValues);
+            LOGGER.debug("Enum values found: typedefId={}, name={}: {}", typedefId, enumName, enumValues);
             enumDictionary.put(typedefId, enumValues);
         }
         return enumDictionary;

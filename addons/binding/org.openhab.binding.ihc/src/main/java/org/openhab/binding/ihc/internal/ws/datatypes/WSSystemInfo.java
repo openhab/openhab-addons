@@ -38,7 +38,6 @@ public class WSSystemInfo {
     public WSSystemInfo(long uptime, ZonedDateTime realtimeclock, String serialNumber, String brand, String version,
             String hwRevision, ZonedDateTime swDate, boolean applicationIsWithoutViewer, String productionDate,
             String datalineVersion, String rfModuleSoftwareVersion, String rfModuleSerialNumber) {
-
         this.uptime = uptime;
         this.realtimeclock = realtimeclock;
         this.serialNumber = serialNumber;

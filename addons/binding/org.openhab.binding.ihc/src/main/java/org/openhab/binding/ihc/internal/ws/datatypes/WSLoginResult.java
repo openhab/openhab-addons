@@ -29,7 +29,6 @@ public class WSLoginResult {
     public WSLoginResult(WSUser loggedInUser, boolean loginWasSuccessful,
             boolean loginFailedDueToConnectionRestrictions, boolean loginFailedDueToInsufficientUserRights,
             boolean loginFailedDueToAccountInvalid) {
-
         this.loggedInUser = loggedInUser;
         this.loginWasSuccessful = loginWasSuccessful;
         this.loginFailedDueToConnectionRestrictions = loginFailedDueToConnectionRestrictions;

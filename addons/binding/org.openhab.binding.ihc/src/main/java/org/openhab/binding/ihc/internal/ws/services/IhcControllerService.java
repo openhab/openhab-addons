@@ -111,7 +111,6 @@ public class IhcControllerService extends IhcBaseService {
      */
     public synchronized WSControllerState waitStateChangeNotifications(WSControllerState previousState,
             int timeoutInSeconds) throws IhcExecption {
-
         // @formatter:off
         final String soapQuery =
                   "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"

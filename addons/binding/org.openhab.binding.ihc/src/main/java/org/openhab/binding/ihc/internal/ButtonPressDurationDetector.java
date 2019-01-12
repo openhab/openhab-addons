@@ -24,8 +24,8 @@ public class ButtonPressDurationDetector {
     private boolean shortPress;
     private boolean longPress;
     private Duration duration;
-    private long long_press_time;
-    private long long_press_max_time;
+    private long longPressTime;
+    private long longPressMaxTime;
 
     public boolean isShortPress() {
         return shortPress;
@@ -35,10 +35,10 @@ public class ButtonPressDurationDetector {
         return longPress;
     }
 
-    public ButtonPressDurationDetector(Duration duration, long long_press_time, long long_press_max_time) {
+    public ButtonPressDurationDetector(Duration duration, long longPressTime, long longPressMaxTime) {
         this.duration = duration;
-        this.long_press_time = long_press_time;
-        this.long_press_max_time = long_press_max_time;
+        this.longPressTime = longPressTime;
+        this.longPressMaxTime = longPressMaxTime;
 
         calculate();
     }
@@ -46,14 +46,14 @@ public class ButtonPressDurationDetector {
     private void calculate() {
         if (duration.toMillis() < 0) {
             logger.debug("Button press duration < 0ms");
-        } else if (isBetween(duration.toMillis(), 0, long_press_time)) {
-            logger.debug("Button press duration > {}ms and < {}ms", 0, long_press_time);
+        } else if (isBetween(duration.toMillis(), 0, longPressTime)) {
+            logger.debug("Button press duration > {}ms and < {}ms", 0, longPressTime);
             shortPress = true;
-        } else if (isBetween(duration.toMillis(), long_press_time, long_press_max_time)) {
-            logger.debug("Button press duration > {}ms and < {}ms", long_press_time, long_press_max_time);
+        } else if (isBetween(duration.toMillis(), longPressTime, longPressMaxTime)) {
+            logger.debug("Button press duration > {}ms and < {}ms", longPressTime, longPressMaxTime);
             longPress = true;
         } else {
-            logger.debug("Button press duration > {}ms, ignore it", long_press_max_time);
+            logger.debug("Button press duration > {}ms, ignore it", longPressMaxTime);
         }
     }
 

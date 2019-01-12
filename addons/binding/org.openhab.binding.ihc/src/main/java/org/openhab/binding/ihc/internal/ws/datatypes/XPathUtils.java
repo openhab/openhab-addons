@@ -32,7 +32,7 @@ import org.xml.sax.InputSource;
  * @author Pauli Anttila - Initial contribution
  */
 public class XPathUtils {
-    private static NamespaceContext IhcNamespaceContext = new NamespaceContext() {
+    private static NamespaceContext ihcNamespaceContext = new NamespaceContext() {
         @Override
         public String getNamespaceURI(String prefix) {
             if (prefix == null) {
@@ -62,7 +62,7 @@ public class XPathUtils {
             XPath xpath = XPathFactory.newInstance().newXPath();
             InputSource inputSource = new InputSource(is);
 
-            xpath.setNamespaceContext(IhcNamespaceContext);
+            xpath.setNamespaceContext(ihcNamespaceContext);
 
             try {
                 return (String) xpath.evaluate(xpathExpression, inputSource, XPathConstants.STRING);
@@ -83,19 +83,17 @@ public class XPathUtils {
     }
 
     public static String getSpeficValueFromNode(Node n, String xpathExpr) throws XPathExpressionException {
-
         XPath xpath = XPathFactory.newInstance().newXPath();
-        xpath.setNamespaceContext(IhcNamespaceContext);
+        xpath.setNamespaceContext(ihcNamespaceContext);
         XPathExpression pathExpr = xpath.compile(xpathExpr);
         return (String) pathExpr.evaluate(n, XPathConstants.STRING);
     }
 
     public static NodeList parseList(String xml, String xpathExpression) throws XPathExpressionException, IOException {
-
         try (InputStream is = new ByteArrayInputStream(xml.getBytes("UTF8"))) {
             XPath xpath = XPathFactory.newInstance().newXPath();
             InputSource inputSource = new InputSource(is);
-            xpath.setNamespaceContext(IhcNamespaceContext);
+            xpath.setNamespaceContext(ihcNamespaceContext);
             return (NodeList) xpath.evaluate(xpathExpression, inputSource, XPathConstants.NODESET);
         }
     }

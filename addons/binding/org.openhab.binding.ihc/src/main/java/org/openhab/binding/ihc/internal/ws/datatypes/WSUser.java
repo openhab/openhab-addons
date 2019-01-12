@@ -31,7 +31,6 @@ public class WSUser {
 
     public WSUser(WSDate createdDate, WSDate loginDate, String username, String password, String email,
             String firstname, String lastname, String phone, WSUserGroup group, String project) {
-
         this.createdDate = createdDate;
         this.loginDate = loginDate;
         this.username = username;

@@ -55,10 +55,10 @@ public class IhcClient {
     CONNECTED
     }
 
-    public final static String CONTROLLER_STATE_READY = "text.ctrl.state.ready";
-    public final static String CONTROLLER_STATE_INITIALIZE = "text.ctrl.state.initialize";
+    public static final String CONTROLLER_STATE_READY = "text.ctrl.state.ready";
+    public static final String CONTROLLER_STATE_INITIALIZE = "text.ctrl.state.initialize";
 
-    private final static int NOTIFICATION_WAIT_TIMEOUT_IN_SEC = 5;
+    private static final int NOTIFICATION_WAIT_TIMEOUT_IN_SEC = 5;
 
     private final Logger logger = LoggerFactory.getLogger(IhcClient.class);
 
@@ -163,7 +163,6 @@ public class IhcClient {
      * @throws IhcExecption
      */
     public void openConnection() throws IhcExecption {
-
         logger.debug("Opening connection");
 
         setConnectionState(ConnectionState.CONNECTING);
@@ -172,7 +171,6 @@ public class IhcClient {
         WSLoginResult loginResult = authenticationService.authenticate(username, password, "treeview");
 
         if (!loginResult.isLoginWasSuccessful()) {
-
             // Login failed
 
             setConnectionState(ConnectionState.DISCONNECTED);
@@ -341,7 +339,6 @@ public class IhcClient {
      */
     private WSControllerState waitStateChangeNotifications(WSControllerState previousState, int timeoutInSeconds)
             throws IhcExecption {
-
         return controllerService.waitStateChangeNotifications(previousState, timeoutInSeconds);
     }
 
@@ -353,7 +350,6 @@ public class IhcClient {
      * @return True is connection successfully opened.
      */
     public synchronized void enableRuntimeValueNotifications(Set<Integer> resourceIdList) throws IhcExecption {
-
         resourceInteractionService.enableRuntimeValueNotifications(resourceIdList);
     }
 
@@ -369,7 +365,6 @@ public class IhcClient {
      * @throws SocketTimeoutException
      */
     private List<WSResourceValue> waitResourceValueNotifications(int timeoutInSeconds) throws IhcExecption {
-
         List<WSResourceValue> list = resourceInteractionService.waitResourceValueNotifications(timeoutInSeconds);
 
         for (WSResourceValue val : list) {
@@ -509,7 +504,7 @@ public class IhcClient {
                             NOTIFICATION_WAIT_TIMEOUT_IN_SEC);
                     logger.trace("Controller state {}", currentState.getState());
 
-                    if (previousState.getState().equals(currentState.getState()) == false) {
+                    if (!previousState.getState().equals(currentState.getState())) {
                         logger.debug("Controller state change detected ({} -> {})", previousState.getState(),
                                 currentState.getState());
                         sendControllerStateUpdateEvent(currentState);

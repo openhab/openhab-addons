@@ -58,7 +58,6 @@ public class IhcConnectionPool {
     }
 
     private void init() {
-
         // Create a local instance of cookie store
         cookieStore = new BasicCookieStore();
 

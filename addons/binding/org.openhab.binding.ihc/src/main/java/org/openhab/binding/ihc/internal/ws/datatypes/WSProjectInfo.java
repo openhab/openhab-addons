@@ -32,7 +32,6 @@ public class WSProjectInfo {
     public WSProjectInfo(int visualMinorVersion, int visualMajorVersion, int projectMajorRevision,
             int projectMinorRevision, WSDate lastmodified, String projectNumber, String customerName,
             String installerName) {
-
         this.visualMinorVersion = visualMinorVersion;
         this.visualMajorVersion = visualMajorVersion;
         this.projectMajorRevision = projectMajorRevision;

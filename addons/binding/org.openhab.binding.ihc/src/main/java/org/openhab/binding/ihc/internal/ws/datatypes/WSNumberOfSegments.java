@@ -23,7 +23,6 @@ public class WSNumberOfSegments {
     }
 
     public WSNumberOfSegments(int segments) {
-
         this.segments = segments;
     }
 

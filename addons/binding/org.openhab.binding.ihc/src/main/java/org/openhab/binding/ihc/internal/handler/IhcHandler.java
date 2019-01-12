@@ -358,7 +358,6 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
 
     private void updateChannel(ChannelUID channelUID, ChannelParams params, Command command)
             throws IllegalArgumentException, IhcExecption {
-
         if (params.getCommandToReact() != null) {
             if (command.toString().equals(params.getCommandToReact())) {
                 logger.debug("Command '{}' equal to channel reaction parameter '{}', execute it", command,
@@ -381,7 +380,6 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
 
     private void sendNormalCommand(ChannelUID channelUID, ChannelParams params, Command command, WSResourceValue value)
             throws IhcExecption {
-
         logger.debug("Send command '{}' to resource '{}'", command, value.getResourceID());
         ConverterAdditionalInfo converterAdditionalInfo = new ConverterAdditionalInfo(getEnumValues(value),
                 params.isInverted());
@@ -403,7 +401,6 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
 
     private void sendPulseCommand(ChannelUID channelUID, ChannelParams params, WSResourceValue value,
             Integer pulseWidth) throws IhcExecption {
-
         logger.debug("Send {}ms pulse to resource: {}", pulseWidth, value.getResourceID());
         logger.debug("Channel params: {}", params);
         Converter<WSResourceValue, Type> converter = ConverterFactory.getInstance().getConverter(value.getClass(),
@@ -554,7 +551,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
             loadProject = true;
         }
 
-        if (loadProject == true) {
+        if (loadProject) {
             logger.debug("Loading IHC /ELKO LS project file from controller...");
             byte[] data = ihc.loadProjectFileFromControllerAsByteArray();
             logger.debug("Saving project file to local file '{}'", filePath);
@@ -659,7 +656,6 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
 
             if (controllerState.equals(IhcClient.CONTROLLER_STATE_INITIALIZE)
                     && newState.getState().equals(IhcClient.CONTROLLER_STATE_READY)) {
-
                 logger.debug("Reconnection request");
                 projectFile = null;
                 setReconnectRequest(true);
@@ -711,7 +707,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
 
     private void checkTriggers(WSResourceValue value) {
         if (value instanceof WSBooleanValue) {
-            if (((WSBooleanValue) value).isValue() == false) {
+            if (!((WSBooleanValue) value).isValue()) {
                 LocalDateTime lastUpdateTime = lastUpdate.get(value.getResourceID());
                 if (lastUpdateTime != null) {
                     Duration duration = Duration.between(lastUpdateTime, LocalDateTime.now());

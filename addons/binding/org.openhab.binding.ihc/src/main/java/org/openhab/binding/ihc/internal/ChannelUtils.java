@@ -36,7 +36,7 @@ import org.w3c.dom.NodeList;
  * @author Pauli Anttila - Initial contribution
  */
 public class ChannelUtils {
-    private final static Logger LOGGER = LoggerFactory.getLogger(IhcHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(IhcHandler.class);
 
     public static Set<Integer> getAllChannelsResourceIds(Thing thing) {
         Set<Integer> resourceIds = new HashSet<>();

@@ -27,7 +27,6 @@ public class WSRFDevice {
 
     public WSRFDevice(int batteryLevel, int deviceType, long serialNumber, int signalStrength, int version,
             boolean detected) {
-
         this.batteryLevel = batteryLevel;
         this.deviceType = deviceType;
         this.serialNumber = serialNumber;

@@ -112,7 +112,6 @@ public enum ConverterFactory {
     @SuppressWarnings("unchecked")
     public Converter<WSResourceValue, Type> getConverter(Class<? extends WSResourceValue> resourceValueType,
             String itemType) {
-
         Class<? extends Type> type = null;
         switch (itemType) {
             case ITEM_TYPE_SWITCH:

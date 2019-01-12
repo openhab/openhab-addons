@@ -28,7 +28,6 @@ public class StringTypeWSEnumValueConverter implements Converter<WSEnumValue, St
     @Override
     public WSEnumValue convertFromOHType(StringType from, WSEnumValue value, ConverterAdditionalInfo convertData)
             throws NumberFormatException {
-
         if (convertData.getEnumValues() != null) {
             boolean found = false;
             for (IhcEnumValue item : convertData.getEnumValues()) {
@@ -39,7 +38,7 @@ public class StringTypeWSEnumValueConverter implements Converter<WSEnumValue, St
                     break;
                 }
             }
-            if (found == false) {
+            if (!found) {
                 throw new NumberFormatException("Can't find enum value for string " + value.toString());
             }
             return value;

@@ -69,7 +69,6 @@ public class IhcResourceInteractionService extends IhcBaseService {
             nodeList = XPathUtils.parseList(response, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getRuntimeValue2");
 
             if (nodeList != null && nodeList.getLength() == 1) {
-
                 WSResourceValue val = parseResourceValue(nodeList.item(0));
 
                 if (val != null && val.getResourceID() == resoureId) {
@@ -428,7 +427,6 @@ public class IhcResourceInteractionService extends IhcBaseService {
      * @throws IhcTimeoutExecption
      */
     public List<WSResourceValue> waitResourceValueNotifications(int timeoutInSeconds) throws IhcExecption {
-
         // @formatter:off
         final String soapQuery =
                   "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"

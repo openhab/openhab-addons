@@ -27,15 +27,13 @@ public class DateTimeTypeWSTimeValueConverter implements Converter<WSTimeValue, 
     @Override
     public DateTimeType convertFromResourceValue(WSTimeValue from, ConverterAdditionalInfo convertData)
             throws NumberFormatException {
-        Calendar cal = WSDateTimeToCalendar(null, from);
-        // return new DateTimeType(cal);
+        Calendar cal = dateTimeToCalendar(null, from);
         return new DateTimeType(ZonedDateTime.ofInstant(cal.toInstant(), TimeZone.getDefault().toZoneId()));
     }
 
     @Override
     public WSTimeValue convertFromOHType(DateTimeType from, WSTimeValue value, ConverterAdditionalInfo convertData)
             throws NumberFormatException {
-        // Calendar cal = from.getCalendar();
         Calendar cal = GregorianCalendar.from(from.getZonedDateTime());
         int hours = cal.get(Calendar.HOUR_OF_DAY);
         int minutes = cal.get(Calendar.MINUTE);
@@ -46,7 +44,7 @@ public class DateTimeTypeWSTimeValueConverter implements Converter<WSTimeValue, 
         return value;
     }
 
-    private Calendar WSDateTimeToCalendar(WSDateValue date, WSTimeValue time) {
+    private Calendar dateTimeToCalendar(WSDateValue date, WSTimeValue time) {
         Calendar cal = new GregorianCalendar(2000, 01, 01);
         if (date != null) {
             short year = date.getYear();
@@ -59,7 +57,6 @@ public class DateTimeTypeWSTimeValueConverter implements Converter<WSTimeValue, 
             int hour = time.getHours();
             int minute = time.getMinutes();
             int second = time.getSeconds();
-
             cal.set(2000, 0, 1, hour, minute, second);
         }
         return cal;

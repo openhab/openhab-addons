@@ -29,7 +29,6 @@ public class WSTimeManagerSettings {
 
     public WSTimeManagerSettings(boolean synchroniseTimeAgainstServer, boolean useDST, int gmtOffsetInHours,
             String serverName, int syncIntervalInHours, WSDate timeAndDateInUTC) {
-
         this.synchroniseTimeAgainstServer = synchroniseTimeAgainstServer;
         this.useDST = useDST;
         this.gmtOffsetInHours = gmtOffsetInHours;
