@@ -9,7 +9,7 @@
 package org.openhab.binding.ihc.internal.ws.services;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.net.SocketTimeoutException;
@@ -18,7 +18,6 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatchers;
 import org.openhab.binding.ihc.internal.ws.ResourceFileUtils;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
 import org.openhab.binding.ihc.internal.ws.http.IhcConnectionPool;
@@ -40,12 +39,12 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSWeekdayValue;
 public class IhcResourceInteractionServiceTest {
 
     private IhcResourceInteractionService ihcResourceInteractionService;
+    private final String host = "1.1.1.1";
     private final String url = "https://1.1.1.1/ws/ResourceInteractionService";
 
     @Before
     public void setUp() throws IhcExecption, SocketTimeoutException {
-        ihcResourceInteractionService = spy(new IhcResourceInteractionService(url, 0, new IhcConnectionPool()));
-        doNothing().when(ihcResourceInteractionService).openConnection(eq(url));
+        ihcResourceInteractionService = spy(new IhcResourceInteractionService(host, 0, new IhcConnectionPool()));
 
         final String query = ResourceFileUtils.getFileContent("src/test/resources/ResourceValueQueryTemplate.xml");
         final String response11111 = ResourceFileUtils
@@ -65,22 +64,22 @@ public class IhcResourceInteractionServiceTest {
         final String response88888 = ResourceFileUtils
                 .getFileContent("src/test/resources/ResourceValueQueryResponse88888.xml");
 
-        doReturn(response11111).when(ihcResourceInteractionService).sendQuery(eq(String.format(query, 11111)),
-                ArgumentMatchers.anyInt());
-        doReturn(response22222).when(ihcResourceInteractionService).sendQuery(eq(String.format(query, 22222)),
-                ArgumentMatchers.anyInt());
-        doReturn(response33333).when(ihcResourceInteractionService).sendQuery(eq(String.format(query, 33333)),
-                ArgumentMatchers.anyInt());
-        doReturn(response44444).when(ihcResourceInteractionService).sendQuery(eq(String.format(query, 44444)),
-                ArgumentMatchers.anyInt());
-        doReturn(response55555).when(ihcResourceInteractionService).sendQuery(eq(String.format(query, 55555)),
-                ArgumentMatchers.anyInt());
-        doReturn(response66666).when(ihcResourceInteractionService).sendQuery(eq(String.format(query, 66666)),
-                ArgumentMatchers.anyInt());
-        doReturn(response77777).when(ihcResourceInteractionService).sendQuery(eq(String.format(query, 77777)),
-                ArgumentMatchers.anyInt());
-        doReturn(response88888).when(ihcResourceInteractionService).sendQuery(eq(String.format(query, 88888)),
-                ArgumentMatchers.anyInt());
+        doReturn(response11111).when(ihcResourceInteractionService).sendQuery(eq(url), any(),
+                eq(String.format(query, 11111)), anyInt());
+        doReturn(response22222).when(ihcResourceInteractionService).sendQuery(eq(url), any(),
+                eq(String.format(query, 22222)), anyInt());
+        doReturn(response33333).when(ihcResourceInteractionService).sendQuery(eq(url), any(),
+                eq(String.format(query, 33333)), anyInt());
+        doReturn(response44444).when(ihcResourceInteractionService).sendQuery(eq(url), any(),
+                eq(String.format(query, 44444)), anyInt());
+        doReturn(response55555).when(ihcResourceInteractionService).sendQuery(eq(url), any(),
+                eq(String.format(query, 55555)), anyInt());
+        doReturn(response66666).when(ihcResourceInteractionService).sendQuery(eq(url), any(),
+                eq(String.format(query, 66666)), anyInt());
+        doReturn(response77777).when(ihcResourceInteractionService).sendQuery(eq(url), any(),
+                eq(String.format(query, 77777)), anyInt());
+        doReturn(response88888).when(ihcResourceInteractionService).sendQuery(eq(url), any(),
+                eq(String.format(query, 88888)), anyInt());
 
         final String updateOkResult = ResourceFileUtils
                 .getFileContent("src/test/resources/ResourceValueUpdateOkResult.xml");
@@ -101,38 +100,38 @@ public class IhcResourceInteractionServiceTest {
         final String update800008 = ResourceFileUtils
                 .getFileContent("src/test/resources/ResourceValueUpdate800008.xml");
 
-        doReturn(updateOkResult).when(ihcResourceInteractionService).sendQuery(eq(update100001),
-                ArgumentMatchers.anyInt());
-        doReturn(updateOkResult).when(ihcResourceInteractionService).sendQuery(eq(update200002),
-                ArgumentMatchers.anyInt());
-        doReturn(updateOkResult).when(ihcResourceInteractionService).sendQuery(eq(update300003),
-                ArgumentMatchers.anyInt());
-        doReturn(updateOkResult).when(ihcResourceInteractionService).sendQuery(eq(update400004),
-                ArgumentMatchers.anyInt());
-        doReturn(updateOkResult).when(ihcResourceInteractionService).sendQuery(eq(update500005),
-                ArgumentMatchers.anyInt());
-        doReturn(updateOkResult).when(ihcResourceInteractionService).sendQuery(eq(update600006),
-                ArgumentMatchers.anyInt());
-        doReturn(updateOkResult).when(ihcResourceInteractionService).sendQuery(eq(update700007),
-                ArgumentMatchers.anyInt());
-        doReturn(updateOkResult).when(ihcResourceInteractionService).sendQuery(eq(update800008),
-                ArgumentMatchers.anyInt());
+        doReturn(updateOkResult).when(ihcResourceInteractionService).sendQuery(eq(url), any(), eq(update100001),
+                anyInt());
+        doReturn(updateOkResult).when(ihcResourceInteractionService).sendQuery(eq(url), any(), eq(update200002),
+                anyInt());
+        doReturn(updateOkResult).when(ihcResourceInteractionService).sendQuery(eq(url), any(), eq(update300003),
+                anyInt());
+        doReturn(updateOkResult).when(ihcResourceInteractionService).sendQuery(eq(url), any(), eq(update400004),
+                anyInt());
+        doReturn(updateOkResult).when(ihcResourceInteractionService).sendQuery(eq(url), any(), eq(update500005),
+                anyInt());
+        doReturn(updateOkResult).when(ihcResourceInteractionService).sendQuery(eq(url), any(), eq(update600006),
+                anyInt());
+        doReturn(updateOkResult).when(ihcResourceInteractionService).sendQuery(eq(url), any(), eq(update700007),
+                anyInt());
+        doReturn(updateOkResult).when(ihcResourceInteractionService).sendQuery(eq(url), any(), eq(update800008),
+                anyInt());
 
         final String updateFailureResult = ResourceFileUtils
                 .getFileContent("src/test/resources/ResourceValueUpdateFailureResult.xml");
         final String update100011 = ResourceFileUtils
                 .getFileContent("src/test/resources/ResourceValueUpdate100011.xml");
 
-        doReturn(updateFailureResult).when(ihcResourceInteractionService).sendQuery(eq(update100011),
-                ArgumentMatchers.anyInt());
+        doReturn(updateFailureResult).when(ihcResourceInteractionService).sendQuery(eq(url), any(), eq(update100011),
+                anyInt());
 
         final String resourceValueNotificationsQuery = ResourceFileUtils
                 .getFileContent("src/test/resources/ResourceValueNotificationsQuery.xml");
         final String resourceValueNotificationsResponse = ResourceFileUtils
                 .getFileContent("src/test/resources/ResourceValueNotificationsResponse.xml");
 
-        doReturn(resourceValueNotificationsResponse).when(ihcResourceInteractionService)
-                .sendQuery(eq(resourceValueNotificationsQuery), ArgumentMatchers.anyInt());
+        doReturn(resourceValueNotificationsResponse).when(ihcResourceInteractionService).sendQuery(eq(url), any(),
+                eq(resourceValueNotificationsQuery), anyInt());
     }
 
     @Test

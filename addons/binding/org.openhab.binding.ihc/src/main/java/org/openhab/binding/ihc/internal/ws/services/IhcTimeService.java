@@ -20,10 +20,7 @@ import org.openhab.binding.ihc.internal.ws.http.IhcConnectionPool;
 public class IhcTimeService extends IhcBaseService {
 
     public IhcTimeService(String host, int timeout, IhcConnectionPool ihcConnectionPool) {
-        super(ihcConnectionPool);
-        url = "https://" + host + "/ws/TimeManagerService";
-        this.timeout = timeout;
-        setConnectTimeout(timeout);
+        super(ihcConnectionPool, timeout, host, "TimeManagerService");
     }
 
     /**
@@ -33,7 +30,7 @@ public class IhcTimeService extends IhcBaseService {
      * @throws IhcExecption
      */
     public synchronized WSTimeManagerSettings getTimeSettings() throws IhcExecption {
-        String response = sendSoapQuery("getSettings", EMPTY_QUERY, timeout);
+        String response = sendSoapQuery("getSettings", EMPTY_QUERY);
         return new WSTimeManagerSettings().parseXMLData(response);
     }
 }

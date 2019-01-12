@@ -15,7 +15,7 @@ import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
  *
  * @author Pauli Anttila - Initial contribution
  */
-public class WSLoginResult extends WSBaseDataType {
+public class WSLoginResult {
 
     protected WSUser loggedInUser;
     protected boolean loginWasSuccessful;
@@ -123,16 +123,16 @@ public class WSLoginResult extends WSBaseDataType {
 
     public WSLoginResult parseXMLData(String data) throws IhcExecption {
         try {
-            loginWasSuccessful = parseValueToBoolean(data,
+            loginWasSuccessful = XPathUtils.parseValueToBoolean(data,
                     "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:authenticate2/ns1:loginWasSuccessful");
 
-            loginFailedDueToConnectionRestrictions = parseValueToBoolean(data,
+            loginFailedDueToConnectionRestrictions = XPathUtils.parseValueToBoolean(data,
                     "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:authenticate2/ns1:loginFailedDueToConnectionRestrictions");
 
-            loginFailedDueToInsufficientUserRights = parseValueToBoolean(data,
+            loginFailedDueToInsufficientUserRights = XPathUtils.parseValueToBoolean(data,
                     "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:authenticate2/ns1:loginFailedDueToInsufficientUserRights");
 
-            loginFailedDueToAccountInvalid = parseValueToBoolean(data,
+            loginFailedDueToAccountInvalid = XPathUtils.parseValueToBoolean(data,
                     "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:authenticate2/ns1:loginFailedDueToAccountInvalid");
 
             return this;

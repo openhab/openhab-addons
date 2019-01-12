@@ -104,8 +104,6 @@ public class IhcConnectionPool {
             logger.warn("Exception", e);
         }
 
-        httpClientBuilder.setSslcontext(sslContext);
-
         // Controller accepts only HTTPS connections and because normally IP address are used on home network rather
         // than DNS names, create custom host name verifier.
         HostnameVerifier hostnameVerifier = new HostnameVerifier() {

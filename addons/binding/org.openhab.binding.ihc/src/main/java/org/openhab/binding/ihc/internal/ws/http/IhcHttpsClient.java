@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.http.HttpResponse;
@@ -35,10 +36,7 @@ public abstract class IhcHttpsClient {
 
     private final Logger logger = LoggerFactory.getLogger(IhcHttpsClient.class);
 
-    private static final int DEF_CONNECT_TIMEOUT = 5000;
-
     private IhcConnectionPool ihcConnectionPool;
-    private int connectTimeout = DEF_CONNECT_TIMEOUT;
     private HttpClient client;
     private HttpPost postReq;
     private AtomicInteger counter = new AtomicInteger();
@@ -48,48 +46,26 @@ public abstract class IhcHttpsClient {
     }
 
     /**
-     * @return the timeout in milliseconds
-     *
-     */
-    public int getConnectTimeout() {
-        return connectTimeout;
-    }
-
-    /**
-     * @param timeout
-     *            the timeout in milliseconds
-     */
-    public void setConnectTimeout(int timeout) {
-        connectTimeout = timeout;
-    }
-
-    /**
-     * Open HTTP connection.
+     * Init HTTP connection.
      *
      * @param url
      *            Url to connect.
      */
-    public void openConnection(String url) throws IhcExecption {
-        logger.debug("Open connection to '{}'", url);
+    private void initConnection(String url) throws IhcExecption {
         if (client == null) {
             client = ihcConnectionPool.getHttpClient();
         }
         postReq = new HttpPost(url);
     }
 
-    public void closeConnection() {
-    }
-
     /**
      * Send HTTP request and wait response from the server.
      *
-     * @param query
-     *            Data to send.
-     * @param timeout
-     *            the timeout to set in milliseconds
-     * @return Response from server.
      */
-    public String sendQuery(String query, int timeout) throws IhcExecption {
+    public String sendQuery(String url, Map<String, String> requestProperties, String query, int timeout)
+            throws IhcExecption {
+        initConnection(url);
+        setRequestProperty(requestProperties);
         try {
             return sendQ(query, timeout);
         } catch (NoHttpResponseException e) {
@@ -120,13 +96,13 @@ public abstract class IhcHttpsClient {
 
         if (logger.isTraceEnabled()) {
             requestId = counter.getAndIncrement();
-            logger.trace("Send query (connectionPool={}, clientId={} requestId={}, timeout={}, headers={}): {}",
-                    ihcConnectionPool.hashCode(), client.hashCode(), requestId, timeout, postReq.getAllHeaders(),
-                    query);
+            logger.trace("Send query (url={}, connectionPool={}, clientId={} requestId={}, timeout={}, headers={}): {}",
+                    postReq.getURI(), ihcConnectionPool.hashCode(), client.hashCode(), requestId, timeout,
+                    postReq.getAllHeaders(), query);
         }
 
-        final RequestConfig params = RequestConfig.custom().setConnectTimeout(connectTimeout)
-                .setConnectionRequestTimeout(connectTimeout).setSocketTimeout(timeout).build();
+        final RequestConfig params = RequestConfig.custom().setConnectTimeout(timeout)
+                .setConnectionRequestTimeout(timeout).setSocketTimeout(timeout).build();
         postReq.setConfig(params);
 
         // Execute POST
@@ -151,14 +127,12 @@ public abstract class IhcHttpsClient {
     }
 
     /**
-     * Set request property.
+     * Set request properties.
      *
-     * @param key
-     *            property key.
-     * @param value
-     *            property value.
      */
-    public void setRequestProperty(String key, String value) {
-        postReq.setHeader(key, value);
+    private void setRequestProperty(Map<String, String> requestProperties) {
+        if (postReq != null && requestProperties != null) {
+            requestProperties.forEach((k, v) -> postReq.setHeader(k, v));
+        }
     }
 }

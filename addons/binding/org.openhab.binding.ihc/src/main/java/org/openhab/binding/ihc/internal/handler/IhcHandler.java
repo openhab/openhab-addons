@@ -516,8 +516,9 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
     private void connect() throws IhcExecption {
         try {
             setConnectingState(true);
-            logger.debug("Connecting to IHC / ELKO LS controller [IP='{}', username='{}'].", conf.ip, conf.username);
-            ihc = new IhcClient(conf.ip, conf.username, conf.password, conf.timeout);
+            logger.debug("Connecting to IHC / ELKO LS controller [hostname='{}', username='{}'].", conf.hostname,
+                    conf.username);
+            ihc = new IhcClient(conf.hostname, conf.username, conf.password, conf.timeout);
             ihc.openConnection();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                     "Initializing communication to the IHC / ELKO controller");

@@ -15,7 +15,7 @@ import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
  *
  * @author Pauli Anttila - Initial contribution
  */
-public class WSTimeManagerSettings extends WSBaseDataType {
+public class WSTimeManagerSettings {
 
     private boolean synchroniseTimeAgainstServer;
     private boolean useDST;
@@ -88,45 +88,47 @@ public class WSTimeManagerSettings extends WSBaseDataType {
 
     public WSTimeManagerSettings parseXMLData(String data) throws IhcExecption {
         try {
-            String value = parseXMLValue(data,
+            String value = XPathUtils.parseXMLValue(data,
                     "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:synchroniseTimeAgainstServer");
             setSynchroniseTimeAgainstServer(Boolean.parseBoolean(value));
 
-            value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:useDST");
+            value = XPathUtils.parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:useDST");
             setUseDST(Boolean.parseBoolean(value));
 
-            value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:gmtOffsetInHours");
+            value = XPathUtils.parseXMLValue(data,
+                    "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:gmtOffsetInHours");
             setGmtOffsetInHours(Integer.parseInt(value));
 
-            value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:serverName");
+            value = XPathUtils.parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:serverName");
             setServerName(value);
 
-            value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:syncIntervalInHours");
+            value = XPathUtils.parseXMLValue(data,
+                    "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:syncIntervalInHours");
             setSyncIntervalInHours(Integer.parseInt(value));
 
             WSDate timeAndDateInUTC = new WSDate();
 
-            value = parseXMLValue(data,
+            value = XPathUtils.parseXMLValue(data,
                     "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:timeAndDateInUTC/ns1:day");
             timeAndDateInUTC.setDay(Integer.parseInt(value));
 
-            value = parseXMLValue(data,
+            value = XPathUtils.parseXMLValue(data,
                     "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:timeAndDateInUTC/ns1:monthWithJanuaryAsOne");
             timeAndDateInUTC.setMonthWithJanuaryAsOne(Integer.parseInt(value));
 
-            value = parseXMLValue(data,
+            value = XPathUtils.parseXMLValue(data,
                     "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:timeAndDateInUTC/ns1:hours");
             timeAndDateInUTC.setHours(Integer.parseInt(value));
 
-            value = parseXMLValue(data,
+            value = XPathUtils.parseXMLValue(data,
                     "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:timeAndDateInUTC/ns1:minutes");
             timeAndDateInUTC.setMinutes(Integer.parseInt(value));
 
-            value = parseXMLValue(data,
+            value = XPathUtils.parseXMLValue(data,
                     "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:timeAndDateInUTC/ns1:seconds");
             timeAndDateInUTC.setSeconds(Integer.parseInt(value));
 
-            value = parseXMLValue(data,
+            value = XPathUtils.parseXMLValue(data,
                     "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSettings1/ns1:timeAndDateInUTC/ns1:year");
             timeAndDateInUTC.setYear(Integer.parseInt(value));
 

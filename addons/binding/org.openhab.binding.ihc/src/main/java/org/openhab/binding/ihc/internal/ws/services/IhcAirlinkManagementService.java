@@ -8,27 +8,17 @@
  */
 package org.openhab.binding.ihc.internal.ws.services;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import javax.xml.namespace.NamespaceContext;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSRFDevice;
+import org.openhab.binding.ihc.internal.ws.datatypes.XPathUtils;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
 import org.openhab.binding.ihc.internal.ws.http.IhcConnectionPool;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 
 /**
  * Class to handle IHC / ELKO LS Controller's airlink management service.
@@ -39,10 +29,7 @@ import org.xml.sax.InputSource;
 public class IhcAirlinkManagementService extends IhcBaseService {
 
     public IhcAirlinkManagementService(String host, int timeout, IhcConnectionPool ihcConnectionPool) {
-        super(ihcConnectionPool);
-        url = "https://" + host + "/ws/AirlinkManagementService";
-        this.timeout = timeout;
-        setConnectTimeout(timeout);
+        super(ihcConnectionPool, timeout, host, "AirlinkManagementService");
     }
 
     /**
@@ -52,12 +39,12 @@ public class IhcAirlinkManagementService extends IhcBaseService {
      * @throws IhcExecption
      */
     public synchronized List<WSRFDevice> getDetectedDeviceList() throws IhcExecption {
-        String response = sendSoapQuery("getDetectedDeviceList", EMPTY_QUERY, timeout);
+        String response = sendSoapQuery("getDetectedDeviceList", EMPTY_QUERY);
 
         List<WSRFDevice> resourceValueList = new ArrayList<WSRFDevice>();
 
         try {
-            NodeList nodeList = parseList(response,
+            NodeList nodeList = XPathUtils.parseList(response,
                     "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getDetectedDeviceList1/ns1:arrayItem");
 
             if (nodeList != null) {
@@ -76,111 +63,15 @@ public class IhcAirlinkManagementService extends IhcBaseService {
         }
     }
 
-    private NodeList parseList(String xml, String xpathExpression) throws XPathExpressionException, IOException {
-
-        try (InputStream is = new ByteArrayInputStream(xml.getBytes("UTF8"))) {
-            XPath xpath = XPathFactory.newInstance().newXPath();
-            InputSource inputSource = new InputSource(is);
-
-            xpath.setNamespaceContext(new NamespaceContext() {
-                @Override
-                public String getNamespaceURI(String prefix) {
-                    if (prefix == null) {
-                        throw new IllegalArgumentException("Prefix argument can't be null");
-                    } else if ("SOAP-ENV".equals(prefix)) {
-                        return "http://schemas.xmlsoap.org/soap/envelope/";
-                    } else if ("ns1".equals(prefix)) {
-                        return "utcs";
-                    } else if ("ns2".equals(prefix)) {
-                        return "utcs.values";
-                    }
-                    return null;
-                }
-
-                @Override
-                public String getPrefix(String uri) {
-                    return null;
-                }
-
-                @Override
-                @SuppressWarnings("rawtypes")
-                public Iterator getPrefixes(String uri) {
-                    throw new UnsupportedOperationException();
-                }
-            });
-            return (NodeList) xpath.evaluate(xpathExpression, inputSource, XPathConstants.NODESET);
-        }
-    }
-
-    private String getValue(Node n, String expr) throws XPathExpressionException {
-
-        XPath xpath = XPathFactory.newInstance().newXPath();
-        xpath.setNamespaceContext(new NamespaceContext() {
-
-            @Override
-            public String getNamespaceURI(String prefix) {
-
-                if (prefix == null) {
-                    throw new IllegalArgumentException("Prefix argument can't be null");
-                } else if ("SOAP-ENV".equals(prefix)) {
-                    return "http://schemas.xmlsoap.org/soap/envelope/";
-                } else if ("ns1".equals(prefix)) {
-                    return "utcs";
-                }
-                // else if ("ns2".equals(prefix)) return "utcs.values";
-                return "utcs.values";
-            }
-
-            @Override
-            public String getPrefix(String uri) {
-                return null;
-            }
-
-            @Override
-            @SuppressWarnings("rawtypes")
-            public Iterator getPrefixes(String uri) {
-                throw new UnsupportedOperationException();
-            }
-        });
-
-        XPathExpression pathExpr = xpath.compile(expr);
-        return (String) pathExpr.evaluate(n, XPathConstants.STRING);
-    }
-
-    private WSRFDevice parseResourceValue(Node n) throws XPathExpressionException {
-
-        WSRFDevice dev = new WSRFDevice();
-
-        String batteryLevel = getValue(n, "ns1:batteryLevel");
-        if (StringUtils.isNotBlank(batteryLevel)) {
-            dev.setBatteryLevel(Integer.parseInt(batteryLevel));
-        }
-
-        String deviceType = getValue(n, "ns1:deviceType");
-        if (StringUtils.isNotBlank(deviceType)) {
-            dev.setDeviceType(Integer.parseInt(deviceType));
-        }
-
-        String serialNumber = getValue(n, "ns1:serialNumber");
-        if (StringUtils.isNotBlank(serialNumber)) {
-            dev.setSerialNumber(Long.parseLong(serialNumber));
-        }
-
-        String signalStrength = getValue(n, "ns1:signalStrength");
-        if (StringUtils.isNotBlank(signalStrength)) {
-            dev.setSignalStrength(Integer.parseInt(signalStrength));
-        }
-
-        String version = getValue(n, "ns1:version");
-        if (StringUtils.isNotBlank(version)) {
-            dev.setVersion(Integer.parseInt(version));
-        }
-
-        String detected = getValue(n, "ns1:detected");
-        if (StringUtils.isNotBlank(detected)) {
-            dev.setdetected(Boolean.valueOf(detected));
-        }
-
-        return dev;
+    private WSRFDevice parseResourceValue(Node n) throws XPathExpressionException, NumberFormatException {
+        String batteryLevel = XPathUtils.getValueFromNode(n, "batteryLevel");
+        String deviceType = XPathUtils.getValueFromNode(n, "deviceType");
+        String serialNumber = XPathUtils.getValueFromNode(n, "serialNumber");
+        String signalStrength = XPathUtils.getValueFromNode(n, "signalStrength");
+        String version = XPathUtils.getValueFromNode(n, "version");
+        String detected = XPathUtils.getValueFromNode(n, "detected");
+        return new WSRFDevice(Integer.parseInt(batteryLevel), Integer.parseInt(deviceType),
+                Long.parseLong(serialNumber), Integer.parseInt(signalStrength), Integer.parseInt(version),
+                Boolean.valueOf(detected));
     }
 }

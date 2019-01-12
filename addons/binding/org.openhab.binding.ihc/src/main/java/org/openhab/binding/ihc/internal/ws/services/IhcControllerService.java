@@ -27,10 +27,7 @@ import org.openhab.binding.ihc.internal.ws.http.IhcConnectionPool;
 public class IhcControllerService extends IhcBaseService {
 
     public IhcControllerService(String host, int timeout, IhcConnectionPool ihcConnectionPool) {
-        super(ihcConnectionPool);
-        url = "https://" + host + "/ws/ControllerService";
-        this.timeout = timeout;
-        setConnectTimeout(timeout);
+        super(ihcConnectionPool, timeout, host, "ControllerService");
     }
 
     /**
@@ -40,7 +37,7 @@ public class IhcControllerService extends IhcBaseService {
      * @throws IhcExecption
      */
     public synchronized WSProjectInfo getProjectInfo() throws IhcExecption {
-        String response = sendSoapQuery("getProjectInfo", EMPTY_QUERY, timeout);
+        String response = sendSoapQuery("getProjectInfo", EMPTY_QUERY);
         return new WSProjectInfo().parseXMLData(response);
     }
 
@@ -51,7 +48,7 @@ public class IhcControllerService extends IhcBaseService {
      * @throws IhcExecption
      */
     public synchronized int getProjectNumberOfSegments() throws IhcExecption {
-        String response = sendSoapQuery("getIHCProjectNumberOfSegments", EMPTY_QUERY, timeout);
+        String response = sendSoapQuery("getIHCProjectNumberOfSegments", EMPTY_QUERY);
         return new WSNumberOfSegments().parseXMLData(response).getNumberOfSegments();
     }
 
@@ -62,7 +59,7 @@ public class IhcControllerService extends IhcBaseService {
      * @throws IhcExecption
      */
     public synchronized int getProjectSegmentationSize() throws IhcExecption {
-        String response = sendSoapQuery("getIHCProjectSegmentationSize", EMPTY_QUERY, timeout);
+        String response = sendSoapQuery("getIHCProjectSegmentationSize", EMPTY_QUERY);
         return new WSSegmentationSize().parseXMLData(response).getSegmentationSize();
     }
 
@@ -89,7 +86,7 @@ public class IhcControllerService extends IhcBaseService {
         // @formatter:on
 
         String query = String.format(soapQuery, index, major, minor);
-        String response = sendSoapQuery("getIHCProjectSegment", query, timeout);
+        String response = sendSoapQuery("getIHCProjectSegment", query);
         return new WSFile().parseXMLData(response);
     }
 
@@ -100,7 +97,7 @@ public class IhcControllerService extends IhcBaseService {
      * @throws IhcExecption
      */
     public synchronized WSControllerState getControllerState() throws IhcExecption {
-        String response = sendSoapQuery("getState", EMPTY_QUERY, timeout);
+        String response = sendSoapQuery("getState", EMPTY_QUERY);
         return new WSControllerState().parseXMLData(response);
     }
 
@@ -129,7 +126,7 @@ public class IhcControllerService extends IhcBaseService {
         // @formatter:on
 
         String query = String.format(soapQuery, previousState.getState(), timeoutInSeconds);
-        String response = sendSoapQuery("waitForControllerStateChange", query, timeout + timeoutInSeconds * 1000);
+        String response = sendSoapQuery("waitForControllerStateChange", query, getTimeout() + timeoutInSeconds * 1000);
         return new WSControllerState().parseXMLData(response);
     }
 }

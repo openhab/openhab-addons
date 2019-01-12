@@ -26,19 +26,12 @@ import org.slf4j.LoggerFactory;
 public class IhcAuthenticationService extends IhcBaseService {
     private final Logger logger = LoggerFactory.getLogger(IhcAuthenticationService.class);
 
-    IhcAuthenticationService(String host, IhcConnectionPool ihcConnectionPool) {
-        super(ihcConnectionPool);
-        url = "https://" + host + "/ws/AuthenticationService";
-    }
-
     public IhcAuthenticationService(String host, int timeout, IhcConnectionPool ihcConnectionPool) {
-        this(host, ihcConnectionPool);
-        this.timeout = timeout;
-        super.setConnectTimeout(timeout);
+        super(ihcConnectionPool, timeout, host, "AuthenticationService");
     }
 
     public WSLoginResult authenticate(String username, String password, String application) throws IhcExecption {
-        logger.debug("Open connection");
+        logger.debug("Authenticate");
 
         // @formatter:off
         final String soapQuery =
@@ -55,8 +48,7 @@ public class IhcAuthenticationService extends IhcBaseService {
         // @formatter:on
 
         String query = String.format(soapQuery, password, username, application);
-        openConnection(url);
-        String response = sendQuery(query, timeout);
+        String response = sendSoapQuery(null, query);
         return new WSLoginResult().parseXMLData(response);
     }
 }

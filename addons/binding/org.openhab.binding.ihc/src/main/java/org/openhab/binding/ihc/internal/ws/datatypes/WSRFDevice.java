@@ -13,7 +13,7 @@ package org.openhab.binding.ihc.internal.ws.datatypes;
  *
  * @author Pauli Anttila - Initial contribution
  */
-public class WSRFDevice extends WSBaseDataType {
+public class WSRFDevice {
 
     private int batteryLevel;
     private int deviceType;
@@ -147,7 +147,7 @@ public class WSRFDevice extends WSBaseDataType {
     @Override
     public String toString() {
         return String.format(
-                "[batteryLevel=%d, deviceType=%d, serialNumber=%d, signalStrength=%d, version=%d, detected=%b]",
+                "[ batteryLevel=%d, deviceType=%d, serialNumber=%d, signalStrength=%d, version=%d, detected=%b ]",
                 batteryLevel, deviceType, serialNumber, signalStrength, version, detected);
     }
 }

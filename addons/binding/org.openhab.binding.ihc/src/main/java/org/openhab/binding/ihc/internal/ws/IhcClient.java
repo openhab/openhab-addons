@@ -80,22 +80,24 @@ public class IhcClient {
     /** Thread to handle controller's state change notifications */
     private IhcControllerStateListener controllerStateListener;
 
-    private String username = "";
-    private String password = "";
-    private String ip = "";
-    private int timeout = 5000; // milliseconds
+    private String username;
+    private String password;
+    private String host;
+
+    /** Timeout in milliseconds */
+    private int timeout;
 
     private Map<Integer, WSResourceValue> resourceValues = new HashMap<Integer, WSResourceValue>();
     private List<IhcEventListener> eventListeners = new ArrayList<IhcEventListener>();
 
-    public IhcClient(String ip, String username, String password) {
-        this.ip = ip;
-        this.username = username;
-        this.password = password;
+    public IhcClient(String host, String username, String password) {
+        this(host, username, password, 5000);
     }
 
-    public IhcClient(String ip, String username, String password, int timeout) {
-        this(ip, username, password);
+    public IhcClient(String host, String username, String password, int timeout) {
+        this.host = host;
+        this.username = username;
+        this.password = password;
         this.timeout = timeout;
     }
 
@@ -166,7 +168,7 @@ public class IhcClient {
 
         setConnectionState(ConnectionState.CONNECTING);
         ihcConnectionPool = new IhcConnectionPool();
-        authenticationService = new IhcAuthenticationService(ip, timeout, ihcConnectionPool);
+        authenticationService = new IhcAuthenticationService(host, timeout, ihcConnectionPool);
         WSLoginResult loginResult = authenticationService.authenticate(username, password, "treeview");
 
         if (!loginResult.isLoginWasSuccessful()) {
@@ -192,11 +194,11 @@ public class IhcClient {
 
         logger.debug("Connection successfully opened");
 
-        resourceInteractionService = new IhcResourceInteractionService(ip, timeout, ihcConnectionPool);
-        controllerService = new IhcControllerService(ip, timeout, ihcConnectionPool);
-        configurationService = new IhcConfigurationService(ip, timeout, ihcConnectionPool);
-        airlinkManagementService = new IhcAirlinkManagementService(ip, timeout, ihcConnectionPool);
-        timeService = new IhcTimeService(ip, timeout, ihcConnectionPool);
+        resourceInteractionService = new IhcResourceInteractionService(host, timeout, ihcConnectionPool);
+        controllerService = new IhcControllerService(host, timeout, ihcConnectionPool);
+        configurationService = new IhcConfigurationService(host, timeout, ihcConnectionPool);
+        airlinkManagementService = new IhcAirlinkManagementService(host, timeout, ihcConnectionPool);
+        timeService = new IhcTimeService(host, timeout, ihcConnectionPool);
         setConnectionState(ConnectionState.CONNECTED);
     }
 

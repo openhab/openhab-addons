@@ -8,6 +8,9 @@
  */
 package org.openhab.binding.ihc.internal.ws.services;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
 import org.openhab.binding.ihc.internal.ws.http.IhcConnectionPool;
 import org.openhab.binding.ihc.internal.ws.http.IhcHttpsClient;
@@ -29,22 +32,33 @@ public abstract class IhcBaseService extends IhcHttpsClient {
             + "</soapenv:Envelope>";
     // @formatter:on
 
-    protected String url;
-    protected int timeout;
+    private String url;
+    private int timeout;
 
-    public IhcBaseService(IhcConnectionPool ihcConnectionPool) {
+    public IhcBaseService(IhcConnectionPool ihcConnectionPool, int timeout, String host, String service) {
         super(ihcConnectionPool);
+        this.timeout = timeout;
+        this.url = createUrl(host, service);
+    }
+
+    private String createUrl(String host, String service) {
+        return "https://" + host + "/ws/" + service;
+    }
+
+    protected String sendSoapQuery(String soapAction, String query) throws IhcExecption {
+        return sendSoapQuery(soapAction, query, timeout);
     }
 
     protected String sendSoapQuery(String soapAction, String query, int timeout) throws IhcExecption {
-        openConnection(url);
-        try {
-            if (soapAction != null) {
-                setRequestProperty("SOAPAction", soapAction);
-            }
-            return sendQuery(query, timeout);
-        } finally {
-            closeConnection();
+        Map<String, String> reqProperties = null;
+        if (soapAction != null) {
+            reqProperties = new HashMap<String, String>();
+            reqProperties.put("SOAPAction", soapAction);
         }
+        return sendQuery(url, reqProperties, query, timeout);
+    }
+
+    protected int getTimeout() {
+        return timeout;
     }
 }

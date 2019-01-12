@@ -8,24 +8,16 @@
  */
 package org.openhab.binding.ihc.internal.ws.services;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.xml.namespace.NamespaceContext;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.lang.StringUtils;
-import org.openhab.binding.ihc.internal.ws.datatypes.WSBaseDataType;
+import org.openhab.binding.ihc.internal.ws.datatypes.XPathUtils;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
 import org.openhab.binding.ihc.internal.ws.http.IhcConnectionPool;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSBooleanValue;
@@ -39,7 +31,6 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSTimerValue;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSWeekdayValue;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 
 /**
  * Class to handle IHC / ELKO LS Controller's resource interaction service.
@@ -51,10 +42,7 @@ import org.xml.sax.InputSource;
 public class IhcResourceInteractionService extends IhcBaseService {
 
     public IhcResourceInteractionService(String host, int timeout, IhcConnectionPool ihcConnectionPool) {
-        super(ihcConnectionPool);
-        url = "https://" + host + "/ws/ResourceInteractionService";
-        this.timeout = timeout;
-        super.setConnectTimeout(timeout);
+        super(ihcConnectionPool, timeout, host, "ResourceInteractionService");
     }
 
     /**
@@ -75,14 +63,14 @@ public class IhcResourceInteractionService extends IhcBaseService {
         // @formatter:on
 
         String query = String.format(soapQuery, String.valueOf(resoureId));
-        String response = sendSoapQuery(null, query, timeout);
+        String response = sendSoapQuery(null, query);
         NodeList nodeList;
         try {
-            nodeList = parseList(response, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getRuntimeValue2");
+            nodeList = XPathUtils.parseList(response, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getRuntimeValue2");
 
             if (nodeList != null && nodeList.getLength() == 1) {
 
-                WSResourceValue val = parseResourceValue(nodeList.item(0), 2);
+                WSResourceValue val = parseResourceValue(nodeList.item(0));
 
                 if (val != null && val.getResourceID() == resoureId) {
                     return val;
@@ -92,163 +80,75 @@ public class IhcResourceInteractionService extends IhcBaseService {
             } else {
                 throw new IhcExecption("No resource value found");
             }
-        } catch (XPathExpressionException | IOException e) {
+        } catch (XPathExpressionException | NumberFormatException | IOException e) {
             throw new IhcExecption(e);
         }
     }
 
-    private NodeList parseList(String xml, String xpathExpression) throws XPathExpressionException, IOException {
-
-        try (InputStream is = new ByteArrayInputStream(xml.getBytes("UTF8"))) {
-            XPath xpath = XPathFactory.newInstance().newXPath();
-            InputSource inputSource = new InputSource(is);
-
-            xpath.setNamespaceContext(new NamespaceContext() {
-                @Override
-                public String getNamespaceURI(String prefix) {
-                    if (prefix == null) {
-                        throw new IllegalArgumentException("Prefix argument can't be null");
-                    } else if ("SOAP-ENV".equals(prefix)) {
-                        return "http://schemas.xmlsoap.org/soap/envelope/";
-                    } else if ("ns1".equals(prefix)) {
-                        return "utcs";
-                    } else if ("ns2".equals(prefix)) {
-                        return "utcs.values";
-                    }
-                    return null;
-                }
-
-                @Override
-                public String getPrefix(String uri) {
-                    return null;
-                }
-
-                @Override
-                @SuppressWarnings("rawtypes")
-                public Iterator getPrefixes(String uri) {
-                    throw new UnsupportedOperationException();
-                }
-            });
-
-            return (NodeList) xpath.evaluate(xpathExpression, inputSource, XPathConstants.NODESET);
-        }
-    }
-
-    private WSResourceValue parseResourceValue(Node n, int nameSpaceNumber) throws XPathExpressionException {
+    private WSResourceValue parseResourceValue(Node n) throws XPathExpressionException, NumberFormatException {
         // parse resource id
-        String resourceId = getValue(n, "ns1:resourceID");
+        String resourceId = XPathUtils.getSpeficValueFromNode(n, "ns1:resourceID");
 
         if (StringUtils.isNotBlank(resourceId)) {
             int id = Integer.parseInt(resourceId);
 
             // Parse floating point value
-            String value = getValue(n, "ns1:value/ns" + nameSpaceNumber + ":floatingPointValue");
-            if (StringUtils.isNotBlank(value)) {
-                WSFloatingPointValue val = new WSFloatingPointValue();
-                val.setResourceID(id);
-                val.setFloatingPointValue(Double.valueOf(value));
-                value = getValue(n, "ns1:value/ns" + nameSpaceNumber + ":maximumValue");
-                if (StringUtils.isNotBlank(value)) {
-                    val.setMaximumValue(Double.valueOf(value));
-                }
-                value = getValue(n, "ns1:value/ns" + nameSpaceNumber + ":minimumValue");
-                if (StringUtils.isNotBlank(value)) {
-                    val.setMinimumValue(Double.valueOf(value));
-                }
-                return val;
+            String floatingPointValue = getValue(n, "floatingPointValue");
+            if (StringUtils.isNotBlank(floatingPointValue)) {
+                String min = getValue(n, "minimumValue");
+                String max = getValue(n, "maximumValue");
+                return new WSFloatingPointValue(id, Double.valueOf(floatingPointValue), Double.valueOf(min),
+                        Double.valueOf(max));
             }
 
             // Parse boolean value
-            value = getValue(n, "ns1:value/ns" + nameSpaceNumber + ":value");
+            String value = getValue(n, "value");
             if (StringUtils.isNotBlank(value)) {
-                WSBooleanValue val = new WSBooleanValue();
-                val.setResourceID(id);
-                val.setValue(Boolean.valueOf(value));
-                return val;
+                return new WSBooleanValue(id, Boolean.valueOf(value));
             }
 
             // Parse integer value
-            value = getValue(n, "ns1:value/ns" + nameSpaceNumber + ":integer");
-            if (StringUtils.isNotBlank(value)) {
-                WSIntegerValue val = new WSIntegerValue();
-                val.setResourceID(id);
-                val.setInteger(Integer.valueOf(value));
-                value = getValue(n, "ns1:value/ns" + nameSpaceNumber + ":maximumValue");
-                if (StringUtils.isNotBlank(value)) {
-                    val.setMaximumValue(Integer.valueOf(value));
-                }
-                value = getValue(n, "ns1:value/ns" + nameSpaceNumber + ":minimumValue");
-                if (StringUtils.isNotBlank(value)) {
-                    val.setMinimumValue(Integer.valueOf(value));
-                }
-                return val;
+            String integer = getValue(n, "integer");
+            if (StringUtils.isNotBlank(integer)) {
+                String min = getValue(n, "minimumValue");
+                String max = getValue(n, "maximumValue");
+                return new WSIntegerValue(id, Integer.valueOf(integer), Integer.valueOf(min), Integer.valueOf(max));
             }
 
             // Parse timer value
-            value = getValue(n, "ns1:value/ns" + nameSpaceNumber + ":milliseconds");
-            if (StringUtils.isNotBlank(value)) {
-                WSTimerValue val = new WSTimerValue();
-                val.setResourceID(id);
-                val.setMilliseconds(Integer.valueOf(value));
-                return val;
+            String milliseconds = getValue(n, "milliseconds");
+            if (StringUtils.isNotBlank(milliseconds)) {
+                return new WSTimerValue(id, Integer.valueOf(milliseconds));
             }
 
             // Parse time value
-            value = getValue(n, "ns1:value/ns" + nameSpaceNumber + ":hours");
-            if (StringUtils.isNotBlank(value)) {
-                WSTimeValue val = new WSTimeValue();
-                val.setResourceID(id);
-                val.setHours(Integer.valueOf(value));
-                value = getValue(n, "ns1:value/ns" + nameSpaceNumber + ":minutes");
-                if (StringUtils.isNotBlank(value)) {
-                    val.setMinutes(Integer.valueOf(value));
-                }
-                value = getValue(n, "ns1:value/ns" + nameSpaceNumber + ":seconds");
-                if (StringUtils.isNotBlank(value)) {
-                    val.setSeconds(Integer.valueOf(value));
-                }
-                return val;
+            String hours = getValue(n, "hours");
+            if (StringUtils.isNotBlank(hours)) {
+                String minutes = getValue(n, "minutes");
+                String seconds = getValue(n, "seconds");
+                return new WSTimeValue(id, Integer.valueOf(hours), Integer.valueOf(minutes), Integer.valueOf(seconds));
             }
 
             // Parse date value
-            value = getValue(n, "ns1:value/ns" + nameSpaceNumber + ":day");
-            if (StringUtils.isNotBlank(value)) {
-                WSDateValue val = new WSDateValue();
-                val.setResourceID(id);
-                val.setDay(Byte.valueOf(value));
-                value = getValue(n, "ns1:value/ns" + nameSpaceNumber + ":month");
-                if (StringUtils.isNotBlank(value)) {
-                    val.setMonth(Byte.valueOf(value));
-                }
-                value = getValue(n, "ns1:value/ns" + nameSpaceNumber + ":year");
-                if (StringUtils.isNotBlank(value)) {
-                    val.setYear(Short.valueOf(value));
-                }
-                return val;
+            String year = getValue(n, "year");
+            if (StringUtils.isNotBlank(year)) {
+                String month = getValue(n, "month");
+                String day = getValue(n, "day");
+                return new WSDateValue(id, Short.valueOf(year), Byte.valueOf(month), Byte.valueOf(day));
             }
 
             // Parse enum value
-            value = getValue(n, "ns1:value/ns" + nameSpaceNumber + ":definitionTypeID");
-            if (StringUtils.isNotBlank(value)) {
-                WSEnumValue val = new WSEnumValue();
-                val.setResourceID(id);
-                val.setDefinitionTypeID(Integer.valueOf(value));
-                value = getValue(n, "ns1:value/ns" + nameSpaceNumber + ":enumValueID");
-                if (StringUtils.isNotBlank(value)) {
-                    val.setEnumValueID(Integer.valueOf(value));
-                }
-                value = getValue(n, "ns1:value/ns" + nameSpaceNumber + ":enumName");
-                if (StringUtils.isNotBlank(value)) {
-                    val.setEnumName(value);
-                }
-                return val;
+            String definitionTypeID = getValue(n, "definitionTypeID");
+            if (StringUtils.isNotBlank(definitionTypeID)) {
+                String enumValueID = getValue(n, "enumValueID");
+                String enumName = getValue(n, "enumName");
+                return new WSEnumValue(id, Integer.valueOf(definitionTypeID), Integer.valueOf(enumValueID), enumName);
             }
 
             // Parse week day value
-            value = getValue(n, "ns1:value/ns" + nameSpaceNumber + ":weekdayNumber");
+            value = getValue(n, "weekdayNumber");
             if (StringUtils.isNotBlank(value)) {
-                WSWeekdayValue val = new WSWeekdayValue();
-                val.setResourceID(id);
+                WSWeekdayValue val = new WSWeekdayValue(id);
                 val.setWeekdayNumber(Integer.valueOf(value));
                 return val;
             }
@@ -259,37 +159,8 @@ public class IhcResourceInteractionService extends IhcBaseService {
         return null;
     }
 
-    private String getValue(Node n, String expr) throws XPathExpressionException {
-        XPath xpath = XPathFactory.newInstance().newXPath();
-        xpath.setNamespaceContext(new NamespaceContext() {
-
-            @Override
-            public String getNamespaceURI(String prefix) {
-
-                if (prefix == null) {
-                    throw new IllegalArgumentException("Prefix argument can't be null");
-                } else if ("SOAP-ENV".equals(prefix)) {
-                    return "http://schemas.xmlsoap.org/soap/envelope/";
-                } else if ("ns1".equals(prefix)) {
-                    return "utcs";
-                }
-                return "utcs.values";
-            }
-
-            @Override
-            public String getPrefix(String uri) {
-                return null;
-            }
-
-            @Override
-            @SuppressWarnings("rawtypes")
-            public Iterator getPrefixes(String uri) {
-                throw new UnsupportedOperationException();
-            }
-        });
-
-        XPathExpression pathExpr = xpath.compile(expr);
-        return (String) pathExpr.evaluate(n, XPathConstants.STRING);
+    private String getValue(Node n, String value) throws XPathExpressionException {
+        return XPathUtils.getSpeficValueFromNode(n, "ns1:value/" + XPathUtils.createIgnoreNameSpaceSyntaxExpr(value));
     }
 
     /**
@@ -510,9 +381,9 @@ public class IhcResourceInteractionService extends IhcBaseService {
     }
 
     private boolean doResourceUpdate(String query) throws IhcExecption {
-        String response = sendSoapQuery(null, query, timeout);
+        String response = sendSoapQuery(null, query);
         return Boolean.parseBoolean(
-                WSBaseDataType.parseXMLValue(response, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:setResourceValue2"));
+                XPathUtils.parseXMLValue(response, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:setResourceValue2"));
     }
 
     /**
@@ -541,7 +412,7 @@ public class IhcResourceInteractionService extends IhcBaseService {
             query += "   <xsd:arrayItem>" + i + "</xsd:arrayItem>\n";
         }
         query += soapQuerySuffix;
-        sendSoapQuery(null, query, timeout);
+        sendSoapQuery(null, query);
     }
 
     /**
@@ -569,16 +440,16 @@ public class IhcResourceInteractionService extends IhcBaseService {
         // @formatter:on
 
         String query = String.format(soapQuery, timeoutInSeconds);
-        String response = sendSoapQuery(null, query, timeout + timeoutInSeconds * 1000);
+        String response = sendSoapQuery(null, query, getTimeout() + timeoutInSeconds * 1000);
         List<WSResourceValue> resourceValueList = new ArrayList<WSResourceValue>();
 
         try {
-            NodeList nodeList = parseList(response,
+            NodeList nodeList = XPathUtils.parseList(response,
                     "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:waitForResourceValueChanges2/ns1:arrayItem");
 
             if (nodeList != null) {
                 if (nodeList.getLength() == 1) {
-                    String resourceId = getValue(nodeList.item(0), "ns1:resourceID");
+                    String resourceId = XPathUtils.getSpeficValueFromNode(nodeList.item(0), "ns1:resourceID");
                     if (resourceId == null || resourceId.isEmpty()) {
                         // IHC controller indicates timeout, return empty list
                         return resourceValueList;
@@ -586,8 +457,7 @@ public class IhcResourceInteractionService extends IhcBaseService {
                 }
 
                 for (int i = 0; i < nodeList.getLength(); i++) {
-                    int nameSpaceNumber = i + 2;
-                    WSResourceValue newVal = parseResourceValue(nodeList.item(i), nameSpaceNumber);
+                    WSResourceValue newVal = parseResourceValue(nodeList.item(i));
                     if (newVal != null) {
                         resourceValueList.add(newVal);
                     }
@@ -596,9 +466,7 @@ public class IhcResourceInteractionService extends IhcBaseService {
                 throw new IhcExecption("Illegal resource value notification response received");
             }
             return resourceValueList;
-        } catch (IOException e) {
-            throw new IhcExecption(e);
-        } catch (XPathExpressionException e) {
+        } catch (XPathExpressionException | NumberFormatException | IOException e) {
             throw new IhcExecption(e);
         }
     }

@@ -15,7 +15,7 @@ import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
  *
  * @author Pauli Anttila - Initial contribution
  */
-public class WSNumberOfSegments extends WSBaseDataType {
+public class WSNumberOfSegments {
 
     private int segments;
 
@@ -47,7 +47,8 @@ public class WSNumberOfSegments extends WSBaseDataType {
 
     public WSNumberOfSegments parseXMLData(String data) throws IhcExecption {
         try {
-            String value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getIHCProjectNumberOfSegments1");
+            String value = XPathUtils.parseXMLValue(data,
+                    "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getIHCProjectNumberOfSegments1");
             setNumberOfSegments(Integer.parseInt(value));
             return this;
         } catch (Exception e) {

@@ -14,7 +14,7 @@ package org.openhab.binding.ihc.internal.config;
  * @author Pauli Anttila - Initial contribution
  */
 public class IhcConfiguration {
-    public String ip;
+    public String hostname;
     public String username;
     public String password;
     public int timeout;
@@ -23,7 +23,7 @@ public class IhcConfiguration {
 
     @Override
     public String toString() {
-        return "[" + "ip=" + ip + ", username=" + username + ", password=******" + ", timeout=" + timeout
+        return "[" + "hostname=" + hostname + ", username=" + username + ", password=******" + ", timeout=" + timeout
                 + ", loadProjectFile=" + loadProjectFile + ", createChannelsAutomatically="
                 + createChannelsAutomatically + "]";
     }

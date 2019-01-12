@@ -15,11 +15,11 @@ import static org.mockito.Mockito.*;
 import java.net.SocketTimeoutException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 import org.openhab.binding.ihc.internal.ws.ResourceFileUtils;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSTimeManagerSettings;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
@@ -33,26 +33,28 @@ import org.openhab.binding.ihc.internal.ws.http.IhcConnectionPool;
 public class IhcTimeServiceTest {
 
     private IhcTimeService ihcTimeService;
+    private final String host = "1.1.1.1";
     private final String url = "https://1.1.1.1/ws/TimeManagerService";
+    private Map<String, String> requestProps = new HashMap<String, String>();
+    private final int timeout = 100;
 
     @Before
     public void setUp() throws IhcExecption, SocketTimeoutException {
-        ihcTimeService = spy(new IhcTimeService(url, 0, new IhcConnectionPool()));
-        doNothing().when(ihcTimeService).openConnection(eq(url));
+        ihcTimeService = spy(new IhcTimeService(host, timeout, new IhcConnectionPool()));
 
         final String query = ResourceFileUtils.getFileContent("src/test/resources/EmptyQuery.xml");
         final String response = ResourceFileUtils.getFileContent("src/test/resources/GetSettingsResponse.xml");
 
-        doReturn(response).when(ihcTimeService).sendQuery(eq(query), ArgumentMatchers.anyInt());
+        requestProps.clear();
+        requestProps.put("SOAPAction", "getSettings");
+
+        doReturn(response).when(ihcTimeService).sendQuery(eq(url), eq(requestProps), eq(query), eq(timeout));
     }
 
     @Test
     public void test() throws IhcExecption {
-        doNothing().when(ihcTimeService).setRequestProperty(eq("SOAPAction"), eq("getSettings"));
-
         final WSTimeManagerSettings result = ihcTimeService.getTimeSettings();
 
-        Mockito.verify(ihcTimeService).setRequestProperty(eq("SOAPAction"), eq("getSettings"));
         assertEquals(true, result.getSynchroniseTimeAgainstServer());
         assertEquals(true, result.getUseDST());
         assertEquals(2, result.getGmtOffsetInHours());

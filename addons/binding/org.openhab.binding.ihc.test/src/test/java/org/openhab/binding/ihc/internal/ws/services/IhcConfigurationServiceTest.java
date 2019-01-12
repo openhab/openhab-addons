@@ -15,11 +15,11 @@ import static org.mockito.Mockito.*;
 import java.net.SocketTimeoutException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 import org.openhab.binding.ihc.internal.ws.ResourceFileUtils;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSSystemInfo;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
@@ -33,24 +33,27 @@ import org.openhab.binding.ihc.internal.ws.http.IhcConnectionPool;
 public class IhcConfigurationServiceTest {
 
     private IhcConfigurationService ihcConfigurationService;
+    private final String host = "1.1.1.1";
     private final String url = "https://1.1.1.1/ws/ConfigurationService";
     final String query = ResourceFileUtils.getFileContent("src/test/resources/EmptyQuery.xml");
+    private Map<String, String> requestProps = new HashMap<String, String>();
+    private final int timeout = 100;
 
     @Before
     public void setUp() throws IhcExecption, SocketTimeoutException {
-        ihcConfigurationService = spy(new IhcConfigurationService(url, 0, new IhcConnectionPool()));
-        doNothing().when(ihcConfigurationService).openConnection(eq(url));
+        ihcConfigurationService = spy(new IhcConfigurationService(host, timeout, new IhcConnectionPool()));
+        requestProps.clear();
+        requestProps.put("SOAPAction", "getSystemInfo");
     }
 
     @Test
     public void testv2() throws IhcExecption {
         final String response = ResourceFileUtils.getFileContent("src/test/resources/GetSystemInfoResponse.xml");
-        doReturn(response).when(ihcConfigurationService).sendQuery(eq(query), ArgumentMatchers.anyInt());
-        doNothing().when(ihcConfigurationService).setRequestProperty(eq("SOAPAction"), eq("getSystemInfo"));
+
+        doReturn(response).when(ihcConfigurationService).sendQuery(eq(url), eq(requestProps), eq(query), eq(timeout));
 
         final WSSystemInfo result = ihcConfigurationService.getSystemInfo();
 
-        Mockito.verify(ihcConfigurationService).setRequestProperty(eq("SOAPAction"), eq("getSystemInfo"));
         assertEquals(false, result.getApplicationIsWithoutViewer());
         assertEquals("ELKOFI", result.getBrand());
         assertEquals("6.2", result.getHwRevision());
@@ -70,12 +73,10 @@ public class IhcConfigurationServiceTest {
     @Test
     public void testv3() throws IhcExecption {
         final String response = ResourceFileUtils.getFileContent("src/test/resources/GetSystemInfoResponse2.xml");
-        doReturn(response).when(ihcConfigurationService).sendQuery(eq(query), ArgumentMatchers.anyInt());
-        doNothing().when(ihcConfigurationService).setRequestProperty(eq("SOAPAction"), eq("getSystemInfo"));
+        doReturn(response).when(ihcConfigurationService).sendQuery(eq(url), eq(requestProps), eq(query), eq(timeout));
 
         final WSSystemInfo result = ihcConfigurationService.getSystemInfo();
 
-        Mockito.verify(ihcConfigurationService).setRequestProperty(eq("SOAPAction"), eq("getSystemInfo"));
         assertEquals(false, result.getApplicationIsWithoutViewer());
         assertEquals("LK", result.getBrand());
         assertEquals("7.1", result.getHwRevision());

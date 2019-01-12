@@ -15,7 +15,7 @@ import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
  *
  * @author Pauli Anttila - Initial contribution
  */
-public class WSFile extends WSBaseDataType {
+public class WSFile {
     private byte[] data;
     private String filename;
 
@@ -65,8 +65,10 @@ public class WSFile extends WSBaseDataType {
 
     public WSFile parseXMLData(String data) throws IhcExecption {
         try {
-            filename = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getIHCProjectSegment4/ns1:filename");
-            this.data = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getIHCProjectSegment4/ns1:data")
+            filename = XPathUtils.parseXMLValue(data,
+                    "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getIHCProjectSegment4/ns1:filename");
+            this.data = XPathUtils
+                    .parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getIHCProjectSegment4/ns1:data")
                     .getBytes();
             return this;
         } catch (Exception e) {

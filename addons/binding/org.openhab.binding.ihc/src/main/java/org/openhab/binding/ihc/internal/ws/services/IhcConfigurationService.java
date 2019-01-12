@@ -22,10 +22,7 @@ import org.openhab.binding.ihc.internal.ws.http.IhcConnectionPool;
 public class IhcConfigurationService extends IhcBaseService {
 
     public IhcConfigurationService(String host, int timeout, IhcConnectionPool ihcConnectionPool) {
-        super(ihcConnectionPool);
-        url = "https://" + host + "/ws/ConfigurationService";
-        this.timeout = timeout;
-        setConnectTimeout(timeout);
+        super(ihcConnectionPool, timeout, host, "ConfigurationService");
     }
 
     /**
@@ -35,7 +32,7 @@ public class IhcConfigurationService extends IhcBaseService {
      * @throws IhcExecption
      */
     public synchronized WSSystemInfo getSystemInfo() throws IhcExecption {
-        String response = sendSoapQuery("getSystemInfo", EMPTY_QUERY, timeout);
+        String response = sendSoapQuery("getSystemInfo", EMPTY_QUERY);
         return new WSSystemInfo().parseXMLData(response);
     }
 }

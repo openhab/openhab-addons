@@ -16,7 +16,7 @@ import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
  * @author Pauli Anttila - Initial contribution
  */
 
-public class WSControllerState extends WSBaseDataType {
+public class WSControllerState {
     private String state;
 
     public WSControllerState() {
@@ -47,9 +47,9 @@ public class WSControllerState extends WSBaseDataType {
     public WSControllerState parseXMLData(String data) throws IhcExecption {
         try {
             if (data.contains("getState1")) {
-                state = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getState1/ns1:state");
+                state = XPathUtils.parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getState1/ns1:state");
             } else if (data.contains("waitForControllerStateChange3")) {
-                state = parseXMLValue(data,
+                state = XPathUtils.parseXMLValue(data,
                         "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:waitForControllerStateChange3/ns1:state");
             } else {
                 throw new IhcExecption("Encoding error, unsupported data");

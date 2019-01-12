@@ -17,7 +17,7 @@ import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
  *
  * @author Pauli Anttila - Initial contribution
  */
-public class WSSystemInfo extends WSBaseDataType {
+public class WSSystemInfo {
 
     private long uptime;
     private ZonedDateTime realtimeclock;
@@ -271,42 +271,49 @@ public class WSSystemInfo extends WSBaseDataType {
 
     public WSSystemInfo parseXMLData(String data) throws IhcExecption {
         try {
-            String value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:uptime");
+            String value = XPathUtils.parseXMLValue(data,
+                    "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:uptime");
             setUptime(Long.parseLong(value));
 
-            value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:serialNumber");
+            value = XPathUtils.parseXMLValue(data,
+                    "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:serialNumber");
             setSerialNumber(value);
 
-            value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:realtimeclock");
+            value = XPathUtils.parseXMLValue(data,
+                    "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:realtimeclock");
             setRealTimeClock(ZonedDateTime.parse(value));
 
-            value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:brand");
+            value = XPathUtils.parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:brand");
             setBrand(value);
 
-            value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:version");
+            value = XPathUtils.parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:version");
             setVersion(value);
 
-            value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:hwRevision");
+            value = XPathUtils.parseXMLValue(data,
+                    "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:hwRevision");
             setHwRevision(value);
 
-            value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:swDate");
+            value = XPathUtils.parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:swDate");
             setSwDate(ZonedDateTime.parse(value));
 
-            value = parseXMLValue(data,
+            value = XPathUtils.parseXMLValue(data,
                     "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:applicationIsWithoutViewer");
             setApplicationIsWithoutViewer(Boolean.parseBoolean(value));
 
-            value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:productionDate");
+            value = XPathUtils.parseXMLValue(data,
+                    "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:productionDate");
             setProductionDate(value);
 
-            value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:datalineVersion");
+            value = XPathUtils.parseXMLValue(data,
+                    "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:datalineVersion");
             setDatalineVersion(value);
 
-            value = parseXMLValue(data,
+            value = XPathUtils.parseXMLValue(data,
                     "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:rfModuleSoftwareVersion");
             setRfModuleSoftwareVersion(value);
 
-            value = parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:rfModuleSerialNumber");
+            value = XPathUtils.parseXMLValue(data,
+                    "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getSystemInfo1/ns1:rfModuleSerialNumber");
             setRfModuleSerialNumber(value);
 
             return this;

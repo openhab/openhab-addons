@@ -9,14 +9,13 @@
 package org.openhab.binding.ihc.internal.ws.services;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.net.SocketTimeoutException;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatchers;
 import org.openhab.binding.ihc.internal.ws.ResourceFileUtils;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSLoginResult;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
@@ -30,28 +29,28 @@ import org.openhab.binding.ihc.internal.ws.http.IhcConnectionPool;
 public class IhcAuthenticationServiceTest {
 
     private IhcAuthenticationService ihcAuthenticationService;
+    private final String host = "1.1.1.1";
     private final String url = "https://1.1.1.1/ws/AuthenticationService";
+    private final int timeout = 100;
 
     @Before
     public void setUp() throws IhcExecption, SocketTimeoutException {
-        ihcAuthenticationService = spy(new IhcAuthenticationService(url, 0, new IhcConnectionPool()));
-        doNothing().when(ihcAuthenticationService).openConnection(eq(url));
+        ihcAuthenticationService = spy(new IhcAuthenticationService(host, timeout, new IhcConnectionPool()));
 
         final String querySuccesfulLogin = ResourceFileUtils
                 .getFileContent("src/test/resources/SuccesfulLoginQuery.xml");
         final String responseSuccesfulLogin = ResourceFileUtils
                 .getFileContent("src/test/resources/SuccesfulLoginResponse.xml");
 
-        doReturn(responseSuccesfulLogin).when(ihcAuthenticationService).sendQuery(eq(querySuccesfulLogin),
-                ArgumentMatchers.anyInt());
+        doReturn(responseSuccesfulLogin).when(ihcAuthenticationService).sendQuery(eq(url), any(),
+                eq(querySuccesfulLogin), eq(timeout));
 
-        final String queryLoginFailed = ResourceFileUtils
-                .getFileContent("src/test/resources/LoginFailedQuery.xml");
+        final String queryLoginFailed = ResourceFileUtils.getFileContent("src/test/resources/LoginFailedQuery.xml");
         final String responseLoginFailed = ResourceFileUtils
                 .getFileContent("src/test/resources/LoginFailedResponse.xml");
 
-        doReturn(responseLoginFailed).when(ihcAuthenticationService).sendQuery(eq(queryLoginFailed),
-                ArgumentMatchers.anyInt());
+        doReturn(responseLoginFailed).when(ihcAuthenticationService).sendQuery(eq(url), any(), eq(queryLoginFailed),
+                eq(timeout));
     }
 
     @Test
