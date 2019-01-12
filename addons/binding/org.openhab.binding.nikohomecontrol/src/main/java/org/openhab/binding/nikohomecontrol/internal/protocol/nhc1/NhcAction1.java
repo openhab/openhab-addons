@@ -59,6 +59,7 @@ public class NhcAction1 extends NhcAction {
         String value = "";
         switch (getType()) {
             case GENERIC:
+            case TRIGGER:
             case RELAY:
                 if (command.equals(NHCON)) {
                     value = "100";

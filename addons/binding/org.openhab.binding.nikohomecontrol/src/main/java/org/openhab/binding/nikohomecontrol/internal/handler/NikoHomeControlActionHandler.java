@@ -40,6 +40,7 @@ import org.openhab.binding.nikohomecontrol.internal.protocol.NhcAction;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcActionEvent;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlCommunication;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlConstants.ActionType;
+import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcAction2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -428,23 +429,18 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
             }
 
             int actionState = nhcAction.getState();
-            ActionType actionType = nhcAction.getType();
             String actionLocation = nhcAction.getLocation();
 
             this.prevActionState = actionState;
             nhcAction.setEventHandler(this);
 
-            Map<String, String> properties = new HashMap<>();
-            properties.put("type", String.valueOf(actionType));
             if (this.getThing().getThingTypeUID() == THING_TYPE_BLIND) {
                 cancelRollershutterStop();
                 this.waitForEvent = false;
                 setRollershutterMovingFalse();
-
-                properties.put("timeToOpen", String.valueOf(nhcAction.getOpenTime()));
-                properties.put("timeToClose", String.valueOf(nhcAction.getCloseTime()));
             }
-            thing.setProperties(properties);
+
+            updateProperties();
 
             if (thing.getLocation() == null) {
                 thing.setLocation(actionLocation);
@@ -454,6 +450,23 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
 
             logger.debug("Niko Home Control: action initialized {}", actionId);
         });
+    }
+
+    private void updateProperties() {
+        Map<String, String> properties = new HashMap<>();
+        properties.put("type", String.valueOf(nhcAction.getType()));
+        if (this.getThing().getThingTypeUID() == THING_TYPE_BLIND) {
+            properties.put("timeToOpen", String.valueOf(nhcAction.getOpenTime()));
+            properties.put("timeToClose", String.valueOf(nhcAction.getCloseTime()));
+        }
+
+        if (nhcAction instanceof NhcAction2) {
+            NhcAction2 action = (NhcAction2) nhcAction;
+            properties.put("model", action.getModel());
+            properties.put("technology", action.getTechnology());
+        }
+
+        thing.setProperties(properties);
     }
 
     @Override

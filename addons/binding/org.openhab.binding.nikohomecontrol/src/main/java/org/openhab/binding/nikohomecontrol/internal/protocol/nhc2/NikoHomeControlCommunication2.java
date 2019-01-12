@@ -377,7 +377,8 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
                 if (!this.actions.containsKey(device.uuid)) {
                     logger.debug("Niko Home Control: adding action device {}", device.name);
 
-                    NhcAction2 nhcAction = new NhcAction2(device.uuid, device.name, actionType, location);
+                    NhcAction2 nhcAction = new NhcAction2(device.uuid, device.name, device.model, device.technology,
+                            actionType, location);
                     nhcAction.setNhcComm(this);
                     this.actions.put(device.uuid, nhcAction);
                 }

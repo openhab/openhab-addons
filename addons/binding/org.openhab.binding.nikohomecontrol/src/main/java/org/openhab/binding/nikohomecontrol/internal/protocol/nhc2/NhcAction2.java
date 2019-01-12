@@ -27,10 +27,14 @@ public class NhcAction2 extends NhcAction {
 
     private final Logger logger = LoggerFactory.getLogger(NhcAction2.class);
 
-    protected volatile boolean booleanState;
+    private volatile boolean booleanState;
+    private String model;
+    private String technology;
 
-    NhcAction2(String id, String name, ActionType type, @Nullable String location) {
+    NhcAction2(String id, String name, String model, String technology, ActionType type, @Nullable String location) {
         super(id, name, type, location);
+        this.model = model;
+        this.technology = technology;
     }
 
     /**
@@ -105,5 +109,19 @@ public class NhcAction2 extends NhcAction {
         if (nhcComm != null) {
             nhcComm.executeAction(this.id, command);
         }
+    }
+
+    /**
+     * @return model as returned from Niko Home Control
+     */
+    public String getModel() {
+        return model;
+    }
+
+    /**
+     * @return technology as returned from Niko Home Control
+     */
+    public String getTechnology() {
+        return technology;
     }
 }

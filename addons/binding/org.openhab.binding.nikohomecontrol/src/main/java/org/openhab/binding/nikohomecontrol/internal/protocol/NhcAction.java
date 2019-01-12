@@ -96,7 +96,7 @@ public abstract class NhcAction {
     /**
      * Get type of action identified.
      * <p>
-     * ActionType can be RELAY (for simple light or socket switch), DIMMER, ROLLERSHUTTER or GENERIC.
+     * ActionType can be RELAY (for simple light or socket switch), DIMMER, ROLLERSHUTTER, TRIGGER or GENERIC.
      *
      * @return {@link ActionType}
      */
