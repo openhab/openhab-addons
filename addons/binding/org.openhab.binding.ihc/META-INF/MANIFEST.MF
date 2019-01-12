@@ -4,9 +4,9 @@ Bundle-Name: IHC / ELKO Binding
 Bundle-SymbolicName: org.openhab.binding.ihc;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-ClassPath: .,
- lib/commons-logging-1.2.jar,
- lib/org.apache.httpcomponents.httpclient_4.4.1.jar,
- lib/org.apache.httpcomponents.httpcore_4.4.1.jar
+ lib/httpclient-4.5.6.jar,
+ lib/httpcore-4.4.10.jar,
+ lib/commons-logging-1.2.jar
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Version: 2.4.0.qualifier
 Import-Package: org.apache.commons.io,
