@@ -19,7 +19,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  */
 public class BindingConstants {
 
-    private static final String BINDING_ID = "deconz";
+    public static final String BINDING_ID = "deconz";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID BRIDGE_TYPE = new ThingTypeUID(BINDING_ID, "deconz");
@@ -36,17 +36,23 @@ public class BindingConstants {
 
     // List of all Channel ids
     public static final String CHANNEL_PRESENCE = "presence";
+    public static final String CHANNEL_LAST_UPDATED = "last_updated";
     public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_CONSUMPTION = "consumption";
     public static final String CHANNEL_VALUE = "value";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_HUMIDITY = "humidity";
     public static final String CHANNEL_PRESSURE = "pressure";
-    public static final String CHANNEL_DAYLIGHT = "light";
+    public static final String CHANNEL_LIGHT = "light";
     public static final String CHANNEL_LIGHT_LUX = "lightlux";
+    public static final String CHANNEL_LIGHT_LEVEL = "light_level";
+    public static final String CHANNEL_DARK = "dark";
+    public static final String CHANNEL_DAYLIGHT = "daylight";
     public static final String CHANNEL_BUTTON = "button";
     public static final String CHANNEL_BUTTONEVENT = "buttonevent";
     public static final String CHANNEL_OPENCLOSE = "open";
+    public static final String CHANNEL_BATTERY_LEVEL = "battery_level";
+    public static final String CHANNEL_BATTERY_LOW = "battery_low";
 
     // Thing configuration
     public static final String CONFIG_HOST = "host";
