@@ -429,7 +429,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
         }
     }
 
-    private void notificationsEvt(String response) {
+    private void notificationEvt(String response) {
         Type messageType = new TypeToken<NhcMessage2>() {
         }.getType();
         List<NhcNotification2> notificationList = null;
@@ -470,13 +470,22 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
         Optional<NhcProperty> statusProperty = device.properties.stream().filter(p -> (p.status != null)).findFirst();
         Optional<NhcProperty> dimmerProperty = device.properties.stream().filter(p -> (p.brightness != null))
                 .findFirst();
+        Optional<NhcProperty> basicStateProperty = device.properties.stream().filter(p -> (p.basicState != null))
+                .findFirst();
 
+        String booleanState = null;
         if (statusProperty.isPresent()) {
-            if (NHCON.equals(statusProperty.get().status)) {
+            booleanState = statusProperty.get().status;
+        } else if (basicStateProperty.isPresent()) {
+            booleanState = basicStateProperty.get().basicState;
+        }
+
+        if (booleanState != null) {
+            if (NHCON.equals(booleanState)) {
                 action.setBooleanState(true);
                 // should be removed after testing
                 logger.debug("Niko Home Control: setting action {} internally to ON", action.getId());
-            } else if (NHCOFF.equals(statusProperty.get().status)) {
+            } else if (NHCOFF.equals(booleanState)) {
                 action.setBooleanState(false);
                 // should be removed after testing
                 logger.debug("Niko Home Control: setting action {} internally to OFF", action.getId());
@@ -556,7 +565,6 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
         NhcAction2 action = (NhcAction2) actions.get(actionId);
 
         switch (action.getType()) {
-            case GENERIC:
             case TRIGGER:
                 property.basicState = NHCTRIGGERED;
                 break;
@@ -688,9 +696,9 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
             logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
             profilesListRsp(message);
             startProfileCommunication();
-        } else if ((profileUuid + "/notifications/evt").equals(topic)) {
+        } else if ((profileUuid + "/notification/evt").equals(topic)) {
             logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
-            notificationsEvt(message);
+            notificationEvt(message);
         } else if ((profileUuid + "/control/devices/evt").equals(topic)) {
             logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
             devicesStatusEvt(message);
