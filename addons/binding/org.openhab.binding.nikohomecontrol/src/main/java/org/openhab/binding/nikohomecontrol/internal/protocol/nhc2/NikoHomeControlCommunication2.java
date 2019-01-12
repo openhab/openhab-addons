@@ -357,6 +357,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
                 ActionType actionType = ActionType.GENERIC;
                 switch (device.model) {
                     case "generic":
+                    case "pir":
                     case "simulation":
                     case "comfort":
                     case "alarms":
