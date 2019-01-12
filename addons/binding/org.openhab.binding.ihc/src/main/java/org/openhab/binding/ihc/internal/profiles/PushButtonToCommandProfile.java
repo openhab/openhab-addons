@@ -99,7 +99,7 @@ public class PushButtonToCommandProfile implements TriggerProfile {
         if (paramValue instanceof BigDecimal) {
             retval = ((BigDecimal) paramValue).longValue();
         } else {
-            logger.warn("Parameter '{}' is not of type BigDecimal, using default value '{}'", param, defValue);
+            logger.debug("Parameter '{}' is not of type BigDecimal, using default value '{}'", param, defValue);
             retval = defValue;
         }
         return retval;
@@ -119,7 +119,7 @@ public class PushButtonToCommandProfile implements TriggerProfile {
             }
 
         } else {
-            logger.warn("Parameter '{}' is not of type String, using default value '{}'", param, defValue);
+            logger.debug("Parameter '{}' is not of type String, using default value '{}'", param, defValue);
             retval = defValue;
         }
 
