@@ -54,11 +54,13 @@ Bridge deconz:deconz:homeserver [ host="192.168.0.10" ]
 
 In this case, the API key is generated automatically as described above (the deCONZ bridge has to be unlocked). Please note that the generated key cannot be written automatically to the `.thing` file, and has to be set manually.
 The generated key can be queried from the configuration using the openHAB console. To do this log into the [console](https://www.openhab.org/docs/administration/console.html) and use the command `things show` to display the configuration parameters, e.g:
+
 ```
 things show deconz:deconz:homeserver
 ```
 
 Afterwards the displayed API key has to be inserted in the `.thing` file as `apikey` configuration value, e.g.:
+
 ```
 Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ]
 ```
@@ -67,29 +69,35 @@ Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ]
 
 The devices support some of the following channels:
 
-| Channel Type ID   | Item Type             | Access Mode   | Description                                                               | Thing types       |
-| :---------------- | :-------------------- | :-----------: | :------------------------------------------------------------------------ | :---------------- |
-| presence          | Switch                | R             | Status of presence: `ON` = presence; `OFF` = no-presence                  | presencesensor    |
-| power             | Number:Power          | R             | Current power usage in Watts                                              | powersensor       |
-| consumption       | Number:Energy         | R             | Current power usage in Watts/Hour                                         | consumptionsensor |
-| button            | Number                | R             | Last pressed button id on a switch                                        | switch            |
-| lightlux          | Number:Illuminance    | R             | Current light illuminance in Lux                                          | lightsensor       |
-| temperature       | Number:Temperature    | R             | Current temperature in ˚C                                                 | temperaturesensor |
-| humidity          | Number:Dimensionless  | R             | Current humidity in %                                                     | humiditysensor    |
-| pressure          | Number:Pressure       | R             | Current pressure in hPa                                                   | pressuresensor    |
-| open              | Contact               | R             | Status of contacts: `OPEN`; `CLOSED`                                      | openclosesensor   |
-| light             | String                | R             | Light level: `Daylight`,`Sunset`,`Dark`                                   | daylightsensor    |
-| value             | Number                | R             | Sun position: `130` = dawn; `140` = sunrise; `190` = sunset; `210` = dusk | daylightsensor    |
+| Channel Type ID | Item Type            | Access Mode | Description                                                               | Thing types                               |
+|-----------------|----------------------|:-----------:|---------------------------------------------------------------------------|-------------------------------------------|
+| presence        | Switch               |      R      | Status of presence: `ON` = presence; `OFF` = no-presence                  | presencesensor                            |
+| last_updated    | DateTime             |      R      | Timestamp when the sensor was last updated                                | all, except daylightsensor                |
+| power           | Number:Power         |      R      | Current power usage in Watts                                              | powersensor                               |
+| consumption     | Number:Energy        |      R      | Current power usage in Watts/Hour                                         | consumptionsensor                         |
+| button          | Number               |      R      | Last pressed button id on a switch                                        | switch                                    |
+| lightlux        | Number:Illuminance   |      R      | Current light illuminance in Lux                                          | lightsensor                               |
+| light_level     | Number               |      R      | Current light level                                                       | lightsensor                               |
+| dark            | Switch               |      R      | Light level is below the darkness threshold.                              | lightsensor, sometimes for presencesensor |
+| daylight        | Switch               |      R      | Light level is above the daylight threshold.                              | lightsensor                               |
+| temperature     | Number:Temperature   |      R      | Current temperature in ˚C                                                 | temperaturesensor                         |
+| humidity        | Number:Dimensionless |      R      | Current humidity in %                                                     | humiditysensor                            |
+| pressure        | Number:Pressure      |      R      | Current pressure in hPa                                                   | pressuresensor                            |
+| open            | Contact              |      R      | Status of contacts: `OPEN`; `CLOSED`                                      | openclosesensor                           |
+| light           | String               |      R      | Light level: `Daylight`,`Sunset`,`Dark`                                   | daylightsensor                            |
+| value           | Number               |      R      | Sun position: `130` = dawn; `140` = sunrise; `190` = sunset; `210` = dusk | daylightsensor                            |
+| battery_level   | Number               |      R      | Battery level (in %)                                                      | any battery-powered sensor                |
+| battery_low     | Switch               |      R      | Battery level low: `ON`; `OFF`                                            | any battery-powered sensor                |
+
+**NOTE:** The `battery_level` and `battery_low` channels will be added to the Thing during runtime if the sensor is battery-powered.
 
 ### Trigger Channels
 
 The dimmer switch additionally supports a trigger channel.
 
-| Channel Type ID   | Description                                                       | Thing types       |
-| :---------------- | :---------------------------------------------------------------- | :---------------- |
-| buttonevent       | Event for switch pressed.                                         | switch            |
-
-
+| Channel Type ID | Description               | Thing types |
+|-----------------|---------------------------|-------------|
+| buttonevent     | Event for switch pressed. | switch      |
 
 ## Full Example
 
@@ -100,9 +108,9 @@ Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ] {
     presencesensor      livingroom-presence     "Livingroom Presence"       [ id="1" ]
     temperaturesensor   livingroom-temperature  "Livingroom Temperature"    [ id="2" ]
     humiditysensor      livingroom-humidity     "Livingroom Humidity"       [ id="3" ]
-	pressuresensor      livingroom-pressure     "Livingroom Pressure"       [ id="4" ]
+    pressuresensor      livingroom-pressure     "Livingroom Pressure"       [ id="4" ]
     openclosesensor     livingroom-window       "Livingroom Window"         [ id="5" ]
-	switch              livingroom-hue-tap      "Livingroom Hue Tap"        [ id="6" ]
+    switch              livingroom-hue-tap      "Livingroom Hue Tap"        [ id="6" ]
 }
 ```
 
