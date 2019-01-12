@@ -132,7 +132,7 @@ public class MiIoAsyncCommunication {
             JsonObject fullCommand = new JsonObject();
             int cmdId = id.incrementAndGet();
             if (cmdId > MAX_ID) {
-                id.set(-1);
+                id.set(0);
             }
             fullCommand.addProperty("id", cmdId);
             fullCommand.addProperty("method", command);
@@ -395,7 +395,7 @@ public class MiIoAsyncCommunication {
 
     /**
      * Time delta between device time and server time
-     * 
+     *
      * @return delta
      */
     public int getTimeDelta() {
