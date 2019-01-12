@@ -24,8 +24,10 @@ import org.eclipse.jdt.annotation.Nullable;
 public class SensorState {
     /** Some presence sensors, the daylight sensor and all light sensors provide the "dark" boolean. */
     public @Nullable Boolean dark;
-    /** The daylight sensor provides the "daylight" boolean. */
+    /** The daylight sensor and all light sensors provides the "daylight" boolean. */
     public @Nullable Boolean daylight;
+    /** Light sensors provide a light level value. */
+    public @Nullable Integer lightlevel;
     /** Light sensors provide a lux value. */
     public @Nullable Integer lux;
     /** Temperature sensors provide a degrees value. */
