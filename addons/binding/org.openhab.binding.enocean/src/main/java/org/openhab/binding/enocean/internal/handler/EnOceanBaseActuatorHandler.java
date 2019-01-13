@@ -26,6 +26,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
@@ -195,10 +196,21 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
 
         // check if we do support refreshs
         if (command == RefreshType.REFRESH) {
-            // receiving status cannot be refreshed
-            if (channel.getChannelTypeUID().getId().equals(CHANNEL_RECEIVINGSTATE)
-                    || !sendingEEPType.getSupportsRefresh()) {
+            if (!sendingEEPType.getSupportsRefresh()) {
                 return;
+            }
+
+            // receiving status cannot be refreshed
+            ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
+            if (channelTypeUID != null) {
+                String channelTypeId = channelTypeUID.getId();
+
+                switch (channelTypeId) {
+                    case CHANNEL_RSSI:
+                    case CHANNEL_REPEATCOUNT:
+                    case CHANNEL_LASTRECEIVED:
+                        return;
+                }
             }
         }
 
@@ -217,9 +229,9 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
             // The currentState is updated by EnOceanBaseSensorHandler after receiving a response.
             State currentState = getCurrentState(channelId);
 
-            ESP3Packet msg = eep.setSenderId(senderId).setDestinationId(destinationId)
-                    .convertFromCommand(channelId, channel.getChannelTypeUID().getId(), command, currentState,
-                            channelConfig)
+            ESP3Packet msg = eep
+                    .setSenderId(senderId).setDestinationId(destinationId).convertFromCommand(channelId,
+                            channel.getChannelTypeUID().getId(), command, currentState, channelConfig)
                     .setSuppressRepeating(getConfiguration().suppressRepeating).getERP1Message();
 
             getBridgeHandler().sendMessage(msg, null);
