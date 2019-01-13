@@ -7,6 +7,7 @@ For log in transaction, the binding uses Neato Beehive API and for status and co
 ## Supported Things
 
 Supported thing types
+
 * neatoaccount (bridge)
 * vacuumcleaner
 

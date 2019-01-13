@@ -15,6 +15,8 @@ package org.openhab.binding.neato.internal;
  */
 public class NeatoCommunicationException extends Exception {
 
+    private static final long serialVersionUID = 1L;
+
     public NeatoCommunicationException(Throwable cause) {
         super("Error attempting to communicate with Neato", cause);
     }
