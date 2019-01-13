@@ -21,7 +21,6 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
@@ -100,8 +99,6 @@ public abstract class EEP {
         }
 
         switch (channelTypeId) {
-            case CHANNEL_RECEIVINGSTATE:
-                return convertToReceivingState();
             case CHANNEL_RSSI:
                 if (this.optionalData == null || this.optionalData.length < 6) {
                     return UnDefType.UNDEF;
@@ -269,13 +266,5 @@ public abstract class EEP {
             setOptionalData(Helper.concatAll(new byte[] { 0x01 }, destinationId, new byte[] { (byte) 0xff, 0x00 }));
         }
         return this;
-    }
-
-    protected State convertToReceivingState() {
-        if (this.optionalData == null || this.optionalData.length < 6) {
-            return UnDefType.UNDEF;
-        }
-
-        return new StringType(String.format("Rssi %s, repeated %s", this.optionalData[5], this.status & 0b1111));
     }
 }

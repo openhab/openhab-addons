@@ -117,7 +117,6 @@ public class EnOceanBindingConstants {
     public final static String CHANNEL_TWOSTATESWITCH = "twoStateSwitch";
     public final static String CHANNEL_ECOMODE = "ecoMode";
 
-    public final static String CHANNEL_RECEIVINGSTATE = "receivingState";
     public final static String CHANNEL_RSSI = "rssi";
     public final static String CHANNEL_REPEATCOUNT = "repeatCount";
     public final static String CHANNEL_LASTRECEIVED = "lastReceived";
@@ -225,8 +224,6 @@ public class EnOceanBindingConstants {
                     put(CHANNEL_ECOMODE, new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_ECOMODE),
                             CoreItemFactory.SWITCH));
 
-                    put(CHANNEL_RECEIVINGSTATE, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_RECEIVINGSTATE), CoreItemFactory.STRING));
                     put(CHANNEL_RSSI, new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_RSSI),
                             CoreItemFactory.NUMBER));
                     put(CHANNEL_REPEATCOUNT, new EnOceanChannelDescription(
