@@ -159,15 +159,14 @@ public class NetworkHandler extends BaseThingHandler implements PresenceDetectio
         try {
             presenceDetection.setHostname(handlerConfiguration.hostname);
         } catch (UnknownHostException e) {
-            logger.error("Configuration for hostname is faulty", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getLocalizedMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "invalid IP or hostname could not be resolved");
             return;
         }
 
         if (isTCPServiceDevice) {
             Integer port = handlerConfiguration.port;
             if (port == null) {
-                logger.error("You need to configure the port for a service device");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No port configured!");
                 return;
             }
