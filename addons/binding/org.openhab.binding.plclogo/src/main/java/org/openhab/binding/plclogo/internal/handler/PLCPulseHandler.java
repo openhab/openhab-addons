@@ -16,7 +16,6 @@ import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.*;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -74,13 +73,15 @@ public class PLCPulseHandler extends PLCCommonHandler {
         }
 
         Channel channel = getThing().getChannel(channelUID.getId());
-        Objects.requireNonNull(channel, "PLCPulseHandler: Invalid channel found");
-
-        PLCLogoClient client = getLogoClient();
         String name = getBlockFromChannel(channel);
+        if (!isValid(name) || (channel == null)) {
+            logger.debug("Can not update channel {}, block {}.", channelUID, name);
+            return;
+        }
 
         int bit = getBit(name);
         int address = getAddress(name);
+        PLCLogoClient client = getLogoClient();
         if ((address != INVALID) && (bit != INVALID) && (client != null)) {
             byte[] buffer = new byte[1];
             if (command instanceof RefreshType) {
@@ -186,9 +187,6 @@ public class PLCPulseHandler extends PLCCommonHandler {
             value = new DecimalType(type == OpenClosedType.CLOSED ? 1 : 0);
         }
 
-        Channel channel = thing.getChannel(channelUID.getId());
-        Objects.requireNonNull(channel, "PLCPulseHandler: Invalid channel found");
-
         setOldValue(channelUID.getId(), value);
     }
 
@@ -203,13 +201,13 @@ public class PLCPulseHandler extends PLCCommonHandler {
         if (2 <= name.length() && (name.length() <= 7)) {
             String kind = config.get().getObservedBlockKind();
             if (Character.isDigit(name.charAt(1))) {
-                boolean valid = "I".equalsIgnoreCase(kind) || "Q".equalsIgnoreCase(kind);
-                return name.startsWith(kind) && (valid || "M".equalsIgnoreCase(kind));
+                boolean valid = I_DIGITAL.equalsIgnoreCase(kind) || Q_DIGITAL.equalsIgnoreCase(kind);
+                return name.startsWith(kind) && (valid || M_DIGITAL.equalsIgnoreCase(kind));
             } else if (Character.isDigit(name.charAt(2))) {
                 String bKind = getBlockKind();
-                boolean valid = "NI".equalsIgnoreCase(kind) || "NQ".equalsIgnoreCase(kind);
-                valid = name.startsWith(kind) && (valid || "VB".equalsIgnoreCase(kind));
-                return (name.startsWith(bKind) && "VB".equalsIgnoreCase(bKind)) || valid;
+                boolean valid = NI_DIGITAL.equalsIgnoreCase(kind) || NQ_DIGITAL.equalsIgnoreCase(kind);
+                valid = name.startsWith(kind) && (valid || MEMORY_BYTE.equalsIgnoreCase(kind));
+                return (name.startsWith(bKind) && MEMORY_BYTE.equalsIgnoreCase(bKind)) || valid;
             }
         }
         return false;
@@ -242,9 +240,6 @@ public class PLCPulseHandler extends PLCCommonHandler {
     @Override
     protected void doInitialization() {
         Thing thing = getThing();
-        Bridge bridge = getBridge();
-        Objects.requireNonNull(bridge, "PLCPulseHandler: Bridge may not be null");
-
         logger.debug("Initialize LOGO! pulse handler.");
 
         config.set(getConfigAs(PLCPulseConfiguration.class));
@@ -255,7 +250,8 @@ public class PLCPulseHandler extends PLCCommonHandler {
 
             String label = thing.getLabel();
             if (label == null) {
-                label = bridge.getLabel() == null ? "Siemens Logo!" : bridge.getLabel();
+                Bridge bridge = getBridge();
+                label = (bridge == null) || (bridge.getLabel() == null) ? "Siemens Logo!" : bridge.getLabel();
                 label += (": digital pulse in/output");
             }
             tBuilder.withLabel(label);
