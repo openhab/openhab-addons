@@ -14,6 +14,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -56,11 +57,10 @@ public class NeatoHandler extends BaseThingHandler {
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
+    public void handleCommand(@NonNull ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             refreshStateAndUpdate();
-        }
-        if (channelUID.getId().equals(NeatoBindingConstants.COMMAND)) {
+        } else if (channelUID.getId().equals(NeatoBindingConstants.COMMAND)) {
             sendCommandToRobot(command);
         }
     }
@@ -108,16 +108,18 @@ public class NeatoHandler extends BaseThingHandler {
     }
 
     public void refreshStateAndUpdate() {
-        try {
-            mrRobot.sendGetState();
-            updateStatus(ThingStatus.ONLINE);
+        if (mrRobot != null) {
+            try {
+                mrRobot.sendGetState();
+                updateStatus(ThingStatus.ONLINE);
 
-            mrRobot.sendGetGeneralInfo();
+                mrRobot.sendGetGeneralInfo();
 
-            publishChannels();
-        } catch (NeatoCommunicationException | CouldNotFindRobotException e) {
-            logger.debug("Error when refreshing state.", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                publishChannels();
+            } catch (NeatoCommunicationException | CouldNotFindRobotException e) {
+                logger.debug("Error when refreshing state.", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
         }
     }
 
