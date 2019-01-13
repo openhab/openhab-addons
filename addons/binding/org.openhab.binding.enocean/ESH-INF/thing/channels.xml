@@ -189,12 +189,6 @@
 		</config-description>
 	</channel-type>
 
-	<channel-type id="receivingState">
-		<item-type>String</item-type>
-		<label>Receiving Status</label>
-		<state readOnly="true" />
-	</channel-type>
-	
 	<channel-type id="rssi" advanced="true">
 		<item-type>Number</item-type>
 		<label>RSSI</label>
