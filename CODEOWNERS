@@ -1,0 +1,13 @@
+# This file helps Github doing automatic review requests for new PRs.
+# It should always list the active maintainers of certain add-ons.
+
+# As a fallback, if no specific maintainer is listed below, assign the PR to the repo maintainers team:
+*       @openhab/2-x-add-ons-maintainers
+
+# Add-on maintainers:
+/addons/binding/org.openhab.binding.deconz/ @davidgraeff
+/addons/binding/org.openhab.binding.enocean/ @fruggy83
+/addons/binding/org.openhab.binding.dsmr/ @Hilbrand
+/addons/binding/org.openhab.binding.leapmotion/ @kaikreuzer
+
+# PLEASE HELP ADDING FURTHER LINES HERE!
