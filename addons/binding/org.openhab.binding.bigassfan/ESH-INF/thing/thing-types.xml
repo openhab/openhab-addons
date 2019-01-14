@@ -21,6 +21,7 @@
 			<channel id="fan-speed-min" typeId="fan-speed-min" />
 			<channel id="fan-speed-max" typeId="fan-speed-max" />
 			<channel id="fan-wintermode" typeId="fan-wintermode" />
+			<channel id="fan-sleep" typeId="fan-sleep" />
 
 			<!-- Channels related to light functions -->
 			<channel id="light-power" typeId="light-power" />
@@ -148,6 +149,12 @@
 		<item-type>Switch</item-type>
 		<label>Fan Winter Mode</label>
 		<description>Enable or disable fan winter mode</description>
+		<category>Switch</category>
+	</channel-type>
+	<channel-type id="fan-sleep">
+		<item-type>Switch</item-type>
+		<label>Sleep Mode</label>
+		<description>Enable or disable fan sleep mode</description>
 		<category>Switch</category>
 	</channel-type>
 	<channel-type id="light-power">
