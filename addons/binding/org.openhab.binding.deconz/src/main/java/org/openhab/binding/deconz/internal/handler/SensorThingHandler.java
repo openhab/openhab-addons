@@ -8,8 +8,8 @@
  */
 package org.openhab.binding.deconz.internal.handler;
 
-import static org.openhab.binding.deconz.internal.BindingConstants.*;
 import static org.eclipse.smarthome.core.library.unit.MetricPrefix.HECTO;
+import static org.openhab.binding.deconz.internal.BindingConstants.*;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -168,15 +168,7 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
                         return;
                     }
 
-                    // Add some information about the bridge
-                    Integer batteryLevel = newState.config.battery;
-                    if (batteryLevel != null) {
-                        ignoreConfigurationUpdate = true;
-                        updateChannelIfExists(CHANNEL_BATTERY_LEVEL, new DecimalType(batteryLevel.longValue()));
-                        updateChannelIfExists(CHANNEL_BATTERY_LOW, batteryLevel <= 10 ? OnOffType.ON : OnOffType.OFF);
-                        ignoreConfigurationUpdate = false;
-                    }
-
+                    // Add some information about the sensor
                     if (!newState.config.reachable) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Not reachable");
                         return;
@@ -188,6 +180,26 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
                     }
 
                     // Some sensors support optional channels
+                    // (see https://github.com/dresden-elektronik/deconz-rest-plugin/wiki/Supported-Devices#sensors)
+                    // any battery-powered sensor
+                    Integer batteryLevel = newState.config.battery;
+                    if (batteryLevel != null) {
+                        ignoreConfigurationUpdate = true;
+                        createAndUpdateChannelIfExists(CHANNEL_BATTERY_LEVEL,
+                                new DecimalType(batteryLevel.longValue()));
+                        createAndUpdateChannelIfExists(CHANNEL_BATTERY_LOW,
+                                batteryLevel <= 10 ? OnOffType.ON : OnOffType.OFF);
+                        ignoreConfigurationUpdate = false;
+                    }
+
+                    // some Xiaomi sensors
+                    Float temperature = newState.config.temperature;
+                    if (temperature instanceof Float) {
+                        createAndUpdateChannelIfExists(CHANNEL_TEMPERATURE,
+                                new QuantityType<Temperature>(temperature / 100, SIUnits.CELSIUS));
+                    }
+
+                    // ZHAPresence - TRÅDFRI motion sensor
                     if (newState.state.dark instanceof Boolean) {
                         createChannel(CHANNEL_DARK);
                     }
@@ -203,16 +215,17 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
                 });
     }
 
-    private void updateChannelIfExists(String channelId, State state) {
+    private void createAndUpdateChannelIfExists(String channelId, State state) {
         Channel channel = thing.getChannel(channelId);
         if (channel == null) {
-            createChannel(channelId);
-        } else {
+            channel = createChannel(channelId);
+        }
+        if (channel != null) {
             updateState(channel.getUID(), state);
         }
     }
 
-    private void createChannel(String channelId) {
+    private @Nullable Channel createChannel(String channelId) {
         ThingHandlerCallback callback = getCallback();
         if (callback != null) {
             ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
@@ -230,7 +243,9 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
             }
             Channel channel = callback.createChannelBuilder(channelUID, channelTypeUID).build();
             updateThing(editThing().withoutChannel(channelUID).withChannel(channel).build());
+            return channel;
         }
+        return null;
     }
 
     @Override

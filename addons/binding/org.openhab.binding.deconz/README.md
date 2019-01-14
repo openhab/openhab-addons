@@ -13,18 +13,18 @@ which makes the lights and plugs available.
 There is one bridge (`deconz`) that manages the connection to the deCONZ software instance.
 These things are supported:
 
-| Device type                       | Resource Type                     | Thing type            | Channels provided         |
-| :-------------------------------- | :-------------------------------- | :-------------------- | :------------------------ |
-| Presence sensor                   | ZHAPresence, CLIPPrensence        | `presencesensor`      | `presence`                |
-| Power sensor                      | ZHAPower, CLIPPower               | `powersensor`         | `power`                   |
-| Consumption Sensor                | ZHAConsumption                    | `consumtionsensor`    | `consumption`             |
-| Switch                            | ZHASwitch                         | `switch`              | `button`,`buttonevent`    |
-| Light sensor                      | ZHALightLevel                     | `lightsensor`         | `lightlux`                |
-| Temperature sensor                | ZHATemperature                    | `temperaturesensor`   | `temperature`             |
-| Humidity sensor                   | ZHAHumidity                       | `humiditysensor`      | `humidity`                |
-| Pressure sensor                   | ZHAPressure                       | `pressuresensor`      | `pressure`                |
-| Open/close sensor                 | ZHAOpenClose                      | `openclosesensor`     | `open`                    |
-| deCONZ artificial daylight sensor | Deconz specific: simulated sensor | `daylightsensor`      | `value`,`light`           |
+| Device type                       | Resource Type                     | Thing type          |
+|-----------------------------------|-----------------------------------|---------------------|
+| Presence sensor                   | ZHAPresence, CLIPPrensence        | `presencesensor`    |
+| Power sensor                      | ZHAPower, CLIPPower               | `powersensor`       |
+| Consumption Sensor                | ZHAConsumption                    | `consumptionsensor` |
+| Switch                            | ZHASwitch                         | `switch`            |
+| Light sensor                      | ZHALightLevel                     | `lightsensor`       |
+| Temperature sensor                | ZHATemperature                    | `temperaturesensor` |
+| Humidity sensor                   | ZHAHumidity                       | `humiditysensor`    |
+| Pressure sensor                   | ZHAPressure                       | `pressuresensor`    |
+| Open/close sensor                 | ZHAOpenClose                      | `openclosesensor`   |
+| deCONZ artificial daylight sensor | Deconz specific: simulated sensor | `daylightsensor`    |
 
 ## Discovery
 
@@ -80,7 +80,7 @@ The devices support some of the following channels:
 | light_level     | Number               |      R      | Current light level                                                       | lightsensor                               |
 | dark            | Switch               |      R      | Light level is below the darkness threshold.                              | lightsensor, sometimes for presencesensor |
 | daylight        | Switch               |      R      | Light level is above the daylight threshold.                              | lightsensor                               |
-| temperature     | Number:Temperature   |      R      | Current temperature in ˚C                                                 | temperaturesensor                         |
+| temperature     | Number:Temperature   |      R      | Current temperature in ˚C                                                 | temperaturesensor, some Xiaomi sensors    |
 | humidity        | Number:Dimensionless |      R      | Current humidity in %                                                     | humiditysensor                            |
 | pressure        | Number:Pressure      |      R      | Current pressure in hPa                                                   | pressuresensor                            |
 | open            | Contact              |      R      | Status of contacts: `OPEN`; `CLOSED`                                      | openclosesensor                           |
