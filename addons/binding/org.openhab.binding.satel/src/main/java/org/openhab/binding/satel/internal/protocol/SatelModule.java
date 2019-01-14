@@ -95,8 +95,8 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
      * Creates new instance of the class.
      *
      * @param timeout
-     *            timeout value in milliseconds for connect/read/write
-     *            operations
+     *                    timeout value in milliseconds for connect/read/write
+     *                    operations
      */
     public SatelModule(int timeout) {
         this.integraType = IntegraType.UNKNOWN;
@@ -164,6 +164,7 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
      * Stops communication by disconnecting from the module and stopping all
      * background tasks.
      */
+    @SuppressWarnings("null")
     public void close() {
         // first we clear watchdog field in the object
         CommunicationWatchdog watchdog = null;
@@ -185,7 +186,7 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
      * Enqueues specified command in send queue if not already enqueued.
      *
      * @param cmd
-     *            command to enqueue
+     *                command to enqueue
      * @return <code>true</code> if operation succeeded
      */
     public boolean sendCommand(SatelCommand cmd) {
@@ -196,9 +197,9 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
      * Enqueues specified command in send queue.
      *
      * @param cmd
-     *            command to enqueue
+     *                  command to enqueue
      * @param force
-     *            if <code>true</code> enqueues unconditionally
+     *                  if <code>true</code> enqueues unconditionally
      * @return <code>true</code> if operation succeeded
      */
     public boolean sendCommand(SatelCommand cmd, boolean force) {
@@ -487,6 +488,7 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
             }
         }
 
+        @SuppressWarnings("null")
         private void checkThread() {
             logger.trace("Checking communication thread: {}, {}", this.thread != null,
                     Boolean.toString(this.thread != null && this.thread.isAlive()));

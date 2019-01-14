@@ -10,7 +10,6 @@ package org.openhab.binding.satel.internal.discovery;
 
 import static org.openhab.binding.satel.internal.SatelBindingConstants.*;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -67,7 +66,7 @@ public class SatelDeviceDiscoveryService extends AbstractDiscoveryService {
             // add virtual things by default
             for (ThingTypeUID thingTypeUID : VIRTUAL_THING_TYPES_UIDS) {
                 ThingType thingType = thingTypeProvider.apply(thingTypeUID);
-                addThing(THING_TYPE_SYSTEM, null, thingType.getLabel(), Collections.emptyMap());
+                addThing(thingTypeUID, null, thingType.getLabel(), Collections.emptyMap());
             }
         }
         if (!scanStopped) {
@@ -90,26 +89,20 @@ public class SatelDeviceDiscoveryService extends AbstractDiscoveryService {
     private void scanForDevices(DeviceType deviceType, int maxNumber) {
         logger.debug("Scanning for {} started", deviceType.name());
         for (int i = 1; i <= maxNumber && !scanStopped; ++i) {
-            try {
-                ReadDeviceInfoCommand cmd = new ReadDeviceInfoCommand(deviceType, i);
-                cmd.ignoreResponseError();
-                if (bridgeHandler.sendCommand(cmd, false)) {
-                    String name = cmd.getName(bridgeHandler.getEncoding());
-                    int deviceKind = cmd.getDeviceKind();
-                    logger.debug("Found device: type={}, id={}, name={}, kind/function={}", deviceType.name(), i, name,
-                            deviceKind);
-                    if (isDeviceAvailable(deviceType, deviceKind)) {
-                        addDevice(deviceType, deviceKind, i, name);
-                    }
-                } else if (cmd.getState() != SatelCommand.State.FAILED) {
-                    // serious failure, disconnection or so
-                    scanStopped = true;
-                    logger.error("Unexpected failure during scan for {} using {}", deviceType.name(),
-                            bridgeHandler.getThing().getUID().toString());
+            ReadDeviceInfoCommand cmd = new ReadDeviceInfoCommand(deviceType, i);
+            cmd.ignoreResponseError();
+            if (bridgeHandler.sendCommand(cmd, false)) {
+                String name = cmd.getName(bridgeHandler.getEncoding());
+                int deviceKind = cmd.getDeviceKind();
+                logger.debug("Found device: type={}, id={}, name={}, kind/function={}", deviceType.name(), i, name,
+                        deviceKind);
+                if (isDeviceAvailable(deviceType, deviceKind)) {
+                    addDevice(deviceType, deviceKind, i, name);
                 }
-            } catch (UnsupportedEncodingException e) {
+            } else if (cmd.getState() != SatelCommand.State.FAILED) {
+                // serious failure, disconnection or so
                 scanStopped = true;
-                logger.error("Unsupported encoding '{}' configured for the bridge: {}", bridgeHandler.getEncoding(),
+                logger.error("Unexpected failure during scan for {} using {}", deviceType.name(),
                         bridgeHandler.getThing().getUID().toString());
             }
         }

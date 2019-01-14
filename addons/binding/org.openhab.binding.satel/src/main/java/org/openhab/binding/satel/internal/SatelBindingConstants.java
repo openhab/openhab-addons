@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.satel.internal;
 
-import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -35,6 +34,7 @@ public class SatelBindingConstants {
     public static final ThingTypeUID THING_TYPE_SHUTTER = new ThingTypeUID(BINDING_ID, "shutter");
     public static final ThingTypeUID THING_TYPE_ZONE = new ThingTypeUID(BINDING_ID, "zone");
     public static final ThingTypeUID THING_TYPE_SYSTEM = new ThingTypeUID(BINDING_ID, "system");
+    public static final ThingTypeUID THING_TYPE_EVENTLOG = new ThingTypeUID(BINDING_ID, "event-log");
 
     public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Stream.of(THING_TYPE_ETHM1, THING_TYPE_INTRS)
             .collect(Collectors.toSet());
@@ -45,9 +45,10 @@ public class SatelBindingConstants {
             .collect(Collectors.toSet());
 
     // Virtual devices
-    public static final Set<ThingTypeUID> VIRTUAL_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SYSTEM);
+    public static final Set<ThingTypeUID> VIRTUAL_THING_TYPES_UIDS = Stream.of(THING_TYPE_SYSTEM, THING_TYPE_EVENTLOG)
+            .collect(Collectors.toSet());
 
-    // List of all Channel ids
+    // List of all Channel ids except those covered by state enums
     public static final String CHANNEL_SHUTTER_STATE = "shutter_state";
     public static final String CHANNEL_DATE_TIME = "date_time";
     public static final String CHANNEL_SERVICE_MODE = "service_mode";
@@ -57,5 +58,10 @@ public class SatelBindingConstants {
     public static final String CHANNEL_INTRX_PRESENT = "intrx_present";
     public static final String CHANNEL_GRADE23_SET = "grade23_set";
     public static final String CHANNEL_USER_CODE = "user_code";
+    public static final String CHANNEL_INDEX = "index";
+    public static final String CHANNEL_PREV_INDEX = "prev_index";
+    public static final String CHANNEL_TIMESTAMP = "timestamp";
+    public static final String CHANNEL_DESCRIPTION = "description";
+    public static final String CHANNEL_DETAILS = "details";
 
 }

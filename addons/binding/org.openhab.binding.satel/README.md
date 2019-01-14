@@ -19,7 +19,8 @@ This binding supports following thing types:
 | zone       | A physical device: reed switch, motion sensor or a virtual zone                                                                          |
 | output     | An output defined in the system                                                                                                          |
 | shutter    | Two outputs that control a roller shutter, one for "up" direction, another one for "down"                                                |
-| system     | A logical thing describing general status of the alarm system                                                                            |
+| system     | A virtual thing describing general status of the alarm system                                                                            |
+| event-log  | A virtual thing that allows reading records from the alarm system event log                                                              |
 
 
 ## Discovery
@@ -100,11 +101,11 @@ Thing zone zone1 [ id=1 ]
 
 You can configure the following settings for an output:
 
-| Name        | Required | Description                                          |
-|-------------|----------|------------------------------------------------------|
-| id          | yes      | Output number                                        |
-| invertState | no       | Changes active (ON) state to 0                       |
-| commandOnly | no       | Accepts commands only, does not update thing's state |
+| Name        | Required | Description                                               |
+|-------------|----------|-----------------------------------------------------------|
+| id          | yes      | Output number                                             |
+| invertState | no       | Changes active (ON) state to 0                            |
+| commandOnly | no       | Accepts commands only, does not update state of the thing |
 
 Example:
 
@@ -116,11 +117,11 @@ Thing output output1 [ id=1, invertState=true ]
 
 You can configure the following settings for a shutter:
 
-| Name        | Required | Description                                          |
-|-------------|----------|------------------------------------------------------|
-| upId        | yes      | Output number for "up" direction                     |
-| downId      | yes      | Output number for "down" direction                   |
-| commandOnly | no       | Accepts commands only, does not update thing's state |
+| Name        | Required | Description                                               |
+|-------------|----------|-----------------------------------------------------------|
+| upId        | yes      | Output number for "up" direction                          |
+| downId      | yes      | Output number for "down" direction                        |
+| commandOnly | no       | Accepts commands only, does not update state of the thing |
 
 Example:
 
@@ -131,6 +132,22 @@ Thing shutter shutter1 [ upId=10, downId=11, commandOnly=true ]
 ### system
 
 This thing type does not have any configuration parameters.
+
+Example:
+
+```
+Thing system System [ ]
+```
+
+### event-log
+
+This thing type does not have any configuration parameters.
+
+Example:
+
+```
+Thing event-log EventLog [ ]
+```
 
 ## Channels
 
@@ -182,9 +199,9 @@ This thing type does not have any configuration parameters.
 
 ### shutter
 
-| Name  | Type          | Description          |
-|-------|---------------|----------------------|
-| state | Rollershutter | State of the shutter |
+| Name          | Type          | Description          |
+|---------------|---------------|----------------------|
+| shutter_state | Rollershutter | State of the shutter |
 
 ### system
 
@@ -199,6 +216,16 @@ This thing type does not have any configuration parameters.
 | grade23_set     | Switch   | Active when Grade2/Grade3 option is set in the system                                                                              |
 | user_code       | String   | Accepts string commands that override configured user code. Send empty string to revert user code to the one in the configuration. |
 
+### event-log
+
+| Name        | Type     | Description                                                                            |
+|-------------|----------|----------------------------------------------------------------------------------------|
+| index       | Number   | Index of the current record in the event log. Send '-1' to get most recent record.     |
+| prev_index  | Number   | Index of the previous record in the event log. Use this value to iterate over the log. |
+| timestamp   | DateTime | Date and time when the event happened.                                                 |
+| description | String   | Textual description of the event.                                                      |
+| details     | String   | Details about the event, usually list of objects related to the event.                 |
+
 ## Full Example
 
 ### satel.things
@@ -211,6 +238,7 @@ Bridge satel:ethm-1:home [ host="192.168.0.2", refresh=1000, userCode="1234", en
     Thing output KitchenLamp [ id=1 ]
     Thing shutter KitchenWindow [ upId=2, downId=3 ]
     Thing system System [ ]
+    Thing event-log EventLog [ ]
 }
 ```
 
@@ -226,10 +254,15 @@ Switch LIVING_ALARM "Intruder in living room" (Satel) { channel="satel:zone:home
 Switch BEDROOM_TAMPER "Bedroom PIR tampered" (Satel) { channel="satel:zone:home:BedroomPIR:tamper_alarm" }
 Switch BEDROOM_TAMPER_M "Bedroom PIR tamper memory" (Satel) { channel="satel:zone:home:BedroomPIR:tamper_alarm_memory" }
 Switch KITCHEN_LAMP "Kitchen lamp" (Satel) { channel="satel:output:home:KitchenLamp:state" }
-Rollershutter KITCHEN_BLIND "Kitchen blind" (Satel) { channel="satel:shutter:home:KitchenWindow:state" }
+Rollershutter KITCHEN_BLIND "Kitchen blind" (Satel) { channel="satel:shutter:home:KitchenWindow:shutter_state" }
 Switch SYSTEM_TROUBLES "Troubles in the system" (Satel) { channel="satel:system:home:System:troubles" }
 String KEYPAD_CHAR ">" <none> (Satel)
 String USER_CODE "User code" (Satel) { channel="satel:system:home:System:user_code" }
+Number EVENT_LOG_IDX "Event log - current index [%d]" (Satel) { channel="satel:event-log:home:EventLog:index" }
+Number EVENT_LOG_PREV "Event log - previous index [%d]" (Satel) { channel="satel:event-log:home:EventLog:prev_index" }
+DateTime EVENT_LOG_TIME "Event log - time [%1$tF %1$tR]" (Satel) { channel="satel:event-log:home:EventLog:timestamp" }
+String EVENT_LOG_DESCR "Event log - description [%s]" (Satel) { channel="satel:event-log:home:EventLog:description" }
+String EVENT_LOG_DET "Event log - details [%s]" (Satel) { channel="satel:event-log:home:EventLog:details" }
 ```
 
 ### satel.sitemap
@@ -264,6 +297,8 @@ Frame label="Alarm system" {
 var String userCode = ""
 var Timer keypadTimer = null
 var Timer userCodeTimer = null
+var int eventLogCounter = 0
+var String eventLogMsgBody = ""
 
 rule "Keypad char entered"
 when
@@ -297,6 +332,83 @@ then
         userCode = ""
         KEYPAD_CHAR.postUpdate("")
     ]
+end
+
+rule "Send event log start"
+when
+    Item Alarms changed to ON
+then
+    eventLogCounter = 0
+    eventLogMsgBody = ""
+    EVENT_LOG_PREV.postUpdate(NULL)
+    EVENT_LOG_IDX.sendCommand(-1)
+end
+
+rule "Send event log next"
+when
+    Item EVENT_LOG_PREV changed
+then
+    if (EVENT_LOG_PREV.state == NULL) {
+        
+    } else if (eventLogCounter == 30) {
+        sendMail("my@address.net", "Alarm system log", eventLogMsgBody)
+        // prevent initiating reading when index item is restored during OH startup
+        EVENT_LOG_IDX.postUpdate(NULL)
+    } else {
+		eventLogMsgBody += "\n" + (EVENT_LOG_TIME.state as DateTimeType).format("%1$tF %1$tR") + ": " + EVENT_LOG_DESCR.state
+		if (EVENT_LOG_DET.state != NULL && EVENT_LOG_DET.state != "") {
+			 eventLogMsgBody += " - " + EVENT_LOG_DET.state
+		}
+        eventLogCounter += 1
+        EVENT_LOG_IDX.sendCommand(EVENT_LOG_PREV.state)
+    }
+end
+```
+
+## Migration from 1.x version of the binding
+
+### binary items
+
+In OH2.x all channels have strict types, which means you cannot use other type then designated for a channel. 
+In Satel binding all binary items are now of 'Switch' type. Using other item types, like 'Contact' is not possible in this version of the binding.
+For this reason, when migrating 1.x item files, besides changing binding configuration for each item, you must replace all 'Contact' items to 'Switch' type.  
+
+### 'module' channels
+
+In version 2.x of the binding all 'module' channels have been removed. You can easily replace them with the following configuration:
+
+#### satel.items
+
+```
+Switch MODULE_CONNECTED "Connection status" <network> (Satel)
+DateTime MODULE_CONNECTED_SINCE "Connection established at [%1$tF %1$tR]" <time> (Satel)
+Number MODULE_CONNECTION_ERRORS "Connection errors [%d]" (Satel)
+```
+
+#### satel.rules
+
+```
+rule "Satel bridge changed to ONLINE"
+when
+    Thing "satel:ethm-1:home" changed to ONLINE
+then
+    MODULE_CONNECTED.postUpdate(ON)
+    MODULE_CONNECTED_SINCE.postUpdate(new DateTimeType())
+    MODULE_CONNECTION_ERRORS.postUpdate(0)
+end
+
+rule "Satel bridge received OFFLINE"
+when
+    Thing "satel:ethm-1:home" received update OFFLINE
+then
+    if (MODULE_CONNECTED.state == ON) {
+        MODULE_CONNECTED.postUpdate(OFF)
+        MODULE_CONNECTED_SINCE.postUpdate(NULL)
+        MODULE_CONNECTION_ERRORS.postUpdate(1)
+    } else {
+        val connErrors = MODULE_CONNECTION_ERRORS.state as DecimalType
+        MODULE_CONNECTION_ERRORS.postUpdate(connErrors.intValue + 1)
+    }
 end
 ```
 

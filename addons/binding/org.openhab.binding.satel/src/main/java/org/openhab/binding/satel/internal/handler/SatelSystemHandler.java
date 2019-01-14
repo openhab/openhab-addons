@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
-public class SatelSystemHandler extends SatelThingHandler {
+public class SatelSystemHandler extends SatelStateThingHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_SYSTEM);
 
@@ -73,7 +73,8 @@ public class SatelSystemHandler extends SatelThingHandler {
             if (thingConfig.isCommandOnly()) {
                 return;
             }
-            updateState(CHANNEL_DATE_TIME, new DateTimeType(statusEvent.getIntegraTime()));
+            updateState(CHANNEL_DATE_TIME,
+                    new DateTimeType(statusEvent.getIntegraTime().atZone(bridgeHandler.getZoneId())));
             updateSwitch(CHANNEL_SERVICE_MODE, statusEvent.inServiceMode());
             updateSwitch(CHANNEL_TROUBLES, statusEvent.troublesPresent());
             updateSwitch(CHANNEL_TROUBLES_MEMORY, statusEvent.troublesMemory());
@@ -108,7 +109,9 @@ public class SatelSystemHandler extends SatelThingHandler {
                     dateTime = (DateTimeType) command;
                 }
                 if (dateTime != null) {
-                    return new SetClockCommand(dateTime.getCalendar(), bridgeHandler.getUserCode());
+                    return new SetClockCommand(dateTime.getZonedDateTime()
+                            .withZoneSameInstant(bridgeHandler.getZoneId()).toLocalDateTime(),
+                            bridgeHandler.getUserCode());
                 }
                 break;
             default:
