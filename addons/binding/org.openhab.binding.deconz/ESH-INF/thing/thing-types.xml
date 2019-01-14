@@ -77,7 +77,7 @@
 		<description>Current power usage</description>
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
-	
+
 	<thing-type id="consumptionsensor">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="deconz" />
@@ -101,7 +101,7 @@
 		<label>Consumption</label>
 		<description>Current consumption</description>
 		<state readOnly="true" pattern="%.1f %unit%"></state>
-	</channel-type>	
+	</channel-type>
 
 	<thing-type id="switch">
 		<supported-bridge-type-refs>
@@ -234,7 +234,7 @@
 		<description>Current humidity</description>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
-	
+
 	<thing-type id="pressuresensor">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="deconz" />
@@ -252,7 +252,7 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-	
+
 	<channel-type id="pressure">
 		<item-type>Number:Pressure</item-type>
 		<label>Pressure</label>
@@ -321,6 +321,31 @@
 		<label>Open/Close</label>
 		<description>Open/Close detected</description>
 		<state readOnly="true"></state>
+	</channel-type>
+
+	<thing-type id="waterleakagesensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="deconz" />
+		</supported-bridge-type-refs>
+		<label>Water Leakage Sensor</label>
+		<description>A water leakage sensor</description>
+		<channels>
+			<channel typeId="waterleakage" id="waterleakage" />
+			<channel typeId="last_updated" id="last_updated" />
+		</channels>
+		<config-description>
+			<parameter name="id" type="text" required="true">
+				<label>Sensor ID</label>
+				<description>The deCONZ bridge assigns an integer number ID to each sensor.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="waterleakage">
+		<item-type>Switch</item-type>
+		<label>Water Leakage</label>
+		<description>Water leakage detected</description>
+		<state readOnly="true" />
 	</channel-type>
 
 </thing:thing-descriptions>

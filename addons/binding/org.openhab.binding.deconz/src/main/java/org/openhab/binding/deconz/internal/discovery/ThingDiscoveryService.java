@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.deconz.internal.discovery;
 
+import static org.openhab.binding.deconz.internal.BindingConstants.*;
+
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,7 +23,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
-import org.openhab.binding.deconz.internal.BindingConstants;
 import org.openhab.binding.deconz.internal.dto.SensorMessage;
 import org.openhab.binding.deconz.internal.handler.DeconzBridgeHandler;
 
@@ -37,13 +38,10 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements T
     private @NonNullByDefault({}) DeconzBridgeHandler handler;
 
     public ThingDiscoveryService() {
-        super(Stream
-                .of(BindingConstants.THING_TYPE_PRESENCE_SENSOR, BindingConstants.THING_TYPE_POWER_SENSOR,
-                        BindingConstants.THING_TYPE_CONSUMPTION_SENSOR, BindingConstants.THING_TYPE_DAYLIGHT_SENSOR,
-                        BindingConstants.THING_TYPE_SWITCH, BindingConstants.THING_TYPE_LIGHT_SENSOR,
-                        BindingConstants.THING_TYPE_TEMPERATURE_SENSOR, BindingConstants.THING_TYPE_HUMIDITY_SENSOR,
-                        BindingConstants.THING_TYPE_PRESSURE_SENSOR, BindingConstants.THING_TYPE_OPENCLOSE_SENSOR)
-                .collect(Collectors.toSet()), 0, true);
+        super(Stream.of(THING_TYPE_PRESENCE_SENSOR, THING_TYPE_POWER_SENSOR, THING_TYPE_CONSUMPTION_SENSOR,
+                THING_TYPE_DAYLIGHT_SENSOR, THING_TYPE_SWITCH, THING_TYPE_LIGHT_SENSOR, THING_TYPE_TEMPERATURE_SENSOR,
+                THING_TYPE_HUMIDITY_SENSOR, THING_TYPE_PRESSURE_SENSOR, THING_TYPE_OPENCLOSE_SENSOR,
+                THING_TYPE_WATERLEAKAGE_SENSOR).collect(Collectors.toSet()), 0, true);
     }
 
     /**
@@ -58,31 +56,33 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements T
     /**
      * Add a sensor device to the discovery inbox.
      *
-     * @param sensor    The sensor description
+     * @param sensor The sensor description
      * @param bridgeUID The bridge UID
      */
     private void addDevice(String sensorID, SensorMessage sensor) {
         ThingTypeUID thingTypeUID;
         if (sensor.type.contains("Daylight")) { // Deconz specific: Software simulated daylight sensor
-            thingTypeUID = BindingConstants.THING_TYPE_DAYLIGHT_SENSOR;
+            thingTypeUID = THING_TYPE_DAYLIGHT_SENSOR;
         } else if (sensor.type.contains("Power")) { // ZHAPower, CLIPPower
-            thingTypeUID = BindingConstants.THING_TYPE_POWER_SENSOR;
+            thingTypeUID = THING_TYPE_POWER_SENSOR;
         } else if (sensor.type.contains("ZHAConsumption")) { // ZHAConsumption
-            thingTypeUID = BindingConstants.THING_TYPE_CONSUMPTION_SENSOR;
+            thingTypeUID = THING_TYPE_CONSUMPTION_SENSOR;
         } else if (sensor.type.contains("Presence")) { // ZHAPresence, CLIPPrensence
-            thingTypeUID = BindingConstants.THING_TYPE_PRESENCE_SENSOR;
+            thingTypeUID = THING_TYPE_PRESENCE_SENSOR;
         } else if (sensor.type.contains("Switch")) { // ZHASwitch
-            thingTypeUID = BindingConstants.THING_TYPE_SWITCH;
+            thingTypeUID = THING_TYPE_SWITCH;
         } else if (sensor.type.contains("LightLevel")) { // ZHALightLevel
-            thingTypeUID = BindingConstants.THING_TYPE_LIGHT_SENSOR;
+            thingTypeUID = THING_TYPE_LIGHT_SENSOR;
         } else if (sensor.type.contains("ZHATemperature")) { // ZHATemperature
-            thingTypeUID = BindingConstants.THING_TYPE_TEMPERATURE_SENSOR;
+            thingTypeUID = THING_TYPE_TEMPERATURE_SENSOR;
         } else if (sensor.type.contains("ZHAHumidity")) { // ZHAHumidity
-            thingTypeUID = BindingConstants.THING_TYPE_HUMIDITY_SENSOR;
+            thingTypeUID = THING_TYPE_HUMIDITY_SENSOR;
         } else if (sensor.type.contains("ZHAPressure")) { // ZHAPressure
-            thingTypeUID = BindingConstants.THING_TYPE_PRESSURE_SENSOR;
+            thingTypeUID = THING_TYPE_PRESSURE_SENSOR;
         } else if (sensor.type.contains("ZHAOpenClose")) { // ZHAOpenClose
-            thingTypeUID = BindingConstants.THING_TYPE_OPENCLOSE_SENSOR;
+            thingTypeUID = THING_TYPE_OPENCLOSE_SENSOR;
+        } else if (sensor.type.contains("ZHAWater")) { // ZHAWater
+            thingTypeUID = THING_TYPE_OPENCLOSE_SENSOR;
         } else {
             return;
         }

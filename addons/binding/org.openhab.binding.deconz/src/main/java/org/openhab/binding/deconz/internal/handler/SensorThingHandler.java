@@ -362,6 +362,9 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
                     updateState(channelUID, open ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
                 }
                 break;
+            case CHANNEL_WATERLEAKAGE:
+                updateState(channelUID, Boolean.TRUE.equals(state.water) ? OnOffType.ON : OnOffType.OFF);
+                break;
             case CHANNEL_BUTTON:
                 if (buttonevent != null) {
                     updateState(channelUID, new DecimalType(buttonevent));
