@@ -71,61 +71,73 @@ regoheatpump:serialRego6xx:ivtSerial [ portName="COM3" ]
 
 ### Channels
 
-Below is the list of supported channels, all values are read only:
+Below is the list of supported channels:
 
-| Channel Type ID                    | Item Type   |
-|------------------------------------|-------------|
-| sensorValues#radiatorReturn        | Temperature |
-| sensorValues#outdoor               | Temperature |
-| sensorValues#hotWater              | Temperature |
-| sensors#radiatorForward            | Temperature |
-| sensorValues#indoor                | Temperature |
-| sensorValues#compressor            | Temperature |
-| sensorValues#heatFluidOut          | Temperature |
-| sensorValues#heatFluidIn           | Temperature |
-| sensorValues#coldFluidIn           | Temperature |
-| sensorValues#coldFluidOut          | Temperature |
-| sensorValues#externalHotWater      | Temperature |
-| status#lastErrorTimestamp          | DateTime    |
-| status#lastErrorType               | String      |
-| frontPanel#powerLamp               | Switch      |
-| frontPanel#heatPumpLamp            | Switch      |
-| frontPanel#additionalHeatLamp      | Switch      |
-| frontPanel#hotWaterLamp            | Switch      |
-| frontPanel#alarmLamp               | Switch      |
-| controlData#radiatorReturnTarget   | Temperature |
-| controlData#radiatorReturnOn       | Temperature |
-| controlData#radiatorReturnOff      | Temperature |
-| controlData#hotWaterTarget         | Temperature |
-| controlData#hotWaterOn             | Temperature |
-| controlData#hotWaterOff            | Temperature |
-| controlData#radiatorForwardTarget  | Temperature |
-| controlData#addHeatPower           | Number (%)  |
-| deviceValues#coldFluidPump         | Switch      |
-| deviceValues#compressor            | Switch      |
-| deviceValues#additionalHeat3kW     | Switch      |
-| deviceValues#additionalHeat6kW     | Switch      |
-| deviceValues#radiatorPump          | Switch      |
-| deviceValues#heatFluidPump         | Switch      |
-| deviceValues#switchValue           | Switch      |
-| deviceValues#alarm                 | Switch      |
-| settings#heatCurve                 | Number      |
-| settings#heatCurveFineAdj          | Temperature |
-| registersettings#indoorTempSetting | Temperature |
-| settings#curveInflByInTemp         | Number      |
-| settings#adjCurveAt20              | Temperature |
-| settings#adjCurveAt15              | Temperature |
-| settings#adjCurveAt10              | Temperature |
-| settings#adjCurveAt5               | Temperature |
-| settings#adjCurveAt0               | Temperature |
-| settings#adjCurveAtMinus5          | Temperature |
-| settings#adjCurveAtMinus10         | Temperature |
-| settings#adjCurveAtMinus15         | Temperature |
-| settings#adjCurveAtMinus20         | Temperature |
-| settings#adjCurveAtMinus25         | Temperature |
-| settings#adjCurveAtMinus30         | Temperature |
-| settings#adjCurveAtMinus35         | Temperature |
-| settings#heatCurveCouplingDiff     | Temperature |
+| Channel Type ID                       | Item Type   | Access |
+|---------------------------------------|-------------|--------|
+| sensorValues#radiatorReturn           | Temperature | R      |
+| sensorValues#outdoor                  | Temperature | R      |
+| sensorValues#hotWater                 | Temperature | R      |
+| sensors#radiatorForward               | Temperature | R      |
+| sensorValues#indoor                   | Temperature | R      |
+| sensorValues#compressor               | Temperature | R      |
+| sensorValues#heatFluidOut             | Temperature | R      |
+| sensorValues#heatFluidIn              | Temperature | R      |
+| sensorValues#coldFluidIn              | Temperature | R      |
+| sensorValues#coldFluidOut             | Temperature | R      |
+| sensorValues#externalHotWater         | Temperature | R      |
+| status#lastErrorTimestamp             | DateTime    | R      |
+| status#lastErrorType                  | String      | R      |
+| frontPanel#powerLamp                  | Switch      | R      |
+| frontPanel#heatPumpLamp               | Switch      | R      |
+| frontPanel#additionalHeatLamp         | Switch      | R      |
+| frontPanel#hotWaterLamp               | Switch      | R      |
+| frontPanel#alarmLamp                  | Switch      | R      |
+| controlData#radiatorReturnTarget      | Temperature | R      |
+| controlData#radiatorReturnOn          | Temperature | R      |
+| controlData#radiatorReturnOff         | Temperature | R      |
+| controlData#hotWaterOn                | Temperature | R      |
+| controlData#hotWaterOff               | Temperature | R      |
+| controlData#radiatorForwardTarget     | Temperature | R      |
+| controlData#addHeatPower              | Number (%)  | R      |
+| deviceValues#coldFluidPump            | Switch      | R      |
+| deviceValues#compressor               | Switch      | R      |
+| deviceValues#additionalHeat3kW        | Switch      | R      |
+| deviceValues#additionalHeat6kW        | Switch      | R      |
+| deviceValues#radiatorPump             | Switch      | R      |
+| deviceValues#heatFluidPump            | Switch      | R      |
+| deviceValues#switchValue              | Switch      | R      |
+| deviceValues#alarm                    | Switch      | R      |
+| settings#hotWaterTarget               | Temperature | RW     |
+| settings#hotWaterTargetHysteresis     | Temperature | RW     |
+| settings#heatCurve                    | Number      | RW     |
+| settings#heatCurveFineAdj             | Temperature | RW     |
+| settings#heatCurve2                   | Number      | RW     |
+| settings#heatCurve2FineAdj            | Temperature | RW     |
+| settings#indoorTempSetting            | Temperature | RW     |
+| settings#curveInflByInTemp            | Number      | RW     |
+| settings#adjCurveAt20                 | Temperature | RW     |
+| settings#adjCurveAt15                 | Temperature | RW     |
+| settings#adjCurveAt10                 | Temperature | RW     |
+| settings#adjCurveAt5                  | Temperature | RW     |
+| settings#adjCurveAt0                  | Temperature | RW     |
+| settings#adjCurveAtMinus5             | Temperature | RW     |
+| settings#adjCurveAtMinus10            | Temperature | RW     |
+| settings#adjCurveAtMinus15            | Temperature | RW     |
+| settings#adjCurveAtMinus20            | Temperature | RW     |
+| settings#adjCurveAtMinus25            | Temperature | RW     |
+| settings#adjCurveAtMinus30            | Temperature | RW     |
+| settings#adjCurveAtMinus35            | Temperature | RW     |
+| settings#heatCurveCouplingDiff        | Temperature | RW     |
+| settings#summerDisconnection          | Temperature | RW     |
+| operatingTimes#heatPumpInOperationRAD | Hours       | R      |
+| operatingTimes#heatPumpInOperationDHW | Hours       | R      |
+| operatingTimes#addHeatInOperationRAD  | Hours       | R      |
+| operatingTimes#addHeatInOperationDHW  | Hours       | R      |
+
+Access: R = read only; RW = read write
+
+**Note - breaking change:** to have all writable channels within the settings group, hotWaterTarget channel was moved from controlData to the setting group.
 
 ## The Husdata interface
 

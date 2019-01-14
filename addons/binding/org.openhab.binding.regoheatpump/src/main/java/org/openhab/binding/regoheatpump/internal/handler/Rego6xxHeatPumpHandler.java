@@ -19,11 +19,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.measure.Unit;
+
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -121,13 +125,39 @@ abstract class Rego6xxHeatPumpHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            processChannelRequest(channelUID.getId());
+            processChannelReadRequest(channelUID.getId());
         } else {
-            logger.debug("Unsupported command {}! Supported commands: REFRESH", command);
+            RegoRegisterMapper.Channel channel = mapper.map(channelUID.getId());
+            if (channel != null) {
+                logger.debug("Executing command '{}' for channel '{}'", command, channelUID.getId());
+                processChannelWriteRequest(channel, command);
+            } else {
+                logger.debug("Unsupported channel {}", channelUID.getId());
+            }
         }
     }
 
-    private void processChannelRequest(String channelIID) {
+    private static double commandToValue(Command command) {
+        if (command instanceof QuantityType<?>) {
+            return ((QuantityType<?>) command).doubleValue();
+        }
+
+        if (command instanceof DecimalType) {
+            return ((DecimalType) command).doubleValue();
+        }
+
+        throw new NumberFormatException("Command '" + command + "' not supported");
+    }
+
+    private void processChannelWriteRequest(RegoRegisterMapper.Channel channel, Command command) {
+        short value = (short) (commandToValue(command) / channel.scaleFactor() + 0.5);
+        byte[] commandPayload = CommandFactory.createWriteToSystemRegisterCommand(channel.address(), value);
+        executeCommand(null, commandPayload, ResponseParserFactory.WRITE, result -> {
+            // Ignore result since it is a write command.
+        });
+    }
+
+    private void processChannelReadRequest(String channelIID) {
         switch (channelIID) {
             case CHANNEL_LAST_ERROR_TYPE:
                 readAndUpdateLastErrorType();
@@ -167,7 +197,7 @@ abstract class Rego6xxHeatPumpHandler extends BaseThingHandler {
                 break;
             }
 
-            processChannelRequest(channelIID);
+            processChannelReadRequest(channelIID);
 
             if (thing.getStatus() != ThingStatus.ONLINE) {
                 break;
@@ -199,22 +229,32 @@ abstract class Rego6xxHeatPumpHandler extends BaseThingHandler {
         RegoRegisterMapper.Channel channel = mapper.map(channelIID);
         if (channel != null) {
             byte[] command = CommandFactory.createReadFromSystemRegisterCommand(channel.address());
-            executeCommandAndUpdateState(channelIID, command, ResponseParserFactory.SHORT, channel::convert);
+            executeCommandAndUpdateState(channelIID, command, ResponseParserFactory.SHORT, value -> {
+                Unit<?> unit = channel.unit();
+                double result = value * channel.scaleFactor();
+                return unit != null ? new QuantityType<>(result, unit) : new DecimalType(result);
+            });
         } else {
             logger.debug("Unsupported channel {}", channelIID);
         }
     }
 
-    private synchronized <T> void executeCommandAndUpdateState(String channelIID, byte[] command,
-            ResponseParser<T> parser, Function<T, State> converter) {
+    private <T> void executeCommandAndUpdateState(String channelIID, byte[] command, ResponseParser<T> parser,
+            Function<T, State> converter) {
         logger.debug("Reading value for channel '{}' ...", channelIID);
-
-        try {
-            T result = executeCommandWithRetry(channelIID, command, parser, 5);
+        executeCommand(channelIID, command, parser, result -> {
             logger.debug("Got value for '{}' = {}", channelIID, result);
             updateState(channelIID, converter.apply(result));
+        });
+    }
+
+    private synchronized <T> void executeCommand(String channelIID, byte[] command, ResponseParser<T> parser,
+            Consumer<T> resultProcessor) {
+        try {
+            T result = executeCommandWithRetry(channelIID, command, parser, 5);
+            resultProcessor.accept(result);
         } catch (IOException e) {
-            logger.warn("Accessing value for channel '{}' failed.", channelIID, e);
+            logger.warn("Executing command for channel '{}' failed.", channelIID, e);
 
             synchronized (channelDescriptors) {
                 channelDescriptors.clear();
@@ -222,7 +262,7 @@ abstract class Rego6xxHeatPumpHandler extends BaseThingHandler {
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (Rego6xxProtocolException e) {
-            logger.warn("Accessing value for channel '{}' failed.", channelIID, e);
+            logger.warn("Executing command for channel '{}' failed.", channelIID, e);
             updateState(channelIID, UnDefType.UNDEF);
         } catch (InterruptedException e) {
             logger.debug("Execution interrupted when accessing value for channel '{}'.", channelIID, e);
@@ -237,7 +277,7 @@ abstract class Rego6xxHeatPumpHandler extends BaseThingHandler {
             return executeCommand(channelIID, command, parser);
         } catch (IOException | Rego6xxProtocolException e) {
             if (retry > 0) {
-                logger.debug("Accessing value for channel '{}' failed, retry {}.", channelIID, retry, e);
+                logger.debug("Executing command for channel '{}' failed, retry {}.", channelIID, retry, e);
                 Thread.sleep(200);
                 return executeCommandWithRetry(channelIID, command, parser, retry - 1);
             }
