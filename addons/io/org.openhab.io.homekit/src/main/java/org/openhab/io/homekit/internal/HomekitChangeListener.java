@@ -123,7 +123,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
                         "Bug! Cannot add as a root accessory if it is a member of a group! " + taggedItem.getName());
             }
             logger.debug("Adding homekit device {}", taggedItem.getItem().getName());
-            accessoryRegistry.addRootDevice(taggedItem.getName(),
+            accessoryRegistry.addRootAccessory(taggedItem.getName(),
                     HomekitAccessoryFactory.create(taggedItem, itemRegistry, updater, settings));
             logger.debug("Added homekit device {}", taggedItem.getItem().getName());
         } catch (Exception e) {
