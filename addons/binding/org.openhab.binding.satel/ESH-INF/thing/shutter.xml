@@ -28,7 +28,7 @@
 			</parameter>
 			<parameter name="commandOnly" type="boolean" required="false">
 				<label>Command only</label>
-				<description>Accepts commands only, does not update thing's state</description>
+				<description>Accepts commands only, does not update state of the thing</description>
 			</parameter>
 		</config-description>
 

@@ -30,7 +30,7 @@ import org.openhab.binding.satel.internal.types.ZoneState;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
-public class SatelZoneHandler extends SatelThingHandler {
+public class SatelZoneHandler extends SatelStateThingHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_ZONE);
 

@@ -31,6 +31,7 @@ import org.openhab.binding.satel.internal.discovery.SatelDeviceDiscoveryService;
 import org.openhab.binding.satel.internal.handler.Ethm1BridgeHandler;
 import org.openhab.binding.satel.internal.handler.IntRSBridgeHandler;
 import org.openhab.binding.satel.internal.handler.SatelBridgeHandler;
+import org.openhab.binding.satel.internal.handler.SatelEventLogHandler;
 import org.openhab.binding.satel.internal.handler.SatelOutputHandler;
 import org.openhab.binding.satel.internal.handler.SatelPartitionHandler;
 import org.openhab.binding.satel.internal.handler.SatelShutterHandler;
@@ -62,14 +63,15 @@ public class SatelHandlerFactory extends BaseThingHandlerFactory {
     @Override
     public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,
             ThingUID bridgeUID) {
-        if (thingUID == null) {
+        ThingUID effectiveUID = thingUID;
+        if (effectiveUID == null) {
             if (DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
-                thingUID = getDeviceUID(thingTypeUID, thingUID, configuration, bridgeUID);
-            } else if (VIRTUAL_THING_TYPES_UIDS.contains(thingTypeUID)) {
-                thingUID = new ThingUID(thingTypeUID, bridgeUID.getId());
+                effectiveUID = getDeviceUID(thingTypeUID, thingUID, configuration, bridgeUID);
+            } else if (VIRTUAL_THING_TYPES_UIDS.contains(thingTypeUID) && bridgeUID != null) {
+                effectiveUID = new ThingUID(thingTypeUID, bridgeUID.getId());
             }
         }
-        return super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
+        return super.createThing(thingTypeUID, configuration, effectiveUID, bridgeUID);
     }
 
     @Override
@@ -94,6 +96,8 @@ public class SatelHandlerFactory extends BaseThingHandlerFactory {
             return new SatelShutterHandler(thing);
         } else if (SatelSystemHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new SatelSystemHandler(thing);
+        } else if (SatelEventLogHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            return new SatelEventLogHandler(thing);
         }
 
         return null;

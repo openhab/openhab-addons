@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.satel.internal.command;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
 import org.openhab.binding.satel.internal.protocol.SatelMessage;
 import org.slf4j.Logger;
@@ -29,8 +29,8 @@ public class ReadEventDescCommand extends SatelCommandBase {
     /**
      * Creates new command class instance to read description for given parameters.
      *
-     * @param eventCode event code
-     * @param restore <code>true</code> if this is restoration
+     * @param eventCode       event code
+     * @param restore         <code>true</code> if this is restoration
      * @param longDescription <code>true</code> for long description, <code>false</code> for short one
      */
     public ReadEventDescCommand(int eventCode, boolean restore, boolean longDescription) {
@@ -64,9 +64,8 @@ public class ReadEventDescCommand extends SatelCommandBase {
      *
      * @param encoding encoding for the text
      * @return text of the description
-     * @throws UnsupportedEncodingException if provided encoding is not supported
      */
-    public String getText(String encoding) throws UnsupportedEncodingException {
+    public String getText(Charset encoding) {
         int length = isLongDescription() ? 46 : 16;
         return new String(response.getPayload(), 5, length, encoding).trim();
     }

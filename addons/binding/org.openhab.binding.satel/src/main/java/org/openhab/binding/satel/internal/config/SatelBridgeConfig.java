@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.satel.internal.config;
 
+import java.nio.charset.Charset;
+
 /**
  * The {@link SatelBridgeConfig} contains common configuration values for Satel bridge things.
  *
@@ -44,8 +46,8 @@ public class SatelBridgeConfig {
     /**
      * @return encoding for texts received from the bridge (names, descriptions)
      */
-    public String getEncoding() {
-        return encoding;
+    public Charset getEncoding() {
+        return Charset.forName(encoding);
     }
 
 }
