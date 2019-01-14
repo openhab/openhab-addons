@@ -29,11 +29,11 @@ class Checksum {
     }
 
     private static byte calculate(byte checksum, byte[] buffer, int offset, int count) {
-        count += offset;
-        for (; offset < count; ++offset) {
-            checksum = (byte) (checksum ^ buffer[offset]);
+        byte result = checksum;
+        int end = count + offset;
+        for (int index = offset; index < end; ++index) {
+            result = (byte) (result ^ buffer[index]);
         }
-
-        return checksum;
+        return result;
     }
 }
