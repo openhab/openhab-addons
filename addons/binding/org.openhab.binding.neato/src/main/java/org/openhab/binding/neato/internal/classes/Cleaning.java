@@ -32,6 +32,7 @@ public class Cleaning {
         MANUAL(1),
         HOUSE(2),
         SPOT(3),
+        MAP(4),
         UNRECOGNIZED(-1);
 
         private int value;
@@ -92,7 +93,8 @@ public class Cleaning {
 
     public enum NavigationMode {
         NORMAL(1),
-        EXTRA_CARE(2);
+        EXTRA_CARE(2),
+        DEEP(3);
 
         private int value;
 
