@@ -18,4 +18,5 @@ public class ResponseParserFactory {
     public static final ResponseParser<Short> SHORT = new ShortResponseParser();
     public static final ResponseParser<String> STRING = new StringResponseParser();
     public static final ResponseParser<ErrorLine> ERROR_LINE = new ErrorLineResponseParser();
+    public static final ResponseParser<Void> WRITE = new WriteResponse();
 }

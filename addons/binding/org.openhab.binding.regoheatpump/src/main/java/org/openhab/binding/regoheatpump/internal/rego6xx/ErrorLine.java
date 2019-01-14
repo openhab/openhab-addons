@@ -8,7 +8,8 @@
  */
 package org.openhab.binding.regoheatpump.internal.rego6xx;
 
-import java.util.Calendar;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 /**
  * The {@link ErrorLine} is responsible for holding information about a single error line.
@@ -37,9 +38,7 @@ public class ErrorLine {
         return timestamp;
     }
 
-    public Calendar timestamp() {
-        Calendar cal = Calendar.getInstance();
-
+    public ZonedDateTime timestamp() {
         int year = Integer.parseInt(timestamp.substring(0, 2)) + 1000;
         if (year < 1950) {
             year += 1000;
@@ -49,9 +48,7 @@ public class ErrorLine {
         int hour = Integer.parseInt(timestamp.substring(7, 9));
         int min = Integer.parseInt(timestamp.substring(10, 12));
         int sec = Integer.parseInt(timestamp.substring(13, 15));
-        cal.set(year, month - 1, day, hour, min, sec);
-        cal.set(Calendar.MILLISECOND, 0);
 
-        return cal;
+        return ZonedDateTime.of(year, month, day, hour, min, sec, 0, ZoneId.systemDefault());
     }
 }
