@@ -5,12 +5,6 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Primary Channel types -->
-	<channel-type id="switch">
-		<item-type>Switch</item-type>
-		<label>Switch</label>
-		<description>Switch the Smart Home device on or off.</description>
-		<category>Switch</category>
-	</channel-type>
 	<channel-type id="switchReadonly">
 		<item-type>Switch</item-type>
 		<label>Switch</label>
@@ -53,34 +47,6 @@
 		<description>Actual voltage usage.</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.0f V"></state>
-	</channel-type>
-
-	<!-- Bulb Channel types -->
-	<channel-type id="color">
-		<item-type>Color</item-type>
-		<label>Color</label>
-		<description>This channel supports adjusting the color of a light. </description>
-		<category>ColorLight</category>
-		<tags>
-			<tag>Lighting</tag>
-		</tags>
-	</channel-type>
-
-	<channel-type id="colorTemperature">
-		<item-type>Dimmer</item-type>
-		<label>Color Temperature</label>
-		<description>This channel supports adjusting the color temperature from cold (0%) to warm (100%).</description>
-		<category>ColorLight</category>
-	</channel-type>
-
-	<channel-type id="brightness">
-		<item-type>Dimmer</item-type>
-		<label>Brightness</label>
-		<description>This channel supports adjusting the brightness.</description>
-		<category>DimmableLight</category>
-		<tags>
-			<tag>Lighting</tag>
-		</tags>
 	</channel-type>
 
 	<!-- Misc Channel types -->
