@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.satel.internal.command;
 
-import java.util.Calendar;
+import java.time.LocalDateTime;
 
 import org.openhab.binding.satel.internal.protocol.SatelMessage;
 import org.slf4j.Logger;
@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ReadEventCommand extends SatelCommandBase {
 
-    private final Logger logger = LoggerFactory.getLogger(ReadEventCommand.class);
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public static final byte COMMAND_CODE = (byte) 0x8c;
 
@@ -56,7 +56,7 @@ public class ReadEventCommand extends SatelCommandBase {
      * Creates new command class instance to read a record under given index.
      *
      * @param eventIndex
-     *            index of event record to retrieve, -1 for the most recent one
+     *                       index of event record to retrieve, -1 for the most recent one
      */
     public ReadEventCommand(int eventIndex) {
         super(COMMAND_CODE, getIndexBytes(eventIndex));
@@ -90,20 +90,19 @@ public class ReadEventCommand extends SatelCommandBase {
      *
      * @return date and time of the event
      */
-    public Calendar getTimestamp() {
-        Calendar c = Calendar.getInstance();
-        int yearBase = c.get(Calendar.YEAR) / 4;
+    public LocalDateTime getTimestamp() {
+        int currentYear = LocalDateTime.now().getYear();
+        int yearBase = currentYear / 4;
         int yearMarker = (response.getPayload()[0] >> 6) & 0x03;
+        int year = 4 * yearBase + yearMarker;
         int minutes = ((response.getPayload()[2] & 0x0f) << 8) + (response.getPayload()[3] & 0xff);
 
-        c.set(Calendar.YEAR, 4 * yearBase + yearMarker);
-        c.set(Calendar.MONTH, ((response.getPayload()[2] >> 4) & 0x0f) - 1);
-        c.set(Calendar.DAY_OF_MONTH, response.getPayload()[1] & 0x1f);
-        c.set(Calendar.HOUR_OF_DAY, minutes / 60);
-        c.set(Calendar.MINUTE, minutes % 60);
-        c.set(Calendar.SECOND, 0);
-        c.set(Calendar.MILLISECOND, 0);
-        return c;
+        if (year > currentYear) {
+            year -= 4;
+        }
+        LocalDateTime result = LocalDateTime.of(year, (response.getPayload()[2] >> 4) & 0x0f,
+                response.getPayload()[1] & 0x1f, minutes / 60, minutes % 60);
+        return result;
     }
 
     /**

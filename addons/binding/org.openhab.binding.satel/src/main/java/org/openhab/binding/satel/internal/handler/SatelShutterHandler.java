@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
-public class SatelShutterHandler extends SatelThingHandler {
+public class SatelShutterHandler extends SatelStateThingHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_SHUTTER);
 
