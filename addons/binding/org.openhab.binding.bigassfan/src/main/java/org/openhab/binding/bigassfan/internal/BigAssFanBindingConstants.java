@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * The {@link BigAssFanBinding} class defines common constants, which are
+ * The {@link BigAssFanBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Mark Hilbush - Initial contribution
@@ -55,6 +55,7 @@ public class BigAssFanBindingConstants {
     public static final String CHANNEL_FAN_LEARN_MINSPEED = "fan-learn-speed-min";
     public static final String CHANNEL_FAN_LEARN_MAXSPEED = "fan-learn-speed-max";
     public static final String CHANNEL_FAN_WINTERMODE = "fan-wintermode";
+    public static final String CHANNEL_FAN_SLEEP = "fan-sleep";
 
     // Light control channels
     public static final String CHANNEL_LIGHT_POWER = "light-power";
