@@ -15,16 +15,16 @@ These things are supported:
 
 | Device type                       | Resource Type                     | Thing type          |
 |-----------------------------------|-----------------------------------|---------------------|
-| Presence sensor                   | ZHAPresence, CLIPPrensence        | `presencesensor`    |
-| Power sensor                      | ZHAPower, CLIPPower               | `powersensor`       |
+| Presence Sensor                   | ZHAPresence, CLIPPrensence        | `presencesensor`    |
+| Power Sensor                      | ZHAPower, CLIPPower               | `powersensor`       |
 | Consumption Sensor                | ZHAConsumption                    | `consumptionsensor` |
 | Switch                            | ZHASwitch                         | `switch`            |
-| Light sensor                      | ZHALightLevel                     | `lightsensor`       |
-| Temperature sensor                | ZHATemperature                    | `temperaturesensor` |
-| Humidity sensor                   | ZHAHumidity                       | `humiditysensor`    |
-| Pressure sensor                   | ZHAPressure                       | `pressuresensor`    |
-| Open/close sensor                 | ZHAOpenClose                      | `openclosesensor`   |
-| deCONZ artificial daylight sensor | Deconz specific: simulated sensor | `daylightsensor`    |
+| Light Sensor                      | ZHALightLevel                     | `lightsensor`       |
+| Temperature Sensor                | ZHATemperature                    | `temperaturesensor` |
+| Humidity Sensor                   | ZHAHumidity                       | `humiditysensor`    |
+| Pressure Sensor                   | ZHAPressure                       | `pressuresensor`    |
+| Open/Close Sensor                 | ZHAOpenClose                      | `openclosesensor`   |
+| deCONZ Artificial Daylight Sensor | deCONZ specific: simulated sensor | `daylightsensor`    |
 
 ## Discovery
 
@@ -69,27 +69,29 @@ Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ]
 
 The devices support some of the following channels:
 
-| Channel Type ID | Item Type            | Access Mode | Description                                                               | Thing types                               |
-|-----------------|----------------------|:-----------:|---------------------------------------------------------------------------|-------------------------------------------|
-| presence        | Switch               |      R      | Status of presence: `ON` = presence; `OFF` = no-presence                  | presencesensor                            |
-| last_updated    | DateTime             |      R      | Timestamp when the sensor was last updated                                | all, except daylightsensor                |
-| power           | Number:Power         |      R      | Current power usage in Watts                                              | powersensor                               |
-| consumption     | Number:Energy        |      R      | Current power usage in Watts/Hour                                         | consumptionsensor                         |
-| button          | Number               |      R      | Last pressed button id on a switch                                        | switch                                    |
-| lightlux        | Number:Illuminance   |      R      | Current light illuminance in Lux                                          | lightsensor                               |
-| light_level     | Number               |      R      | Current light level                                                       | lightsensor                               |
-| dark            | Switch               |      R      | Light level is below the darkness threshold.                              | lightsensor, sometimes for presencesensor |
-| daylight        | Switch               |      R      | Light level is above the daylight threshold.                              | lightsensor                               |
-| temperature     | Number:Temperature   |      R      | Current temperature in ˚C                                                 | temperaturesensor, some Xiaomi sensors    |
-| humidity        | Number:Dimensionless |      R      | Current humidity in %                                                     | humiditysensor                            |
-| pressure        | Number:Pressure      |      R      | Current pressure in hPa                                                   | pressuresensor                            |
-| open            | Contact              |      R      | Status of contacts: `OPEN`; `CLOSED`                                      | openclosesensor                           |
-| light           | String               |      R      | Light level: `Daylight`,`Sunset`,`Dark`                                   | daylightsensor                            |
-| value           | Number               |      R      | Sun position: `130` = dawn; `140` = sunrise; `190` = sunset; `210` = dusk | daylightsensor                            |
-| battery_level   | Number               |      R      | Battery level (in %)                                                      | any battery-powered sensor                |
-| battery_low     | Switch               |      R      | Battery level low: `ON`; `OFF`                                            | any battery-powered sensor                |
+| Channel Type ID | Item Type            | Access Mode | Description                                                               | Thing types                                  |
+|-----------------|----------------------|:-----------:|---------------------------------------------------------------------------|----------------------------------------------|
+| presence        | Switch               |      R      | Status of presence: `ON` = presence; `OFF` = no-presence                  | presencesensor                               |
+| last_updated    | DateTime             |      R      | Timestamp when the sensor was last updated                                | all, except daylightsensor                   |
+| power           | Number:Power         |      R      | Current power usage in Watts                                              | powersensor, sometimes for consumptionsensor |
+| consumption     | Number:Energy        |      R      | Current power usage in Watts/Hour                                         | consumptionsensor                            |
+| button          | Number               |      R      | Last pressed button id on a switch                                        | switch                                       |
+| lightlux        | Number:Illuminance   |      R      | Current light illuminance in Lux                                          | lightsensor                                  |
+| light_level     | Number               |      R      | Current light level                                                       | lightsensor                                  |
+| dark            | Switch               |      R      | Light level is below the darkness threshold.                              | lightsensor, sometimes for presencesensor    |
+| daylight        | Switch               |      R      | Light level is above the daylight threshold.                              | lightsensor                                  |
+| temperature     | Number:Temperature   |      R      | Current temperature in ˚C                                                 | temperaturesensor, some Xiaomi sensors       |
+| humidity        | Number:Dimensionless |      R      | Current humidity in %                                                     | humiditysensor                               |
+| pressure        | Number:Pressure      |      R      | Current pressure in hPa                                                   | pressuresensor                               |
+| open            | Contact              |      R      | Status of contacts: `OPEN`; `CLOSED`                                      | openclosesensor                              |
+| light           | String               |      R      | Light level: `Daylight`,`Sunset`,`Dark`                                   | daylightsensor                               |
+| value           | Number               |      R      | Sun position: `130` = dawn; `140` = sunrise; `190` = sunset; `210` = dusk | daylightsensor                               |
+| battery_level   | Number               |      R      | Battery level (in %)                                                      | any battery-powered sensor                   |
+| battery_low     | Switch               |      R      | Battery level low: `ON`; `OFF`                                            | any battery-powered sensor                   |
 
-**NOTE:** The `battery_level` and `battery_low` channels will be added to the Thing during runtime if the sensor is battery-powered.
+**NOTE:** Beside other non mandatory channels, the `battery_level` and `battery_low` channels will be added to the Thing during runtime if the sensor is battery-powered.
+The specification of your sensor depends on the deCONZ capabilities.
+Have a detailed look for [supported devices](https://github.com/dresden-elektronik/deconz-rest-plugin/wiki/Supported-Devices).
 
 ### Trigger Channels
 

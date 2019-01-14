@@ -199,9 +199,14 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
                                 new QuantityType<Temperature>(temperature / 100, SIUnits.CELSIUS));
                     }
 
-                    // ZHAPresence - TRÅDFRI motion sensor
+                    // ZHAPresence - e.g. IKEA TRÅDFRI motion sensor
                     if (newState.state.dark instanceof Boolean) {
                         createChannel(CHANNEL_DARK);
+                    }
+
+                    // ZHAConsumption - e.g Bitron 902010/25
+                    if (newState.state.power instanceof Integer) {
+                        createChannel(CHANNEL_POWER);
                     }
 
                     // Initial data
