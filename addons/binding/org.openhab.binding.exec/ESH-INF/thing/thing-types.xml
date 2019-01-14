@@ -29,7 +29,7 @@
 			<parameter name="interval" type="integer"  required="false">
 				<label>Interval</label>
 				<description>Interval, in seconds, the command will be repeatedly executed</description>
-				<default>60</default>
+				<default>0</default>
 			</parameter>
 			<parameter name="timeout" type="integer"  required="false">
 				<label>Timeout</label>
