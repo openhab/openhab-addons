@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,15 +8,12 @@
  */
 package org.openhab.binding.enocean.internal.eep.A5_38;
 
-import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.CHANNEL_DIMMER;
-
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 
@@ -58,18 +55,11 @@ public class A5_38_08_Dimming extends _4BSMessage {
 
     @Override
     public State convertToStateImpl(String channelId, String channelTypeId, State currentState, Configuration config) {
-        if (!isValid()) {
-            return UnDefType.UNDEF;
-        }
 
-        if (channelId == CHANNEL_DIMMER) {
-            if (getDB_0() == (TeachInBit | SwitchOff)) {
-                return new PercentType(0);
-            } else {
-                return new PercentType(getDB_2Value());
-            }
+        if (getDB_0() == (TeachInBit | SwitchOff)) {
+            return new PercentType(0);
+        } else {
+            return new PercentType(getDB_2Value());
         }
-
-        return UnDefType.UNDEF;
     }
 }

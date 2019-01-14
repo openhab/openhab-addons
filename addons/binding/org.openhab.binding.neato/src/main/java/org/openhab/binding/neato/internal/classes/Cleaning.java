@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -32,6 +32,7 @@ public class Cleaning {
         MANUAL(1),
         HOUSE(2),
         SPOT(3),
+        MAP(4),
         UNRECOGNIZED(-1);
 
         private int value;
@@ -92,7 +93,8 @@ public class Cleaning {
 
     public enum NavigationMode {
         NORMAL(1),
-        EXTRA_CARE(2);
+        EXTRA_CARE(2),
+        DEEP(3);
 
         private int value;
 

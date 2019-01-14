@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.smartmeter.internal.sml;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -85,6 +87,7 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
         // read out the whole buffer. We are only interested in the most recent SML file.
         Stack<SmlFile> smlFiles = new Stack<>();
         do {
+            logger.trace("Reading {}. SML message", smlFiles.size() + 1);
             smlFiles.push(TRANSPORT.getSMLFile(is));
         } while (is != null && is.available() > 0);
         if (smlFiles.isEmpty()) {
@@ -111,6 +114,12 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
             try {
                 serialPort.setSerialPortParams(baudrateToUse, serialParameter.getDatabits(),
                         serialParameter.getStopbits(), serialParameter.getParity());
+                serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT);
+                try {
+                    serialPort.enableReceiveTimeout(100);
+                } catch (UnsupportedCommOperationException e) {
+                    // doesn't matter (rfc2217 is not supporting this)
+                }
             } catch (UnsupportedCommOperationException e) {
                 throw new IOException(MessageFormat.format(
                         "Error at SerialConnector.openConnection: unable to set serial port parameters for port {0}.",
@@ -118,8 +127,8 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
             }
             // serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT);
             serialPort.notifyOnDataAvailable(true);
-            is = new DataInputStream(serialPort.getInputStream());
-            os = new DataOutputStream(serialPort.getOutputStream());
+            is = new DataInputStream(new BufferedInputStream(serialPort.getInputStream()));
+            os = new DataOutputStream(new BufferedOutputStream(serialPort.getOutputStream()));
         } else {
             throw new IllegalStateException(MessageFormat.format("No provider for port {0} found", getPortName()));
         }

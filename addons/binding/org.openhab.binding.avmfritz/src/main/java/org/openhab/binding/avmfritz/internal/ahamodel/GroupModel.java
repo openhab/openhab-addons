@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -20,13 +20,13 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @XmlType(name = "group")
 public class GroupModel extends AVMFritzBaseModel {
 
-    private Groupinfo groupinfo;
+    private GroupInfoModel groupinfo;
 
-    public Groupinfo getGroupinfo() {
+    public GroupInfoModel getGroupinfo() {
         return groupinfo;
     }
 
-    public void setGroupinfo(Groupinfo groupinfo) {
+    public void setGroupinfo(GroupInfoModel groupinfo) {
         this.groupinfo = groupinfo;
     }
 
@@ -36,8 +36,7 @@ public class GroupModel extends AVMFritzBaseModel {
     }
 
     @XmlType(propOrder = { "masterdeviceid", "members" })
-    public static class Groupinfo {
-
+    public static class GroupInfoModel {
         private String masterdeviceid;
         private String members;
 

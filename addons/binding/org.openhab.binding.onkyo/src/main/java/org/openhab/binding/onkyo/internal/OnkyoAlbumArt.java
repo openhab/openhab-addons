@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -153,7 +153,7 @@ public class OnkyoAlbumArt {
                         int bodyLength = data.length;
                         int i = new String(data).indexOf("image/");
                         if (i > 0) {
-                            while (i < bodyLength && data[i] != '\r') {
+                            while (i < bodyLength && (data[i] != '\r' && data[i] != '\n')) {
                                 i++;
                             }
                             while (i < bodyLength && (data[i] == '\r' || data[i] == '\n')) {

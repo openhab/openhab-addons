@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,8 +13,8 @@ import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindin
 
 import java.io.IOException;
 
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.junit.Test;
 import org.openhab.binding.tplinksmarthome.internal.model.ModelTestUtil;
@@ -26,7 +26,7 @@ import org.openhab.binding.tplinksmarthome.internal.model.ModelTestUtil;
  */
 public class DimmerDeviceTest extends DeviceTestBase {
 
-    private static final DecimalType BRIGHTNESS_VALUE = new DecimalType(50);
+    private static final PercentType BRIGHTNESS_VALUE = new PercentType(50);
 
     private final DimmerDevice device = new DimmerDevice();
 
@@ -35,19 +35,27 @@ public class DimmerDeviceTest extends DeviceTestBase {
     }
 
     @Test
-    public void testHandleCommandSwitch() throws IOException {
+    public void testHandleCommandBrightnessOnOff() throws IOException {
         assertInput("dimmer_set_switch_state_on");
         setSocketReturnAssert("dimmer_set_switch_state_response");
-        assertTrue("Switch channel should be handled",
+        assertTrue("Brightness channel as OnOffType type should be handled",
                 device.handleCommand(CHANNEL_BRIGHTNESS, connection, OnOffType.ON, configuration));
     }
 
     @Test
+    public void testHandleCommandBrightnessZero() throws IOException {
+        assertInput("dimmer_set_switch_state_off");
+        setSocketReturnAssert("dimmer_set_switch_state_response");
+        assertTrue("Brightness channel with percentage 0 should be handled",
+                device.handleCommand(CHANNEL_BRIGHTNESS, connection, PercentType.ZERO, configuration));
+    }
+
+    @Test
     public void testHandleCommandBrightness() throws IOException {
-        assertInput("dimmer_set_brightness", "dimmer_set_switch_state_on");
-        setSocketReturnAssert("dimmer_set_brightness_response", "dimmer_set_switch_state_response");
+        assertInput("dimmer_set_brightness");
+        setSocketReturnAssert("dimmer_set_brightness_response");
         assertTrue("Brightness channel should be handled",
-                device.handleCommand(CHANNEL_BRIGHTNESS, connection, new DecimalType(17), configuration));
+                device.handleCommand(CHANNEL_BRIGHTNESS, connection, new PercentType(17), configuration));
     }
 
     @Test
@@ -55,7 +63,7 @@ public class DimmerDeviceTest extends DeviceTestBase {
         deviceState = new DeviceState(ModelTestUtil.readJson("hs220_get_sysinfo_response_off"));
 
         assertSame("Dimmer device should be off", OnOffType.OFF,
-                ((DecimalType) device.updateChannel(CHANNEL_BRIGHTNESS, deviceState)).as(OnOffType.class));
+                ((PercentType) device.updateChannel(CHANNEL_BRIGHTNESS, deviceState)).as(OnOffType.class));
     }
 
     @Test

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,7 +9,7 @@
 package org.openhab.binding.tplinksmarthome.internal.device;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -74,10 +74,10 @@ public class DeviceTestBase {
     }
 
     /**
-     * Sets the answer to return when the socket.getInputStream() is requested. This simulates the answer a real device
-     * would give.
+     * Sets the answer to return when the socket.getInputStream() is requested. If multiple files are given they will
+     * returned in order each time a call to socket.getInputStream() is done.
      *
-     * @param responseFilename name of the file to read that contains the answer. It's the unencrypted json string
+     * @param responseFilenames names of the files to read that contains the answer. It's the unencrypted json string
      * @throws IOException exception in case device not reachable
      */
     protected void setSocketReturnAssert(@NonNull String... responseFilenames) throws IOException {
@@ -93,19 +93,22 @@ public class DeviceTestBase {
 
     /**
      * Asserts the value passed to outputstream.write, which is the call that would be made to the actual device. This
-     * checks if the value sent to the device is what is expected to be sent to the device.
+     * checks if the value sent to the device is what is expected to be sent to the device. If multiple files are given
+     * they will be used to check in order each time a call outputstream.write is done.
      *
-     * @param filename name of the file containing the reference json
+     * @param filenames names of the files containing the reference json
      * @throws IOException exception in case device not reachable
      */
     protected void assertInput(@NonNull String... filename) throws IOException {
         AtomicInteger index = new AtomicInteger();
 
-        doAnswer(i -> {
+        doAnswer(arg -> {
             String json = ModelTestUtil.readJson(filename[index.get()]);
 
-            byte[] input = (byte[]) i.getArguments()[0];
-            assertEquals(filename[index.get()], json, CryptUtil.decryptWithLength(new ByteArrayInputStream(input)));
+            byte[] input = (byte[]) arg.getArguments()[0];
+            try (ByteArrayInputStream inputStream = new ByteArrayInputStream(input)) {
+                assertEquals(filename[index.get()], json, CryptUtil.decryptWithLength(inputStream));
+            }
             index.incrementAndGet();
             return null;
         }).when(outputStream).write(any());

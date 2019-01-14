@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.lgwebos.internal.discovery;
 
-import static org.openhab.binding.lgwebos.LGWebOSBindingConstants.*;
+import static org.openhab.binding.lgwebos.internal.LGWebOSBindingConstants.*;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -16,7 +16,8 @@ import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -24,7 +25,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.lgwebos.LGWebOSBindingConstants;
+import org.openhab.binding.lgwebos.internal.LGWebOSBindingConstants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -38,10 +39,11 @@ import com.connectsdk.discovery.DiscoveryManagerListener;
 import com.connectsdk.service.command.ServiceCommandError;
 
 /**
- * This class provides the bridges between openhab thing discovery and connect sdk device discovery.
+ * This class provides the bridge between openhab thing discovery and connect sdk device discovery.
  *
  * @author Sebastian Prehn - initial contribution
  */
+@NonNullByDefault
 @Component(service = { DiscoveryService.class,
         LGWebOSDiscovery.class }, immediate = true, configurationPid = "binding.lgwebos")
 public class LGWebOSDiscovery extends AbstractDiscoveryService implements DiscoveryManagerListener, Context {
@@ -49,10 +51,10 @@ public class LGWebOSDiscovery extends AbstractDiscoveryService implements Discov
 
     private final Logger logger = LoggerFactory.getLogger(LGWebOSDiscovery.class);
 
-    private DiscoveryManager discoveryManager;
+    private @Nullable DiscoveryManager discoveryManager;
 
-    private NetworkAddressService networkAddressService;
-    private Optional<InetAddress> localInetAddressesOverride;
+    private @Nullable NetworkAddressService networkAddressService;
+    private Optional<InetAddress> localInetAddressesOverride = Optional.empty();
 
     public LGWebOSDiscovery() {
         super(LGWebOSBindingConstants.SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIMEOUT_SECONDS, true);
@@ -69,21 +71,29 @@ public class LGWebOSDiscovery extends AbstractDiscoveryService implements Discov
     }
 
     @Override
-    protected void activate(Map<String, Object> configProperties) {
+    protected void activate(@Nullable Map<String, @Nullable Object> configProperties) {
         logger.debug("Config Parameters: {}", configProperties);
-        localInetAddressesOverride = evaluateConfigPropertyLocalIP(
-                (String) configProperties.get(BINDING_CONFIGURATION_LOCALIP));
+        if (configProperties != null) {
+            localInetAddressesOverride = evaluateConfigPropertyLocalIP(
+                    (String) configProperties.get(BINDING_CONFIGURATION_LOCALIP));
+        }
         Util.init(scheduler);
-        discoveryManager = DiscoveryManager.getInstance();
-        discoveryManager.setPairingLevel(DiscoveryManager.PairingLevel.ON);
-        discoveryManager.addListener(this);
+
+        DiscoveryManager manager = DiscoveryManager.getInstance();
+        manager.setPairingLevel(DiscoveryManager.PairingLevel.ON);
+        manager.addListener(this);
+        discoveryManager = manager;
+
         super.activate(configProperties); // starts background discovery
     }
 
     @Override
     protected void deactivate() {
         super.deactivate(); // stops background discovery
-        discoveryManager.removeListener(this);
+        DiscoveryManager manager = discoveryManager;
+        if (manager != null) {
+            manager.removeListener(this);
+        }
         discoveryManager = null;
         DiscoveryManager.destroy();
         Util.uninit();
@@ -94,43 +104,55 @@ public class LGWebOSDiscovery extends AbstractDiscoveryService implements Discov
     protected void startScan() {
         // no adhoc scanning. Discovery Service runs in background, but re-discover all known devices in case they were
         // deleted from the inbox.
-        discoveryManager.getCompatibleDevices().values()
-                .forEach(device -> thingDiscovered(createDiscoveryResult(device)));
+        DiscoveryManager manager = discoveryManager;
+        if (manager != null) {
+            manager.getCompatibleDevices().values().forEach(device -> thingDiscovered(createDiscoveryResult(device)));
+        }
     }
 
     @Override
     protected void startBackgroundDiscovery() {
-        discoveryManager.start();
+        DiscoveryManager manager = discoveryManager;
+        if (manager != null) {
+            manager.start();
+        }
     }
 
     @Override
     protected void stopBackgroundDiscovery() {
-        discoveryManager.stop();
+        DiscoveryManager manager = discoveryManager;
+        if (manager != null) {
+            manager.stop();
+        }
     }
 
     // DiscoveryManagerListener
 
     @Override
-    public void onDeviceAdded(DiscoveryManager manager, ConnectableDevice device) {
+    public void onDeviceAdded(@Nullable DiscoveryManager manager, @Nullable ConnectableDevice device) {
+        if (device == null) {
+            throw new IllegalArgumentException("ConnectableDevice must not be null");
+        }
         thingDiscovered(createDiscoveryResult(device));
     }
 
     @Override
-    public void onDeviceUpdated(DiscoveryManager manager, ConnectableDevice device) {
+    public void onDeviceUpdated(@Nullable DiscoveryManager manager, @Nullable ConnectableDevice device) {
         logger.debug("Device updated: {}", device);
-        // thingRemoved(createThingUID(device));
-        // thingDiscovered(createDiscoveryResult(device));
     }
 
     @Override
-    public void onDeviceRemoved(DiscoveryManager manager, ConnectableDevice device) {
+    public void onDeviceRemoved(@Nullable DiscoveryManager manager, @Nullable ConnectableDevice device) {
+        if (device == null) {
+            throw new IllegalArgumentException("ConnectableDevice must not be null");
+        }
         logger.debug("Device removed: {}", device);
         thingRemoved(createThingUID(device));
     }
 
     @Override
-    public void onDiscoveryFailed(DiscoveryManager manager, ServiceCommandError error) {
-        logger.warn("Discovery Failed {}", error.getMessage());
+    public void onDiscoveryFailed(@Nullable DiscoveryManager manager, @Nullable ServiceCommandError error) {
+        logger.warn("Discovery Failed {}", error == null ? "" : error.getMessage());
     }
 
     // Helpers for DiscoveryManagerListener Impl
@@ -145,7 +167,7 @@ public class LGWebOSDiscovery extends AbstractDiscoveryService implements Discov
         return new ThingUID(THING_TYPE_WEBOSTV, device.getId());
     }
 
-    public DiscoveryManager getDiscoveryManager() {
+    public @Nullable DiscoveryManager getDiscoveryManager() {
         return this.discoveryManager;
     }
 
@@ -167,7 +189,7 @@ public class LGWebOSDiscovery extends AbstractDiscoveryService implements Discov
     }
 
     @Override
-    public InetAddress getIpAddress() {
+    public @Nullable InetAddress getIpAddress() {
         return localInetAddressesOverride.orElseGet(() -> getIpFromNetworkAddressService().orElse(null));
     }
 
@@ -177,8 +199,8 @@ public class LGWebOSDiscovery extends AbstractDiscoveryService implements Discov
      * @param localIP optional configuration string
      * @return local ip or <code>empty</code> if property is not set or unparseable.
      */
-    private Optional<InetAddress> evaluateConfigPropertyLocalIP(String localIP) {
-        if (StringUtils.isNotBlank(localIP)) {
+    private Optional<InetAddress> evaluateConfigPropertyLocalIP(@Nullable String localIP) {
+        if (localIP != null && !localIP.trim().isEmpty()) {
             try {
                 logger.debug("localIP property was explicitly set to: {}", localIP);
                 return Optional.ofNullable(InetAddress.getByName(localIP.trim()));
@@ -195,8 +217,15 @@ public class LGWebOSDiscovery extends AbstractDiscoveryService implements Discov
      *
      * @return local ip or <code>empty</code> if configured primary IP is not set or could not be parsed.
      */
+    @NonNullByDefault({})
     private Optional<InetAddress> getIpFromNetworkAddressService() {
-        String ipAddress = networkAddressService.getPrimaryIpv4HostAddress();
+        NetworkAddressService service = networkAddressService;
+        if (service == null) {
+            throw new IllegalStateException(
+                    "NetworkAddressService must be bound before getIpFromNetworkAddressService can be called.");
+        }
+
+        String ipAddress = service.getPrimaryIpv4HostAddress();
         if (ipAddress == null) {
             logger.warn("No network interface could be found.");
             return Optional.empty();

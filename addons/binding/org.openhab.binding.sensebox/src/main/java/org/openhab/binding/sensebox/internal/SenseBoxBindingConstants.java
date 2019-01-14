@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -29,7 +29,7 @@ public class SenseBoxBindingConstants {
     public static final String CHANNEL_LOCATION = "descriptors#location";
 
     public static final String CHANNEL_UV_INTENSITY = "measurements#uvIntensity";
-    public static final String CHANNEL_LUMINANCE = "measurements#luminance";
+    public static final String CHANNEL_ILLUMINANCE = "measurements#illuminance";
     public static final String CHANNEL_PRESSURE = "measurements#pressure";
     public static final String CHANNEL_HUMIDITY = "measurements#humidity";
     public static final String CHANNEL_TEMPERATURE = "measurements#temperature";
@@ -37,7 +37,7 @@ public class SenseBoxBindingConstants {
     public static final String CHANNEL_PARTICULATE_MATTER_10 = "measurements#particulateMatter10";
 
     public static final String CHANNEL_UV_INTENSITY_LR = "lastReported#uvIntensityLastReported";
-    public static final String CHANNEL_LUMINANCE_LR = "lastReported#luminanceLastReported";
+    public static final String CHANNEL_ILLUMINANCE_LR = "lastReported#illuminanceLastReported";
     public static final String CHANNEL_PRESSURE_LR = "lastReported#pressureLastReported";
     public static final String CHANNEL_HUMIDITY_LR = "lastReported#humidityLastReported";
     public static final String CHANNEL_TEMPERATURE_LR = "lastReported#temperatureLastReported";

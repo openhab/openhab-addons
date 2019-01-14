@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,8 +10,8 @@ package org.openhab.binding.avmfritz.internal.hardware;
 
 import static org.eclipse.jetty.http.HttpMethod.*;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ExecutionException;
@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.openhab.binding.avmfritz.internal.config.AVMFritzConfiguration;
 import org.openhab.binding.avmfritz.internal.handler.AVMFritzBaseBridgeHandler;
+import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaApplyTemplateCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetHeatingTemperatureCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetSwitchCallback;
@@ -180,13 +181,7 @@ public class FritzAhaWebInterface {
             logger.error("This version of Java does not support MD5 hashing");
             return "";
         }
-        byte[] handshakeHash;
-        try {
-            handshakeHash = md5.digest(handshake.getBytes("UTF-16LE"));
-        } catch (UnsupportedEncodingException e) {
-            logger.error("This version of Java does not understand UTF-16LE encoding");
-            return "";
-        }
+        byte[] handshakeHash = md5.digest(handshake.getBytes(StandardCharsets.UTF_16LE));
         String response = challenge.concat("-");
         for (byte handshakeByte : handshakeHash) {
             response = response.concat(String.format("%02x", handshakeByte));
@@ -262,8 +257,8 @@ public class FritzAhaWebInterface {
     /**
      * Sends a HTTP GET request using the asynchronous client
      *
-     * @param path     Path of the requested resource
-     * @param args     Arguments for the request
+     * @param path Path of the requested resource
+     * @param args Arguments for the request
      * @param callback Callback to handle the response with
      */
     public FritzAhaContentExchange asyncGet(String path, String args, FritzAhaCallback callback) {
@@ -284,8 +279,8 @@ public class FritzAhaWebInterface {
     /**
      * Sends a HTTP POST request using the asynchronous client
      *
-     * @param path     Path of the requested resource
-     * @param args     Arguments for the request
+     * @param path Path of the requested resource
+     * @param args Arguments for the request
      * @param callback Callback to handle the response with
      */
     public FritzAhaContentExchange asyncPost(String path, String args, FritzAhaCallback callback) {
@@ -295,8 +290,13 @@ public class FritzAhaWebInterface {
         FritzAhaContentExchange postExchange = new FritzAhaContentExchange(callback);
         httpClient.newRequest(getURL(path)).timeout(config.getAsyncTimeout(), TimeUnit.SECONDS).method(POST)
                 .onResponseSuccess(postExchange).onResponseFailure(postExchange) // .onComplete(postExchange)
-                .content(new StringContentProvider(addSID(args), "UTF-8")).send(postExchange);
+                .content(new StringContentProvider(addSID(args), StandardCharsets.UTF_8)).send(postExchange);
         return postExchange;
+    }
+
+    public FritzAhaContentExchange applyTemplate(String ain) {
+        FritzAhaApplyTemplateCallback callback = new FritzAhaApplyTemplateCallback(this, ain);
+        return asyncGet(callback);
     }
 
     public FritzAhaContentExchange setSwitch(String ain, boolean switchOn) {

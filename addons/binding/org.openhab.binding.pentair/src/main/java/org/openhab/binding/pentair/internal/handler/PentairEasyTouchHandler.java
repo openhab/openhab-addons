@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -124,6 +124,30 @@ public class PentairEasyTouchHandler extends PentairBaseThingHandler {
                 case EASYTOUCH_AUX7: // A5 01 10 20 86 02 09 01
                     circuitSwitch(9, state);
                     break;
+                case EASYTOUCH_FEATURE1:
+                    circuitSwitch(11, state);
+                    break;
+                case EASYTOUCH_FEATURE2:
+                    circuitSwitch(12, state);
+                    break;
+                case EASYTOUCH_FEATURE3:
+                    circuitSwitch(13, state);
+                    break;
+                case EASYTOUCH_FEATURE4:
+                    circuitSwitch(14, state);
+                    break;
+                case EASYTOUCH_FEATURE5:
+                    circuitSwitch(15, state);
+                    break;
+                case EASYTOUCH_FEATURE6:
+                    circuitSwitch(16, state);
+                    break;
+                case EASYTOUCH_FEATURE7:
+                    circuitSwitch(17, state);
+                    break;
+                case EASYTOUCH_FEATURE8:
+                    circuitSwitch(18, state);
+                    break;
             }
         } else if (command instanceof DecimalType) {
             int sp = ((DecimalType) command).intValue();
@@ -215,6 +239,14 @@ public class PentairEasyTouchHandler extends PentairBaseThingHandler {
                 updateChannel(EASYTOUCH_AUX5, p29Old);
                 updateChannel(EASYTOUCH_AUX6, p29Old);
                 updateChannel(EASYTOUCH_AUX7, p29Old);
+                updateChannel(EASYTOUCH_FEATURE1, p29Old);
+                updateChannel(EASYTOUCH_FEATURE2, p29Old);
+                updateChannel(EASYTOUCH_FEATURE3, p29Old);
+                updateChannel(EASYTOUCH_FEATURE4, p29Old);
+                updateChannel(EASYTOUCH_FEATURE5, p29Old);
+                updateChannel(EASYTOUCH_FEATURE6, p29Old);
+                updateChannel(EASYTOUCH_FEATURE7, p29Old);
+                updateChannel(EASYTOUCH_FEATURE8, p29Old);
                 updateChannel(DIAG, p29Old);
 
                 break;
@@ -342,6 +374,46 @@ public class PentairEasyTouchHandler extends PentairBaseThingHandler {
             case EASYTOUCH_AUX7:
                 if (p29 == null || (p29.aux7 != p29cur.aux7)) {
                     updateState(channel, (p29cur.aux7) ? OnOffType.ON : OnOffType.OFF);
+                }
+                break;
+            case EASYTOUCH_FEATURE1:
+                if (p29 == null || (p29.feature1 != p29cur.feature1)) {
+                    updateState(channel, (p29cur.feature1) ? OnOffType.ON : OnOffType.OFF);
+                }
+                break;
+            case EASYTOUCH_FEATURE2:
+                if (p29 == null || (p29.feature2 != p29cur.feature2)) {
+                    updateState(channel, (p29cur.feature2) ? OnOffType.ON : OnOffType.OFF);
+                }
+                break;
+            case EASYTOUCH_FEATURE3:
+                if (p29 == null || (p29.feature3 != p29cur.feature3)) {
+                    updateState(channel, (p29cur.feature3) ? OnOffType.ON : OnOffType.OFF);
+                }
+                break;
+            case EASYTOUCH_FEATURE4:
+                if (p29 == null || (p29.feature4 != p29cur.feature4)) {
+                    updateState(channel, (p29cur.feature4) ? OnOffType.ON : OnOffType.OFF);
+                }
+                break;
+            case EASYTOUCH_FEATURE5:
+                if (p29 == null || (p29.feature5 != p29cur.feature5)) {
+                    updateState(channel, (p29cur.feature5) ? OnOffType.ON : OnOffType.OFF);
+                }
+                break;
+            case EASYTOUCH_FEATURE6:
+                if (p29 == null || (p29.feature6 != p29cur.feature6)) {
+                    updateState(channel, (p29cur.feature6) ? OnOffType.ON : OnOffType.OFF);
+                }
+                break;
+            case EASYTOUCH_FEATURE7:
+                if (p29 == null || (p29.feature7 != p29cur.feature7)) {
+                    updateState(channel, (p29cur.feature7) ? OnOffType.ON : OnOffType.OFF);
+                }
+                break;
+            case EASYTOUCH_FEATURE8:
+                if (p29 == null || (p29.feature8 != p29cur.feature8)) {
+                    updateState(channel, (p29cur.feature8) ? OnOffType.ON : OnOffType.OFF);
                 }
                 break;
             case EASYTOUCH_POOLTEMP:

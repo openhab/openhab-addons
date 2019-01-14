@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -37,12 +37,17 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements T
     private @NonNullByDefault({}) DeconzBridgeHandler handler;
 
     public ThingDiscoveryService() {
-        super(Stream.of(BindingConstants.THING_TYPE_PRESENCE_SENSOR, BindingConstants.THING_TYPE_POWER_SENSOR,
-                BindingConstants.THING_TYPE_DAYLIGHT_SENSOR, BindingConstants.THING_TYPE_SWITCH,
-                BindingConstants.THING_TYPE_OPENCLOSE_SENSOR).collect(Collectors.toSet()), 0, true);
+        super(Stream
+                .of(BindingConstants.THING_TYPE_PRESENCE_SENSOR, BindingConstants.THING_TYPE_POWER_SENSOR,
+                        BindingConstants.THING_TYPE_CONSUMPTION_SENSOR, BindingConstants.THING_TYPE_DAYLIGHT_SENSOR,
+                        BindingConstants.THING_TYPE_SWITCH, BindingConstants.THING_TYPE_LIGHT_SENSOR,
+                        BindingConstants.THING_TYPE_TEMPERATURE_SENSOR, BindingConstants.THING_TYPE_HUMIDITY_SENSOR,
+                        BindingConstants.THING_TYPE_PRESSURE_SENSOR, BindingConstants.THING_TYPE_OPENCLOSE_SENSOR)
+                .collect(Collectors.toSet()), 0, true);
     }
 
     /**
+     *
      * Perform a new bridge full state request.
      */
     @Override
@@ -62,6 +67,8 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements T
             thingTypeUID = BindingConstants.THING_TYPE_DAYLIGHT_SENSOR;
         } else if (sensor.type.contains("Power")) { // ZHAPower, CLIPPower
             thingTypeUID = BindingConstants.THING_TYPE_POWER_SENSOR;
+        } else if (sensor.type.contains("ZHAConsumption")) { // ZHAConsumption
+            thingTypeUID = BindingConstants.THING_TYPE_CONSUMPTION_SENSOR;
         } else if (sensor.type.contains("Presence")) { // ZHAPresence, CLIPPrensence
             thingTypeUID = BindingConstants.THING_TYPE_PRESENCE_SENSOR;
         } else if (sensor.type.contains("Switch")) { // ZHASwitch
@@ -70,7 +77,11 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements T
             thingTypeUID = BindingConstants.THING_TYPE_LIGHT_SENSOR;
         } else if (sensor.type.contains("ZHATemperature")) { // ZHATemperature
             thingTypeUID = BindingConstants.THING_TYPE_TEMPERATURE_SENSOR;
-        } else if (sensor.type.contains("ZHAOpenClose")) { // ZHATemperature
+        } else if (sensor.type.contains("ZHAHumidity")) { // ZHAHumidity
+            thingTypeUID = BindingConstants.THING_TYPE_HUMIDITY_SENSOR;
+        } else if (sensor.type.contains("ZHAPressure")) { // ZHAPressure
+            thingTypeUID = BindingConstants.THING_TYPE_PRESSURE_SENSOR;
+        } else if (sensor.type.contains("ZHAOpenClose")) { // ZHAOpenClose
             thingTypeUID = BindingConstants.THING_TYPE_OPENCLOSE_SENSOR;
         } else {
             return;

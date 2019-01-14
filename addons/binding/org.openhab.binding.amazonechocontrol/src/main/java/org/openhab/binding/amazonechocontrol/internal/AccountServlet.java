@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,6 +15,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -200,7 +201,7 @@ public class AccountServlet extends HttpServlet {
             if (name.equals("failedSignInCount")) {
                 value = "ape:AA==";
             }
-            postDataBuilder.append(URLEncoder.encode(value, "UTF-8"));
+            postDataBuilder.append(URLEncoder.encode(value, StandardCharsets.UTF_8.name()));
         }
 
         uri = req.getRequestURI();

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -57,6 +57,8 @@ public class AVMFritzHandlerFactory extends BaseThingHandlerFactory {
      */
     private HttpClient httpClient;
 
+    private AVMFritzDynamicStateDescriptionProvider stateDescriptionProvider;
+
     /**
      * Provides the supported thing types
      */
@@ -72,11 +74,12 @@ public class AVMFritzHandlerFactory extends BaseThingHandlerFactory {
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (BRIDGE_THING_TYPE.equals(thingTypeUID)) {
-            BoxHandler handler = new BoxHandler((Bridge) thing, httpClient);
+            BoxHandler handler = new BoxHandler((Bridge) thing, httpClient, stateDescriptionProvider);
             registerDeviceDiscoveryService(handler);
             return handler;
         } else if (PL546E_STANDALONE_THING_TYPE.equals(thingTypeUID)) {
-            Powerline546EHandler handler = new Powerline546EHandler((Bridge) thing, httpClient);
+            Powerline546EHandler handler = new Powerline546EHandler((Bridge) thing, httpClient,
+                    stateDescriptionProvider);
             registerDeviceDiscoveryService(handler);
             return handler;
         } else if (SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
@@ -126,5 +129,16 @@ public class AVMFritzHandlerFactory extends BaseThingHandlerFactory {
 
     protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
         this.httpClient = null;
+    }
+
+    @Reference
+    protected void setDynamicStateDescriptionProvider(
+            AVMFritzDynamicStateDescriptionProvider stateDescriptionProvider) {
+        this.stateDescriptionProvider = stateDescriptionProvider;
+    }
+
+    protected void unsetDynamicStateDescriptionProvider(
+            AVMFritzDynamicStateDescriptionProvider stateDescriptionProvider) {
+        this.stateDescriptionProvider = null;
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -14,8 +14,8 @@ import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.tplinksmarthome.internal.Connection;
@@ -23,7 +23,7 @@ import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeConfiguration
 import org.openhab.binding.tplinksmarthome.internal.model.HasErrorResponse;
 
 /**
- * TP-Link Smart Home device with a dimmer.
+ * TP-Link Smart Home device with a dimmer (HS220).
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
@@ -38,24 +38,36 @@ public class DimmerDevice extends SwitchDevice {
     @Override
     public boolean handleCommand(String channelId, Connection connection, Command command,
             TPLinkSmartHomeConfiguration configuration) throws IOException {
-        return CHANNEL_BRIGHTNESS.equals(channelId) ? handleBrightness(channelId, connection, command, configuration)
+        return CHANNEL_BRIGHTNESS.equals(channelId)
+                ? handleBrightnessChannel(channelId, connection, command, configuration)
                 : super.handleCommand(channelId, connection, command, configuration);
     }
 
-    private boolean handleBrightness(String channelId, Connection connection, Command command,
+    /**
+     * Handle the brightness channel. Because the device has different commands for setting the device on/off and
+     * setting the brightness the on/off command must be send to the device as well when the brightness.
+     *
+     * @param connection Connection to use
+     * @param command command to the send
+     * @return returns true if the command was handled
+     * @throws IOException throws an {@link IOException} if the command handling failed
+     */
+    private boolean handleBrightnessChannel(String channelId, Connection connection, Command command,
             TPLinkSmartHomeConfiguration configuration) throws IOException {
         HasErrorResponse response = null;
 
         if (command instanceof OnOffType) {
             response = setOnOffState(connection, (OnOffType) command);
-        } else if (command instanceof DecimalType) {
-            DecimalType decimalCommand = (DecimalType) command;
+        } else if (command instanceof PercentType) {
+            PercentType percentCommand = (PercentType) command;
 
-            response = commands.setDimmerBrightnessResponse(
-                    connection.sendCommand(commands.setDimmerBrightness((decimalCommand).intValue())));
-            checkErrors(response);
-            response = setOnOffState(connection,
-                    DecimalType.ZERO.equals(decimalCommand) ? OnOffType.OFF : OnOffType.ON);
+            // Don't send value 0 as brightness value as it will give an error from the device.
+            if (percentCommand.intValue() > 0) {
+                response = commands.setDimmerBrightnessResponse(
+                        connection.sendCommand(commands.setDimmerBrightness(percentCommand.intValue())));
+            } else {
+                response = setOnOffState(connection, OnOffType.OFF);
+            }
         }
         checkErrors(response);
         return response != null;
@@ -64,8 +76,8 @@ public class DimmerDevice extends SwitchDevice {
     @Override
     public State updateChannel(String channelId, DeviceState deviceState) {
         if (CHANNEL_BRIGHTNESS.equals(channelId)) {
-            return deviceState.getSysinfo().getRelayState() == OnOffType.OFF ? DecimalType.ZERO
-                    : new DecimalType(deviceState.getSysinfo().getBrightness());
+            return deviceState.getSysinfo().getRelayState() == OnOffType.OFF ? PercentType.ZERO
+                    : new PercentType(deviceState.getSysinfo().getBrightness());
         } else {
             return super.updateChannel(channelId, deviceState);
         }

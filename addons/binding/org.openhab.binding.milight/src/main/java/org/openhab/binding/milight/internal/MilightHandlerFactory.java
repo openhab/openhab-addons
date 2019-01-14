@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -55,6 +55,8 @@ public class MilightHandlerFactory extends BaseThingHandlerFactory {
     // each other (user report!).
     private @Nullable QueuedSend queuedSend;
 
+    private int bridgeOffset;
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -69,9 +71,9 @@ public class MilightHandlerFactory extends BaseThingHandlerFactory {
         }
 
         if (thingTypeUID.equals(BRIDGEV3_THING_TYPE)) {
-            return new BridgeV3Handler((Bridge) thing);
+            return new BridgeV3Handler((Bridge) thing, bridgeOffset += 100);
         } else if (thingTypeUID.equals(BRIDGEV6_THING_TYPE)) {
-            return new BridgeV6Handler((Bridge) thing);
+            return new BridgeV6Handler((Bridge) thing, bridgeOffset += 100);
         } else if (thing.getThingTypeUID().equals(MilightBindingConstants.RGB_IBOX_THING_TYPE)) {
             return new MilightV6RGBIBOXHandler(thing, queuedSend);
         } else if (thing.getThingTypeUID().equals(MilightBindingConstants.RGB_CW_WW_THING_TYPE)) {
@@ -94,6 +96,7 @@ public class MilightHandlerFactory extends BaseThingHandlerFactory {
         super.activate(componentContext);
         queuedSend = new QueuedSend();
         queuedSend.start();
+        bridgeOffset = 0;
     }
 
     @Override

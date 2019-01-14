@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -99,6 +99,34 @@ public class LightItemsTest {
         HueDevice device = ds.lights.get(lightItems.itemUIDtoHueID.get("group1"));
         assertThat(device.item, is(item));
         assertThat(device.state, is(instanceOf(HueStatePlug.class)));
+    }
+
+    @Test
+    public void addGroupWithoutTypeByTag() throws IOException {
+        GroupItem item = new GroupItem("group1", null);
+        item.addTag("Switchable");
+
+        lightItems.added(item);
+
+        HueDevice device = ds.lights.get(lightItems.itemUIDtoHueID.get("group1"));
+        assertThat(device.item, is(item));
+        assertThat(device.state, is(instanceOf(HueStatePlug.class)));
+        assertThat(ds.groups.get(lightItems.itemUIDtoHueID.get("group1")).groupItem, is(item));
+    }
+
+    @Test
+    public void removeGroupWithoutTypeAndTag() throws IOException {
+        String groupName = "group1";
+        GroupItem item = new GroupItem(groupName, null);
+        item.addTag("Switchable");
+        lightItems.added(item);
+        Integer hueId = lightItems.itemUIDtoHueID.get(groupName);
+
+        lightItems.updated(item, new GroupItem(groupName, null));
+
+        assertThat(lightItems.itemUIDtoHueID.get(groupName), nullValue());
+        assertThat(ds.lights.get(hueId), nullValue());
+        assertThat(ds.groups.get(hueId), nullValue());
     }
 
     @Test

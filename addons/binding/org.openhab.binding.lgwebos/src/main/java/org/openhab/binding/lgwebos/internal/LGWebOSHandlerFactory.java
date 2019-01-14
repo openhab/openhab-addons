@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,8 +8,10 @@
  */
 package org.openhab.binding.lgwebos.internal;
 
-import static org.openhab.binding.lgwebos.LGWebOSBindingConstants.*;
+import static org.openhab.binding.lgwebos.internal.LGWebOSBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -26,9 +28,10 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Sebastian Prehn - initial contribution
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.lgwebos")
 public class LGWebOSHandlerFactory extends BaseThingHandlerFactory {
-    private LGWebOSDiscovery discovery;
+    private @Nullable LGWebOSDiscovery discovery;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -45,10 +48,14 @@ public class LGWebOSHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
+        LGWebOSDiscovery lgWebOSDiscovery = discovery;
+        if (lgWebOSDiscovery == null) {
+            throw new IllegalStateException("LGWebOSDiscovery must be bound before ThingHandlers can be created");
+        }
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(THING_TYPE_WEBOSTV)) {
-            return new LGWebOSHandler(thing, discovery.getDiscoveryManager());
+            return new LGWebOSHandler(thing, lgWebOSDiscovery.getDiscoveryManager());
         }
         return null;
     }

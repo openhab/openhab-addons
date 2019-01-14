@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,8 +8,10 @@
  */
 package org.openhab.binding.sensebox.internal.handler;
 
+import static org.eclipse.smarthome.core.library.unit.MetricPrefix.HECTO;
 import static org.openhab.binding.sensebox.internal.SenseBoxBindingConstants.*;
 
+import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -18,6 +20,9 @@ import org.eclipse.smarthome.core.cache.ExpiringCacheMap;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.PointType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -42,6 +47,7 @@ import org.slf4j.LoggerFactory;
  * @author Hakan Tandogan - Initial contribution
  * @author Hakan Tandogan - Ignore incorrect data for brightness readings
  * @author Hakan Tandogan - Changed use of caching utils to ESH ExpiringCacheMap
+ * @author Hakan Tandogan - Unit of Measurement support
  */
 public class SenseBoxHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(SenseBoxHandler.class);
@@ -51,6 +57,8 @@ public class SenseBoxHandler extends BaseThingHandler {
     private SenseBoxData data = new SenseBoxData();
 
     ScheduledFuture<?> refreshJob;
+
+    private static final BigDecimal ONEHUNDRED = BigDecimal.valueOf(100l);
 
     private static final String CACHE_KEY_DATA = "DATA";
 
@@ -134,7 +142,7 @@ public class SenseBoxHandler extends BaseThingHandler {
                 publishDataForChannel(CHANNEL_LOCATION);
 
                 publishDataForChannel(CHANNEL_UV_INTENSITY);
-                publishDataForChannel(CHANNEL_LUMINANCE);
+                publishDataForChannel(CHANNEL_ILLUMINANCE);
                 publishDataForChannel(CHANNEL_PRESSURE);
                 publishDataForChannel(CHANNEL_HUMIDITY);
                 publishDataForChannel(CHANNEL_TEMPERATURE);
@@ -142,7 +150,7 @@ public class SenseBoxHandler extends BaseThingHandler {
                 publishDataForChannel(CHANNEL_PARTICULATE_MATTER_10);
 
                 publishDataForChannel(CHANNEL_UV_INTENSITY_LR);
-                publishDataForChannel(CHANNEL_LUMINANCE_LR);
+                publishDataForChannel(CHANNEL_ILLUMINANCE_LR);
                 publishDataForChannel(CHANNEL_PRESSURE_LR);
                 publishDataForChannel(CHANNEL_HUMIDITY_LR);
                 publishDataForChannel(CHANNEL_TEMPERATURE_LR);
@@ -178,8 +186,8 @@ public class SenseBoxHandler extends BaseThingHandler {
             case CHANNEL_UV_INTENSITY:
                 updateState(CHANNEL_UV_INTENSITY, decimalFromSensor(data.getUvIntensity()));
                 break;
-            case CHANNEL_LUMINANCE:
-                updateState(CHANNEL_LUMINANCE, decimalFromSensor(data.getLuminance()));
+            case CHANNEL_ILLUMINANCE:
+                updateState(CHANNEL_ILLUMINANCE, decimalFromSensor(data.getLuminance()));
                 break;
             case CHANNEL_PRESSURE:
                 updateState(CHANNEL_PRESSURE, decimalFromSensor(data.getPressure()));
@@ -199,8 +207,8 @@ public class SenseBoxHandler extends BaseThingHandler {
             case CHANNEL_UV_INTENSITY_LR:
                 updateState(CHANNEL_UV_INTENSITY_LR, dateTimeFromSensor(data.getUvIntensity()));
                 break;
-            case CHANNEL_LUMINANCE_LR:
-                updateState(CHANNEL_LUMINANCE_LR, dateTimeFromSensor(data.getLuminance()));
+            case CHANNEL_ILLUMINANCE_LR:
+                updateState(CHANNEL_ILLUMINANCE_LR, dateTimeFromSensor(data.getLuminance()));
                 break;
             case CHANNEL_PRESSURE_LR:
                 updateState(CHANNEL_PRESSURE_LR, dateTimeFromSensor(data.getPressure()));
@@ -243,7 +251,42 @@ public class SenseBoxHandler extends BaseThingHandler {
         if (data != null) {
             if (data.getLastMeasurement() != null) {
                 if (StringUtils.isNotEmpty(data.getLastMeasurement().getValue())) {
-                    result = new DecimalType(data.getLastMeasurement().getValue());
+                    logger.debug("About to determine quantity for {} / {}", data.getLastMeasurement().getValue(), data.getUnit());
+                    BigDecimal bd = new BigDecimal(data.getLastMeasurement().getValue());
+
+                    switch (data.getUnit()) {
+                        case "%":
+                            result = new QuantityType<>(bd, SmartHomeUnits.ONE);
+                            break;
+                        case "°C":
+                            result = new QuantityType<>(bd, SIUnits.CELSIUS);
+                            break;
+                        case "Pa":
+                            result = new QuantityType<>(bd, SIUnits.PASCAL);
+                            break;
+                        case "hPa":
+                            if (BigDecimal.valueOf(10000l).compareTo(bd) < 0) {
+                                // Some stations report measurements in Pascal, but send 'hPa' as units...
+                                bd = bd.divide(ONEHUNDRED);
+                            }
+                            result = new QuantityType<>(bd, HECTO(SIUnits.PASCAL));
+                            break;
+                        case "lx":
+                            result = new QuantityType<>(bd, SmartHomeUnits.LUX);
+                            break;
+                        case "\u00b5g/m³":
+                            result = new QuantityType<>(bd, SmartHomeUnits.MICROGRAM_PER_CUBICMETRE);
+                            break;
+                        case "\u00b5W/cm²":
+                            result = new QuantityType<>(bd, SmartHomeUnits.MICROWATT_PER_SQUARE_CENTIMETRE);
+                            break;
+                        default:
+                            // The data provider might have configured some unknown unit, accept at least the measurement
+                            logger.debug("Could not determine unit for '{}', using default", data.getUnit());
+                            result = new QuantityType<>(bd, SmartHomeUnits.ONE);
+                    }
+
+                    logger.debug("State: '{}'", result);
                 }
             }
         }

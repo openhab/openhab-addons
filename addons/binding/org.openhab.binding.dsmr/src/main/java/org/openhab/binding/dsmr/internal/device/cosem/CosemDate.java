@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -99,8 +99,7 @@ class CosemDate extends CosemValueDescriptor<DateTimeType> {
                 LocalDateTime localDateTime = LocalDateTime.parse(m.group(1), cosemDateFormat.formatter);
                 return new DateTimeType(ZonedDateTime.of(localDateTime, ZoneId.systemDefault()));
             }
-            logger.debug("{} does not match pattern: {}", cosemValue, cosemDateFormat.pattern);
         }
-        throw new ParseException("value: " + cosemValue + " is not a known CosemDate string", 0);
+        throw new ParseException("Cosem value: '" + cosemValue + "' is not a known CosemDate string", 0);
     }
 }

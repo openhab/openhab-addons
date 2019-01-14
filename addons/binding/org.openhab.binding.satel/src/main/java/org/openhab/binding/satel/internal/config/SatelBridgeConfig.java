@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,6 +7,8 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 package org.openhab.binding.satel.internal.config;
+
+import java.nio.charset.Charset;
 
 /**
  * The {@link SatelBridgeConfig} contains common configuration values for Satel bridge things.
@@ -44,8 +46,8 @@ public class SatelBridgeConfig {
     /**
      * @return encoding for texts received from the bridge (names, descriptions)
      */
-    public String getEncoding() {
-        return encoding;
+    public Charset getEncoding() {
+        return Charset.forName(encoding);
     }
 
 }

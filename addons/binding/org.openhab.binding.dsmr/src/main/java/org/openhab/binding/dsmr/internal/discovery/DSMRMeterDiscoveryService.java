@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -78,27 +78,27 @@ public class DSMRMeterDiscoveryService extends DSMRDiscoveryService implements P
             logger.debug("Detect meters from #{} objects", telegram.getCosemObjects().size());
         }
         final Entry<Collection<DSMRMeterDescriptor>, Map<CosemObjectType, CosemObject>> detectedMeters = meterDetector
-                .detectMeters(telegram);
+            .detectMeters(telegram);
         verifyUnregisteredCosemObjects(telegram, detectedMeters.getValue());
         validateConfiguredMeters(dsmrBridgeHandler.getThing().getThings(),
-                detectedMeters.getKey().stream().map(md -> md.getMeterType()).collect(Collectors.toSet()));
+            detectedMeters.getKey().stream().map(md -> md.getMeterType()).collect(Collectors.toSet()));
         detectedMeters.getKey().forEach(m -> meterDiscovered(m, dsmrBridgeHandler.getThing().getUID()));
     }
 
     protected void verifyUnregisteredCosemObjects(P1Telegram telegram,
-            Map<CosemObjectType, CosemObject> undetectedCosemObjects) {
+        Map<CosemObjectType, CosemObject> undetectedCosemObjects) {
         if (!undetectedCosemObjects.isEmpty()) {
             if (undetectedCosemObjects.entrySet().stream()
-                    .anyMatch(e -> e.getKey() == CosemObjectType.METER_EQUIPMENT_IDENTIFIER
-                            && e.getValue().getCosemValues().entrySet().stream().anyMatch(
-                                    cv -> cv.getValue() instanceof StringType && cv.getValue().toString().isEmpty()))) {
+                .anyMatch(e -> e.getKey() == CosemObjectType.METER_EQUIPMENT_IDENTIFIER
+                    && e.getValue().getCosemValues().entrySet().stream()
+                        .anyMatch(cv -> cv.getValue() instanceof StringType && cv.getValue().toString().isEmpty()))) {
                 // Unregistered meter detected. log to the user.
                 reportUnregisteredMeters();
             } else {
                 reportUnrecognizedCosemObjects(undetectedCosemObjects);
-                logger.info(
-                        "There are some unrecognized values, which means some meters might not be detected. Not all values are recognized. Please report your raw data as example:",
-                        telegram.getRawTelegram());
+                logger.info("There are some unrecognized cosem values in the data received from the meter,"
+                    + " which means some meters might not be detected. Please report your raw data as reference: {}",
+                    telegram.getRawTelegram());
             }
         }
     }
@@ -110,7 +110,7 @@ public class DSMRMeterDiscoveryService extends DSMRDiscoveryService implements P
      */
     protected void reportUnrecognizedCosemObjects(Map<CosemObjectType, CosemObject> unidentifiedCosemObjects) {
         unidentifiedCosemObjects
-                .forEach((k, v) -> logger.debug("Unrecognized cosem object '{}' found in the data: {}", k, v));
+            .forEach((k, v) -> logger.info("Unrecognized cosem object '{}' found in the data: {}", k, v));
     }
 
     /**
@@ -118,7 +118,7 @@ public class DSMRMeterDiscoveryService extends DSMRDiscoveryService implements P
      */
     protected void reportUnregisteredMeters() {
         logger.info(
-                "An unregistered meter has been found. Probably a new meter. Retry discovery once the meter is registered with the energy provider.");
+            "An unregistered meter has been found. Probably a new meter. Retry discovery once the meter is registered with the energy provider.");
     }
 
     /**
@@ -143,10 +143,10 @@ public class DSMRMeterDiscoveryService extends DSMRDiscoveryService implements P
         // Create list of all configured meters that are not in the detected list. If not empty meters might not be
         // correctly configured.
         final List<DSMRMeterType> invalidConfigured = configuredMeters.stream()
-                .filter(dm -> !configuredMeterTypes.contains(dm)).collect(Collectors.toList());
+            .filter(dm -> !configuredMeterTypes.contains(dm)).collect(Collectors.toList());
         // Create a list of all detected meters not yet configured.
         final List<DSMRMeterType> unconfiguredMeters = configuredMeterTypes.stream()
-                .filter(dm -> !configuredMeters.contains(dm)).collect(Collectors.toList());
+            .filter(dm -> !configuredMeters.contains(dm)).collect(Collectors.toList());
 
         if (!invalidConfigured.isEmpty()) {
             reportConfigurationValidationResults(invalidConfigured, unconfiguredMeters);
@@ -160,12 +160,12 @@ public class DSMRMeterDiscoveryService extends DSMRDiscoveryService implements P
      * @param unconfiguredMeters The list of meters that were detected, but not configured
      */
     protected void reportConfigurationValidationResults(List<DSMRMeterType> invalidConfigured,
-            List<DSMRMeterType> unconfiguredMeters) {
+        List<DSMRMeterType> unconfiguredMeters) {
         logger.info(
-                "Possible incorrect meters configured. These are configured: {}."
-                        + "But the following unconfigured meters are found in the data received from the meter: {}",
-                invalidConfigured.stream().map(m -> m.name()).collect(Collectors.joining(", ")),
-                unconfiguredMeters.stream().map(m -> m.name()).collect(Collectors.joining(", ")));
+            "Possible incorrect meters configured. These are configured: {}."
+                + "But the following unconfigured meters are found in the data received from the meter: {}",
+            invalidConfigured.stream().map(m -> m.name()).collect(Collectors.joining(", ")),
+            unconfiguredMeters.stream().map(m -> m.name()).collect(Collectors.joining(", ")));
     }
 
     public void setLocaleProvider(final LocaleProvider localeProvider) {

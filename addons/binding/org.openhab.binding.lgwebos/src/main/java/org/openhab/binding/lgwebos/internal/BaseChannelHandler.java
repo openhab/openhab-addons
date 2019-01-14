@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -48,11 +48,6 @@ abstract class BaseChannelHandler<T, R> implements ChannelHandler {
     // IP to Subscriptions map
     private Map<String, ServiceSubscription<T>> subscriptions = new ConcurrentHashMap<>();
 
-    // lazy init
-    private synchronized Map<String, ServiceSubscription<T>> getSubscriptions() {
-        return subscriptions;
-    }
-
     @Override
     public void onDeviceReady(ConnectableDevice device, String channelId, LGWebOSHandler handler) {
         // NOP
@@ -72,7 +67,7 @@ abstract class BaseChannelHandler<T, R> implements ChannelHandler {
 
             if (listener.isPresent()) {
                 logger.debug("Subscribed {} on IP: {}", this.getClass().getName(), device.getIpAddress());
-                getSubscriptions().put(device.getIpAddress(), listener.get());
+                subscriptions.put(device.getIpAddress(), listener.get());
             }
         }
     }
@@ -94,7 +89,6 @@ abstract class BaseChannelHandler<T, R> implements ChannelHandler {
     @Override
     public final synchronized void removeAnySubscription(ConnectableDevice device) {
         ServiceSubscription<T> l = subscriptions.remove(device.getIpAddress());
-
         if (l != null) {
             l.unsubscribe();
             logger.debug("Unsubscribed {} on IP: {}", this.getClass().getName(), device.getIpAddress());
@@ -103,5 +97,21 @@ abstract class BaseChannelHandler<T, R> implements ChannelHandler {
 
     protected ResponseListener<R> getDefaultResponseListener() {
         return defaultResponseListener;
+    }
+
+    /**
+     * A convenience method that calls device.hasCapability, but logs a message if the result is false.
+     *
+     * @param device the webos tv
+     * @param capability the capability to check
+     *
+     */
+    protected boolean hasCapability(ConnectableDevice device, String capability) {
+        boolean result = device.hasCapability(capability);
+        if (!result) {
+            logger.debug("Device {} does not have capability {} as required by handler {}", device.getFriendlyName(),
+                    capability, this.getClass().getName());
+        }
+        return result;
     }
 }

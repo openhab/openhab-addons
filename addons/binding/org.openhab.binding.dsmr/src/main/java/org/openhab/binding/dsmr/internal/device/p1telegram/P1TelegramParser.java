@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -89,17 +89,17 @@ public class P1TelegramParser {
     /**
      * Current state of the P1 telegram parser
      */
-    private State state = State.WAIT_FOR_START;
+    private volatile State state = State.WAIT_FOR_START;
 
     /**
      * Work in lenient mode (more fault tolerant)
      */
-    private boolean lenientMode = false;
+    private volatile boolean lenientMode;
 
     /**
      * Current telegram state
      */
-    private TelegramState telegramState;
+    private volatile TelegramState telegramState;
 
     /**
      * CosemObjectFactory helper class
@@ -147,7 +147,7 @@ public class P1TelegramParser {
                 rawData.append(rawBlock);
             }
             if (logger.isTraceEnabled()) {
-                logger.trace("Data: {}, state before parsing: {}", rawBlock, state);
+                logger.trace("Raw data: {}, Parser state entering parseData: {}", rawBlock, state);
             }
         }
         for (int i = offset; i < (offset + length); i++) {
@@ -241,7 +241,7 @@ public class P1TelegramParser {
 
                                 if (logger.isDebugEnabled()) {
                                     logger.trace("received CRC value: {}, calculated CRC value: 0x{}", crcValue,
-                                            String.format("%04X", calculatedCRC));
+                                        String.format("%04X", calculatedCRC));
                                 }
                                 if (crcP1Telegram != calculatedCRC) {
                                     logger.trace("CRC value does not match, p1 Telegram failed");
@@ -253,7 +253,7 @@ public class P1TelegramParser {
                             }
                         }
                         telegramListener.telegramReceived(
-                                new P1Telegram(new ArrayList<>(cosemObjects), telegramState, rawData.toString()));
+                            new P1Telegram(new ArrayList<>(cosemObjects), telegramState, rawData.toString()));
                         setState(State.WAIT_FOR_START);
                         if (c == '/') {
                             /*

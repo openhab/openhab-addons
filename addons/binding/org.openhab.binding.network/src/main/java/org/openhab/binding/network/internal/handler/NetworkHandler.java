@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -159,15 +159,14 @@ public class NetworkHandler extends BaseThingHandler implements PresenceDetectio
         try {
             presenceDetection.setHostname(handlerConfiguration.hostname);
         } catch (UnknownHostException e) {
-            logger.error("Configuration for hostname is faulty", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getLocalizedMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "invalid IP or hostname could not be resolved");
             return;
         }
 
         if (isTCPServiceDevice) {
             Integer port = handlerConfiguration.port;
             if (port == null) {
-                logger.error("You need to configure the port for a service device");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No port configured!");
                 return;
             }

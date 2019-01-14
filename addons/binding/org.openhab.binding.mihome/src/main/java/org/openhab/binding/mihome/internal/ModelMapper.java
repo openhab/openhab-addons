@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -32,6 +32,7 @@ public class ModelMapper {
         THING_MAP.put("curtain", THING_TYPE_ACTOR_CURTAIN);
         THING_MAP.put("gateway", THING_TYPE_GATEWAY);
         THING_MAP.put("plug", THING_TYPE_ACTOR_PLUG);
+        THING_MAP.put("ctrl_86plug.aq1", THING_TYPE_ACTOR_PLUG);
         THING_MAP.put("ctrl_neutral1", THING_TYPE_ACTOR_AQARA1);
         THING_MAP.put("ctrl_neutral2", THING_TYPE_ACTOR_AQARA2);
         THING_MAP.put("ctrl_ln1", THING_TYPE_ACTOR_AQARA_ZERO1);
@@ -63,6 +64,7 @@ public class ModelMapper {
         LABEL_MAP.put("curtain", "Xiaomi Aqara Intelligent Curtain Motor");
         LABEL_MAP.put("gateway", "Xiaomi Mi Smart Home Gateway");
         LABEL_MAP.put("plug", "Xiaomi Mi Smart Socket Plug");
+        LABEL_MAP.put("ctrl_86plug.aq1", "Xiaomi Aqara Smart Socket Plug");
         LABEL_MAP.put("ctrl_neutral1", "Xiaomi Aqara Wall Switch 1 Button");
         LABEL_MAP.put("ctrl_neutral2", "Xiaomi Aqara Wall Switch 2 Button");
         LABEL_MAP.put("ctrl_ln1", "Xiaomi \"zero-fire\" 1 Channel Wall Switch");

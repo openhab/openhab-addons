@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,6 +18,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 
 import javax.measure.Quantity;
@@ -32,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -46,6 +48,8 @@ import io.reactivex.schedulers.Schedulers;
 @NonNullByDefault
 public abstract class MeterDevice<T> {
 
+    private final static int RETRY_DELAY = 2;
+    private final Logger logger = LoggerFactory.getLogger(MeterDevice.class);
     /**
      * Controls wether the device info is logged to the OSGi console.
      */
@@ -65,9 +69,6 @@ public abstract class MeterDevice<T> {
     IMeterReaderConnector<T> connector;
     private List<MeterValueListener> valueChangeListeners;
 
-    private final static int RETRY_DELAY = 2;
-    private final Logger logger = LoggerFactory.getLogger(MeterDevice.class);
-
     public MeterDevice(Supplier<SerialPortManager> serialPortManagerSupplier, String deviceId, String serialPort,
             byte @Nullable [] initMessage, int baudrate, int baudrateChangeDelay, ProtocolMode protocolMode) {
         super();
@@ -77,6 +78,9 @@ public abstract class MeterDevice<T> {
         this.printMeterInfo = true;
         this.connector = createConnector(serialPortManagerSupplier, serialPort, baudrate, baudrateChangeDelay,
                 protocolMode);
+        RxJavaPlugins.setErrorHandler(error -> {
+            logger.error("Fatal error occured", error);
+        });
     }
 
     /**
@@ -152,14 +156,19 @@ public abstract class MeterDevice<T> {
      * @return The {@link Disposable} which needs to be disposed whenever not used anymore.
      *
      */
-    public Disposable readValues(ScheduledExecutorService executorService, Duration period) {
+    public Disposable readValues(long timeout, ScheduledExecutorService executorService, Duration period) {
         return Flowable.fromPublisher(connector.getMeterValues(initMessage, period, executorService))
-                .timeout(30, TimeUnit.SECONDS, Schedulers.from(executorService)).doOnSubscribe(sub -> {
+                .timeout(timeout + period.toMillis(), TimeUnit.MILLISECONDS, Schedulers.from(executorService))
+                .doOnSubscribe(sub -> {
                     logger.info("Opening connection to {}", getDeviceId());
                     connector.openConnection();
                 }).doOnError(ex -> {
-                    logger.warn("Failed to read: {}. Closing connection and trying again in {} seconds...; {}",
-                            ex.getMessage(), RETRY_DELAY, getDeviceId(), ex);
+                    if (ex instanceof TimeoutException) {
+                        logger.warn("Timeout occured for {}; {}", getDeviceId(), ex.getMessage());
+                    } else {
+                        logger.warn("Failed to read: {}. Closing connection and trying again in {} seconds...; {}",
+                                ex.getMessage(), RETRY_DELAY, getDeviceId(), ex);
+                    }
                     connector.closeConnection();
                     notifyReadingError(ex);
                 }).doOnCancel(connector::closeConnection).doOnComplete(connector::closeConnection).share()
@@ -196,7 +205,7 @@ public abstract class MeterDevice<T> {
 
     /**
      * Adds a {@link MeterValue} to the current cache.
-     * 
+     *
      * @param value The value to add.
      */
     protected <Q extends Quantity<Q>> void addObisCache(MeterValue<Q> value) {
@@ -227,7 +236,7 @@ public abstract class MeterDevice<T> {
 
     /**
      * Adds a {@link MeterValueListener} to the list of listeners which gets notified on new values being read.
-     * 
+     *
      * @param valueChangeListener The new {@link MeterValueListener}
      */
     public void addValueChangeListener(MeterValueListener valueChangeListener) {
@@ -236,7 +245,7 @@ public abstract class MeterDevice<T> {
 
     /**
      * Removes a {@link MeterValueListener} from the list of listeners.
-     * 
+     *
      * @param valueChangeListener The listener to remove.
      */
     public void removeValueChangeListener(MeterValueListener valueChangeListener) {
@@ -278,5 +287,4 @@ public abstract class MeterDevice<T> {
     private void setPrintMeterInfo(Boolean printMeterInfo) {
         this.printMeterInfo = printMeterInfo;
     }
-
 }

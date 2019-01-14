@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.satel.internal.handler;
 
+import java.nio.charset.Charset;
+import java.time.ZoneId;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -42,6 +44,7 @@ public abstract class SatelBridgeHandler extends ConfigStatusBridgeHandler imple
     private SatelModule satelModule;
     private ScheduledFuture<?> pollingJob;
     private String userCodeOverride;
+    private final ZoneId integraZone = ZoneId.systemDefault();
 
     public SatelBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -169,15 +172,22 @@ public abstract class SatelBridgeHandler extends ConfigStatusBridgeHandler imple
     /**
      * @return encoding for texts
      */
-    public String getEncoding() {
+    public Charset getEncoding() {
         return config.getEncoding();
+    }
+
+    /**
+     * @return zone for Integra date and time values
+     */
+    public ZoneId getZoneId() {
+        return integraZone;
     }
 
     /**
      * Sends given command to communication module.
      *
      * @param command a command to send
-     * @param async if <code>true</code> method waits for the response
+     * @param async   if <code>false</code> method waits for the response
      * @return <code>true</code> if send succeeded
      */
     public boolean sendCommand(SatelCommand command, boolean async) {

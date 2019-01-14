@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -28,6 +28,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.openhab.binding.avmfritz.internal.AVMFritzDynamicStateDescriptionProvider;
 
 /**
  * Tests for {@link AVMFritzThingHandlerOSGiTest}.
@@ -64,7 +65,7 @@ public abstract class AVMFritzThingHandlerOSGiTest extends JavaOSGiTest {
 
         ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
 
-        bridgeHandler = new BoxHandler(bridge, httpClient);
+        bridgeHandler = new BoxHandler(bridge, httpClient, new AVMFritzDynamicStateDescriptionProvider());
         assertNotNull(bridgeHandler);
 
         bridgeHandler.setCallback(callback);

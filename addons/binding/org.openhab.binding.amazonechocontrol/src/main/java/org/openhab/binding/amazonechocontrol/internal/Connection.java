@@ -1,12 +1,11 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.openhab.binding.amazonechocontrol.internal;
 
 import java.io.IOException;
@@ -422,7 +421,7 @@ public class Connection {
             }
         }
 
-        Scanner inputScanner = StringUtils.isEmpty(charSet) ? new Scanner(readerStream, "UTF-8")
+        Scanner inputScanner = StringUtils.isEmpty(charSet) ? new Scanner(readerStream, StandardCharsets.UTF_8.name())
                 : new Scanner(readerStream, charSet);
         Scanner scannerWithoutDelimiter = inputScanner.useDelimiter("\\A");
         String result = scannerWithoutDelimiter.hasNext() ? scannerWithoutDelimiter.next() : null;
@@ -598,8 +597,8 @@ public class Connection {
         String[] pairs = query.split("&");
         for (String pair : pairs) {
             int idx = pair.indexOf("=");
-            queryParameters.put(URLDecoder.decode(pair.substring(0, idx), "UTF-8"),
-                    URLDecoder.decode(pair.substring(idx + 1), "UTF-8"));
+            queryParameters.put(URLDecoder.decode(pair.substring(0, idx), StandardCharsets.UTF_8.name()),
+                    URLDecoder.decode(pair.substring(idx + 1), StandardCharsets.UTF_8.name()));
         }
         String accessToken = queryParameters.get("openid.oa2.access_token");
 
@@ -727,7 +726,7 @@ public class Connection {
     public boolean checkRenewSession() throws UnknownHostException, URISyntaxException, IOException {
         if (System.currentTimeMillis() >= this.renewTime) {
             String renewTokenPostData = "app_name=Amazon%20Alexa&app_version=2.2.223830.0&di.sdk.version=6.10.0&source_token="
-                    + URLEncoder.encode(refreshToken, "UTF-8")
+                    + URLEncoder.encode(refreshToken, StandardCharsets.UTF_8.name())
                     + "&package_name=com.amazon.echo&di.hw.version=iPhone&platform=iOS&requested_token_type=access_token&source_token_type=refresh_token&di.os.name=iOS&di.os.version=11.4.1&current_version=6.10.0";
             String renewTokenRepsonseJson = makeRequestAndReturnString("POST", "https://api.amazon.com/auth/token",
                     renewTokenPostData, false, null);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.amazondashbutton.internal.handler;
 
+import static org.eclipse.smarthome.core.thing.CommonTriggerEvents.PRESSED;
 import static org.openhab.binding.amazondashbutton.internal.AmazonDashButtonBindingConstants.PRESS;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -63,13 +64,11 @@ public class AmazonDashButtonHandler extends BaseThingHandler implements PcapNet
 
             packetCapturingService = new PacketCapturingService(pcapNetworkInterface);
             boolean capturingStarted = packetCapturingService.startCapturing(new PacketCapturingHandler() {
-
                 @Override
                 public void packetCaptured(MacAddress macAddress) {
                     long now = System.currentTimeMillis();
                     if (lastCommandHandled + packetInterval < now) {
-                        ChannelUID pressChannel = new ChannelUID(getThing().getUID(), PRESS);
-                        triggerChannel(pressChannel);
+                        triggerChannel(PRESS, PRESSED);
                         lastCommandHandled = now;
                     }
                 }

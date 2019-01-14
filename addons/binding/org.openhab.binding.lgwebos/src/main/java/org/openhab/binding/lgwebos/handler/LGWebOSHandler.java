@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,8 +8,9 @@
  */
 package org.openhab.binding.lgwebos.handler;
 
-import static org.openhab.binding.lgwebos.LGWebOSBindingConstants.*;
+import static org.openhab.binding.lgwebos.internal.LGWebOSBindingConstants.*;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -22,8 +23,10 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.lgwebos.action.LGWebOSActions;
 import org.openhab.binding.lgwebos.internal.ChannelHandler;
 import org.openhab.binding.lgwebos.internal.LauncherApplication;
 import org.openhab.binding.lgwebos.internal.MediaControlPlayer;
@@ -60,6 +63,8 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
     private final Map<String, ChannelHandler> channelHandlers;
     private String deviceId;
 
+    private LauncherApplication appLauncher = new LauncherApplication();
+
     public LGWebOSHandler(@NonNull Thing thing, DiscoveryManager discoveryManager) {
         super(thing);
         this.discoveryManager = discoveryManager;
@@ -69,11 +74,15 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
         handlers.put(CHANNEL_MUTE, new VolumeControlMute());
         handlers.put(CHANNEL_CHANNEL, new TVControlChannel());
         handlers.put(CHANNEL_CHANNEL_NAME, new TVControlChannelName());
-        handlers.put(CHANNEL_APP_LAUNCHER, new LauncherApplication());
+        handlers.put(CHANNEL_APP_LAUNCHER, appLauncher);
         handlers.put(CHANNEL_MEDIA_STOP, new MediaControlStop());
         handlers.put(CHANNEL_TOAST, new ToastControlToast());
         handlers.put(CHANNEL_MEDIA_PLAYER, new MediaControlPlayer());
         channelHandlers = Collections.unmodifiableMap(handlers);
+    }
+
+    public LauncherApplication getLauncherApplication() {
+        return appLauncher;
     }
 
     @Override
@@ -94,7 +103,7 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
         handler.onReceiveCommand(device.orElse(null), channelUID.getId(), this, command);
     }
 
-    private Optional<ConnectableDevice> getDevice() {
+    public Optional<ConnectableDevice> getDevice() {
         return discoveryManager.getCompatibleDevices().values().stream()
                 .filter(device -> deviceId.equals(device.getId())).findFirst();
     }
@@ -240,5 +249,10 @@ public class LGWebOSHandler extends BaseThingHandler implements ConnectableDevic
     @Override
     public void onDiscoveryFailed(DiscoveryManager manager, ServiceCommandError error) {
         // NOP
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(LGWebOSActions.class);
     }
 }

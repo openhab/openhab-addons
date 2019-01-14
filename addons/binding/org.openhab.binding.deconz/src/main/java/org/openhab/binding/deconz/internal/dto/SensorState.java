@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -24,12 +24,16 @@ import org.eclipse.jdt.annotation.Nullable;
 public class SensorState {
     /** Some presence sensors, the daylight sensor and all light sensors provide the "dark" boolean. */
     public @Nullable Boolean dark;
-    /** The daylight sensor provides the "daylight" boolean. */
+    /** The daylight sensor and all light sensors provides the "daylight" boolean. */
     public @Nullable Boolean daylight;
+    /** Light sensors provide a light level value. */
+    public @Nullable Integer lightlevel;
     /** Light sensors provide a lux value. */
     public @Nullable Integer lux;
     /** Temperature sensors provide a degrees value. */
     public @Nullable Float temperature;
+    /** Humidity sensors provide a percent value. */
+    public @Nullable Float humidity;
     /** OpenClose sensors provide a boolean value. */
     public @Nullable Boolean open;
     /** fire sensors provide a boolean value. */
@@ -46,6 +50,8 @@ public class SensorState {
     public @Nullable Boolean presence;
     /** Power sensors provide this value in Watts. */
     public @Nullable Integer power;
+    /** Consumption sensors provide this value in Watts/hour. */
+    public @Nullable Integer consumption;
     /** Light sensors and the daylight sensor provide a status integer that can have various semantics. */
     public @Nullable Integer status;
     /** Switches provide this value. */

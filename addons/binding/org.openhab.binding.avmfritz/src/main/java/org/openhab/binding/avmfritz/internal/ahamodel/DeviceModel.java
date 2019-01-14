@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -24,7 +24,7 @@ public class DeviceModel extends AVMFritzBaseModel {
     private TemperatureModel temperature;
     private AlertModel alert;
     private ButtonModel button;
-    private ETSUnitInfo etsiunitinfo;
+    private ETSUnitInfoModel etsiunitinfo;
 
     public TemperatureModel getTemperature() {
         return temperature;
@@ -50,11 +50,11 @@ public class DeviceModel extends AVMFritzBaseModel {
         this.button = buttonModel;
     }
 
-    public ETSUnitInfo getEtsiunitinfo() {
+    public ETSUnitInfoModel getEtsiunitinfo() {
         return etsiunitinfo;
     }
 
-    public void setEtsiunitinfo(ETSUnitInfo etsiunitinfo) {
+    public void setEtsiunitinfo(ETSUnitInfoModel etsiunitinfo) {
         this.etsiunitinfo = etsiunitinfo;
     }
 
@@ -65,7 +65,7 @@ public class DeviceModel extends AVMFritzBaseModel {
     }
 
     @XmlType(propOrder = { "etsideviceid", "unittype", "interfaces" })
-    public static class ETSUnitInfo {
+    public static class ETSUnitInfoModel {
         public static final String HAN_FUN_UNITTYPE_SIMPLE_BUTTON = "273";
         public static final String HAN_FUN_UNITTYPE_SIMPLE_DETECTOR = "512";
         public static final String HAN_FUN_UNITTYPE_MAGNETIC_CONTACT = "513";

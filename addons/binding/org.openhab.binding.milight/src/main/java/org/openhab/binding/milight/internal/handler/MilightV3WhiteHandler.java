@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -139,10 +139,10 @@ public class MilightV3WhiteHandler extends AbstractLedV3Handler {
         } else {
             oldLevel = (int) Math.ceil((state.brightness * BRIGHTNESS_LEVELS) / 100.0);
             skipFirst = true;
-        }
 
-        if (newLevel == oldLevel) {
-            return;
+            if (newLevel == oldLevel) {
+                return;
+            }
         }
 
         final int repeatCount = Math.abs(newLevel - oldLevel);

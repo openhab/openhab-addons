@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -65,6 +65,7 @@ import io.reactivex.disposables.Disposable;
         DefaultLocation.TYPE_ARGUMENT })
 public class SmartMeterHandler extends BaseThingHandler {
 
+    private static final long DEFAULT_TIMEOUT = 30000;
     private static final int DEFAULT_REFRESH_PERIOD = 30;
     private Logger logger = LoggerFactory.getLogger(SmartMeterHandler.class);
     private MeterDevice<?> smlDevice;
@@ -239,7 +240,7 @@ public class SmartMeterHandler extends BaseThingHandler {
 
         SmartMeterConfiguration config = getConfigAs(SmartMeterConfiguration.class);
         int delay = config.refresh != null ? config.refresh : DEFAULT_REFRESH_PERIOD;
-        valueReader = this.smlDevice.readValues(this.scheduler, Duration.ofSeconds(delay));
+        valueReader = this.smlDevice.readValues(DEFAULT_TIMEOUT, this.scheduler, Duration.ofSeconds(delay));
     }
 
     private void updateOBISChannel(ChannelUID channelId) {

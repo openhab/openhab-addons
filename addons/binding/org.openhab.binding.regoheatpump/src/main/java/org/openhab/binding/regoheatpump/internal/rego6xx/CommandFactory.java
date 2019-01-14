@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,26 +18,34 @@ public class CommandFactory {
     private static final byte DEVICE_ADDRESS = (byte) 0x81;
 
     public static byte[] createReadRegoVersionCommand() {
-        return createReadCommand((byte) 0x7f, (short) 0, (short) 0);
+        return createReadCommand((byte) 0x7f, (short) 0);
     }
 
     public static byte[] createReadFromSystemRegisterCommand(short address) {
-        return createReadCommand((byte) 0x02, address, (short) 0);
+        return createReadCommand((byte) 0x02, address);
+    }
+
+    public static byte[] createWriteToSystemRegisterCommand(short address, short data) {
+        return createCommand((byte) 0x03, address, data);
     }
 
     public static byte[] createReadFromDisplayCommand(short displayLine) {
-        return createReadCommand((byte) 0x20, displayLine, (short) 0);
+        return createReadCommand((byte) 0x20, displayLine);
     }
 
     public static byte[] createReadLastErrorCommand() {
-        return createReadCommand((byte) 0x40, (short) 0, (short) 0);
+        return createReadCommand((byte) 0x40, (short) 0);
     }
 
     public static byte[] createReadFromFrontPanelCommand(short address) {
-        return createReadCommand((byte) 0x00, address, (short) 0);
+        return createReadCommand((byte) 0x00, address);
     }
 
-    private static byte[] createReadCommand(byte source, short address, short data) {
+    private static byte[] createReadCommand(byte source, short address) {
+        return createCommand(source, address, (short) 0);
+    }
+
+    private static byte[] createCommand(byte source, short address, short data) {
         byte[] addressBytes = ValueConverter.shortToSevenBitFormat(address);
         byte[] dataBytes = ValueConverter.shortToSevenBitFormat(data);
         return new byte[] { DEVICE_ADDRESS, source, addressBytes[0], addressBytes[1], addressBytes[2], dataBytes[0],

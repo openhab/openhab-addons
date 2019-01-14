@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -28,9 +28,9 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.binding.avmfritz.internal.handler.AVMFritzThingHandlerOSGiTest;
 import org.openhab.binding.avmfritz.internal.ahamodel.AVMFritzBaseModel;
-import org.openhab.binding.avmfritz.internal.ahamodel.DevicelistModel;
+import org.openhab.binding.avmfritz.internal.ahamodel.DeviceListModel;
+import org.openhab.binding.avmfritz.internal.handler.AVMFritzThingHandlerOSGiTest;
 import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
 
 /**
@@ -109,8 +109,8 @@ public class AVMFritzDiscoveryServiceTest extends AVMFritzThingHandlerOSGiTest {
                 "</devicelist>";
         //@formatter:on
 
-        Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
-        DevicelistModel devices = (DevicelistModel) u.unmarshal(new StringReader(xml));
+        Unmarshaller u = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
+        DeviceListModel devices = (DeviceListModel) u.unmarshal(new StringReader(xml));
         assertNotNull(devices);
         assertEquals(1, devices.getDevicelist().size());
 
@@ -137,8 +137,8 @@ public class AVMFritzDiscoveryServiceTest extends AVMFritzThingHandlerOSGiTest {
                 "</devicelist>";
         //@formatter:on
 
-        Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
-        DevicelistModel devices = (DevicelistModel) u.unmarshal(new StringReader(xml));
+        Unmarshaller u = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
+        DeviceListModel devices = (DeviceListModel) u.unmarshal(new StringReader(xml));
         assertNotNull(devices);
         assertEquals(1, devices.getDevicelist().size());
 
@@ -187,8 +187,8 @@ public class AVMFritzDiscoveryServiceTest extends AVMFritzThingHandlerOSGiTest {
                 "</devicelist>";
         //@formatter:on
 
-        Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
-        DevicelistModel devices = (DevicelistModel) u.unmarshal(new StringReader(xml));
+        Unmarshaller u = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
+        DeviceListModel devices = (DeviceListModel) u.unmarshal(new StringReader(xml));
         assertNotNull(devices);
         assertEquals(1, devices.getDevicelist().size());
 
@@ -237,8 +237,8 @@ public class AVMFritzDiscoveryServiceTest extends AVMFritzThingHandlerOSGiTest {
                 "</devicelist>";
         //@formatter:on
 
-        Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
-        DevicelistModel devices = (DevicelistModel) u.unmarshal(new StringReader(xml));
+        Unmarshaller u = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
+        DeviceListModel devices = (DeviceListModel) u.unmarshal(new StringReader(xml));
         assertNotNull(devices);
         assertEquals(1, devices.getDevicelist().size());
 
@@ -290,8 +290,8 @@ public class AVMFritzDiscoveryServiceTest extends AVMFritzThingHandlerOSGiTest {
                  "</devicelist>";
         //@formatter:on
 
-        Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
-        DevicelistModel devices = (DevicelistModel) u.unmarshal(new StringReader(xml));
+        Unmarshaller u = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
+        DeviceListModel devices = (DeviceListModel) u.unmarshal(new StringReader(xml));
         assertNotNull(devices);
         assertEquals(1, devices.getDevicelist().size());
 
@@ -343,8 +343,8 @@ public class AVMFritzDiscoveryServiceTest extends AVMFritzThingHandlerOSGiTest {
                 "</devicelist>";
         //@formatter:on
 
-        Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
-        DevicelistModel devices = (DevicelistModel) u.unmarshal(new StringReader(xml));
+        Unmarshaller u = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
+        DeviceListModel devices = (DeviceListModel) u.unmarshal(new StringReader(xml));
         assertNotNull(devices);
         assertEquals(1, devices.getDevicelist().size());
 
@@ -396,8 +396,8 @@ public class AVMFritzDiscoveryServiceTest extends AVMFritzThingHandlerOSGiTest {
             "</devicelist>";
         //@formatter:on
 
-        Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
-        DevicelistModel devices = (DevicelistModel) u.unmarshal(new StringReader(xml));
+        Unmarshaller u = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
+        DeviceListModel devices = (DeviceListModel) u.unmarshal(new StringReader(xml));
         assertNotNull(devices);
         assertEquals(1, devices.getDevicelist().size());
 
@@ -442,8 +442,8 @@ public class AVMFritzDiscoveryServiceTest extends AVMFritzThingHandlerOSGiTest {
                 "</devicelist>";
         //@formatter:on
 
-        Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
-        DevicelistModel devices = (DevicelistModel) u.unmarshal(new StringReader(xml));
+        Unmarshaller u = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
+        DeviceListModel devices = (DeviceListModel) u.unmarshal(new StringReader(xml));
         assertNotNull(devices);
         assertEquals(1, devices.getDevicelist().size());
 
@@ -477,8 +477,8 @@ public class AVMFritzDiscoveryServiceTest extends AVMFritzThingHandlerOSGiTest {
                 "</devicelist>";
         //@formatter:on
 
-        Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
-        DevicelistModel devices = (DevicelistModel) u.unmarshal(new StringReader(xml));
+        Unmarshaller u = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
+        DeviceListModel devices = (DeviceListModel) u.unmarshal(new StringReader(xml));
         assertNotNull(devices);
         assertEquals(1, devices.getDevicelist().size());
 
@@ -509,8 +509,8 @@ public class AVMFritzDiscoveryServiceTest extends AVMFritzThingHandlerOSGiTest {
                 "</devicelist>";
         //@formatter:on
 
-        Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
-        DevicelistModel devices = (DevicelistModel) u.unmarshal(new StringReader(xml));
+        Unmarshaller u = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
+        DeviceListModel devices = (DeviceListModel) u.unmarshal(new StringReader(xml));
         assertNotNull(devices);
         assertEquals(1, devices.getDevicelist().size());
 
@@ -552,8 +552,8 @@ public class AVMFritzDiscoveryServiceTest extends AVMFritzThingHandlerOSGiTest {
                 "</devicelist>";
         //@formatter:on
 
-        Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
-        DevicelistModel devices = (DevicelistModel) u.unmarshal(new StringReader(xml));
+        Unmarshaller u = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
+        DeviceListModel devices = (DeviceListModel) u.unmarshal(new StringReader(xml));
         assertNotNull(devices);
         assertEquals(1, devices.getDevicelist().size());
 
@@ -595,8 +595,8 @@ public class AVMFritzDiscoveryServiceTest extends AVMFritzThingHandlerOSGiTest {
                 "</devicelist>";
         //@formatter:on
 
-        Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
-        DevicelistModel devices = (DevicelistModel) u.unmarshal(new StringReader(xml));
+        Unmarshaller u = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
+        DeviceListModel devices = (DeviceListModel) u.unmarshal(new StringReader(xml));
         assertNotNull(devices);
         assertEquals(1, devices.getDevicelist().size());
 
@@ -638,8 +638,8 @@ public class AVMFritzDiscoveryServiceTest extends AVMFritzThingHandlerOSGiTest {
                 "</devicelist>";
         //@formatter:on
 
-        Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
-        DevicelistModel devices = (DevicelistModel) u.unmarshal(new StringReader(xml));
+        Unmarshaller u = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
+        DeviceListModel devices = (DeviceListModel) u.unmarshal(new StringReader(xml));
         assertNotNull(devices);
         assertEquals(1, devices.getDevicelist().size());
 
@@ -681,8 +681,8 @@ public class AVMFritzDiscoveryServiceTest extends AVMFritzThingHandlerOSGiTest {
                 "</devicelist>";
         //@formatter:on
 
-        Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
-        DevicelistModel devices = (DevicelistModel) u.unmarshal(new StringReader(xml));
+        Unmarshaller u = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
+        DeviceListModel devices = (DeviceListModel) u.unmarshal(new StringReader(xml));
         assertNotNull(devices);
         assertEquals(1, devices.getDevicelist().size());
 
@@ -738,8 +738,8 @@ public class AVMFritzDiscoveryServiceTest extends AVMFritzThingHandlerOSGiTest {
                 "</devicelist>";
         //@formatter:on
 
-        Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
-        DevicelistModel devices = (DevicelistModel) u.unmarshal(new StringReader(xml));
+        Unmarshaller u = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
+        DeviceListModel devices = (DeviceListModel) u.unmarshal(new StringReader(xml));
         assertNotNull(devices);
         assertEquals(1, devices.getDevicelist().size());
 
@@ -790,8 +790,8 @@ public class AVMFritzDiscoveryServiceTest extends AVMFritzThingHandlerOSGiTest {
                 "</devicelist>";
         //@formatter:on
 
-        Unmarshaller u = JAXBUtils.JAXBCONTEXT.createUnmarshaller();
-        DevicelistModel devices = (DevicelistModel) u.unmarshal(new StringReader(xml));
+        Unmarshaller u = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
+        DeviceListModel devices = (DeviceListModel) u.unmarshal(new StringReader(xml));
         assertNotNull(devices);
         assertEquals(1, devices.getDevicelist().size());
 
