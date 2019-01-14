@@ -115,6 +115,12 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.dsmr/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-elerotransmitterstick" description="Elero Transmitterstick Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-serial</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.elerotransmitterstick/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-enocean" description="EnOcean Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-serial</feature>
