@@ -127,12 +127,24 @@ public class NeatoRobot {
                 request.addParam("modifier", 1);
             } else if ("minimal-2".equalsIgnoreCase(houseCleaningStr)) {
                 request.addParam("navigationMode", this.state.getCleaning().getNavigationModeValue());
-            } else if ("basic-3".equalsIgnoreCase(houseCleaningStr)) {
-                request.addParam("mode", this.state.getCleaning().getModeValue());
-                request.addParam("category", this.state.getCleaning().getCategoryValue());
-                request.addParam("navigationMode", this.state.getCleaning().getNavigationModeValue());
             } else {
-                logger.error("Unknown service for houseCleaning: {}. Will not start house cleaning!", houseCleaningStr);
+                if (!"basic-3".equalsIgnoreCase(houseCleaningStr) && !"basic-4".equalsIgnoreCase(houseCleaningStr)) {
+                    logger.debug(
+                            "Unknown service for houseCleaning: {}. Will attempt to start cleaning using basic-4 message",
+                            houseCleaningStr);
+                }
+
+                request.addParam("mode", this.state.getCleaning().getModeValue());
+                request.addParam("category", "2");
+
+                Integer navigationMode = this.state.getCleaning().getNavigationModeValue();
+                if (Integer.valueOf(2).equals(this.state.getCleaning().getModeValue())) {
+                    // From the Neato API Docs...
+                    // Note that navigationMode can only be set to 3 if mode is 2,
+                    // otherwise an error will be returned.
+                    navigationMode = 3;
+                }
+                request.addParam("navigationMode", navigationMode);
             }
         } else if ("pause".equalsIgnoreCase(command.toString())) {
             request.setCmd("pauseCleaning");
