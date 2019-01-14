@@ -43,6 +43,7 @@ The following channels are supported for fans:
 | fan-direction           | String       | Indicates the direction in which the fan is turning   |
 | fan-auto                | Switch       | Enable/disable fan auto mode                          |
 | fan-whoosh              | Switch       | Enable/disable fan "whoosh" mode                      |
+| fan-sleep               | Switch       | Enable/disable fan sleep mode                         |
 | fan-smartmode           | String       | Set Smartmode to HEATING, COOLING, or OFF             |
 | fan-learn-minspeed      | Dimmer       | Set minimum fan speed for Smartmode COOLING           |
 | fan-learn-maxspeed      | Dimmer       | Set maximum fan speed for Smartmode COOLING           |
@@ -87,6 +88,7 @@ Switch PorchFanPower                { channel="bigassfan:fan:20F85EDAA56A:fan-po
 Dimmer PorchFanSpeed                { channel="bigassfan:fan:20F85EDAA56A:fan-speed" }
 Switch PorchFanAuto                 { channel="bigassfan:fan:20F85EDAA56A:fan-auto" }
 Switch PorchFanWhoosh               { channel="bigassfan:fan:20F85EDAA56A:fan-whoosh" }
+Switch PorchFanSleep                { channel="bigassfan:fan:20F85EDAA56A:fan-sleep" }
 String PorchFanSmartmode            { channel="bigassfan:fan:20F85EDAA56A:fan-smartmode" }
 Dimmer PorchFanSpeedMin             { channel="bigassfan:fan:20F85EDAA56A:fan-learn-minspeed" }
 Dimmer PorchFanSpeedMax             { channel="bigassfan:fan:20F85EDAA56A:fan-learn-maxspeed" }
