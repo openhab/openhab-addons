@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.smartmeter.internal.sml;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -85,6 +87,7 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
         // read out the whole buffer. We are only interested in the most recent SML file.
         Stack<SmlFile> smlFiles = new Stack<>();
         do {
+            logger.trace("Reading {}. SML message", smlFiles.size() + 1);
             smlFiles.push(TRANSPORT.getSMLFile(is));
         } while (is != null && is.available() > 0);
         if (smlFiles.isEmpty()) {
@@ -124,8 +127,8 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
             }
             // serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT);
             serialPort.notifyOnDataAvailable(true);
-            is = new DataInputStream(serialPort.getInputStream());
-            os = new DataOutputStream(serialPort.getOutputStream());
+            is = new DataInputStream(new BufferedInputStream(serialPort.getInputStream()));
+            os = new DataOutputStream(new BufferedOutputStream(serialPort.getOutputStream()));
         } else {
             throw new IllegalStateException(MessageFormat.format("No provider for port {0} found", getPortName()));
         }
