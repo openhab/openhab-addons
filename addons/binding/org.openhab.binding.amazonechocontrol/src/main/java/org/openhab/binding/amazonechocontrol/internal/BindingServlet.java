@@ -100,7 +100,7 @@ public class BindingServlet extends HttpServlet {
 
         StringBuilder html = new StringBuilder();
         html.append("<html><head><title>" + StringEscapeUtils.escapeHtml(BINDING_NAME) + "</title><head><body>");
-        html.append("<h1>" + StringEscapeUtils.escapeHtml(BINDING_NAME) + " Beta 2.5 (2 PRE)</h1>");
+        html.append("<h1>" + StringEscapeUtils.escapeHtml(BINDING_NAME) + " Beta 2.5 (3)</h1>");
 
         synchronized (accountHandlers) {
             if (accountHandlers.isEmpty()) {

@@ -12,6 +12,9 @@ import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBi
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
@@ -24,6 +27,7 @@ import javax.measure.quantity.Time;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
@@ -52,6 +56,7 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAscendingAlarm.A
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates.BluetoothState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates.PairedDevice;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonCommandPayloadPushNotificationChange;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonCommandPayloadPushVolumeChange;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDeviceNotificationState.DeviceNotificationState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
@@ -682,6 +687,7 @@ public class EchoHandler extends BaseThingHandler {
             };
             if (command instanceof RefreshType) {
                 waitForUpdate = 0;
+                account.forceCheckData();
             }
             if (waitForUpdate == 0) {
                 doRefresh.run();
@@ -705,7 +711,11 @@ public class EchoHandler extends BaseThingHandler {
             }
             this.ignoreVolumeChange = scheduler.schedule(this::stopIgnoreVolumeChange, 2000, TimeUnit.MILLISECONDS);
         }
-        connection.textToSpeech(device, text, textToSpeechVolume, lastKnownVolume);
+        if (text.startsWith("<speak>") && text.endsWith("</speak>")) {
+            connection.sendAnnouncement(device, text, null, textToSpeechVolume, lastKnownVolume);
+        } else {
+            connection.textToSpeech(device, text, textToSpeechVolume, lastKnownVolume);
+        }
     }
 
     private void stopCurrentNotification() {
@@ -1176,6 +1186,9 @@ public class EchoHandler extends BaseThingHandler {
                 || StringUtils.startsWithIgnoreCase(description.firstUtteranceId, "TextClient:")) {
             return;
         }
+        if (StringUtils.isEmpty(description.firstStreamId)) {
+            return;
+        }
         String spokenText = description.summary;
         if (spokenText != null && StringUtils.isNotEmpty(spokenText)) {
             // remove wake word
@@ -1228,5 +1241,68 @@ public class EchoHandler extends BaseThingHandler {
                     updateState(account, device, null, null, null, null, null, null);
                 }
         }
+    }
+
+    public void updateNotifications(ZonedDateTime currentTime, ZonedDateTime now,
+            @Nullable JsonCommandPayloadPushNotificationChange pushPayload, JsonNotificationResponse[] notifications) {
+        Device device = this.device;
+        if (device == null) {
+            return;
+        }
+
+        ZonedDateTime nextReminder = null;
+        ZonedDateTime nextAlarm = null;
+        ZonedDateTime nextMusicAlarm = null;
+        ZonedDateTime nextTimer = null;
+        for (JsonNotificationResponse notification : notifications) {
+            if (StringUtils.equals(notification.deviceSerialNumber, device.serialNumber)) {
+                // notification for this device
+                if (StringUtils.equals(notification.status, "ON")) {
+                    if (StringUtils.equals(notification.type, "Reminder")) {
+                        String offset = ZoneId.systemDefault().getRules().getOffset(Instant.now()).toString();
+                        ZonedDateTime alarmTime = ZonedDateTime
+                                .parse(notification.originalDate + "T" + notification.originalTime + offset);
+                        if (StringUtils.isNotBlank(notification.recurringPattern) && alarmTime.isBefore(now)) {
+                            continue; // Ignore recurring entry if alarm time is before now
+                        }
+                        if (nextReminder == null || alarmTime.isBefore(nextReminder)) {
+                            nextReminder = alarmTime;
+                        }
+                    } else if (StringUtils.equals(notification.type, "Timer")) {
+                        // use remaining time
+                        ZonedDateTime alarmTime = currentTime.plusNanos(notification.remainingTime * 1000000);
+                        if (nextTimer == null || alarmTime.isBefore(nextTimer)) {
+                            nextTimer = alarmTime;
+                        }
+                    } else if (StringUtils.equals(notification.type, "Alarm")) {
+                        String offset = ZoneId.systemDefault().getRules().getOffset(Instant.now()).toString();
+                        ZonedDateTime alarmTime = ZonedDateTime
+                                .parse(notification.originalDate + "T" + notification.originalTime + offset);
+                        if (StringUtils.isNotBlank(notification.recurringPattern) && alarmTime.isBefore(now)) {
+                            continue; // Ignore recurring entry if alarm time is before now
+                        }
+                        if (nextAlarm == null || alarmTime.isBefore(nextAlarm)) {
+                            nextAlarm = alarmTime;
+                        }
+                    } else if (StringUtils.equals(notification.type, "MusicAlarm")) {
+                        String offset = ZoneId.systemDefault().getRules().getOffset(Instant.now()).toString();
+                        ZonedDateTime alarmTime = ZonedDateTime
+                                .parse(notification.originalDate + "T" + notification.originalTime + offset);
+                        if (StringUtils.isNotBlank(notification.recurringPattern) && alarmTime.isBefore(now)) {
+                            continue; // Ignore recurring entry if alarm time is before now
+                        }
+                        if (nextMusicAlarm == null || alarmTime.isBefore(nextAlarm)) {
+                            nextMusicAlarm = alarmTime;
+                        }
+                    }
+                }
+            }
+        }
+
+        updateState(CHANNEL_NEXT_REMINDER, nextReminder == null ? UnDefType.UNDEF : new DateTimeType(nextReminder));
+        updateState(CHANNEL_NEXT_ALARM, nextAlarm == null ? UnDefType.UNDEF : new DateTimeType(nextAlarm));
+        updateState(CHANNEL_NEXT_MUSIC_ALARM,
+                nextMusicAlarm == null ? UnDefType.UNDEF : new DateTimeType(nextMusicAlarm));
+        updateState(CHANNEL_NEXT_TIMER, nextTimer == null ? UnDefType.UNDEF : new DateTimeType(nextTimer));
     }
 }

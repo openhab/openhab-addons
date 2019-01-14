@@ -19,9 +19,9 @@
 			<channel id="mediaProgressTime" typeId="mediaProgressTime" />
 			<channel id="mediaLength" typeId="mediaLength" />
 			<channel id="volume" typeId="volume" />
-            <channel id="equalizerTreble" typeId="equalizerTreble" />
+			<channel id="equalizerTreble" typeId="equalizerTreble" />
 			<channel id="equalizerMidrange" typeId="equalizerMidrange" />
-            <channel id="equalizerBass" typeId="equalizerBass" />
+			<channel id="equalizerBass" typeId="equalizerBass" />
 			<channel id="shuffle" typeId="shuffle" />
 			<channel id="imageUrl" typeId="imageUrl" />
 			<channel id="title" typeId="title" />
@@ -39,7 +39,11 @@
 			<channel id="textToSpeech" typeId="textToSpeech" />
 			<channel id="textToSpeechVolume" typeId="textToSpeechVolume" />
 			<channel id="remind" typeId="remind" />
+			<channel id="nextReminder" typeId="nextReminder" />
 			<channel id="playAlarmSound" typeId="playAlarmSound" />
+			<channel id="nextAlarm" typeId="nextAlarm" />
+			<channel id="nextMusicAlarm" typeId="nextMusicAlarm" />
+			<channel id="nextTimer" typeId="nextTimer" />
 			<channel id="startRoutine" typeId="startRoutine" />
 			<channel id="bluetoothMAC" typeId="bluetoothMAC" />
 			<channel id="bluetooth" typeId="bluetooth" />
@@ -68,9 +72,9 @@
 			<channel id="mediaProgressTime" typeId="mediaProgressTime" />
 			<channel id="mediaLength" typeId="mediaLength" />
 			<channel id="volume" typeId="volume" />
-            <channel id="equalizerTreble" typeId="equalizerTreble" />
-            <channel id="equalizerMidrange" typeId="equalizerMidrange" />
-            <channel id="equalizerBass" typeId="equalizerBass" />
+			<channel id="equalizerTreble" typeId="equalizerTreble" />
+			<channel id="equalizerMidrange" typeId="equalizerMidrange" />
+			<channel id="equalizerBass" typeId="equalizerBass" />
 			<channel id="shuffle" typeId="shuffle" />
 			<channel id="imageUrl" typeId="imageUrl" />
 			<channel id="title" typeId="title" />
@@ -88,7 +92,11 @@
 			<channel id="textToSpeech" typeId="textToSpeech" />
 			<channel id="textToSpeechVolume" typeId="textToSpeechVolume" />
 			<channel id="remind" typeId="remind" />
+			<channel id="nextReminder" typeId="nextReminder" />
 			<channel id="playAlarmSound" typeId="playAlarmSound" />
+			<channel id="nextAlarm" typeId="nextAlarm" />
+			<channel id="nextMusicAlarm" typeId="nextMusicAlarm" />
+			<channel id="nextTimer" typeId="nextTimer" />
 			<channel id="startRoutine" typeId="startRoutine" />
 			<channel id="bluetoothMAC" typeId="bluetoothMAC" />
 			<channel id="bluetooth" typeId="bluetooth" />
@@ -117,9 +125,9 @@
 			<channel id="mediaProgressTime" typeId="mediaProgressTime" />
 			<channel id="mediaLength" typeId="mediaLength" />
 			<channel id="volume" typeId="volume" />
-            <channel id="equalizerTreble" typeId="equalizerTreble" />
-            <channel id="equalizerMidrange" typeId="equalizerMidrange" />
-            <channel id="equalizerBass" typeId="equalizerBass" />
+			<channel id="equalizerTreble" typeId="equalizerTreble" />
+			<channel id="equalizerMidrange" typeId="equalizerMidrange" />
+			<channel id="equalizerBass" typeId="equalizerBass" />
 			<channel id="shuffle" typeId="shuffle" />
 			<channel id="imageUrl" typeId="imageUrl" />
 			<channel id="title" typeId="title" />
@@ -137,7 +145,11 @@
 			<channel id="textToSpeech" typeId="textToSpeech" />
 			<channel id="textToSpeechVolume" typeId="textToSpeechVolume" />
 			<channel id="remind" typeId="remind" />
+			<channel id="nextReminder" typeId="nextReminder" />
 			<channel id="playAlarmSound" typeId="playAlarmSound" />
+			<channel id="nextAlarm" typeId="nextAlarm" />
+			<channel id="nextMusicAlarm" typeId="nextMusicAlarm" />
+			<channel id="nextTimer" typeId="nextTimer" />
 			<channel id="startRoutine" typeId="startRoutine" />
 			<channel id="bluetoothMAC" typeId="bluetoothMAC" />
 			<channel id="bluetooth" typeId="bluetooth" />
@@ -356,7 +368,7 @@
 	<channel-type id="textToSpeech" advanced="true">
 		<item-type>String</item-type>
 		<label>Speak</label>
-		<description>Speak the text (Write only)</description>
+		<description>Speak the text (Write only). It is possible to use plain text or SSML: &lt;speak&gt;I want to tell you a secret.&lt;amazon:effect name=&quot;whispered&quot;&gt;I am not a real human.&lt;/amazon:effect&gt;.Can you believe it?&lt;/speak&gt;</description>
 	</channel-type>
 	<channel-type id="textToSpeechVolume" advanced="true">
 		<item-type>Dimmer</item-type>
@@ -413,5 +425,29 @@
 		<label>Ascending alarm</label>
 		<description>Ascending alarm up to the configured volume</description>
 		<state readOnly="false" />
+	</channel-type>
+	<channel-type id="nextReminder" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Next reminder</label>
+		<description>Next Reminder</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="nextAlarm" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Next alarm</label>
+		<description>Next alarm</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="nextMusicAlarm" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Next music alarm</label>
+		<description>Next music alarm</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="nextTimer" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Next timer</label>
+		<description>Next timer</description>
+		<state readOnly="true" />
 	</channel-type>
 </thing:thing-descriptions>
