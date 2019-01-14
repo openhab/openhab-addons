@@ -10,7 +10,7 @@
 		<category>WallSwitch</category>
 
 		<channels>
-			<channel id="brightness" typeId="brightness" />
+			<channel id="brightness" typeId="system.brightness" />
 			<channel id="rssi" typeId="rssi" />
 		</channels>
 

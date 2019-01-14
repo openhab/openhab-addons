@@ -10,7 +10,7 @@
 		<category>Lightbulb</category>
 
 		<channels>
-			<channel id="brightness" typeId="brightness" />
+			<channel id="brightness" typeId="system.brightness" />
 			<channel id="power" typeId="power" />
 			<channel id="rssi" typeId="rssi" />
 		</channels>
