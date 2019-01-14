@@ -23,6 +23,9 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.MetricPrefix;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -181,18 +184,39 @@ abstract class HusdataHandler extends BaseThingHandler {
 
         switch (dataType) {
             case 0x00: // Degrees
+                updateState(channelID, new QuantityType<>(value / 10.0, SmartHomeUnits.DEGREE_ANGLE));
+                break;
+
             case 0x02: // Number
-            case 0x03: // Percent
-            case 0x04: // Ampere
-            case 0x05: // kWh
                 updateState(channelID, new DecimalType(value / 10.0));
                 break;
 
-            case 0x01: // Switch
+            case 0x03: // Percent
+                updateState(channelID, new QuantityType<>(value / 10.0, SmartHomeUnits.PERCENT));
+                break;
+
+            case 0x04: // Ampere
+                updateState(channelID, new QuantityType<>(value / 10.0, SmartHomeUnits.AMPERE));
+                break;
+
+            case 0x05: // kWh
+                updateState(channelID, new QuantityType<>(value / 10.0, SmartHomeUnits.KILOWATT_HOUR));
+                break;
+
             case 0x06: // Hours
+                updateState(channelID, new QuantityType<>(value, SmartHomeUnits.HOUR));
+                break;
+
             case 0x07: // Minutes
-            case 0x08: // Degree minutes
+                updateState(channelID, new QuantityType<>(value, SmartHomeUnits.MINUTE));
+                break;
+
             case 0x09: // kw
+                updateState(channelID, new QuantityType<>(value, MetricPrefix.KILO(SmartHomeUnits.WATT)));
+                break;
+
+            case 0x01: // Switch
+            case 0x08: // Degree minutes
             case 0x0A: // Pulses (For S0 El-meter pulse counter)
                 updateState(channelID, new DecimalType(value));
                 break;
