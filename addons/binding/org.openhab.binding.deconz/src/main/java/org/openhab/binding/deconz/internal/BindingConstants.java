@@ -41,6 +41,8 @@ public class BindingConstants {
     public static final String CHANNEL_LAST_UPDATED = "last_updated";
     public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_CONSUMPTION = "consumption";
+    public static final String CHANNEL_VOLTAGE = "voltage";
+    public static final String CHANNEL_CURRENT = "current";
     public static final String CHANNEL_VALUE = "value";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_HUMIDITY = "humidity";

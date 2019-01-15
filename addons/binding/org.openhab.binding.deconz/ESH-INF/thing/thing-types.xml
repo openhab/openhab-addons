@@ -75,7 +75,24 @@
 		<item-type>Number:Power</item-type>
 		<label>Power</label>
 		<description>Current power usage</description>
+		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage</label>
+		<description>Current voltage</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current</label>
+		<description>Current current</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 	<thing-type id="consumptionsensor">

@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.deconz.internal.handler;
 
-import static org.eclipse.smarthome.core.library.unit.MetricPrefix.HECTO;
+import static org.eclipse.smarthome.core.library.unit.MetricPrefix.*;
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
 
 import java.time.LocalDateTime;
@@ -19,6 +19,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.ElectricCurrent;
+import javax.measure.quantity.ElectricPotential;
 import javax.measure.quantity.Energy;
 import javax.measure.quantity.Illuminance;
 import javax.measure.quantity.Power;
@@ -204,9 +206,17 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
                         createChannel(CHANNEL_DARK);
                     }
 
-                    // ZHAConsumption - e.g Bitron 902010/25
-                    if (newState.state.power instanceof Integer) {
+                    // ZHAConsumption - e.g Bitron 902010/25 or Heiman SmartPlug
+                    if (newState.state.power instanceof Float) {
                         createChannel(CHANNEL_POWER);
+                    }
+
+                    // ZHAPower - e.g. Heiman SmartPlug
+                    if (newState.state.voltage instanceof Float) {
+                        createChannel(CHANNEL_VOLTAGE);
+                    }
+                    if (newState.state.current instanceof Float) {
+                        createChannel(CHANNEL_CURRENT);
                     }
 
                     // Initial data
@@ -280,8 +290,10 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
         Integer status = state.status;
         Boolean presence = state.presence;
         Boolean open = state.open;
-        Integer power = state.power;
-        Integer consumption = state.consumption;
+        Float power = state.power;
+        Float consumption = state.consumption;
+        Float voltage = state.voltage;
+        Float current = state.current;
         Integer lux = state.lux;
         Integer lightlevel = state.lightlevel;
         Float temperature = state.temperature;
@@ -314,6 +326,16 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
             case CHANNEL_CONSUMPTION:
                 if (consumption != null) {
                     updateState(channelUID, new QuantityType<Energy>(consumption, SmartHomeUnits.WATT_HOUR));
+                }
+                break;
+            case CHANNEL_VOLTAGE:
+                if (voltage != null) {
+                    updateState(channelUID, new QuantityType<ElectricPotential>(voltage, SmartHomeUnits.VOLT));
+                }
+                break;
+            case CHANNEL_CURRENT:
+                if (current != null) {
+                    updateState(channelUID, new QuantityType<ElectricCurrent>(current, MILLI(SmartHomeUnits.AMPERE)));
                 }
                 break;
             case CHANNEL_LIGHT_LUX:
