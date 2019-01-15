@@ -14,6 +14,16 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="indoorSensor">
+		<label>Indoor Sensor</label>
+		<description>Indoor Sensor</description>
+		<channels>
+			<channel id="temperature" typeId="temperature" />
+			<channel id="relativeHumidity" typeId="relativeHumidity" />
+			<channel id="batteryIndicator" typeId="batteryIndicator" />
+		</channels>
+	</channel-group-type>
+
 	<channel-group-type id="remoteSensor">
 		<label>Remote Sensor</label>
 		<description>Remote Sensor</description>

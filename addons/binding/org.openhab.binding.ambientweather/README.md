@@ -7,9 +7,10 @@ The binding uses Ambient Weather's real-time API, so updates from weather statio
 
 The binding currently supports weather data from these weather stations
 
-- WS-8482, 
-- WS-1400-IP and WS-1401-IP,
-- WS-2902A.
+- WS-0900-IP,
+- WS-1400-IP / WS-1401-IP,
+- WS-2902A, and
+- WS-8482.
 
 Other stations can be added relatively easily with changes in just several places in the source code.
 

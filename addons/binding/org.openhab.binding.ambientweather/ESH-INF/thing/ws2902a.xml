@@ -20,7 +20,7 @@
 				<label>Weather Data</label>
 				<description></description>
 			</channel-group>
-			<channel-group id="indoorSensor" typeId="remoteSensor">
+			<channel-group id="indoorSensor" typeId="indoorSensor">
 				<label>Indoor Sensor</label>
 				<description></description>
 			</channel-group>

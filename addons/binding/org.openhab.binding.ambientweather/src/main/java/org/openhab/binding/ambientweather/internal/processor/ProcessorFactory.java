@@ -28,6 +28,7 @@ public class ProcessorFactory {
     private static final Ws1400ipProcessor WS1400IP_PROCESSOR = new Ws1400ipProcessor();
     private static final Ws2902aProcessor WS2902A_PROCESSOR = new Ws2902aProcessor();
     private static final Ws8482Processor WS8482_PROCESSOR = new Ws8482Processor();
+    private static final Ws0900ipProcessor WS0900IP_PROCESSOR = new Ws0900ipProcessor();
 
     public static AbstractProcessor getProcessor(Thing thing) throws ProcessorNotFoundException {
         // Return the processor for this thing type
@@ -41,6 +42,9 @@ public class ProcessorFactory {
             }
             case "ambientweather:ws8482": {
                 return WS8482_PROCESSOR;
+            }
+            case "ambientweather:ws0900ip": {
+                return WS0900IP_PROCESSOR;
             }
         }
         throw new ProcessorNotFoundException("No processor for thing type " + thingType);

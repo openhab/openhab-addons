@@ -147,7 +147,6 @@ public abstract class AbstractProcessor {
         } else if (windDirectionDegrees > 348.75 && windDirectionDegrees <= 360) {
             result = "N";
         }
-
         return result;
     }
 }
