@@ -105,17 +105,18 @@ Any help/contribution is appreciated!
 
 The binding has been successfully tested with below hardware configuration:
 
-SML PUSH mode:
+### SML PUSH mode
 
 - EMH EDL300 meter connected the IR-Reader USB from open hardware project in volkszaehler
 - EMH eHZ-IW8E2A
 - ISKRA MT681
 - EMH eHZ-K
 
-IEC 62056-21 Mode C:
+### IEC 62056-21 Mode C
 
 - Apator EC3 with IR-Reader from volkszaehler
+- Landis+Gyr E650 with IR-Reader from volkszaehler
 
-IEC 62056-21 Mode D:
+### IEC 62056-21 Mode D
 
 - Hager EHZ 361Z5 and EHZ 161L5
