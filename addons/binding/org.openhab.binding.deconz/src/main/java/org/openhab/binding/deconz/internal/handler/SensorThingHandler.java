@@ -196,26 +196,26 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
 
                     // some Xiaomi sensors
                     Float temperature = newState.config.temperature;
-                    if (temperature instanceof Float) {
+                    if (temperature != null) {
                         createAndUpdateChannelIfExists(CHANNEL_TEMPERATURE,
                                 new QuantityType<Temperature>(temperature / 100, SIUnits.CELSIUS));
                     }
 
                     // ZHAPresence - e.g. IKEA TRÅDFRI motion sensor
-                    if (newState.state.dark instanceof Boolean) {
+                    if (newState.state.dark != null) {
                         createChannel(CHANNEL_DARK);
                     }
 
                     // ZHAConsumption - e.g Bitron 902010/25 or Heiman SmartPlug
-                    if (newState.state.power instanceof Float) {
+                    if (newState.state.power != null) {
                         createChannel(CHANNEL_POWER);
                     }
 
                     // ZHAPower - e.g. Heiman SmartPlug
-                    if (newState.state.voltage instanceof Float) {
+                    if (newState.state.voltage != null) {
                         createChannel(CHANNEL_VOLTAGE);
                     }
-                    if (newState.state.current instanceof Float) {
+                    if (newState.state.current != null) {
                         createChannel(CHANNEL_CURRENT);
                     }
 
