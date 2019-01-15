@@ -11,11 +11,11 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
 
 The binding supports the following things:
 
-###Bridge
+#### Bridge
 **ip150** - the bridge is used to communicate with IP150 ethernet module attached to Paradox security system.
 Supported commands: LOGOUT, LOGIN, RESET
 
-###Things
+#### Things
 **panel** - this is representation of Paradox panel. Has the general information about the main panel module, i.e. serial number, firmware/hardware/software versions, panel type, etc...<br>
 **partition** - representation of Paradox partition - currently provides "state"(armed, disarmed, in alarm), partition label and in channel additional states are aggregated additional states which are booleans (ready to arm, trouble, force instant arm ready, etc...)<br>
 **zone** - Paradox zone. Can be anything - magnetic, motion or any other opened/closed sensor. State channel is contact, low battery and is tampered channels are boolean, label is String<br>
@@ -94,6 +94,33 @@ Supported commands: LOGOUT, LOGIN, RESET
 ### Example sitemap configuration
 
 ```java
-   Text label="Security" icon="lock" {
-
+   Text label="Security" icon="lock"{
+        Frame label="Panel"{
+            Text item=panelState valuecolor=[panelState=="Online"="green", panelState=="Offline"="red"]
+            Text item=panelType
+            Text item=serialNumber
+            Text item=hardwareVersion
+            Text item=applicationVersion
+            Text item=bootloaderVersion
+        }
+        Frame label="IP150 communication" {
+            Switch item=paradoxSendCommand mappings=["LOGOUT"="Logout", "LOGIN"="Login", "RESET"="Reset"]
+        }
+        Frame label="Partitions" {
+            Text item=partition1State valuecolor=[partition1State=="Disarmed"="green", partition1State=="Armed"="red"]
+            Text item=partition1AdditionalStates
+            Text item=partition2State valuecolor=[partition2State=="Disarmed"="green", partition2State=="Armed"="red"]
+            Text item=partition2AdditionalStates
+            Text item=partition3State valuecolor=[partition3State=="Disarmed"="green", partition3State=="Armed"="red"]
+            Text item=partition3AdditionalStates
+            Text item=partition4State valuecolor=[partition4State=="Disarmed"="green", partition4State=="Armed"="red"]
+            Text item=partition4AdditionalStates
+        }
+        Frame label="Zones" {
+            Group item=Floor1MUC
+            Group item=Floor2MUC
+            Group item=Floor3MUC
+            Group item=PIRSensors
+        }
+    }
 ```
