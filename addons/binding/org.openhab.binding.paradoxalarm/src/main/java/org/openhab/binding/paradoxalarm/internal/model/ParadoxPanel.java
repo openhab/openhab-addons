@@ -53,7 +53,7 @@ public class ParadoxPanel {
         panelInformation = new ParadoxInformation(panelInfoBytes, parser);
 
         if (isPanelSupported()) {
-            logger.debug("Found supported panel - " + panelInformation);
+            logger.info("Found supported panel {} ", panelInformation);
             initializePartitions();
             initializeZones();
         } else {

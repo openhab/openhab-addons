@@ -13,7 +13,7 @@
 		<description>Paradox Partition</description>
 
 		<channels>
-			<channel id="label" typeId="label" />
+			<channel id="label" typeId="partitionLabel" />
 			<channel id="state" typeId="state" />
 			<channel id="additionalStates" typeId="additionalState" />
 		</channels>
@@ -23,15 +23,10 @@
 				<label>Partition Id</label>
 				<description>This is the partition ID of the Paradox partition (1-8 for Evo)</description>
 			</parameter>
-			<parameter name="refresh" type="integer" min="1" max="600">
-				<label>Refresh interval</label>
-				<description>Specifies the refresh interval in seconds.</description>
-				<default>30</default>
-			</parameter>
 		</config-description>
 	</thing-type>
 
-	<channel-type id="label">
+	<channel-type id="partitionLabel">
 		<item-type>String</item-type>
 		<label>Partition label</label>
 		<description>Label of partition</description>

@@ -15,13 +15,8 @@ package org.openhab.binding.paradoxalarm.internal.handlers;
  */
 public class EntityConfiguration {
     private int id;
-    private int refresh;
 
     public int getId() {
         return id;
-    }
-
-    public int getRefresh() {
-        return refresh;
     }
 }

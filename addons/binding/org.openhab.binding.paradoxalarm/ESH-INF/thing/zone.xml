@@ -12,7 +12,7 @@
 		<description>Paradox zone</description>
 
 		<channels>
-			<channel id="label" typeId="label" />
+			<channel id="label" typeId="zoneLabel" />
 			<channel id="isOpened" typeId="isOpenedState" />
 			<channel id="isTampered" typeId="isTamperedState" />
 			<channel id="hasLowBattery" typeId="hasLowBatteryState" />
@@ -23,35 +23,30 @@
 				<label>Zone Id</label>
 				<description>This is the zone ID of the Paradox zone</description>
 			</parameter>
-			<parameter name="refresh" type="integer" min="1" max="600">
-				<label>Refresh interval</label>
-				<description>Specifies the refresh interval in seconds.</description>
-				<default>30</default>
-			</parameter>
 		</config-description>
 	</thing-type>
 
-	<channel-type id="label">
+	<channel-type id="zoneLabel">
 		<item-type>String</item-type>
 		<label>Zone label</label>
 		<description>Label of zone</description>
 		<state readOnly="true" pattern="%s" />
 	</channel-type>
 	<channel-type id="isOpenedState">
-		<item-type>boolean</item-type>
+		<item-type>contact</item-type>
 		<label>Zone state</label>
 		<description>State of zone</description>
 		<state readOnly="true" pattern="%s" />
 	</channel-type>
 	<channel-type id="isTamperedState">
 		<item-type>boolean</item-type>
-		<label>Zone state</label>
+		<label>Is tampered</label>
 		<description>State of zone</description>
 		<state readOnly="true" pattern="%s" />
 	</channel-type>
 	<channel-type id="hasLowBatteryState">
 		<item-type>boolean</item-type>
-		<label>Zone state</label>
+		<label>Zone has low battery</label>
 		<description>State of zone</description>
 		<state readOnly="true" pattern="%s" />
 	</channel-type>

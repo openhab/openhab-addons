@@ -11,7 +11,6 @@ package org.openhab.binding.paradoxalarm.internal.handlers;
 import static org.openhab.binding.paradoxalarm.internal.handlers.ParadoxAlarmBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -35,9 +34,6 @@ import org.slf4j.LoggerFactory;
 public class ParadoxPanelHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ParadoxPanelHandler.class);
-
-    @Nullable
-    private ParadoxPanelConfiguration config;
 
     public ParadoxPanelHandler(Thing thing) {
         super(thing);
@@ -66,7 +62,6 @@ public class ParadoxPanelHandler extends BaseThingHandler {
     }
 
     private void initializeModel() throws Exception, ParadoxBindingException {
-        config = getConfigAs(ParadoxPanelConfiguration.class);
         ParadoxPanel.getInstance();
     }
 

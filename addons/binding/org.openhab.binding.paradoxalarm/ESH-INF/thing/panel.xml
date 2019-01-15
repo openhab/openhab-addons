@@ -10,45 +10,25 @@
 			<bridge-type-ref id="ip150" />
 		</supported-bridge-type-refs>
 
-		<label>Paradox system</label>
-		<description>Paradox Partition status</description>
+		<label>Paradox panel</label>
+		<description>Paradox panel various information</description>
 
 		<channels>
-			<channel id="state" typeId="state" />
+			<channel id="state" typeId="panelState" />
 			<channel id="serialNumber" typeId="serialNumber" />
 			<channel id="panelType" typeId="panelType" />
 			<channel id="hardwareVersion" typeId="hardwareVersion" />
 			<channel id="applicationVersion" typeId="applicationVersion" />
 			<channel id="bootloaderVersion" typeId="bootloaderVersion" />
 		</channels>
-
-		<config-description>
-			<parameter name="refresh" type="integer" min="1" max="600">
-				<label>Refresh interval</label>
-				<description>Specifies the refresh interval in seconds.</description>
-				<default>5</default>
-			</parameter>
-			<parameter name="ip150Password" type="text">
-				<label>IP150 Password</label>
-				<description>Password for accessing IP150</description>
-			</parameter>
-			<parameter name="pcPassword" type="text">
-				<label>PC Password</label>
-				<description>PC Password (section 3012 of configuration)</description>
-				<default>0000</default>
-			</parameter>
-			<parameter name="ipAddress" type="text">
-				<label>IP Address</label>
-				<description>IP address of IP150</description>
-			</parameter>
-			<parameter name="port" type="integer">
-				<label>Port</label>
-				<description>Port to connect to IP150</description>
-				<default>10000</default>
-			</parameter>
-		</config-description>
 	</thing-type>
 
+    <channel-type id="panelState">
+        <item-type>String</item-type>
+        <label>Panel state</label>
+        <description>Shows the state of the communication to panel (online/offline)</description>
+        <state readOnly="true" pattern="%s" />
+    </channel-type>
 	<channel-type id="serialNumber">
 		<item-type>String</item-type>
 		<label>Serial number</label>
@@ -75,8 +55,8 @@
 	</channel-type>
 	<channel-type id="bootloaderVersion">
 		<item-type>String</item-type>
-		<label>Bootloader version</label>
-		<description>Bootloader version</description>
+		<label>Boot loader version</label>
+		<description>Boot loader version</description>
 		<state readOnly="true" pattern="%s" />
 	</channel-type>
 

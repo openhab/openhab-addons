@@ -6,8 +6,8 @@
 
 	<!-- Sample Thing Type -->
 	<bridge-type id="ip150">
-		<label>Paradox system</label>
-		<description>Paradox Partition status</description>
+		<label>Paradox IP150 module connector</label>
+		<description>Paradox IP150 module connector</description>
 
 		<channels>
 			<channel id="communicationCommand" typeId="command" />
@@ -19,7 +19,7 @@
 				<description>Specifies the refresh interval in seconds.</description>
 				<default>5</default>
 			</parameter>
-			<parameter name="panelType" type="text" required="true">
+			<parameter name="panelType" type="text" required="false">
 				<label>PanelType</label>
 				<description>PanelType</description>
 			</parameter>

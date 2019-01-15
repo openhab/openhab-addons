@@ -50,9 +50,9 @@ public class ParadoxAlarmBindingConstants {
 
     public static final String PARTITION_ADDITIONAL_STATES_CHANNEL_UID = "additionalStates";
     public static final String PARTITION_STATE_CHANNEL_UID = "state";
-    public static final String PARTITION_LABEL_CHANNEL_UID = "label";
+    public static final String PARTITION_LABEL_CHANNEL_UID = "partitionLabel";
 
-    public static final String ZONE_LABEL_CHANNEL_UID = "label";
+    public static final String ZONE_LABEL_CHANNEL_UID = "zoneLabel";
     public static final String ZONE_IS_OPENED_CHANNEL_UID = "isOpened";
     public static final String ZONE_IS_TAMPERED_CHANNEL_UID = "isTampered";
     public static final String ZONE_HAS_LOW_BATTERY_CHANNEL_UID = "hasLowBattery";
