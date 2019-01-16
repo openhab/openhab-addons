@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
  * Parsers for the pulseaudio return strings
  *
  * @author Tobias Bräutigam - Initial contribution
- * @since 1.2.0
  */
 public class Parser {
     private static final Logger LOGGER = LoggerFactory.getLogger(Parser.class);
@@ -49,7 +48,7 @@ public class Parser {
      * @return list of modules
      */
     public static List<Module> parseModules(String raw) {
-        List<Module> modules = new ArrayList<Module>();
+        List<Module> modules = new ArrayList<>();
         String[] parts = raw.split("index: ");
         if (parts.length <= 1) {
             return modules;
@@ -57,7 +56,7 @@ public class Parser {
         // skip first part
         for (int i = 1; i < parts.length; i++) {
             String[] lines = parts[i].split("\n");
-            Hashtable<String, String> properties = new Hashtable<String, String>();
+            Hashtable<String, String> properties = new Hashtable<>();
             int id = 0;
             try {
                 id = Integer.valueOf(lines[0].trim());
@@ -94,16 +93,16 @@ public class Parser {
      * @return list of sinks
      */
     public static Collection<Sink> parseSinks(String raw, PulseaudioClient client) {
-        Hashtable<String, Sink> sinks = new Hashtable<String, Sink>();
+        Hashtable<String, Sink> sinks = new Hashtable<>();
         String[] parts = raw.split("index: ");
         if (parts.length <= 1) {
             return sinks.values();
         }
         // skip first part
-        List<Sink> combinedSinks = new ArrayList<Sink>();
+        List<Sink> combinedSinks = new ArrayList<>();
         for (int i = 1; i < parts.length; i++) {
             String[] lines = parts[i].split("\n");
-            Hashtable<String, String> properties = new Hashtable<String, String>();
+            Hashtable<String, String> properties = new Hashtable<>();
             int id = 0;
             try {
                 id = Integer.valueOf(lines[0].trim());
@@ -163,14 +162,14 @@ public class Parser {
      * @return list of sink-inputs
      */
     public static List<SinkInput> parseSinkInputs(String raw, PulseaudioClient client) {
-        List<SinkInput> items = new ArrayList<SinkInput>();
+        List<SinkInput> items = new ArrayList<>();
         String[] parts = raw.split("index: ");
         if (parts.length <= 1) {
             return items;
         }
         for (int i = 1; i < parts.length; i++) {
             String[] lines = parts[i].split("\n");
-            Hashtable<String, String> properties = new Hashtable<String, String>();
+            Hashtable<String, String> properties = new Hashtable<>();
             int id = 0;
             try {
                 id = Integer.valueOf(lines[0].trim());
@@ -222,7 +221,7 @@ public class Parser {
      * @return list of sources
      */
     public static List<Source> parseSources(String raw, PulseaudioClient client) {
-        List<Source> sources = new ArrayList<Source>();
+        List<Source> sources = new ArrayList<>();
         String[] parts = raw.split("index: ");
         if (parts.length <= 1) {
             return sources;
@@ -230,7 +229,7 @@ public class Parser {
         // skip first part
         for (int i = 1; i < parts.length; i++) {
             String[] lines = parts[i].split("\n");
-            Hashtable<String, String> properties = new Hashtable<String, String>();
+            Hashtable<String, String> properties = new Hashtable<>();
             int id = 0;
             try {
                 id = Integer.valueOf(lines[0].trim());
@@ -281,7 +280,7 @@ public class Parser {
      * @return list of source-outputs
      */
     public static List<SourceOutput> parseSourceOutputs(String raw, PulseaudioClient client) {
-        List<SourceOutput> items = new ArrayList<SourceOutput>();
+        List<SourceOutput> items = new ArrayList<>();
         String[] parts = raw.split("index: ");
         if (parts.length <= 1) {
             return items;
@@ -289,7 +288,7 @@ public class Parser {
         // skip first part
         for (int i = 1; i < parts.length; i++) {
             String[] lines = parts[i].split("\n");
-            Hashtable<String, String> properties = new Hashtable<String, String>();
+            Hashtable<String, String> properties = new Hashtable<>();
             int id = 0;
             try {
                 id = Integer.valueOf(lines[0].trim());

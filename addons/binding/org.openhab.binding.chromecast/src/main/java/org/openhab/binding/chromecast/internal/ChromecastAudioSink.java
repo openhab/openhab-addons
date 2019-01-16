@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,6 +7,8 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 package org.openhab.binding.chromecast.internal;
+
+import java.util.Objects;
 
 import org.eclipse.smarthome.core.audio.AudioFormat;
 import org.eclipse.smarthome.core.audio.AudioHTTPServer;
@@ -17,12 +19,10 @@ import org.eclipse.smarthome.core.audio.UnsupportedAudioFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Objects;
-
 /**
  * Handles the AudioSink portion of the Chromecast plugin. Note that we store volume in
  *
- * @author Jason Holmes - Initial Author.
+ * @author Jason Holmes - Initial contribution
  */
 public class ChromecastAudioSink {
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -58,8 +58,7 @@ public class ChromecastAudioSink {
             }
         }
 
-        String mimeType = Objects.equals(audioStream.getFormat().getCodec(), AudioFormat.CODEC_MP3)
-                ? "audio/mpeg"
+        String mimeType = Objects.equals(audioStream.getFormat().getCodec(), AudioFormat.CODEC_MP3) ? "audio/mpeg"
                 : "audio/wav";
 
         commander.playMedia("Notification", url, mimeType);

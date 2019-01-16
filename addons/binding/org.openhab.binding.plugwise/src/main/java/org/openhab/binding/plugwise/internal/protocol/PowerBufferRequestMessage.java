@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,8 +16,7 @@ import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
  * Requests the historical pulse measurements at a certain log address from a device (Circle, Circle+, Stealth). This
  * message is answered by a {@link PowerBufferResponseMessage}.
  *
- * @author Karel Goderis
- * @author Wouter Born - Initial contribution
+ * @author Wouter Born, Karel Goderis - Initial contribution
  */
 public class PowerBufferRequestMessage extends Message {
 

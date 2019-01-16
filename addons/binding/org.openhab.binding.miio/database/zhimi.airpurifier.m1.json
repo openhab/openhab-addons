@@ -1,0 +1,196 @@
+{
+	"deviceMapping": {
+		"id": [
+			"zhimi.airpurifier.m1",
+			"zhimi.airpurifier.m2",
+			"zhimi.airpurifier.v1",
+			"zhimi.airpurifier.v2",
+			"zhimi.airpurifier.v3",
+			"zhimi.airpurifier.v5",
+			"zhimi.airpurifier.ma1",
+			"zhimi.airpurifier.sa1",
+			"zhimi.airpurifier.sa2",
+			"zhimi.airpurifier.mb1",
+			"zhimi.airpurifier.mc1"
+		],
+		"channels": [
+			{
+				"property": "power",
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"channelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "mode",
+				"friendlyName": "Mode",
+				"channel": "mode",
+				"type": "String",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_mode",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "humidity",
+				"friendlyName": "Humidity",
+				"channel": "humidity",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "aqi",
+				"friendlyName": "Air Quality Index",
+				"channel": "aqi",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "average_aqi",
+				"friendlyName": "Average Air Quality Index",
+				"channel": "averageaqi",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "led",
+				"friendlyName": "Led Status",
+				"channel": "led",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_led",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "buzzer",
+				"friendlyName": "Buzzer Status",
+				"channel": "buzzer",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_buzzer",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "f1_hour",
+				"friendlyName": "Filter Max Life",
+				"channel": "filtermaxlife",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "f1_hour_used",
+				"friendlyName": "Filter Hours used",
+				"channel": "filterhours",
+				"type": "Number",
+				"refresh": true,
+				"transformation": "SecondsToHours",
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "use_time",
+				"friendlyName": "Run Time",
+				"channel": "usedhours",
+				"type": "Number",
+				"refresh": true,
+				"transformation": "SecondsToHours",
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "motor1_speed",
+				"friendlyName": "Motor Speed",
+				"channel": "motorspeed",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "filter1_life",
+				"friendlyName": "Filter  Life",
+				"channel": "filterlife",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "favorite_level",
+				"friendlyName": "Favorite Level",
+				"channel": "favoritelevel",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": [
+					{
+						"command": "set_level_favorite",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "temp_dec",
+				"friendlyName": "Temperature",
+				"channel": "temperature",
+				"type": "Number",
+				"refresh": true,
+				"transformation": "/10",
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "purify_volume",
+				"friendlyName": "Purivied Volume",
+				"channel": "purifyvolume",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "child_lock",
+				"friendlyName": "Child Lock",
+				"channel": "childlock",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": [
+					{
+						"command": "set_child_lock",
+						"parameterType": "ONOFF"
+					}
+				]
+			}
+		]
+	}
+}

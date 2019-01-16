@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,7 +11,7 @@ package org.openhab.binding.lutron.internal.config;
 import java.math.BigDecimal;
 
 /**
- * Configuration settings for a {@link org.openhab.binding.lutron.handler.DimmerHandler}.
+ * Configuration settings for a {@link org.openhab.binding.lutron.internal.handler.DimmerHandler}.
  *
  * @author Allan Tong - Initial contribution
  */

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,47 +8,43 @@
  */
 package org.openhab.binding.yamahareceiver.internal.state;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants;
+import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants;
 
 /**
  * Basic AVR state (name, version, available zones, etc)
  *
  * @author David Graeff - Initial contribution
- * @author Tomasz Maruszak - DAB support, Spotify support
+ * @author Tomasz Maruszak - DAB support, Spotify support, better feature detection
  */
 public class DeviceInformationState implements Invalidateable {
-    public String host = null;
+    public String host;
     // Some AVR information
-    public String name = "N/A";
-    public String id = "";
-    public String version = "0.0";
-    public List<YamahaReceiverBindingConstants.Zone> zones = new ArrayList<>();
+    public String name;
+    public String id;
+    public String version;
+    public final Set<YamahaReceiverBindingConstants.Zone> zones = new HashSet<>();
+    public final Set<YamahaReceiverBindingConstants.Feature> features = new HashSet<>();
+    /**
+     * Stores additional properties for the device (protocol specific)
+     */
+    public final Map<String, Object> properties = new HashMap<>();
 
-    /**
-     * Flag indicating if DAB input (dual band digital tuner) is supported
-     */
-    public boolean supportDAB = false;
-    /**
-     * Flag indicating if Tuner input is supported
-     */
-    public boolean supportTuner = false;
-    /**
-     * Flag indicating if Spotify input is supported
-     */
-    public boolean supportSpotify = false;
+    public DeviceInformationState() {
+        invalidate();
+    }
 
     // If we lost the connection, invalidate the state.
     @Override
     public void invalidate() {
-        zones.clear();
-        version = "0.0";
+        host = null;
         name = "N/A";
         id = "";
-        supportDAB = false;
-        supportTuner = false;
-        supportSpotify = false;
+        version = "0.0";
+        zones.clear();
+        features.clear();
+        properties.clear();
     }
+
 }

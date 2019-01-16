@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -27,6 +27,9 @@ public class HeadRequestArguments {
     private String scope;
 
     public String getDataCollection() {
+        if (null == dataCollection) {
+            dataCollection = "";
+        }
         return dataCollection;
     }
 
@@ -35,6 +38,9 @@ public class HeadRequestArguments {
     }
 
     public String getDeviceClass() {
+        if (null == deviceClass) {
+            deviceClass = "";
+        }
         return deviceClass;
     }
 
@@ -43,6 +49,9 @@ public class HeadRequestArguments {
     }
 
     public String getDeviceId() {
+        if (null == deviceId) {
+            deviceId = "";
+        }
         return deviceId;
     }
 
@@ -51,6 +60,9 @@ public class HeadRequestArguments {
     }
 
     public String getScope() {
+        if (null == scope) {
+            scope = "";
+        }
         return scope;
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -39,6 +39,8 @@ public class PentairPacketStatus extends PentairPacket { // 29 byte packet forma
 
     /** Individual boolean values representing whether a particular ciruit is on or off */
     public boolean pool, spa, aux1, aux2, aux3, aux4, aux5, aux6, aux7;
+    public boolean feature1, feature2, feature3, feature4, feature5, feature6, feature7, feature8;
+
     /** Unit of Measure - Celsius = true, Farenheit = false */
     public boolean uom;
 
@@ -82,6 +84,15 @@ public class PentairPacketStatus extends PentairPacket { // 29 byte packet forma
         aux5 = (buf[EQUIP1] & 0x40) != 0;
         aux6 = (buf[EQUIP1] & 0x80) != 0;
         aux7 = (buf[EQUIP2] & 0x01) != 0;
+
+        feature1 = (buf[EQUIP2] & 0x04) != 0;
+        feature2 = (buf[EQUIP2] & 0x08) != 0;
+        feature3 = (buf[EQUIP2] & 0x10) != 0;
+        feature4 = (buf[EQUIP2] & 0x20) != 0;
+        feature5 = (buf[EQUIP2] & 0x40) != 0;
+        feature6 = (buf[EQUIP2] & 0x80) != 0;
+        feature7 = (buf[EQUIP3] & 0x01) != 0;
+        feature8 = (buf[EQUIP3] & 0x02) != 0;
 
         uom = (buf[UOM] & 0x04) != 0;
 

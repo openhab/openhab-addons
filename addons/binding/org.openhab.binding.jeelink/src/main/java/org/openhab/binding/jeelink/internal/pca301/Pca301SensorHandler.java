@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.jeelink.internal.pca301;
 
-import static org.openhab.binding.jeelink.JeeLinkBindingConstants.*;
+import static org.openhab.binding.jeelink.internal.JeeLinkBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -16,8 +16,9 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
@@ -68,6 +69,7 @@ public class Pca301SensorHandler extends JeeLinkSensorHandler<Pca301Reading> {
 
     @Override
     public void dispose() {
+        super.dispose();
         cancelRetry();
     }
 
@@ -90,7 +92,7 @@ public class Pca301SensorHandler extends JeeLinkSensorHandler<Pca301Reading> {
 
     @Override
     public ReadingPublisher<Pca301Reading> createPublisher() {
-        ReadingPublisher<Pca301Reading> publisher = new ReadingPublisher<Pca301Reading>() {
+        return new ReadingPublisher<Pca301Reading>() {
             @Override
             public void publish(Pca301Reading reading) {
                 if (reading != null) {
@@ -99,8 +101,8 @@ public class Pca301SensorHandler extends JeeLinkSensorHandler<Pca301Reading> {
                     BigDecimal current = new BigDecimal(reading.getCurrent()).setScale(1, RoundingMode.HALF_UP);
                     state = reading.isOn() ? OnOffType.ON : OnOffType.OFF;
 
-                    updateState(CURRENT_WATT_CHANNEL, new DecimalType(current));
-                    updateState(CONSUMPTION_CHANNEL, new DecimalType(reading.getTotal()));
+                    updateState(CURRENT_POWER_CHANNEL, new QuantityType<>(current, SmartHomeUnits.WATT));
+                    updateState(CONSUMPTION_CHANNEL, new QuantityType<>(reading.getTotal(), SmartHomeUnits.WATT_HOUR));
                     updateState(SWITCHING_STATE_CHANNEL, state);
 
                     logger.debug("updated states for thing {} ({}): state={}, current={}, total={}",
@@ -112,8 +114,6 @@ public class Pca301SensorHandler extends JeeLinkSensorHandler<Pca301Reading> {
             public void dispose() {
             }
         };
-
-        return new DiscardConfigReadingsPublisher(publisher);
     }
 
     private void sendCommand(Command command) {
@@ -150,9 +150,13 @@ public class Pca301SensorHandler extends JeeLinkSensorHandler<Pca301Reading> {
 
                     sendCommand(command);
                     remainingRetries--;
-                } else if (state != command) {
-                    logger.debug("giving up command for thing {} ({}): {}", getThing().getLabel(),
-                            getThing().getUID().getId(), command);
+                } else {
+                    // we get here when the state is as expected or when the state is still not as expected after
+                    // the configured number of retries. we should cancel the retry for both cases
+                    if (state != command) {
+                        logger.debug("giving up command for thing {} ({}): {}", getThing().getLabel(),
+                                getThing().getUID().getId(), command);
+                    }
 
                     cancelRetry();
                 }

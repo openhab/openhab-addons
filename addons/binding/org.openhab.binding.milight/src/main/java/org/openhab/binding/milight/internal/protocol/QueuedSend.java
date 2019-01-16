@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,15 +8,15 @@
  */
 package org.openhab.binding.milight.internal.protocol;
 
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,34 +27,17 @@ import org.slf4j.LoggerFactory;
  * delay only. The user may issue absolute brightness or color changes faster than 1/10s though, and we don't
  * want to just queue up those commands but apply the newest command only.
  *
- * @author David Graeff <david.graeff@web.de>
- * @since 2.1
- *
+ * @author David Graeff - Initial contribution
  */
-public class QueuedSend implements Runnable {
+@NonNullByDefault
+public class QueuedSend implements Runnable, Closeable {
     private final Logger logger = LoggerFactory.getLogger(QueuedSend.class);
 
-    BlockingQueue<QueueItem> queue = new LinkedBlockingQueue<>(20);
-    protected final DatagramPacket packet;
-    protected final DatagramSocket datagramSocket;
-    private int delay_between_commands = 100;
-    private int repeat_commands = 1;
+    final BlockingQueue<QueueItem> queue = new LinkedBlockingQueue<>(20);
     private boolean willbeclosed = false;
-    private Thread thread;
+    private @Nullable Thread thread;
 
     public static final byte NO_CATEGORY = 0;
-
-    /**
-     * Creates a new send queue and starts the background thread. Call setAddress and
-     * setPort before using any of the queue commands.
-     *
-     * @throws SocketException
-     */
-    public QueuedSend() throws SocketException {
-        byte[] a = new byte[0];
-        packet = new DatagramPacket(a, a.length);
-        datagramSocket = new DatagramSocket();
-    }
 
     /**
      * Start the send thread of this queue. Call dispose() to quit the thread.
@@ -63,24 +46,6 @@ public class QueuedSend implements Runnable {
         willbeclosed = false;
         thread = new Thread(this);
         thread.start();
-    }
-
-    public int getDelayBetweenCommands() {
-        return delay_between_commands;
-    }
-
-    public int getRepeatCommands() {
-        return repeat_commands;
-    }
-
-    public void setRepeatCommands(int repeat_commands) {
-        repeat_commands = Math.max(1, Math.min(5, repeat_commands));
-        this.repeat_commands = repeat_commands;
-    }
-
-    public void setDelayBetweenCommands(int ms) {
-        ms = Math.max(0, Math.min(400, ms));
-        delay_between_commands = ms;
     }
 
     /**
@@ -105,61 +70,39 @@ public class QueuedSend implements Runnable {
                 }
             }
 
-            if (item == null || item.unique_command_id == QueueItem.INVALID) {
+            if (item.isInvalid()) {
                 // Just in case it is a command chain, set the item to null to not process any chained commands.
                 item = null;
                 continue;
             }
 
-            packet.setData(item.data);
             try {
-                for (int i = 0; i < (item.repeatable ? repeat_commands : 1); ++i) {
-                    datagramSocket.send(packet);
+                for (int i = 0; i < (item.repeatable ? item.repeatCommands : 1); ++i) {
+                    item.socket.send(item.packet);
 
-                    if (logger.isDebugEnabled()) {
+                    if (ProtocolConstants.DEBUG_SESSION) {
                         StringBuilder s = new StringBuilder();
-                        for (int c = 0; c < item.data.length; ++c) {
-                            s.append(String.format("%02X ", item.data[c]));
+                        for (int c = 0; c < item.packet.getData().length; ++c) {
+                            s.append(String.format("%02X ", item.packet.getData()[c]));
                         }
                         logger.debug("Sent packet '{}' to bridge {}", s.toString(),
-                                packet.getAddress().getHostAddress());
+                                item.packet.getAddress().getHostAddress());
                     }
                 }
-
-            } catch (Exception e) {
-                logger.error("Failed to send Message to '{}': {}", packet.getAddress().getHostAddress(),
+            } catch (IOException e) {
+                logger.warn("Failed to send Message to '{}': {}", item.packet.getAddress().getHostAddress(),
                         e.getMessage());
             }
 
             try {
-                Thread.sleep((item.custom_delay_time != 0) ? item.custom_delay_time : delay_between_commands);
+                Thread.sleep(item.delayTime);
             } catch (InterruptedException e) {
                 if (!willbeclosed) {
-                    logger.error("Queue sleep failed: {}", e.getLocalizedMessage());
+                    logger.warn("Queue sleep failed: {}", e.getLocalizedMessage());
                 }
                 break;
             }
         }
-
-    }
-
-    /**
-     * Once disposed, this object can't be reused anymore.
-     */
-    public void dispose() {
-        willbeclosed = true;
-        if (thread != null) {
-            try {
-                thread.join(delay_between_commands);
-            } catch (InterruptedException e) {
-            }
-            thread.interrupt();
-        }
-        thread = null;
-    }
-
-    public void setRepeatTimes(int times) {
-        repeat_commands = times;
     }
 
     /**
@@ -168,19 +111,18 @@ public class QueuedSend implements Runnable {
      * element. Command chains are always executed in a row. Even if the head of the command queue has been marked
      * as invalid, if the processing has been started, the chain will be processed completely.
      *
-     * @param unique_command_id
+     * @param uniqueCommandId
      */
-    private void remove_from_queue(int unique_command_id) {
+    private void removeFromQueue(int uniqueCommandId) {
         Iterator<QueueItem> iterator = queue.iterator();
         while (iterator.hasNext()) {
             try {
                 QueueItem item = iterator.next();
-                if (item != null && item.unique_command_id == unique_command_id) {
-                    item.unique_command_id = QueueItem.INVALID; // invalidate
+                if (item.uniqueCommandId == uniqueCommandId) {
+                    item.makeInvalid();
                 }
             } catch (IllegalStateException e) {
                 // Ignore threading errors
-                logger.error("{}", e.getLocalizedMessage());
             } catch (NoSuchElementException e) {
                 // The element might have been processed already while iterate.
                 // Ignore NoSuchElementException here.
@@ -189,60 +131,37 @@ public class QueuedSend implements Runnable {
     }
 
     /**
-     * Add data to the send queue. Use a category of 0 to make an item non-categorised.
-     * Commands which need to be queued up and not replacing same type commands must be non-categorised.
-     * Items added to the queue are considered repeatable, in the sense that they do not cause side effects
-     * if they are send multiple times (e.g. absolute values).
+     * Add data to the send queue.
      *
-     * If you want to, you can add multiple byte sequences to the queue, even if they have the same id.
-     * This is used for animations and multi-message commands. Be aware that a later added command with the
-     * same id will replace all those commands at once.
+     * <p>
+     * You have to create your own QueueItem. This allows to you create a chain of commands. A chain will always
+     * executed in order and without interrupting the sequence with another command. A chain will be removed completely
+     * if another command with the same category is added except if the chain has been started to be processed.
+     * </p>
      *
-     * @param unique_command_id A unique command id. Commands with the same id will overwrite themself.
-     * @param data Data to be send
+     * @param item A queue item, cannot be null.
      */
-    public void queueRepeatable(int unique_command_id, byte[]... data) {
-        remove_from_queue(unique_command_id);
-        QueueItem item = QueueItem.createRepeatable(unique_command_id, data[0]);
-        QueueItem next = item;
-        for (int i = 1; i < data.length; ++i) {
-            next = next.addRepeatable(data[i]);
+    public void queue(QueueItem item) {
+        if (item.uniqueCommandId != NO_CATEGORY) {
+            removeFromQueue(item.uniqueCommandId);
         }
         queue.offer(item);
     }
 
     /**
-     * Add data to the send queue.
-     * You have to create your own QueueItem, but this allows to you create a chain of commands. A chain will always
-     * executed in order and without interrupting the sequence with another command. A chain will be removed completely
-     * if another command with the same category is added except if the chain has been started to be processed.
-     *
-     * @param item A queue item, cannot be null.
+     * Once closed, this object can't be reused anymore.
      */
-    public void queue(QueueItem item) {
-        if (item.unique_command_id != NO_CATEGORY) {
-            remove_from_queue(item.unique_command_id);
+    @Override
+    public void close() throws IOException {
+        willbeclosed = true;
+        final Thread threadL = this.thread;
+        if (threadL != null) {
+            try {
+                threadL.join(200);
+            } catch (InterruptedException e) {
+            }
+            threadL.interrupt();
         }
-        queue.offer(item);
-    }
-
-    public InetAddress getAddr() {
-        return packet.getAddress();
-    }
-
-    public int getPort() {
-        return packet.getPort();
-    }
-
-    public DatagramSocket getSocket() {
-        return datagramSocket;
-    }
-
-    public void setAddress(InetAddress address) {
-        packet.setAddress(address);
-    }
-
-    public void setPort(int port) {
-        packet.setPort(port);
+        this.thread = null;
     }
 }

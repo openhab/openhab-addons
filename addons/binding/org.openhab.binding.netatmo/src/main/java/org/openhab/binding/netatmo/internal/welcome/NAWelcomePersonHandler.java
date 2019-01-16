@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,8 +8,8 @@
  */
 package org.openhab.binding.netatmo.internal.welcome;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.netatmo.handler.NetatmoModuleHandler;
+import org.openhab.binding.netatmo.internal.handler.NetatmoModuleHandler;
 
 import io.swagger.client.api.WelcomeApi;
 import io.swagger.client.model.NAWelcomeEvent;
@@ -32,7 +32,7 @@ import io.swagger.client.model.NAWelcomePerson;
 /**
  * {@link NAWelcomePersonHandler} is the class used to handle the Welcome Home Data
  *
- * @author Ing. Peter Weiss - Welcome camera implementation
+ * @author Ing. Peter Weiss - Initial contribution
  *
  */
 public class NAWelcomePersonHandler extends NetatmoModuleHandler<NAWelcomePerson> {
@@ -45,18 +45,21 @@ public class NAWelcomePersonHandler extends NetatmoModuleHandler<NAWelcomePerson
 
     @Override
     public void updateChannels(Object module) {
-        WelcomeApi welcomeApi = getBridgeHandler().getWelcomeApi();
-        NAWelcomeEventResponse eventResponse = welcomeApi.getlasteventof(getParentId(), getId(), 10);
+        if (isRefreshRequired()) {
+            WelcomeApi welcomeApi = getBridgeHandler().getWelcomeApi();
+            NAWelcomeEventResponse eventResponse = welcomeApi.getlasteventof(getParentId(), getId(), 10);
 
-        // Search the last event for this person
-        List<NAWelcomeEvent> rawEventList = eventResponse.getBody().getEventsList();
-        rawEventList.forEach(event -> {
-            if (event.getPersonId() != null && event.getPersonId().equalsIgnoreCase(getId())
-                    && (lastEvent == null || lastEvent.getTime() < event.getTime())) {
-                lastEvent = event;
-            }
-        });
+            // Search the last event for this person
+            List<NAWelcomeEvent> rawEventList = eventResponse.getBody().getEventsList();
+            rawEventList.forEach(event -> {
+                if (event.getPersonId() != null && event.getPersonId().equalsIgnoreCase(getId())
+                        && (lastEvent == null || lastEvent.getTime() < event.getTime())) {
+                    lastEvent = event;
+                }
+            });
 
+            setRefreshRequired(false);
+        }
         super.updateChannels(module);
     }
 
@@ -109,11 +112,9 @@ public class NAWelcomePersonHandler extends NetatmoModuleHandler<NAWelcomePerson
             if ((OnOffType) command == OnOffType.OFF) {
                 getBridgeHandler().getWelcomeApi().setpersonsaway(getParentId(), getId());
             } else {
-                // Experimental, this method is not documented in the API but **seems** to work
-                // Playing to much with it seems to lead to connection refused
-                // getBridgeHandler().getWelcomeApi().setpersonshome(getParentId(), "[\"" + getId() + "\"]");
+                getBridgeHandler().getWelcomeApi().setpersonshome(getParentId(), "[\"" + getId() + "\"]");
             }
-            requestParentRefresh();
+            invalidateParentCacheAndRefresh();
         }
     }
 

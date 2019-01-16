@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,6 +7,8 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 package org.openhab.binding.pulseaudio.internal;
+
+import static org.openhab.binding.pulseaudio.internal.PulseaudioBindingConstants.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,7 +40,6 @@ import org.slf4j.LoggerFactory;
  * On the pulseaudio server the module-cli-protocol-tcp has to be loaded.
  *
  * @author Tobias Bräutigam - Initial contribution
- * @since 1.2.0
  */
 public class PulseaudioClient {
 
@@ -119,8 +120,8 @@ public class PulseaudioClient {
         this.host = host;
         this.port = port;
 
-        items = new ArrayList<AbstractAudioDeviceConfig>();
-        modules = new ArrayList<Module>();
+        items = new ArrayList<>();
+        modules = new ArrayList<>();
 
         connect();
         update();
@@ -138,11 +139,22 @@ public class PulseaudioClient {
         modules.addAll(Parser.parseModules(listModules()));
 
         items.clear();
-        items.addAll(Parser.parseSinks(listSinks(), this));
-        items.addAll(Parser.parseSources(listSources(), this));
-        items.addAll(Parser.parseSinkInputs(listSinkInputs(), this));
-        items.addAll(Parser.parseSourceOutputs(listSourceOutputs(), this));
-
+        if (TYPE_FILTERS.get(SINK_THING_TYPE.getId())) {
+            logger.debug("reading sinks");
+            items.addAll(Parser.parseSinks(listSinks(), this));
+        }
+        if (TYPE_FILTERS.get(SOURCE_THING_TYPE.getId())) {
+            logger.debug("reading sources");
+            items.addAll(Parser.parseSources(listSources(), this));
+        }
+        if (TYPE_FILTERS.get(SINK_INPUT_THING_TYPE.getId())) {
+            logger.debug("reading sink-inputs");
+            items.addAll(Parser.parseSinkInputs(listSinkInputs(), this));
+        }
+        if (TYPE_FILTERS.get(SOURCE_OUTPUT_THING_TYPE.getId())) {
+            logger.debug("reading source-outputs");
+            items.addAll(Parser.parseSourceOutputs(listSourceOutputs(), this));
+        }
         logger.debug("Pulseaudio server {}: {} modules and {} items updated", host, modules.size(), items.size());
     }
 
@@ -417,7 +429,7 @@ public class PulseaudioClient {
         if (combinedSink == null || !combinedSink.isCombinedSink()) {
             return;
         }
-        List<String> slaves = new ArrayList<String>();
+        List<String> slaves = new ArrayList<>();
         for (Sink sink : sinks) {
             slaves.add(sink.getPaName());
         }
@@ -510,7 +522,7 @@ public class PulseaudioClient {
         if (getSink(combinedSinkName) != null) {
             return;
         }
-        List<String> slaves = new ArrayList<String>();
+        List<String> slaves = new ArrayList<>();
         for (Sink sink : sinks) {
             slaves.add(sink.getPaName());
         }

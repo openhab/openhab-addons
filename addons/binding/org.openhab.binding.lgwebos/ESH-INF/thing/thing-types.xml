@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="lgwebos" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="lgwebos"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
@@ -17,8 +18,11 @@
 			<channel id="mediaPlayer" typeId="mediaPlayerType" />
 			<channel id="mediaStop" typeId="mediaStopType" />
 			<channel id="appLauncher" typeId="appLauncherChannelType" />
-
 		</channels>
+
+		<representation-property>deviceId</representation-property>
+
+		<config-description-ref uri="thing-type:lgwebos:WebOSTV" />
 	</thing-type>
 
 	<channel-type id="powerType">
@@ -30,11 +34,13 @@
 		<item-type>Switch</item-type>
 		<label>Mute</label>
 		<description>Current Mute Setting</description>
+		<category>SoundVolume</category>
 	</channel-type>
 	<channel-type id="volumeType">
 		<item-type>Dimmer</item-type>
 		<label>Volume</label>
 		<description>Current Volume Setting</description>
+		<category>SoundVolume</category>
 		<state min="0" max="100" step="1"></state>
 	</channel-type>
 	<channel-type id="channelType">
@@ -58,6 +64,7 @@
 		<item-type>Player</item-type>
 		<label>Media Control</label>
 		<description>Control media (e.g. audio or video) playback</description>
+		<category>MediaControl</category>
 	</channel-type>
 	<channel-type id="mediaStopType">
 		<item-type>Switch</item-type>

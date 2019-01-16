@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,6 +17,8 @@ import java.util.Base64;
 
 import javax.imageio.ImageIO;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.lgwebos.handler.LGWebOSHandler;
 import org.slf4j.Logger;
@@ -30,7 +32,8 @@ import com.connectsdk.service.capability.ToastControl;
  *
  * @author Sebastian Prehn - initial contribution
  */
-public class ToastControlToast extends BaseChannelHandler<Void> {
+@NonNullByDefault
+public class ToastControlToast extends BaseChannelHandler<Void, Object> {
     private final Logger logger = LoggerFactory.getLogger(ToastControlToast.class);
 
     private ToastControl getControl(ConnectableDevice device) {
@@ -38,11 +41,12 @@ public class ToastControlToast extends BaseChannelHandler<Void> {
     }
 
     @Override
-    public void onReceiveCommand(ConnectableDevice device, String channelId, LGWebOSHandler handler, Command command) {
+    public void onReceiveCommand(@Nullable ConnectableDevice device, String channelId, LGWebOSHandler handler,
+            Command command) {
         if (device == null) {
             return;
         }
-        if (device.hasCapabilities(ToastControl.Show_Toast)) {
+        if (hasCapability(device, ToastControl.Show_Toast)) {
             final String value = command.toString();
             final ToastControl control = getControl(device);
             try {
@@ -51,7 +55,7 @@ public class ToastControlToast extends BaseChannelHandler<Void> {
                         OutputStream b64 = Base64.getEncoder().wrap(os);) {
                     ImageIO.write(bi, "png", b64);
                     control.showToast(value, os.toString(StandardCharsets.UTF_8.name()), "png",
-                            createDefaultResponseListener());
+                            getDefaultResponseListener());
                 }
             } catch (IOException ex) {
                 logger.warn("Failed to load toast icon: {}", ex.getMessage());

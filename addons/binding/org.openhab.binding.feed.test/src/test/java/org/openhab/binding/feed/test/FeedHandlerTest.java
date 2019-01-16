@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -49,8 +49,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.openhab.binding.feed.FeedBindingConstants;
-import org.openhab.binding.feed.handler.FeedHandler;
+import org.openhab.binding.feed.internal.FeedBindingConstants;
+import org.openhab.binding.feed.internal.handler.FeedHandler;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 
@@ -229,7 +229,7 @@ public class FeedHandlerTest extends JavaOSGiTest {
         // This will ensure that the configuration is read before the channelLinked() method in FeedHandler is called !
         waitForAssert(() -> {
             assertThat(feedThing.getStatus(), anyOf(is(ONLINE), is(OFFLINE)));
-        });
+        }, 30000, DFL_SLEEP_TIME);
         initializeItem(channelUID);
     }
 

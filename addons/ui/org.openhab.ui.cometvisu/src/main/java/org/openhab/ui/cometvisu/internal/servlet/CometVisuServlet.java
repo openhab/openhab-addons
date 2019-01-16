@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -984,8 +984,12 @@ public class CometVisuServlet extends HttpServlet {
                     for (int i = 0, len = nl.getLength(); i < len; i++) {
                         Node node = nl.item(i);
                         DataBean bean = new DataBean();
-                        bean.label = node.getTextContent();
-                        bean.value = node.getTextContent();
+                        String iconName = node.getTextContent();
+                        if (iconName.startsWith("kuf-")) {
+                            iconName = iconName.substring(4);
+                        }
+                        bean.label = iconName;
+                        bean.value = iconName;
                         beans.add(bean);
                     }
                 } catch (SAXException e) {

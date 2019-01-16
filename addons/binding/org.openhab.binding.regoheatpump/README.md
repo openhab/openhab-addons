@@ -2,14 +2,15 @@
 
 The Rego heat pump binding supports:
 
-* Rego 6xx controllers family and
-* Husdata interface.
+*   Rego 6xx controllers family and
+*   Husdata interface.
 
 ## The Rego 6xx family
 
-The Rego 6xx controllers family is used in many heat pumps, like IVT/Bosch/Autotherm/Carrier and others.
+The Rego 6xx controllers family is used in many heat pumps such as IVT/Bosch/Autotherm/Carrier and others.
 
-Rego 6xx unit contain an interface marked as service. Header of this interface is close to the control unit. This is 5V (TTL) serial interface and is connected by a 9 pin can/d-sub connector. Pinout:  
+Rego 6xx unit contain an interface marked as service.
+Header of this interface is close to the control unit. This is 5V (TTL) serial interface and is connected by a 9 pin can/d-sub connector. Pinout:  
 
 2 - RxD  
 3 - TxD  
@@ -22,12 +23,13 @@ Serial communication is using 19200 bps, 8 bit, no parity, 1 stop bit.
 
 Two connection types are supported:
 
-* TCP/IP and
-* serial (RS232).
+*   TCP/IP and
+*   serial (RS232).
 
 #### TCP/IP connection
 
-A transparent bridge between the serial interface of the heat pump and network (i.e. wifi) is used. This way no additional wires are required between heat pump and computer, running openhab.
+A transparent bridge between the serial interface of the heat pump and network (i.e. wifi) is used.
+This way no additional wires are required between heat pump and computer, running openhab.
 
 There are many existing project providing such functionality, i.e. [ser2net](http://ser2net.sourceforge.net/).
 
@@ -37,13 +39,14 @@ Board:
 
 ![board](doc/board.png)
 
-The code running on the ESP module can be found [here](https://github.com/crnjan/esp8266-bridge). There are other projects providing ESP firmware with similar functionality, i.e. [ESP-LINK](https://github.com/jeelabs/esp-link), but did not test with those.
+The code running on the ESP module can be found [here](https://github.com/crnjan/esp8266-bridge).
+There are other projects providing ESP firmware with similar functionality, i.e. [ESP-LINK](https://github.com/jeelabs/esp-link), but did not test with those.
 
 Configuration of the TCP/IP thing:
 
- - address: the hostname/IP address of the transparent bridge on the local network - mandatory,
- - tcpPort: the port number to use to connect to the transparent bridge - optional, defaults to 9265,
- - refreshInterval: refresh interval in seconds, used to fetch new values from the heat pump - optional, defaults to 60 seconds.
+-   address: the hostname/IP address of the transparent bridge on the local network - mandatory,
+-   tcpPort: the port number to use to connect to the transparent bridge - optional, defaults to 9265,
+-   refreshInterval: refresh interval in seconds, used to fetch new values from the heat pump - optional, defaults to 60 seconds.
 
 Example thing definition:
 
@@ -57,8 +60,8 @@ In order to connect directly to the rego 6xx controller, one needs to adjust the
 
 Parameters:
 
- - portName: the name of the serial port on your computer - mandatory,
- - refreshInterval: refresh interval in seconds, used to fetch new values from the heat pump - optional, defaults to 60 seconds.
+-   portName: the name of the serial port on your computer - mandatory,
+-   refreshInterval: refresh interval in seconds, used to fetch new values from the heat pump - optional, defaults to 60 seconds.
 
 Example thing definition:
 
@@ -66,64 +69,75 @@ Example thing definition:
 regoheatpump:serialRego6xx:ivtSerial [ portName="COM3" ]
 ```
 
-
 ### Channels
 
-Below is the list of supported channels, all values are read only:
+Below is the list of supported channels:
 
-| Channel Type ID                    | Item Type   |
-|------------------------------------|-------------|
-| sensorValues#radiatorReturn        | Temperature |
-| sensorValues#outdoor               | Temperature |
-| sensorValues#hotWater              | Temperature |
-| sensors#radiatorForward            | Temperature |
-| sensorValues#indoor                | Temperature |
-| sensorValues#compressor            | Temperature |
-| sensorValues#heatFluidOut          | Temperature |
-| sensorValues#heatFluidIn           | Temperature |
-| sensorValues#coldFluidIn           | Temperature |
-| sensorValues#coldFluidOut          | Temperature |
-| sensorValues#externalHotWater      | Temperature |
-| status#lastErrorTimestamp          | DateTime    |
-| status#lastErrorType               | String      |
-| frontPanel#powerLamp               | Switch      |
-| frontPanel#heatPumpLamp            | Switch      |
-| frontPanel#additionalHeatLamp      | Switch      |
-| frontPanel#hotWaterLamp            | Switch      |
-| frontPanel#alarmLamp               | Switch      |
-| controlData#radiatorReturnTarget   | Temperature |
-| controlData#radiatorReturnOn       | Temperature |
-| controlData#radiatorReturnOff      | Temperature |
-| controlData#hotWaterTarget         | Temperature |
-| controlData#hotWaterOn             | Temperature |
-| controlData#hotWaterOff            | Temperature |
-| controlData#radiatorForwardTarget  | Temperature |
-| controlData#addHeatPower           | Number (%)  |
-| deviceValues#coldFluidPump         | Switch      |
-| deviceValues#compressor            | Switch      |
-| deviceValues#additionalHeat3kW     | Switch      |
-| deviceValues#additionalHeat6kW     | Switch      |
-| deviceValues#radiatorPump          | Switch      |
-| deviceValues#heatFluidPump         | Switch      |
-| deviceValues#switchValue           | Switch      |
-| deviceValues#alarm                 | Switch      |
-| settings#heatCurve                 | Number      |
-| settings#heatCurveFineAdj          | Temperature |
-| registersettings#indoorTempSetting | Temperature |
-| settings#curveInflByInTemp         | Number      |
-| settings#adjCurveAt20              | Temperature |
-| settings#adjCurveAt15              | Temperature |
-| settings#adjCurveAt10              | Temperature |
-| settings#adjCurveAt5               | Temperature |
-| settings#adjCurveAt0               | Temperature |
-| settings#adjCurveAtMinus5          | Temperature |
-| settings#adjCurveAtMinus10         | Temperature |
-| settings#adjCurveAtMinus15         | Temperature |
-| settings#adjCurveAtMinus20         | Temperature |
-| settings#adjCurveAtMinus25         | Temperature |
-| settings#adjCurveAtMinus30         | Temperature |
-| settings#adjCurveAtMinus35         | Temperature |
-| settings#heatCurveCouplingDiff     | Temperature |
+| Channel Type ID                       | Item Type   | Access |
+|---------------------------------------|-------------|--------|
+| sensorValues#radiatorReturn           | Temperature | R      |
+| sensorValues#outdoor                  | Temperature | R      |
+| sensorValues#hotWater                 | Temperature | R      |
+| sensors#radiatorForward               | Temperature | R      |
+| sensorValues#indoor                   | Temperature | R      |
+| sensorValues#compressor               | Temperature | R      |
+| sensorValues#heatFluidOut             | Temperature | R      |
+| sensorValues#heatFluidIn              | Temperature | R      |
+| sensorValues#coldFluidIn              | Temperature | R      |
+| sensorValues#coldFluidOut             | Temperature | R      |
+| sensorValues#externalHotWater         | Temperature | R      |
+| status#lastErrorTimestamp             | DateTime    | R      |
+| status#lastErrorType                  | String      | R      |
+| frontPanel#powerLamp                  | Switch      | R      |
+| frontPanel#heatPumpLamp               | Switch      | R      |
+| frontPanel#additionalHeatLamp         | Switch      | R      |
+| frontPanel#hotWaterLamp               | Switch      | R      |
+| frontPanel#alarmLamp                  | Switch      | R      |
+| controlData#radiatorReturnTarget      | Temperature | R      |
+| controlData#radiatorReturnOn          | Temperature | R      |
+| controlData#radiatorReturnOff         | Temperature | R      |
+| controlData#hotWaterOn                | Temperature | R      |
+| controlData#hotWaterOff               | Temperature | R      |
+| controlData#radiatorForwardTarget     | Temperature | R      |
+| controlData#addHeatPower              | Number (%)  | R      |
+| deviceValues#coldFluidPump            | Switch      | R      |
+| deviceValues#compressor               | Switch      | R      |
+| deviceValues#additionalHeat3kW        | Switch      | R      |
+| deviceValues#additionalHeat6kW        | Switch      | R      |
+| deviceValues#radiatorPump             | Switch      | R      |
+| deviceValues#heatFluidPump            | Switch      | R      |
+| deviceValues#switchValue              | Switch      | R      |
+| deviceValues#alarm                    | Switch      | R      |
+| settings#hotWaterTarget               | Temperature | RW     |
+| settings#hotWaterTargetHysteresis     | Temperature | RW     |
+| settings#heatCurve                    | Number      | RW     |
+| settings#heatCurveFineAdj             | Temperature | RW     |
+| settings#heatCurve2                   | Number      | RW     |
+| settings#heatCurve2FineAdj            | Temperature | RW     |
+| settings#indoorTempSetting            | Temperature | RW     |
+| settings#curveInflByInTemp            | Number      | RW     |
+| settings#adjCurveAt20                 | Temperature | RW     |
+| settings#adjCurveAt15                 | Temperature | RW     |
+| settings#adjCurveAt10                 | Temperature | RW     |
+| settings#adjCurveAt5                  | Temperature | RW     |
+| settings#adjCurveAt0                  | Temperature | RW     |
+| settings#adjCurveAtMinus5             | Temperature | RW     |
+| settings#adjCurveAtMinus10            | Temperature | RW     |
+| settings#adjCurveAtMinus15            | Temperature | RW     |
+| settings#adjCurveAtMinus20            | Temperature | RW     |
+| settings#adjCurveAtMinus25            | Temperature | RW     |
+| settings#adjCurveAtMinus30            | Temperature | RW     |
+| settings#adjCurveAtMinus35            | Temperature | RW     |
+| settings#heatCurveCouplingDiff        | Temperature | RW     |
+| settings#summerDisconnection          | Temperature | RW     |
+| operatingTimes#heatPumpInOperationRAD | Hours       | R      |
+| operatingTimes#heatPumpInOperationDHW | Hours       | R      |
+| operatingTimes#addHeatInOperationRAD  | Hours       | R      |
+| operatingTimes#addHeatInOperationDHW  | Hours       | R      |
+
+Access: R = read only; RW = read write
+
+**Note - breaking change:** to have all writable channels within the settings group, hotWaterTarget channel was moved from controlData to the setting group.
 
 ## The Husdata interface
 
@@ -147,8 +161,8 @@ Above list is informational, please consult with the Husdata interface provider 
 
 Two connection types are supported:
 
-* TCP/IP and
-* serial (RS232).
+*   TCP/IP and
+*   serial (RS232).
 
 #### TCP/IP connection
 
@@ -158,8 +172,8 @@ There are many existing project providing such functionality, i.e. [ser2net](htt
 
 Configuration of the TCP/IP thing:
 
- - address: the hostname/IP address of the transparent bridge on the local network - mandatory,
- - tcpPort: the port number to use to connect to the transparent bridge - optional, defaults to 9265.
+-   address: the hostname/IP address of the transparent bridge on the local network - mandatory,
+-   tcpPort: the port number to use to connect to the transparent bridge - optional, defaults to 9265.
 
 Example thing definition:
 
@@ -173,14 +187,13 @@ One can connect the Husdata interface directly to a computer that runs openHAB.
 
 Parameters:
 
- - portName: the name of the serial port on your computer - mandatory.
+-   portName: the name of the serial port on your computer - mandatory.
 
 Example thing definition:
 
 ```
 regoheatpump:serialHusdata:ivtSerial [ portName="COM3" ]
 ```
-
 
 ### Channels
 

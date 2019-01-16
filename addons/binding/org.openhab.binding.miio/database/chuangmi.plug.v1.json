@@ -1,0 +1,37 @@
+{
+	"deviceMapping": {
+		"id": [
+			"chuangmi.plug.v1"
+		],
+		"channels": [
+			{
+				"property": "on",
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"channelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_*",
+						"parameterType": "ONOFFPARA"
+					}
+				]
+			},
+			{
+				"property": "usb_on",
+				"friendlyName": "USB",
+				"channel": "usb",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_usb_*",
+						"parameterType": "ONOFFPARA"
+					}
+				]
+			}
+		]
+	}
+}

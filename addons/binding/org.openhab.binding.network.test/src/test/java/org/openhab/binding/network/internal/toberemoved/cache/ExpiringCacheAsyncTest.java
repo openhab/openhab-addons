@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -23,6 +23,7 @@ import org.openhab.binding.network.internal.toberemoved.cache.ExpiringCacheAsync
  * @author David Graeff - Initial contribution
  */
 public class ExpiringCacheAsyncTest {
+    @SuppressWarnings("unused")
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorWrongCacheTime() {
         // Fail if cache time is <= 0
@@ -30,6 +31,7 @@ public class ExpiringCacheAsyncTest {
         });
     }
 
+    @SuppressWarnings("unused")
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorNoRefrehCommand() {
         new ExpiringCacheAsync<Double>(2000, null);
@@ -38,9 +40,10 @@ public class ExpiringCacheAsyncTest {
     @Test
     public void testFetchValue() {
         ExpiringCacheUpdate u = mock(ExpiringCacheUpdate.class);
-        ExpiringCacheAsync<Double> t = new ExpiringCacheAsync<Double>(2000, u);
+        ExpiringCacheAsync<Double> t = new ExpiringCacheAsync<>(2000, u);
         assertTrue(t.isExpired());
         // Request a value
+        @SuppressWarnings("unchecked")
         Consumer<Double> consumer = mock(Consumer.class);
         t.getValue(consumer);
         // We expect a call to the updater object
@@ -58,9 +61,10 @@ public class ExpiringCacheAsyncTest {
     @Test
     public void testExpiring() {
         ExpiringCacheUpdate u = mock(ExpiringCacheUpdate.class);
+        @SuppressWarnings("unchecked")
         Consumer<Double> consumer = mock(Consumer.class);
 
-        ExpiringCacheAsync<Double> t = new ExpiringCacheAsync<Double>(100, u);
+        ExpiringCacheAsync<Double> t = new ExpiringCacheAsync<>(100, u);
         t.setValue(10.0);
         assertFalse(t.isExpired());
 
@@ -85,7 +89,7 @@ public class ExpiringCacheAsyncTest {
     @Test
     public void testFetchExpiredValue() {
         ExpiringCacheUpdate u = mock(ExpiringCacheUpdate.class);
-        ExpiringCacheAsync<Double> t = new ExpiringCacheAsync<Double>(2000, u);
+        ExpiringCacheAsync<Double> t = new ExpiringCacheAsync<>(2000, u);
         t.setValue(10.0);
         // We should always be able to get the raw value, expired or not
         assertEquals(10.0, t.getExpiredValue(), 0);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.lgwebos.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.lgwebos.handler.LGWebOSHandler;
 
@@ -19,19 +21,21 @@ import com.connectsdk.service.capability.MediaControl;
  *
  * @author Sebastian Prehn - initial contribution
  */
-public class MediaControlStop extends BaseChannelHandler<Void> {
+@NonNullByDefault
+public class MediaControlStop extends BaseChannelHandler<Void, Object> {
 
     private MediaControl getControl(ConnectableDevice device) {
         return device.getCapability(MediaControl.class);
     }
 
     @Override
-    public void onReceiveCommand(ConnectableDevice device, String channelId, LGWebOSHandler handler, Command command) {
+    public void onReceiveCommand(@Nullable ConnectableDevice device, String channelId, LGWebOSHandler handler,
+            Command command) {
         if (device == null) {
             return;
         }
-        if (device.hasCapabilities(MediaControl.Stop)) {
-            getControl(device).stop(createDefaultResponseListener());
+        if (hasCapability(device, MediaControl.Stop)) {
+            getControl(device).stop(getDefaultResponseListener());
         }
     }
 }

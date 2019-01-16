@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,11 +8,15 @@
  */
 package org.openhab.binding.lgwebos.internal;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.lgwebos.handler.LGWebOSHandler;
 import org.slf4j.Logger;
@@ -31,71 +35,93 @@ import com.connectsdk.service.command.ServiceSubscription;
  *
  * @author Sebastian Prehn - initial contribution
  */
-public class TVControlChannel extends BaseChannelHandler<ChannelListener> {
+@NonNullByDefault
+public class TVControlChannel extends BaseChannelHandler<ChannelListener, Object> {
     private final Logger logger = LoggerFactory.getLogger(TVControlChannel.class);
+    private final Map<String, List<ChannelInfo>> channelListCache = new HashMap<>();
 
     private TVControl getControl(ConnectableDevice device) {
         return device.getCapability(TVControl.class);
     }
 
     @Override
-    public void onReceiveCommand(ConnectableDevice device, String channelId, LGWebOSHandler handler, Command command) {
-        if (device == null) {
-            return;
-        }
+    public void onDeviceReady(@NonNull ConnectableDevice device, @NonNull String channelId,
+            @NonNull LGWebOSHandler handler) {
+        super.onDeviceReady(device, channelId, handler);
 
-        if (IncreaseDecreaseType.INCREASE == command) {
-            if (device.hasCapabilities(TVControl.Channel_Up)) {
-                getControl(device).channelUp(createDefaultResponseListener());
-            }
-        } else if (IncreaseDecreaseType.DECREASE == command) {
-            if (device.hasCapabilities(TVControl.Channel_Down)) {
-                getControl(device).channelDown(createDefaultResponseListener());
-            }
-        } else if (device.hasCapabilities(TVControl.Channel_List, TVControl.Channel_Set)) {
-            final String value = command.toString();
+        if (device.hasCapabilities(TVControl.Channel_List)) {
             final TVControl control = getControl(device);
             control.getChannelList(new TVControl.ChannelListListener() {
                 @Override
-                public void onError(ServiceCommandError error) {
-                    logger.warn("error requesting channel list: {}.", error.getMessage());
+                public void onError(@Nullable ServiceCommandError error) {
+                    logger.warn("error requesting channel list: {}.", error == null ? "" : error.getMessage());
                 }
 
                 @Override
+                @NonNullByDefault({})
                 public void onSuccess(List<ChannelInfo> channels) {
                     if (logger.isDebugEnabled()) {
                         channels.forEach(c -> logger.debug("Channel {} - {}", c.getNumber(), c.getName()));
                     }
-                    Optional<ChannelInfo> channelInfo = channels.stream().filter(c -> c.getNumber().equals(value))
-                            .findFirst();
-                    if (channelInfo.isPresent()) {
-                        control.setChannel(channelInfo.get(), createDefaultResponseListener());
-                    } else {
-                        logger.warn("TV does not have a channel: {}.", value);
-                    }
+                    channelListCache.put(device.getId(), channels);
                 }
             });
+        }
+
+    }
+
+    @Override
+    public void onDeviceRemoved(@NonNull ConnectableDevice device, @NonNull String channelId,
+            @NonNull LGWebOSHandler handler) {
+        super.onDeviceRemoved(device, channelId, handler);
+        channelListCache.remove(device.getId());
+    }
+
+    @Override
+    public void onReceiveCommand(@Nullable ConnectableDevice device, String channelId, LGWebOSHandler handler,
+            Command command) {
+        if (device == null) {
+            return;
+        }
+        if (hasCapability(device, TVControl.Channel_Set)) {
+            final String value = command.toString();
+            final TVControl control = getControl(device);
+            List<ChannelInfo> channels = channelListCache.get(device.getId());
+            if (channels == null) {
+                logger.warn("No channel list cached for this device {}, ignoring command.", device.getId());
+            } else {
+                Optional<ChannelInfo> channelInfo = channels.stream().filter(c -> c.getNumber().equals(value))
+                        .findFirst();
+                if (channelInfo.isPresent()) {
+                    control.setChannel(channelInfo.get(), getDefaultResponseListener());
+                } else {
+                    logger.warn("TV does not have a channel: {}.", value);
+                }
+            }
         }
     }
 
     @Override
     protected Optional<ServiceSubscription<ChannelListener>> getSubscription(ConnectableDevice device, String channelId,
             LGWebOSHandler handler) {
-        if (device.hasCapability(TVControl.Channel_Subscribe)) {
+        if (hasCapability(device, TVControl.Channel_Subscribe)) {
             return Optional.of(getControl(device).subscribeCurrentChannel(new ChannelListener() {
 
                 @Override
-                public void onError(ServiceCommandError error) {
-                    logger.debug("error: {} {} {}", error.getCode(), error.getPayload(), error.getMessage());
+                public void onError(@Nullable ServiceCommandError error) {
+                    logger.debug("Error in listening to channel changes: {}.", error == null ? "" : error.getMessage());
                 }
 
                 @Override
-                public void onSuccess(ChannelInfo channelInfo) {
+                public void onSuccess(@Nullable ChannelInfo channelInfo) {
+                    if (channelInfo == null) {
+                        return;
+                    }
                     handler.postUpdate(channelId, new DecimalType(channelInfo.getNumber()));
                 }
             }));
         } else {
-            return null;
+            return Optional.empty();
         }
     }
 }

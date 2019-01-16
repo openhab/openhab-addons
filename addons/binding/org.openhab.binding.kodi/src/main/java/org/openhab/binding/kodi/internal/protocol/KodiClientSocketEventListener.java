@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,8 +13,7 @@ import com.google.gson.JsonObject;
 /**
  * This interface has to be implemented for classes which need to be able to receive events from KodiClientSocket
  *
- * @author Paul Frank
- *
+ * @author Paul Frank - Initial contribution
  */
 public interface KodiClientSocketEventListener {
 

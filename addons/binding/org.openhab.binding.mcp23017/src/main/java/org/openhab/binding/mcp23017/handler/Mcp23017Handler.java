@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,6 +15,7 @@ import java.io.IOException;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -40,11 +41,11 @@ import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
 /**
  * The {@link Mcp23017Handler} is base class for MCP23017 chip support
  *
- * @author Anatol Ogorek
+ * @author Anatol Ogorek - Initial contribution
  */
 public class Mcp23017Handler extends BaseThingHandler implements GpioPinListenerDigital {
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private MCP23017GpioProvider mcpProvider;
     private Integer address;
@@ -57,13 +58,7 @@ public class Mcp23017Handler extends BaseThingHandler implements GpioPinListener
 
     public Mcp23017Handler(Thing thing) {
         super(thing);
-    }
 
-    @Override
-    public void initialize() {
-        checkConfiguration();
-        mcpProvider = initializeMcpProvider();
-        pinStateHolder = new Mcp23017PinStateHolder(mcpProvider, this.thing);
     }
 
     @Override
@@ -86,7 +81,19 @@ public class Mcp23017Handler extends BaseThingHandler implements GpioPinListener
             default:
                 break;
         }
+    }
 
+    @Override
+    public void initialize() {
+        try {
+            checkConfiguration();
+            mcpProvider = initializeMcpProvider();
+            pinStateHolder = new Mcp23017PinStateHolder(mcpProvider, this.thing);
+            updateStatus(ThingStatus.ONLINE);
+        } catch (IllegalArgumentException | SecurityException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "An exception occurred while adding pin. Check pin configuration. Exception: " + e.getMessage());
+        }
     }
 
     private boolean verifyChannel(ChannelUID channelUID) {
@@ -132,13 +139,6 @@ public class Mcp23017Handler extends BaseThingHandler implements GpioPinListener
         Configuration configuration = getConfig();
         address = Integer.parseInt((configuration.get(ADDRESS)).toString(), 16);
         busNumber = Integer.parseInt((configuration.get(BUS_NUMBER)).toString());
-        try {
-            updateStatus(ThingStatus.ONLINE);
-        } catch (IllegalArgumentException | SecurityException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "An exception occurred while adding pin. Check pin configuration. Exception: " + e.getMessage());
-        }
-
     }
 
     private MCP23017GpioProvider initializeMcpProvider() {
@@ -160,7 +160,7 @@ public class Mcp23017Handler extends BaseThingHandler implements GpioPinListener
         Pin pin = PinMapper.get(channel.getIdWithoutGroup());
 
         String pullMode = DEFAULT_PULL_MODE;
-        if (thing.getChannel(channel.getIdWithoutGroup()) != null) {
+        if (thing.getChannel(channel.getId()) != null) {
             Configuration configuration = thing.getChannel(channel.getId()).getConfiguration();
             pullMode = ((String) configuration.get(PULL_MODE)) != null ? ((String) configuration.get(PULL_MODE))
                     : DEFAULT_PULL_MODE;
@@ -172,7 +172,6 @@ public class Mcp23017Handler extends BaseThingHandler implements GpioPinListener
         logger.debug("Bound digital input for PIN: {}, ItemName: {}, pullMode: {}", pin, channel.getAsString(),
                 pullMode);
         return input;
-
     }
 
     @Override
@@ -195,18 +194,22 @@ public class Mcp23017Handler extends BaseThingHandler implements GpioPinListener
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        logger.debug("channel linked {}", channelUID.getAsString());
-        if (!verifyChannel(channelUID)) {
-            return;
-        }
-        String channelGroup = channelUID.getGroupId();
+        synchronized (this) {
+            logger.debug("channel linked {}", channelUID.getAsString());
+            if (!verifyChannel(channelUID)) {
+                return;
+            }
+            String channelGroup = channelUID.getGroupId();
 
-        if (channelGroup.equals(CHANNEL_GROUP_INPUT)) {
-            GpioPinDigitalInput inputPin = initializeInputPin(channelUID);
-            pinStateHolder.addInputPin(inputPin, channelUID);
+            if (channelGroup != null && channelGroup.equals(CHANNEL_GROUP_INPUT)) {
+                if (pinStateHolder.getInputPin(channelUID) != null) {
+                    return;
+                }
+                GpioPinDigitalInput inputPin = initializeInputPin(channelUID);
+                pinStateHolder.addInputPin(inputPin, channelUID);
 
+            }
+            super.channelLinked(channelUID);
         }
-        super.channelLinked(channelUID);
     }
-
 }

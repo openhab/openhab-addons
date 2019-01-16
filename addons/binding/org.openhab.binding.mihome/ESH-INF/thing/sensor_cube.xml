@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="mihome" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="mihome"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
@@ -9,9 +10,10 @@
 		</supported-bridge-type-refs>
 		<label>Xiaomi Mi Smart Cube</label>
 		<description>Multifunctional controller equipped with an accelerometer and a gyroscope. Triggers the following
-			actions: move, rotate, rotate, flip 90, flip 180, tap twice, shake air, free fall, alert.</description>
+			actions: move, rotate right, rotate left, flip 90, flip 180, tap twice, shake air, free fall, alert.</description>
 		<channels>
-			<channel id="action" typeId="action"></channel>
+			<channel id="action" typeId="cubeAction"></channel>
+			<channel id="lastAction" typeId="lastAction"></channel>
 			<channel id="rotationAngle" typeId="rotationAngle"></channel>
 			<channel id="rotationTime" typeId="rotationTime"></channel>
 			<channel id="batteryLevel" typeId="system.battery-level" />
@@ -20,7 +22,7 @@
 		<config-description-ref uri="thing-type:mihome:device" />
 	</thing-type>
 
-	<channel-type id="action">
+	<channel-type id="cubeAction">
 		<kind>trigger</kind>
 		<label>Cube event</label>
 		<event>

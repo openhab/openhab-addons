@@ -1,8 +1,8 @@
 {
-	"app_url": "nestmobile://cameras/CjZfTEs4ajlyUlh3Q0tFQk90RG83SnNrTnh6V2ZIQk9JbTNDTG91Q1QzRlFaenJ2b2tLX0R6RlESFm9wNVB2NW93NmJ6cUdvMkZQSGUxdEEaNld0Mkl5b2tIR0tKX2FpUVd1SkRnQjc2ejhSWFl3SFFxWXFrSWx2QlpxN1gyeWNqdmRZVjdGQQ?auth=c.eQ5QBBPiFOTNzPHbmZPcE9yPZ7GayzLusifgQR2DQRFNyUS9ESvlhJF0D7vG8Y0TFV39zX1vIOsWrv8RKCMrFepNUb9FqHEboa4MtWLUsGb4tD9oBh0jrV4HooJUmz5sVA5KZR0dkxyLYyPc",
+	"app_url": "https://camera_app_url",
 	"device_id": "_LK8j9rRXwCKEBOtDo7JskNxzWfHBOIm3CLouCT3FQZzrvokK_DzFQ",
 	"is_audio_input_enabled": true,
-	"is_online": false,
+	"is_online": true,
 	"is_public_share_enabled": false,
 	"is_streaming": false,
 	"is_video_history_enabled": false,
@@ -11,22 +11,23 @@
 			"id1",
 			"id2"
 		],
-		"animated_image_url": "animeted",
-		"app_url": "app_url",
+		"animated_image_url": "https://last_event_animated_image_url",
+		"app_url": "https://last_event_app_url",
 		"end_time": "2017-01-22T07:40:38.680Z",
 		"has_motion": true,
 		"has_person": false,
 		"has_sound": false,
-		"image_url": "image_url",
+		"image_url": "https://last_event_image_url",
 		"start_time": "2017-01-22T07:40:19.020Z",
-		"web_url": "myurl"
+		"urls_expire_time": "2017-02-05T07:40:19.020Z",
+		"web_url": "https://last_event_web_url"
 	},
 	"last_is_online_change": "2017-01-22T08:19:20.000Z",
 	"name": "Upstairs",
 	"name_long": "Upstairs Camera",
-	"snapshot_url": "https://www.dropcam.com/api/wwn.get_snapshot/CjZfTEs4ajlyUlh3Q0tFQk90RG83SnNrTnh6V2ZIQk9JbTNDTG91Q1QzRlFaenJ2b2tLX0R6RlESFm9wNVB2NW93NmJ6cUdvMkZQSGUxdEEaNld0Mkl5b2tIR0tKX2FpUVd1SkRnQjc2ejhSWFl3SFFxWXFrSWx2QlpxN1gyeWNqdmRZVjdGQQ?auth=c.eQ5QBBPiFOTNzPHbmZPcE9yPZ7GayzLusifgQR2DQRFNyUS9ESvlhJF0D7vG8Y0TFV39zX1vIOsWrv8RKCMrFepNUb9FqHEboa4MtWLUsGb4tD9oBh0jrV4HooJUmz5sVA5KZR0dkxyLYyPc",
+	"snapshot_url": "https://camera_snapshot_url",
 	"software_version": "205-600052",
 	"structure_id": "ysCnsCaq1pQwKUPP9H4AqE943C1XtLin3x6uCVN5Qh09IDyTg7Ey5A",
-	"web_url": "https://home.nest.com/cameras/CjZfTEs4ajlyUlh3Q0tFQk90RG83SnNrTnh6V2ZIQk9JbTNDTG91Q1QzRlFaenJ2b2tLX0R6RlESFm9wNVB2NW93NmJ6cUdvMkZQSGUxdEEaNld0Mkl5b2tIR0tKX2FpUVd1SkRnQjc2ejhSWFl3SFFxWXFrSWx2QlpxN1gyeWNqdmRZVjdGQQ?auth=c.eQ5QBBPiFOTNzPHbmZPcE9yPZ7GayzLusifgQR2DQRFNyUS9ESvlhJF0D7vG8Y0TFV39zX1vIOsWrv8RKCMrFepNUb9FqHEboa4MtWLUsGb4tD9oBh0jrV4HooJUmz5sVA5KZR0dkxyLYyPc",
+	"web_url": "https://camera_web_url",
 	"where_id": "z8fK075vJJPPWnXxLx1m3GskRSZQ64iQydB59k-UPsKCxvyZfxNpKA"
 }

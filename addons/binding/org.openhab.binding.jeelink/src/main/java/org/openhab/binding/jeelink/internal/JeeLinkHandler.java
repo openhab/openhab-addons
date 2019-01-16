@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -39,18 +39,22 @@ import org.slf4j.LoggerFactory;
  * @author Volker Bier - Initial contribution
  */
 public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, ConnectionListener {
-    private static final Pattern READING_P = Pattern.compile("^OK\\s+([0-9]+)(?:\\s+([0-9]+))+$");
+    private static final Pattern READING_P = Pattern.compile("^OK\\s+(WS|[0-9]+)(?:\\s+([0-9]+))+$");
 
     private final Logger logger = LoggerFactory.getLogger(JeeLinkHandler.class);
 
     private JeeLinkConnection connection;
-    private Map<String, JeeLinkReadingConverter> sensorTypeConvertersMap = new HashMap<>();
-    private Map<Class, List<ReadingHandler>> readingClassHandlerMap = new HashMap<>();
+    private Map<String, JeeLinkReadingConverter<?>> sensorTypeConvertersMap = new HashMap<>();
+    private Map<Class<?>, List<ReadingHandler<? extends Reading>>> readingClassHandlerMap = new HashMap<>();
 
-    private final AtomicReference<ReadingHandler> discoveryHandler = new AtomicReference<ReadingHandler>();
+    private final AtomicReference<ReadingHandler<Reading>> discoveryHandler = new AtomicReference<>();
 
     private AtomicBoolean connectionInitialized = new AtomicBoolean(false);
     private ScheduledFuture<?> connectJob;
+    private ScheduledFuture<?> initJob;
+
+    private long lastReadingTime;
+    private ScheduledFuture<?> monitorJob;
 
     public JeeLinkHandler(Bridge bridge) {
         super(bridge);
@@ -79,23 +83,72 @@ public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, 
             connectJob.cancel(true);
             connectJob = null;
         }
+
+        JeeLinkConfig cfg = getConfig().as(JeeLinkConfig.class);
+        initJob = scheduler.schedule(() -> {
+            intializeConnection();
+        }, cfg.initDelay, TimeUnit.SECONDS);
+
+        logger.debug("Init commands scheduled in {} seconds.", cfg.initDelay);
+
+        if (cfg.reconnectInterval > 0) {
+            monitorJob = scheduler.scheduleWithFixedDelay(new Runnable() {
+                private long lastMonitorTime;
+
+                @Override
+                public void run() {
+                    if (getThing().getStatus() == ThingStatus.ONLINE && lastReadingTime < lastMonitorTime) {
+                        logger.debug("Monitoring job for port {} detected missing readings. Triggering reconnect...",
+                                connection.getPort());
+
+                        connection.closeConnection();
+                        updateStatus(ThingStatus.OFFLINE);
+
+                        connection.openConnection();
+                    }
+                    lastMonitorTime = System.currentTimeMillis();
+                }
+            }, cfg.reconnectInterval, cfg.reconnectInterval, TimeUnit.SECONDS);
+            logger.debug("Monitoring job started.");
+        }
+    }
+
+    @Override
+    public void connectionClosed() {
+        logger.debug("Connection to port {} closed.", connection.getPort());
+
+        updateStatus(ThingStatus.OFFLINE);
+        connectionInitialized.set(false);
+
+        if (initJob != null) {
+            initJob.cancel(true);
+        }
+        if (monitorJob != null) {
+            monitorJob.cancel(true);
+        }
     }
 
     @Override
     public void connectionAborted(String cause) {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, cause);
 
+        if (monitorJob != null) {
+            monitorJob.cancel(true);
+        }
+        if (initJob != null) {
+            initJob.cancel(true);
+        }
+        connectionInitialized.set(false);
+
         connectJob = scheduler.schedule(() -> {
             connection.openConnection();
         }, 10, TimeUnit.SECONDS);
         logger.debug("Connection to port {} aborted ({}). Reconnect scheduled.", connection.getPort(), cause);
-
-        connectionInitialized.set(false);
     }
 
-    public void addReadingHandler(ReadingHandler h) {
+    public void addReadingHandler(ReadingHandler<? extends Reading> h) {
         synchronized (readingClassHandlerMap) {
-            List<ReadingHandler> handlers = readingClassHandlerMap.get(h.getReadingClass());
+            List<ReadingHandler<? extends Reading>> handlers = readingClassHandlerMap.get(h.getReadingClass());
             if (handlers == null) {
                 handlers = new ArrayList<>();
                 readingClassHandlerMap.put(h.getReadingClass(), handlers);
@@ -109,9 +162,9 @@ public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, 
         }
     }
 
-    public void removeReadingHandler(ReadingHandler h) {
+    public void removeReadingHandler(ReadingHandler<? extends Reading> h) {
         synchronized (readingClassHandlerMap) {
-            List<ReadingHandler> handlers = readingClassHandlerMap.get(h.getReadingClass());
+            List<ReadingHandler<? extends Reading>> handlers = readingClassHandlerMap.get(h.getReadingClass());
             if (handlers != null) {
                 logger.debug("Removing reading handler for class {}: {}", h.getReadingClass(), h);
                 handlers.remove(h);
@@ -129,17 +182,11 @@ public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, 
 
     @Override
     public void handleInput(String input) {
+        lastReadingTime = System.currentTimeMillis();
+
         Matcher matcher = READING_P.matcher(input);
         if (matcher.matches()) {
-            if (!connectionInitialized.getAndSet(true)) {
-                JeeLinkConfig cfg = getConfig().as(JeeLinkConfig.class);
-
-                String initCommands = cfg.initCommands;
-                if (initCommands != null && !initCommands.trim().isEmpty()) {
-                    logger.debug("Sending init commands for port {}: {}", connection.getPort(), initCommands);
-                    connection.sendCommands(initCommands);
-                }
-            }
+            intializeConnection();
 
             String sensorType = matcher.group(1);
             JeeLinkReadingConverter<?> converter;
@@ -162,20 +209,32 @@ public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, 
 
             Reading r = converter.createReading(input);
             if (r != null) {
-                ReadingHandler d = discoveryHandler.get();
+                ReadingHandler<Reading> d = discoveryHandler.get();
                 if (d != null) {
                     d.handleReading(r);
                 }
 
                 // propagate to the appropriate sensor handler
                 synchronized (readingClassHandlerMap) {
-                    List<ReadingHandler> handlers = readingClassHandlerMap.get(r.getClass());
+                    List<ReadingHandler<? extends Reading>> handlers = readingClassHandlerMap.get(r.getClass());
                     if (handlers != null) {
                         for (ReadingHandler h : handlers) {
                             h.handleReading(r);
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private void intializeConnection() {
+        if (!connectionInitialized.getAndSet(true)) {
+            JeeLinkConfig cfg = getConfig().as(JeeLinkConfig.class);
+
+            String initCommands = cfg.initCommands;
+            if (initCommands != null && !initCommands.trim().isEmpty()) {
+                logger.debug("Sending init commands for port {}: {}", connection.getPort(), initCommands);
+                connection.sendCommands(initCommands);
             }
         }
     }
@@ -194,9 +253,6 @@ public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, 
         synchronized (sensorTypeConvertersMap) {
             sensorTypeConvertersMap.clear();
         }
-        synchronized (readingClassHandlerMap) {
-            readingClassHandlerMap.clear();
-        }
 
         super.dispose();
     }
@@ -205,7 +261,7 @@ public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, 
         return connection;
     }
 
-    public void startDiscovery(ReadingHandler handler) {
+    public void startDiscovery(ReadingHandler<Reading> handler) {
         discoveryHandler.set(handler);
     }
 

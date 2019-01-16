@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -34,6 +34,7 @@ public class AirQualityJsonData {
     private AirQualityJsonCity city;
     private List<Attribute> attributions;
     private AirQualityJsonIaqi iaqi;
+    private String dominentpol;
 
     public AirQualityJsonData() {
     }
@@ -120,6 +121,10 @@ public class AirQualityJsonData {
         }
 
         return NO_DATA;
+    }
+
+    public String getDominentPol() {
+        return dominentpol;
     }
 
 }

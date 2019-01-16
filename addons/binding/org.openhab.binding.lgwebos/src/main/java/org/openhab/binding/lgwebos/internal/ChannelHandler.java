@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.lgwebos.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.lgwebos.handler.LGWebOSHandler;
 
@@ -18,6 +20,7 @@ import com.connectsdk.device.ConnectableDevice;
  *
  * @author Sebastian Prehn - initial contribution
  */
+@NonNullByDefault
 public interface ChannelHandler {
 
     /**
@@ -29,7 +32,8 @@ public interface ChannelHandler {
      * @param handler must not be <code>null</code>
      * @param command must not be <code>null</code>
      */
-    void onReceiveCommand(ConnectableDevice device, String channelId, LGWebOSHandler handler, Command command);
+    void onReceiveCommand(@Nullable ConnectableDevice device, String channelId, LGWebOSHandler handler,
+            Command command);
 
     /**
      * Handle underlying subscription status if device changes online state, capabilities or channel gets linked or

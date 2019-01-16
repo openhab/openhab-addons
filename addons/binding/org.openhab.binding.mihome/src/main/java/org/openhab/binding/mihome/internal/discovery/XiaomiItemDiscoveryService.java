@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,8 +8,8 @@
  */
 package org.openhab.binding.mihome.internal.discovery;
 
-import static org.openhab.binding.mihome.XiaomiGatewayBindingConstants.ITEM_ID;
 import static org.openhab.binding.mihome.internal.ModelMapper.*;
+import static org.openhab.binding.mihome.internal.XiaomiGatewayBindingConstants.*;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -21,8 +21,8 @@ import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
 import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.mihome.handler.XiaomiBridgeHandler;
 import org.openhab.binding.mihome.internal.XiaomiItemUpdateListener;
+import org.openhab.binding.mihome.internal.handler.XiaomiBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,9 +87,11 @@ public class XiaomiItemDiscoveryService extends AbstractDiscoveryService
             String model = data.get("model").getAsString();
 
             ThingTypeUID thingType = getThingTypeForModel(model);
+            String modelLabel = getLabelForModel(model);
             if (thingType == null) {
-                logger.debug("Unknown discovered model: {}", model);
-                return;
+                logger.warn("Discovered unsupported device with id \"{}\" -> Creating Basic Device Thing", model);
+                thingType = THING_TYPE_BASIC;
+                modelLabel = String.format("Unsupported Xiaomi MiHome Device \"%s\"", model);
             }
 
             Map<String, Object> properties = new HashMap<>(1);
@@ -99,10 +101,9 @@ public class XiaomiItemDiscoveryService extends AbstractDiscoveryService
 
             if (discoveryServiceCallback.getExistingThing(thingUID) == null) {
                 logger.debug("Detected Xiaomi smart device - sid: {} model: {}", sid, model);
-                thingDiscovered(
-                        DiscoveryResultBuilder.create(thingUID).withThingType(thingType).withProperties(properties)
-                                .withRepresentationProperty(ITEM_ID).withLabel(getLabelForModel(model))
-                                .withBridge(xiaomiBridgeHandler.getThing().getUID()).build());
+                thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(thingType)
+                        .withProperties(properties).withRepresentationProperty(ITEM_ID).withLabel(modelLabel)
+                        .withBridge(xiaomiBridgeHandler.getThing().getUID()).build());
             }
         }
     }

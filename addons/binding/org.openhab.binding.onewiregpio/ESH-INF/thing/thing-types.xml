@@ -26,10 +26,10 @@
 	</thing-type>
 
 	<channel-type id="temperature">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
-		<description>Indicates the temperature read from one wire gpio sensor in Celsius</description>
-		<state readOnly="true" pattern="%.3f °C" />
+		<description>Indicates the temperature read from one wire gpio sensor</description>
+		<state readOnly="true" pattern="%.3f %unit%" />
 	</channel-type>
 
 </thing:thing-descriptions>

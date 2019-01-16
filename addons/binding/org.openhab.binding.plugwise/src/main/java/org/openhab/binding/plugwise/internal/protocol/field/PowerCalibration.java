@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,12 +8,15 @@
  */
 package org.openhab.binding.plugwise.internal.protocol.field;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The power calibration data of a relay device (Circle, Circle+, Stealth). It is used in {@link Energy} to calculate
  * energy (kWh) and power (W) from pulses.
  *
  * @author Wouter Born - Initial contribution
  */
+@NonNullByDefault
 public class PowerCalibration {
 
     private final double gainA;

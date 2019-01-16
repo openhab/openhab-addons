@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,22 +16,14 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Thomas Rokohl - Initial contribution
  */
-public class PowerFlowRealtimeResponse {
-    @SerializedName("Head")
-    private Head head;
-
+public class PowerFlowRealtimeResponse extends BaseFroniusResponse {
     @SerializedName("Body")
     private PowerFlowRealtimeBody body;
 
-    public Head getHead() {
-        return head;
-    }
-
-    public void setHead(Head head) {
-        this.head = head;
-    }
-
     public PowerFlowRealtimeBody getBody() {
+        if (body == null) {
+            body = new PowerFlowRealtimeBody();
+        }
         return body;
     }
 

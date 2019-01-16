@@ -122,12 +122,15 @@ You can ignore these devices in your Inbox.
     You can specify how long any further detected button pressed should be ignored after one click was processed.
     The parameter is optional and 5000ms by default.
 
-For manual defintion of a `dashbutton` Thing the MAC address can either be taken from the discovery output or can e.g. be captured through your router/DHCP frontend or with [Wireshark](https://wireshark.org).
+For manual definition of a `dashbutton` Thing the MAC address can either be taken from the discovery output or can e.g. be captured through your router/DHCP frontend or with [Wireshark](https://wireshark.org).
 
 ## Channels
 
-- **Press:** Trigger channel for recognizing presses on the Amazon Dash Button.
+- **press:** Trigger channel for recognizing presses on the Amazon Dash Button.
 A trigger channel can directly be used in a rule, check the "Full Example" section for one example.
+Dispatches a `PRESSED` event when a button is pressed.
+
+The trigger channel `press` is of type `system.rawbutton` to allow the usage of the `rawbutton-toggle-switch` profile.
 
 ## Full Example
 
@@ -137,7 +140,7 @@ Things:
 Thing amazondashbutton:dashbutton:fc-a6-67-0c-aa-c7 "My Dash Button" @ "Living" [ macAddress="fc:a6:67:0c:aa:c7", pcapNetworkInterfaceName="eth0", packetInterval=5000 ]
 ```
 
-(Pay attention: The mac address has to be given in two different formats)
+(Pay attention: The MAC address has to be given in two different formats)
 
 Rules:
 

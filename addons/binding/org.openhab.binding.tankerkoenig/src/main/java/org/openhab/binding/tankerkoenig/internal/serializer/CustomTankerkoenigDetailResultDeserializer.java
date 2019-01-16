@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -24,15 +24,13 @@ import com.google.gson.JsonParseException;
 /***
  * Custom Deserializer for the detail result of tankerkoenigs api response
  *
- * @author Jürgen Baginski
- *
+ * @author Jürgen Baginski - Initial contribution
  */
 public class CustomTankerkoenigDetailResultDeserializer implements JsonDeserializer<TankerkoenigDetailResult> {
 
     @Override
     public TankerkoenigDetailResult deserialize(final JsonElement json, final Type typeOfT,
             final JsonDeserializationContext context) throws JsonParseException {
-
         final JsonObject jsonObject = json.getAsJsonObject();
         final Boolean isOK = jsonObject.get("ok").getAsBoolean();
         TankerkoenigDetailResult result = new TankerkoenigDetailResult();

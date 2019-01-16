@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -129,20 +129,32 @@ public class LxControlDimmer extends LxControl {
     }
 
     private Double mapLoxoneToOH(Double loxoneValue) {
-        Double max = getMax();
-        Double min = getMin();
-        if (max != null && min != null && loxoneValue != null) {
-            return (loxoneValue - min) * ((max - min) / 100);
+        if (loxoneValue != null) {
+            // 0 means turn dimmer off, any value above zero should be mapped from min-max range
+            if (Double.compare(loxoneValue, 0.0) == 0) {
+                return 0.0;
+            }
+            Double max = getMax();
+            Double min = getMin();
+            if (max != null && min != null) {
+                return (loxoneValue - min) * ((max - min) / 100);
+            }
         }
         return null;
     }
 
     private Double mapOHToLoxone(Double ohValue) {
-        Double max = getMax();
-        Double min = getMin();
-        if (max != null && min != null && ohValue != null) {
-            double value = min + (ohValue / ((max - min) / 100));
-            return value; // no rounding to integer value is needed as loxone is accepting floating point values
+        if (ohValue != null) {
+            // 0 means turn dimmer off, any value above zero should be mapped to min-max range
+            if (Double.compare(ohValue, 0.0) == 0) {
+                return 0.0;
+            }
+            Double max = getMax();
+            Double min = getMin();
+            if (max != null && min != null) {
+                double value = min + (ohValue / ((max - min) / 100));
+                return value; // no rounding to integer value is needed as loxone is accepting floating point values
+            }
         }
         return null;
     }

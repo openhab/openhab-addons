@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="rfxcom" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="thermostat3">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="tcpbridge" />
+			<bridge-type-ref id="RFXtrx433" />
+			<bridge-type-ref id="RFXrec433" />
+		</supported-bridge-type-refs>
+
+		<label>RFXCOM Thermostat3 Sensor</label>
+		<description>A Thermostat3 device.</description>
+
+		<channels>
+			<channel id="command" typeId="command" />
+			<channel id="signalLevel" typeId="system.signal-strength" />
+		</channels>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device Id</label>
+				<description>Sensor Id. Example 106411</description>
+			</parameter>
+			<parameter name="subType" type="text" required="true">
+				<label>Sub Type</label>
+				<description>Specifies device sub type.</description>
+				<options>
+					<option value="MERTIK__G6R_H4T1">Mertik (G6R H4T1)</option>
+					<option value="MERTIK__G6R_H4TB__G6R_H4T__G6R_H4T21_Z22">Mertik (G6R H4TB, G6R H4T, or G6R
+						H4T21-Z22)
+					</option>
+					<option value="MERTIK__G6R_H4TD__G6R_H4T16">Mertik (G6R H4TD or G6R H4T16)</option>
+					<option value="MERTIK__G6R_H4S_TRANSMIT_ONLY">Mertik (G6R H4S - transmit only)</option>
+				</options>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

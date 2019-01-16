@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="gardena" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="gardena"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
@@ -17,6 +18,7 @@
 			<channel-group id="battery" typeId="rechargeableBattery" />
 			<channel-group id="radio" typeId="radio" />
 			<channel-group id="mower" typeId="mower" />
+			<channel-group id="mower_stats" typeId="mowerStats" />
 			<channel-group id="firmware" typeId="firmware" />
 		</channel-groups>
 		<properties>
@@ -43,7 +45,6 @@
 		<description>Information about the rechargeable battery</description>
 		<channels>
 			<channel id="level" typeId="system.battery-level" />
-			<channel id="rechargeable_battery_status" typeId="rechargeableBatteryStatus" />
 			<channel id="charging" typeId="charging" />
 		</channels>
 	</channel-group-type>
@@ -113,19 +114,6 @@
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="rechargeableBatteryStatus" advanced="true">
-		<item-type>String</item-type>
-		<label>Rechargeable Battery Status</label>
-		<description>The status of the rechargeable battery</description>
-		<state readOnly="true">
-			<options>
-				<option value="weak">Weak</option>
-				<option value="ok">OK</option>
-				<option value="undefined">Undefined</option>
-			</options>
-		</state>
-	</channel-type>
-
 	<channel-type id="charging" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Battery Charging</label>
@@ -153,6 +141,7 @@
 		<description>The mower status</description>
 		<state readOnly="true">
 			<options>
+				<option value="uninitialised">Uninitialised</option>
 				<option value="paused">Paused</option>
 				<option value="ok_cutting">Mowing</option>
 				<option value="ok_searching">Searching charging station</option>
@@ -188,11 +177,15 @@
 				<option value="wrong_loop_signal">Wrong loop signal</option>
 				<option value="loop_sensor_problem_front">Loop sensor problem, front</option>
 				<option value="loop_sensor_problem_rear">Loop sensor problem, rear</option>
+				<option value="loop_sensor_problem_left">Loop sensor problem, left</option>
+				<option value="loop_sensor_problem_right">Loop sensor problem, right</option>
+				<option value="wrong_pin_code">Wrong pin code</option>
 				<option value="trapped">Trapped</option>
 				<option value="upside_down">Upside down</option>
 				<option value="low_battery">Low battery</option>
 				<option value="empty_battery">Empty battery</option>
 				<option value="no_drive">Disabled. Hatch open</option>
+				<option value="temporarily_lifted">Temporary lifted</option>
 				<option value="lifted">Lifted</option>
 				<option value="stuck_in_charging_station">Stuck in charging station</option>
 				<option value="charging_station_blocked">Charging station blocked</option>
@@ -202,32 +195,55 @@
 				<option value="wheel_motor_blocked_left">Wheel motor blocked, left</option>
 				<option value="wheel_drive_problem_right">Wheel drive problem, right</option>
 				<option value="wheel_drive_problem_left">Wheel drive problem, left</option>
+				<option value="cutting_motor_drive_defect">Cutting motor drive defect</option>
 				<option value="cutting_system_blocked">Cutting system blocked</option>
 				<option value="invalid_sub_device_combination">Invalid sub-device combination</option>
 				<option value="settings_restored">Settings restored</option>
-				<option value="electronic_problem">Electronic problem</option>
+				<option value="memory_circuit_problem">Memory circuit problem</option>
+				<option value="slope_too_steep">Slope too steep</option>
 				<option value="charging_system_problem">Charging system problem</option>
+				<option value="stop_button_problem">Stop button problem</option>
 				<option value="tilt_sensor_problem">Tilt sensor problem</option>
+				<option value="mower_tilted">Mower tilted</option>
 				<option value="wheel_motor_overloaded_right">Wheel motor overloaded, right</option>
 				<option value="wheel_motor_overloaded_left">Wheel motor overloaded, left</option>
 				<option value="charging_current_too_high">Charging current too high</option>
+				<option value="electronic_problem">Electronic problem</option>
+				<option value="cutting_motor_problem">Cutting motor problem</option>
+				<option value="limited_cutting_height_range">Limited cutting height range</option>
+				<option value="unexpected_cutting_height_adj">Unexpected cutting height adj</option>
+				<option value="cutting_height_problem_drive">Cutting height problem drive</option>
+				<option value="cutting_height_problem_curr">Cutting height problem curr</option>
+				<option value="cutting_height_problem_dir">Cutting height problem dir</option>
+				<option value="cutting_height_blocked">Cutting height blocked</option>
+				<option value="cutting_height_problem">Cutting height problem</option>
+				<option value="no_response_from_charger">No response from charger</option>
+				<option value="ultrasonic_problem">Ultrasonic problem</option>
 				<option value="temporary_problem">Temporary problem</option>
 				<option value="guide_1_not_found">Guide 1 not found</option>
 				<option value="guide_2_not_found">Guide 2 not found</option>
 				<option value="guide_3_not_found">Guide 3 not found</option>
+				<option value="gps_tracker_module_error">GPS tracker module error</option>
+				<option value="weak_gps_signal">Weak gps signal</option>
 				<option value="difficult_finding_home">Difficult finding home</option>
 				<option value="guide_calibration_accomplished">Guide calibration accomplished</option>
 				<option value="guide_calibration_failed">Guide calibration failed</option>
 				<option value="temporary_battery_problem">Temporary battery problem</option>
 				<option value="battery_problem">Battery problem</option>
+				<option value="too_many_batteries">Too many batteries</option>
 				<option value="alarm_mower_switched_off">Alarm! Mower switched off</option>
 				<option value="alarm_mower_stopped">Alarm! Mower stopped</option>
 				<option value="alarm_mower_lifted">Alarm! Mower lifted</option>
 				<option value="alarm_mower_tilted">Alarm! Mower tilted</option>
+				<option value="alarm_mower_in_motion">Alarm! Mower in motion</option>
+				<option value="alarm_outside_geofence">Alarm outside geofence</option>
 				<option value="connection_changed">Connection changed</option>
 				<option value="connection_not_changed">Connection not changed</option>
 				<option value="com_board_not_available">COM board not available</option>
 				<option value="slipped">Slipped</option>
+				<option value="invalid_battery_combination">Invalid battery combination</option>
+				<option value="imbalanced_cutting_disc">Imbalanced cutting disc</option>
+				<option value="safety_function_faulty">Safety function faulty</option>
 			</options>
 		</state>
 	</channel-type>
@@ -299,6 +315,45 @@
 		<label>Available version</label>
 		<description>Available firmware version</description>
 		<state readOnly="true" />
+	</channel-type>
+
+	<channel-group-type id="mowerStats">
+		<label>Robotic Mower Statistics</label>
+		<description>Statistics about the robotic mower</description>
+		<channels>
+			<channel id="cutting_time" typeId="cuttingTime" />
+			<channel id="charging_cycles" typeId="chargingCycles" />
+			<channel id="collisions" typeId="collisions" />
+			<channel id="running_time" typeId="runningTime" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="cuttingTime" advanced="true">
+		<item-type>Number</item-type>
+		<label>Cutting Time</label>
+		<description>The cutting time</description>
+		<state readOnly="true" pattern="%d h" />
+	</channel-type>
+
+	<channel-type id="chargingCycles" advanced="true">
+		<item-type>Number</item-type>
+		<label>Charging Cycles</label>
+		<description>The charging cycles</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="collisions" advanced="true">
+		<item-type>Number</item-type>
+		<label>Collisions</label>
+		<description>The number of collisions</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="runningTime" advanced="true">
+		<item-type>Number</item-type>
+		<label>Running Time</label>
+		<description>Running time</description>
+		<state readOnly="true" pattern="%d h" />
 	</channel-type>
 
 	<!-- ############################### Watering Computer ############################### -->
@@ -643,6 +698,7 @@
 		<item-type>Switch</item-type>
 		<label>Pump</label>
 		<description>Pump</description>
+		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="turnOnPressure">
@@ -749,11 +805,29 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-type id="manualWateringTimer" advanced="true">
+	<channel-type id="manualWateringTimer">
 		<item-type>Number</item-type>
 		<label>Manual Watering Timer</label>
 		<description>The manual watering timer</description>
-		<state readOnly="true" pattern="%d sec" />
+		<state pattern="%d min" min="0" max="59" step="1">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">1 min</option>
+				<option value="3">3 min</option>
+				<option value="5">5 min</option>
+				<option value="10">10 min</option>
+				<option value="15">15 min</option>
+				<option value="20">20 min</option>
+				<option value="25">25 min</option>
+				<option value="30">30 min</option>
+				<option value="35">35 min</option>
+				<option value="40">40 min</option>
+				<option value="45">45 min</option>
+				<option value="50">50 min</option>
+				<option value="55">55 min</option>
+				<option value="59">59 min</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="lastManualOverrideTime" advanced="true">
@@ -800,5 +874,298 @@
 			</options>
 		</state>
 	</channel-type>
+
+	<!-- ############################### Power ############################### -->
+	<thing-type id="power">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account" />
+		</supported-bridge-type-refs>
+
+		<label>Gardena Smart Power Plug</label>
+		<description>A Gardena Smart Power Plug</description>
+
+		<channel-groups>
+			<channel-group id="device_info" typeId="deviceInfo" />
+			<channel-group id="radio" typeId="radio" />
+			<channel-group id="power" typeId="power" />
+			<channel-group id="firmware" typeId="firmware" />
+		</channel-groups>
+		<properties>
+			<!-- device info -->
+			<property name="manufacturer" />
+			<property name="product" />
+			<property name="serialNumber" />
+			<property name="sgtin" />
+			<property name="version" />
+			<property name="category" />
+		</properties>
+	</thing-type>
+
+	<channel-group-type id="power">
+		<label>Power</label>
+		<description>Power</description>
+		<channels>
+			<channel id="power_timer" typeId="powerTimer" />
+			<channel id="error" typeId="powerError" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="powerTimer">
+		<item-type>String</item-type>
+		<label>Power Timer</label>
+		<description>The power timer</description>
+		<state>
+			<options>
+				<option value="on">On</option>
+				<option value="off">Off</option>
+				<option value="60">1 Minute</option>
+				<option value="300">5 Minutes</option>
+				<option value="900">15 Minutes</option>
+				<option value="3600">1 Hour</option>
+				<option value="7200">2 Hours</option>
+				<option value="18000">5 Hours</option>
+				<option value="43200">12 Hours</option>
+				<option value="86400">1 Day</option>
+				<option value="259200">3 Days</option>
+				<option value="604800">1 Week</option>
+				<option value="1209600">2 Weeks</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="powerError">
+		<item-type>String</item-type>
+		<label>Power Error</label>
+		<description>Power Error</description>
+		<state readOnly="true">
+			<options>
+				<option value="ok">OK</option>
+				<option value="timer_cancelled">Timer Cancelled</option>
+				<option value="unknown">Unknown</option>
+			</options>
+		</state>
+	</channel-type>
+
+
+	<!-- ############################### Irrigation Control ############################### -->
+
+	<thing-type id="ic24">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account" />
+		</supported-bridge-type-refs>
+
+		<label>Gardena Smart Irrigation Control</label>
+		<description>A Gardena Smart Irrigation Control</description>
+
+		<channel-groups>
+			<channel-group id="device_info" typeId="deviceInfo" />
+			<channel-group id="radio" typeId="radio" />
+
+			<channel-group id="watering" typeId="watering" />
+			<channel-group id="ic24" typeId="ic24" />
+			<channel-group id="scheduling" typeId="ic24scheduling" />
+
+			<channel-group id="firmware" typeId="firmware" />
+		</channel-groups>
+		<properties>
+			<!-- device info -->
+			<property name="manufacturer" />
+			<property name="product" />
+			<property name="serialNumber" />
+			<property name="sgtin" />
+			<property name="version" />
+			<property name="category" />
+		</properties>
+	</thing-type>
+
+	<channel-group-type id="watering">
+		<label>Watering</label>
+		<description>The watering</description>
+		<channels>
+			<channel id="watering_timer_1" typeId="wateringTimer">
+				<label>Watering Timer 1</label>
+				<description>The watering timer for valve 1</description>
+			</channel>
+			<channel id="watering_timer_2" typeId="wateringTimer">
+				<label>Watering Timer 2</label>
+				<description>The watering timer for valve 2</description>
+			</channel>
+			<channel id="watering_timer_3" typeId="wateringTimer">
+				<label>Watering Timer 3</label>
+				<description>The watering timer for valve 3</description>
+			</channel>
+			<channel id="watering_timer_4" typeId="wateringTimer">
+				<label>Watering Timer 4</label>
+				<description>The watering timer for valve 4</description>
+			</channel>
+			<channel id="watering_timer_5" typeId="wateringTimer">
+				<label>Watering Timer 5</label>
+				<description>The watering timer for valve 5</description>
+			</channel>
+			<channel id="watering_timer_6" typeId="wateringTimer">
+				<label>Watering Timer 6</label>
+				<description>The watering timer for valve 6</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="wateringTimer">
+		<item-type>Number</item-type>
+		<label>Watering Timer</label>
+		<state pattern="%d min">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">1 min</option>
+				<option value="3">3 min</option>
+				<option value="5">5 min</option>
+				<option value="10">10 min</option>
+				<option value="15">15 min</option>
+				<option value="20">20 min</option>
+				<option value="25">25 min</option>
+				<option value="30">30 min</option>
+				<option value="35">35 min</option>
+				<option value="40">40 min</option>
+				<option value="45">45 min</option>
+				<option value="50">50 min</option>
+				<option value="55">55 min</option>
+				<option value="59">59 min</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-group-type id="ic24" advanced="true">
+		<label>Irrigation Control</label>
+		<description>The irrigation control</description>
+		<channels>
+			<channel id="valves_connected" typeId="valvesConnected" />
+			<channel id="valves_master_config" typeId="valvesMasterConfig" />
+			<channel id="error" typeId="ic24error" />
+			<channel id="valve_error_0" typeId="valveError">
+				<label>Valve Error 0</label>
+				<description>The error for valve 0</description>
+			</channel>
+			<channel id="valve_error_1" typeId="valveError">
+				<label>Valve Error 1</label>
+				<description>The error for valve 1</description>
+			</channel>
+			<channel id="valve_error_2" typeId="valveError">
+				<label>Valve Error 2</label>
+				<description>The error for valve 2</description>
+			</channel>
+			<channel id="valve_error_3" typeId="valveError">
+				<label>Valve Error 3</label>
+				<description>The error for valve 3</description>
+			</channel>
+			<channel id="valve_error_4" typeId="valveError">
+				<label>Valve Error 4</label>
+				<description>The error for valve 4</description>
+			</channel>
+			<channel id="valve_error_5" typeId="valveError">
+				<label>Valve Error 5</label>
+				<description>The error for valve 5</description>
+			</channel>
+			<channel id="valve_error_6" typeId="valveError">
+				<label>Valve Error 6</label>
+				<description>The error for valve 6</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="valvesConnected" advanced="true">
+		<item-type>String</item-type>
+		<label>Valves Connected</label>
+		<description>The connected valves</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="valvesMasterConfig" advanced="true">
+		<item-type>String</item-type>
+		<label>Valves Master Config</label>
+		<description>The valves master config</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="ic24error" advanced="true">
+		<item-type>String</item-type>
+		<label>Irrigation Control Error</label>
+		<description>The irrigation control error</description>
+		<state readOnly="true">
+			<options>
+				<option value="ok">OK</option>
+				<option value="voltage_drop">Voltage Drop</option>
+				<option value="wrong_power_supply">Wrong Power Supply</option>
+				<option value="no_mcu_connection">No Mcu Connection</option>
+				<option value="unknown">Unknown</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="valveError" advanced="true">
+		<item-type>String</item-type>
+		<label>Valve Error</label>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-group-type id="ic24scheduling">
+		<label>Scheduling</label>
+		<description>The scheduled watering</description>
+		<channels>
+			<channel id="scheduled_watering_next_start_1" typeId="ic24ScheduledWatering">
+				<label>Scheduled Watering Next Start 1</label>
+				<description>The scheduled watering next start for valve 1</description>
+			</channel>
+			<channel id="scheduled_watering_end_1" typeId="ic24ScheduledWatering">
+				<label>Scheduled Watering End 1</label>
+				<description>The scheduled watering end for valve 1</description>
+			</channel>
+			<channel id="scheduled_watering_next_start_2" typeId="ic24ScheduledWatering">
+				<label>Scheduled Watering Next Start 2</label>
+				<description>The scheduled watering next start for valve 2</description>
+			</channel>
+			<channel id="scheduled_watering_end_2" typeId="ic24ScheduledWatering">
+				<label>Scheduled Watering End 2</label>
+				<description>The scheduled watering end for valve 2</description>
+			</channel>
+			<channel id="scheduled_watering_next_start_3" typeId="ic24ScheduledWatering">
+				<label>Scheduled Watering Next Start 3</label>
+				<description>The scheduled watering next start for valve 3</description>
+			</channel>
+			<channel id="scheduled_watering_end_3" typeId="ic24ScheduledWatering">
+				<label>Scheduled Watering End 3</label>
+				<description>The scheduled watering end for valve 3</description>
+			</channel>
+			<channel id="scheduled_watering_next_start_4" typeId="ic24ScheduledWatering">
+				<label>Scheduled Watering Next Start 4</label>
+				<description>The scheduled watering next start for valve 4</description>
+			</channel>
+			<channel id="scheduled_watering_end_4" typeId="ic24ScheduledWatering">
+				<label>Scheduled Watering End 4</label>
+				<description>The scheduled watering end for valve 4</description>
+			</channel>
+			<channel id="scheduled_watering_next_start_5" typeId="ic24ScheduledWatering">
+				<label>Scheduled Watering Next Start 5</label>
+				<description>The scheduled watering next start for valve 5</description>
+			</channel>
+			<channel id="scheduled_watering_end_5" typeId="ic24ScheduledWatering">
+				<label>Scheduled Watering End 5</label>
+				<description>The scheduled watering end for valve 5</description>
+			</channel>
+			<channel id="scheduled_watering_next_start_6" typeId="ic24ScheduledWatering">
+				<label>Scheduled Watering Next Start 6</label>
+				<description>The scheduled watering next start for valve 6</description>
+			</channel>
+			<channel id="scheduled_watering_end_6" typeId="ic24ScheduledWatering">
+				<label>Scheduled Watering End 6</label>
+				<description>The scheduled watering end for valve 6</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="ic24ScheduledWatering" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Scheduled Watering</label>
+		<state readOnly="true" />
+	</channel-type>
+
 
 </thing:thing-descriptions>

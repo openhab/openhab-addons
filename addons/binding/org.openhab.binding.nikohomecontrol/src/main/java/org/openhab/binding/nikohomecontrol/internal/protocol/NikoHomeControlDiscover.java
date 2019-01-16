@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -25,11 +25,11 @@ import org.slf4j.LoggerFactory;
  * The IP-address from the Niko Home Control IP-interface is then extracted from the response packet.
  * The data content of the response packet is used as a unique identifier for the bridge.
  *
- * @author Mark Herwege
+ * @author Mark Herwege - Initial Contribution
  */
 public final class NikoHomeControlDiscover {
 
-    private Logger logger = LoggerFactory.getLogger(NikoHomeControlDiscover.class);
+    private final Logger logger = LoggerFactory.getLogger(NikoHomeControlDiscover.class);
 
     private InetAddress addr;
     private String nhcBridgeId;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -14,11 +14,14 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Contains the result or partial result of a presence detection.
  *
  * @author David Graeff - Initial contribution
  */
+@NonNullByDefault
 public class PresenceDetectionValue {
     private double latency;
     private boolean detectionIsFinished;

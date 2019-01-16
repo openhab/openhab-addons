@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -29,11 +29,11 @@ class Checksum {
     }
 
     private static byte calculate(byte checksum, byte[] buffer, int offset, int count) {
-        count += offset;
-        for (; offset < count; ++offset) {
-            checksum = (byte) (checksum ^ buffer[offset]);
+        byte result = checksum;
+        int end = count + offset;
+        for (int index = offset; index < end; ++index) {
+            result = (byte) (result ^ buffer[index]);
         }
-
-        return checksum;
+        return result;
     }
 }

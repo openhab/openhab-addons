@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.lgwebos.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.lgwebos.handler.LGWebOSHandler;
@@ -23,7 +25,8 @@ import com.connectsdk.service.capability.PowerControl;
  *
  * @author Sebastian Prehn - initial contribution
  */
-public class PowerControlPower extends BaseChannelHandler<Void> {
+@NonNullByDefault
+public class PowerControlPower extends BaseChannelHandler<Void, Object> {
     private final Logger logger = LoggerFactory.getLogger(PowerControlPower.class);
 
     private PowerControl getControl(ConnectableDevice device) {
@@ -31,7 +34,8 @@ public class PowerControlPower extends BaseChannelHandler<Void> {
     }
 
     @Override
-    public void onReceiveCommand(ConnectableDevice device, String channelId, LGWebOSHandler handler, Command command) {
+    public void onReceiveCommand(@Nullable ConnectableDevice device, String channelId, LGWebOSHandler handler,
+            Command command) {
         if (device == null) {
             /*
              * Unable to send anything to a null device. Unless the user configured autoupdate="false" neither
@@ -42,27 +46,27 @@ public class PowerControlPower extends BaseChannelHandler<Void> {
             return;
         }
 
-        if (OnOffType.ON == command || OnOffType.OFF == command) {
-            if (OnOffType.ON == command && device.hasCapabilities(PowerControl.On)) {
-                getControl(device).powerOn(createDefaultResponseListener());
-            } else if (OnOffType.OFF == command && device.hasCapabilities(PowerControl.Off)) {
-                getControl(device).powerOff(createDefaultResponseListener());
+        if (OnOffType.ON == command) {
+            if (hasCapability(device, PowerControl.On)) {
+                getControl(device).powerOn(getDefaultResponseListener());
+            }
+        } else if (OnOffType.OFF == command) {
+            if (hasCapability(device, PowerControl.Off)) {
+                getControl(device).powerOff(getDefaultResponseListener());
             }
         } else {
-            logger.warn("only accept OnOffType");
-            return;
+            logger.warn("Only accept OnOffType. Type was {}.", command.getClass());
         }
+
     }
 
     @Override
     public void onDeviceReady(ConnectableDevice device, String channelId, LGWebOSHandler handler) {
-        super.onDeviceReady(device, channelId, handler);
         handler.postUpdate(channelId, OnOffType.ON);
     }
 
     @Override
     public void onDeviceRemoved(ConnectableDevice device, String channelId, LGWebOSHandler handler) {
-        super.onDeviceRemoved(device, channelId, handler);
         handler.postUpdate(channelId, OnOffType.OFF);
     }
 }

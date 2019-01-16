@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -14,22 +14,26 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * A simple class to represent energy usage, converting between Plugwise data representations.
  *
- * @author Karel Goderis
- * @author Wouter Born - Initial contribution
+ * @author Wouter Born, Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public class Energy {
 
     private static final int WATTS_PER_KILOWATT = 1000;
     private static final double PULSES_PER_KW_SECOND = 468.9385193;
     private static final double PULSES_PER_W_SECOND = PULSES_PER_KW_SECOND / WATTS_PER_KILOWATT;
 
-    private ZonedDateTime utcStart; // using UTC resolves wrong local start/end timestamps when DST changes occur
+    private @Nullable ZonedDateTime utcStart; // using UTC resolves wrong local start/end timestamps when DST changes
+                                              // occur
     private ZonedDateTime utcEnd;
     private long pulses;
-    private Duration interval;
+    private @Nullable Duration interval;
 
     public Energy(ZonedDateTime utcEnd, long pulses) {
         this.utcEnd = utcEnd;
@@ -61,7 +65,7 @@ public class Energy {
         return utcEnd.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
     }
 
-    public Duration getInterval() {
+    public @Nullable Duration getInterval() {
         return interval;
     }
 
@@ -69,13 +73,22 @@ public class Energy {
         return pulses;
     }
 
-    public LocalDateTime getStart() {
-        return utcStart.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
+    public @Nullable LocalDateTime getStart() {
+        ZonedDateTime localUtcStart = utcStart;
+        if (localUtcStart == null) {
+            return null;
+        }
+        return localUtcStart.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
     }
 
     private double intervalSeconds() {
-        double seconds = interval.getSeconds();
-        seconds += interval.getNano() / ChronoUnit.SECONDS.getDuration().toNanos();
+        Duration localInterval = interval;
+        if (localInterval == null) {
+            throw new IllegalStateException("Failed to calculate seconds because interval is null");
+        }
+
+        double seconds = localInterval.getSeconds();
+        seconds += localInterval.getNano() / ChronoUnit.SECONDS.getDuration().toNanos();
         return seconds;
     }
 

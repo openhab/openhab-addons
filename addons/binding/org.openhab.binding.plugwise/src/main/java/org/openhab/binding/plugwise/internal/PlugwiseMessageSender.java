@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,6 +17,9 @@ import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.io.transport.serial.SerialPort;
 import org.openhab.binding.plugwise.internal.protocol.AcknowledgementMessage;
 import org.openhab.binding.plugwise.internal.protocol.Message;
 import org.slf4j.Logger;
@@ -25,15 +28,18 @@ import org.slf4j.LoggerFactory;
 /**
  * Sends messages to the Plugwise Stick using a serial connection.
  *
- * @author Karel Goderis
- * @author Wouter Born - Initial contribution
+ * @author Wouter Born, Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public class PlugwiseMessageSender {
 
     private class MessageSenderThread extends Thread {
 
-        public MessageSenderThread() {
+        private int messageWaitTime;
+
+        public MessageSenderThread(int messageWaitTime) {
             super("Plugwise MessageSenderThread");
+            this.messageWaitTime = messageWaitTime;
             setDaemon(true);
         }
 
@@ -47,7 +53,7 @@ public class PlugwiseMessageSender {
                         continue;
                     }
                     sendMessage(queuedMessage);
-                    sleep(context.getConfiguration().getMessageWaitTime());
+                    sleep(messageWaitTime);
                 } catch (InterruptedException e) {
                     // That's our signal to stop
                     break;
@@ -68,9 +74,10 @@ public class PlugwiseMessageSender {
     private final Logger logger = LoggerFactory.getLogger(PlugwiseMessageSender.class);
     private final PlugwiseCommunicationContext context;
 
-    private WritableByteChannel outputChannel;
     private int sequentialWriteErrors;
-    private MessageSenderThread thread;
+
+    private @Nullable WritableByteChannel outputChannel;
+    private @Nullable MessageSenderThread thread;
 
     public PlugwiseMessageSender(PlugwiseCommunicationContext context) {
         this.context = context;
@@ -82,10 +89,8 @@ public class PlugwiseMessageSender {
                     + sequentialWriteErrors + " times)");
         }
 
-        if (message != null) {
-            logger.debug("Adding {} message to sendQueue: {}", priority, message);
-            context.getSendQueue().put(new PlugwiseQueuedMessage(message, priority));
-        }
+        logger.debug("Adding {} message to sendQueue: {}", priority, message);
+        context.getSendQueue().put(new PlugwiseQueuedMessage(message, priority));
     }
 
     private void sendMessage(PlugwiseQueuedMessage queuedMessage) throws InterruptedException {
@@ -93,8 +98,16 @@ public class PlugwiseMessageSender {
             queuedMessage.increaseAttempts();
 
             Message message = queuedMessage.getMessage();
-
             String messageHexString = message.toHexString();
+
+            WritableByteChannel localOutputChannel = outputChannel;
+            if (localOutputChannel == null) {
+                logger.warn("Error writing '{}' to serial port {}: outputChannel is null", messageHexString,
+                        context.getConfiguration().getSerialPort());
+                sequentialWriteErrors++;
+                return;
+            }
+
             String packetString = PROTOCOL_HEADER + messageHexString + PROTOCOL_TRAILER;
             ByteBuffer bytebuffer = ByteBuffer.allocate(packetString.length());
             bytebuffer.put(packetString.getBytes());
@@ -102,7 +115,7 @@ public class PlugwiseMessageSender {
 
             try {
                 logger.debug("Sending: {} as {}", message, messageHexString);
-                outputChannel.write(bytebuffer);
+                localOutputChannel.write(bytebuffer);
                 sequentialWriteErrors = 0;
             } catch (IOException e) {
                 logger.warn("Error writing '{}' to serial port {}: {}", messageHexString,
@@ -153,15 +166,21 @@ public class PlugwiseMessageSender {
         }
     }
 
+    @SuppressWarnings("resource")
     public void start() throws PlugwiseInitializationException {
-        sequentialWriteErrors = 0;
+        SerialPort serialPort = context.getSerialPort();
+        if (serialPort == null) {
+            throw new PlugwiseInitializationException("Failed to get serial port output stream because port is null");
+        }
+
         try {
-            outputChannel = Channels.newChannel(context.getSerialPort().getOutputStream());
+            outputChannel = Channels.newChannel(serialPort.getOutputStream());
         } catch (IOException e) {
             throw new PlugwiseInitializationException("Failed to get serial port output stream", e);
         }
 
-        thread = new MessageSenderThread();
+        sequentialWriteErrors = 0;
+        thread = new MessageSenderThread(context.getConfiguration().getMessageWaitTime());
         thread.start();
     }
 

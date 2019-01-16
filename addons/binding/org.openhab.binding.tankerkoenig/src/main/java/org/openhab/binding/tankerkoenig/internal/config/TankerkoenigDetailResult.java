@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,16 +8,15 @@
  */
 package org.openhab.binding.tankerkoenig.internal.config;
 
-import org.openhab.binding.tankerkoenig.TankerkoenigBindingConstants;
+import org.openhab.binding.tankerkoenig.internal.TankerkoenigBindingConstants;
 
 /***
  * The {@link TankerkoenigDetailResult} class is the representing java model for the json result of the tankerkoenig.de
  * details request
  * Actually used for OpeningTimes only.
  *
- * @author Dennis Dollinger
- * @author Jürgen Baginski
- *
+ * @author Dennis Dollinger - Initial contribution
+ * @author Jürgen Baginski - Initial contribution
  */
 public class TankerkoenigDetailResult {
 

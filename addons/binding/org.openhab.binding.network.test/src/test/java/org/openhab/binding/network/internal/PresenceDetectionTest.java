@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -77,7 +77,7 @@ public class PresenceDetectionTest {
         subject.setUseArpPing(true, "arping");
         subject.setUseIcmpPing(true);
 
-        assertThat(subject.getPingMethod(), is(IpPingMethodEnum.WINDOWS_PING));
+        assertThat(subject.pingMethod, is(IpPingMethodEnum.WINDOWS_PING));
     }
 
     @After
@@ -91,7 +91,7 @@ public class PresenceDetectionTest {
     public void threadCountTest() {
         assertNull(subject.executorService);
 
-        doNothing().when(subject).performARPping(anyObject());
+        doNothing().when(subject).performARPping(any());
         doNothing().when(subject).performJavaPing();
         doNothing().when(subject).performSystemPing();
         doNothing().when(subject).performServicePing(anyInt());
@@ -111,7 +111,7 @@ public class PresenceDetectionTest {
     public void partialAndFinalCallbackTests() throws InterruptedException, IOException {
         doReturn(true).when(networkUtils).nativePing(eq(IpPingMethodEnum.WINDOWS_PING), anyString(), anyInt());
         doReturn(true).when(networkUtils).nativeARPPing(eq(ArpPingUtilEnum.IPUTILS_ARPING), anyString(), anyString(),
-                anyObject(), anyInt());
+                any(), anyInt());
         doReturn(true).when(networkUtils).servicePing(anyString(), anyInt(), anyInt());
 
         assertTrue(subject.performPresenceDetection(false));
@@ -119,10 +119,10 @@ public class PresenceDetectionTest {
 
         verify(subject, times(0)).performJavaPing();
         verify(subject).performSystemPing();
-        verify(subject).performARPping(anyObject());
+        verify(subject).performARPping(any());
         verify(subject).performServicePing(anyInt());
 
-        verify(listener, times(3)).partialDetectionResult(anyObject());
+        verify(listener, times(3)).partialDetectionResult(any());
         ArgumentCaptor<PresenceDetectionValue> capture = ArgumentCaptor.forClass(PresenceDetectionValue.class);
         verify(listener, times(1)).finalDetectionResult(capture.capture());
 
@@ -133,7 +133,7 @@ public class PresenceDetectionTest {
     public void cacheTest() throws InterruptedException, IOException {
         doReturn(true).when(networkUtils).nativePing(eq(IpPingMethodEnum.WINDOWS_PING), anyString(), anyInt());
         doReturn(true).when(networkUtils).nativeARPPing(eq(ArpPingUtilEnum.IPUTILS_ARPING), anyString(), anyString(),
-                anyObject(), anyInt());
+                any(), anyInt());
         doReturn(true).when(networkUtils).servicePing(anyString(), anyInt(), anyInt());
 
         doReturn(executorService).when(subject).getThreadsFor(anyInt());
@@ -145,7 +145,7 @@ public class PresenceDetectionTest {
         verify(subject).performPresenceDetection(eq(false));
         assertNotNull(subject.executorService);
         // There should be no straight callback yet
-        verify(callback, times(0)).accept(anyObject());
+        verify(callback, times(0)).accept(any());
 
         // Perform the different presence detection threads now
         ArgumentCaptor<Runnable> capture = ArgumentCaptor.forClass(Runnable.class);
@@ -158,16 +158,16 @@ public class PresenceDetectionTest {
 
         // Although there are multiple partial results and a final result,
         // the getValue() consumers get the fastest response possible, and only once.
-        verify(callback, times(1)).accept(anyObject());
+        verify(callback, times(1)).accept(any());
 
         // As long as the cache is valid, we can get the result back again
         subject.getValue(callback);
-        verify(callback, times(2)).accept(anyObject());
+        verify(callback, times(2)).accept(any());
 
         // Invalidate value, we should not get a new callback immediately again
         subject.cache.invalidateValue();
         subject.getValue(callback);
-        verify(callback, times(2)).accept(anyObject());
+        verify(callback, times(2)).accept(any());
     }
 
     @Test

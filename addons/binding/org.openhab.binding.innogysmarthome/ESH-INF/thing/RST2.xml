@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="innogysmarthome" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="RST2">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>Radiator mounted Smart Thermostat (RST2)</label>
+		<description>A thermostat, that supports setting the temperature and measuring the current temperature and humidity (2 battery version since 2018)</description>
+
+		<channels>
+			<channel id="set_temperature" typeId="ThermostatActuator_PointTemperature" />
+			<channel id="temperature" typeId="TemperatureSensor_Temperature" />
+			<channel id="frost_warning" typeId="TemperatureSensor_FrostWarning" />
+			<channel id="humidity" typeId="HumiditySensor_Humidity" />
+			<channel id="mold_warning" typeId="HumiditySensor_MoldWarning" />
+			<channel id="operation_mode" typeId="ThermostatActuator_OperationMode" />
+			<channel id="window_reduction_active" typeId="ThermostatActuator_WindowReductionActive" />
+			<channel id="battery_low" typeId="system.low-battery" />
+		</channels>
+
+		<config-description-ref uri="thing-type:innogysmarthome:config" />
+	</thing-type>
+</thing:thing-descriptions>

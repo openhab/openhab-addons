@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tado" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- my.tado API Gateway -->
+	<bridge-type id="home">
+		<label>Tado Home</label>
+		<description>The user's tado home</description>
+
+		<config-description>
+			<parameter name="username" type="text" required="true">
+				<label>User name</label>
+				<description>User name of tado login used for API access</description>
+			</parameter>
+
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>Password of tado login used for API access</description>
+				<context>password</context>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="zone">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="home" />
+		</supported-bridge-type-refs>
+
+		<label>Zone</label>
+		<description>A zone of a home</description>
+
+		<channels>
+			<channel typeId="currentTemperature" id="currentTemperature"></channel>
+			<channel typeId="humidity" id="humidity"></channel>
+
+			<channel typeId="heatingPower" id="heatingPower"></channel>
+
+			<channel typeId="hvacMode" id="hvacMode"></channel>
+			<channel typeId="targetTemperature" id="targetTemperature"></channel>
+			<channel typeId="fanspeed" id="fanspeed"></channel>
+			<channel typeId="swing" id="swing"></channel>
+
+			<channel typeId="overlayExpiry" id="overlayExpiry"></channel>
+			<channel typeId="timerDuration" id="timerDuration"></channel>
+
+			<channel typeId="operationMode" id="operationMode"></channel>
+		</channels>
+
+		<config-description>
+			<parameter name="id" type="integer" required="true">
+				<label>Zone Id</label>
+				<description>Id of the zone</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer">
+				<label>Refresh interval</label>
+				<description>Refresh interval of home data</description>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="fallbackTimerDuration" type="integer">
+				<label>Fallback timer duration</label>
+				<description>Timer duration used if no other duration can be determined</description>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="hvacChangeDebounce" type="integer">
+				<label>HVAC Change debounce delay</label>
+				<description>Duration in seconds to combine multiple HVAC changes into one.</description>
+				<default>5</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="mobiledevice">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="home" />
+		</supported-bridge-type-refs>
+
+		<label>Mobile Device</label>
+		<description>Mobile device of a home</description>
+
+		<channels>
+			<channel typeId="atHome" id="atHome"></channel>
+		</channels>
+
+		<config-description>
+			<parameter name="id" type="integer" required="true">
+				<label>Mobile Device Id</label>
+				<description>Id of the mobile device</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer">
+				<label>Refresh interval</label>
+				<description>Refresh interval of location state</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="currentTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Current temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="humidity">
+		<item-type>Number</item-type>
+		<label>Humidity</label>
+		<description>Current humidity in %</description>
+		<category>Humidity</category>
+		<state readOnly="true" pattern="%.1f %%"></state>
+	</channel-type>
+
+	<channel-type id="heatingPower">
+		<item-type>Number</item-type>
+		<label>Heating Power</label>
+		<description>Current heating power</description>
+		<state readOnly="true" pattern="%.0f %%"></state>
+	</channel-type>
+
+	<channel-type id="hvacMode">
+		<item-type>String</item-type>
+		<label>HVAC Mode</label>
+		<description>Mode of the device (OFF, HEAT, COOL, DRY, FAN, AUTO - if supported)</description>
+		<state readOnly="false">
+			<options>
+				<option value="OFF">Off</option>
+				<option value="HEAT">Heat</option>
+				<option value="COOL">Cool</option>
+				<option value="DRY">Dry</option>
+				<option value="FAN">Fan</option>
+				<option value="AUTO">Auto</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="targetTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Target Temperature</label>
+		<description>Thermostat temperature setpoint</description>
+		<category>Temperature</category>
+		<state step="0.1" pattern="%.1f %unit%" readOnly="false"></state>
+	</channel-type>
+
+	<channel-type id="fanspeed">
+		<item-type>String</item-type>
+		<label>Fan speed</label>
+		<description>AC fan speed (only if supported by AC)</description>
+		<state readOnly="false">
+			<options>
+				<option value="LOW">Low</option>
+				<option value="MIDDLE">Middle</option>
+				<option value="HIGH">High</option>
+				<option value="AUTO">Auto</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="swing">
+		<item-type>Switch</item-type>
+		<label>Swing</label>
+		<description>State of AC swing (only if supported by AC)</description>
+	</channel-type>
+
+	<channel-type id="operationMode">
+		<item-type>String</item-type>
+		<label>Zone Operation Mode</label>
+		<description>Active operation mode (schedule, manual, timer or until next change)</description>
+		<state readOnly="false">
+			<options>
+				<option value="SCHEDULE">Schedule</option>
+				<option value="MANUAL">Manual</option>
+				<option value="UNTIL_CHANGE">Until change</option>
+				<option value="TIMER">Timer</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="timerDuration">
+		<item-type>Number</item-type>
+		<label>Timer Duration</label>
+		<description>Total duration of a timer</description>
+		<state min="0" step="1" pattern="%d min" readOnly="false"></state>
+	</channel-type>
+
+	<channel-type id="overlayExpiry">
+		<item-type>DateTime</item-type>
+		<label>Overlay end time</label>
+		<description>Time until when the overlay is active. Null if no overlay is set or overlay type is manual.</description>
+		<state readOnly="true" pattern="%1$tF %1$tR" />
+	</channel-type>
+
+	<channel-type id="atHome">
+		<item-type>Switch</item-type>
+		<label>At home</label>
+		<description>ON if at home, OFF if away</description>
+	</channel-type>
+
+</thing:thing-descriptions>

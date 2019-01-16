@@ -4,8 +4,8 @@
 
 	<name>Feed Binding</name>
 	<description>The Feed Binding downloads Feed data from URL, 
-	   displays information about the feed (number of Entries, last published date, author, feed title and description, last entry)
-	   and tracks for changes in the Feed at intervals.</description>
+		displays information about the feed (number of Entries, last published date, author, feed title and description, last entry)
+		and tracks for changes in the Feed at intervals.</description>
 	<author>Svilen Valkanov</author>
 
 </binding:binding>

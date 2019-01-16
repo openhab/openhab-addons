@@ -1,0 +1,33 @@
+{
+	"deviceMapping": {
+		"id": [
+			"chuangmi.plug.m1",
+			"chuangmi.plug.hmi205"
+		],
+		"channels": [
+			{
+				"property": "power",
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": [
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "temperature",
+				"friendlyName": "Temperature",
+				"channel": "temperature",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": []
+			}
+		]
+	}
+}

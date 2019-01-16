@@ -18,6 +18,16 @@ None
 -   totalEnergy
 -   dayEnergy
 -   status
+-   str1Voltage
+-   str1Current
+-   str2Voltage
+-   str2Current
+-   l1Voltage
+-   l1Power
+-   l2Voltage
+-   l2Power
+-   l3Voltage
+-   l3Power
 
 ## Thing Configuration
 
@@ -29,14 +39,15 @@ Thing kostalinverter:kostalinverter:inverter [ url="http://192.168.0.128" ]
 
 If the thing goes online then the connection to the web interface is successful.
 In case it is offline you should see an error message.
+You optionally can define a `userName` and a `password` parameter if the access to the webinterface is protected and a desired `refreshInterval` (the time interval between updates, default 60 seconds).
 
 ## Items
 
 demo.items:
 
 ```
-Number SolarPower "Solar power [%.2f Watt]" <energy> (gGF) { channel="kostalinverter:kostalinverter:inverter:acPower" }
-Number SolarEnergyDay "Solar day energy[%.2f kwh]" <energy> (gGF)  { channel="kostalinverter:kostalinverter:inverter:dayEnergy" }
-Number SolarTotalEnergy "Solar total energy[%.2f kwh]" <energy> (gGF) { channel="kostalinverter:kostalinverter:inverter:totalEnergy" }
-String SolarStatus "Solar status [%s]" <energy> (gGF) { channel="kostalinverter:kostalinverter:inverter:status" }
+Number:Power SolarPower "Solar power [%.1f %unit%]" <energy> { channel="kostalinverter:kostalinverter:inverter:acPower" }
+Number:Energy SolarEnergyDay "Solar day energy [%.3f %unit%]" <energy> { channel="kostalinverter:kostalinverter:inverter:dayEnergy" }
+Number:Energy SolarTotalEnergy "Solar total energy [%.3f %unit%]" <energy> { channel="kostalinverter:kostalinverter:inverter:totalEnergy" }
+String SolarStatus "Solar status [%s]" <energy> { channel="kostalinverter:kostalinverter:inverter:status" }
 ```

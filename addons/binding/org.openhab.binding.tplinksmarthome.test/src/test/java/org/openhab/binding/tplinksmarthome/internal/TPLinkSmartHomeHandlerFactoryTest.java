@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -24,11 +24,12 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.mockito.Mock;
-import org.openhab.binding.tplinksmarthome.TPLinkSmartHomeBindingConstants;
-import org.openhab.binding.tplinksmarthome.handler.SmartHomeHandler;
 import org.openhab.binding.tplinksmarthome.internal.device.BulbDevice;
+import org.openhab.binding.tplinksmarthome.internal.device.DimmerDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.EnergySwitchDevice;
+import org.openhab.binding.tplinksmarthome.internal.device.RangeExtenderDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.SwitchDevice;
+import org.openhab.binding.tplinksmarthome.internal.handler.SmartHomeHandler;
 
 /**
  * Test class for {@link TPLinkSmartHomeHandlerFactory}.
@@ -47,11 +48,12 @@ public class TPLinkSmartHomeHandlerFactoryTest {
             { "hs100", SwitchDevice.class },
             { "hs110", EnergySwitchDevice.class },
             { "hs200", SwitchDevice.class },
+            { "hs220", DimmerDevice.class },
             { "lb100", BulbDevice.class },
             { "lb120", BulbDevice.class },
             { "lb130", BulbDevice.class },
             { "lb230", BulbDevice.class },
-            { "re270", SwitchDevice.class },
+            { "re270", RangeExtenderDevice.class },
             { "unknown", null },
     });
     // @formatter:on

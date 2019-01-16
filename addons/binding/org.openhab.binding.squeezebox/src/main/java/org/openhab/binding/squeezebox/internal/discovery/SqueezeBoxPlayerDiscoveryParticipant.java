@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.squeezebox.internal.discovery;
 
-import static org.openhab.binding.squeezebox.SqueezeBoxBindingConstants.SQUEEZEBOXPLAYER_THING_TYPE;
+import static org.openhab.binding.squeezebox.internal.SqueezeBoxBindingConstants.SQUEEZEBOXPLAYER_THING_TYPE;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,10 +20,10 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.squeezebox.handler.SqueezeBoxPlayer;
-import org.openhab.binding.squeezebox.handler.SqueezeBoxPlayerEventListener;
-import org.openhab.binding.squeezebox.handler.SqueezeBoxPlayerHandler;
-import org.openhab.binding.squeezebox.handler.SqueezeBoxServerHandler;
+import org.openhab.binding.squeezebox.internal.handler.SqueezeBoxPlayer;
+import org.openhab.binding.squeezebox.internal.handler.SqueezeBoxPlayerEventListener;
+import org.openhab.binding.squeezebox.internal.handler.SqueezeBoxPlayerHandler;
+import org.openhab.binding.squeezebox.internal.handler.SqueezeBoxServerHandler;
 import org.openhab.binding.squeezebox.internal.model.Favorite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,15 +110,10 @@ public class SqueezeBoxPlayerDiscoveryParticipant extends AbstractDiscoveryServi
      * Tells the bridge to request a list of players
      */
     private void setupRequestPlayerJob() {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                squeezeBoxServerHandler.requestPlayers();
-            }
-        };
-
-        logger.debug("request player job scheduled to run every {} seconds", TTL);
-        requestPlayerJob = scheduler.scheduleWithFixedDelay(runnable, 10, TTL, TimeUnit.SECONDS);
+        logger.debug("Request player job scheduled to run every {} seconds", TTL);
+        requestPlayerJob = scheduler.scheduleWithFixedDelay(() -> {
+            squeezeBoxServerHandler.requestPlayers();
+        }, 10, TTL, TimeUnit.SECONDS);
     }
 
     // we can ignore the other events

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
@@ -11,6 +12,10 @@
 		<parameter-group name="connection">
 			<label>Connection</label>
 			<description>Connection settings.</description>
+		</parameter-group>
+		<parameter-group name="notification">
+			<label>Notification</label>
+			<description>Notification settings.</description>
 		</parameter-group>
 		<parameter name="ipAddress" type="text" required="true" groupName="network">
 			<label>Network Address</label>
@@ -39,11 +44,22 @@
 			<description>Password to access the HTTP service.</description>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="refreshInterval" type="integer" required="false" min="1" max="60" unit="s" groupName="connection">
+		<parameter name="refreshInterval" type="integer" required="false" min="1" max="60" unit="s"
+			groupName="connection">
 			<label>Refresh Interval</label>
 			<description>The refresh interval to poll Kodi API (in s).</description>
 			<default>10</default>
 			<advanced>true</advanced>
+		</parameter>
+		<parameter name="notificationTimeout" type="integer" unit="s" required="true" groupName="notification">
+			<label>Notification Timeout</label>
+			<description>Maximum amount of time for which the notification will be played (in s).</description>
+			<default>20</default>
+		</parameter>
+		<parameter name="notificationVolume" type="integer" min="0" max="100" step="1" unit="%"
+			groupName="notification">
+			<label>Notification Sound Volume</label>
+			<description>Specifies the volume applied to a notification sound (in %).</description>
 		</parameter>
 	</config-description>
 
@@ -54,5 +70,4 @@
 			<default>All channels</default>
 		</parameter>
 	</config-description>
-
 </config-description:config-descriptions>

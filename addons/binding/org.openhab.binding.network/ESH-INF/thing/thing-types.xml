@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="network" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="network"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd"><!--Network Binding -->
 	<thing-type id="pingdevice">
@@ -15,10 +16,11 @@
 		</channels>
 
 		<properties>
-			<property name="uses_arp_pings">no</property>
-			<property name="uses_dhcp_listen">no</property>
-			<property name="uses_ios_wakeup">no</property>
-			<property name="presence_detection_type"></property>
+			<property name="arp_state">-</property>
+			<property name="dhcp_state">-</property>
+			<property name="icmp_state">-</property>
+			<property name="presence_detection_type">-</property>
+			<property name="uses_ios_wakeup">-</property>
 		</properties>
 
 		<config-description>
@@ -27,7 +29,7 @@
 				<description>Hostname or IP of the device</description>
 			</parameter>
 
-			<parameter name="refresh_interval" type="integer">
+			<parameter name="refreshInterval" type="integer">
 				<label>Refresh Interval</label>
 				<description>States how long to wait after a device state update before the next refresh shall occur (in ms)</description>
 				<default>60000</default>
@@ -60,10 +62,11 @@
 		</channels>
 
 		<properties>
-			<property name="uses_arp_pings">no</property>
-			<property name="uses_dhcp_listen">no</property>
-			<property name="uses_ios_wakeup">no</property>
-			<property name="presence_detection_type"></property>
+			<property name="arp_state">-</property>
+			<property name="dhcp_state">-</property>
+			<property name="icmp_state">-</property>
+			<property name="presence_detection_type">-</property>
+			<property name="uses_ios_wakeup">-</property>
 		</properties>
 
 		<config-description>
@@ -90,7 +93,7 @@
 				<default>5000</default>
 			</parameter>
 
-			<parameter name="refresh_interval" type="integer">
+			<parameter name="refreshInterval" type="integer">
 				<label>Refresh Interval</label>
 				<description>States how long to wait after a device state update before the next refresh shall occur (in ms)</description>
 				<default>60000</default>

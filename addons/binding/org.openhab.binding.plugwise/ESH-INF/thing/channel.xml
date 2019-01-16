@@ -12,19 +12,19 @@
 	</channel-type>
 
 	<channel-type id="humidity">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Current relative humidity</description>
 		<category>Humidity</category>
-		<state readOnly="true" pattern="%.1f %%" />
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 	<channel-type id="energy">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Energy</label>
 		<description>Energy consumption/production during the last measurement interval</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.3f kWh" />
+		<state readOnly="true" pattern="%.3f %unit%" />
 		<config-description-ref uri="channel-type:plugwise:slowerupdates" />
 	</channel-type>
 
@@ -50,11 +50,11 @@
 	</channel-type>
 
 	<channel-type id="power">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Power</label>
 		<description>Current power consumption/production</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f W" />
+		<state readOnly="true" pattern="%.1f %unit%" />
 		<config-description-ref uri="channel-type:plugwise:fasterupdates" />
 	</channel-type>
 
@@ -83,11 +83,11 @@
 	</channel-type>
 
 	<channel-type id="temperature">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Current temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f °C" />
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 	<channel-type id="triggered">

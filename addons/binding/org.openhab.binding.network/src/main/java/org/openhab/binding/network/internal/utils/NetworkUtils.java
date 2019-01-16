@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,7 +8,9 @@
  */
 package org.openhab.binding.network.internal.utils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.ConnectException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -31,13 +33,16 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.net.util.SubnetUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.net.exec.ExecUtil;
 
 /**
  * Network utility functions for pinging and for determining all interfaces and assigned IP addresses.
  *
- * @author David Graeff <david.graeff@web.de>
+ * @author David Graeff - Initial contribution
  */
+@NonNullByDefault
 public class NetworkUtils {
     /**
      * Gets every IPv4 Address on each Interface except the loopback
@@ -135,7 +140,6 @@ public class NetworkUtils {
                 for (int i = 0; i < len; i++) {
                     networkIPs.add(addresses[i]);
                 }
-
             } catch (Exception ex) {
             }
         }
@@ -159,13 +163,8 @@ public class NetworkUtils {
         try (Socket socket = new Socket()) {
             socket.connect(socketAddress, timeout);
             return true;
-        } catch (NoRouteToHostException ignored) {
+        } catch (ConnectException | SocketTimeoutException | NoRouteToHostException ignored) {
             return false;
-        } catch (SocketTimeoutException ignored) {
-            return false;
-        } catch (ConnectException e) {
-            // Connection refused, there is a device on the other end though
-            return true;
         }
     }
 
@@ -201,11 +200,11 @@ public class NetworkUtils {
      * Return true if the external arp ping utility (arping) is available and executable on the given path.
      */
     public ArpPingUtilEnum determineNativeARPpingMethod(String arpToolPath) {
-        String result = ExecUtil.executeCommandLineAndWaitResponse(arpToolPath, 100);
+        String result = ExecUtil.executeCommandLineAndWaitResponse(arpToolPath + " --help", 100);
         if (StringUtils.isBlank(result)) {
-            return null;
+            return ArpPingUtilEnum.UNKNOWN_TOOL;
         } else if (result.contains("Thomas Habets")) {
-            if (result.contains("-w sec Specify a timeout")) {
+            if (result.matches("(.*)w sec(\\s*)Specify a timeout(.*)")) {
                 return ArpPingUtilEnum.THOMAS_HABERT_ARPING;
             } else {
                 return ArpPingUtilEnum.THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT;
@@ -231,7 +230,7 @@ public class NetworkUtils {
      * @return Returns true if the device responded
      * @throws IOException The ping command could probably not be found
      */
-    public boolean nativePing(IpPingMethodEnum method, String hostname, int timeoutInMS)
+    public boolean nativePing(@Nullable IpPingMethodEnum method, String hostname, int timeoutInMS)
             throws IOException, InterruptedException {
         Process proc;
         // Yes, all supported operating systems have their own ping utility with a different command line
@@ -251,12 +250,37 @@ public class NetworkUtils {
             default:
                 // We cannot estimate the command line for any other operating system and just return false
                 return false;
-
         }
 
-        // The return code is 0 for a successful ping. 1 if device didn't respond and 2 if there is another error like
-        // network interface not ready.
-        return proc.waitFor() == 0;
+        // The return code is 0 for a successful ping, 1 if device didn't
+        // respond, and 2 if there is another error like network interface
+        // not ready.
+        // Exception: return code is also 0 in Windows for all requests on the local subnet.
+        // see https://superuser.com/questions/403905/ping-from-windows-7-get-no-reply-but-sets-errorlevel-to-0
+        if (method != IpPingMethodEnum.WINDOWS_PING) {
+            return proc.waitFor() == 0;
+        }
+
+        int result = proc.waitFor();
+        if (result != 0) {
+            return false;
+        }
+
+        try (BufferedReader r = new BufferedReader(new InputStreamReader(proc.getInputStream()))) {
+            String line = r.readLine();
+            if (line == null) {
+                throw new IOException("Received no output from ping process.");
+            }
+            do {
+                if (line.contains("host unreachable") || line.contains("timed out")
+                        || line.contains("could not find host")) {
+                    return false;
+                }
+                line = r.readLine();
+            } while (line != null);
+
+            return true;
+        }
     }
 
     public enum ArpPingUtilEnum {
@@ -280,14 +304,17 @@ public class NetworkUtils {
      * @return Return true if the device responded
      * @throws IOException The ping command could probably not be found
      */
-    public boolean nativeARPPing(ArpPingUtilEnum arpingTool, String arpUtilPath, String interfaceName,
-            String ipV4address, int timeoutInMS) throws IOException, InterruptedException {
+    public boolean nativeARPPing(@Nullable ArpPingUtilEnum arpingTool, @Nullable String arpUtilPath,
+            String interfaceName, String ipV4address, int timeoutInMS) throws IOException, InterruptedException {
         if (arpUtilPath == null || arpingTool == null || arpingTool == ArpPingUtilEnum.UNKNOWN_TOOL) {
             return false;
         }
         Process proc;
         if (arpingTool == ArpPingUtilEnum.THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT) {
-            proc = new ProcessBuilder(arpUtilPath, "-c", "1", "-I", interfaceName, ipV4address).start();
+            proc = new ProcessBuilder(arpUtilPath, "-c", "1", "-i", interfaceName, ipV4address).start();
+        } else if (arpingTool == ArpPingUtilEnum.THOMAS_HABERT_ARPING) {
+            proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeoutInMS / 1000), "-c", "1", "-i",
+                    interfaceName, ipV4address).start();
         } else {
             proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeoutInMS / 1000), "-c", "1", "-I",
                     interfaceName, ipV4address).start();
@@ -312,5 +339,4 @@ public class NetworkUtils {
             // We ignore the port unreachable error
         }
     }
-
 }

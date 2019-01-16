@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -14,9 +14,12 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.openhab.binding.tplinksmarthome.internal.model.GetRealtime;
 import org.openhab.binding.tplinksmarthome.internal.model.GetSysinfo;
 import org.openhab.binding.tplinksmarthome.internal.model.GsonUtil;
+import org.openhab.binding.tplinksmarthome.internal.model.HasErrorResponse;
 import org.openhab.binding.tplinksmarthome.internal.model.Realtime;
+import org.openhab.binding.tplinksmarthome.internal.model.SetBrightness;
 import org.openhab.binding.tplinksmarthome.internal.model.SetLedOff;
 import org.openhab.binding.tplinksmarthome.internal.model.SetRelayState;
+import org.openhab.binding.tplinksmarthome.internal.model.SetSwitchState;
 import org.openhab.binding.tplinksmarthome.internal.model.Sysinfo;
 import org.openhab.binding.tplinksmarthome.internal.model.TransitionLightState;
 import org.openhab.binding.tplinksmarthome.internal.model.TransitionLightState.LightOnOff;
@@ -117,6 +120,50 @@ public class Commands {
      */
     public SetRelayState setRelayStateResponse(String relayStateResponse) {
         return gsonWithExpose.fromJson(relayStateResponse, SetRelayState.class);
+    }
+
+    /**
+     * Returns the json for the set_switch_state command to switch a dimmer on or off.
+     *
+     * @param onOff the switch state to set
+     * @return The json string of the command to send to the device
+     */
+    public String setSwitchState(OnOffType onOff) {
+        SetSwitchState switchState = new SetSwitchState();
+        switchState.setSwitchState(onOff);
+        return gsonWithExpose.toJson(switchState);
+    }
+
+    /**
+     * Returns the json response of the set_switch_state command to the data object.
+     *
+     * @param switchStateResponse the json string
+     * @return The data object containing the state data from the json string
+     */
+    public SetSwitchState setSwitchStateResponse(String switchStateResponse) {
+        return gsonWithExpose.fromJson(switchStateResponse, SetSwitchState.class);
+    }
+
+    /**
+     * Returns the json for the set_brightness command to set the brightness value.
+     *
+     * @param brightness the brightness value to set
+     * @return The json string of the command to send to the device
+     */
+    public String setDimmerBrightness(int brightness) {
+        SetBrightness setBrightness = new SetBrightness();
+        setBrightness.setBrightness(brightness);
+        return gsonWithExpose.toJson(setBrightness);
+    }
+
+    /**
+     * Returns the json response of the set_brightness command to the data object.
+     *
+     * @param dimmerBrightnessResponse the json string
+     * @return The data object containing the state data from the json string
+     */
+    public HasErrorResponse setDimmerBrightnessResponse(String dimmerBrightnessResponse) {
+        return gsonWithExpose.fromJson(dimmerBrightnessResponse, SetBrightness.class);
     }
 
     /**

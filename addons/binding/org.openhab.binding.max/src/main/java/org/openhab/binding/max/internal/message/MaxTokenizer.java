@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,14 +18,13 @@ import java.util.Enumeration;
  * The tokens returned consist of the payload solely, and do not contain the first byte holding the
  * tokens length.
  *
- * @author Andreas Heil (info@aheil.de)
- * @since 1.4.0
+ * @author Andreas Heil (info@aheil.de) - Initial contribution
  */
 public final class MaxTokenizer implements Enumeration<byte[]> {
 
-    private int offset = 0;
+    private int offset;
 
-    private byte[] decodedRawMessage = null;
+    private byte[] decodedRawMessage;
 
     /**
      * Creates a new MaxTokenizer.

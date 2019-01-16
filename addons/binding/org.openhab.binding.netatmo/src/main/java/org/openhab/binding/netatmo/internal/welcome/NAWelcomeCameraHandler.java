@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,8 +8,8 @@
  */
 package org.openhab.binding.netatmo.internal.welcome;
 
-import static org.openhab.binding.netatmo.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -18,14 +18,14 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.netatmo.handler.NetatmoModuleHandler;
+import org.openhab.binding.netatmo.internal.handler.NetatmoModuleHandler;
 
 import io.swagger.client.model.NAWelcomeCamera;
 
 /**
  * {@link NAWelcomeCameraHandler} is the class used to handle the Welcome Camera Data
  *
- * @author Ing. Peter Weiss - Welcome camera implementation
+ * @author Ing. Peter Weiss - Initial contribution
  *
  */
 public class NAWelcomeCameraHandler extends NetatmoModuleHandler<NAWelcomeCamera> {
@@ -37,6 +37,11 @@ public class NAWelcomeCameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
 
     public NAWelcomeCameraHandler(@NonNull Thing thing) {
         super(thing);
+    }
+
+    @Override
+    protected void updateProperties(NAWelcomeCamera moduleData) {
+        updateProperties(null, moduleData.getType());
     }
 
     @Override

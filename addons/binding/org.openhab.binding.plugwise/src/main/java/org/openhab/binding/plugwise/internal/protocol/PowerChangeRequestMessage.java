@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,8 +17,7 @@ import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
  * of a device is retrieved by sending a {@link InformationRequestMessage} and reading the
  * {@link InformationResponseMessage#getPowerState()} value.
  *
- * @author Karel Goderis
- * @author Wouter Born - Initial contribution
+ * @author Wouter Born, Karel Goderis - Initial contribution
  */
 public class PowerChangeRequestMessage extends Message {
 

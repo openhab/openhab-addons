@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,7 +9,7 @@
 package org.openhab.binding.jeelink.internal.pca301;
 
 import org.eclipse.smarthome.core.thing.Thing;
-import org.openhab.binding.jeelink.JeeLinkBindingConstants;
+import org.openhab.binding.jeelink.internal.JeeLinkBindingConstants;
 import org.openhab.binding.jeelink.internal.JeeLinkReadingConverter;
 import org.openhab.binding.jeelink.internal.JeeLinkSensorHandler;
 import org.openhab.binding.jeelink.internal.SensorDefinition;

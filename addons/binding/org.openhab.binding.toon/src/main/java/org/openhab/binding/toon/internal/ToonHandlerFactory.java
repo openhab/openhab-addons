@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.toon.internal;
 
-import static org.openhab.binding.toon.ToonBindingConstants.*;
+import static org.openhab.binding.toon.internal.ToonBindingConstants.*;
 
 import java.util.Hashtable;
 
@@ -19,13 +19,12 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.toon.handler.ToonBridgeHandler;
-import org.openhab.binding.toon.handler.ToonDisplayHandler;
-import org.openhab.binding.toon.handler.ToonPlugHandler;
 import org.openhab.binding.toon.internal.discovery.ToonDiscoveryService;
+import org.openhab.binding.toon.internal.handler.ToonBridgeHandler;
+import org.openhab.binding.toon.internal.handler.ToonDisplayHandler;
+import org.openhab.binding.toon.internal.handler.ToonPlugHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +34,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jorg de Jong - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.toon", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.toon")
 public class ToonHandlerFactory extends BaseThingHandlerFactory {
     private Logger logger = LoggerFactory.getLogger(ToonHandlerFactory.class);
 

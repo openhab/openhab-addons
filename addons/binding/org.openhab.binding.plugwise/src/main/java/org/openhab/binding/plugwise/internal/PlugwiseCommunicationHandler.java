@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,6 +10,8 @@ package org.openhab.binding.plugwise.internal;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.plugwise.internal.config.PlugwiseStickConfig;
 import org.openhab.binding.plugwise.internal.listener.PlugwiseMessageListener;
 import org.openhab.binding.plugwise.internal.protocol.Message;
@@ -18,9 +20,9 @@ import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
 /**
  * The {@link PlugwiseCommunicationHandler} handles all serial communication with the Plugwise Stick.
  *
- * @author Karel Goderis
- * @author Wouter Born - Initial contribution
+ * @author Wouter Born, Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public class PlugwiseCommunicationHandler {
 
     private final PlugwiseCommunicationContext context = new PlugwiseCommunicationContext();
@@ -53,6 +55,10 @@ public class PlugwiseCommunicationHandler {
 
     public void setConfiguration(PlugwiseStickConfig configuration) {
         context.setConfiguration(configuration);
+    }
+
+    public void setSerialPortManager(SerialPortManager serialPortManager) {
+        context.setSerialPortManager(serialPortManager);
     }
 
     public void start() throws PlugwiseInitializationException {

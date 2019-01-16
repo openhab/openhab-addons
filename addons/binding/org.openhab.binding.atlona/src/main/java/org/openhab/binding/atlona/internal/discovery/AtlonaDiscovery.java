@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,6 +7,8 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 package org.openhab.binding.atlona.internal.discovery;
+
+import static org.openhab.binding.atlona.internal.AtlonaBindingConstants.*;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -21,29 +23,31 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.atlona.AtlonaBindingConstants;
 import org.openhab.binding.atlona.internal.pro3.AtlonaPro3Config;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * Discovery class for the Atlona PRO3 line. The PRO3 line uses SDDP (simple device discovery protocol) for discovery
  * (similar to UPNP but defined by Control4). The user should start the discovery process in openhab and then log into
  * the switch, go to the Network options and press the SDDP button (which initiates the SDDP conversation).
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  */
+@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.atlona")
 public class AtlonaDiscovery extends AbstractDiscoveryService {
 
-    private Logger logger = LoggerFactory.getLogger(AtlonaDiscovery.class);
+    private final Logger logger = LoggerFactory.getLogger(AtlonaDiscovery.class);
 
     /**
      * Address SDDP broadcasts on
@@ -68,19 +72,21 @@ public class AtlonaDiscovery extends AbstractDiscoveryService {
     /**
      * Whether we are currently scanning or not
      */
-    private boolean _scanning;
+    private boolean scanning;
 
     /**
      * The {@link ExecutorService} to run the listening threads on.
      */
-    private ExecutorService _executorService = null;
+    private ExecutorService executorService;
 
     /**
      * Constructs the discovery class using the thing IDs that we can discover.
      */
     public AtlonaDiscovery() {
-        super(ImmutableSet.of(AtlonaBindingConstants.THING_TYPE_PRO3_44M, AtlonaBindingConstants.THING_TYPE_PRO3_66M,
-                AtlonaBindingConstants.THING_TYPE_PRO3_88M, AtlonaBindingConstants.THING_TYPE_PRO3_1616M), 30, false);
+        super(Collections.unmodifiableSet(
+                Stream.of(THING_TYPE_PRO3_44M, THING_TYPE_PRO3_66M, THING_TYPE_PRO3_88M, THING_TYPE_PRO3_1616M)
+                        .collect(Collectors.toSet())),
+                30, false);
     }
 
     /**
@@ -89,7 +95,7 @@ public class AtlonaDiscovery extends AbstractDiscoveryService {
      * Starts the scan. This discovery will:
      * <ul>
      * <li>Request all the network interfaces</li>
-     * <li>For each network interface, create a listening thread using {@link #_executorService}</li>
+     * <li>For each network interface, create a listening thread using {@link #executorService}</li>
      * <li>Each listening thread will open up a {@link MulticastSocket} using {@link #SDDP_ADDR} and {@link #SDDP_PORT}
      * and
      * will receive any {@link DatagramPacket} that comes in</li>
@@ -100,7 +106,7 @@ public class AtlonaDiscovery extends AbstractDiscoveryService {
      */
     @Override
     protected void startScan() {
-        if (_executorService != null) {
+        if (executorService != null) {
             stopScan();
         }
 
@@ -110,18 +116,18 @@ public class AtlonaDiscovery extends AbstractDiscoveryService {
             final InetAddress addr = InetAddress.getByName(SDDP_ADDR);
             final List<NetworkInterface> networkInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
 
-            _executorService = Executors.newFixedThreadPool(networkInterfaces.size());
-            _scanning = true;
+            executorService = Executors.newFixedThreadPool(networkInterfaces.size());
+            scanning = true;
             for (final NetworkInterface netint : networkInterfaces) {
 
-                _executorService.execute(() -> {
+                executorService.execute(() -> {
                     try {
                         MulticastSocket multiSocket = new MulticastSocket(SDDP_PORT);
                         multiSocket.setSoTimeout(TIMEOUT);
                         multiSocket.setNetworkInterface(netint);
                         multiSocket.joinGroup(addr);
 
-                        while (_scanning) {
+                        while (scanning) {
                             DatagramPacket receivePacket = new DatagramPacket(new byte[BUFFER_SIZE], BUFFER_SIZE);
                             try {
                                 multiSocket.receive(receivePacket);
@@ -173,7 +179,6 @@ public class AtlonaDiscovery extends AbstractDiscoveryService {
      * @param message possibly null, possibly empty SDDP message
      */
     private void messageReceive(String message) {
-
         if (message == null || message.trim().length() == 0) {
             return;
         }
@@ -216,13 +221,13 @@ public class AtlonaDiscovery extends AbstractDiscoveryService {
         if (host != null && model != null && from != null) {
             ThingTypeUID typeId = null;
             if (model.equalsIgnoreCase("AT-UHD-PRO3-44M")) {
-                typeId = AtlonaBindingConstants.THING_TYPE_PRO3_44M;
+                typeId = THING_TYPE_PRO3_44M;
             } else if (model.equalsIgnoreCase("AT-UHD-PRO3-66M")) {
-                typeId = AtlonaBindingConstants.THING_TYPE_PRO3_66M;
+                typeId = THING_TYPE_PRO3_66M;
             } else if (model.equalsIgnoreCase("AT-UHD-PRO3-88M")) {
-                typeId = AtlonaBindingConstants.THING_TYPE_PRO3_88M;
+                typeId = THING_TYPE_PRO3_88M;
             } else if (model.equalsIgnoreCase("AT-UHD-PRO3-1616M")) {
-                typeId = AtlonaBindingConstants.THING_TYPE_PRO3_1616M;
+                typeId = THING_TYPE_PRO3_1616M;
             } else {
                 logger.warn("Unknown model #: {}");
             }
@@ -232,7 +237,7 @@ public class AtlonaDiscovery extends AbstractDiscoveryService {
                 ThingUID j = new ThingUID(typeId, host);
 
                 Map<String, Object> properties = new HashMap<>(1);
-                properties.put(AtlonaPro3Config.IpAddress, from);
+                properties.put(AtlonaPro3Config.IP_ADDRESS, from);
                 DiscoveryResult result = DiscoveryResultBuilder.create(j).withProperties(properties)
                         .withLabel(model + " (" + from + ")").build();
                 thingDiscovered(result);
@@ -243,23 +248,23 @@ public class AtlonaDiscovery extends AbstractDiscoveryService {
     /**
      * {@inheritDoc}
      *
-     * Stops the discovery scan. We set {@link #_scanning} to false (allowing the listening threads to end naturally
-     * within {@link #TIMEOUT) * 5 time then shutdown the {@link #_executorService}
+     * Stops the discovery scan. We set {@link #scanning} to false (allowing the listening threads to end naturally
+     * within {@link #TIMEOUT) * 5 time then shutdown the {@link #executorService}
      */
     @Override
     protected synchronized void stopScan() {
         super.stopScan();
-        if (_executorService == null) {
+        if (executorService == null) {
             return;
         }
 
-        _scanning = false;
+        scanning = false;
 
         try {
-            _executorService.awaitTermination(TIMEOUT * 5, TimeUnit.MILLISECONDS);
+            executorService.awaitTermination(TIMEOUT * 5, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
         }
-        _executorService.shutdown();
-        _executorService = null;
+        executorService.shutdown();
+        executorService = null;
     }
 }

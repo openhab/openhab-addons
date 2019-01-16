@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,6 +11,7 @@ package org.openhab.binding.plugwise.internal;
 import static org.openhab.binding.plugwise.internal.PlugwiseCommunicationContext.*;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.TooManyListenersException;
@@ -18,6 +19,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.io.transport.serial.SerialPort;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEventListener;
 import org.openhab.binding.plugwise.internal.protocol.AcknowledgementMessage;
 import org.openhab.binding.plugwise.internal.protocol.Message;
 import org.openhab.binding.plugwise.internal.protocol.MessageFactory;
@@ -25,15 +31,12 @@ import org.openhab.binding.plugwise.internal.protocol.field.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gnu.io.SerialPortEvent;
-import gnu.io.SerialPortEventListener;
-
 /**
  * Processes messages received from the Plugwise Stick using a serial connection.
  *
- * @author Karel Goderis
- * @author Wouter Born - Initial contribution
+ * @author Wouter Born, Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public class PlugwiseMessageProcessor implements SerialPortEventListener {
 
     private class MessageProcessorThread extends Thread {
@@ -48,8 +51,13 @@ public class PlugwiseMessageProcessor implements SerialPortEventListener {
             while (!interrupted()) {
                 try {
                     Message message = context.getReceivedQueue().take();
-                    logger.debug("Took message from receivedQueue (length={})", context.getReceivedQueue().size());
-                    processMessage(message);
+                    if (message != null) {
+                        logger.debug("Took message from receivedQueue (length={})", context.getReceivedQueue().size());
+                        processMessage(message);
+                    } else {
+                        logger.debug("Skipping null message from receivedQueue (length={})",
+                                context.getReceivedQueue().size());
+                    }
                 } catch (InterruptedException e) {
                     // That's our signal to stop
                     break;
@@ -68,9 +76,10 @@ public class PlugwiseMessageProcessor implements SerialPortEventListener {
     private final PlugwiseCommunicationContext context;
     private final MessageFactory messageFactory = new MessageFactory();
 
-    private ByteBuffer readBuffer = ByteBuffer.allocate(PlugwiseCommunicationContext.MAX_BUFFER_SIZE);
+    private final ByteBuffer readBuffer = ByteBuffer.allocate(PlugwiseCommunicationContext.MAX_BUFFER_SIZE);
     private int previousByte = -1;
-    private MessageProcessorThread thread;
+
+    private @Nullable MessageProcessorThread thread;
 
     public PlugwiseMessageProcessor(PlugwiseCommunicationContext context) {
         this.context = context;
@@ -82,60 +91,58 @@ public class PlugwiseMessageProcessor implements SerialPortEventListener {
      * @param readBuffer - the string to parse
      */
     private void parseAndQueue(ByteBuffer readBuffer) {
-        if (readBuffer != null) {
-            String response = new String(readBuffer.array(), 0, readBuffer.limit());
-            response = StringUtils.chomp(response);
+        String response = new String(readBuffer.array(), 0, readBuffer.limit());
+        response = StringUtils.chomp(response);
 
-            Matcher matcher = RESPONSE_PATTERN.matcher(response);
+        Matcher matcher = RESPONSE_PATTERN.matcher(response);
 
-            if (matcher.matches()) {
-                String protocolHeader = matcher.group(1);
-                String messageTypeHex = matcher.group(2);
-                String sequence = matcher.group(3);
-                String payload = matcher.group(4);
-                String crc = matcher.group(5);
+        if (matcher.matches()) {
+            String protocolHeader = matcher.group(1);
+            String messageTypeHex = matcher.group(2);
+            String sequence = matcher.group(3);
+            String payload = matcher.group(4);
+            String crc = matcher.group(5);
 
-                if (protocolHeader.equals(PROTOCOL_HEADER)) {
-                    String calculatedCRC = Message.getCRC(messageTypeHex + sequence + payload);
-                    if (calculatedCRC.equals(crc)) {
-                        MessageType messageType = MessageType.forValue(Integer.parseInt(messageTypeHex, 16));
-                        int sequenceNumber = Integer.parseInt(sequence, 16);
+            if (protocolHeader.equals(PROTOCOL_HEADER)) {
+                String calculatedCRC = Message.getCRC(messageTypeHex + sequence + payload);
+                if (calculatedCRC.equals(crc)) {
+                    MessageType messageType = MessageType.forValue(Integer.parseInt(messageTypeHex, 16));
+                    int sequenceNumber = Integer.parseInt(sequence, 16);
 
-                        if (messageType == null) {
-                            logger.debug("Received unrecognized message: messageTypeHex=0x{}, sequence={}, payload={}",
-                                    messageTypeHex, sequenceNumber, payload);
-                            return;
+                    if (messageType == null) {
+                        logger.debug("Received unrecognized message: messageTypeHex=0x{}, sequence={}, payload={}",
+                                messageTypeHex, sequenceNumber, payload);
+                        return;
+                    }
+
+                    logger.debug("Received message: messageType={}, sequenceNumber={}, payload={}", messageType,
+                            sequenceNumber, payload);
+
+                    try {
+                        Message message = messageFactory.createMessage(messageType, sequenceNumber, payload);
+
+                        if (message instanceof AcknowledgementMessage
+                                && !((AcknowledgementMessage) message).isExtended()) {
+                            logger.debug("Adding to acknowledgedQueue: {}", message);
+                            context.getAcknowledgedQueue().put((AcknowledgementMessage) message);
+                        } else {
+                            logger.debug("Adding to receivedQueue: {}", message);
+                            context.getReceivedQueue().put(message);
                         }
-
-                        logger.debug("Received message: messageType={}, sequenceNumber={}, payload={}", messageType,
-                                sequenceNumber, payload);
-
-                        try {
-                            Message message = messageFactory.createMessage(messageType, sequenceNumber, payload);
-
-                            if (message instanceof AcknowledgementMessage
-                                    && !((AcknowledgementMessage) message).isExtended()) {
-                                logger.debug("Adding to acknowledgedQueue: {}", message);
-                                context.getAcknowledgedQueue().put((AcknowledgementMessage) message);
-                            } else {
-                                logger.debug("Adding to receivedQueue: {}", message);
-                                context.getReceivedQueue().put(message);
-                            }
-                        } catch (IllegalArgumentException e) {
-                            logger.warn("Failed to create message", e);
-                        } catch (InterruptedException e) {
-                            Thread.interrupted();
-                        }
-                    } else {
-                        logger.warn("Plugwise protocol CRC error: {} does not match {} in message", calculatedCRC, crc);
+                    } catch (IllegalArgumentException e) {
+                        logger.warn("Failed to create message", e);
+                    } catch (InterruptedException e) {
+                        Thread.interrupted();
                     }
                 } else {
-                    logger.debug("Plugwise protocol header error: {} in message {}", protocolHeader, response);
+                    logger.warn("Plugwise protocol CRC error: {} does not match {} in message", calculatedCRC, crc);
                 }
-            } else if (!response.contains("APSRequestNodeInfo") && !response.contains("APSSetSleepBehaviour")
-                    && !response.startsWith("# ")) {
-                logger.warn("Plugwise protocol message error: {}", response);
+            } else {
+                logger.debug("Plugwise protocol header error: {} in message {}", protocolHeader, response);
             }
+        } else if (!response.contains("APSRequestNodeInfo") && !response.contains("APSSetSleepBehaviour")
+                && !response.startsWith("# ")) {
+            logger.warn("Plugwise protocol message error: {}", response);
         }
     }
 
@@ -150,10 +157,11 @@ public class PlugwiseMessageProcessor implements SerialPortEventListener {
         try {
             context.getSentQueueLock().lock();
 
-            Iterator<PlugwiseQueuedMessage> messageIterator = context.getSentQueue().iterator();
+            Iterator<@Nullable PlugwiseQueuedMessage> messageIterator = context.getSentQueue().iterator();
             while (messageIterator.hasNext()) {
                 PlugwiseQueuedMessage queuedSentMessage = messageIterator.next();
-                if (queuedSentMessage.getMessage().getSequenceNumber() == message.getSequenceNumber()) {
+                if (queuedSentMessage != null
+                        && queuedSentMessage.getMessage().getSequenceNumber() == message.getSequenceNumber()) {
                     logger.debug("Removing from sentQueue: {}", queuedSentMessage.getMessage());
                     context.getSentQueue().remove(queuedSentMessage);
                     break;
@@ -164,14 +172,27 @@ public class PlugwiseMessageProcessor implements SerialPortEventListener {
         }
     }
 
+    @SuppressWarnings("resource")
     @Override
-    public void serialEvent(SerialPortEvent event) {
-        if (event.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
+    public void serialEvent(@Nullable SerialPortEvent event) {
+        if (event != null && event.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
             // We get here if data has been received
+            SerialPort serialPort = context.getSerialPort();
+            if (serialPort == null) {
+                logger.debug("Failed to read available data from null serialPort");
+                return;
+            }
+
             try {
+                InputStream inputStream = serialPort.getInputStream();
+                if (inputStream == null) {
+                    logger.debug("Failed to read available data from null inputStream");
+                    return;
+                }
+
                 // Read data from serial device
-                while (context.getSerialPort().getInputStream().available() > 0) {
-                    int currentByte = context.getSerialPort().getInputStream().read();
+                while (inputStream.available() > 0) {
+                    int currentByte = inputStream.read();
                     // Plugwise sends ASCII data, but for some unknown reason we sometimes get data with unsigned
                     // byte value >127 which in itself is very strange. We filter these out for the time being
                     if (currentByte < 128) {
@@ -193,9 +214,15 @@ public class PlugwiseMessageProcessor implements SerialPortEventListener {
         }
     }
 
+    @SuppressWarnings("resource")
     public void start() throws PlugwiseInitializationException {
+        SerialPort serialPort = context.getSerialPort();
+        if (serialPort == null) {
+            throw new PlugwiseInitializationException("Failed to add serial port listener because port is null");
+        }
+
         try {
-            context.getSerialPort().addEventListener(this);
+            serialPort.addEventListener(this);
         } catch (TooManyListenersException e) {
             throw new PlugwiseInitializationException("Failed to add serial port listener", e);
         }
@@ -204,10 +231,13 @@ public class PlugwiseMessageProcessor implements SerialPortEventListener {
         thread.start();
     }
 
+    @SuppressWarnings("resource")
     public void stop() {
         PlugwiseUtils.stopBackgroundThread(thread);
-        if (context.getSerialPort() != null) {
-            context.getSerialPort().removeEventListener();
+
+        SerialPort serialPort = context.getSerialPort();
+        if (serialPort != null) {
+            serialPort.removeEventListener();
         }
     }
 

@@ -37,6 +37,15 @@
 			<channel id="aux6" typeId="auxswitch"/>
 			<channel id="aux7" typeId="auxswitch"/>
 			<channel id="aux8" typeId="auxswitch"/>
+
+			<channel id="feature1" typeId="featureswitch"/>
+			<channel id="feature2" typeId="featureswitch"/>
+			<channel id="feature3" typeId="featureswitch"/>
+			<channel id="feature4" typeId="featureswitch"/>
+			<channel id="feature5" typeId="featureswitch"/>
+			<channel id="feature6" typeId="featureswitch"/>
+			<channel id="feature7" typeId="featureswitch"/>
+			<channel id="feature8" typeId="featureswitch"/>
 		</channels>
 
 		<config-description>
@@ -76,6 +85,12 @@
 		<item-type>Switch</item-type>
 		<label>Auxillary Switch</label>
 		<description>Auxillary Switch</description>
+	</channel-type>
+
+	<channel-type id="featureswitch" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Feature Switch</label>
+		<description>Feature Switch</description>
 	</channel-type>
 
 	<channel-type id="heatmode">

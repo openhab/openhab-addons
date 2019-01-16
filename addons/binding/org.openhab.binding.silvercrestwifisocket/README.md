@@ -10,7 +10,7 @@ This binding integrates the Silvercrest Wifi Socket SWS-A1 sold by Lidl and the 
 
 ## Discovery
 
-The Discovery of Wifi Sockets is always running in the background. If a command is sent to wifi socket using the android/ios app or if the physical button in the device is pressed, the device will be recognized and will be placed in the Inbox.
+The Discovery of Wifi Sockets is always running in the background. If a command is sent to wifi socket using the Android/iOS app or if the physical button in the device is pressed, the device will be recognized and will be placed in the Inbox.
 
 ## Binding Configuration
 
@@ -27,12 +27,12 @@ Wifi Socket thing parameters:
 | macAddress     | text           | true      | The socket MAC address                                                        |                  |
 | hostAddress    | text           | false     | The socket Host address. The binding is capable to discover the host address. |                  |
 | updateInterval | integer        | false     | Update time interval in seconds to request the status of the socket.          | 60               |
-| vendor         | option         | true      | The vendor of the system ("Aldi_EasyHome" or "Lidl_Silvercrest")              | Lidl_Silvercrest |
+| vendor         | text           | true      | The vendor of the system ("ALDI_EASYHOME" or "LIDL_SILVERCREST")              | LIDL_SILVERCREST |
 
 E.g.
 
 ```
-Thing silvercrestwifisocket:wifiSocket:lamp [ macAddress="ACCF23343C50", vendor="Aldi_EasyHome" ]
+Thing silvercrestwifisocket:wifiSocket:lamp [ macAddress="ACCF23343C50", vendor="ALDI_EASYHOME" ]
 ```
 
 ## Channels

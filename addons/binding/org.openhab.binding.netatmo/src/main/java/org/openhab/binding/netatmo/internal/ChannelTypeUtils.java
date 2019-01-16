@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,11 +13,14 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -83,4 +86,31 @@ public class ChannelTypeUtils {
         return value != null ? (value == 1 ? OnOffType.ON : OnOffType.OFF) : UnDefType.NULL;
     }
 
+    public static State toQuantityType(@Nullable Float value, Unit<?> unit) {
+        return value == null ? UnDefType.NULL : toQuantityType(new BigDecimal(value), unit);
+    }
+
+    public static State toQuantityType(@Nullable Integer value, Unit<?> unit) {
+        return value == null ? UnDefType.NULL : toQuantityType(new BigDecimal(value), unit);
+    }
+
+    public static State toQuantityType(@Nullable Double value, Unit<?> unit) {
+        return value == null ? UnDefType.NULL : toQuantityType(new BigDecimal(value), unit);
+    }
+
+    public static State toQuantityType(float value, Unit<?> unit) {
+        return toQuantityType(new BigDecimal(value), unit);
+    }
+
+    public static State toQuantityType(int value, Unit<?> unit) {
+        return toQuantityType(new BigDecimal(value), unit);
+    }
+
+    public static State toQuantityType(double value, Unit<?> unit) {
+        return toQuantityType(new BigDecimal(value), unit);
+    }
+
+    public static State toQuantityType(@Nullable BigDecimal value, Unit<?> unit) {
+        return value == null ? UnDefType.NULL : new QuantityType<>(value, unit);
+    }
 }

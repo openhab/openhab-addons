@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -34,18 +34,17 @@ import org.openhab.binding.russound.internal.net.SocketSession;
 import org.openhab.binding.russound.internal.net.WaitingSessionListener;
 import org.openhab.binding.russound.internal.rio.RioConstants;
 import org.openhab.binding.russound.internal.rio.system.RioSystemConfig;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * This implementation of {@link DiscoveryService} will scan the network for any Russound RIO system devices. The scan
  * will occur against all network interfaces.
  *
- * @author Tim Roberts
- *
+ * @author Tim Roberts - Initial contribution
  */
+@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.russound")
 public class RioSystemDiscovery extends AbstractDiscoveryService {
     /** The logger */
     private final Logger logger = LoggerFactory.getLogger(RioSystemDiscovery.class);
@@ -64,7 +63,7 @@ public class RioSystemDiscovery extends AbstractDiscoveryService {
      * 120 seconds (depending on how many network interfaces there are)
      */
     public RioSystemDiscovery() {
-        super(ImmutableSet.of(RioConstants.BRIDGE_TYPE_RIO), 120);
+        super(Collections.singleton(RioConstants.BRIDGE_TYPE_RIO), 120);
     }
 
     /**
@@ -150,17 +149,16 @@ public class RioSystemDiscovery extends AbstractDiscoveryService {
      * @param ipAddress a possibly null, possibly empty ip address (null/empty addresses will be ignored)
      */
     private void scanAddress(String ipAddress) {
-
         if (StringUtils.isEmpty(ipAddress)) {
             return;
         }
 
-        final SocketSession session = new SocketChannelSession(ipAddress, RioConstants.RioPort);
+        final SocketSession session = new SocketChannelSession(ipAddress, RioConstants.RIO_PORT);
         try {
             final WaitingSessionListener listener = new WaitingSessionListener();
             session.addListener(listener);
             session.connect(CONN_TIMEOUT_IN_MS);
-            logger.debug("Connected to port {}:{} - testing to see if RIO", ipAddress, RioConstants.RioPort);
+            logger.debug("Connected to port {}:{} - testing to see if RIO", ipAddress, RioConstants.RIO_PORT);
 
             // can't check for system properties because DMS responds to those -
             // need to check if any controllers are defined
@@ -181,9 +179,9 @@ public class RioSystemDiscovery extends AbstractDiscoveryService {
                 }
             }
         } catch (InterruptedException e) {
-            logger.debug("Connection was interrupted to port {}:{}", ipAddress, RioConstants.RioPort);
+            logger.debug("Connection was interrupted to port {}:{}", ipAddress, RioConstants.RIO_PORT);
         } catch (IOException e) {
-            logger.trace("Connection couldn't be established to port {}:{}", ipAddress, RioConstants.RioPort);
+            logger.trace("Connection couldn't be established to port {}:{}", ipAddress, RioConstants.RIO_PORT);
         } finally {
             try {
                 session.disconnect();
@@ -209,10 +207,10 @@ public class RioSystemDiscovery extends AbstractDiscoveryService {
         }
 
         final Map<String, Object> properties = new HashMap<>(3);
-        properties.put(RioSystemConfig.IpAddress, ipAddress);
-        properties.put(RioSystemConfig.Ping, 30);
-        properties.put(RioSystemConfig.RetryPolling, 10);
-        properties.put(RioSystemConfig.ScanDevice, true);
+        properties.put(RioSystemConfig.IP_ADDRESS, ipAddress);
+        properties.put(RioSystemConfig.PING, 30);
+        properties.put(RioSystemConfig.RETRY_POLLING, 10);
+        properties.put(RioSystemConfig.SCAN_DEVICE, true);
 
         final String id = ipAddress.replace(".", "");
         final ThingUID uid = new ThingUID(RioConstants.BRIDGE_TYPE_RIO, id);

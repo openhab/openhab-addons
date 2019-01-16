@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * Represents a restartable socket connection to the underlying telnet session with an GRX-PRG/GRX-CI-PRG. Commands can
  * be sent via {@link #sendCommand(String)} and responses will be received on the {@link SocketSessionCallback}
  *
- * @author Tim Roberts
+ * @author Tim Roberts - Initial contribution
  */
 public class SocketSession {
     private final Logger logger = LoggerFactory.getLogger(SocketSession.class);
@@ -189,7 +189,6 @@ public class SocketSession {
         logger.debug("Sending Command: '{}'", command);
         _writer.println(command + "\n"); // as pre spec - each command must have a newline
         _writer.flush();
-
     }
 
     /**
@@ -319,7 +318,6 @@ public class SocketSession {
          * timeout below)
          */
         public void stopRunning() {
-
             _lock.lock();
             try {
                 if (_isRunning.getAndSet(false)) {
@@ -332,7 +330,6 @@ public class SocketSession {
             } finally {
                 _lock.unlock();
             }
-
         }
 
         /**
