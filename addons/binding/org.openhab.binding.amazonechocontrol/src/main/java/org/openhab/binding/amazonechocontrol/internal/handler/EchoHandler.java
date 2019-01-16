@@ -15,12 +15,17 @@ import java.net.URISyntaxException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.measure.quantity.Time;
 
@@ -90,7 +95,7 @@ public class EchoHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(EchoHandler.class);
     private Gson gson = new Gson();
     private @Nullable Device device;
-    private HashSet<String> capabilities = new HashSet<String>();
+    private Set<String> capabilities = new HashSet<String>();
     private @Nullable AccountHandler account;
     private @Nullable ScheduledFuture<?> updateStateJob;
     private @Nullable ScheduledFuture<?> ignoreVolumeChange;
@@ -157,12 +162,7 @@ public class EchoHandler extends BaseThingHandler {
         this.device = device;
         String[] capabilities = device.capabilities;
         if (capabilities != null) {
-            this.capabilities.clear();
-            for (String capability : capabilities) {
-                if (capability != null) {
-                    this.capabilities.add(capability);
-                }
-            }
+            this.capabilities = Stream.of(capabilities).filter(Objects::nonNull).collect(Collectors.toSet());
         }
         if (!device.online) {
             updateStatus(ThingStatus.OFFLINE);
@@ -382,36 +382,8 @@ public class EchoHandler extends BaseThingHandler {
             // equalizer commands
             if (channelId.equals(CHANNEL_EQUALIZER_BASS) || channelId.equals(CHANNEL_EQUALIZER_MIDRANGE)
                     || channelId.equals(CHANNEL_EQUALIZER_TREBLE)) {
-                if (command instanceof RefreshType) {
-                    this.lastKnownEqualizer = null;
-                }
-                if (command instanceof DecimalType) {
-                    DecimalType value = (DecimalType) command;
-                    if (this.lastKnownEqualizer == null) {
-                        updateEqualizerState();
-                    }
-                    JsonEqualizer lastKnownEqualizer = this.lastKnownEqualizer;
-                    if (lastKnownEqualizer != null) {
-                        JsonEqualizer newEqualizerSetting = lastKnownEqualizer.createClone();
-                        if (channelId.equals(CHANNEL_EQUALIZER_BASS)) {
-                            newEqualizerSetting.bass = value.intValue();
-                        }
-                        if (channelId.equals(CHANNEL_EQUALIZER_MIDRANGE)) {
-                            newEqualizerSetting.mid = value.intValue();
-                        }
-                        if (channelId.equals(CHANNEL_EQUALIZER_TREBLE)) {
-                            newEqualizerSetting.treble = value.intValue();
-                        }
-                        try {
-                            connection.SetEqualizer(device, newEqualizerSetting);
-                            waitForUpdate = -1;
-                        } catch (HttpException | IOException | ConnectionException e) {
-                            logger.debug("Update equalizer failed {}", e);
-                            this.lastKnownEqualizer = null;
-                            waitForUpdate = 1000;
-                        }
-
-                    }
+                if (handleEqualizerCommands(channelId, command, connection, device)) {
+                    waitForUpdate = -1;
                 }
             }
 
@@ -699,6 +671,41 @@ public class EchoHandler extends BaseThingHandler {
                 URISyntaxException e) {
             logger.info("handleCommand fails: {}", e);
         }
+    }
+
+    private boolean handleEqualizerCommands(String channelId, Command command, Connection connection, Device device)
+            throws URISyntaxException {
+        if (command instanceof RefreshType) {
+            this.lastKnownEqualizer = null;
+        }
+        if (command instanceof DecimalType) {
+            DecimalType value = (DecimalType) command;
+            if (this.lastKnownEqualizer == null) {
+                updateEqualizerState();
+            }
+            JsonEqualizer lastKnownEqualizer = this.lastKnownEqualizer;
+            if (lastKnownEqualizer != null) {
+                JsonEqualizer newEqualizerSetting = lastKnownEqualizer.createClone();
+                if (channelId.equals(CHANNEL_EQUALIZER_BASS)) {
+                    newEqualizerSetting.bass = value.intValue();
+                }
+                if (channelId.equals(CHANNEL_EQUALIZER_MIDRANGE)) {
+                    newEqualizerSetting.mid = value.intValue();
+                }
+                if (channelId.equals(CHANNEL_EQUALIZER_TREBLE)) {
+                    newEqualizerSetting.treble = value.intValue();
+                }
+                try {
+                    connection.SetEqualizer(device, newEqualizerSetting);
+                    return true;
+                } catch (HttpException | IOException | ConnectionException e) {
+                    logger.debug("Update equalizer failed {}", e);
+                    this.lastKnownEqualizer = null;
+                }
+
+            }
+        }
+        return false;
     }
 
     private void startTextToSpeech(Connection connection, Device device, String text)
@@ -1258,7 +1265,7 @@ public class EchoHandler extends BaseThingHandler {
             if (StringUtils.equals(notification.deviceSerialNumber, device.serialNumber)) {
                 // notification for this device
                 if (StringUtils.equals(notification.status, "ON")) {
-                    if (StringUtils.equals(notification.type, "Reminder")) {
+                    if ("Reminder".equals(notification.type)) {
                         String offset = ZoneId.systemDefault().getRules().getOffset(Instant.now()).toString();
                         ZonedDateTime alarmTime = ZonedDateTime
                                 .parse(notification.originalDate + "T" + notification.originalTime + offset);
@@ -1268,13 +1275,13 @@ public class EchoHandler extends BaseThingHandler {
                         if (nextReminder == null || alarmTime.isBefore(nextReminder)) {
                             nextReminder = alarmTime;
                         }
-                    } else if (StringUtils.equals(notification.type, "Timer")) {
+                    } else if ("Timer".equals(notification.type)) {
                         // use remaining time
-                        ZonedDateTime alarmTime = currentTime.plusNanos(notification.remainingTime * 1000000);
+                        ZonedDateTime alarmTime = currentTime.plus(notification.remainingTime, ChronoUnit.MILLIS);
                         if (nextTimer == null || alarmTime.isBefore(nextTimer)) {
                             nextTimer = alarmTime;
                         }
-                    } else if (StringUtils.equals(notification.type, "Alarm")) {
+                    } else if ("Alarm".equals(notification.type)) {
                         String offset = ZoneId.systemDefault().getRules().getOffset(Instant.now()).toString();
                         ZonedDateTime alarmTime = ZonedDateTime
                                 .parse(notification.originalDate + "T" + notification.originalTime + offset);
@@ -1284,7 +1291,7 @@ public class EchoHandler extends BaseThingHandler {
                         if (nextAlarm == null || alarmTime.isBefore(nextAlarm)) {
                             nextAlarm = alarmTime;
                         }
-                    } else if (StringUtils.equals(notification.type, "MusicAlarm")) {
+                    } else if ("MusicAlarm".equals(notification.type)) {
                         String offset = ZoneId.systemDefault().getRules().getOffset(Instant.now()).toString();
                         ZonedDateTime alarmTime = ZonedDateTime
                                 .parse(notification.originalDate + "T" + notification.originalTime + offset);
