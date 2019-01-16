@@ -49,9 +49,13 @@ public class SensorState {
     /** Presence sensors provide this boolean. */
     public @Nullable Boolean presence;
     /** Power sensors provide this value in Watts. */
-    public @Nullable Integer power;
+    public @Nullable Float power;
     /** Consumption sensors provide this value in Watts/hour. */
-    public @Nullable Integer consumption;
+    public @Nullable Float consumption;
+    /** Power sensors provide this value in Volt. */
+    public @Nullable Float voltage;
+    /** Power sensors provide this value in Milliampere. */
+    public @Nullable Float current;
     /** Light sensors and the daylight sensor provide a status integer that can have various semantics. */
     public @Nullable Integer status;
     /** Switches provide this value. */

@@ -8,8 +8,8 @@
  */
 package org.openhab.binding.deconz.internal.handler;
 
+import static org.eclipse.smarthome.core.library.unit.MetricPrefix.*;
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
-import static org.eclipse.smarthome.core.library.unit.MetricPrefix.HECTO;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -19,6 +19,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.ElectricCurrent;
+import javax.measure.quantity.ElectricPotential;
 import javax.measure.quantity.Energy;
 import javax.measure.quantity.Illuminance;
 import javax.measure.quantity.Power;
@@ -168,15 +170,7 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
                         return;
                     }
 
-                    // Add some information about the bridge
-                    Integer batteryLevel = newState.config.battery;
-                    if (batteryLevel != null) {
-                        ignoreConfigurationUpdate = true;
-                        updateChannelIfExists(CHANNEL_BATTERY_LEVEL, new DecimalType(batteryLevel.longValue()));
-                        updateChannelIfExists(CHANNEL_BATTERY_LOW, batteryLevel <= 10 ? OnOffType.ON : OnOffType.OFF);
-                        ignoreConfigurationUpdate = false;
-                    }
-
+                    // Add some information about the sensor
                     if (!newState.config.reachable) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Not reachable");
                         return;
@@ -188,8 +182,41 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
                     }
 
                     // Some sensors support optional channels
-                    if (newState.state.dark instanceof Boolean) {
+                    // (see https://github.com/dresden-elektronik/deconz-rest-plugin/wiki/Supported-Devices#sensors)
+                    // any battery-powered sensor
+                    Integer batteryLevel = newState.config.battery;
+                    if (batteryLevel != null) {
+                        ignoreConfigurationUpdate = true;
+                        createAndUpdateChannelIfExists(CHANNEL_BATTERY_LEVEL,
+                                new DecimalType(batteryLevel.longValue()));
+                        createAndUpdateChannelIfExists(CHANNEL_BATTERY_LOW,
+                                batteryLevel <= 10 ? OnOffType.ON : OnOffType.OFF);
+                        ignoreConfigurationUpdate = false;
+                    }
+
+                    // some Xiaomi sensors
+                    Float temperature = newState.config.temperature;
+                    if (temperature != null) {
+                        createAndUpdateChannelIfExists(CHANNEL_TEMPERATURE,
+                                new QuantityType<Temperature>(temperature / 100, SIUnits.CELSIUS));
+                    }
+
+                    // ZHAPresence - e.g. IKEA TRÅDFRI motion sensor
+                    if (newState.state.dark != null) {
                         createChannel(CHANNEL_DARK);
+                    }
+
+                    // ZHAConsumption - e.g Bitron 902010/25 or Heiman SmartPlug
+                    if (newState.state.power != null) {
+                        createChannel(CHANNEL_POWER);
+                    }
+
+                    // ZHAPower - e.g. Heiman SmartPlug
+                    if (newState.state.voltage != null) {
+                        createChannel(CHANNEL_VOLTAGE);
+                    }
+                    if (newState.state.current != null) {
+                        createChannel(CHANNEL_CURRENT);
                     }
 
                     // Initial data
@@ -203,16 +230,17 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
                 });
     }
 
-    private void updateChannelIfExists(String channelId, State state) {
+    private void createAndUpdateChannelIfExists(String channelId, State state) {
         Channel channel = thing.getChannel(channelId);
         if (channel == null) {
-            createChannel(channelId);
-        } else {
+            channel = createChannel(channelId);
+        }
+        if (channel != null) {
             updateState(channel.getUID(), state);
         }
     }
 
-    private void createChannel(String channelId) {
+    private @Nullable Channel createChannel(String channelId) {
         ThingHandlerCallback callback = getCallback();
         if (callback != null) {
             ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
@@ -230,7 +258,9 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
             }
             Channel channel = callback.createChannelBuilder(channelUID, channelTypeUID).build();
             updateThing(editThing().withoutChannel(channelUID).withChannel(channel).build());
+            return channel;
         }
+        return null;
     }
 
     @Override
@@ -260,8 +290,10 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
         Integer status = state.status;
         Boolean presence = state.presence;
         Boolean open = state.open;
-        Integer power = state.power;
-        Integer consumption = state.consumption;
+        Float power = state.power;
+        Float consumption = state.consumption;
+        Float voltage = state.voltage;
+        Float current = state.current;
         Integer lux = state.lux;
         Integer lightlevel = state.lightlevel;
         Float temperature = state.temperature;
@@ -294,6 +326,16 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
             case CHANNEL_CONSUMPTION:
                 if (consumption != null) {
                     updateState(channelUID, new QuantityType<Energy>(consumption, SmartHomeUnits.WATT_HOUR));
+                }
+                break;
+            case CHANNEL_VOLTAGE:
+                if (voltage != null) {
+                    updateState(channelUID, new QuantityType<ElectricPotential>(voltage, SmartHomeUnits.VOLT));
+                }
+                break;
+            case CHANNEL_CURRENT:
+                if (current != null) {
+                    updateState(channelUID, new QuantityType<ElectricCurrent>(current, MILLI(SmartHomeUnits.AMPERE)));
                 }
                 break;
             case CHANNEL_LIGHT_LUX:
@@ -341,6 +383,9 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
                 if (open != null) {
                     updateState(channelUID, open ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
                 }
+                break;
+            case CHANNEL_WATERLEAKAGE:
+                updateState(channelUID, Boolean.TRUE.equals(state.water) ? OnOffType.ON : OnOffType.OFF);
                 break;
             case CHANNEL_BUTTON:
                 if (buttonevent != null) {
