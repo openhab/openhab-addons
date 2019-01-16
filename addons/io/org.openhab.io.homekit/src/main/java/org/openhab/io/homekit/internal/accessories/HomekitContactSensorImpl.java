@@ -11,8 +11,8 @@ package org.openhab.io.homekit.internal.accessories;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.smarthome.core.items.ItemRegistry;
-import org.eclipse.smarthome.core.library.items.SwitchItem;
-import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.items.ContactItem;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
@@ -25,18 +25,18 @@ import com.beowulfe.hap.accessories.properties.ContactState;
  *
  * @author Philipp Arndt
  */
-public class HomekitContactSensorImpl extends AbstractHomekitAccessoryImpl<SwitchItem> implements ContactSensor {
+public class HomekitContactSensorImpl extends AbstractHomekitAccessoryImpl<ContactItem> implements ContactSensor {
 
     public HomekitContactSensorImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
             HomekitAccessoryUpdater updater) {
-        super(taggedItem, itemRegistry, updater, SwitchItem.class);
+        super(taggedItem, itemRegistry, updater, ContactItem.class);
     }
 
     @Override
     public CompletableFuture<ContactState> getCurrentState() {
-        OnOffType state = getItem().getStateAs(OnOffType.class);
+        OpenClosedType state = getItem().getStateAs(OpenClosedType.class);
         return CompletableFuture
-                .completedFuture(state == OnOffType.ON ? ContactState.DETECTED : ContactState.NOT_DETECTED);
+                .completedFuture(state == OpenClosedType.CLOSED ? ContactState.DETECTED : ContactState.NOT_DETECTED);
     }
 
     @Override
