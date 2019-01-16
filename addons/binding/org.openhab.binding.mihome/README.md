@@ -64,20 +64,29 @@ There are three ways of connecting supported devices to the gateway:
 *   Offline - manual
 
     1.  Click 3 times on the Gateway's button
-    2.  Gateway will flash in blue and you will hear female voice in Chinese
+    2.  Gateway will flash in blue and you will hear female voice in Chinese, you have 30 seconds to include your new device
     3.  Place the needle into the sensor and hold it for at least 3 seconds
     4.  You'll hear confirmation message in Chinese
     5.  The device appears in openHAB thing Inbox
 
-__If you don't want to hear the Chinese voice every time, you can disable it by setting the volume to minimum in the MiHome App (same for the blinking light)__
-
 * With the binding
 
     1.  after adding the gateway make sure you have entered the right developer key
-    2.  setup a Switch Item for the channel `mihome:gateway:xxxxxxxxxxx:joinPermission` (see Examples) or control the switch via PaperUI
-    3.  after switching you have 30 seconds to include your new device
+    2.  in PaperUI, go to your Inbox and trigger a discovery for the binding
+    3.  the gateway flashes in blue and you hear a female voice in Chinese, you have 30 seconds to include your new device
+    4.  follow the instructions for your device to pair it to the gateway
+    5.  you'll hear a confirmation message in Chinese
+    6.  The device appears in openHAB thing Inbox
 
-__The devices don't need an Internet connection to be working after you have set up the developer mode BUT you won't be able to connect to them via App anymore - easiest way is to block their outgoing Internet connection in your router and enable it later, when you want to check for updates etc__
+__Hints:__
+
+* If you don't want to hear the Chinese voice every time, you can disable it by setting the volume to minimum in the MiHome App (same for the blinking light)
+
+* The devices don't need an Internet connection to be working after you have set up the developer mode BUT you won't be able to connect to them via App anymore - easiest way is to block their outgoing Internet connection in your router and enable it later, when you want to check for updates etc. This will ensure that your smart home data stays only with you!
+
+## Removing devices from the gateway
+
+If you remove a Thing in PapaerUI it will also trigger the gateway to unpair the device. It will only reappear in your Inbox, if you connect it to the gateway again. Just follow the instructions in ["Connecting devices to the gateway"](#connecting-devices-to-the-gateway).
 
 ## Network configuration
 
@@ -108,7 +117,6 @@ Bridge mihome:bridge:f0b429XXXXXX "Xiaomi Gateway" [ serialNumber="f0b429XXXXXX"
 // Replace <GwID> with itemId of gateway from Things file
 // Replace <ID> with itemId of item from Things file
 // Gateway 
-Switch Gateway_AddDevice { channel="mihome:gateway:<GwID>:<ID>:joinPermission" }
 Switch Gateway_LightSwitch <light> { channel="mihome:gateway:<GwID>:<ID>:brightness" }
 Dimmer Gateway_Brightness <dimmablelight> { channel="mihome:gateway:<GwID>:<ID>:brightness" }
 Color Gateway_Color <rgb> { channel="mihome:gateway:<GwID>:<ID>:color" }
@@ -403,77 +411,140 @@ sitemap xiaomi label="Xiaomi" {
 }
 ```
 
-## Supporting new devices
+## Handling unsupported devices
 
-The Xiaomi ecosystem grows at a steady rate. So there is a good chance that in the future even more devices get added to the suite. This section describes, how to get the necessary information to support new device types.
+The Xiaomi ecosystem grows at a steady rate. So there is a good chance that in the future even more devices get added to the suite. This section describes, how to get the necessary information to support new device types. While a device is not supported yet, it is still possible to access it's informations.
 
-### Preconditions
-
-- you know how to access the [openHAB Console](https://www.openhab.org/docs/administration/console.html)
-- you have connected your gateway to openHAB and the communication is working
-
-### Enable debug logging for the binding
-
-- Enter ```log:set TRACE org.openhab.binding.mihome``` in the console to enable full logs.
-
-    _When you are done you can disable the extended logging with ```log:set DEFAULT org.openhab.binding.mihome```_
-
-- Exit the console and start [viewing the logs](https://www.openhab.org/docs/tutorial/logs.html).
+Make sure you have connected your gateway to openHAB and the communication is working.
 
 ### Connect the new device
 
 - Go through the normal procedure to add a device to the gateway
-- The device won't show up in your inbox, but it will send messages to the gateway which you can see in the logs
-- Analyse the logs and find the model name of the new device
+- The device will show up in your inbox as a new unsupported device and it's model name
+- Add the device as a new thing of type "basic device", now you have different channels to receive and send messages from/to the device
+    - raw messages from the device
+    - the data from the four different type of messages (see their details in the next chapter)
+    - parameters you can send to the device
 
-_Example: Aqara Vibration Sensor_
-
-    2018-09-08 00:58:14.903 [DEBUG] [discovery.XiaomiItemDiscoveryService] - Unknown discovered model: vibration
-
-### Gather information about the new device
+### Gather information about the new device for future support
 
 The devices send different types of messages to the gateway.
 You have to capture as many of them as possible, so that the device is fully supported in the end.
 
 1. Heartbeat (transmitted usually every 60 minutes)
-2. Report (device reports new values)
+2. Report (device reports new sensor or status values)
 3. Read ACK (binding refreshes all sensor values after a restart of openHAB)
-4. Write ACK (device has received a command) __not avaiable for sensor devices__
-
-___You can filter the log to show only relevant information, just replace {deviceName} with the model name of the new device___
-
-    tail -f /var/log/openhab2/openhab.log -f /var/log/openhab2/events.log | grep {deviceName}
-
-_Example: Aqara Vibration Sensor_
-
-```
-user@computer:~$ tail -f /var/log/openhab2/openhab.log -f /var/log/openhab2/events.log | grep vibration
-2018-09-08 00:58:14.878 [TRACE] [g.mihome.handler.XiaomiBridgeHandler] - Received message {"cmd":"report","model":"vibration","sid":"158d0002a92499","short_id":2226,"data":"{\"status\":\"vibrate\"}"}
-2018-09-08 00:58:14.903 [DEBUG] [discovery.XiaomiItemDiscoveryService] - Unknown discovered model: vibration
-2018-09-08 01:00:11.952 [TRACE] [g.mihome.handler.XiaomiBridgeHandler] - Received message {"cmd":"report","model":"vibration","sid":"158d0002a92499","short_id":2226,"data":"{\"status\":\"vibrate\"}"}
-2018-09-08 01:00:11.984 [DEBUG] [discovery.XiaomiItemDiscoveryService] - Unknown discovered model: vibration
-2018-09-08 01:00:13.064 [TRACE] [g.mihome.handler.XiaomiBridgeHandler] - Received message {"cmd":"report","model":"vibration","sid":"158d0002a92499","short_id":2226,"data":"{\"status\":\"tilt\"}"}
-2018-09-08 01:00:13.073 [DEBUG] [discovery.XiaomiItemDiscoveryService] - Unknown discovered model: vibration
-2018-09-08 01:00:13.089 [TRACE] [g.mihome.handler.XiaomiBridgeHandler] - Received message {"cmd":"report","model":"vibration","sid":"158d0002a92499","short_id":2226,"data":"{\"final_tilt_angle\":\"71\"}"}
-2018-09-08 01:00:13.105 [DEBUG] [discovery.XiaomiItemDiscoveryService] - Unknown discovered model: vibration
-2018-09-08 01:00:15.131 [TRACE] [g.mihome.handler.XiaomiBridgeHandler] - Received message {"cmd":"report","model":"vibration","sid":"158d0002a92499","short_id":2226,"data":"{\"coordination\":\"71,1080,286\"}"}
-2018-09-08 01:00:15.168 [DEBUG] [discovery.XiaomiItemDiscoveryService] - Unknown discovered model: vibration
-2018-09-08 01:00:18.179 [TRACE] [g.mihome.handler.XiaomiBridgeHandler] - Received message {"cmd":"report","model":"vibration","sid":"158d0002a92499","short_id":2226,"data":"{\"status\":\"tilt\"}"}
-2018-09-08 01:00:18.187 [DEBUG] [discovery.XiaomiItemDiscoveryService] - Unknown discovered model: vibration
-2018-09-08 01:00:19.216 [TRACE] [g.mihome.handler.XiaomiBridgeHandler] - Received message {"cmd":"report","model":"vibration","sid":"158d0002a92499","short_id":2226,"data":"{\"coordination\":\"10,84,1248\"}"}
-2018-09-08 01:00:19.247 [DEBUG] [discovery.XiaomiItemDiscoveryService] - Unknown discovered model: vibration
-2018-09-08 01:00:21.468 [TRACE] [g.mihome.handler.XiaomiBridgeHandler] - Received message {"cmd":"report","model":"vibration","sid":"158d0002a92499","short_id":2226,"data":"{\"status\":\"free_fall\"}"}
-2018-09-08 01:00:21.502 [DEBUG] [discovery.XiaomiItemDiscoveryService] - Unknown discovered model: vibration
-2018-09-08 01:00:22.494 [TRACE] [g.mihome.handler.XiaomiBridgeHandler] - Received message {"cmd":"report","model":"vibration","sid":"158d0002a92499","short_id":2226,"data":"{\"coordination\":\"87,51,1247\"}"}
-2018-09-08 01:00:22.527 [DEBUG] [discovery.XiaomiItemDiscoveryService] - Unknown discovered model: vibration
-2018-09-08 01:00:26.587 [TRACE] [g.mihome.handler.XiaomiBridgeHandler] - Received message {"cmd":"report","model":"vibration","sid":"158d0002a92499","short_id":2226,"data":"{\"final_tilt_angle\":\"19\"}"}
-2018-09-08 01:00:26.619 [DEBUG] [discovery.XiaomiItemDiscoveryService] - Unknown discovered model: vibration
-2018-09-08 01:00:28.630 [TRACE] [g.mihome.handler.XiaomiBridgeHandler] - Received message {"cmd":"report","model":"vibration","sid":"158d0002a92499","short_id":2226,"data":"{\"coordination\":\"475,119,1147\"}"}
-2018-09-08 01:00:28.660 [DEBUG] [discovery.XiaomiItemDiscoveryService] - Unknown discovered model: vibration
-2018-09-08 01:05:30.418 [TRACE] [g.mihome.handler.XiaomiBridgeHandler] - Received message {"cmd":"report","model":"vibration","sid":"158d0002a92499","short_id":2226,"data":"{\"bed_activity\":\"158\"}"}
-2018-09-08 01:05:30.441 [DEBUG] [discovery.XiaomiItemDiscoveryService] - Unknown discovered model: vibration
-```
+4. Write ACK (device has received a command) __not avaiable for sensor-only devices__
 
 ### Open a new issue or get your hands dirty
 
-Every little help is welcome, be part of the community!
+Every little help is welcome, be part of the community! 
+Post an issue in the Github repository with as much information as possible about the new device:
+- brand and link to device description
+- model name
+- content of all the different message types
+
+Or implement the support by youself and submit a pull request.
+
+### Handle the message contents of a basic device thing with items
+
+You can access the whole message contents of the basic device thing with String items. That way you can make use of your device, even if it is not supported yet!
+The following examples are a demonstration, where a basic device thing for the gateway was manually added.
+
+```String Gateway_Raw { channel="mihome:basic:xxx:lastMessage" }
+String Gateway_Heartbeat { channel="mihome:basic:xxx:heartbeatMessage" }
+```
+
+_Example for a raw message from the gateway: ```{"cmd":"heartbeat","model":"gateway","sid":"xxx","short_id":"0","token":"xxx","data":"{\"ip\":\"192.168.0.124\"}"}```_
+
+_Example for the same message from the heartbeat channel - only the data is returned: ```{"ip":"192.168.0.124"}```_
+
+These messages are in JSON format, which also gives you the ability to parse single values.
+
+_Example for the retrieved IP from the heartbeat message and transformed with JSONPATH transfomration: ```String Gateway_IP {channel="mihome:basic:xxx:heartbeatMessage"[profile="transform:JSONPATH", function="$.ip"]}```_
+
+ The item will get the value `192.168.0.124`.
+
+### Write commands to a basic device
+
+You can write commands to devices which support it, usually all battery powered devices are not able to receive commands.
+The commands have to be issued as attributes of a JSON Object, e.g. instead of writing ```{"attr":"value"}``` you have to write ```"attr":"value"``` or ```"channel_0":"on", "channel_1":"on"``` to the item.
+
+The following example uses a rule to enable device pairing on the gateway:
+
+__mihome.items__
+
+```
+String Gateway_Write { channel="mihome:basic:xxx:writeMessage" }
+Switch Gateway_AddDevicesSwitch
+```
+
+__mihome.rules__
+
+```
+rule "Enable device pairing with gateway as basic device thing"
+when
+    Item Gateway_AddDevicesSwitch changed to ON
+then
+    Gateway_Write.sendCommand("\"join_permission\":\"yes\"")
+end
+```
+You can also send multiple command at once:
+```
+GatewayWrite.sendCommand("\"rgb\":150000,\"join_permission\":\"yes\"")
+```
+
+Make sure to write numbers without quotes and strings with quotes. Also, quotes have to be escaped.
+
+## Debugging
+
+If you experience any unexpected behaviour or just want to know what is going on behind the scenes, you can enable debug logging. This makes possible following the communication between the binding and the gateway.
+
+### Enable debug logging for the binding
+
+- Login to the [openHAB Console](https://www.openhab.org/docs/administration/console.html)
+- Enter ```log:set TRACE org.openhab.binding.mihome``` in the console to enable full logs
+
+    _When you are done you can disable the extended logging with ```log:set DEFAULT org.openhab.binding.mihome```_
+
+- Enter ```log:tail``` in the console or exit the console and start [viewing the logs](https://www.openhab.org/docs/tutorial/logs.html)
+
+## Troubleshooting
+
+For the binding to function properly it is very important, that your network config allows the machine running openHAB to receive multicast traffic. In case you want to check if the communication between the machine and the gateway is working, you can find some hints here.
+- Set up the developer communication as described in the Setup section
+
+### Check if your linux machine receives multicast traffic
+
+- Login to the linux console
+- make sure you have __netcat__ installed
+- Enter ```netcat -ukl 9898```
+- At least every 10 seconds you should see a message coming in from the gateway which looks like
+    ```{"cmd":"heartbeat","model":"gateway","sid":"`xxx","short_id":"0","token":"xxx","data":"{\"ip\":\"`xxx\"}"}```
+
+### Check if your Windows/Mac machine receives multicast traffic
+
+- Download Wireshark
+- Start and select the network interface which is connected to the same network as the gateway
+- Filter for the multicast messages with the expression ```udp.dstport== 9898 && data.text```
+- At least every 10 seconds you should see a message coming in from the gateway which looks like
+    ```{"cmd":"heartbeat","model":"gateway","sid":"`xxx","short_id":"0","token":"xxx","data":"{\"ip\":\"`xxx\"}"}```
+
+__My gateway shows up in openHAB and I have added all devices, but I don't get any value updates:__
+- Most likely your machine is not receiving multicast messages
+- Check your network config:
+    - Routers often block multicast - enable it
+    - Make sure the gateway and the machine are in the same subnet
+    - Try to connect your machine via Ethernet instead of Wifi
+    - Make sure you don't have any firewall rules blocking multicast
+
+__I have connected my gateway to the network but it doesn't show up in openHAB:__
+- Make sure to have the developer mode enabled in the MiHome app
+- Reinstall the binding
+- Try to update the firmware of the gateway
+- Make sure you have a supported gateway hardware
+- Search the openHAB Community forum
+- Contact Xiaomi support - get your gateway replaced
+
+__Nothing works, I'm frustrated and have thrown my gateway into the bin. Now I don't know what to do with all the sensors:__
+Check out the Zigbee2Mqtt project on Github. It allows you to use the sensors without the gateway and get their values through MQTT. You will need some hardware to act as a gateway which is not expensive. You can find more information and a list of supported Xiaomi devices in the Github repository.
