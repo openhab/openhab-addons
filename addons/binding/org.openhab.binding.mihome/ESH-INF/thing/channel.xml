@@ -76,11 +76,6 @@
 		<state max="100" min="0" step="1" pattern="%d %%" readOnly="false"></state>
 	</channel-type>
 
-	<channel-type id="joinPermission">
-		<item-type>Switch</item-type>
-		<label>Enable Device Inclusion</label>
-	</channel-type>
-
 	<channel-type id="enableSound">
 		<item-type>Switch</item-type>
 		<label>Switch to turn sound off when playing</label>
