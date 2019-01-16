@@ -13,18 +13,19 @@ which makes the lights and plugs available.
 There is one bridge (`deconz`) that manages the connection to the deCONZ software instance.
 These things are supported:
 
-| Device type                       | Resource Type                     | Thing type            | Channels provided         |
-| :-------------------------------- | :-------------------------------- | :-------------------- | :------------------------ |
-| Presence sensor                   | ZHAPresence, CLIPPrensence        | `presencesensor`      | `presence`                |
-| Power sensor                      | ZHAPower, CLIPPower               | `powersensor`         | `power`                   |
-| Consumption Sensor                | ZHAConsumption                    | `consumtionsensor`    | `consumption`             |
-| Switch                            | ZHASwitch                         | `switch`              | `button`,`buttonevent`    |
-| Light sensor                      | ZHALightLevel                     | `lightsensor`         | `lightlux`                |
-| Temperature sensor                | ZHATemperature                    | `temperaturesensor`   | `temperature`             |
-| Humidity sensor                   | ZHAHumidity                       | `humiditysensor`      | `humidity`                |
-| Pressure sensor                   | ZHAPressure                       | `pressuresensor`      | `pressure`                |
-| Open/close sensor                 | ZHAOpenClose                      | `openclosesensor`     | `open`                    |
-| deCONZ artificial daylight sensor | Deconz specific: simulated sensor | `daylightsensor`      | `value`,`light`           |
+| Device type                       | Resource Type                     | Thing type           |
+|-----------------------------------|-----------------------------------|----------------------|
+| Presence Sensor                   | ZHAPresence, CLIPPrensence        | `presencesensor`     |
+| Power Sensor                      | ZHAPower, CLIPPower               | `powersensor`        |
+| Consumption Sensor                | ZHAConsumption                    | `consumptionsensor`  |
+| Switch                            | ZHASwitch                         | `switch`             |
+| Light Sensor                      | ZHALightLevel                     | `lightsensor`        |
+| Temperature Sensor                | ZHATemperature                    | `temperaturesensor`  |
+| Humidity Sensor                   | ZHAHumidity                       | `humiditysensor`     |
+| Pressure Sensor                   | ZHAPressure                       | `pressuresensor`     |
+| Open/Close Sensor                 | ZHAOpenClose                      | `openclosesensor`    |
+| Water Leakage Sensor              | ZHAWater                          | `waterleakagesensor` |
+| deCONZ Artificial Daylight Sensor | deCONZ specific: simulated sensor | `daylightsensor`     |
 
 ## Discovery
 
@@ -69,27 +70,32 @@ Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ]
 
 The devices support some of the following channels:
 
-| Channel Type ID | Item Type            | Access Mode | Description                                                               | Thing types                               |
-|-----------------|----------------------|:-----------:|---------------------------------------------------------------------------|-------------------------------------------|
-| presence        | Switch               |      R      | Status of presence: `ON` = presence; `OFF` = no-presence                  | presencesensor                            |
-| last_updated    | DateTime             |      R      | Timestamp when the sensor was last updated                                | all, except daylightsensor                |
-| power           | Number:Power         |      R      | Current power usage in Watts                                              | powersensor                               |
-| consumption     | Number:Energy        |      R      | Current power usage in Watts/Hour                                         | consumptionsensor                         |
-| button          | Number               |      R      | Last pressed button id on a switch                                        | switch                                    |
-| lightlux        | Number:Illuminance   |      R      | Current light illuminance in Lux                                          | lightsensor                               |
-| light_level     | Number               |      R      | Current light level                                                       | lightsensor                               |
-| dark            | Switch               |      R      | Light level is below the darkness threshold.                              | lightsensor, sometimes for presencesensor |
-| daylight        | Switch               |      R      | Light level is above the daylight threshold.                              | lightsensor                               |
-| temperature     | Number:Temperature   |      R      | Current temperature in ˚C                                                 | temperaturesensor                         |
-| humidity        | Number:Dimensionless |      R      | Current humidity in %                                                     | humiditysensor                            |
-| pressure        | Number:Pressure      |      R      | Current pressure in hPa                                                   | pressuresensor                            |
-| open            | Contact              |      R      | Status of contacts: `OPEN`; `CLOSED`                                      | openclosesensor                           |
-| light           | String               |      R      | Light level: `Daylight`,`Sunset`,`Dark`                                   | daylightsensor                            |
-| value           | Number               |      R      | Sun position: `130` = dawn; `140` = sunrise; `190` = sunset; `210` = dusk | daylightsensor                            |
-| battery_level   | Number               |      R      | Battery level (in %)                                                      | any battery-powered sensor                |
-| battery_low     | Switch               |      R      | Battery level low: `ON`; `OFF`                                            | any battery-powered sensor                |
+| Channel Type ID | Item Type                | Access Mode | Description                                                                               | Thing types                                  |
+|-----------------|--------------------------|:-----------:|-------------------------------------------------------------------------------------------|----------------------------------------------|
+| presence        | Switch                   |      R      | Status of presence: `ON` = presence; `OFF` = no-presence                                  | presencesensor                               |
+| last_updated    | DateTime                 |      R      | Timestamp when the sensor was last updated                                                | all, except daylightsensor                   |
+| power           | Number:Power             |      R      | Current power usage in Watts                                                              | powersensor, sometimes for consumptionsensor |
+| consumption     | Number:Energy            |      R      | Current power usage in Watts/Hour                                                         | consumptionsensor                            |
+| voltage         | Number:ElectricPotential |      R      | Current voltage in V                                                                      | some powersensors                            |
+| current         | Number:ElectricCurrent   |      R      | Current current in mA                                                                     | some powersensors                            |
+| button          | Number                   |      R      | Last pressed button id on a switch                                                        | switch                                       |
+| lightlux        | Number:Illuminance       |      R      | Current light illuminance in Lux                                                          | lightsensor                                  |
+| light_level     | Number                   |      R      | Current light level                                                                       | lightsensor                                  |
+| dark            | Switch                   |      R      | Light level is below the darkness threshold.                                              | lightsensor, sometimes for presencesensor    |
+| daylight        | Switch                   |      R      | Light level is above the daylight threshold.                                              | lightsensor                                  |
+| temperature     | Number:Temperature       |      R      | Current temperature in ˚C                                                                 | temperaturesensor, some Xiaomi sensors       |
+| humidity        | Number:Dimensionless     |      R      | Current humidity in %                                                                     | humiditysensor                               |
+| pressure        | Number:Pressure          |      R      | Current pressure in hPa                                                                   | pressuresensor                               |
+| open            | Contact                  |      R      | Status of contacts: `OPEN`; `CLOSED`                                                      | openclosesensor                              |
+| waterleakage    | Switch                   |      R      | Status of water leakage: `ON` = water leakage detected; `OFF` = no water leakage detected | waterleakagesensor                           |
+| light           | String                   |      R      | Light level: `Daylight`,`Sunset`,`Dark`                                                   | daylightsensor                               |
+| value           | Number                   |      R      | Sun position: `130` = dawn; `140` = sunrise; `190` = sunset; `210` = dusk                 | daylightsensor                               |
+| battery_level   | Number                   |      R      | Battery level (in %)                                                                      | any battery-powered sensor                   |
+| battery_low     | Switch                   |      R      | Battery level low: `ON`; `OFF`                                                            | any battery-powered sensor                   |
 
-**NOTE:** The `battery_level` and `battery_low` channels will be added to the Thing during runtime if the sensor is battery-powered.
+**NOTE:** Beside other non mandatory channels, the `battery_level` and `battery_low` channels will be added to the Thing during runtime if the sensor is battery-powered.
+The specification of your sensor depends on the deCONZ capabilities.
+Have a detailed look for [supported devices](https://github.com/dresden-elektronik/deconz-rest-plugin/wiki/Supported-Devices).
 
 ### Trigger Channels
 
@@ -111,6 +117,7 @@ Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ] {
     pressuresensor      livingroom-pressure     "Livingroom Pressure"       [ id="4" ]
     openclosesensor     livingroom-window       "Livingroom Window"         [ id="5" ]
     switch              livingroom-hue-tap      "Livingroom Hue Tap"        [ id="6" ]
+    waterleakagesensor  basement-water-leakage  "Basement Water Leakage"    [ id="7" ]
 }
 ```
 
@@ -122,6 +129,7 @@ Number:Temperature      Livingroom_Temperature  "Temperature Livingroom [%.1f °
 Number:Dimensionless    Livingroom_Humidity     "Humidity Livingroom [%.1f %%]"     <humidity>      { channel="deconz:humiditysensor:homeserver:livingroom-humidity:humidity" }
 Number:Pressure         Livingroom_Pressure     "Pressure Livingroom [%.1f hPa]"    <pressure>      { channel="deconz:pressuresensor:homeserver:livingroom-pressure:pressure" }
 Contact                 Livingroom_Window       "Window Livingroom [%s]"            <door>          { channel="deconz:openclosesensor:homeserver:livingroom-window:open" }
+Switch                  Basement_Water_Leakage  "Basement Water Leakage [%s]"                       { channel="deconz:waterleakagesensor:homeserver:basement-water-leakage:waterleakage" }
 ```
 
 ### Events
