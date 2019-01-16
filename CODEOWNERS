@@ -103,8 +103,8 @@
 /addons/binding/org.openhab.binding.powermax/ @lolodomo
 /addons/binding/org.openhab.binding.pulseaudio/ @peuter
 /addons/binding/org.openhab.binding.regoheatpump/ @crnjan
-/addons/binding/org.openhab.binding.rfxcom/ @paulianttila
-/addons/binding/org.openhab.binding.rfxcom.test/ @paulianttila
+/addons/binding/org.openhab.binding.rfxcom/ @martinvw @paulianttila
+/addons/binding/org.openhab.binding.rfxcom.test/ @martinvw @paulianttila
 /addons/binding/org.openhab.binding.rme/ @kgoderis
 /addons/binding/org.openhab.binding.robonect/ @reyem
 /addons/binding/org.openhab.binding.robonect.test/ @reyem
@@ -148,8 +148,8 @@
 /addons/binding/org.openhab.binding.zway/ @pathec
 /addons/io/org.openhab.io.azureiothub/ @nikotanghe
 /addons/io/org.openhab.io.homekit/ @beowulfe
-/addons/io/org.openhab.io.hueemulation/ @digitaldan
-/addons/io/org.openhab.io.hueemulation.test/ @digitaldan
+/addons/io/org.openhab.io.hueemulation/ @davidgraeff @digitaldan
+/addons/io/org.openhab.io.hueemulation.test/ @davidgraeff @digitaldan
 /addons/io/org.openhab.io.imperihome/ @pdegeus
 /addons/io/org.openhab.io.neeo/ @tmrobert8
 /addons/io/org.openhab.io.openhabcloud/ @kaikreuzer
