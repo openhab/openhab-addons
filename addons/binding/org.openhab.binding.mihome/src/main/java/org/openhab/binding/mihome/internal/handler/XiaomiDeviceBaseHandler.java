@@ -73,6 +73,7 @@ public class XiaomiDeviceBaseHandler extends BaseThingHandler implements XiaomiI
     protected static final Unit<Angle> ANGLE_UNIT = SmartHomeUnits.DEGREE_ANGLE;
     protected static final Unit<Time> TIME_UNIT = MILLI(SmartHomeUnits.SECOND);
 
+    private static final String REMOVE_DEVICE = "remove_device";
     private static final long ONLINE_TIMEOUT_MILLIS = TimeUnit.HOURS.toMillis(2);
     private ScheduledFuture<?> onlineCheckTask;
 
@@ -113,6 +114,12 @@ public class XiaomiDeviceBaseHandler extends BaseThingHandler implements XiaomiI
             onlineCheckTask.cancel(false);
         }
 
+    }
+
+    @Override
+    public void handleRemoval() {
+        getXiaomiBridgeHandler().writeToBridge(new String[] { REMOVE_DEVICE }, new Object[] { itemId });
+        super.handleRemoval();
     }
 
     @Override
