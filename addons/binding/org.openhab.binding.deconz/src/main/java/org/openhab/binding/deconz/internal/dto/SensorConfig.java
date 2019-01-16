@@ -25,4 +25,5 @@ public class SensorConfig {
     public boolean on = true;
     public boolean reachable = true;
     public @Nullable Integer battery;
+    public @Nullable Float temperature;
 }
