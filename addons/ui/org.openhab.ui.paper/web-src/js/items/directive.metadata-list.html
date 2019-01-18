@@ -1,0 +1,3 @@
+<div ng-repeat="configDescription in $ctrl.metadataConfigDescriptions | orderBy:'uri' track by configDescription.uri">
+    <metadata config-description="configDescription" metadata="$ctrl.item.metadata[$ctrl.URI2Namespace(configDescription.uri)]"></metadata>
+</div>

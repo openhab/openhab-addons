@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:lifx:light">
+		<parameter name="deviceId" type="text" pattern="([0-9A-Fa-f]{12})" required="false">
+			<label>LIFX device ID</label>
+			<description>Identifies the light e.g. "D073D5A1A1A1"</description>
+		</parameter>
+		<parameter name="host" type="text" required="false">
+			<label>Host</label>
+			<description>Hostname or IP address of the light. Use empty value for automatic discovery.</description>
+			<context>network-address</context>
+		</parameter>
+		<parameter name="fadetime" type="integer" required="false">
+			<label>Fade time</label>
+			<description>The time to fade to the new color value (in ms).</description>
+			<default>300</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:lifx:brightness">
+		<parameter name="powerOnBrightness" type="integer" min="0" max="100" required="false" unit="%">
+			<label>Power on brightness</label>
+			<description>Brightness level used when switching on the light. Use empty value to leave brightness as is.</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:lifx:color">
+		<parameter name="powerOnBrightness" type="integer" min="0" max="100" required="false" unit="%">
+			<label>Power on brightness</label>
+			<description>Brightness level used when switching on the light. Use empty value to leave brightness as is.</description>
+		</parameter>
+		<parameter name="powerOnColor" type="text" pattern="(36[0]|3[0-5][0-9]|[12][0-9][0-9]|[1-9][0-9]|[0-9]),(100|[1-9][0-9]|[0-9]),(100|[1-9][0-9]|[0-9])" required="false">
+			<label>Power on Color</label>
+			<description>Comma separated Hue (0-360), saturation (0-100) and brightness (0-100) levels used when switching on the light. Use empty value to leave it as is.</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:lifx:temperature">
+		<parameter name="powerOnTemperature" type="integer" min="0" max="100" required="false" unit="%">
+			<label>Power on temperature</label>
+			<description>Color temperature level used when switching on the light. Use empty value to leave color temperature as is.</description>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

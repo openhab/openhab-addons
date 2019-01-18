@@ -1,0 +1,36 @@
+<md-dialog aria-label="Link Channel"> <md-dialog-content class="md-dialog-content" ng-init="form={}">
+<h1>Link channel</h1>
+
+<div class="row">
+    <span class="">Please select a profile:</span>
+</div>
+<md-input-container class="row noPadding" style="width:100%">
+    <profile-selection profile-model="linkModel.configuration['profile']" channel="channel"></profile-selection>
+</md-input-container>
+<div class="row">
+    <span class="">Please select the item to link:</span>
+</div>
+
+<md-input-container class="row noPadding" style="width:100%">
+    <md-select name="itemName" md-on-close="checkCreateOption()" required="true" ng-model="itemName">
+       <md-option ng-repeat="item in itemsList" ng-value="item.name">
+           <span ng-class="{italic:(item.name == '_createNew')}">
+                  {{ (item.name == '_createNew') ? '+ Create new item...' : item.label }}
+              <span class="md-caption" style="color: grey;">
+                      {{ !(item.name == '_createNew') ? '(' + item.name + ')' : '' }}
+              </span>
+           </span>
+      </md-option>
+    </md-select>
+</md-input-container>
+
+<div class="row" ng-if="itemFormVisible">
+	<div ng-include="'partials/items/item.config.html'"></div>
+</div>
+</md-dialog-content>
+<div class="md-actions" layout="row">
+	<md-button ng-click="close()">Cancel</md-button>
+	<md-button ng-show="!itemFormVisible" ng-disabled="!itemName" ng-click="link(itemName,itemLabel)">Link</md-button>
+	<md-button ng-show="itemFormVisible" ng-disabled="form.itemForm.$invalid" ng-click="createAndLink()">Link</md-button>
+</div>
+</md-dialog>

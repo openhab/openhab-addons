@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <artifactId>pom</artifactId>
+    <groupId>org.openhab.persistence</groupId>
+    <version>2.5.0-SNAPSHOT</version>
+  </parent>
+  <groupId>org.openhab.persistence</groupId>
+  <artifactId>org.openhab.persistence.mapdb.test</artifactId>
+
+  <packaging>eclipse-test-plugin</packaging>
+
+  <name>MapDB Persistence Tests</name>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>${tycho-groupid}</groupId>
+        <artifactId>target-platform-configuration</artifactId>
+        <configuration>
+          <environments combine.self="override"></environments>
+          <dependency-resolution>
+            <extraRequirements>
+              <requirement>
+                <type>eclipse-plugin</type>
+                <id>org.eclipse.equinox.ds</id>
+                <versionRange>0.0.0</versionRange>
+              </requirement>
+            </extraRequirements>
+          </dependency-resolution>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>${tycho-groupid}</groupId>
+        <artifactId>tycho-surefire-plugin</artifactId>
+        <configuration>
+          <bundleStartLevel>
+            <bundle>
+              <id>org.eclipse.equinox.ds</id>
+              <level>1</level>
+              <autoStart>true</autoStart>
+            </bundle>
+          </bundleStartLevel>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

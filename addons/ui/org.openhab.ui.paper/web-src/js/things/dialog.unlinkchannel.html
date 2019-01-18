@@ -1,0 +1,8 @@
+<md-dialog aria-label="Unlink item"> <md-dialog-content class="md-dialog-content">
+<h2>Unlink item '{{itemName}}'?</h2>
+</md-dialog-content>
+<div class="md-actions" layout="row">
+    <md-button ng-click="close()">Cancel</md-button>
+    <md-button class="md-primary" ng-click="unlink(channel.UID)">Unlink</md-button>
+</div>
+</md-dialog>

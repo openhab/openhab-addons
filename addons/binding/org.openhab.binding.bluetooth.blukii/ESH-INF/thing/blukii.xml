@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bluetooth" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="blukii_beacon">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bluegiga" />
+			<bridge-type-ref id="bluez" />
+		</supported-bridge-type-refs>
+
+		<label>Blukii SmartBeacon</label>
+		<description>A Blukii SmartBeacon</description>
+
+		<channels>
+			<channel id="rssi" typeId="rssi" />
+			<channel id="battery" typeId="system.battery-level" />
+
+			<channel id="temperature" typeId="blukii_temperature" />
+			<channel id="humidity" typeId="blukii_humidity" />
+			<channel id="pressure" typeId="blukii_pressure" />
+			<channel id="luminance" typeId="blukii_luminance" />
+
+			<channel id="tiltx" typeId="blukii_tiltx" />
+			<channel id="tilty" typeId="blukii_tilty" />
+			<channel id="tiltz" typeId="blukii_tiltz" />
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text">
+				<label>Address</label>
+				<description>Bluetooth address in XX:XX:XX:XX:XX:XX format</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="blukii_temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="blukii_humidity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<state readOnly="true" pattern="%d %unit%" />
+	</channel-type>
+
+	<channel-type id="blukii_pressure">
+		<item-type>Number:Pressure</item-type>
+		<label>Pressure</label>
+		<state readOnly="true" pattern="%.0f %unit%" />
+	</channel-type>
+
+	<channel-type id="blukii_luminance">
+		<item-type>Number:Illuminance</item-type>
+		<label>Luminance</label>
+		<state readOnly="true" pattern="%d %unit%" />
+	</channel-type>
+
+	<channel-type id="blukii_tiltx" advanced="true">
+		<item-type>Number:Angle</item-type>
+		<label>Tilt X</label>
+		<state readOnly="true" pattern="%.0f %unit%" />
+	</channel-type>
+
+	<channel-type id="blukii_tilty" advanced="true">
+		<item-type>Number:Angle</item-type>
+		<label>Tilt Y</label>
+		<state readOnly="true" pattern="%.0f %unit%" />
+	</channel-type>
+
+	<channel-type id="blukii_tiltz" advanced="true">
+		<item-type>Number:Angle</item-type>
+		<label>Tilt Z</label>
+		<state readOnly="true" pattern="%.0f %unit%" />
+	</channel-type>
+
+</thing:thing-descriptions>

@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" style="enable-background:new 0 0 64 64">
+  <defs>
+    <linearGradient id="0" gradientUnits="userSpaceOnUse" y1="8" x2="0" y2="16">
+      <stop style="stop-color:#dcdcdc"/>
+      <stop offset="1" style="stop-color:#646464"/>
+    </linearGradient>
+    <linearGradient id="1" gradientUnits="userSpaceOnUse" x1="1.251" x2="23.5496">
+      <stop style="stop-color:#fafafa"/>
+      <stop offset="1" style="stop-color:#dcdcdc"/>
+    </linearGradient>
+    <linearGradient id="2" gradientUnits="userSpaceOnUse" x1="18.375" x2="61.625">
+      <stop style="stop-color:#dcdcdc"/>
+      <stop offset=".5" style="stop-color:#fafafa"/>
+      <stop offset="1" style="stop-color:#dcdcdc"/>
+    </linearGradient>
+  </defs>
+  <path d="m6.49 58.78c-.83 0-1.49-.09-1.87-.15l.71-3.1-2.67-2.27 2.83-4.33-3.5-3 3.43-5.01-3.52-2.76 2.81-4.79-3.46-3.79 4.05-4.71-3.24-4.82c8.25-1.32 16.5-10.41 17.61-11.67h3.87c.02 3.31.05 27.87-4.4 40-3.31 9.05-9.35 10.4-12.65 10.4" style="fill:url(#1)"/>
+  <path d="m23.17 8.75c.02 4.45-.09 27.8-4.37 39.49-3.24 8.84-9.11 10.16-12.31 10.16-.57 0-1.05-.04-1.41-.09l.57-2.48.1-.45-.35-.3-2.25-1.91 2.47-3.78.36-.55-.5-.43-2.98-2.54 3.04-4.44.4-.58-.55-.43-2.99-2.35 2.5-4.27.28-.48-.38-.41-3.05-3.34 3.65-4.25.37-.43-.32-.47-2.76-4.11c7.95-1.61 15.7-9.93 17.15-11.56h3.33m.75-.75h-4.42c0 0-9.25 10.75-18.09 11.75l3.42 5.08-4.08 4.75 3.5 3.83-2.83 4.83 3.5 2.76-3.42 5 3.5 3-2.83 4.33 2.75 2.33-.75 3.25c0 0 .91.24 2.32.24 3.38 0 9.61-1.37 13.01-10.66 4.83-13.16 4.42-40.49 4.42-40.49z" style="fill:#828282"/>
+  <path d="M40,60.62c-11.92,0-21.62-4.77-21.62-10.62V12.38h43.25V50C61.62,55.86,51.92,60.62,40,60.62z" style="fill:url(#2)"/>
+  <path d="m61.25 12.75v37.25c0 5.56-9.73 10.25-21.25 10.25s-21.25-4.69-21.25-10.25v-37.25h42.5m.75-.75h-44v38c0 6.08 9.85 11 22 11s22-4.92 22-11v-38z" style="fill:#828282"/>
+  <path d="M40,22.62c-11.92,0-21.62-4.77-21.62-10.62S28.08,1.38,40,1.38S61.62,6.14,61.62,12S51.92,22.62,40,22.62z    " style="fill:#fafafa"/>
+  <path d="M40,1.75c11.52,0,21.25,4.69,21.25,10.25S51.52,22.25,40,22.25S18.75,17.56,18.75,12S28.48,1.75,40,1.75     M40,1C27.85,1,18,5.92,18,12s9.85,11,22,11s22-4.92,22-11S52.15,1,40,1L40,1z" style="fill:#828282"/>
+  <g style="stroke-miterlimit:10">
+    <ellipse cx="40" cy="12" rx="8" ry="4" style="fill:url(#0);stroke:#828282;stroke-width:.75"/>
+    <g style="fill:none;stroke:#aaa">
+      <path d="m31 22v.5"/>
+      <path d="m31 24.45v34.08" style="stroke-dasharray:0.9737 1.9474"/>
+      <path d="m31 59.5v.5"/>
+      <path d="m58 18v.5"/>
+      <path d="m58 20.45v34.08" style="stroke-dasharray:0.9737 1.9474"/>
+      <path d="m58 55.5v.5"/>
+    </g>
+  </g>
+</svg>

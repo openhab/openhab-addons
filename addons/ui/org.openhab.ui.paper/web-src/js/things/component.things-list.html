@@ -1,0 +1,39 @@
+<section class="fill-height configMain">
+	<div class="things white-bg">
+		<div class="header-toolbar">
+			<md-button ng-click="$ctrl.refresh()" aria-label="Refresh"> <i class="material-icons">refresh</i></md-button>
+		</div>
+		<div class="section-header">
+			<div class="container">
+				<div class="toolbar">
+					<md-button class="md-fab" ng-click="$ctrl.navigateTo('/inbox/setup')" aria-label="Add"> <i class="material-icons">add</i></md-button>
+				</div>
+			</div>
+		</div>
+		<div class="search itemSearch" layout="row" layout-align="center center">
+			<div layout="row" flex="85" class="searchControl" layout-align="start center">
+				<i ng-style="{'font-size': '24px'}" class="material-icons">search</i>
+				<md-input-container flex="90" md-no-float class="md-block searchBox"> <input ng-model="searchText" type="text" placeholder="Search"> </md-input-container>
+				<i ng-click="searchText = undefined" ng-class="{'vhidden': !searchText}" ng-style="{'font-size': '24px'}" class="material-icons clickable">close</i>
+			</div>
+			<div layout="row" flex="15" class="controls" layout-align="start center" ng-init="showMore=false">
+				<i class="material-icons clickable" ng-click="showMore=!showMore">{{showMore?'unfold_less':'unfold_more'}}</i>
+				<button class="md-button clickable" ng-click="$ctrl.clearAll()">clear</button>
+			</div>
+		</div>
+		<div class="row" ng-show="showMore" class="searchBox" search-filters>
+			<md-autocomplete md-no-cache config='{"index":0,"targetField":"bindingType","sourceField":"id"}' class="col-xs-12 md-filter" md-min-length="0" md-selected-item="selectedOptions[0].value" md-item-text="binding.name" md-search-text="searchType" md-items="binding in searchInOptions($ctrl.bindings,['name'],searchType) | orderBy:'name'" placeholder="Filter by binding"> <md-item-template> <span md-highlight-text="searchType" md-highlight-flags="^i">{{binding.name}}</span> </md-item-template> <md-not-found> No matches found. </md-not-found> </md-autocomplete>
+		</div>
+		<div class="container thingContainer">
+			<p class="text-center" ng-show="$ctrl.things.length == 0">
+				No things configured yet.
+				<button class="md-button" ng-click="$ctrl.navigateTo('/inbox/setup')">Add Things</button>
+			</p>
+			<div class="things">
+				<div class="clickable" ng-class="{'new':newThingUID==thing.UID,'lastThing':$last}" ng-repeat="thing in $ctrl.things | filter:filterItems(['label','UID'])| orderBy:'label'">
+					<thing-entry thing="thing"></thing-entry>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>

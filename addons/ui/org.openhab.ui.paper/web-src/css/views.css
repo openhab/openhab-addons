@@ -1,0 +1,293 @@
+/**
+ * Application Views
+ */
+
+/* Control */
+section#main.header-tabs {
+	margin-top: 0px;
+	padding-top: 0px;
+	height: 100%;
+}
+
+.items {
+	min-height: 350px;
+}
+
+.items .item {
+	padding: 20px;
+}
+
+.items .item span {
+	margin: 0 0 5px 0;
+}
+
+.items .item md-radio-button {
+	display: inline;
+}
+
+.items .item md-slider {
+	width: 100%;
+}
+
+.items .item span.state {
+	margin: 5px 0px;
+	overflow: hidden;
+	font-size: 20px;
+}
+
+.items .item p {
+	margin: 0px;
+	text-align: left;
+	white-space: nowrap;
+	/*
+	overflow: hidden;
+	text-overflow: ellipsis;*/
+	line-height: 38px;
+}
+
+.items .item .number-input {
+	margin: 0 0 8px 0;
+}
+
+.dimmer-widget md-slider {
+	margin: 0px 10px;
+}
+
+.dimmer-widget .md-button.active {
+	color: #01324D;
+}
+
+.dimmer-widget p.no-icon-margin-left {
+	margin-left: 45px;
+}
+
+.md-default-theme.left-padded {
+	padding-left: 45px;
+	margin-left: 0px;
+}
+
+.image-widget {
+	/* This is a a utility class for image items so the !important is for the exceptional rule*/
+	height: auto !important;
+	margin-top: 5px;
+}
+
+.image-scaled {
+	width: 100%;
+	position: relative;
+}
+
+.number-control-widget {
+	/* background: #EEE;	
+	box-shadow: 0px 2px 2px 0 rgba(0, 0, 0, 0.26); */
+	padding: 5px;
+	border-radius: 2px;
+	padding-top: 0px;
+}
+
+.number-control-widget md-slider {
+	margin: 0px;
+}
+.number-control-widget .text-left, .number-control-widget .text-right {
+	margin-top: 10px;
+}
+
+.items .item .icontrol>div>div {
+	height: 40px;
+}
+
+.items .item .map-container {
+	height: 100%;
+}
+
+.items .item hr {
+	margin: 10px 0px;
+}
+
+.items .item p[class^="icon-"]:before, .items .item p[class*=" icon-"]:before,
+	.items .item p[class^="material-icons"], .items .item p[class*=" material-icons"],
+	.items .item i[class^="material-icons"], .items .item i[class*=" material-icons"],
+	.items .item p[class^="home-icon-"]:before, .items .item p[class*=" home-icon-"]:before
+	{
+	margin-right: 10px;
+	border-radius: 50%;
+	width: 35px;
+	height: 35px;
+	background-color: #4CAF50;
+	color: white;
+	text-align: center;
+	font-size: 16px;
+	padding: 10px;
+
+}
+
+.items .item md-input-container input {
+	text-align: right;
+}
+
+.items .item .icontrol md-switch {
+	margin: 0px;
+}
+
+.items .item md-input-container {
+	padding: 0;
+	margin: 0;
+}
+
+.item-edit metadata md-select, .item-edit metadata md-input-container, .item-edit metadata button {
+    margin-top: 0;
+}
+
+.items .text-control span.state {
+	margin-top: 2px;
+}
+
+metadata h4 {
+	font-weight: normal;
+}
+
+metadata i.edit {
+    transition: box-shadow .4s;
+    border-radius: 100%;
+    border: 5px solid transparent;
+    width: 34px;
+    height: 34px;
+    outline: 0;
+    float: right;
+}
+
+metadata i.edit:hover {
+	cursor: pointer;
+    box-shadow: 0px 0px 4px 2px #dedede;
+}
+
+metadata fieldset {
+    padding-top: 10px;
+    margin-top: 10px;
+}
+
+metadata fieldset md-input-container{
+    width: 100%;
+}
+
+/* Inbox */
+.scan .fab-item md-progress-circular {
+    float: left;
+    margin: 0px;
+    width: 56px !important;
+}
+
+.thing-type-choose {
+	margin-top: -20px;
+}
+
+.thing-type-choose .bindings {
+	border-right: 1px solid #e0e0e0;
+	box-shadow: 4px 0px 4px -3px rgba(0, 0, 0, 0.15);
+	z-index: 1;
+	padding-top: 10px;
+}
+
+.thing-type-choose .binding {
+	padding: 5px 10px;
+	cursor: pointer;
+}
+
+.thing-type-choose .binding.active {
+	background-color: #e0e0e0;
+}
+
+.thing-type-choose .thing-types {
+	padding-left: 10px;
+	padding-top: 10px;
+}
+
+.thing-type-choose .thing-types .thing-type {
+	
+}
+
+.thing-type-choose .thing-type.ng-enter, .thing-type-choose .thing-type.ng-leave
+	{
+	-webkit-transition: 150ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+	-moz-transition: 150ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+	-ms-transition: 150ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+	-o-transition: 150ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+	transition: 150ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
+	position: relative;
+	display: block;
+}
+
+.thing-type-choose .thing-type.ng-leave.ng-leave-active,
+	.thing-type-choose .thing-type.ng-enter {
+	-webkit-transform: scaleY(1);
+	-moz-transform: scaleY(1);
+	-ms-transform: scaleY(1);
+	-o-transform: scaleY(1);
+	transform: scaleY(1);
+	height: 0px;
+	opacity: 0;
+}
+
+.thing-type-choose .thing-type.ng-enter.ng-enter-active,
+	.thing-type-choose .thing-type.ng-leave {
+	-webkit-transform: scaleY(1);
+	-moz-transform: scaleY(1);
+	-ms-transform: scaleY(1);
+	-o-transform: scaleY(1);
+	transform: scaleY(1);
+	height: 30px;
+	opacity: 1;
+}
+
+/* Things */
+.badge.online {
+	background-color: green;
+}
+
+.badge.grey {
+}
+
+.badge.orange {
+	background-color: orange;
+}
+
+.badge.blue {
+	background-color: blue;
+}
+
+.badge {
+	vertical-align: bottom;
+}
+
+.thing-configure .parameter {
+	
+}
+
+/* Setup */
+.scan-indicator md-progress-circular {
+	margin-right: 25px;
+}
+
+/* Home Groups */
+.homeGroup.fab-item h3 {
+	line-height: 55px;
+}
+
+/* Extensions */
+section#main.extensions {
+	margin-top: 0px;
+}
+
+.extensions.white-bg .content {
+	padding-top: 0px;
+}
+
+.extensions.white-bg md-tab-content {
+	padding: 0px;
+}
+
+/* Rules */
+.rules .card {
+	padding: 20px;
+	min-height: 200px;
+}

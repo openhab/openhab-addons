@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="sonos"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Channels common for all SONOS devices -->
+	<channel-type id="add" advanced="true">
+		<item-type>String</item-type>
+		<label>Add</label>
+		<description>Add the given Zone Player to the group of this Zone Player</description>
+	</channel-type>
+
+	<channel-type id="alarm" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Set Alarm</label>
+		<description>Set the first occurring alarm either ON or OFF. Alarms first have to be defined through the Sonos Controller app</description>
+	</channel-type>
+
+	<channel-type id="alarmproperties" advanced="true">
+		<item-type>String</item-type>
+		<label>Alarm Properties</label>
+		<description>Properties of the alarm currently running</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="alarmrunning" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Alarm is running</label>
+		<description>Set to ON if the alarm was triggered</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="clearqueue" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Clear Queue</label>
+		<description>Suppress all songs from the current queue</description>
+	</channel-type>
+
+	<channel-type id="coordinator" advanced="true">
+		<item-type>String</item-type>
+		<label>Coordinator</label>
+		<description>UDN of the coordinator for the current group</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="currentalbum">
+		<item-type>String</item-type>
+		<label>Current Album</label>
+		<description>Name of the album currently playing</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="currentalbumart">
+		<item-type>Image</item-type>
+		<label>Current Album Cover Art</label>
+		<description>Cover art of the album currently playing</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="currentalbumarturl" advanced="true">
+		<item-type>String</item-type>
+		<label>Current Album Cover Art URL</label>
+		<description>Cover art URL of the album currently playing</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="currenttrack" advanced="true">
+		<item-type>String</item-type>
+		<label>Current Track</label>
+		<description>Name of the current track or radio station currently playing</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="currenttrackuri" advanced="true">
+		<item-type>String</item-type>
+		<label>Current track URI</label>
+		<description>URI of the current track</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="currenttransporturi" advanced="true">
+		<item-type>String</item-type>
+		<label>Current AV transport URI</label>
+		<description>URI of the current AV transport</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="favorite" advanced="true">
+		<item-type>String</item-type>
+		<label>Favorite</label>
+		<description>Play the given favorite entry. The favorite entry has to be predefined in the Sonos Controller app</description>
+	</channel-type>
+
+	<channel-type id="led" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Led</label>
+		<description>Set or get the status of the white led on the front of the Zone Player</description>
+	</channel-type>
+
+	<channel-type id="localcoordinator" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Local Coordinator</label>
+		<description>Indicator set to ON if this Zone Player is the Zone Group Coordinator</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="nightmode" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Night Mode</label>
+		<description>Enable or disable the night mode feature</description>
+	</channel-type>
+
+	<channel-type id="notificationsound" advanced="true">
+		<item-type>String</item-type>
+		<label>Notification Sound</label>
+		<description>Play a notification sound by a given URI</description>
+	</channel-type>
+
+	<channel-type id="playlist" advanced="true">
+		<item-type>String</item-type>
+		<label>Play Playlist</label>
+		<description>Play the given playlist. The playlist has to predefined in the Sonos Controller app</description>
+	</channel-type>
+
+	<channel-type id="playqueue" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Play Queue</label>
+		<description>Play the songs from the current queue</description>
+	</channel-type>
+
+	<channel-type id="playtrack" advanced="true">
+		<item-type>Number</item-type>
+		<label>Play Track</label>
+		<description>Play the given track number from the current queue</description>
+	</channel-type>
+
+	<channel-type id="playuri" advanced="true">
+		<item-type>String</item-type>
+		<label>Play URI</label>
+		<description>Play the given URI</description>
+	</channel-type>
+
+	<channel-type id="publicaddress" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Public Address</label>
+		<description>Put all Zone Players in one group, and stream audio from the line-in from the Zone Player that triggered the command</description>
+	</channel-type>
+
+	<channel-type id="radio" advanced="true">
+		<item-type>String</item-type>
+		<label>Radio</label>
+		<description>Play the given radio station. The radio station has to be predefined in the Sonos Controller app</description>
+	</channel-type>
+
+	<channel-type id="remove" advanced="true">
+		<item-type>String</item-type>
+		<label>Remove</label>
+		<description>Remove the given Zone Player from the group of this Zone Player</description>
+	</channel-type>
+
+	<channel-type id="repeat" advanced="true">
+		<item-type>String</item-type>
+		<label>Repeat</label>
+		<description>Repeat track or queue playback</description>
+	</channel-type>
+
+	<channel-type id="restore" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Restore</label>
+		<description>Restore the state of the Zone Player</description>
+	</channel-type>
+
+	<channel-type id="restoreall" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Restore All</label>
+		<description>Restore the state of all the Zone Players</description>
+	</channel-type>
+
+	<channel-type id="save" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Save</label>
+		<description>Save the state of the Zone Player</description>
+	</channel-type>
+
+	<channel-type id="saveall" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Save All</label>
+		<description>Save the state of all the Zone Players</description>
+	</channel-type>
+
+	<channel-type id="shuffle" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Shuffle</label>
+		<description>Shuffle queue playback</description>
+	</channel-type>
+
+	<channel-type id="sleeptimer" advanced="true">
+		<item-type>Number</item-type>
+		<label>Sleep Timer</label>
+		<description>Set/show the duration of the sleep timer in seconds</description>
+		<state min="0" max="68399" step="1" readOnly="false" pattern="%d s" />
+	</channel-type>
+
+	<channel-type id="snooze" advanced="true">
+		<item-type>Number</item-type>
+		<label>Snooze</label>
+		<description>Snooze the running alarm, if any, with the given number of minutes</description>
+		<state readOnly="false" pattern="%d min" />
+	</channel-type>
+
+	<channel-type id="speechenhancement" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Speech Enhancement </label>
+		<description>Enable or disable the speech enhancement feature</description>
+	</channel-type>
+
+	<channel-type id="standalone" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Stand Alone</label>
+		<description>Make the Zone Player leave its group and become a standalone Zone Player</description>
+	</channel-type>
+
+	<!-- The Sonos State Type -->
+	<channel-type id="state" advanced="true">
+		<item-type>String</item-type>
+		<label>State</label>
+		<description>The State channel contains state of the Zone Player, e.g. PLAYING, STOPPED,...</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="stop" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Stop</label>
+		<description>Stop the Zone Player. ON if the player is stopped.</description>
+	</channel-type>
+
+	<channel-type id="tuneinstationid" advanced="true">
+		<item-type>String</item-type>
+		<label>TuneIn Station Id</label>
+		<description>Provide the current TuneIn station id or play the TuneIn radio given by its station id</description>
+	</channel-type>
+
+	<channel-type id="zonegroupid" advanced="true">
+		<item-type>String</item-type>
+		<label>Zone Group ID</label>
+		<description>Id of the Zone Group the Zone Player belongs to</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="zonename">
+		<item-type>String</item-type>
+		<label>Zone Name</label>
+		<description>Name of the Zone Group associated to the Zone Player</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<!-- Extended channels (for SONOS PLAY5, CONNECT & CONNECT:AMP only) -->
+	<channel-type id="linein" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Line-in connected</label>
+		<description>Indicator set to ON when the line-in of the Zone Player is connected</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="playlinein" advanced="true">
+		<item-type>String</item-type>
+		<label>Play Line-in</label>
+		<description>Play the line-in of the the Zone Player corresponding to the given UIN</description>
+	</channel-type>
+
+</thing:thing-descriptions>

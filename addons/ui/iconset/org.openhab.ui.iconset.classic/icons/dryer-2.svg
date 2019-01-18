@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="0" y2="70.362" gradientUnits="userSpaceOnUse" x2="0" gradientTransform="matrix(1.9998887 0 0 1.2424276-47.993281 955.21738)" y1="73.362">
+      <stop style="stop-color:#fff"/>
+      <stop offset="1" style="stop-color:#ccc"/>
+    </linearGradient>
+    <linearGradient id="1" y2="70.362" gradientUnits="userSpaceOnUse" y1="73.362" gradientTransform="matrix(1.9998887 0 0 2.0000677-47.871459 861.62697)" x2="0">
+      <stop style="stop-color:#fff"/>
+      <stop offset="1" style="stop-color:#cdcdcd"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(0-988.36218)">
+    <path d="m12.253 994.45h9.187 30.498v51.689h-39.685z" style="fill:#fff;color:#000"/>
+    <g style="fill:#d3d3d3">
+      <path d="m34 996.36h4v4h-4z"/>
+      <path d="m40 996.36h4v4h-4z" id="2"/>
+      <path d="m46 996.36h4v4h-4z" id="3"/>
+    </g>
+    <path d="m32 994.36h8l-.000003 8h-8z" style="fill:#a5ffa8"/>
+    <path d="m34 996.36h4v4h-4z" style="fill:#00c808"/>
+    <g style="fill:#a1a1a1">
+      <use xlink:href="#2"/>
+      <use xlink:href="#3"/>
+    </g>
+    <g transform="translate(.39996847.26516505)">
+      <path d="m26.549 1024.8c-.68936-.1242-1.2755-.4302-1.7681-.9228-.62207-.622-.96657-1.4419-.96657-2.3003 0-.8444.49988-2.2195 1.7941-4.9351.4064-.8527.73294-1.502 1.0975-2.1824.39998-.7465.39098-.7324.43573-.6854.09635.1011.94304 1.7424 1.4794 2.8678 1.2942 2.7156 1.7941 4.0907 1.7941 4.9351 0 1.2592-.75536 2.4277-1.9199 2.9698-.57265.2667-1.3278.3649-1.9463.2533z" id="4" style="fill:#018aca"/>
+      <path d="m27.59 1023.1c.5933-.1531 1.1042-.6213 1.3007-1.192.08037-.2334.11866-.4834.10519-.6869-.03916-.5912-.54406-1.8555-1.492-3.7359-.26906-.5336-.36194-.7016-.38801-.7016s-.11896.168-.38801.7016c-.79115 1.5694-1.2641 2.6878-1.4458 3.419-.06261.2519-.05851.5951.01012.848.13267.4887.46321.9183.8978 1.1669.41085.2351.92985.3021 1.4.1809z" id="5" style="fill:#006694"/>
+    </g>
+    <g transform="translate(9.887247 6.6608496)">
+      <use xlink:href="#4"/>
+      <use xlink:href="#5"/>
+    </g>
+    <path d="m12 1002.4h40v6h-40z" style="fill:url(#1)"/>
+    <path d="m12 1042.4h40v4h-40z" style="fill:url(#0)"/>
+    <path d="m10 992.36v56h44l.000001-56zm2 2h40v52h-40z" style="fill:#969696;color:#000"/>
+    <path d="m47.38 1023.6c0 8.5523-6.9324 15.485-15.484 15.485s-15.484-6.9331-15.484-15.485c0-8.5524 6.9324-15.485 15.484-15.485s15.484 6.933 15.484 15.485z" style="fill:none;stroke:#4c4c4c;stroke-width:2.21210146"/>
+    <path d="m15 1020.4h6v6h-6z" style="fill:#939393"/>
+    <path d="m17 10l2.672-2.3594.89 2.3594z" transform="translate(0 988.36218)" style="fill:#4f4f4f"/>
+  </g>
+</svg>

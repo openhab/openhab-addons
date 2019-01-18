@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:sonos:zoneplayer">
+		<parameter name="udn" type="text" required="true">
+			<label>Unique Device Name</label>
+			<description>The UDN identifies the Zone Player.</description>
+		</parameter>
+		<parameter name="notificationTimeout" type="integer" unit="s">
+			<label>Notification Timeout</label>
+			<description>Specifies the amount of time in seconds for which the notification sound will be played</description>
+			<default>20</default>
+		</parameter>
+		<parameter name="notificationVolume" type="integer" min="0" max="100" step="1" unit="%">
+			<label>Notification Sound Volume</label>
+			<description>Specifies the volume in percent applied to a notification sound</description>
+		</parameter>
+		<parameter name="refresh" type="integer" unit="s">
+			<label>Refresh interval</label>
+			<description>Specifies the refresh interval in seconds</description>
+			<default>60</default>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

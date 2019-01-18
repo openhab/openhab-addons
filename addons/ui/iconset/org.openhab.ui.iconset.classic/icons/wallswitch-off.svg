@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 64 64" style="enable-background:new 0 0 64 64">
+  <defs>
+    <linearGradient id="0" gradientUnits="userSpaceOnUse" x1="54.364" y1="9.636" x2="9.636" y2="54.364">
+      <stop style="stop-color:#f8f5e5"/>
+      <stop offset="1" style="stop-color:#cac7b9"/>
+    </linearGradient>
+    <linearGradient id="1" gradientUnits="userSpaceOnUse" y1="15" x2="0" y2="49">
+      <stop style="stop-color:#4e493f"/>
+      <stop offset=".7677" style="stop-color:#3b3732"/>
+    </linearGradient>
+    <linearGradient id="2" gradientUnits="userSpaceOnUse" x1="49.7525" y1="42.0381" x2="14.7475" y2="21.8279" xlink:href="#0"/>
+  </defs>
+  <path d="m48 57h-32c-4.97 0-9-4.03-9-9v-32c0-4.97 4.03-9 9-9h32c4.97 0 9 4.03 9 9v32c0 4.97-4.03 9-9 9z" style="fill:url(#0);stroke-miterlimit:10;stroke:#7c715e;stroke-width:.25"/>
+  <path d="m44 49h-24c-2.76 0-5-2.24-5-5v-24c0-2.76 2.24-5 5-5h24c2.76 0 5 2.24 5 5v24c0 2.76-2.24 5-5 5" style="fill:url(#1)"/>
+  <path d="m44 47h-24c-2.76 0-5-2.24-5-5l1-21c0-2.76 2.24-5 5-5h22c2.76 0 5 2.24 5 5l1 21c0 2.76-2.24 5-5 5z" style="fill:url(#2);stroke-miterlimit:10;stroke:#7c715e;stroke-width:.25"/>
+</svg>
