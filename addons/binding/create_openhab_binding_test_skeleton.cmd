@@ -26,7 +26,7 @@ If NOT exist "org.openhab.binding.%BindingIdInLowerCase%" (
 
 call mvn -s ../archetype-settings.xml archetype:generate -N -DarchetypeGroupId=org.eclipse.smarthome.archetype -DarchetypeArtifactId=org.eclipse.smarthome.archetype.binding.test -DarchetypeVersion=%ArchetypeVersion% -DgroupId=org.openhab.binding -DartifactId=org.openhab.binding.%BindingIdInLowerCase%.test -Dpackage=org.openhab.binding.%BindingIdInLowerCase% -Dversion=%BindingVersion% -DbindingId=%BindingIdInLowerCase% -DbindingIdCamelCase=%BindingIdInCamelCase% -DvendorName=openHAB -Dnamespace=org.openhab -Dauthor="%Author%"
 
-COPY ..\..\src\etc\about.html org.openhab.binding.%BindingIdInLowerCase%.test\
+COPY ..\..\src\etc\NOTICE org.openhab.binding.%BindingIdInLowerCase%.test\
 
 (SET BindingIdInLowerCase=)
 (SET BindingIdInCamelCase=)

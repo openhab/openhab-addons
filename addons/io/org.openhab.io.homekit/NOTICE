@@ -1,0 +1,50 @@
+This content is produced and maintained by the openHAB project.
+
+* Project home: https://www.openhab.org
+
+== Declared Project Licenses
+
+This program and the accompanying materials are made available under the terms
+of the Eclipse Public License 2.0 which is available at
+https://www.eclipse.org/legal/epl-2.0/.
+
+== Source Code
+
+https://github.com/openhab/openhab2-addons
+
+== Third-party Content
+
+HAP-Java
+* License: MIT License
+* Project: https://github.com/beowulfe/HAP-Java
+* Source:  https://github.com/beowulfe/HAP-Java
+
+nimbus-srp
+* License: Apache 2.0 license
+* Project: http://connect2id.com/products/nimbus-srp
+* Source:  http://connect2id.com/products/nimbus-srp
+
+netty
+* License: Apache 2.0 license
+* Project: http://netty.io
+* Source:  https://github.com/netty/netty
+
+jsonp
+* License: GPLv2 or CDDL 1.1 license
+* Project: https://jsonp.java.net
+* Source:  https://github.com/eclipse-ee4j/jsonp
+
+ed25519-java
+* License: GPLv2 or CDDL 1.1 license
+* Project: https://github.com/str4d/ed25519-java
+* Source:  https://github.com/str4d/ed25519-java
+
+bc-java
+* License: MIT License
+* Project: https://www.bouncycastle.org
+* Source:  https://github.com/bcgit/bc-java
+
+curve25519-java
+* License: Apache 2.0 license
+* Project: https://code.google.com/archive/p/curve25519-java
+* Source:  https://github.com/trevorbernard/curve25519-java
