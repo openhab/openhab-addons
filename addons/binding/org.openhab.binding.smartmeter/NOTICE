@@ -1,0 +1,35 @@
+This content is produced and maintained by the openHAB project.
+
+* Project home: https://www.openhab.org
+
+== Declared Project Licenses
+
+This program and the accompanying materials are made available under the terms
+of the Eclipse Public License 2.0 which is available at
+https://www.eclipse.org/legal/epl-2.0/.
+
+== Source Code
+
+https://github.com/openhab/openhab2-addons
+
+== Third-party Content
+
+jsml
+* License: MPL v2.0 License
+* Project: https://www.openmuc.org/sml
+* Source:  https://www.openmuc.org/sml
+
+j62056
+* License: LGPL v2.1 License
+* Project: https://www.openmuc.org/iec-62056-21
+* Source:  https://www.openmuc.org/iec-62056-21
+
+rxjava
+* License: Apache 2.0 License
+* Project: https://github.com/ReactiveX/RxJava
+* Source:  https://github.com/ReactiveX/RxJava
+
+reactive-streams
+* License: CC0 1.0 License
+* Project: https://www.reactive-streams.org
+* Source:  https://github.com/reactive-streams/reactive-streams-jvm

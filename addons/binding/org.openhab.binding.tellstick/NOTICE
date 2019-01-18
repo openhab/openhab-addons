@@ -1,0 +1,35 @@
+This content is produced and maintained by the openHAB project.
+
+* Project home: https://www.openhab.org
+
+== Declared Project Licenses
+
+This program and the accompanying materials are made available under the terms
+of the Eclipse Public License 2.0 which is available at
+https://www.eclipse.org/legal/epl-2.0/.
+
+== Source Code
+
+https://github.com/openhab/openhab2-addons
+
+== Third-party Content
+
+async-http
+* License: Apache 2.0 License
+* Project: https://github.com/AsyncHttpClient/async-http-client
+* Source:  https://github.com/AsyncHttpClient/async-http-client
+
+javatellstick
+* License: BSD-2-Clause License
+* Project: https://github.com/peec/javatellstick
+* Source:  https://github.com/jannegpriv/javatellstick
+
+netty
+* License: Apache 2.0 License
+* Project: https://netty.io
+* Source:  https://github.com/netty/netty
+
+reactive-streams
+* License: CC0 1.0 License
+* Project: https://www.reactive-streams.org
+* Source:  https://github.com/reactive-streams/reactive-streams-jvm
