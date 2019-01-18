@@ -94,6 +94,7 @@ public class BridgeV3Handler extends AbstractBridgeHandler {
     protected void stopKeepAlive() {
         if (running != null) {
             running.cancel(false);
+            running = null;
         }
         if (socket != null) {
             socket.close();
