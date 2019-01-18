@@ -64,7 +64,6 @@ public class SomfyTahomaAwningHandler extends SomfyTahomaBaseThingHandler {
                 sendCommand(cmd, param);
             }
         }
-
     }
 
     private String getTahomaCommand(String command) {

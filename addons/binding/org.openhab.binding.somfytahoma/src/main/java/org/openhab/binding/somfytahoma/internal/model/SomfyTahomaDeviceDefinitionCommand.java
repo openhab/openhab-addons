@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.somfytahoma.internal.model;
 
-import java.util.ArrayList;
-
 /**
  * The {@link SomfyTahomaDeviceDefinitionCommand} holds information about commands
  * accepted by a device.
