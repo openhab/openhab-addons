@@ -58,7 +58,7 @@ public class MarketplaceRuleTemplateProvider extends DefaultAbstractManagedProvi
 
     @Override
     protected String getStorageName() {
-        return "org.eclipse.smarthome.extensionservice.marketplace.RuleTemplates";
+        return "org.openhab.extensionservice.marketplace.RuleTemplates";
     }
 
     @Override

@@ -6,7 +6,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.voice.mactts.test
 Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
-Fragment-Host: org.eclipse.smarthome.voice.mactts
+Fragment-Host: org.openhab.voice.mactts
 Import-Package: 
  org.apache.commons.io,
  org.eclipse.jdt.annotation;resolution:=optional,

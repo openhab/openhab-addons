@@ -8,7 +8,7 @@ Bundle-SymbolicName: org.openhab.extensionservice.marketplace;
  singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
-Export-Package: org.eclipse.smarthome.extensionservice.marketplace
+Export-Package: org.openhab.extensionservice.marketplace
 Import-Package: 
  com.thoughtworks.xstream,
  org.apache.commons.io,
@@ -21,7 +21,7 @@ Import-Package:
  org.eclipse.smarthome.core.events,
  org.eclipse.smarthome.core.extension,
  org.eclipse.smarthome.core.storage,
- org.eclipse.smarthome.extensionservice.marketplace,
+ org.openhab.extensionservice.marketplace,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

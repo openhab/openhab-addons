@@ -18,7 +18,7 @@ Import-Package:
  org.eclipse.smarthome.core.common.registry,
  org.eclipse.smarthome.core.extension,
  org.eclipse.smarthome.core.storage,
- org.eclipse.smarthome.extensionservice.marketplace,
+ org.openhab.extensionservice.marketplace,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
