@@ -20,8 +20,6 @@ Import-Package:
  org.eclipse.jetty.websocket.api.extensions,
  org.eclipse.jetty.websocket.client,
  org.eclipse.jetty.websocket.common,
- org.eclipse.smarthome.binding.bosesoundtouch,
- org.eclipse.smarthome.binding.bosesoundtouch.handler,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.config.discovery.mdns,
@@ -33,9 +31,11 @@ Import-Package:
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.io.net.http,
+ org.openhab.binding.bosesoundtouch,
+ org.openhab.binding.bosesoundtouch.handler,
  org.osgi.service.component.annotations;resolution:=optional,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.eclipse.smarthome.binding.bosesoundtouch,
- org.eclipse.smarthome.binding.bosesoundtouch.handler
+Export-Package: org.openhab.binding.bosesoundtouch,
+ org.openhab.binding.bosesoundtouch.handler
 Automatic-Module-Name: org.openhab.binding.bosesoundtouch

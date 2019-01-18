@@ -8,8 +8,8 @@ Bundle-SymbolicName: org.openhab.binding.fsinternetradio;singl
 Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
 Export-Package: 
- org.eclipse.smarthome.binding.fsinternetradio,
- org.eclipse.smarthome.binding.fsinternetradio.handler
+ org.openhab.binding.fsinternetradio,
+ org.openhab.binding.fsinternetradio.handler
 Import-Package: 
  org.apache.commons.io,
  org.apache.commons.lang,
@@ -19,8 +19,6 @@ Import-Package:
  org.eclipse.jetty.client.util,
  org.eclipse.jetty.http,
  org.eclipse.jetty.util.component,
- org.eclipse.smarthome.binding.fsinternetradio,
- org.eclipse.smarthome.binding.fsinternetradio.handler,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.config.discovery.upnp,
@@ -32,6 +30,8 @@ Import-Package:
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.io.net.http,
  org.jupnp.model.meta,
+ org.openhab.binding.fsinternetradio,
+ org.openhab.binding.fsinternetradio.handler,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
 Automatic-Module-Name: org.openhab.binding.fsinternetradio

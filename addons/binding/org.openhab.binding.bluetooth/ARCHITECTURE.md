@@ -3,7 +3,7 @@
 The Bluetooth binding is implemented to allow bundles to extend the main Bluetooth bundle (this one) in order to add new Bluetooth adapter as well as device support.
 This architecture means that such extension bundles must utilise the binding name `bluetooth`.
 
-A base class structure is defined in the `org.eclipse.smarthome.binding.bluetooth` bundle.
+A base class structure is defined in the `org.openhab.binding.bluetooth` bundle.
 This includes the main classes required to implement Bluetooth:
  
 * `BluetoothAdapter`. This interface defines the main functionality required to be implemented by a Bluetooth adapter, including device discovery. Typically, this interface is implemented by a BridgeHandler and then registered as an OSGi service

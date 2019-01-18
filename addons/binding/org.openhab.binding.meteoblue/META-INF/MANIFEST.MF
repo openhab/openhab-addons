@@ -7,13 +7,11 @@ Bundle-Version: 2.5.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Import-Package: 
- javax.measure.quantity,
  com.google.gson,
  com.google.gson.annotations,
+ javax.measure.quantity,
  org.apache.commons.lang,
  org.eclipse.jdt.annotation;resolution:=optional,
- org.eclipse.smarthome.binding.meteoblue,
- org.eclipse.smarthome.binding.meteoblue.handler,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.library.items,
  org.eclipse.smarthome.core.library.types,
@@ -24,9 +22,11 @@ Import-Package:
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.io.net.http,
+ org.openhab.binding.meteoblue,
+ org.openhab.binding.meteoblue.handler,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.eclipse.smarthome.binding.meteoblue,
- org.eclipse.smarthome.binding.meteoblue.handler
+Export-Package: org.openhab.binding.meteoblue,
+ org.openhab.binding.meteoblue.handler
 Bundle-ActivationPolicy: lazy
 Automatic-Module-Name: org.openhab.binding.meteoblue

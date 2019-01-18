@@ -6,13 +6,10 @@ Bundle-SymbolicName: org.openhab.binding.tradfri.test;singleto
  n:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
-Export-Package: org.eclipse.smarthome.binding.tradfri;uses:="org.eclipse
- .smarthome.test"
+Export-Package: org.openhab.binding.tradfri;uses:="org.eclipse.smarthome.test"
 Fragment-Host: org.openhab.binding.tradfri
 Import-Package: 
  org.eclipse.jdt.annotation;resolution:=optional,
- org.eclipse.smarthome.binding.tradfri,
- org.eclipse.smarthome.binding.tradfri.handler,
  org.eclipse.smarthome.core.common.registry,
  org.eclipse.smarthome.core.events,
  org.eclipse.smarthome.core.thing.util,
@@ -23,6 +20,8 @@ Import-Package:
  org.junit;version="4.0.0",
  org.mockito,
  org.mockito.stubbing,
+ org.openhab.binding.tradfri,
+ org.openhab.binding.tradfri.handler,
  org.osgi.framework,
  org.osgi.service.device,
  org.slf4j

@@ -11,7 +11,7 @@
 <booleanAttribute key="clearws" value="true"/>
 <booleanAttribute key="clearwslog" value="false"/>
 <listAttribute key="com.mountainminds.eclemma.core.SCOPE_IDS">
-<listEntry value="=org.eclipse.smarthome.binding.fsinternetradio/src\/main\/java"/>
+<listEntry value="=org.openhab.binding.fsinternetradio/src\/main\/java"/>
 </listAttribute>
 <stringAttribute key="configLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/pde-junit"/>
 <booleanAttribute key="default" value="false"/>
@@ -21,12 +21,12 @@
 <booleanAttribute key="includeOptional" value="false"/>
 <stringAttribute key="location" value="${workspace_loc}/../junit-workspace"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/org.eclipse.smarthome.binding.fsinternetradio.test"/>
+<listEntry value="/org.openhab.binding.fsinternetradio.test"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="4"/>
 </listAttribute>
-<stringAttribute key="org.eclipse.jdt.junit.CONTAINER" value="=org.eclipse.smarthome.binding.fsinternetradio.test"/>
+<stringAttribute key="org.eclipse.jdt.junit.CONTAINER" value="=org.openhab.binding.fsinternetradio.test"/>
 <booleanAttribute key="org.eclipse.jdt.junit.KEEPRUNNING_ATTR" value="false"/>
 <stringAttribute key="org.eclipse.jdt.junit.TESTNAME" value=""/>
 <stringAttribute key="org.eclipse.jdt.junit.TEST_KIND" value="org.eclipse.jdt.junit.loader.junit4"/>
@@ -34,7 +34,7 @@
 <stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value=""/>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consoleLog"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="org.eclipse.smarthome.binding.fsinternetradio.test"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="org.openhab.binding.fsinternetradio.test"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Djetty.port=9090 -Djetty.home.bundle=org.eclipse.jetty.osgi.boot"/>
 <stringAttribute key="pde.version" value="3.3"/>
@@ -163,7 +163,7 @@
 <setEntry value="org.jupnp.feature:default"/>
 </setAttribute>
 <stringAttribute key="selected_target_plugins" value="ch.qos.logback.classic@default:default,ch.qos.logback.core@default:default,ch.qos.logback.slf4j@default:false,com.google.gson@default:default,com.google.guava@default:default,javax.measure.unit-api@default:default,javax.servlet@default:default,javax.transaction@default:false,javax.xml@default:default,net.bytebuddy.byte-buddy-agent@default:default,net.bytebuddy.byte-buddy@default:default,org.apache.ant@default:default,org.apache.commons.codec@default:default,org.apache.commons.collections@default:default,org.apache.commons.exec@default:default,org.apache.commons.io@default:default,org.apache.commons.lang@default:default,org.apache.commons.logging@default:default,org.apache.felix.gogo.command@default:default,org.apache.felix.gogo.runtime@default:default,org.apache.httpcomponents.httpclient@default:default,org.apache.httpcomponents.httpcore@default:default,org.codehaus.groovy@default:default,org.eclipse.core.contenttype@default:default,org.eclipse.core.jobs@default:default,org.eclipse.core.runtime@default:true,org.eclipse.equinox.app@default:default,org.eclipse.equinox.common@2:true,org.eclipse.equinox.preferences@default:default,org.eclipse.equinox.region@default:false,org.eclipse.equinox.registry@default:default,org.eclipse.equinox.transforms.hook@default:false,org.eclipse.equinox.weaving.hook@default:false,org.eclipse.jetty.client@default:default,org.eclipse.jetty.http@default:default,org.eclipse.jetty.io@default:default,org.eclipse.jetty.osgi.alpn.fragment@default:false,org.eclipse.jetty.security@default:default,org.eclipse.jetty.server@default:default,org.eclipse.jetty.servlet@default:default,org.eclipse.jetty.util@default:default,org.eclipse.jetty.websocket.api@default:default,org.eclipse.jetty.websocket.client@default:default,org.eclipse.jetty.websocket.common@default:default,org.eclipse.jetty.xml@default:default,org.eclipse.osgi.services@default:default,org.eclipse.osgi.util@default:default,org.eclipse.osgi@-1:true,org.hamcrest.core@default:default,org.hamcrest.integration@default:default,org.hamcrest.library@default:default,org.hamcrest.text@default:default,org.hamcrest@default:default,org.junit@default:default,org.jupnp@default:default,org.mockito.mockito-core@default:default,org.objenesis@default:default,org.slf4j.api@default:default,tec.uom.lib.uom-lib-common@default:default,tec.uom.se@default:default"/>
-<stringAttribute key="selected_workspace_plugins" value="org.eclipse.smarthome.binding.fsinternetradio.test@default:false,org.eclipse.smarthome.binding.fsinternetradio@default:default,org.eclipse.smarthome.config.core@default:default,org.eclipse.smarthome.config.discovery.upnp@default:default,org.eclipse.smarthome.config.discovery@default:default,org.eclipse.smarthome.config.xml@default:default,org.eclipse.smarthome.core.thing@default:default,org.eclipse.smarthome.core@default:default,org.eclipse.smarthome.io.console@default:default,org.eclipse.smarthome.io.net@default:default,org.eclipse.smarthome.test@default:default"/>
+<stringAttribute key="selected_workspace_plugins" value="org.openhab.binding.fsinternetradio.test@default:false,org.openhab.binding.fsinternetradio@default:default,org.eclipse.smarthome.config.core@default:default,org.eclipse.smarthome.config.discovery.upnp@default:default,org.eclipse.smarthome.config.discovery@default:default,org.eclipse.smarthome.config.xml@default:default,org.eclipse.smarthome.core.thing@default:default,org.eclipse.smarthome.core@default:default,org.eclipse.smarthome.io.console@default:default,org.eclipse.smarthome.io.net@default:default,org.eclipse.smarthome.test@default:default"/>
 <booleanAttribute key="show_selected_only" value="true"/>
 <stringAttribute key="templateConfig" value="${target_home}\configuration\config.ini"/>
 <booleanAttribute key="tracing" value="false"/>

@@ -13,11 +13,6 @@ Bundle-NativeCode:
  processor=arm;osname=linux,
  *
 Import-Package: org.eclipse.jdt.annotation;resolution:=optional,
- org.eclipse.smarthome.binding.bluetooth,
- org.eclipse.smarthome.binding.bluetooth.bluez,
- org.eclipse.smarthome.binding.bluetooth.bluez.handler,
- org.eclipse.smarthome.binding.bluetooth.discovery,
- org.eclipse.smarthome.binding.bluetooth.notification,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.common,
@@ -29,10 +24,15 @@ Import-Package: org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.core.util,
+ org.openhab.binding.bluetooth,
+ org.openhab.binding.bluetooth.bluez,
+ org.openhab.binding.bluetooth.bluez.handler,
+ org.openhab.binding.bluetooth.discovery,
+ org.openhab.binding.bluetooth.notification,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.eclipse.smarthome.binding.bluetooth.bluez,
- org.eclipse.smarthome.binding.bluetooth.bluez.handler
+Export-Package: org.openhab.binding.bluetooth.bluez,
+ org.openhab.binding.bluetooth.bluez.handler
 Bundle-ActivationPolicy: lazy
 Automatic-Module-Name: org.openhab.binding.bluetooth.bluez

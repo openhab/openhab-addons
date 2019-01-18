@@ -9,8 +9,8 @@ Bundle-SymbolicName: org.openhab.binding.tradfri;singleton:=tr
 Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
 Export-Package: 
- org.eclipse.smarthome.binding.tradfri,
- org.eclipse.smarthome.binding.tradfri.handler
+ org.openhab.binding.tradfri,
+ org.openhab.binding.tradfri.handler
 Import-Package: 
  com.google.gson,
  javax.jmdns,
@@ -24,8 +24,6 @@ Import-Package:
  org.eclipse.californium.scandium.dtls,
  org.eclipse.californium.scandium.dtls.pskstore,
  org.eclipse.jdt.annotation;resolution:=optional,
- org.eclipse.smarthome.binding.tradfri,
- org.eclipse.smarthome.binding.tradfri.handler,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.config.discovery.mdns,
@@ -35,6 +33,8 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.openhab.binding.tradfri,
+ org.openhab.binding.tradfri.handler,
  org.osgi.framework,
  org.osgi.service.component,
  org.slf4j

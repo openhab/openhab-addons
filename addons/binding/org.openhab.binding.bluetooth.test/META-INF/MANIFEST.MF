@@ -7,14 +7,14 @@ Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Fragment-Host: org.openhab.binding.bluetooth
-Import-Package: org.eclipse.smarthome.binding.bluetooth,
- org.eclipse.smarthome.core.events,
+Import-Package: org.eclipse.smarthome.core.events,
  org.eclipse.smarthome.core.thing.util,
  org.eclipse.smarthome.test.java,
  org.eclipse.smarthome.test.storage,
  org.hamcrest;core=split,
  org.junit;version="4.0.0",
  org.mockito,
+ org.openhab.binding.bluetooth,
  org.osgi.framework,
  org.osgi.service.device,
  org.slf4j

@@ -8,15 +8,13 @@ Bundle-SymbolicName: org.openhab.binding.dmx.test;singleton:=t
 Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
 Export-Package: 
- org.eclipse.smarthome.binding.dmx.test;x-internal:=true,
- org.eclipse.smarthome.binding.dmx;uses:="org.eclipse.smarthome.test"
+ org.openhab.binding.dmx;uses:="org.eclipse.smarthome.test",
+ org.openhab.binding.dmx.test;x-internal:=true
 Fragment-Host: org.openhab.binding.dmx
 Import-Package: 
  com.google.gson,
  com.google.gson.reflect,
  org.eclipse.jdt.annotation;resolution:=optional,
- org.eclipse.smarthome.binding.dmx,
- org.eclipse.smarthome.binding.dmx.test,
  org.eclipse.smarthome.core.common.registry,
  org.eclipse.smarthome.core.events,
  org.eclipse.smarthome.core.items,
@@ -36,6 +34,8 @@ Import-Package:
  org.mockito.invocation,
  org.mockito.stubbing,
  org.mockito.verification,
+ org.openhab.binding.dmx,
+ org.openhab.binding.dmx.test,
  org.osgi.framework,
  org.osgi.service.component,
  org.osgi.service.device,

@@ -9,9 +9,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Import-Package: 
  org.eclipse.jdt.annotation;resolution:=optional,
- org.eclipse.smarthome.binding.bluetooth,
- org.eclipse.smarthome.binding.bluetooth.discovery,
- org.eclipse.smarthome.binding.bluetooth.notification,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.common.registry,
@@ -21,10 +18,13 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.openhab.binding.bluetooth,
+ org.openhab.binding.bluetooth.discovery,
+ org.openhab.binding.bluetooth.notification,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.eclipse.smarthome.binding.bluetooth,
- org.eclipse.smarthome.binding.bluetooth.discovery,
- org.eclipse.smarthome.binding.bluetooth.notification
+Export-Package: org.openhab.binding.bluetooth,
+ org.openhab.binding.bluetooth.discovery,
+ org.openhab.binding.bluetooth.notification
 Bundle-ActivationPolicy: lazy
 Automatic-Module-Name: org.openhab.binding.bluetooth

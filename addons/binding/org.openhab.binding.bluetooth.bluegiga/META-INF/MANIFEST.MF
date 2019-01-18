@@ -6,11 +6,6 @@ Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: org.eclipse.jdt.annotation;resolution:=optional,
- org.eclipse.smarthome.binding.bluetooth,
- org.eclipse.smarthome.binding.bluetooth.bluegiga,
- org.eclipse.smarthome.binding.bluetooth.bluegiga.handler,
- org.eclipse.smarthome.binding.bluetooth.discovery,
- org.eclipse.smarthome.binding.bluetooth.notification,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.common,
@@ -22,9 +17,14 @@ Import-Package: org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.io.transport.serial,
+ org.openhab.binding.bluetooth,
+ org.openhab.binding.bluetooth.bluegiga,
+ org.openhab.binding.bluetooth.bluegiga.handler,
+ org.openhab.binding.bluetooth.discovery,
+ org.openhab.binding.bluetooth.notification,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.eclipse.smarthome.binding.bluetooth.bluegiga,
- org.eclipse.smarthome.binding.bluetooth.bluegiga.handler
+Export-Package: org.openhab.binding.bluetooth.bluegiga,
+ org.openhab.binding.bluetooth.bluegiga.handler
 Automatic-Module-Name: org.openhab.binding.bluetooth.bluegiga
