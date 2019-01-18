@@ -123,9 +123,29 @@ public class ValloxMVBindingConstants {
     public static final String CHANNEL_HOME_SPEED_SETTING = "homespeedsetting";
 
     /**
-     * arget temperature in home state.
+     * Home fan speed in % (0-100).
+     */
+    public static final String CHANNEL_AWAY_SPEED_SETTING = "awayspeedsetting";
+
+    /**
+     * Home fan speed in % (0-100).
+     */
+    public static final String CHANNEL_BOOST_SPEED_SETTING = "boostspeedsetting";
+
+    /**
+     * Target temperature in home state.
      */
     public static final String CHANNEL_HOME_AIR_TEMP_TARGET = "homeairtemptarget";
+
+    /**
+     * Target temperature in away state.
+     */
+    public static final String CHANNEL_AWAY_AIR_TEMP_TARGET = "awayairtemptarget";
+
+    /**
+     * Target temperature in boost state.
+     */
+    public static final String CHANNEL_BOOST_AIR_TEMP_TARGET = "boostairtemptarget";
 
     // Thing configuration
     /**
