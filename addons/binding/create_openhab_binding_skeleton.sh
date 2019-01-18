@@ -26,5 +26,5 @@ mvn -s ../archetype-settings.xml archetype:generate -N \
 
 directory="org.openhab.binding.$id/"
 
-cp ../../src/etc/about.html "$directory"
+cp ../../src/etc/NOTICE "$directory"
 
