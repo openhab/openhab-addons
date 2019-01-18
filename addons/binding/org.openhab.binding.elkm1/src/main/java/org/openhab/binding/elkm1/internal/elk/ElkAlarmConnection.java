@@ -9,13 +9,24 @@
 package org.openhab.binding.elkm1.internal.elk;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
+
+import javax.net.SocketFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.openhab.binding.elkm1.internal.config.ElkAlarmConfig;
 import org.openhab.binding.elkm1.internal.elk.message.EthernetModuleTestReply;
@@ -40,10 +51,12 @@ public class ElkAlarmConnection {
     private List<ElkListener> listeners = Lists.newArrayList();
     private Queue<ElkMessage> toSend = new ArrayBlockingQueue<>(100);
 
+    private SocketFactory sFactory;
+
     /**
      * Create the connection to the alarm.
      *
-     * @param config The configuration of the elk config
+     * @param config  The configuration of the elk config
      * @param factory The message factory to use
      */
     public ElkAlarmConnection(ElkAlarmConfig config, ElkMessageFactory factory) {
@@ -58,17 +71,88 @@ public class ElkAlarmConnection {
      * @return true if successfuly initialized.
      */
     public boolean initialize() {
+        /*
+         * try {
+         * socket = new Socket(config.ipAddress, 2101);
+         * running = true;
+         * elkAlarmThread = new Thread(new ReadingDataThread());
+         * elkAlarmThread.start();
+         * } catch (IOException e) {
+         * logger.error("Unable to open connection to the elk alarm {}:{}", config.ipAddress, config.port, e);
+         * return false;
+         * }
+         *
+         * return socket != null && !socket.isClosed();
+         */
+        if (config.useSSL) {
+            TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+                @Override
+                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                    return new X509Certificate[0];
+                }
+
+                @Override
+                public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+                }
+
+                @Override
+                public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+                }
+            } };
+
+            SSLContext sc;
+            try {
+                sc = SSLContext.getInstance("SSL");
+                sc.init(null, trustAllCerts, new java.security.SecureRandom());
+                sFactory = sc.getSocketFactory();
+            } catch (KeyManagementException | NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
+
+        } else {
+            sFactory = SocketFactory.getDefault();
+        }
         try {
-            socket = new Socket(config.ipAddress, 2101);
-            running = true;
-            elkAlarmThread = new Thread(new ReadingDataThread());
-            elkAlarmThread.start();
+            socket = sFactory.createSocket(config.ipAddress, config.port);
+            if (config.useSSL) {
+                ((SSLSocket) socket).setEnabledProtocols(new String[] { "TLSv1" });
+            }
         } catch (IOException e) {
-            logger.error("Unable to open connection to the elk alarm {}:{}", config.ipAddress, config.port, e);
-            return false;
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
 
+        if (config.useSSL) {
+            if (!sslLogin()) {
+                return false;
+            }
+        }
+
+        running = true;
+        elkAlarmThread = new Thread(new ReadingDataThread());
+        elkAlarmThread.start();
+
         return socket != null && !socket.isClosed();
+    }
+
+    public boolean sslLogin() {
+        try {
+            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF8"));
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF8"));
+            out.write(config.username + "\r\n");
+            out.write(config.password + "\r\n");
+            out.flush();
+
+            // Read back username and password
+            System.out.println(in.readLine());
+            System.out.println(in.readLine());
+            System.out.println(in.readLine());
+            System.out.println(in.readLine());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -117,7 +201,10 @@ public class ElkAlarmConnection {
         try {
             // Try and reopen it.
             if (socket == null || socket.isClosed()) {
-                socket = new Socket(config.ipAddress, config.port);
+                socket = sFactory.createSocket(config.ipAddress, config.port);
+                if (config.useSSL) {
+                    sslLogin();
+                }
             }
             socket.getOutputStream().write(sendStr.getBytes(StandardCharsets.US_ASCII));
             socket.getOutputStream().flush();

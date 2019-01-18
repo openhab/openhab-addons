@@ -21,6 +21,19 @@
 				<label>Pincode</label>
 				<description>The pincode to use for access to the elk alarm data.</description>
 			</parameter>
+            <parameter name="useSSL" type="boolean">
+                <label>Use Secure Port</label>
+                <description>When enabled the binding will connect assuming a secure port rather than an insecure one. Username and password required.</description>
+            </parameter>
+            <parameter name="username" type="text">
+                <label>Username</label>
+                <description>Username for secure port connections.</description>
+            </parameter>
+            <parameter name="password" type="text">
+                <label>Password</label>
+                <description>Password for secure port connections.</description>
+            </parameter>
+            
 		</config-description>
 	</bridge-type>
 </thing:thing-descriptions>

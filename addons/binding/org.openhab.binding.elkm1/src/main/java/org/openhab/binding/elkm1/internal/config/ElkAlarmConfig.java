@@ -17,4 +17,7 @@ public class ElkAlarmConfig {
     public String ipAddress;
     public int port;
     public int pincode;
+    public boolean useSSL;
+    public String username;
+    public String password;
 }
