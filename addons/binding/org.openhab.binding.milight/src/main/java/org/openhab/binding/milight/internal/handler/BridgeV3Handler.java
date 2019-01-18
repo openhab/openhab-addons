@@ -16,8 +16,11 @@ import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -36,7 +39,7 @@ public class BridgeV3Handler extends AbstractBridgeHandler {
     protected final DatagramPacket discoverPacketV3;
     protected final byte[] buffer = new byte[1024];
     protected final DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-    private boolean running = false;
+    private @Nullable ScheduledFuture<?> running;
 
     public BridgeV3Handler(Bridge bridge, int bridgeOffset) {
         super(bridge, bridgeOffset);
@@ -85,12 +88,14 @@ public class BridgeV3Handler extends AbstractBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
 
-        new Thread(this::receive).start();
-        running = true;
+        running = scheduler.scheduleWithFixedDelay(this::receive, 0, config.refreshTime, TimeUnit.SECONDS);
     }
 
     protected void stopKeepAlive() {
-        running = false;
+        if (running != null) {
+            running.cancel(false);
+            running = null;
+        }
         if (socket != null) {
             socket.close();
         }
@@ -105,31 +110,17 @@ public class BridgeV3Handler extends AbstractBridgeHandler {
         try {
             discoverPacketV3.setAddress(address);
             discoverPacketV3.setPort(MilightBindingConstants.PORT_DISCOVER);
-            socket.setSoTimeout(100);
 
-            final int attempts = 3;
+            final int attempts = 5;
             int timeoutsCounter = 0;
-            while (running) {
+            for (timeoutsCounter = 1; timeoutsCounter <= attempts; ++timeoutsCounter) {
                 try {
                     packet.setLength(buffer.length);
+                    socket.setSoTimeout(500 * timeoutsCounter);
+                    socket.send(discoverPacketV3);
                     socket.receive(packet);
                 } catch (SocketTimeoutException e) {
-                    if (timeoutsCounter >= attempts) {
-                        socket.setSoTimeout(config.refreshTime * 1000);
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Bridge did not respond!");
-                        timeoutsCounter = 0;
-                    } else {
-                        socket.setSoTimeout(1000);
-                        ++timeoutsCounter;
-                        socket.send(discoverPacketV3);
-                    }
                     continue;
-                } catch (IOException e) {
-                    // Socket closed -> Time to leave this thread
-                    if (running) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                    }
-                    break;
                 }
                 // We expect packets with a format like this: 10.1.1.27,ACCF23F57AD4,HF-LPB100
                 final String received = new String(packet.getData());
@@ -162,7 +153,7 @@ public class BridgeV3Handler extends AbstractBridgeHandler {
 
                 if (!config.bridgeid.isEmpty() && !bridgeID.equals(config.bridgeid)) {
                     // We found a bridge, but it is not the one that is handled by this handler
-                    if (this.address != null) { // The user has set a host address -> but wrong bridge found!
+                    if (!config.host.isEmpty()) { // The user has set a host address -> but wrong bridge found!
                         stopKeepAlive();
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                                 "Wrong bridge found on host address. Change bridgeid or host configuration.");
@@ -188,16 +179,14 @@ public class BridgeV3Handler extends AbstractBridgeHandler {
                     preventReinit = false;
                 }
 
-                timeoutsCounter = 0;
                 updateStatus(ThingStatus.ONLINE);
-                socket.setSoTimeout(config.refreshTime * 1000);
+                break;
+            }
+            if (timeoutsCounter > attempts) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Bridge did not respond!");
             }
         } catch (IOException e) {
-            stopKeepAlive();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
-
-        this.socket = null;
-        running = false;
     }
 }
