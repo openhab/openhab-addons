@@ -23,7 +23,7 @@ import com.beowulfe.hap.accessories.properties.ContactState;
 /**
  * Implements Contact sensor using an Item that provides an On/Off state.
  *
- * @author Philipp Arndt
+ * @author Philipp Arndt - Initial contribution
  */
 public class HomekitContactSensorImpl extends AbstractHomekitAccessoryImpl<ContactItem> implements ContactSensor {
 
