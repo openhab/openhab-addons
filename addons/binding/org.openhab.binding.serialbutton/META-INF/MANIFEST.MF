@@ -5,7 +5,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: SerialButton Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: 
- org.eclipse.smarthome.binding.serialbutton;singleton:=true
+ org.openhab.binding.serialbutton;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
 Export-Package: 
