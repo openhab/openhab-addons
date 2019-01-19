@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2010-2019 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.lgtvserial.internal.protocol.serial;
 
 import java.io.IOException;
@@ -14,6 +22,12 @@ import gnu.io.NRSerialPort;
 import gnu.io.SerialPort;
 import gnu.io.UnsupportedCommOperationException;
 
+/**
+ * This class handles the communication (read/writes) between the COM port and the things.
+ *
+ * @author Richard Lavoie - Initial contribution
+ *
+ */
 public class LGSerialCommunicator {
 
     private OutputStream output;
@@ -39,8 +53,7 @@ public class LGSerialCommunicator {
                 port.getSerialPortInstance().setSerialPortParams(BAUD_RATE, SerialPort.DATABITS_8,
                         SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
             } catch (UnsupportedCommOperationException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.warn("Failed to set serial port communication parameters", e);
             }
         }
         this.port = port;
@@ -91,7 +104,7 @@ public class LGSerialCommunicator {
      * Forward the response to the proper response handler, if a response was given.
      *
      * @param response Serial response
-     * @param channel Channel to update
+     * @param channel  Channel to update
      */
     private void updateHandler(LGSerialResponse response, ChannelUID channel) {
         if (response != null) {
