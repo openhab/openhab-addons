@@ -161,4 +161,12 @@
     </plugins>
   </build>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.openhab.core</groupId>
+      <artifactId>org.openhab.ui.dashboard</artifactId>
+      <version>${project.version}</version>
+    </dependency>    
+  </dependencies>
+  
 </project>
