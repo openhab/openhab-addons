@@ -27,7 +27,7 @@ public class SerialCommunicatorFactory {
      */
     private Logger logger = LoggerFactory.getLogger(SerialCommunicatorFactory.class);
 
-    private Map<String, LGSerialCommunicator> instances = new HashMap<String, LGSerialCommunicator>();
+    private Map<String, LGSerialCommunicator> instances = new HashMap<>();
 
     public synchronized LGSerialCommunicator getInstance(String port) {
         LGSerialCommunicator comm = instances.get(port);

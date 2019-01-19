@@ -85,7 +85,7 @@ public class LgTvSerialHandler extends BaseThingHandler {
     /**
      * .
      *
-     * @param thing Thing associated to this handler
+     * @param thing   Thing associated to this handler
      * @param factory Factory to retrieve a communicator for a given port
      */
     public LgTvSerialHandler(Thing thing, SerialCommunicatorFactory factory) {
@@ -182,24 +182,19 @@ public class LgTvSerialHandler extends BaseThingHandler {
         }
     }
 
-    private Runnable eventRunnable = new Runnable() {
-
-        @Override
-        public void run() {
-            synchronized (channelCommands) {
-                for (Map.Entry<ChannelUID, LGSerialCommand> entry : channelCommands.entrySet()) {
-                    if (Thread.currentThread().isInterrupted()) {
-                        logger.debug("Thread interrupted, stopping");
-                        break;
-                    }
-                    try {
-                        entry.getValue().execute(entry.getKey(), communicator, null);
-                    } catch (IOException e) {
-                        logger.error("An error occured while sending an update command for " + entry.getKey(), e);
-                    }
+    private Runnable eventRunnable = () -> {
+        synchronized (channelCommands) {
+            for (Map.Entry<ChannelUID, LGSerialCommand> entry : channelCommands.entrySet()) {
+                if (Thread.currentThread().isInterrupted()) {
+                    logger.debug("Thread interrupted, stopping");
+                    break;
+                }
+                try {
+                    entry.getValue().execute(entry.getKey(), communicator, null);
+                } catch (IOException e) {
+                    logger.error("An error occured while sending an update command for " + entry.getKey(), e);
                 }
             }
         }
-
     };
 }

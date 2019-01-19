@@ -34,7 +34,7 @@ public class LGSerialCommunicator {
     private InputStream input;
     private NRSerialPort port;
 
-    private Map<Integer, LGSerialResponseListener> handlers = new HashMap<Integer, LGSerialResponseListener>();
+    private Map<Integer, LGSerialResponseListener> handlers = new HashMap<>();
     private RegistrationCallback callback;
 
     private byte[] buffer = new byte[1024];
