@@ -65,7 +65,7 @@
               </requirement>
               <requirement>
                 <type>eclipse-plugin</type>
-                <id>org.eclipse.smarthome.io.mqttembeddedbroker</id>
+                <id>org.openhab.io.mqttembeddedbroker</id>
                 <versionRange>0.0.0</versionRange>
               </requirement>
               <requirement>
@@ -143,7 +143,7 @@
               <autoStart>true</autoStart>
             </bundle>
             <bundle>
-              <id>org.eclipse.smarthome.io.mqttembeddedbroker</id>
+              <id>org.openhab.io.mqttembeddedbroker</id>
               <level>4</level>
               <autoStart>true</autoStart>
             </bundle>
