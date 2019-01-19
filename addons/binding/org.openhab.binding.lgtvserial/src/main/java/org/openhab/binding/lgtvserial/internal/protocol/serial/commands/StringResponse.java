@@ -1,9 +1,23 @@
+/**
+ * Copyright (c) 2010-2019 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.lgtvserial.internal.protocol.serial.commands;
 
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.lgtvserial.internal.protocol.serial.LGSerialResponse;
 
+/**
+ * This class represents a STRING state response.
+ *
+ * @author Richard Lavoie - Initial contribution
+ *
+ */
 public class StringResponse implements LGSerialResponse {
 
     private int setId;

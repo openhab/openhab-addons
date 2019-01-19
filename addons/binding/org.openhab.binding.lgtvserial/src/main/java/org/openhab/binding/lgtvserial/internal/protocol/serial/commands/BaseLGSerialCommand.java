@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2010-2019 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.lgtvserial.internal.protocol.serial.commands;
 
 import java.io.IOException;
@@ -7,6 +15,19 @@ import org.openhab.binding.lgtvserial.internal.protocol.serial.LGSerialCommand;
 import org.openhab.binding.lgtvserial.internal.protocol.serial.LGSerialCommunicator;
 import org.openhab.binding.lgtvserial.internal.protocol.serial.LGSerialResponse;
 
+/**
+ * This class represents the base for most, if not all, LG commands.
+ *
+ * It consists of :
+ * - the command1 character which represents the command group
+ * - the command2 character which represents the command in the group
+ * - the setid which represents the device to target defined by the protocol, 0 means it will target all devices
+ * - updatable which represents if this command can actually change the device state, or can only retrieve it's state
+ * from the device.
+ *
+ * @author Richard Lavoie - Initial contribution
+ *
+ */
 public abstract class BaseLGSerialCommand implements LGSerialCommand {
 
     private char command1;

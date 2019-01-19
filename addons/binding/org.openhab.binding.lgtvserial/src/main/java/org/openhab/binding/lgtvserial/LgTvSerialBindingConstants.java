@@ -20,6 +20,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Marius Bjoernstad - Initial contribution
+ * @author Richard Lavoie - Moved channels id to a factory class
  */
 @NonNullByDefault
 public class LgTvSerialBindingConstants {
