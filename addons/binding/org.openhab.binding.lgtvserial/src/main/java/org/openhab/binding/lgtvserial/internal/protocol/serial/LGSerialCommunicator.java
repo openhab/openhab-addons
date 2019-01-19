@@ -59,6 +59,7 @@ public class LGSerialCommunicator {
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new IOException(e);
         }
 
@@ -128,11 +129,12 @@ public class LGSerialCommunicator {
         }
         port.disconnect();
         // For some reason, there needs some delay after close so we don't fail to open back the serial device
+        // TODO : investigate if this is still a real issue with the latest NRSerialPort jar
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            Thread.currentThread().interrupt();
+            logger.debug("Thread interrupted while closing the communicator");
         }
     }
 

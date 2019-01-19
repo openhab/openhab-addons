@@ -118,7 +118,7 @@ public class LgTvSerialHandler extends BaseThingHandler {
 
             @Override
             public void onFailure(ChannelUID channel, LGSerialResponse response) {
-                logger.error("Received error response for channel " + channel + " : " + response.getState());
+                logger.debug("Received error response for channel " + channel + " : " + response.getState());
             }
 
         };
@@ -178,7 +178,7 @@ public class LgTvSerialHandler extends BaseThingHandler {
                 channelCommands.get(channelUID).execute(channelUID, communicator, command);
             }
         } catch (IOException e) {
-            logger.error("Serial port write error", e);
+            logger.warn("Serial port write error", e);
         }
     }
 
