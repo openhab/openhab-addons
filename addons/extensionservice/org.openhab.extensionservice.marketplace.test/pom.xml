@@ -8,7 +8,7 @@
     <version>2.5.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>org.eclipse.smarthome.extensionservice.marketplace.test</artifactId>
+  <artifactId>org.openhab.extensionservice.marketplace.test</artifactId>
   <packaging>eclipse-test-plugin</packaging>
 
   <name>IoT Marketplace Extension Service Test</name>
