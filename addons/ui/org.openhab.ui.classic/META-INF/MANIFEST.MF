@@ -1,18 +1,14 @@
 Manifest-Version: 1.0
-Bundle-Activator: org.eclipse.smarthome.ui.classic.internal.WebAppActiva
- tor
+Bundle-Activator: org.openhab.ui.classic.internal.WebAppActivator
 Bundle-ClassPath: patch/,.
 Bundle-License: https://www.eclipse.org/legal/epl-2.0/
 Bundle-ManifestVersion: 2
-Bundle-Name: WebApp UI
+Bundle-Name: Classic UI
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.ui.classic
 Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
-Export-Package: org.eclipse.smarthome.ui.classic.render
-Ignore-Package: org.eclipse.smarthome.ui.webapp.internal
-Import-Package: 
- javax.measure,
+Import-Package: javax.measure,
  javax.servlet,
  javax.servlet.http,
  org.apache.commons.io,
@@ -33,12 +29,11 @@ Import-Package:
  org.eclipse.smarthome.io.http,
  org.eclipse.smarthome.io.http.servlet,
  org.eclipse.smarthome.model.sitemap,
- org.eclipse.smarthome.ui.classic.render,
  org.eclipse.smarthome.ui.items,
+ org.openhab.ui.dashboard,
  org.osgi.framework,
  org.osgi.service.component,
  org.osgi.service.http,
  org.slf4j
-Private-Package: org.eclipse.smarthome.ui.webapp.internal
 Service-Component: OSGI-INF/*.xml
 Automatic-Module-Name: org.openhab.ui.classic

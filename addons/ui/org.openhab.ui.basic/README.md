@@ -11,12 +11,12 @@ The Basic UI is a web interface based on Material Design Lite from Google.
 ### Configuration
 
 ```
-org.eclipse.smarthome.basicui:defaultSitemap=demo
+org.openhab.basicui:defaultSitemap=demo
 # Icons can be disabled
-org.eclipse.smarthome.basicui:enableIcons=true
+org.openhab.basicui:enableIcons=true
 # Icons can be shown as PNG or SVG images
 # Default: PNG
-org.eclipse.smarthome.basicui:iconType=svg
+org.openhab.basicui:iconType=svg
 ```
 
 ### Accessing Sitemaps

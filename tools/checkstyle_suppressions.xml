@@ -26,4 +26,5 @@
     <suppress files=".+[\\/]pom\.xml" checks="OnlyTabIndentationInXmlFilesCheck"/>
     <suppress files=".+[\\/]OSGI-INF[\\/]org.openhab.+\.xml" checks="OnlyTabIndentationInXmlFilesCheck|NewlineAtEndOfFileCheck"/>
     <suppress files=".+org.openhab.binding.yeelight.+" checks="OutsideOfLibExternalLibrariesCheck" />
+    <suppress files=".+org.openhab.ui.paper.+" checks="OutsideOfLibExternalLibrariesCheck|ManifestExternalLibrariesCheck|BuildPropertiesExternalLibrariesCheck" />
 </suppressions>

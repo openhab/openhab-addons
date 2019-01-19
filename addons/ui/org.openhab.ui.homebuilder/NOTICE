@@ -1,0 +1,55 @@
+This content is produced and maintained by the openHAB project.
+
+* Project home: https://www.openhab.org
+
+== Declared Project Licenses
+
+This program and the accompanying materials are made available under the terms
+of the Eclipse Public License 2.0 which is available at
+https://www.eclipse.org/legal/epl-2.0/.
+
+== Source Code
+
+https://github.com/openhab/openhab-core
+
+== Third-party Content
+
+ascii-table
+* License: MIT License
+* Project: https://www.npmjs.com/package/ascii-table
+* Source:  https://github.com/sorensen/ascii-table
+
+bootstrap-vue
+* License: MIT License
+* Project: https://www.npmjs.com/package/bootstrap-vue
+* Source:  https://github.com/bootstrap-vue/bootstrap-vue
+
+lodash
+* License: MIT License
+* Project: https://www.npmjs.com/package/lodash
+* Source:  https://github.com/lodash/lodash
+
+underscore.string
+* License: MIT License
+* Project: https://www.npmjs.com/package/underscore.string
+* Source:  https://github.com/epeli/underscore.string
+
+vue
+* License: MIT License
+* Project: https://www.npmjs.com/package/vue
+* Source:  https://github.com/vuejs/vue
+
+vue-form-generator
+* License: MIT License
+* Project: https://www.npmjs.com/package/vue-form-generator
+* Source:  https://github.com/vue-generators/vue-form-generator
+
+vue-i18n
+* License: MIT License
+* Project: https://www.npmjs.com/package/vue-i18n
+* Source:  https://github.com/kazupon/vue-i18n
+
+vue-multiselect
+* License: MIT License
+* Project: https://www.npmjs.com/package/vue-multiselect
+* Source:  https://github.com/shentao/vue-multiselect

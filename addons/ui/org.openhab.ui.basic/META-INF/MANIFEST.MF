@@ -1,6 +1,5 @@
 Manifest-Version: 1.0
-Bundle-Activator: org.eclipse.smarthome.ui.basic.internal.WebAppActivato
- r
+Bundle-Activator: org.openhab.ui.basic.internal.WebAppActivator
 Bundle-ClassPath: patch/,.
 Bundle-License: https://www.eclipse.org/legal/epl-2.0/
 Bundle-ManifestVersion: 2
@@ -9,7 +8,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.ui.basic
 Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
-Export-Package: org.eclipse.smarthome.ui.basic.render
+Export-Package: org.openhab.ui.basic.render
 Import-Package: 
  com.google.gson,
  javax.measure,
@@ -37,8 +36,9 @@ Import-Package:
  org.eclipse.smarthome.io.rest.sitemap,
  org.eclipse.smarthome.model.core,
  org.eclipse.smarthome.model.sitemap,
- org.eclipse.smarthome.ui.basic.render,
  org.eclipse.smarthome.ui.items,
+ org.openhab.ui.basic.render,
+ org.openhab.ui.dashboard,
  org.osgi.framework,
  org.osgi.service.component,
  org.osgi.service.http,
