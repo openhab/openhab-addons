@@ -755,6 +755,13 @@
         <bundle start-level="80">mvn:org.openhab.io/org.openhab.io.neeo/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-misc-restdocs" description="REST Documentation" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>esh.tp-swagger-jax-rs-provider</feature>
+        <bundle>mvn:org.openhab.io/org.openhab.io.rest.docs/${project.version}</bundle>
+    </feature>
+
+
     <!-- voice -->
 
     <feature name="openhab-voice-googletts" description="Google Cloud Text-to-Speech" version="${project.version}">
@@ -801,6 +808,11 @@
         <feature>openhab-ui-cometvisu</feature>
         <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.cometvisu.php/${project.version}</bundle>
         <bundle start-level="80">mvn:org.openhab/com.caucho.quercus/4.0.45</bundle>
+    </feature>
+
+    <feature name="openhab-ui-homebuilder" description="Home Builder" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle>mvn:org.openhab.ui/org.openhab.ui.homebuilder/${project.version}</bundle>
     </feature>
 
 </features>
