@@ -10,6 +10,7 @@ package org.openhab.binding.lgtvserial.internal.protocol.serial.commands;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.openhab.binding.lgtvserial.internal.protocol.serial.LGSerialResponse;
+import org.openhab.binding.lgtvserial.internal.protocol.serial.responses.OnOffResponse;
 
 /**
  * This command is the base command for the On/Off type command which translates to 00/01 on the wire.

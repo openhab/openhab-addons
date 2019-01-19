@@ -9,6 +9,7 @@
 package org.openhab.binding.lgtvserial.internal.protocol.serial.commands;
 
 import org.openhab.binding.lgtvserial.internal.protocol.serial.LGSerialResponse;
+import org.openhab.binding.lgtvserial.internal.protocol.serial.responses.StringResponse;
 
 /**
  * This command is the base command for the On/Off type command which translates to 00/01 on the wire.

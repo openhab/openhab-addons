@@ -11,6 +11,7 @@ package org.openhab.binding.lgtvserial.internal.protocol.serial.commands;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.openhab.binding.lgtvserial.internal.protocol.serial.LGSerialResponse;
+import org.openhab.binding.lgtvserial.internal.protocol.serial.responses.DecimalResponse;
 
 /**
  * This command is the base command to handle percent type commands (0-100) in hex format on the wire.

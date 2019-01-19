@@ -6,19 +6,19 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.lgtvserial.internal.protocol.serial.commands;
+package org.openhab.binding.lgtvserial.internal.protocol.serial.responses;
 
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.lgtvserial.internal.protocol.serial.LGSerialResponse;
 
 /**
- * This class represents a decimal response.
+ * This class represents a STRING state response.
  *
  * @author Richard Lavoie - Initial contribution
  *
  */
-public class DecimalResponse implements LGSerialResponse {
+public class StringResponse implements LGSerialResponse {
 
     private int setId;
 
@@ -26,10 +26,10 @@ public class DecimalResponse implements LGSerialResponse {
 
     private State state;
 
-    public DecimalResponse(int setId, boolean success, DecimalType state) {
+    public StringResponse(int setId, boolean success, String data) {
         this.setId = setId;
         this.success = success;
-        this.state = state;
+        state = new StringType(data);
     }
 
     @Override

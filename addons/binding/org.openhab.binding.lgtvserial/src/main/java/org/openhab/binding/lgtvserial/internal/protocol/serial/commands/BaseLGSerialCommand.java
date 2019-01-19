@@ -14,6 +14,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.openhab.binding.lgtvserial.internal.protocol.serial.LGSerialCommand;
 import org.openhab.binding.lgtvserial.internal.protocol.serial.LGSerialCommunicator;
 import org.openhab.binding.lgtvserial.internal.protocol.serial.LGSerialResponse;
+import org.openhab.binding.lgtvserial.internal.protocol.serial.responses.StringResponse;
 
 /**
  * This class represents the base for most, if not all, LG commands.

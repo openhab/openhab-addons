@@ -6,19 +6,20 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.lgtvserial.internal.protocol.serial.commands;
+package org.openhab.binding.lgtvserial.internal.protocol.serial.responses;
 
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.lgtvserial.internal.protocol.serial.LGSerialResponse;
 
 /**
- * This class represents a STRING state response.
+ * This class represents an ON/OFF response.
  *
  * @author Richard Lavoie - Initial contribution
  *
  */
-public class StringResponse implements LGSerialResponse {
+public class OnOffResponse implements LGSerialResponse {
 
     private int setId;
 
@@ -26,10 +27,15 @@ public class StringResponse implements LGSerialResponse {
 
     private State state;
 
-    public StringResponse(int setId, boolean success, String data) {
+    public OnOffResponse(int setId, boolean success, String data) {
         this.setId = setId;
         this.success = success;
-        state = new StringType(data);
+
+        if (success) {
+            state = data.equals("01") ? OnOffType.ON : OnOffType.OFF;
+        } else {
+            state = new StringType(data);
+        }
     }
 
     @Override

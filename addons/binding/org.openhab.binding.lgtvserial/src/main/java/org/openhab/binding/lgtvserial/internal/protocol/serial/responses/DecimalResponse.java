@@ -6,19 +6,19 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.lgtvserial.internal.protocol.serial.commands;
+package org.openhab.binding.lgtvserial.internal.protocol.serial.responses;
 
-import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.lgtvserial.internal.protocol.serial.LGSerialResponse;
 
 /**
- * This class represents a percentage response.
+ * This class represents a decimal response.
  *
  * @author Richard Lavoie - Initial contribution
  *
  */
-public class PercentResponse implements LGSerialResponse {
+public class DecimalResponse implements LGSerialResponse {
 
     private int setId;
 
@@ -26,7 +26,7 @@ public class PercentResponse implements LGSerialResponse {
 
     private State state;
 
-    public PercentResponse(int setId, boolean success, PercentType state) {
+    public DecimalResponse(int setId, boolean success, DecimalType state) {
         this.setId = setId;
         this.success = success;
         this.state = state;
