@@ -1,7 +1,7 @@
 {
   "name": "org.openhab.ui.basic",
-  "version": "0.11.0",
-  "description": "Eclipse SmartHome Basic UI",
+  "version": "2.5.0",
+  "description": "Basic UI",
   "scripts": {
     "build": "gulp default"
   },
