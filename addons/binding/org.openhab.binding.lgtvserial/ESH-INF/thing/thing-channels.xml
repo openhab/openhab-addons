@@ -4,7 +4,17 @@
         xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
         xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-     <!-- TODO 3D and 3D extended support -->
+    <channel-type id="3d">
+        <item-type>String</item-type>
+        <label>3d</label>
+        <description>Change the 3d mode</description>
+    </channel-type>
+
+    <channel-type id="3d-extended">
+        <item-type>String</item-type>
+        <label>3d extended</label>
+        <description>Change the 3d option</description>
+    </channel-type>
 
     <channel-type id="aspect-ratio">
         <item-type>String</item-type>
@@ -101,7 +111,7 @@
     <channel-type id="color-temperature2">
         <item-type>Dimmer</item-type>
         <label>Color temperature</label>
-        <description>Color temperature of the display</description>
+        <description>Color temperature of the display (between 0 and 100)</description>
     </channel-type>
 
     <channel-type id="dpm">

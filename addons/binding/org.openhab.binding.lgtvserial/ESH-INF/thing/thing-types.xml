@@ -8,8 +8,8 @@
     This would be the thing to use if we haven't yet defined a proper thing limiting the supported
     channels. -->
     <thing-type id="lgtv">
-        <label>LG TV</label>
-        <description>Generic LG television connected through a serial interface. This thing should be used only when there is no proper thing defined for your TV model.</description>
+        <label>Generic LG TV</label>
+        <description>Generic LG television connected through a serial interface. This thing should be used only when there is no proper thing defined for your TV model as it has most existing channels for most known commands.</description>
 
         <channels>
             <channel id="aspect-ratio" typeId="aspect-ratio"/>
@@ -62,19 +62,7 @@
             <channel id="v-position" typeId="v-position"/>
         </channels>
         
-        <config-description>
-            <parameter name="port" type="text">
-                <label>Serial port</label>
-                <description>Select serial port (COM1, /dev/ttyS0, ...)</description>
-                <required>true</required>
-            </parameter>
-            <parameter name="setId" type="integer">
-                <label>Set ID</label>
-                <description>Set ID configured in the TV. If 0, this will send a command to every chained TV.</description>
-                <required>true</required>
-                <default>1</default>
-            </parameter>
-         </config-description>
+        <config-description-ref uri="thing-type:lgtvserial:serial" />
     </thing-type>
 
 </thing:thing-descriptions>

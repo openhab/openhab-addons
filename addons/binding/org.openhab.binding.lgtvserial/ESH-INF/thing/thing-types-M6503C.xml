@@ -10,7 +10,6 @@
         <description><![CDATA[This thing supports the M6503C LG TV]]></description>
 
         <channels>
-<!--             <channel id="" typeId=""/> -->
             <channel id="aspect-ratio" typeId="aspect-ratio-M6503C"/>
             <channel id="auto-sleep" typeId="auto-sleep"/>
             <channel id="auto-volume" typeId="auto-volume"/>
@@ -60,19 +59,7 @@
             <channel id="volume-mute" typeId="volume-mute"/>
             
         </channels>
-        <config-description>
-            <parameter name="port" type="text">
-                <label>Serial port</label>
-                <description>Select serial port (COM1, /dev/ttyS0, ...)</description>
-                <required>true</required>
-            </parameter>
-            <parameter name="setId" type="integer">
-                <label>Set ID</label>
-                <description>Set ID configured in the TV. If 0, this will send a command to every chained TV.</description>
-                <required>true</required>
-                <default>1</default>
-            </parameter>
-         </config-description>
+        <config-description-ref uri="thing-type:lgtvserial:serial" />
     </thing-type>
 
     <channel-type id="aspect-ratio-M6503C">
