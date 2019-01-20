@@ -123,7 +123,7 @@ public class LgTvSerialHandler extends BaseThingHandler {
         };
 
         if (portName != null) {
-            this.communicator = factory.getInstance(portName);
+            communicator = factory.getInstance(portName);
             if (communicator != null) {
                 communicator.register(responseListener);
             } else {
