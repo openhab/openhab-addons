@@ -42,7 +42,7 @@ public class LGSerialCommunicator {
     /**
      * Logger.
      */
-    private Logger logger = LoggerFactory.getLogger(LGSerialCommunicator.class);
+    private final Logger logger = LoggerFactory.getLogger(LGSerialCommunicator.class);
 
     private static final int BAUD_RATE = 9600;
 
@@ -135,10 +135,12 @@ public class LGSerialCommunicator {
         try {
             input.close();
         } catch (IOException e) {
+            logger.debug("An error occured while closing the serial input stream", e);
         }
         try {
             output.close();
         } catch (IOException e) {
+            logger.debug("An error occured while closing the serial output stream", e);
         }
         port.disconnect();
         // For some reason, there needs some delay after close so we don't fail to open back the serial device

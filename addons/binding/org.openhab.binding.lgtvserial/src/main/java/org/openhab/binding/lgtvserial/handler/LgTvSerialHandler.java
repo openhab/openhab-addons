@@ -54,7 +54,7 @@ public class LgTvSerialHandler extends BaseThingHandler {
     /**
      * Logger.
      */
-    private Logger logger = LoggerFactory.getLogger(LgTvSerialHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(LgTvSerialHandler.class);
 
     /**
      * Serial communicator factory used to retrieve the communicator for a given port.
