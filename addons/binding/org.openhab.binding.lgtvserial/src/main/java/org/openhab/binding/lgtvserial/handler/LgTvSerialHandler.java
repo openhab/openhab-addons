@@ -82,7 +82,7 @@ public class LgTvSerialHandler extends BaseThingHandler {
     private ScheduledFuture<?> updateJob;
 
     /**
-     * .
+     * Create the LG TV hander.
      *
      * @param thing   Thing associated to this handler
      * @param factory Factory to retrieve a communicator for a given port
