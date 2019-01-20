@@ -69,8 +69,7 @@ public class LgTvSerialHandler extends BaseThingHandler {
     /**
      * List of linked items used for the refresh polling.
      */
-    private Map<ChannelUID, LGSerialCommand> channelCommands = Collections
-            .synchronizedMap(new HashMap<ChannelUID, LGSerialCommand>());
+    private Map<ChannelUID, LGSerialCommand> channelCommands = Collections.synchronizedMap(new HashMap<>());
 
     /**
      * Set ID of this TV.
