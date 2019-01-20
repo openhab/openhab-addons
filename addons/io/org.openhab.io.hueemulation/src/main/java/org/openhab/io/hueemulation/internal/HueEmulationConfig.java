@@ -47,14 +47,14 @@ public class HueEmulationConfig {
     public String restrictToTagsWhiteLights = "Lighting";
 
     public Set<String> switchTags() {
-        return Stream.of(restrictToTagsSwitches.split(",")).collect(Collectors.toSet());
+        return Stream.of(restrictToTagsSwitches.split(",")).map(String::trim).collect(Collectors.toSet());
     }
 
     public Set<String> colorTags() {
-        return Stream.of(restrictToTagsColorLights.split(",")).collect(Collectors.toSet());
+        return Stream.of(restrictToTagsColorLights.split(",")).map(String::trim).collect(Collectors.toSet());
     }
 
     public Set<String> whiteTags() {
-        return Stream.of(restrictToTagsWhiteLights.split(",")).collect(Collectors.toSet());
+        return Stream.of(restrictToTagsWhiteLights.split(",")).map(String::trim).collect(Collectors.toSet());
     }
 }
