@@ -66,7 +66,7 @@ public class LightItems implements RegistryChangeListener<Item> {
     private final Logger logger = LoggerFactory.getLogger(LightItems.class);
     private static final String ITEM_TYPE_GROUP = "Group";
     private static final Set<String> ALLOWED_ITEM_TYPES = Stream
-            .of(CoreItemFactory.COLOR, CoreItemFactory.DIMMER, CoreItemFactory.SWITCH, ITEM_TYPE_GROUP)
+            .of(CoreItemFactory.COLOR, CoreItemFactory.DIMMER, CoreItemFactory.ROLLERSHUTTER, CoreItemFactory.SWITCH, ITEM_TYPE_GROUP)
             .collect(Collectors.toSet());
 
     // deviceMap maps a unique Item id to a Hue numeric id
