@@ -1036,7 +1036,7 @@ Here is a step by step example for a migration from a 1.x configuration to a equ
 It does not cover all features the 1.x configuration offers, but it should serve as an example on how to get it done.
 Please note that although you can do all this stuff also using PaperUI, the file based approach is strongly recommended if you need to migrate more than only a handful of Items.
 
-The 1.x modbus configuration defined 4 slaves:
+The 1.x modbus configuration to be updated defined 4 slaves:
 
 `modbus.cfg`
 
@@ -1073,7 +1073,7 @@ The 1.x modbus configuration defined 4 slaves:
 ```
 
 As you can see, all the slaves poll the same modbus device (actually a Wago 750-841 controller). 
-We now have to create `Things` for this pollers.
+We now have to create `Things` for this slaves.
 
 The 2.x modbus binding uses a three-level definition. 
 Level one defines a `Bridge` for every modbus device that is to be addressed. 
@@ -1113,7 +1113,7 @@ Address, length and type can be directly taken over from the 1.x config.
 The third (and most complex) part is the definition of data `Thing` objects for every `Item` bound to modbus.
 This definitions go into the corresponding 2nd level `Bridge` definitions.
 Here it is especially important that the modbus binding now uses absolute addresses all over the place, while the addresses in the item definition for the 1.x binding were relative to the start address of the slave definition before.
-For less work in the following final step, the update of the `Item` configuration, the naming of the `data` things in this example uses the offset of the modbus value within the poller as suffix, starting with 0(!). 
+For less work in the following final step, the update of the `Item` configuration, the naming of the `data` things in this example uses the offset of the modbus value within the `poller` as suffix, starting with 0(!). 
 See below for details.
 
 Here a few examples of the Item configuration from the 1.x binding:
@@ -1127,7 +1127,7 @@ Switch FooSwitch  "Foo Switch"  {modbus="slave1:0"}
 Now we have to define a `Thing` that can later be bound to that Item.
 
 The `slave1` `poller` uses `12288` as start address. 
-So we define the first data Thing within the poller `wago_slave1` with this address and choose a name that ends with `0`:
+So we define the first data Thing within the `poller` `wago_slave1` with this address and choose a name that ends with `0`:
 
 ```
 Thing data wago_s1_000 [ readStart="12288", readValueType="bit", writeStart="12288", writeValueType="bit", writeType="coil" ]
