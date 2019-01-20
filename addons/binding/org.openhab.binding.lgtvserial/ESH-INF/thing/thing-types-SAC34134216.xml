@@ -29,7 +29,7 @@
             <channel id="osd-select" typeId="osd-select"/>
             <channel id="power" typeId="power"/>
             <channel id="raw" typeId="raw"/>
-            <channel id="screen-mute" typeId="screen-mute-SAC34134216"/>
+            <channel id="screen-mute" typeId="screen-mute"/>
             <channel id="sharpness" typeId="sharpness"/>
             <channel id="tint" typeId="tint"/>
             <channel id="treble" typeId="treble"/>
@@ -61,7 +61,7 @@
             <channel id="osd-select" typeId="osd-select"/>
             <channel id="power" typeId="power"/>
             <channel id="raw" typeId="raw"/>
-            <channel id="screen-mute" typeId="screen-mute-SAC34134216"/>
+            <channel id="screen-mute" typeId="screen-mute"/>
             <channel id="sharpness" typeId="sharpness"/>
             <channel id="tint" typeId="tint"/>
             <channel id="treble" typeId="treble"/>
@@ -95,7 +95,7 @@
             <channel id="osd-select" typeId="osd-select"/>
             <channel id="power" typeId="power"/>
             <channel id="raw" typeId="raw"/>
-            <channel id="screen-mute" typeId="screen-mute-SAC34134216"/>
+            <channel id="screen-mute" typeId="screen-mute"/>
             <channel id="sharpness" typeId="sharpness"/>
             <channel id="tint" typeId="tint"/>
             <channel id="treble" typeId="treble"/>
@@ -128,7 +128,7 @@
             <channel id="osd-select" typeId="osd-select"/>
             <channel id="power" typeId="power"/>
             <channel id="raw" typeId="raw"/>
-            <channel id="screen-mute" typeId="screen-mute-SAC34134216"/>
+            <channel id="screen-mute" typeId="screen-mute"/>
             <channel id="sharpness" typeId="sharpness"/>
             <channel id="tint" typeId="tint"/>
             <channel id="treble" typeId="treble"/>
@@ -362,20 +362,6 @@
             </options>
         </state>
     </channel-type>
-    
-    <channel-type id="screen-mute-SAC34134216">
-        <item-type>String</item-type>
-        <label>Energy Saving</label>
-        <description>Select screen mute on/off</description>
-        <state>
-            <options>
-                <option value="00">Screen mute off (Picture on), Video-out Mute off</option>
-                <option value="01">Screen mute on (Picture off)</option>
-                <option value="10">Video-out Mute on</option>
-            </options>
-        </state>
-    </channel-type>
-
 
 </thing:thing-descriptions>
 

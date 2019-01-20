@@ -20,33 +20,35 @@
             <channel id="color-temperature" typeId="color-temperature"/>
             <channel id="elapsed-time" typeId="elapsed-time"/>
             <channel id="fan-fault-check" typeId="fan-fault-check"/>
-            <channel id="h-position" typeId="h-position"/>
-            <channel id="h-size" typeId="h-size"/>
+            <channel id="h-position" typeId="h-position" />
+            <!-- Not yet implemented
+            <channel id="h-size" typeId="h-size" />
+             -->
             <channel id="input" typeId="input-M6503C"/>
             <channel id="input2" typeId="input2-M6503C"/>
             <channel id="ir-key-code" typeId="ir-key-code-M6503C" />
             <channel id="ism-method" typeId="ism-M6503C"/>
-            <channel id="key" typeId="ir-key-codes-M6503C"/>
             <channel id="lamp-fault-check" typeId="lamp-fault-check"/>
             <channel id="natural-mode" typeId="natural-mode"/>
+            <channel id="osd-language" typeId="osd-language"/>
             <channel id="osd-select" typeId="osd-select"/>
             <channel id="picture-mode" typeId="picture-mode"/>
             <channel id="power" typeId="power"/>
             <channel id="power-indicator" typeId="power-indicator"/>
             <channel id="power-saving" typeId="power-saving"/>
             <channel id="raw" typeId="raw"/>
-            <channel id="screen-mute" typeId="screen-mute"/>
+            <channel id="screen-mute" typeId="screen-mute" />
             <channel id="serial-number" typeId="serial-number"/>
             <channel id="sharpness" typeId="sharpness"/>
             <channel id="sleep-time" typeId="sleep-time"/>
             <channel id="software-version" typeId="software-version"/>
-            <channel id="sound-mode" typeId="sound-mode-M6503C"/>
+            <channel id="sound-mode" typeId="sound-mode"/>
             <channel id="speaker" typeId="speaker"/>
             <channel id="temperature-value" typeId="temperature-value"/>
-            <channel id="tile" typeId="tile-M6503C"/>
+            <channel id="tile" typeId="tile"/>
             <channel id="tile-h-position" typeId="tile-h-position"/>
             <channel id="tile-h-size" typeId="tile-h-size"/>
-            <channel id="tile-id-set" typeId="tile-id-set-M6503C"/>
+            <channel id="tile-id-set" typeId="tile-id-set"/>
             <channel id="tile-v-position" typeId="tile-v-position"/>
             <channel id="tile-v-size" typeId="tile-v-size"/>
             <channel id="tint" typeId="tint"/>
@@ -54,7 +56,9 @@
             <channel id="time" typeId="time"/>
             -->
             <channel id="v-position" typeId="v-position"/>
+            <!--  Not yet implemented
             <channel id="v-size" typeId="v-size"/>
+            -->
             <channel id="volume" typeId="volume"/>
             <channel id="volume-mute" typeId="volume-mute"/>
             
@@ -109,7 +113,7 @@
         </state>
     </channel-type>
     
-    <channel-type id="ir-key-codes-M6503C">
+    <channel-type id="ir-key-code-M6503C">
         <item-type>String</item-type>
         <label>IR Code</label>
         <description>Send IR remote key code</description>
@@ -166,79 +170,6 @@
                 <option value="10">Dot Wash</option>
             </options>
         </state>
-    </channel-type>
-
-    <channel-type id="screen-mute-M6503C">
-        <item-type>String</item-type>
-        <label>Screen mute</label>
-        <description>Select screen mute on/off</description>
-        <state>
-            <options>
-                <option value="00">Screen mute off (Picture on), Video-out Mute off</option>
-                <option value="01">Screen mute on (Picture off)</option>
-                <option value="10">Video-out Mute on</option>
-            </options>
-        </state>
-    </channel-type>
-
-    <channel-type id="sound-mode-M6503C">
-        <item-type>String</item-type>
-        <label>Sound mode</label>
-        <description>To adjust sound mode</description>
-        <state>
-            <options>
-                <option value="00">Clear Voice</option>
-                <option value="01">Standard</option>
-                <option value="02">Music</option>
-                <option value="03">Cinema</option>
-                <option value="04">Sport</option>
-                <option value="05">Game</option>
-                <option value="06">User</option>
-            </options>
-        </state>
-    </channel-type>
-
-    <channel-type id="tile-M6503C">
-        <item-type>String</item-type>
-        <label>Tile mode</label>
-        <description>Change a tile mode</description>
-        <state>
-            <options>
-                <option value="00">Tile mode off</option>
-                <option value="11">1 x 1 mode (same as off)</option>
-                <option value="12">1 x 2 mode</option>
-                <option value="13">1 x 3 mode</option>
-                <option value="14">1 x 4 mode</option>
-                <option value="15">1 x 5 mode</option>
-                <option value="21">2 x 1 mode</option>
-                <option value="22">2 x 2 mode</option>
-                <option value="23">2 x 3 mode</option>
-                <option value="24">2 x 4 mode</option>
-                <option value="25">2 x 5 mode</option>
-                <option value="31">3 x 1 mode</option>
-                <option value="32">3 x 2 mode</option>
-                <option value="33">3 x 3 mode</option>
-                <option value="34">3 x 4 mode</option>
-                <option value="35">3 x 5 mode</option>
-                <option value="41">4 x 1 mode</option>
-                <option value="42">4 x 2 mode</option>
-                <option value="43">4 x 3 mode</option>
-                <option value="44">4 x 4 mode</option>
-                <option value="45">4 x 5 mode</option>
-                <option value="51">5 x 1 mode</option>
-                <option value="52">5 x 2 mode</option>
-                <option value="53">5 x 3 mode</option>
-                <option value="54">5 x 4 mode</option>
-                <option value="55">5 x 5 mode</option>
-            </options>
-        </state>
-    </channel-type>
-    
-    <channel-type id="tile-id-set-M6503C">
-        <item-type>Dimmer</item-type>
-        <label>Tile ID Set</label>
-        <description>To assign the Tile ID for Tiling function</description>
-        <state min="0" max="25" />        
     </channel-type>
 
 </thing:thing-descriptions>

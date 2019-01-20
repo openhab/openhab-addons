@@ -40,7 +40,7 @@
             <channel id="power-indicator" typeId="power-indicator"/>
             <channel id="power-saving" typeId="power-saving"/>
             <channel id="raw" typeId="raw"/>
-            <channel id="screen-mute" typeId="screen-volume"/>
+            <channel id="screen-mute" typeId="screen-mute"/>
             <channel id="serial-number" typeId="serial-number"/>
             <channel id="sharpness" typeId="sharpness"/>
             <channel id="sleep-time" typeId="sleep-time"/>
@@ -54,7 +54,9 @@
             <channel id="tile-id-set" typeId="tile-id-set"/>
             <channel id="tile-v-position" typeId="tile-v-position"/>
             <channel id="tile-v-size" typeId="tile-v-size"/>
+            <!-- Used to set the time on the TV, but have no clue yet how to handle this...
             <channel id="time" typeId="time"/>
+            -->
             <channel id="tint" typeId="tint"/>
             <channel id="treble" typeId="treble"/>
             <channel id="volume" typeId="volume"/>

@@ -346,14 +346,13 @@
             </options>
         </state>
     </channel-type>
-    
-    
+
     <channel-type id="power">
         <item-type>Switch</item-type>
         <label>Power</label>
         <description>Power on/off</description>
     </channel-type>
-    
+
     <channel-type id="power-indicator">
         <item-type>Switch</item-type>
         <label>Power indicator</label>
@@ -379,10 +378,10 @@
         <label>Raw</label>
         <description>Send raw command over the serial power directly to TV(s)</description>
     </channel-type>
-    
-    <channel-type id="screen-volume">
+
+    <channel-type id="screen-mute">
         <item-type>String</item-type>
-        <label>Screen volume</label>
+        <label>Screen mute</label>
         <description>Select screen mute on/off</description>
         <state>
             <options>
@@ -405,6 +404,7 @@
         <description>Adjust screen sharpness</description>
     </channel-type>
 
+    <!-- Definition of the M6503C definition as this is the only one we've seen so far -->
     <channel-type id="sleep-time">
         <item-type>String</item-type>
         <label>Sleep time</label>
@@ -420,6 +420,24 @@
                 <option value="06">120</option>
                 <option value="07">180</option>
                 <option value="08">240</option>
+            </options>
+        </state>
+    </channel-type>
+
+    <!-- Definition of the M6503C definition as this is the only one we've seen so far -->
+    <channel-type id="sound-mode">
+        <item-type>String</item-type>
+        <label>Sound mode</label>
+        <description>To adjust sound mode</description>
+        <state>
+            <options>
+                <option value="00">Clear Voice</option>
+                <option value="01">Standard</option>
+                <option value="02">Music</option>
+                <option value="03">Cinema</option>
+                <option value="04">Sport</option>
+                <option value="05">Game</option>
+                <option value="06">User</option>
             </options>
         </state>
     </channel-type>
@@ -442,6 +460,43 @@
         <description>Read the inside temperature value</description>
     </channel-type>
 
+    <!-- Definition of the M6503C definition as this is the only one we've seen so far -->
+    <channel-type id="tile">
+        <item-type>String</item-type>
+        <label>Tile mode</label>
+        <description>Change a tile mode</description>
+        <state>
+            <options>
+                <option value="00">Tile mode off</option>
+                <option value="11">1 x 1 mode (same as off)</option>
+                <option value="12">1 x 2 mode</option>
+                <option value="13">1 x 3 mode</option>
+                <option value="14">1 x 4 mode</option>
+                <option value="15">1 x 5 mode</option>
+                <option value="21">2 x 1 mode</option>
+                <option value="22">2 x 2 mode</option>
+                <option value="23">2 x 3 mode</option>
+                <option value="24">2 x 4 mode</option>
+                <option value="25">2 x 5 mode</option>
+                <option value="31">3 x 1 mode</option>
+                <option value="32">3 x 2 mode</option>
+                <option value="33">3 x 3 mode</option>
+                <option value="34">3 x 4 mode</option>
+                <option value="35">3 x 5 mode</option>
+                <option value="41">4 x 1 mode</option>
+                <option value="42">4 x 2 mode</option>
+                <option value="43">4 x 3 mode</option>
+                <option value="44">4 x 4 mode</option>
+                <option value="45">4 x 5 mode</option>
+                <option value="51">5 x 1 mode</option>
+                <option value="52">5 x 2 mode</option>
+                <option value="53">5 x 3 mode</option>
+                <option value="54">5 x 4 mode</option>
+                <option value="55">5 x 5 mode</option>
+            </options>
+        </state>
+    </channel-type>
+
     <channel-type id="tile-h-position">
         <item-type>Dimmer</item-type>
         <label>Horizontal position</label>
@@ -453,7 +508,15 @@
         <label>Horizontal size</label>
         <description>Set the horizontal size</description>
     </channel-type>
-    
+
+    <!-- Definition of the M6503C definition as this is the only one we've seen so far -->
+    <channel-type id="tile-id-set">
+        <item-type>Dimmer</item-type>
+        <label>Tile ID Set</label>
+        <description>To assign the Tile ID for Tiling function</description>
+        <state min="0" max="25" />
+    </channel-type>
+
     <channel-type id="tile-v-position">
         <item-type>Dimmer</item-type>
         <label>Vertical position</label>
