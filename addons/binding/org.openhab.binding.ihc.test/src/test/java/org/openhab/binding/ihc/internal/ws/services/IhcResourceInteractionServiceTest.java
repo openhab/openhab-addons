@@ -138,7 +138,7 @@ public class IhcResourceInteractionServiceTest {
     public void testWSBooleanValueQuery() throws IhcExecption {
         final WSBooleanValue val = (WSBooleanValue) ihcResourceInteractionService.resourceQuery(11111);
         assertEquals(11111, val.getResourceID());
-        assertEquals(true, val.isValue());
+        assertEquals(true, val.booleanValue());
     }
 
     @Test
@@ -284,11 +284,11 @@ public class IhcResourceInteractionServiceTest {
                     found.add(val);
                     break;
                 case 4133210:
-                    assertEquals(false, ((WSBooleanValue) val).isValue());
+                    assertEquals(false, ((WSBooleanValue) val).booleanValue());
                     found.add(val);
                     break;
                 case 3988827:
-                    assertEquals(true, ((WSBooleanValue) val).isValue());
+                    assertEquals(true, ((WSBooleanValue) val).booleanValue());
                     found.add(val);
                     break;
                 case 4159252:

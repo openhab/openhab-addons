@@ -21,7 +21,7 @@ public class UpDownTypeWSBooleanValueConverter implements Converter<WSBooleanVal
     @Override
     public UpDownType convertFromResourceValue(WSBooleanValue from, ConverterAdditionalInfo convertData)
             throws NumberFormatException {
-        return from.isValue() ^ convertData.getInverted() ? UpDownType.UP : UpDownType.DOWN;
+        return from.booleanValue() ^ convertData.getInverted() ? UpDownType.UP : UpDownType.DOWN;
     }
 
     @Override

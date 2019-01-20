@@ -30,7 +30,7 @@ public class OpenClosedTypeWSBooleanValueConverterTest {
 
         val = convertFromOHType(val, OpenClosedType.OPEN, new ConverterAdditionalInfo(null, inverted));
         assertEquals(12345, val.getResourceID());
-        assertEquals(true, val.isValue());
+        assertEquals(true, val.booleanValue());
 
         OpenClosedType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
         assertEquals(OpenClosedType.OPEN, type);
@@ -43,7 +43,7 @@ public class OpenClosedTypeWSBooleanValueConverterTest {
         WSBooleanValue val = new WSBooleanValue(12345);
         val = convertFromOHType(val, OpenClosedType.CLOSED, new ConverterAdditionalInfo(null, inverted));
         assertEquals(12345, val.getResourceID());
-        assertEquals(false, val.isValue());
+        assertEquals(false, val.booleanValue());
 
         OpenClosedType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
         assertEquals(OpenClosedType.CLOSED, type);
@@ -56,7 +56,7 @@ public class OpenClosedTypeWSBooleanValueConverterTest {
         WSBooleanValue val = new WSBooleanValue(12345);
         val = convertFromOHType(val, OpenClosedType.OPEN, new ConverterAdditionalInfo(null, inverted));
         assertEquals(12345, val.getResourceID());
-        assertEquals(false, val.isValue());
+        assertEquals(false, val.booleanValue());
 
         OpenClosedType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
         assertEquals(OpenClosedType.OPEN, type);
@@ -69,7 +69,7 @@ public class OpenClosedTypeWSBooleanValueConverterTest {
         WSBooleanValue val = new WSBooleanValue(12345);
         val = convertFromOHType(val, OpenClosedType.CLOSED, new ConverterAdditionalInfo(null, inverted));
         assertEquals(12345, val.getResourceID());
-        assertEquals(true, val.isValue());
+        assertEquals(true, val.booleanValue());
 
         OpenClosedType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
         assertEquals(OpenClosedType.CLOSED, type);

@@ -8,7 +8,11 @@
  */
 package org.openhab.binding.ihc.internal.ws.datatypes;
 
+import java.io.IOException;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
+
+import javax.xml.xpath.XPathExpressionException;
 
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
 
@@ -316,7 +320,7 @@ public class WSSystemInfo {
             setRfModuleSerialNumber(value);
 
             return this;
-        } catch (Exception e) {
+        } catch (IOException | XPathExpressionException | NumberFormatException | DateTimeParseException e) {
             throw new IhcExecption("Error occured during XML data parsing", e);
         }
     }

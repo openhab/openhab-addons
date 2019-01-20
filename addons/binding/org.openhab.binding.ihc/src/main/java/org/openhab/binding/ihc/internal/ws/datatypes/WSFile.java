@@ -8,6 +8,10 @@
  */
 package org.openhab.binding.ihc.internal.ws.datatypes;
 
+import java.io.IOException;
+
+import javax.xml.xpath.XPathExpressionException;
+
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
 
 /**
@@ -71,7 +75,7 @@ public class WSFile {
                     .parseXMLValue(data, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getIHCProjectSegment4/ns1:data")
                     .getBytes();
             return this;
-        } catch (Exception e) {
+        } catch (IOException | XPathExpressionException e) {
             throw new IhcExecption("Error occured during XML data parsing", e);
         }
     }

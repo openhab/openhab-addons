@@ -48,8 +48,7 @@ public abstract class IhcHttpsClient {
     /**
      * Init HTTP connection.
      *
-     * @param url
-     *            Url to connect.
+     * @param url Url to connect.
      */
     private void initConnection(String url) throws IhcExecption {
         if (client == null) {

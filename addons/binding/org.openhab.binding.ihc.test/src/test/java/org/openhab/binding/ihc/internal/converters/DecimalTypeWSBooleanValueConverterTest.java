@@ -30,7 +30,7 @@ public class DecimalTypeWSBooleanValueConverterTest {
 
         val = convertFromOHType(val, new DecimalType(1), new ConverterAdditionalInfo(null, inverted));
         assertEquals(12345, val.getResourceID());
-        assertEquals(true, val.isValue());
+        assertEquals(true, val.booleanValue());
 
         DecimalType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
         assertEquals(new DecimalType(1), type);
@@ -43,7 +43,7 @@ public class DecimalTypeWSBooleanValueConverterTest {
         WSBooleanValue val = new WSBooleanValue(12345);
         val = convertFromOHType(val, new DecimalType(0), new ConverterAdditionalInfo(null, inverted));
         assertEquals(12345, val.getResourceID());
-        assertEquals(false, val.isValue());
+        assertEquals(false, val.booleanValue());
 
         DecimalType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
         assertEquals(new DecimalType(0), type);

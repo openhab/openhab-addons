@@ -8,6 +8,10 @@
  */
 package org.openhab.binding.ihc.internal.ws.datatypes;
 
+import java.io.IOException;
+
+import javax.xml.xpath.XPathExpressionException;
+
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
 
 /**
@@ -135,7 +139,7 @@ public class WSLoginResult {
                     "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:authenticate2/ns1:loginFailedDueToAccountInvalid");
 
             return this;
-        } catch (Exception e) {
+        } catch (IOException | XPathExpressionException e) {
             throw new IhcExecption("Error occured during XML data parsing", e);
         }
     }

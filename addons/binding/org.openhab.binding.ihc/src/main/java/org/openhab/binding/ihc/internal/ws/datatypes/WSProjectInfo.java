@@ -8,6 +8,10 @@
  */
 package org.openhab.binding.ihc.internal.ws.datatypes;
 
+import java.io.IOException;
+
+import javax.xml.xpath.XPathExpressionException;
+
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
 
 /**
@@ -245,7 +249,7 @@ public class WSProjectInfo {
             setInstallerName(value);
 
             return this;
-        } catch (Exception e) {
+        } catch (IOException | XPathExpressionException | NumberFormatException e) {
             throw new IhcExecption("Error occured during XML data parsing", e);
         }
     }

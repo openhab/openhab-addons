@@ -57,7 +57,7 @@ public class IhcClientTest {
         final String ExpectedFileContent = ResourceFileUtils
                 .getFileContent("src/test/resources/ProjectFileContent.txt");
 
-        final byte[] result = ihcClient.loadProjectFileFromControllerAsByteArray();
+        final byte[] result = ihcClient.getProjectFileFromController();
         assertEquals(ExpectedFileContent, new String(result, "UTF-8"));
     }
 }

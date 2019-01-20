@@ -204,10 +204,7 @@ public class PushButtonToCommandProfile implements TriggerProfile {
     }
 
     private synchronized void buttonPressed(Command commandToSend) {
-        if (timeoutFuture != null) {
-            timeoutFuture.cancel(false);
-        }
-
+        cancelTimeoutFuture();
         cancelDimmFuture();
 
         if (repeatTime > 0) {
@@ -226,11 +223,8 @@ public class PushButtonToCommandProfile implements TriggerProfile {
     }
 
     private synchronized void buttonReleased(Command commandToSend) {
-        if (timeoutFuture != null) {
-            timeoutFuture.cancel(false);
-        }
-
-        this.cancelDimmFuture();
+        cancelTimeoutFuture();
+        cancelDimmFuture();
 
         if (System.currentTimeMillis() - pressedTime <= longPressTime) {
             callback.sendCommand(commandToSend);
@@ -240,6 +234,12 @@ public class PushButtonToCommandProfile implements TriggerProfile {
     private synchronized void cancelDimmFuture() {
         if (dimmFuture != null) {
             dimmFuture.cancel(false);
+        }
+    }
+
+    private synchronized void cancelTimeoutFuture() {
+        if (timeoutFuture != null) {
+            timeoutFuture.cancel(false);
         }
     }
 }

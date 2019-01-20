@@ -8,6 +8,10 @@
  */
 package org.openhab.binding.ihc.internal.ws.datatypes;
 
+import java.io.IOException;
+
+import javax.xml.xpath.XPathExpressionException;
+
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
 
 /**
@@ -50,7 +54,7 @@ public class WSNumberOfSegments {
                     "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:getIHCProjectNumberOfSegments1");
             setNumberOfSegments(Integer.parseInt(value));
             return this;
-        } catch (Exception e) {
+        } catch (IOException | XPathExpressionException | NumberFormatException e) {
             throw new IhcExecption("Error occured during XML data parsing", e);
         }
     }

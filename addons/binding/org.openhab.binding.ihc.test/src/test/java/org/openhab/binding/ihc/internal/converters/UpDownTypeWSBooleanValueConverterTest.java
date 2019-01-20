@@ -30,7 +30,7 @@ public class UpDownTypeWSBooleanValueConverterTest {
 
         val = convertFromOHType(val, UpDownType.UP, new ConverterAdditionalInfo(null, inverted));
         assertEquals(12345, val.getResourceID());
-        assertEquals(true, val.isValue());
+        assertEquals(true, val.booleanValue());
 
         UpDownType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
         assertEquals(UpDownType.UP, type);
@@ -43,7 +43,7 @@ public class UpDownTypeWSBooleanValueConverterTest {
         WSBooleanValue val = new WSBooleanValue(12345);
         val = convertFromOHType(val, UpDownType.DOWN, new ConverterAdditionalInfo(null, inverted));
         assertEquals(12345, val.getResourceID());
-        assertEquals(false, val.isValue());
+        assertEquals(false, val.booleanValue());
 
         UpDownType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
         assertEquals(UpDownType.DOWN, type);
@@ -56,7 +56,7 @@ public class UpDownTypeWSBooleanValueConverterTest {
         WSBooleanValue val = new WSBooleanValue(12345);
         val = convertFromOHType(val, UpDownType.UP, new ConverterAdditionalInfo(null, inverted));
         assertEquals(12345, val.getResourceID());
-        assertEquals(false, val.isValue());
+        assertEquals(false, val.booleanValue());
 
         UpDownType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
         assertEquals(UpDownType.UP, type);
@@ -69,7 +69,7 @@ public class UpDownTypeWSBooleanValueConverterTest {
         WSBooleanValue val = new WSBooleanValue(12345);
         val = convertFromOHType(val, UpDownType.DOWN, new ConverterAdditionalInfo(null, inverted));
         assertEquals(12345, val.getResourceID());
-        assertEquals(true, val.isValue());
+        assertEquals(true, val.booleanValue());
 
         UpDownType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
         assertEquals(UpDownType.DOWN, type);

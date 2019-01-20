@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.ihc.internal.ws.services;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,7 +59,7 @@ public class IhcAirlinkManagementService extends IhcBaseService {
                 throw new IhcExecption("Illegal resource value notification response received");
             }
             return resourceValueList;
-        } catch (Exception e) {
+        } catch (IOException | XPathExpressionException | NumberFormatException e) {
             throw new IhcExecption("Error occured during XML data parsing", e);
         }
     }

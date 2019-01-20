@@ -120,7 +120,7 @@ public class IhcClient {
     /**
      * Open connection and authenticate session to IHC / ELKO LS controller.
      *
-     * @return
+     * @throws IhcExecption
      */
     public void closeConnection() throws IhcExecption {
         logger.debug("Closing connection");
@@ -203,14 +203,18 @@ public class IhcClient {
     /**
      * Start event listener to get notifications from IHC / ELKO LS controller.
      *
+     * @throws IhcExecption
+     *
      */
-    public void startControllerEventListeners() {
+    public void startControllerEventListeners() throws IhcExecption {
         if (getConnectionState() == ConnectionState.CONNECTED) {
             logger.debug("Start IHC / ELKO listeners");
             resourceValueNotificationListener = new IhcResourceValueNotificationListener();
             resourceValueNotificationListener.start();
             controllerStateListener = new IhcControllerStateListener();
             controllerStateListener.start();
+        } else {
+            throw new IhcExecption("Connection to controller not open");
         }
     }
 
@@ -295,7 +299,7 @@ public class IhcClient {
      *
      * @return project file.
      */
-    public byte[] loadProjectFileFromControllerAsByteArray() throws IhcExecption {
+    public byte[] getProjectFileFromController() throws IhcExecption {
         try {
             WSProjectInfo projectInfo = getProjectInfo();
             int numberOfSegments = getProjectNumberOfSegments();

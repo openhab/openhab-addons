@@ -21,7 +21,7 @@ public class DecimalTypeWSBooleanValueConverter implements Converter<WSBooleanVa
     @Override
     public DecimalType convertFromResourceValue(WSBooleanValue from, ConverterAdditionalInfo convertData)
             throws NumberFormatException {
-        return new DecimalType(from.isValue() ? 1 : 0);
+        return new DecimalType(from.booleanValue() ? 1 : 0);
     }
 
     @Override

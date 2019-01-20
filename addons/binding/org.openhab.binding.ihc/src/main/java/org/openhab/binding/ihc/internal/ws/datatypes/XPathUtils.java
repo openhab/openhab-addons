@@ -20,7 +20,6 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -57,24 +56,19 @@ public class XPathUtils {
         }
     };
 
-    public static String parseXMLValue(String xml, String xpathExpression) throws IhcExecption {
+    public static String parseXMLValue(String xml, String xpathExpression)
+            throws IOException, XPathExpressionException {
         try (InputStream is = new ByteArrayInputStream(xml.getBytes("UTF8"))) {
             XPath xpath = XPathFactory.newInstance().newXPath();
             InputSource inputSource = new InputSource(is);
 
             xpath.setNamespaceContext(ihcNamespaceContext);
-
-            try {
-                return (String) xpath.evaluate(xpathExpression, inputSource, XPathConstants.STRING);
-            } catch (XPathExpressionException e) {
-                throw new IhcExecption(e);
-            }
-        } catch (IOException e) {
-            throw new IhcExecption(e);
+            return (String) xpath.evaluate(xpathExpression, inputSource, XPathConstants.STRING);
         }
     }
 
-    public static boolean parseValueToBoolean(String xml, String xpathExpression) throws IhcExecption {
+    public static boolean parseValueToBoolean(String xml, String xpathExpression)
+            throws IOException, XPathExpressionException {
         return Boolean.parseBoolean(parseXMLValue(xml, xpathExpression));
     }
 

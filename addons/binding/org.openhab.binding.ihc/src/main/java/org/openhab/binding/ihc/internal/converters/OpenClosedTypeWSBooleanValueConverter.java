@@ -21,7 +21,7 @@ public class OpenClosedTypeWSBooleanValueConverter implements Converter<WSBoolea
     @Override
     public OpenClosedType convertFromResourceValue(WSBooleanValue from, ConverterAdditionalInfo convertData)
             throws NumberFormatException {
-        return from.isValue() ^ convertData.getInverted() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+        return from.booleanValue() ^ convertData.getInverted() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
     }
 
     @Override

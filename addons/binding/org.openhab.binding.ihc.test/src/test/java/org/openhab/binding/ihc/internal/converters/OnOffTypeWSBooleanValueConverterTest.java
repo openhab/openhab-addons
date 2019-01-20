@@ -30,7 +30,7 @@ public class OnOffTypeWSBooleanValueConverterTest {
 
         val = convertFromOHType(val, OnOffType.ON, new ConverterAdditionalInfo(null, inverted));
         assertEquals(12345, val.getResourceID());
-        assertEquals(true, val.isValue());
+        assertEquals(true, val.booleanValue());
 
         OnOffType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
         assertEquals(OnOffType.ON, type);
@@ -43,7 +43,7 @@ public class OnOffTypeWSBooleanValueConverterTest {
         WSBooleanValue val = new WSBooleanValue(12345);
         val = convertFromOHType(val, OnOffType.OFF, new ConverterAdditionalInfo(null, inverted));
         assertEquals(12345, val.getResourceID());
-        assertEquals(false, val.isValue());
+        assertEquals(false, val.booleanValue());
 
         OnOffType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
         assertEquals(OnOffType.OFF, type);
@@ -56,7 +56,7 @@ public class OnOffTypeWSBooleanValueConverterTest {
         WSBooleanValue val = new WSBooleanValue(12345);
         val = convertFromOHType(val, OnOffType.ON, new ConverterAdditionalInfo(null, inverted));
         assertEquals(12345, val.getResourceID());
-        assertEquals(false, val.isValue());
+        assertEquals(false, val.booleanValue());
 
         OnOffType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
         assertEquals(OnOffType.ON, type);
@@ -69,7 +69,7 @@ public class OnOffTypeWSBooleanValueConverterTest {
         WSBooleanValue val = new WSBooleanValue(12345);
         val = convertFromOHType(val, OnOffType.OFF, new ConverterAdditionalInfo(null, inverted));
         assertEquals(12345, val.getResourceID());
-        assertEquals(true, val.isValue());
+        assertEquals(true, val.booleanValue());
 
         OnOffType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
         assertEquals(OnOffType.OFF, type);

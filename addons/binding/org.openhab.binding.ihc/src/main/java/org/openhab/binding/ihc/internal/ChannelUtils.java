@@ -70,8 +70,6 @@ public class ChannelUtils {
     }
 
     public static void addChannelsFromProjectFile(Thing thing, Document projectFile, List<Channel> thingChannels) {
-        LOGGER.debug("Updating thing channels");
-
         if (projectFile != null) {
             try {
                 NodeList nodes = projectFile.getElementsByTagName("product_dataline");

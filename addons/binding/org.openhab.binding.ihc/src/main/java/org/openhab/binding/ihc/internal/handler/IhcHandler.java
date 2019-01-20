@@ -344,7 +344,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 ChannelParams params = new ChannelParams(channel);
                 logger.debug("Channel params: {}", params);
                 if (params.isDirectionReadOnly()) {
-                    logger.warn("Read only channel, skip the update to {}", channelUID);
+                    logger.debug("Read only channel, skip the update to {}", channelUID);
                     return;
                 }
                 updateChannel(channelUID, params, command);
@@ -536,27 +536,40 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
     }
 
     private void loadProject() throws IhcExecption {
-        boolean loadProject = false;
-        String fileName = String.format(LOCAL_IHC_PROJECT_FILE_NAME_TEMPLATE, thing.getUID().getId());
-        String filePath = getFilePathInUserDataFolder(fileName);
+        if (conf.loadProjectFile) {
+            String fileName = String.format(LOCAL_IHC_PROJECT_FILE_NAME_TEMPLATE, thing.getUID().getId());
+            String filePath = getFilePathInUserDataFolder(fileName);
+            boolean loadProject = false;
 
-        if (conf.loadProjectFile && projectFile == null) {
-            projectFile = ProjectFileUtils.readProjectFileFromFile(filePath);
             if (projectFile == null) {
+                // try first load project file from local cache file.
+                try {
+                    projectFile = ProjectFileUtils.readFromFile(filePath);
+                } catch (IhcExecption e) {
+                    logger.debug("Error occured when read project file from file '{}', reason {}", filePath,
+                            e.getMessage());
+                    loadProject = true;
+                }
+            }
+
+            if (!ProjectFileUtils.projectEqualsToControllerProject(projectFile, ihc.getProjectInfo())) {
+                logger.debug(
+                        "Local project file is not same as in the controller, reload project file from controller!");
                 loadProject = true;
             }
-        } else if (conf.loadProjectFile
-                && !ProjectFileUtils.projectEqualsToControllerProject(projectFile, ihc.getProjectInfo())) {
-            logger.debug("Local project file is not same as in the controller, reload project file from controller!");
-            loadProject = true;
-        }
 
-        if (loadProject) {
-            logger.debug("Loading IHC /ELKO LS project file from controller...");
-            byte[] data = ihc.loadProjectFileFromControllerAsByteArray();
-            logger.debug("Saving project file to local file '{}'", filePath);
-            ProjectFileUtils.saveProjectFile(filePath, data);
-            projectFile = ProjectFileUtils.converteBytesToDocument(data);
+            if (loadProject) {
+                logger.debug("Loading IHC /ELKO LS project file from controller...");
+                byte[] data = ihc.getProjectFileFromController();
+                logger.debug("Saving project file to local file '{}'", filePath);
+                try {
+                    ProjectFileUtils.saveToFile(filePath, data);
+                } catch (IhcExecption e) {
+                    logger.warn("Error occured when trying to write data to file '{}', reason {}", filePath,
+                            e.getMessage());
+                }
+                projectFile = ProjectFileUtils.converteBytesToDocument(data);
+            }
         }
 
         enumDictionary = new EnumDictionary(ProjectFileUtils.parseEnums(projectFile));
@@ -676,7 +689,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
             }
         });
 
-        checkTriggers(value);
+        checkPotentialButtonPresses(value);
     }
 
     private void updateChannelState(Channel channel, ChannelParams params, WSResourceValue value) {
@@ -705,18 +718,20 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
         }
     }
 
-    private void checkTriggers(WSResourceValue value) {
+    private void checkPotentialButtonPresses(WSResourceValue value) {
         if (value instanceof WSBooleanValue) {
-            if (!((WSBooleanValue) value).isValue()) {
+            if (((WSBooleanValue) value).booleanValue()) {
+                // potential button press
+                lastUpdate.put(value.getResourceID(), LocalDateTime.now());
+                updateTriggers(value.getResourceID(), Duration.ZERO);
+            } else {
+                // potential button release
                 LocalDateTime lastUpdateTime = lastUpdate.get(value.getResourceID());
                 if (lastUpdateTime != null) {
                     Duration duration = Duration.between(lastUpdateTime, LocalDateTime.now());
                     logger.debug("Time between uddates: {}", duration);
                     updateTriggers(value.getResourceID(), duration);
                 }
-            } else {
-                lastUpdate.put(value.getResourceID(), LocalDateTime.now());
-                updateTriggers(value.getResourceID(), Duration.ZERO);
             }
         }
     }

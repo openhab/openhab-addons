@@ -80,7 +80,7 @@ public class IhcResourceInteractionService extends IhcBaseService {
                 throw new IhcExecption("No resource value found");
             }
         } catch (XPathExpressionException | NumberFormatException | IOException e) {
-            throw new IhcExecption(e);
+            throw new IhcExecption("Error occured during XML data parsing", e);
         }
     }
 
@@ -213,7 +213,7 @@ public class IhcResourceInteractionService extends IhcBaseService {
                 + "</soap:Envelope>";
         // @formatter:on
 
-        String query = String.format(soapQuery, value.isValue() ? "true" : "false", value.getResourceID());
+        String query = String.format(soapQuery, value.booleanValue() ? "true" : "false", value.getResourceID());
         return doResourceUpdate(query);
     }
 
@@ -381,8 +381,12 @@ public class IhcResourceInteractionService extends IhcBaseService {
 
     private boolean doResourceUpdate(String query) throws IhcExecption {
         String response = sendSoapQuery(null, query);
-        return Boolean.parseBoolean(
-                XPathUtils.parseXMLValue(response, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:setResourceValue2"));
+        try {
+            return Boolean.parseBoolean(
+                    XPathUtils.parseXMLValue(response, "/SOAP-ENV:Envelope/SOAP-ENV:Body/ns1:setResourceValue2"));
+        } catch (IOException | XPathExpressionException e) {
+            throw new IhcExecption(e);
+        }
     }
 
     /**
@@ -465,7 +469,7 @@ public class IhcResourceInteractionService extends IhcBaseService {
             }
             return resourceValueList;
         } catch (XPathExpressionException | NumberFormatException | IOException e) {
-            throw new IhcExecption(e);
+            throw new IhcExecption("Error occured during XML data parsing", e);
         }
     }
 }
