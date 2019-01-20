@@ -14,7 +14,8 @@ package org.openhab.io.homekit.internal;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -32,7 +33,7 @@ import com.beowulfe.hap.HomekitRoot;
 class HomekitAccessoryRegistry {
 
     private HomekitRoot bridge;
-    private final Map<String, HomekitAccessory> createdAccessories = new HashMap<>();
+    private final HashMap<String, HomekitAccessory> createdAccessories = new HashMap<>();
     private final Set<Integer> createdIds = new HashSet<>();
 
     private final Logger logger = LoggerFactory.getLogger(HomekitAccessoryRegistry.class);
@@ -46,8 +47,11 @@ class HomekitAccessoryRegistry {
     }
 
     public synchronized void clear() {
-        while (!createdAccessories.isEmpty()) {
-            bridge.removeAccessory(createdAccessories.remove(0));
+        Iterator<Entry<String, HomekitAccessory>> iter = createdAccessories.entrySet().iterator();
+        while (iter.hasNext()) {
+            Entry<String, HomekitAccessory> entry = iter.next();
+            bridge.removeAccessory(entry.getValue());
+            iter.remove();
         }
         createdIds.clear();
     }
