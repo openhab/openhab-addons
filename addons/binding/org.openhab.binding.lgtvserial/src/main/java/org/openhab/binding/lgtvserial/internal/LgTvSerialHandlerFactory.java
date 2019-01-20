@@ -29,7 +29,7 @@ import org.openhab.binding.lgtvserial.internal.protocol.serial.SerialCommunicato
  */
 public class LgTvSerialHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static SerialCommunicatorFactory FACTORY = new SerialCommunicatorFactory();
+    private static final SerialCommunicatorFactory FACTORY = new SerialCommunicatorFactory();
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
