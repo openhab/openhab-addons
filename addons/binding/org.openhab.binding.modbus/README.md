@@ -1118,13 +1118,13 @@ See below for details.
 
 Here a few examples of the Item configuration from the 1.x binding:
 
-The first Item polled with the first poller used this configuration (with offset 0):
+The first Item polled with the first `poller` used this configuration (with offset 0):
 
 ```
 Switch FooSwitch  "Foo Switch"  {modbus="slave1:0"} 
 ```
 
-Now we have to define a `Thing`that can later be bound to that Item.
+Now we have to define a `Thing` that can later be bound to that Item.
 
 The `slave1` `poller` uses `12288` as start address. 
 So we define the first data Thing within the poller `wago_slave1` with this address and choose a name that ends with `0`:
@@ -1189,7 +1189,7 @@ Switch FooSwitch  "Foo Switch" {channel="modbus:data:wago:wago_slave1:wago_s1_00
 Switch BarSwitch  "Bar Switch" {channel="modbus:data:wago:wago_slave1:wago_s1_001:switch", autoupdate="false"}
 ```
 
-If you have many Items to change and used the namin scheme recommended above, you can now use the following search-and-replace expressions in your editor:
+If you have many Items to change and used the naming scheme recommended above, you can now use the following search-and-replace expressions in your editor:
 
 Replace 
 
