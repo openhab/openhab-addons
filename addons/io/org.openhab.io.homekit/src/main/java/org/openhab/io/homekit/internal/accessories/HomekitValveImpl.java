@@ -65,13 +65,12 @@ public class HomekitValveImpl extends AbstractHomekitAccessoryImpl<SwitchItem> i
 
     @Override
     public void subscribeValveInUse(HomekitCharacteristicChangeCallback callback) {
-        subscribeValveActive(callback);
+        getUpdater().subscribe(getItem(), "inUse", callback);
     }
 
     @Override
     public void unsubscribeValveInUse() {
-        // we're unsubscribing twice but this is probably fine.
-        unsubscribeValveActive();
+        getUpdater().unsubscribe(getItem(), "inUse");
     }
 
     @Override
