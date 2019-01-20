@@ -1055,7 +1055,7 @@
   <feature name="openhab-iconset-classic" version="${project.version}">
     <feature>openhab-runtime-base</feature>
     <feature>esh-ui-icon</feature>
-    <bundle>mvn:org.openhab.extension.ui.iconset/org.openhab.ui.iconset.classic/${project.version}</bundle>
+    <bundle>mvn:org.openhab.ui.iconset/org.openhab.ui.iconset.classic/${project.version}</bundle>
   </feature>
 
 </features>
