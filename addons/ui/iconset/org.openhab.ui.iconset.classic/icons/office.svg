@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" style="enable-background:new 0 0 64 64">
+  <path d="m4.5 8.5h13v43h-13z" style="fill:#ff4545"/>
+  <path d="M17,9v42H5V9H17 M18,8H4v44h14V8L18,8z" style="fill:#d82b2b"/>
+  <path d="m20.5 8.5h13v43h-13z" style="fill:#70ce2e"/>
+  <path d="m33 9v42h-12v-42h12m1-1h-14v44h14v-44z" style="fill:#62b224"/>
+  <path d="m34.8 11.8l12.3-4.3 14.3 40.5-12.3 4.3-14.3-40.5" style="fill:#1e82ff"/>
+  <path d="m46.8 8.1l14 39.6-11.3 4-14-39.6 11.3-4m.6-1.3l-13.2 4.7 14.6 41.5 13.2-4.7-14.6-41.5z" style="fill:#1271d8"/>
+  <g style="fill:#828b7d">
+    <circle cx="11" cy="44" r="3"/>
+    <circle cx="27" cy="44" r="3"/>
+    <circle cx="52.7" cy="43.1" r="3"/>
+  </g>
+  <circle cx="11" cy="44" r="2"/>
+  <circle cx="27" cy="44" r="2"/>
+  <circle cx="52.7" cy="43.1" r="2"/>
+  <g style="fill:#e7f4f5">
+    <path d="m6 14h10v16h-10z"/>
+    <path d="m22 14h10v16h-10z"/>
+    <path d="m52.8 28.3l-9.4 3.3-5.4-15.1 9.4-3.3 5.4 15.1"/>
+  </g>
+  <g style="fill:#c8c8c8">
+    <path d="m7 21h8v1h-8z"/>
+    <path d="m7 24h8v1h-8z"/>
+    <path d="m7 27h8v1h-8z"/>
+    <path d="m23 21h8v1h-8z"/>
+    <path d="m23 24h8v1h-8z"/>
+    <path d="m23 27h8v1h-8z"/>
+    <path d="m41.4 22.7l7.5-2.7.3.9-7.5 2.7-.3-.9"/>
+    <path d="m42.3 25.5l7.5-2.7.3.9-7.5 2.7-.3-.9"/>
+    <path d="m43.4 28.4l7.5-2.7.3.9-7.5 2.7-.3-.9"/>
+  </g>
+  <path d="m8 16h6v3h-6z" style="fill:#fadc00"/>
+  <path d="m24 16h6v3h-6z" style="fill:#ff845c"/>
+  <path d="m40.6 17.7l5.7-2 1 2.8-5.7 2-1-2.8" style="fill:#5fbc15"/>
+</svg>

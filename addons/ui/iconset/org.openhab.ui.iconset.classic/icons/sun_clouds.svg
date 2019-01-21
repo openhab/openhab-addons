@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" style="enable-background:new 0 0 64 64">
+  <defs>
+    <radialGradient id="0" cx="33" cy="30" r="25" gradientUnits="userSpaceOnUse">
+      <stop offset=".8" style="stop-color:#f8f5e5;stop-opacity:0"/>
+      <stop offset=".8" style="stop-color:#ffde52;stop-opacity:.2"/>
+      <stop offset="1" style="stop-color:#ffde52;stop-opacity:0"/>
+    </radialGradient>
+  </defs>
+  <circle cx="33" cy="30" r="25" style="fill:url(#0)"/>
+  <circle cx="33" cy="30" r="18" style="fill:#ffde52"/>
+  <g style="fill:#d9f1ff;stroke-miterlimit:10;stroke:#7aadcc;stroke-linejoin:bevel">
+    <path d="m25.98 44.7c.01-.07.02-.13.02-.2 0-2.49-4.03-4.5-9-4.5s-9 2.01-9 4.5c0 .4.11.78.31 1.15-2.57.86-4.31 2.49-4.31 4.35 0 2.76 3.81 5 8.5 5 3.09 0 5.78-.97 7.27-2.42.83.27 1.75.42 2.73.42 3.59 0 6.5-2.01 6.5-4.5 0-1.6-1.21-3-3.02-3.8z"/>
+    <path d="m59 44.5c0-3.04-2.46-5.5-5.5-5.5-.71 0-1.39.14-2.02.39-1.37-1.45-3.54-2.39-5.98-2.39-.75 0-1.47.09-2.15.25-1.37-1.37-3.48-2.25-5.85-2.25-3.27 0-6.04 1.67-7.07 4-4.11.03-7.43 2.7-7.43 6s3.32 5.97 7.43 6c1.03 2.33 3.8 4 7.07 4 1.69 0 3.25-.45 4.5-1.21 1.25.76 2.81 1.21 4.5 1.21 3.72 0 6.81-2.17 7.39-5.02 2.86-.2 5.11-2.57 5.11-5.48z"/>
+  </g>
+</svg>

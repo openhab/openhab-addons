@@ -1,0 +1,48 @@
+<div layout="row" layout-align="start center" class="dimmer-widget">
+	<div class="item-label-container" flex="45">
+        <i class="material-icons">wb_incandescent</i>
+        <div>{{::$ctrl.getLabel($ctrl.item, 'Color')}}</div>
+    </div>
+	<div ng-if="::(!$ctrl.isOptionList($ctrl.item) && !$ctrl.item.readOnly)" flex="55" layout="row" layout-align="end center" class="dimmer-widget">
+
+		<md-slider class="hue md-default-theme"
+		           hue-color="{{$ctrl.state.hue}}"
+		           flex min="0" 
+		           max="360" 
+		           ng-model="$ctrl.state.hue" 
+		           ng-change="$ctrl.setColor()" 
+		           aria-label="{{::$ctrl.getLabel($ctrl.item, 'Color')}} hue"></md-slider>
+	</div>
+</div>
+<div ng-if="::(!$ctrl.isOptionList(item) && !$ctrl.item.readOnly)" layout="row" layout-align="start center" class="dimmer-widget">
+	<div flex="45">
+		<p class="no-icon-margin-left">Brightness</p>
+	</div>
+	<div flex="55" layout="row" layout-align="end center" class="dimmer-widget">
+		<md-slider class="md-default-theme" 
+		           flex min="0" 
+		           max="100" 
+		           ng-model="$ctrl.state.brightness" 
+		           ng-change="$ctrl.setBrightness()" 
+		           aria-label="{{::$ctrl.getLabel($ctrl.item, 'Color')}} brightness"></md-slider>
+	</div>
+</div>
+<div ng-if="::(!$ctrl.isOptionList(item) && !$ctrl.item.readOnly)" layout="row" layout-align="start center" class="dimmer-widget">
+	<div flex="45">
+		<p class="no-icon-margin-left">Saturation</p>
+	</div>
+	<div flex="55" layout="row" layout-align="end center" class="dimmer-widget">
+		<md-slider class="md-default-theme" 
+		           flex min="0" 
+		           max="100" 
+		           ng-model="$ctrl.state.saturation" 
+		           ng-change="$ctrl.setColor()" 
+		           aria-label="{{::$ctrl.getLabel($ctrl.item, 'Color')}} saturation"></md-slider>
+	</div>
+</div>
+<div ng-if="::item.readOnly" flex="100" layout="row" layout-align="end center">
+	<span class="state">{{$ctrl.item.stateText}}</span>
+</div>
+<div layout="row" layout-align="start center" ng-if="::($ctrl.isOptionList($ctrl.item) && !$ctrl.item.readOnly)">
+    <item-state-dropdown item="$ctrl.item" on-change="$ctrl.setBrightness()"></item-state-dropdown>
+</div>

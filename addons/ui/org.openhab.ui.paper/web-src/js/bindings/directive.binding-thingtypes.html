@@ -1,0 +1,27 @@
+<div class="things">
+	<div class="md-title">Supported Things</div>
+	
+	<div class="search" layout="row" ng-if="$ctrl.binding.thingTypes.length > 3">
+	    <search-field model="$ctrl.filter.text" placeholder="Filter"/>
+	</div>
+
+	<md-expansion-panel-group multiple> 
+	    <md-expansion-panel md-component-id="thing-type" ng-repeat="thingType in $ctrl.binding.thingTypes | filter:$ctrl.filterItems(['uid','label'], $ctrl.filter.text) track by thingType.UID"> 
+	        <md-expansion-panel-collapsed>
+	             <div class="md-title">{{::thingType.label}}</div>
+	             <div class="md-summary">{{::thingType.UID}}</div>
+	             <md-expansion-panel-icon></md-expansion-panel-icon>
+	        </md-expansion-panel-collapsed>
+	        <md-expansion-panel-expanded>
+	            <md-expansion-panel-header ng-click="$panel.collapse()">
+	                <div class="md-title">{{::thingType.label}}</div>
+	                <div class="md-summary">{{::thingType.UID}}</div>
+	                <md-expansion-panel-icon></md-expansion-panel-icon>
+	            </md-expansion-panel-header>
+	            <md-expansion-panel-content>
+	                <div>{{::thingType.description}}</div>
+	            </md-expansion-panel-content>
+	        </md-expansion-panel-expanded>
+	    </md-expansion-panel>
+	</md-expansion-panel-group>
+</div>

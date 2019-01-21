@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="hue" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Hue Bridge -->
+	<bridge-type id="bridge">
+		<label>Hue Bridge</label>
+		<description>The Hue bridge represents the Philips Hue bridge.</description>
+
+		<properties>
+			<property name="vendor">Philips</property>
+		</properties>
+		<representation-property>serialNumber</representation-property>
+
+		<config-description>
+			<parameter name="ipAddress" type="text">
+				<context>network-address</context>
+				<label>Network Address</label>
+				<description>Network address of the Hue bridge.</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="userName" type="text">
+				<context>password</context>
+				<label>Username</label>
+				<description>Name of a registered Hue bridge user, that allows to access the API.</description>
+				<required>false</required>
+			</parameter>
+			<parameter name="pollingInterval" type="integer" min="1" step="1" unit="s">
+				<label>Polling Interval</label>
+				<description>Seconds between fetching values from the Hue bridge.</description>
+				<required>true</required>
+				<default>10</default>
+			</parameter>
+			<parameter name="sensorPollingInterval" type="integer" min="50" step="1" unit="ms">
+				<label>Sensor Polling Interval</label>
+				<description>Milliseconds between fetching sensor-values from the Hue bridge. A higher value means more delay for the sensor values, but a too low value can cause congestion on the Hue bridge.</description>
+				<required>true</required>
+				<default>500</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+</thing:thing-descriptions>

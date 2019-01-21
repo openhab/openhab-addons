@@ -1,0 +1,19 @@
+<div layout="row" layout-align="start center" class="dimmer-widget">
+	<div class="item-label-container" flex="40">
+        <i class="material-icons">{{::$ctrl.getIcon($ctrl.item.category)}}</i>
+        <div>{{::$ctrl.getLabel($ctrl.item, 'Switch')}}</div>
+    </div>
+	<div flex="60" layout="row" layout-align="end center" class="switch-widget" ng-if="::!$ctrl.isOptionList($ctrl.item)">
+		<md-switch class="md-default-theme" 
+		           ng-disabled="::$ctrl.item.readOnly" 
+		           ng-model="$ctrl.item.state" 
+		           ng-change="$ctrl.updateState()" 
+		           ng-true-value="'ON'" 
+		           ng-false-value="'OFF'" 
+		           aria-label="{{::$ctrl.getLabel($ctrl.item, 'Switch')}}">
+		</md-switch>
+	</div>
+</div>
+<div layout="row" layout-align="start center" ng-if="::($ctrl.isOptionList($ctrl.item) && !$ctrl.item.readOnly)">
+    <item-state-dropdown item="$ctrl.item" on-change="$ctrl.updateState()"></item-state-dropdown>
+</div>

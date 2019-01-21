@@ -1,0 +1,25 @@
+Manifest-Version: 1.0
+Bundle-ClassPath: .
+Bundle-License: https://www.eclipse.org/legal/epl-2.0/
+Bundle-ManifestVersion: 2
+Bundle-Name: JSonPath Transformation Service
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.transform.jsonpath
+Bundle-Vendor: openHAB
+Bundle-Version: 2.5.0.qualifier
+Import-Package: 
+ com.jayway.jsonpath,
+ net.minidev.json,
+ net.minidev.json.annotate,
+ net.minidev.json.parser,
+ net.minidev.json.reader,
+ net.minidev.json.writer,
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.thing.profiles,
+ org.eclipse.smarthome.core.transform,
+ org.eclipse.smarthome.core.types,
+ org.slf4j
+Service-Component: OSGI-INF/*.xml
+Automatic-Module-Name: org.openhab.transform.jsonpath

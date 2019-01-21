@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.openhab.addons</groupId>
+    <artifactId>pom</artifactId>
+    <version>2.5.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.openhab.transform</groupId>
+  <artifactId>pom</artifactId>
+
+  <packaging>pom</packaging>
+
+  <name>Transformation Services</name>
+
+  <modules>
+    <module>org.openhab.transform.exec</module>
+    <module>org.openhab.transform.javascript</module>
+    <module>org.openhab.transform.map</module>
+    <module>org.openhab.transform.map.test</module>
+    <module>org.openhab.transform.scale</module>
+    <module>org.openhab.transform.scale.test</module>
+    <module>org.openhab.transform.regex</module>
+    <module>org.openhab.transform.regex.test</module>
+    <module>org.openhab.transform.xpath</module>
+    <module>org.openhab.transform.xpath.test</module>
+    <module>org.openhab.transform.jsonpath</module>
+    <module>org.openhab.transform.jsonpath.test</module>
+    <module>org.openhab.transform.xslt</module>
+    <module>org.openhab.transform.xslt.test</module>
+  </modules>
+
+</project>

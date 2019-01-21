@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="bridge-type:tradfri:gateway">
+		<parameter name="host" type="text" required="true">
+			<context>network-address</context>
+			<label>Host</label>
+			<description>Hostname or IP address of the IKEA TRÅDFRI gateway</description>
+		</parameter>
+		<parameter name="port" type="integer" required="false">
+			<label>Port</label>
+			<description>Port for accessing the gateway</description>
+			<advanced>true</advanced>
+			<default>5684</default>
+		</parameter>
+		<parameter name="code" type="text" required="false">
+			<context>password</context>
+			<label>Security Code</label>
+			<description>Security code printed on the label underneath the gateway.</description>
+		</parameter>
+		<parameter name="identity" type="text" required="false">
+			<advanced>true</advanced>
+			<label>Identity</label>
+			<description>Unique identity used for communication with the gateway</description>
+		</parameter>
+		<parameter name="preSharedKey" type="text" required="false">
+			<advanced>true</advanced>
+			<context>password</context>
+			<label>Pre-Shared security key</label>
+			<description>Security key obtained during first initialization of the gateway</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:tradfri:device">
+		<parameter name="id" type="integer" required="true">
+			<label>ID</label>
+			<description>The identifier of the device on the gateway.</description>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

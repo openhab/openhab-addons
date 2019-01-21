@@ -1,0 +1,20 @@
+<md-dialog aria-label="Scan for Things" class="scan"> <md-dialog-content class="md-dialog-content">
+<h1>Scan for Things</h1>
+<p>Click on the "Scan" button to scan for new things for a binding.</p>
+<br />
+<div class="fab-item" ng-repeat="binding in getSupportedBindingIdsSortedByName()">
+	<md-button ng-show="activeScans.indexOf(binding) < 0" title="Refresh" class="md-fab" ng-click="scan(binding)" aria-label="Refresh"> <i class="material-icons">settings_input_antenna</i></md-button>
+	<md-progress-circular ng-show="activeScans.indexOf(binding) >= 0" md-mode="indeterminate"></md-progress-circular>
+	<div class="item-content">
+		<h3>{{getBindingById(binding).name}}</h3>
+		<p>
+			<small>{{binding}}</small>
+		</p>
+	</div>
+	<hr class="border-line" ng-show="!$last" />
+</div>
+</md-dialog-content>
+<div class="md-actions" layout="row">
+	<md-button ng-click="close()">OK</md-button>
+</div>
+</md-dialog>

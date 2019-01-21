@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Xslt Transformation Service Tests
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.transform.xslt.test
+Bundle-Vendor: openHAB
+Bundle-Version: 2.5.0.qualifier
+Fragment-Host: org.openhab.transform.xslt
+Import-Package: 
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.junit;version="4.0.0"
+Automatic-Module-Name: org.openhab.transform.xslt.test

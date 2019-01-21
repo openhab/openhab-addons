@@ -1,0 +1,20 @@
+<div class="row includeConfig">
+<fieldset>
+    <legend>{{::$ctrl.namespace}}</b> - <span>{{::$ctrl.mainParameter.description}}</legend>
+	<div class="col-xs-12 row">
+	    <div ng-if="$ctrl.hasOptions()" class="col-xs-11">
+	        <md-select placeholder="Select" class="controlSelect" ng-model="$ctrl.metadata.value" aria-label={{::$ctrl.namespace}}> 
+	            <md-option ng-value="option.value" ng-repeat="option in ::$ctrl.mainParameter.options"> {{::option.label}} </md-option> 
+	        </md-select>
+	    </div>
+	    <div ng-if="!$ctrl.hasOptions()" class="col-xs-11">
+	        <md-input-container> 
+	            <input type="text" name="{{::$ctrl.namespace}}" ng-model="$ctrl.metadata.value" aria-label={{::$ctrl.namespace}}></input> 
+	        </md-input-container>
+	    </div>
+	    <div ng-if="$ctrl.hasParameters()" class="col-xs-1">
+	        <i class="material-icons edit" ng-click="$ctrl.editParameters($event)" aria-label="edit">edit</i> 
+	    </div>
+	</div>
+</fieldset>
+</div>

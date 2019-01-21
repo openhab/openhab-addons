@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" style="enable-background:new 0 0 64 64">
+  <path d="m1.5 31.5h17v31h-17z" style="fill:#00b450"/>
+  <path d="m18 32v30h-16v-30h16m1-1h-1-16-1v1 30 1h1 16 1v-1-30-1z" style="fill:#008c39"/>
+  <path d="m23.5 16.5h17v46h-17z" style="fill:#ff9100"/>
+  <path d="m40 17v45h-16v-45h16m1-1h-1-16-1v1 45 1h1 16 1v-1-45-1z" style="fill:#e57200"/>
+  <path d="m45.5 1.5h17v61h-17z" style="fill:#1e82ff"/>
+  <path d="m62 2v60h-16v-60h16m1-1h-1-16-1v1 60 1h1 16 1v-1-60-1z" style="fill:#1271d8"/>
+</svg>

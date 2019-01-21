@@ -1,0 +1,60 @@
+<section id="main" class="white-bg extensions header-tabs" droppable>
+	<div class="header-toolbar">
+		<md-button ng-click="refresh()" aria-label="Refresh"> <i class="material-icons">refresh</i></md-button>
+		<md-button ng-click="changeView(false)" aria-label="Refresh"> <i class="material-icons">view_list</i></md-button>
+		<md-button ng-click="changeView(true)" aria-label="Refresh"> <i class="material-icons">view_module</i></md-button>
+	</div>
+	<md-tabs md-stretch-tabs="always" class="section-tabs" md-selected="selectedIndex"> <md-tab ng-repeat="extensionType in extensionTypes track by $index" ng-disabled="tab.disabled" label="{{extensionType.label}}" md-on-select="onTabSelected(extensionType)" layout-fill> <md-tab-content layout-fill="">
+	<div class="search" layout="row" layout-align="center center">
+		<i ng-style="{'font-size': '24px'}" class="material-icons">search</i>
+		<md-input-container flex="auto" md-no-float class="md-block"> <input ng-model="searchText[$index]" ng-model-options="{ debounce: 200 }" type="text" placeholder="Search"> </md-input-container>
+		<i ng-click="searchText[$index] = undefined" ng-class="{'vhidden': !searchText}" ng-style="{'font-size': '24px'}" class="material-icons clickable">close</i>
+	</div>
+	<div style="text-align: right; max-width: 98%"></div>
+
+	<div class="container" ng-show="!showCards">
+		<div class="extension fab-item text-left" ng-repeat="extension in extensionType.extensions | filter:filterItems(['id','label'])">
+			<div class="circle" ng-class="{'green': extension.installed}">{{extension.label.substring(0,1).toUpperCase()}}</div>
+			<div class="cbody item-content">
+				<div class="description">
+					<h3 ng-class="{'clickable':extension.link}" ng-click="openExternalLink(extension.link)">{{extension.label}}</h3>
+					<p>{{extension.id}} - {{extension.version}}</p>
+				</div>
+				<div class="actions">
+					<md-button aria-label="Install" ng-show="!extension.installed && !extension.inProgress" ng-click="install(extension.id)">Install</md-button>
+					<md-button aria-label="Uninstall" ng-show="extension.installed && !extension.inProgress" ng-click="uninstall(extension.id)">Uninstall</md-button>
+					<md-progress-circular md-mode="indeterminate" ng-show="extension.inProgress" style="margin-right: 25px;"></md-progress-circular>
+				</div>
+			</div>
+			<hr class="border-line" ng-show="!$last" aria-hidden="false">
+		</div>
+	</div>
+	<div class="container" ng-show="showCards" ng-class="{'showCards':showCards}">
+		<div ng-attr-id="{{'extensions-' + extensionTypes.indexOf(extensionType)}}">
+			<div class="extension fab-item text-left col-lg-4 col-sm-6 col-xs-12" ng-repeat="extension in extensionType.extensions | filter:filterItems(['id','label'])">
+				<div class="card item" style="background-color: {{extension.backgroundColor">
+					<div class="imageAlign">
+						<img ng-show="extension.imageLink" vertical-align class="rectangle" ng-src="{{extension.imageLink}}" onerror="this.style.display='none';" />
+					</div>
+					<div class="item-content">
+						<div class="pull-left" ng-class="{'extension-label':extension.link}">
+							<div class="md-title">{{extension.label}}</div>
+							<p>{{extension.id}} - {{extension.version}}</p>
+						</div>
+						<div style="position: absolute; right: 8px;" ng-if="extension.link">
+							<i ng-click="openExternalLink(extension.link)" class="material-icons cursor-pointer col-xs-3 launch-icon">launch</i>
+						</div>
+					</div>
+					<div ng-bind-html="extension.description" class="description"></div>
+					<div class="actions">
+						<md-button aria-label="Install" ng-show="!extension.installed && !extension.inProgress" ng-click="install(extension.id)">Install</md-button>
+						<md-button aria-label="Uninstall" ng-show="extension.installed && !extension.inProgress" ng-click="uninstall(extension.id)">Uninstall</md-button>
+						<md-progress-circular md-mode="indeterminate" ng-show="extension.inProgress" style="margin-right: 25px;"></md-progress-circular>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="backdrop" ng-show="ondrag"></div>
+	</md-tab-content></md-tab>
+</section>

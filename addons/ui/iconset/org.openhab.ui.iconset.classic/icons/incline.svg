@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" style="enable-background:new 0 0 64 64">
+  <path d="m.5 49.5v-7h.2l.05-.44c1.96-15.71 15.4-27.56 31.25-27.56s29.29 11.85 31.25 27.56l.05.44h.2v7h-63m31.5-28c-12.01 0-22.17 8.59-24.16 20.42l-.1.58h48.51l-.1-.58c-1.98-11.83-12.14-20.42-24.15-20.42" style="fill:#e6f3ff"/>
+  <path d="M32,15c15.6,0,28.82,11.66,30.75,27.12L62.86,43H63v6H1v-6h0.14l0.11-0.88C3.18,26.66,16.4,15,32,15     M7.16,43h1.18h47.32h1.18l-0.2-1.17C54.62,29.76,44.26,21,32,21S9.38,29.76,7.35,41.83L7.16,43 M32,14    C15.68,14,2.23,26.22,0.26,42H0v8h64v-8h-0.26C61.77,26.22,48.32,14,32,14L32,14z M8.34,42C10.24,30.65,20.11,22,32,22    s21.76,8.65,23.66,20H8.34L8.34,42z" style="fill:#c0e4ff"/>
+  <g style="fill:none;stroke-miterlimit:10;stroke:#1a171b;stroke-width:.5">
+    <path d="m28.5 47v2" style="opacity:.4"/>
+    <path d="m20.5 47v2" style="opacity:.4"/>
+    <path d="m51.5 47v2" style="opacity:.4"/>
+    <path d="m43.5 47v2" style="opacity:.4"/>
+    <path d="m59.5 47v2" style="opacity:.4"/>
+    <path d="m4.5 47v2" style="opacity:.4"/>
+    <path d="m12.5 47v2" style="opacity:.4"/>
+    <path d="m35.5 47v2" style="opacity:.4"/>
+  </g>
+  <g style="opacity:.4">
+    <path d="m26.57 15.47l1.04 5.85m-6.26-4.46l2.05 5.58m-6.94-3.31l3 5.15m-7.42-2.07l3.86 4.55m-7.68-.75l4.6 3.82m-7.69.58l5.19 2.97m-7.48 1.9l5.64 2.03m-7.03 3.16l5.91 1.03m55.09-1.03l-5.91 1.03m4.51-6.22l-5.64 2.03m3.36-6.9l-5.19 2.97m2.09-7.37l-4.6 3.82m.78-7.62l-3.85 4.55m-.57-7.63l-3 5.15m-1.89-7.42l-2.05 5.58m-3.17-6.97l-1.04 5.85m-4.33-6.32v5.94" style="fill:none;stroke-miterlimit:10;stroke:#000;stroke-width:.5"/>
+  </g>
+  <g style="opacity:.6">
+    <path d="m32 44.5c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1m0-.5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z" style="fill:#1a171b"/>
+  </g>
+  <g style="fill:none;stroke-miterlimit:10;stroke:#1a171b;stroke-width:.5">
+    <path d="m3 45.5h26" style="opacity:.15"/>
+    <path d="m35 45.5h26" style="opacity:.15"/>
+  </g>
+</svg>

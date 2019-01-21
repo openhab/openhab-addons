@@ -1,0 +1,27 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.io.mqttembeddedbroker
+Bundle-ManifestVersion: 2
+Bundle-Name: Embedded MQTT Broker
+Bundle-SymbolicName: org.openhab.io.mqttembeddedbroker;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.5.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ClassPath: ., lib/moquette-broker-0.11.jar, lib/netty-all-4.1.19.Final.jar
+Import-Package: 
+ javax.security.cert,
+ org.apache.commons.io,
+ org.apache.commons.lang,
+ org.apache.commons.net.util,
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.io.transport.mqtt,
+ org.eclipse.smarthome.io.transport.mqtt.reconnect,
+ org.eclipse.smarthome.io.transport.mqtt.sslcontext,
+ org.osgi.framework,
+ org.osgi.service.cm,
+ org.osgi.service.component,
+ org.slf4j
+Service-Component: OSGI-INF/*.xml
+Export-Package: org.openhab.io.mqttembeddedbroker

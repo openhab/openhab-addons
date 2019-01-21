@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mqtt"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="string">
+		<item-type>String</item-type>
+		<label>Text value</label>
+		<config-description-ref uri="thing-type:mqtt:string_channel" />
+	</channel-type>
+
+	<channel-type id="datetime">
+		<item-type>DateTime</item-type>
+		<label>Date/Time value</label>
+		<description>Current date and/or time</description>
+		<config-description-ref uri="thing-type:mqtt:string_channel" />
+	</channel-type>
+
+	<channel-type id="image">
+		<item-type>Image</item-type>
+		<label>Image</label>
+		<description>An image to display. Send a binary bmp, jpg, png or any other supported format to this channel.</description>
+		<state readOnly="true" />
+		<config-description-ref uri="thing-type:mqtt:string_channel" />
+	</channel-type>
+
+	<channel-type id="location">
+		<item-type>Location</item-type>
+		<label>Location</label>
+		<description>GPS coordinates as Latitude,Longitude,Altitude</description>
+		<config-description-ref uri="thing-type:mqtt:string_channel" />
+	</channel-type>
+
+	<channel-type id="number">
+		<item-type>Number</item-type>
+		<label>Number value</label>
+		<config-description-ref uri="thing-type:mqtt:number_channel"></config-description-ref>
+	</channel-type>
+
+	<channel-type id="dimmer">
+		<item-type>Dimmer</item-type>
+		<label>Percentage value</label>
+		<config-description-ref uri="thing-type:mqtt:dimmer_channel"></config-description-ref>
+	</channel-type>
+
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>On/Off switch</label>
+		<config-description-ref uri="thing-type:mqtt:switch_channel"></config-description-ref>
+	</channel-type>
+
+	<channel-type id="contact">
+		<item-type>Contact</item-type>
+		<label>Open/Close contact</label>
+		<config-description-ref uri="thing-type:mqtt:switch_channel"></config-description-ref>
+	</channel-type>
+
+	<channel-type id="rollershutter">
+		<item-type>Rollershutter</item-type>
+		<label>Rollershutter</label>
+		<config-description-ref uri="thing-type:mqtt:rollershutter_channel"></config-description-ref>
+	</channel-type>
+
+	<channel-type id="colorRGB">
+		<item-type>Color</item-type>
+		<label>Color value (Red,Green,Blue)</label>
+		<description></description>
+		<config-description-ref uri="thing-type:mqtt:color_channel"></config-description-ref>
+	</channel-type>
+
+	<channel-type id="colorHSB">
+		<item-type>Color</item-type>
+		<label>Color value (Hue,Saturation,Brightness)</label>
+		<description></description>
+		<config-description-ref uri="thing-type:mqtt:color_channel"></config-description-ref>
+	</channel-type>
+
+</thing:thing-descriptions>

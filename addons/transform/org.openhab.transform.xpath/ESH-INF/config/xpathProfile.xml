@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+    http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+    <config-description uri="profile:transform:XPATH">
+        <parameter name="function" type="text" required="true">
+            <label>XPath expression</label>
+            <description>XPath expression to be applied on the state: For example: /*[name()='PTZStatus']/*[name()='AbsoluteHigh']/*[name()='azimuth']/</description>
+        </parameter>
+        <parameter name="sourceFormat" type="text" required="false">
+            <label>State Formatter</label>
+            <description>How to format the state on the channel before transforming it, i.e. %s or %.1f °C (default is %s)</description>
+            <advanced>true</advanced>
+        </parameter>
+    </config-description>
+</config-description:config-descriptions>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="fsinternetradio" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="radio">
+		<label>Internet Radio</label>
+		<description>An internet radio device based on the Frontier Silicon chipset.</description>
+
+		<channels>
+			<channel id="power" typeId="power" />
+			<channel id="mode" typeId="mode" />
+			<channel id="volume-absolute" typeId="volume-absolute" />
+			<channel id="volume-percent" typeId="volume-percent" />
+			<channel id="mute" typeId="mute" />
+			<channel id="play-info-name" typeId="play-info-name" />
+			<channel id="play-info-text" typeId="play-info-text" />
+			<channel id="preset" typeId="preset" />
+		</channels>
+
+		<properties>
+			<property name="vendor">Frontiersilicon</property>
+			<property name="modelId"></property>
+		</properties>
+
+		<config-description>
+			<parameter name="ip" type="text" required="true">
+				<context>network-address</context>
+				<label>Network Address</label>
+				<description>The IP address (name or numeric) of the internet radio.</description>
+			</parameter>
+			<parameter name="port" type="integer" required="true">
+				<label>Port</label>
+				<description>The port of the internet radio (default: 80).</description>
+				<default>80</default>
+			</parameter>
+			<parameter name="pin" type="text" required="true">
+				<label>Pin</label>
+				<description>The PIN configured in the internet radio (default: 1234).</description>
+				<default>1234</default>
+			</parameter>
+			<parameter name="refresh" type="integer">
+				<label>Refresh interval</label>
+				<description>Specifies the refresh interval in seconds.</description>
+				<default>60</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Switch the radio on or off.</description>
+		<category>Switch</category>
+	</channel-type>
+	<channel-type id="preset">
+		<item-type>Number</item-type>
+		<label>Preset</label>
+		<description>Preset radio stations configured in the radio.</description>
+	</channel-type>
+	<channel-type id="volume-absolute" advanced="true">
+		<item-type>Number</item-type>
+		<label>Volume</label>
+		<description>Volume (min=0, max=32).</description>
+		<category>SoundVolume</category>
+		<state min="0" max="32" step="1" />
+	</channel-type>
+	<channel-type id="volume-percent">
+		<item-type>Dimmer</item-type>
+		<label>Volume</label>
+		<description>Volume (in percent).</description>
+		<category>SoundVolume</category>
+		<state min="0" max="100" step="3" /> <!-- 3% correspond to 1 absolute step -->
+	</channel-type>
+	<channel-type id="mute">
+		<item-type>Switch</item-type>
+		<label>Mute</label>
+		<description>Mute the radio.</description>
+	</channel-type>
+	<channel-type id="play-info-name">
+		<item-type>String</item-type>
+		<label>Current Title</label>
+		<description>The name of the current radio station or track.</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="play-info-text">
+		<item-type>String</item-type>
+		<label>Info Text</label>
+		<description>Additional information e.g. of the current radio station.</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="mode">
+		<item-type>Number</item-type>
+		<label>Mode</label>
+		<description>The radio mode, e.g. FM radio, internet radio, AUX, etc.</description>
+		<state min="0" step="1" />
+	</channel-type>
+
+</thing:thing-descriptions>

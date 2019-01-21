@@ -1,0 +1,23 @@
+<md-dialog aria-label="Configure Metadata Parameters"> <md-dialog-content class="md-dialog-content">
+<h1>
+    Configure Metadata {{$ctrl.configDescription.uri}}
+</h1>
+
+<div ng-init="form={}">
+    <config-description configuration="$ctrl.configuration" parameters="$ctrl.parameterGroups" expert-mode="$ctrl.expertMode" config-array="$ctrl.configArray" form="form"/>
+</div>
+
+<div ng-show="$ctrl.expertMode" layout="row" layout-align="center">
+    <button class="md-raised md-button" ng-click="$ctrl.addParameter()" aria-label="Add Parameter">Add Parameter</button>
+</div>
+</md-dialog-content>
+<div class="md-actions" layout="row">
+    <a class="md-button md-ink-ripple" ng-click="$ctrl.expertMode=!$ctrl.expertMode">
+        <span>{{$ctrl.expertMode ? 'Normal' : 'Expert'}} Mode</span>
+        <div class="md-ripple-container"></div>
+    </a>
+    <span flex="auto"></span>
+    <md-button ng-click="$ctrl.cancel()">Cancel</md-button>
+    <md-button ng-disabled="form.configForm.$invalid && !$ctrl.expertMode" ng-click="$ctrl.close()">OK</md-button>
+</div>
+</md-dialog>

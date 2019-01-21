@@ -1,0 +1,22 @@
+<section class="fill-height configMain">
+	<div class="thing-edit white-bg" ng-controller="EditThingController">
+		<div class="header-toolbar">
+			<md-button ng-click="navigateTo('view/' + thing.UID)" aria-label="Close"> <i class="material-icons">close</i></md-button>
+		</div>
+		<div class="section-header">
+			<div class="container">
+				<div class="toolbar">
+					<md-button title="Save" ng-click="update(thing)" ng-disabled="form.configForm.$invalid" class="md-fab" aria-label="Save"> <i class="material-icons">check</i></md-button>
+				</div>
+			</div>
+		</div>
+		<div ng-init="form={}" ng-if="thing"> <!-- ng-if="thing" evaluates when EditThingController eventually loads the thing. It is then present for data binding. -->
+			<thing-configuration thing="thing" is-editing="isEditing" form="form"></thing-configuration>
+			<div class="container" ng-show="parameters.length > 0">
+				<h3>Configuration Parameters</h3>
+				<p>Configure parameters for the thing.</p>
+			    <config-description configuration="configuration" parameters="parameters" form="form" />
+			</div>
+		</div>
+	</div>
+</section>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+	http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="ui:basic">
+		<parameter name="theme" type="text" required="true">
+			<label>Theme</label>
+			<description>Defines the UI theme.</description>
+			<options>
+				<option value="default">Default</option>
+				<option value="dark">Dark</option>
+			</options>
+			<default>default</default>
+		</parameter>
+		<parameter name="iconType" type="text" required="true">
+			<label>Icon Format</label>
+			<description>Defines whether bitmap or vector icons are used by the UI.</description>
+			<options>
+				<option value="png">Bitmap</option>
+				<option value="svg">Vector</option>
+			</options>
+			<default>svg</default>
+		</parameter>
+		<parameter name="enableIcons" type="text" required="true">
+			<label>Enable Icons</label>
+			<description>Defines whether UI renders icons for the widgets or not.</description>
+			<options>
+				<option value="true">Enable</option>
+				<option value="false">Disable</option>
+			</options>
+			<default>true</default>
+		</parameter>
+		<parameter name="condensedLayout" type="text" required="true">
+			<label>Condensed Layout</label>
+			<description>When enabled, changes the layout so that more widgets can fit on the screen.</description>
+			<options>
+				<option value="true">Enable</option>
+				<option value="false">Disable</option>
+			</options>
+			<default>false</default>
+		</parameter>
+		<parameter name="capitalizeValues" type="text" required="true">
+			<label>Capitalize Values</label>
+			<description>Displays all widget states in uppercase.</description>
+			<options>
+				<option value="true">Enable</option>
+				<option value="false">Disable</option>
+			</options>
+			<default>false</default>
+		</parameter>
+		<parameter name="defaultSitemap" type="text" required="false">
+			<label>Default Sitemap</label>
+			<description>The sitemap to show if no parameter is passed.</description>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dmx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0" xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<!-- Brightness Channel -->
+	<channel-type id="brightness">
+		<item-type>Dimmer</item-type>
+		<label>Brightness</label>
+		<description>Allows to send a brightness value to the thing. If the thing is associated with more than one DMX channel, the values is used for ALL DMX channels.</description>
+		<category>DimmableLight</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+	<!-- Color Temperature -->
+	<channel-type id="color_temperature">
+		<item-type>Dimmer</item-type>
+		<label>Color temperature</label>
+		<description>Relative intensity of two adjacent DMX channels</description>
+		<category>ColorLight</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+	<!-- Color Channel -->
+	<channel-type id="color">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<description>Allows to send a color value to the thing. If the thing is associated with more than one DMX channel, color will be re-use in 3-channel groups.</description>
+		<category>ColorLight</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+	<!-- Switch Channel -->
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Allows to switch a thing ON or OFF.</description>
+		<category>Light</category>
+	</channel-type>
+	<!-- Control Channel -->
+	<channel-type id="control">
+		<item-type>String</item-type>
+		<label>Control</label>
+		<description>Change Fade Configuration</description>
+		<category>Light</category>
+	</channel-type>
+	<!-- Mute Channel for bridges -->
+	<channel-type id="mute">
+		<item-type>Switch</item-type>
+		<label>Mute</label>
+		<description>Mutes the DMX output of the Bridge</description>
+		<category>Light</category>
+	</channel-type>
+</thing:thing-descriptions>

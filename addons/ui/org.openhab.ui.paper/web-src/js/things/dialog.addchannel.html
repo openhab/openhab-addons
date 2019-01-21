@@ -1,0 +1,30 @@
+<md-dialog aria-label="Add channel"> 
+    <md-dialog-content class="md-dialog-content" ng-init="form={}">
+		<h1>Add channel</h1>
+		<p>Please select a channel type for the new channel:</p>
+		<md-input-container class="col-xs-12 noPadding"> 
+		    <label>Channel type</label> 
+		    <md-select name="channelType" required="true" ng-model="channelType"> 
+		        <md-option ng-repeat="channelType in channelTypes" ng-value="channelType"> 
+		            <span class="md-caption">{{channelType.label}}</span>
+		        </md-option> 
+		    </md-select>
+		</md-input-container>
+		<md-input-container class="col-xs-12 noPadding"> 
+		    <label>Channel id</label> 
+		    <input name="channelId" ng-model="channelId" ng-disabled="!channelType" ng-required="true" type="text" aria-label="Channel id">
+		</md-input-container>
+		<md-input-container class="col-xs-12 noPadding"> 
+		    <label>Label</label> 
+		    <input name="channelLabel" ng-model="channelLabel" ng-disabled="!channelType" ng-required="false" type="text" aria-label="Channel label">
+		</md-input-container>
+		<div ng-if="parameters && parameters.length > 0" class="col-xs-12 noPadding">
+		   <h3>Channel configuration</h3>
+	       <config-description configuration="configuration" parameters="parameters" />
+		</div>
+	</md-dialog-content>
+	<div class="md-actions" layout="row">
+	    <md-button ng-click="close()">Cancel</md-button>
+	    <md-button ng-disabled="!channelType || !channelId || form.configForm.$invalid" ng-click="save()">Save</md-button>
+	</div>
+</md-dialog>

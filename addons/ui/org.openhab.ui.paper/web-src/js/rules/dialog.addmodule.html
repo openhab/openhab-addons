@@ -1,0 +1,38 @@
+<md-dialog aria-label="Add triger" class="rules-dialog"> <md-dialog-content class="md-dialog-content">
+<h1 ng-show="!editMode && step==2">Add {{type}}</h1>
+<h1 ng-show="editMode && step==2">Update {{type}}</h1>
+<h1 ng-show="step==1">{{type=='trigger'?'When...':type=='action'?'then...':'but only if...'}} </h1>
+<br>
+<div>
+
+	<form name="myForm">
+
+		<md-input-container class="col-xs-12 noPadding" ng-show="step==2"> <label>Name</label> <input ng-model="name"> </md-input-container>
+		<input type="hidden" ng-value="id">
+
+		<md-select ng-invalid="" required ng-show="step==1" placeholder="{{type}} type" aria-label="Select module" ng-model="module"> <md-option ng-repeat="item in moduleData | orderBy:'label'" value="{{item.uid}}"> {{item.label}} </md-option> </md-select>
+	</form>
+	<div>
+		<div ng-show="step==2">
+			<md-input-container class="col-xs-12 noPadding" style=" margin-right:3%;"> <label>Description</label> <textarea rows="1" ng-model="description"></textarea> </md-input-container>
+		</div>
+	</div>
+	<div ng-show="step==2 && parameters.length>0">
+		<h3 class="md-title-nospace">Configurations</h3>
+		<div ng-init="form={}">
+			<config-description configuration="configuration" parameters="parameters" />
+		</div>
+	</div>
+</div>
+</md-dialog-content>
+
+<div class="md-actions" layout="row">
+
+	<md-button ng-if="editMode" ng-click="deleteModule(type)">Delete</md-button>
+	<span flex="auto"></span>
+	<md-button ng-click="close()">Cancel</md-button>
+	<md-button ng-disabled="form.configForm.$invalid" ng-show="step==2" ng-click="saveModule()">OK</md-button>
+	<md-button ng-disabled="myForm.$invalid" ng-show="step==1" ng-click="secondStep()">Next</md-button>
+</div>
+
+</md-dialog>

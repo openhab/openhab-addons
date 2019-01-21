@@ -1,0 +1,21 @@
+<md-dialog aria-label="Configure Profile"> <md-dialog-content class="md-dialog-content">
+<h1>
+    Configure the profile for the link:
+</h1>
+
+<div class="row includeConfig" ng-init="form={}">
+
+<fieldset ng-if="$ctrl.hasConfig()">
+    <legend>Configuration:</legend>
+	<div>
+	    <config-description configuration="$ctrl.link.configuration" parameters="$ctrl.parameterGroups" expert-mode="$ctrl.expertMode" config-array="$ctrl.configArray" form="form"/>
+    </div>
+</fieldset>
+</div>
+
+<div class="md-actions" layout="row">
+    <span flex="auto"></span>
+    <md-button ng-click="$ctrl.cancel()">Skip</md-button>
+    <md-button ng-disabled="form.configForm.$invalid && !$ctrl.expertMode" ng-click="$ctrl.close()">OK</md-button>
+</div>
+</md-dialog>

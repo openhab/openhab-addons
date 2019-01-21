@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="digitalstrom" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd"
+>
+	<thing-type id="appScene">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="dssBridge" />
+		</supported-bridge-type-refs>
+		<label>@text/app_scene_label</label>
+		<description>@text/app_scene_desc</description>
+
+		<channels>
+			<channel id="scene" typeId="scene" />
+		</channels>
+
+		<config-description>
+			<!--scene id -->
+			<parameter name="sceneID" type="text" readOnly="true">
+				<label>@text/param_scene_id_label</label>
+				<description>@text/param_scene_id_desc</description>
+				<required>true</required>
+				<options>
+					<option value="ABSENT">@text/absent</option>
+					<option value="PRESENT">@text/present</option>
+					<option value="DOOR_BELL">@text/door_bell</option>
+					<option value="PANIC">@text/panic</option>
+					<option value="FIRE">@text/fire</option>
+					<option value="ALARM_1">@text/alarm_1</option>
+					<option value="ALARM_2">@text/alarm_2</option>
+					<option value="ALARM_3">@text/alarm_3</option>
+					<option value="ALARM_4">@text/alarm_4</option>
+					<option value="WIND">@text/wind</option>
+					<option value="NO_WIND">@text/no_wind</option>
+					<option value="RAIN">@text/rain</option>
+					<option value="NO_RAIN">@text/no_rain</option>
+					<option value="HAIL">@text/hail</option>
+					<option value="NO_HAIL">@text/no_hail</option>
+				</options>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

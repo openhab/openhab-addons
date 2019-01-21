@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+    http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+    <config-description uri="profile:transform:REGEX">
+        <parameter name="function" type="text" required="true">
+            <label>Regular expression</label>
+            <description>Regular expression to be applied on the state. Should contain a capture group whose outcome will be the result. For example: .*=(\\d*.\\d*).* extracts the 23.5 from temp=23.5°C</description>
+        </parameter>
+        <parameter name="sourceFormat" type="text" required="false">
+            <label>State Formatter</label>
+            <description>How to format the state on the channel before transforming it, i.e. %s or %.1f °C (default is %s)</description>
+            <advanced>true</advanced>
+        </parameter>
+    </config-description>
+</config-description:config-descriptions>

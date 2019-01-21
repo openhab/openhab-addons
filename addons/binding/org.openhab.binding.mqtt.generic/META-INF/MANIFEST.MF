@@ -1,0 +1,34 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: MQTT Thing Binding
+Bundle-SymbolicName: org.openhab.binding.mqtt.generic;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.5.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ClassPath: .
+Import-Package: 
+ com.google.gson,
+ org.apache.commons.lang,
+ org.apache.commons.net.util,
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.core.common.registry,
+ org.eclipse.smarthome.core.library,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.thing.binding.builder,
+ org.eclipse.smarthome.core.thing.type,
+ org.eclipse.smarthome.core.transform,
+ org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.io.transport.mqtt,
+ org.openhab.binding.mqtt,
+ org.openhab.binding.mqtt.discovery,
+ org.openhab.binding.mqtt.handler,
+ org.osgi.framework,
+ org.osgi.service.component,
+ org.slf4j
+Service-Component: OSGI-INF/*.xml
+Automatic-Module-Name: org.openhab.binding.mqtt.generic
+Bundle-ActivationPolicy: lazy

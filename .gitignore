@@ -35,3 +35,4 @@ addons/voice/org.openhab.voice.marytts/lib/sgt-3.0.jar
 addons/voice/org.openhab.voice.marytts/lib/voice-bits1-hsmm-5.0-SNAPSHOT.jar
 addons/voice/org.openhab.voice.marytts/lib/voice-bits3-hsmm-5.0-SNAPSHOT.jar
 addons/voice/org.openhab.voice.marytts/lib/voice-cmu-slt-hsmm-5.0.jar
+npm-debug.log

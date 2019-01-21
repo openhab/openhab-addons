@@ -1,0 +1,45 @@
+<!doctype html>
+<html class="%htmlclass% page-static">
+	<head>
+		<title>%title%</title>
+
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+		<meta name="theme-color" content="#354497">
+
+		<link rel="shortcut icon" href="favicon.ico" />		
+		<link rel="apple-touch-icon" href="images/app-icon.png" />
+		<link rel="apple-touch-startup-image" href="images/splash-ipad-h.png" media="screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:landscape)" />
+		<link rel="apple-touch-startup-image" href="images/splash-ipad-v.png" media="screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait)" />
+		<link rel="apple-touch-startup-image" href="images/splash-iphone.png" media="screen and (max-device-width: 320px)" />	   
+
+		<link rel="stylesheet" type="text/css" href="mdl/material.min.css" />
+		<link rel="stylesheet" type="text/css" href="material-icons.css" />
+		<link rel="stylesheet" type="text/css" href="roboto.css" />
+		<link rel="stylesheet" type="text/css" href="smarthome.css" />
+
+		<script src="mdl/material.min.js"></script>
+	</head>
+	<body class="mdl-color-text--grey-700">
+	<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+		<header class="mdl-layout__header mdl-layout__header--scroll navigation navigation-home">
+			<div class="mdl-layout__header-row">
+				<div class="mdl-layout__header-button navigation__button-home">
+					<!-- home -->
+					<i class="material-icons">&#xe7f9;</i>
+				</div>
+				<span class="mdl-layout-title">%title%</span>
+				<div class="mdl-layout-spacer"></div>
+			</div>
+		</header>
+		<main class="mdl-layout__content">
+			<div class="page-content page-static__content mdl-color--white mdl-shadow--2dp mdl-grid">
+				%content%
+			</div>
+		</main>
+	</div>
+	</body>
+</html>
