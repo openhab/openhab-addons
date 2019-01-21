@@ -154,6 +154,7 @@ public class ElkM1BridgeHandler extends BaseBridgeHandler implements ElkListener
             VersionReply reply = (VersionReply) message;
             // Set the property.
             getThing().setProperty(ElkM1BindingConstants.PROPERTY_VERSION, reply.getElkVersion());
+            updateStatus(ThingStatus.ONLINE);
         }
         if (message instanceof ZoneStatusReply) {
             ZoneStatusReply reply = (ZoneStatusReply) message;
