@@ -34,7 +34,6 @@ import org.openhab.binding.onewire.test.AbstractDeviceTest;
  * @author Michał Wójcik - Adapted to DS1923
  */
 public class DS1923Test extends AbstractDeviceTest {
-
     @Before
     public void setupMocks() {
         setupMocks(THING_TYPE_MS_TH);
