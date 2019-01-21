@@ -81,7 +81,6 @@ public class ElkM1DiscoveryHandler extends AbstractDiscoveryService implements E
         DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridge.getThing().getUID())
                 .withLabel(label).withProperties(properties).build();
         thingDiscovered(result);
-
     }
 
 }

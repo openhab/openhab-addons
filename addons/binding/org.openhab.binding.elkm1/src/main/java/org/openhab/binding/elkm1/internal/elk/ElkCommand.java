@@ -88,7 +88,6 @@ public enum ElkCommand {
     }
 
     public String toSendString() {
-        // TODO Auto-generated method stub
         return null;
     }
 }

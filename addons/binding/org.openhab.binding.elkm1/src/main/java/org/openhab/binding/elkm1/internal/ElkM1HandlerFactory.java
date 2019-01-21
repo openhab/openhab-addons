@@ -39,7 +39,7 @@ import com.google.common.collect.ImmutableSet;
  */
 public class ElkM1HandlerFactory extends BaseThingHandlerFactory {
     private Logger logger = LoggerFactory.getLogger(ElkM1BridgeHandler.class);
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(
             ElkM1BindingConstants.THING_TYPE_BRIDGE, ElkM1BindingConstants.THING_TYPE_ZONE,
             ElkM1BindingConstants.THING_TYPE_AREA);
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();

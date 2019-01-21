@@ -35,7 +35,6 @@ public class ArmAway extends ElkMessage {
         if (pincode.length() == 4) {
             this.pincode = "00" + pincode;
         }
-        System.out.println(pincode);
     }
 
     @Override

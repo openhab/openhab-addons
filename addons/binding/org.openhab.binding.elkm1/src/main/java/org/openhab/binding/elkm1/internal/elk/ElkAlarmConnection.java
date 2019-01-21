@@ -39,7 +39,7 @@ import com.google.common.collect.Lists;
  * The connection to the elk, handles the socket and other pieces.
  *
  * @author David Bennett - Initial Contribution
- * @author Noah Jacobson
+ * @author Noah Jacobson - Added Secure Socket Connection
  */
 public class ElkAlarmConnection {
     private final Logger logger = LoggerFactory.getLogger(ElkAlarmConnection.class);
@@ -211,7 +211,6 @@ public class ElkAlarmConnection {
             try {
                 socket.close();
             } catch (IOException e1) {
-                // TODO Auto-generated catch block
                 logger.error("Error closing socket to elk alarm {}:{}", config.ipAddress, config.port, e);
             }
             socket = null;
@@ -270,7 +269,6 @@ public class ElkAlarmConnection {
                     // See if we need to send a message too.
                     sendActualMessage();
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
                     logger.error("Error reading line from elk alarm {}:{}", config.ipAddress, config.port, e);
                 }
             }

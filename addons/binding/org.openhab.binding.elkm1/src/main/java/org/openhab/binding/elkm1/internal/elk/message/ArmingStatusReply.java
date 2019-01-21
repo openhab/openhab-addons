@@ -58,7 +58,6 @@ public class ArmingStatusReply extends ElkMessage {
 
     @Override
     protected String getData() {
-        // TODO Auto-generated method stub
         return null;
     }
 

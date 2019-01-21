@@ -79,7 +79,6 @@ public class ElkM1BridgeHandler extends BaseBridgeHandler implements ElkListener
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
     }
 
     /**

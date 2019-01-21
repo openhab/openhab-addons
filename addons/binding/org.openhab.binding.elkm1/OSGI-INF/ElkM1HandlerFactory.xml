@@ -14,7 +14,7 @@
    <implementation class="org.openhab.binding.elkm1.internal.ElkM1HandlerFactory"/>
 
    <service>
-      <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
+	  <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
    </service>
 
 </scr:component>

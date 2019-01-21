@@ -21,15 +21,15 @@ public class ElkM1BindingConstants {
     public static final String BINDING_ID = "elkm1";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
-    public final static ThingTypeUID THING_TYPE_ZONE = new ThingTypeUID(BINDING_ID, "zone");
-    public final static ThingTypeUID THING_TYPE_AREA = new ThingTypeUID(BINDING_ID, "area");
+    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
+    public static final ThingTypeUID THING_TYPE_ZONE = new ThingTypeUID(BINDING_ID, "zone");
+    public static final ThingTypeUID THING_TYPE_AREA = new ThingTypeUID(BINDING_ID, "area");
 
     // List of all Channel ids (zone)
-    public final static String CHANNEL_ZONE_AREA = "area";
-    public final static String CHANNEL_ZONE_CONFIG = "config";
-    public final static String CHANNEL_ZONE_STATUS = "status";
-    public final static String CHANNEL_ZONE_DEFINITION = "definition";
+    public static final String CHANNEL_ZONE_AREA = "area";
+    public static final String CHANNEL_ZONE_CONFIG = "config";
+    public static final String CHANNEL_ZONE_STATUS = "status";
+    public static final String CHANNEL_ZONE_DEFINITION = "definition";
 
     // List of all Channel ids (area)
     public static final String CHANNEL_AREA_STATE = "state";
@@ -37,8 +37,8 @@ public class ElkM1BindingConstants {
     public static final String CHANNEL_AREA_ARMED = "armed";
 
     // The properties associated with the thing
-    public final static String PROPERTY_VERSION = "version";
-    public final static String PROPERTY_ZONE_NUM = "zone";
-    public final static String PROPERTY_TYPE_ID = "type";
+    public static final String PROPERTY_VERSION = "version";
+    public static final String PROPERTY_ZONE_NUM = "zone";
+    public static final String PROPERTY_TYPE_ID = "type";
 
 }
