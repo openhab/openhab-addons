@@ -49,16 +49,6 @@ public class DS18x20Test extends AbstractDeviceTest {
     }
 
     @Test
-    public void presenceTestOn() {
-        presenceTest(OnOffType.ON);
-    }
-
-    @Test
-    public void presenceTestOff() {
-        presenceTest(OnOffType.OFF);
-    }
-
-    @Test
     public void temperatureTest() {
         instantiateDevice();
 
