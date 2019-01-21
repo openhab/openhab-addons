@@ -14,6 +14,11 @@ package org.openhab.binding.onewire.internal.device;
 
 import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
+import java.util.Collections;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Illuminance;
 import javax.measure.quantity.Pressure;
@@ -31,8 +36,6 @@ import org.openhab.binding.onewire.internal.Util;
 import org.openhab.binding.onewire.internal.handler.OwBaseBridgeHandler;
 import org.openhab.binding.onewire.internal.handler.OwBaseThingHandler;
 import org.openhab.binding.onewire.internal.owserver.OwserverDeviceParameter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link EDS006x} class defines an EDS006x device
@@ -41,7 +44,30 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class EDS006x extends AbstractOwDevice {
-    private final Logger logger = LoggerFactory.getLogger(EDS006x.class);
+    public static final Set<OwChannelConfig> CHANNELS_EDS0064 = Collections
+            .singleton(new OwChannelConfig(CHANNEL_TEMPERATURE, CHANNEL_TYPE_UID_TEMPERATURE));
+    public static final Set<OwChannelConfig> CHANNELS_EDS0065 = Stream
+            .of(new OwChannelConfig(CHANNEL_TEMPERATURE, CHANNEL_TYPE_UID_TEMPERATURE),
+                    new OwChannelConfig(CHANNEL_HUMIDITY, CHANNEL_TYPE_UID_HUMIDITY),
+                    new OwChannelConfig(CHANNEL_ABSOLUTE_HUMIDITY, CHANNEL_TYPE_UID_ABSHUMIDITY),
+                    new OwChannelConfig(CHANNEL_DEWPOINT, CHANNEL_TYPE_UID_TEMPERATURE))
+            .collect(Collectors.toSet());
+    public static final Set<OwChannelConfig> CHANNELS_EDS0066 = Stream
+            .of(new OwChannelConfig(CHANNEL_TEMPERATURE, CHANNEL_TYPE_UID_TEMPERATURE),
+                    new OwChannelConfig(CHANNEL_PRESSURE, CHANNEL_TYPE_UID_PRESSURE))
+            .collect(Collectors.toSet());
+    public static final Set<OwChannelConfig> CHANNELS_EDS0067 = Stream
+            .of(new OwChannelConfig(CHANNEL_TEMPERATURE, CHANNEL_TYPE_UID_TEMPERATURE),
+                    new OwChannelConfig(CHANNEL_LIGHT, CHANNEL_TYPE_UID_LIGHT))
+            .collect(Collectors.toSet());
+    public static final Set<OwChannelConfig> CHANNELS_EDS0068 = Stream
+            .of(new OwChannelConfig(CHANNEL_TEMPERATURE, CHANNEL_TYPE_UID_TEMPERATURE),
+                    new OwChannelConfig(CHANNEL_HUMIDITY, CHANNEL_TYPE_UID_HUMIDITY),
+                    new OwChannelConfig(CHANNEL_ABSOLUTE_HUMIDITY, CHANNEL_TYPE_UID_ABSHUMIDITY),
+                    new OwChannelConfig(CHANNEL_DEWPOINT, CHANNEL_TYPE_UID_TEMPERATURE),
+                    new OwChannelConfig(CHANNEL_PRESSURE, CHANNEL_TYPE_UID_PRESSURE),
+                    new OwChannelConfig(CHANNEL_LIGHT, CHANNEL_TYPE_UID_LIGHT))
+            .collect(Collectors.toSet());
 
     private final OwDeviceParameterMap temperatureParameter = new OwDeviceParameterMap() {
         {
@@ -67,28 +93,19 @@ public class EDS006x extends AbstractOwDevice {
         }
     };
 
-    public EDS006x(SensorId sensorId, OwBaseThingHandler callback) {
+    public EDS006x(SensorId sensorId, OwSensorType sensorType, OwBaseThingHandler callback) {
         super(sensorId, callback);
-    }
 
-    @Override
-    public void configureChannels() {
-        isConfigured = false;
-    }
-
-    /**
-     * configure channels for EDS sensors
-     *
-     * @param sensorType an OwSensorType
-     */
-    public void configureChannels(OwSensorType sensorType) {
         String sensorTypeName = sensorType.name();
         temperatureParameter.set(THING_TYPE_OWSERVER,
                 new OwserverDeviceParameter("/" + sensorTypeName + "/temperature"));
         humidityParameter.set(THING_TYPE_OWSERVER, new OwserverDeviceParameter("/" + sensorTypeName + "/humidity"));
         pressureParameter.set(THING_TYPE_OWSERVER, new OwserverDeviceParameter("/" + sensorTypeName + "/pressure"));
         lightParameter.set(THING_TYPE_OWSERVER, new OwserverDeviceParameter("/" + sensorTypeName + "/light"));
+    }
 
+    @Override
+    public void configureChannels() {
         isConfigured = true;
     }
 
@@ -100,7 +117,6 @@ public class EDS006x extends AbstractOwDevice {
                     || enabledChannels.contains(CHANNEL_DEWPOINT)) {
                 QuantityType<Temperature> temperature = new QuantityType<>(
                         (DecimalType) bridgeHandler.readDecimalType(sensorId, temperatureParameter), SIUnits.CELSIUS);
-                logger.trace("read temperature {} from {}", temperature, sensorId);
 
                 if (enabledChannels.contains(CHANNEL_TEMPERATURE)) {
                     callback.postUpdate(CHANNEL_TEMPERATURE, temperature);
@@ -111,7 +127,6 @@ public class EDS006x extends AbstractOwDevice {
                     QuantityType<Dimensionless> humidity = new QuantityType<>(
                             (DecimalType) bridgeHandler.readDecimalType(sensorId, humidityParameter),
                             SmartHomeUnits.PERCENT);
-                    logger.trace("read humidity {} from {}", humidity, sensorId);
 
                     if (enabledChannels.contains(CHANNEL_HUMIDITY)) {
                         callback.postUpdate(CHANNEL_HUMIDITY, humidity);
@@ -131,7 +146,6 @@ public class EDS006x extends AbstractOwDevice {
             if (enabledChannels.contains(CHANNEL_LIGHT)) {
                 QuantityType<Illuminance> light = new QuantityType<>(
                         (DecimalType) bridgeHandler.readDecimalType(sensorId, lightParameter), SmartHomeUnits.LUX);
-                logger.trace("read light {} from {}", light, sensorId);
                 callback.postUpdate(CHANNEL_LIGHT, light);
             }
 
@@ -139,7 +153,6 @@ public class EDS006x extends AbstractOwDevice {
                 QuantityType<Pressure> pressure = new QuantityType<>(
                         (DecimalType) bridgeHandler.readDecimalType(sensorId, pressureParameter),
                         MetricPrefix.HECTO(SIUnits.PASCAL));
-                logger.trace("read pressure {} from {}", pressure, sensorId);
                 callback.postUpdate(CHANNEL_PRESSURE, pressure);
             }
         }

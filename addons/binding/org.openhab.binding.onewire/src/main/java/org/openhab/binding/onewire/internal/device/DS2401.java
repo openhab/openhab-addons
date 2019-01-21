@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.onewire.internal.device;
 
+import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
+
+import java.util.Collections;
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.SensorId;
@@ -25,6 +30,8 @@ import org.openhab.binding.onewire.internal.handler.OwBaseThingHandler;
  */
 @NonNullByDefault
 public class DS2401 extends AbstractOwDevice {
+    public static final Set<OwChannelConfig> CHANNELS = Collections
+            .singleton(new OwChannelConfig(CHANNEL_PRESENT, CHANNEL_TYPE_UID_PRESENT));
 
     public DS2401(SensorId sensorId, OwBaseThingHandler callback) {
         super(sensorId, callback);

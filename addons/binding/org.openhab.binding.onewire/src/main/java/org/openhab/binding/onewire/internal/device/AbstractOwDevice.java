@@ -35,7 +35,7 @@ public abstract class AbstractOwDevice {
     private final Logger logger = LoggerFactory.getLogger(AbstractOwDevice.class);
 
     protected SensorId sensorId;
-    protected OwSensorType sensorType = OwSensorType.UNKNOWN;
+    protected OwSensorType sensorType;
     protected OwBaseThingHandler callback;
     protected Boolean isConfigured = false;
 
@@ -50,6 +50,13 @@ public abstract class AbstractOwDevice {
     public AbstractOwDevice(SensorId sensorId, OwBaseThingHandler callback) {
         this.sensorId = sensorId;
         this.callback = callback;
+        this.sensorType = OwSensorType.UNKNOWN;
+    }
+
+    public AbstractOwDevice(SensorId sensorId, OwSensorType sensorType, OwBaseThingHandler callback) {
+        this.sensorId = sensorId;
+        this.callback = callback;
+        this.sensorType = sensorType;
     }
 
     /**
