@@ -145,7 +145,7 @@ public class ElkM1BridgeHandler extends BaseBridgeHandler implements ElkListener
     /**
      * Handlers an incoming message from the elk system.
      *
-     * @param message The message from the ekl to handle
+     * @param message The message from the elk to handle
      */
     @Override
     public void handleElkMessage(ElkMessage message) {
