@@ -78,7 +78,6 @@ A full list of supported accessory types can be found in the table below.
 | LeakSensor            |                               | Switch                    | Leak sensor. ON state means flood detected. |
 | MotionSensor          |                               | Switch                    | Motion sensor. ON state means motion detected. |
 | Valve                 |                               | Switch                    | Simple open/close valve. Assumes liquid is flowing when valve is open. |
-| WindowCovering        |                               | Rollershutter             | Simple window covering with support for setting target position / current position support. |
 
 See the sample below for example items:
 
@@ -94,7 +93,6 @@ String DownstairsThermostatHeatingCoolingMode "Downstairs Thermostat Heating/Coo
 Switch Hallway_MotionSensor "Hallway Motion Sensor" [ "MotionSensor" ]
 Switch MasterBath_Toilet_LeakSensor "Master Bath Toilet Flood" ["LeakSensor"]
 Switch WaterMain_Valve "Water Main Valve" ["Valve"]
-Rollershutter MasterWindow_Blinds "Master Window Blinds" [ "WindowCovering" ]
 ```
 
 ## Common Problems
