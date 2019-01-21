@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vitotronic.handler;
+package org.openhab.binding.vitotronic.internal.handler;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,7 +29,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.vitotronic.VitotronicBindingConfiguration;
+import org.openhab.binding.vitotronic.internal.VitotronicBindingConfiguration;
 import org.openhab.binding.vitotronic.internal.discovery.VitotronicDiscoveryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
