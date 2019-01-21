@@ -19,11 +19,14 @@ import java.math.RoundingMode;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -54,8 +57,6 @@ import org.openhab.binding.km200.internal.handler.KM200SwitchProgramServiceHandl
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Sets;
-
 /**
  * The {@link KM200ThingHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -67,10 +68,12 @@ public class KM200ThingHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(KM200ThingHandler.class);
     private static URI configDescriptionUriChannel;
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(THING_TYPE_DHW_CIRCUIT,
-            THING_TYPE_HEATING_CIRCUIT, THING_TYPE_SOLAR_CIRCUIT, THING_TYPE_HEAT_SOURCE, THING_TYPE_SYSTEM_APPLIANCE,
-            THING_TYPE_SYSTEM_HOLIDAYMODES, THING_TYPE_SYSTEM_SENSOR, THING_TYPE_GATEWAY, THING_TYPE_NOTIFICATION,
-            THING_TYPE_SYSTEM);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream
+                    .of(THING_TYPE_DHW_CIRCUIT, THING_TYPE_HEATING_CIRCUIT, THING_TYPE_SOLAR_CIRCUIT,
+                            THING_TYPE_HEAT_SOURCE, THING_TYPE_SYSTEM_APPLIANCE, THING_TYPE_SYSTEM_HOLIDAYMODES,
+                            THING_TYPE_SYSTEM_SENSOR, THING_TYPE_GATEWAY, THING_TYPE_NOTIFICATION, THING_TYPE_SYSTEM)
+                    .collect(Collectors.toSet()));
 
     private KM200ChannelTypeProvider channelTypeProvider;
 

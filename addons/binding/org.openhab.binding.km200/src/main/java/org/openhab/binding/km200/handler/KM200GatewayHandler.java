@@ -59,7 +59,6 @@ import com.google.common.net.InetAddresses;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
-
 /**
  * The {@link KM200GatewayHandler} is responsible for handling commands, which are
  * sent to one of the channels.
