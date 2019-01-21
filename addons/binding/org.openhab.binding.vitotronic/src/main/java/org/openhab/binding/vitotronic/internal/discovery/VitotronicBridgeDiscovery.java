@@ -52,7 +52,6 @@ public class VitotronicBridgeDiscovery extends AbstractDiscoveryService {
     // Runnable for search adapter
 
     private Runnable searchRunnable = new Runnable() {
-
         @Override
         public void run() {
             logger.trace("Start adapter discovery ");
@@ -84,12 +83,9 @@ public class VitotronicBridgeDiscovery extends AbstractDiscoveryService {
                 logger.debug("Received from Port: {}", receivePort);
 
                 if (receiveMessage.startsWith(VitotronicBindingConstants.BROADCAST_MESSAGE)) {
-
                     // register bridge
-
                     String adapterID = receiveMessage.substring(VitotronicBindingConstants.BROADCAST_MESSAGE.length())
                             .toUpperCase();
-
                     addAdapter(receiveIP, receivePort, adapterID);
                 }
             } catch (Exception e) {
@@ -108,7 +104,6 @@ public class VitotronicBridgeDiscovery extends AbstractDiscoveryService {
     };
 
     private void addAdapter(String remoteIP, int remotePort, String adapterID) {
-
         Map<String, Object> properties = new HashMap<>(3);
         properties.put(VitotronicBindingConstants.IP_ADDRESS, remoteIP);
         properties.put(VitotronicBindingConstants.PORT, remotePort);

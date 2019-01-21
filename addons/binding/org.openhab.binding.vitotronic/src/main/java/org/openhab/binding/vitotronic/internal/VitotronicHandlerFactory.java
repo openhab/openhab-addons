@@ -48,7 +48,7 @@ public class VitotronicHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-        logger.trace("Install Handler for Thing {}", thing.toString());
+        logger.trace("Install Handler for Thing {}", thing.getUID());
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
@@ -79,13 +79,12 @@ public class VitotronicHandlerFactory extends BaseThingHandlerFactory {
     @Override
     public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,
             ThingUID bridgeUID) {
-        logger.trace("Create Thing for Type {}", thingUID.toString());
+        logger.trace("Create Thing for Type {}", thingUID);
 
         String adapterID = (String) configuration.get(VitotronicBindingConstants.ADAPTER_ID);
 
         if (VitotronicBindingConstants.THING_TYPE_UID_BRIDGE.equals(thingTypeUID)) {
-
-            logger.trace("Create Bride: {}", adapterID);
+            logger.trace("Create Bridge: {}", adapterID);
             return super.createThing(thingTypeUID, configuration, thingUID, null);
         } else {
             if (supportsThingType(thingTypeUID)) {
