@@ -12,17 +12,15 @@
  */
 package org.openhab.binding.autelis.internal;
 
-import static org.openhab.binding.autelis.AutelisBindingConstants.POOLCONTROL_THING_TYPE_UID;
-
-import java.util.Collections;
-import java.util.Set;
-
-import org.openhab.binding.autelis.handler.AutelisHandler;
+import static org.openhab.binding.autelis.AutelisBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.openhab.binding.autelis.handler.AutelisHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link AutelisHandlerFactory} is responsible for creating things and
@@ -31,9 +29,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
  * @author Dan Cunningham - Initial contribution
  */
 public class AutelisHandlerFactory extends BaseThingHandlerFactory {
-
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .singleton(POOLCONTROL_THING_TYPE_UID);
+    private Logger logger = LoggerFactory.getLogger(AutelisHandlerFactory.class);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -42,13 +38,10 @@ public class AutelisHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
-        if (thingTypeUID.equals(POOLCONTROL_THING_TYPE_UID)) {
+        if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new AutelisHandler(thing);
         }
-
         return null;
     }
 }

@@ -1,0 +1,484 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="autelis" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="jandy">
+		<label>Jandy Pool Controller</label>
+		<description>A Jandy pool control thing represents a Autelis pool controller for Jandy systems</description>
+		<channels>
+			<channel id="system-runstate" typeId="system-runstate" />
+			<channel id="system-model" typeId="system-model" />
+			<channel id="system-dip" typeId="system-dip" />
+			<channel id="system-opmode" typeId="system-opmode" />
+			<channel id="system-vbat" typeId="system-vbat" />
+			<channel id="system-lowbat" typeId="system-lowbat" />
+			<channel id="system-time" typeId="system-time" />
+			<channel id="equipment-pump" typeId="equipment-switch">
+				<label>Pump</label>
+				<description>The current state of the pump</description>
+			</channel>
+			<channel id="equipment-pumplo" typeId="equipment-switch">
+				<label>Lowspeed Pump</label>
+				<description>The current state of the lowspeed pump</description>
+			</channel>
+			<channel id="equipment-spa" typeId="equipment-switch">
+				<label>Spa Pump</label>
+				<description>The current state of the spa pump</description>
+			</channel>
+			<channel id="equipment-waterfall" typeId="equipment-switch">
+				<label>Waterfall Pump</label>
+				<description>The current state of the waterfall pump</description>
+			</channel>
+			<channel id="equipment-cleaner" typeId="equipment-switch">
+				<label>Cleaner Pump</label>
+				<description>The current state of the cleaner pump</description>
+			</channel>
+			<channel id="equipment-poolht" typeId="equipment-ht">
+				<label>Pool Heater</label>
+				<description>The current state of the pool heater</description>
+			</channel>
+			<channel id="equipment-poolht2" typeId="equipment-ht">
+				<label>Pool Heater @</label>
+				<description>The current state of the pool heater 2</description>
+			</channel>
+			<channel id="equipment-spaht" typeId="equipment-ht">
+				<label>Spa Heater</label>
+				<description>The current state of the spa heater</description>
+			</channel>
+			<channel id="equipment-solarht" typeId="equipment-ht">
+				<label>Solar Heater</label>
+				<description>The current state of the solar heater</description>
+			</channel>
+			<channel id="equipment-htpmp" typeId="equipment-switch">
+				<label>Heat Pump</label>
+				<description>The current state of the heat pump</description>
+			</channel>
+			<channel id="equipment-aux1" typeId="equipment-aux">
+				<label>Auxiliary 1</label>
+				<description>The current state of auxiliary 1</description>
+			</channel>
+			<channel id="equipment-aux2" typeId="equipment-aux">
+				<label>Auxiliary 2</label>
+				<description>The current state of auxiliary 2</description>
+			</channel>
+			<channel id="equipment-aux3" typeId="equipment-aux">
+				<label>Auxiliary 3</label>
+				<description>The current state of auxiliary 3</description>
+			</channel>
+			<channel id="equipment-aux4" typeId="equipment-aux">
+				<label>Auxiliary 4</label>
+				<description>The current state of auxiliary 4</description>
+			</channel>
+			<channel id="equipment-aux5" typeId="equipment-aux">
+				<label>Auxiliary 5</label>
+				<description>The current state of auxiliary 5</description>
+			</channel>
+			<channel id="equipment-aux6" typeId="equipment-aux">
+				<label>Auxiliary 6</label>
+				<description>The current state of auxiliary 6</description>
+			</channel>
+			<channel id="equipment-aux7" typeId="equipment-aux">
+				<label>Auxiliary 7</label>
+				<description>The current state of auxiliary 7</description>
+			</channel>
+			<channel id="equipment-aux8" typeId="equipment-aux">
+				<label>Auxiliary 8</label>
+				<description>The current state of auxiliary 8</description>
+			</channel>
+			<channel id="equipment-aux9" typeId="equipment-aux">
+				<label>Auxiliary 9</label>
+				<description>The current state of auxiliary 9</description>
+			</channel>
+			<channel id="equipment-aux10" typeId="equipment-aux">
+				<label>Auxiliary 10</label>
+				<description>The current state of auxiliary 10</description>
+			</channel>
+			<channel id="equipment-aux11" typeId="equipment-aux">
+				<label>Auxiliary 11</label>
+				<description>The current state of auxiliary 11</description>
+			</channel>
+			<channel id="equipment-aux12" typeId="equipment-aux">
+				<label>Auxiliary 12</label>
+				<description>The current state of auxiliary 12</description>
+			</channel>
+			<channel id="equipment-aux13" typeId="equipment-aux">
+				<label>Auxiliary 13</label>
+				<description>The current state of auxiliary 13</description>
+			</channel>
+			<channel id="equipment-aux14" typeId="equipment-aux">
+				<label>Auxiliary 14</label>
+				<description>The current state of auxiliary 14</description>
+			</channel>
+			<channel id="equipment-aux15" typeId="equipment-aux">
+				<label>Auxiliary 15</label>
+				<description>The current state of auxiliary 15</description>
+			</channel>
+			<channel id="equipment-aux16" typeId="equipment-aux">
+				<label>Auxiliary 16</label>
+				<description>The current state of auxiliary 16</description>
+			</channel>
+			<channel id="equipment-aux17" typeId="equipment-aux">
+				<label>Auxiliary 17</label>
+				<description>The current state of auxiliary 17</description>
+			</channel>
+			<channel id="equipment-aux18" typeId="equipment-aux">
+				<label>Auxiliary 18</label>
+				<description>The current state of auxiliary 18</description>
+			</channel>
+			<channel id="equipment-aux19" typeId="equipment-aux">
+				<label>Auxiliary 19</label>
+				<description>The current state of auxiliary 19</description>
+			</channel>
+			<channel id="equipment-aux20" typeId="equipment-aux">
+				<label>Auxiliary 20</label>
+				<description>The current state of auxiliary 20</description>
+			</channel>
+			<channel id="equipment-aux21" typeId="equipment-aux">
+				<label>Auxiliary 21</label>
+				<description>The current state of auxiliary 21</description>
+			</channel>
+			<channel id="equipment-aux22" typeId="equipment-aux">
+				<label>Auxiliary 22</label>
+				<description>The current state of auxiliary 22</description>
+			</channel>
+			<channel id="equipment-aux23" typeId="equipment-aux">
+				<label>Auxiliary 23</label>
+				<description>The current state of auxiliary 23</description>
+			</channel>
+			<channel id="temp-poolsp" typeId="temp-sp">
+				<label>Pool Setpoint</label>
+				<description>The current pool setpoint</description>
+			</channel>
+			<channel id="temp-poolsp2" typeId="temp-sp">
+				<label>Pool Setpoint 2</label>
+				<description>The current pool setpoint 2</description>
+			</channel>
+			<channel id="temp-spasp" typeId="temp-sp">
+				<label>Spa Setpoint</label>
+				<description>The current spa setpoint</description>
+			</channel>
+			<channel id="temp-pooltemp" typeId="temp-temperature">
+				<label>Pool Temperature</label>
+				<description>The current pool temperature. Note: Only accurate when pool is running</description>
+			</channel>
+			<channel id="temp-spatemp" typeId="temp-temperature">
+				<label>Spa Temperature</label>
+				<description>The current spa temperature. Note: Only accurate when spa is running</description>
+			</channel>
+			<channel id="temp-airtemp" typeId="temp-temperature">
+				<label>Air Temperature</label>
+				<description>The current air temperature</description>
+			</channel>
+			<channel id="temp-solartemp" typeId="temp-temperature">
+				<label>Solar Temperature</label>
+				<description>The current solar temperature</description>
+			</channel>
+			<channel id="temp-tempunits" typeId="temp-tempunits" />
+			<channel id="pumps-vsp1" typeId="pumps-vsp1" />
+			<channel id="pumps-vsp2" typeId="pumps-vsp2" />
+			<channel id="pumps-vsp3" typeId="pumps-vsp3" />
+			<channel id="pumps-vsp4" typeId="pumps-vsp4" />
+			<channel id="chem-avail" typeId="chem-avail" />
+			<channel id="chem-chlrp" typeId="chem-chlrp" />
+			<channel id="chem-saltp" typeId="chem-saltp" />
+			<channel id="chem-chlrs" typeId="chem-chlrs" />
+			<channel id="chem-salts" typeId="chem-salts" />
+			<channel id="chem-orp1" typeId="chem-orp1" />
+			<channel id="chem-orp2" typeId="chem-orp2" />
+			<channel id="chem-ph1" typeId="chem-ph1" />
+			<channel id="chem-ph2" typeId="chem-ph2" />
+			<channel id="chem-orpfd1" typeId="chem-orpfd1" />
+			<channel id="chem-orpfd2" typeId="chem-orpfd2" />
+			<channel id="chem-phfd1" typeId="chem-phfd1" />
+			<channel id="chem-phfd2" typeId="chem-phfd2" />
+			<channel id="reboot" typeId="reboot" />
+		</channels>
+		
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<context>network-address</context>
+				<label>Host or IP</label>
+				<description>The host name or IP address of the Autelis Controller.</description>
+			</parameter>
+			<parameter name="port" type="integer" min="1" max="65335" required="false">
+				<context>network-address</context>
+				<label>Port</label>
+				<description>The port the Autelis Controller is listening on.</description>
+				<default>80</default>
+			</parameter>
+			<parameter name="user" type="text" required="true">
+				<label>User Name</label>
+				<description>The user name to use when connecting to a Autelis Controller.</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>The password to use when connecting to a Autelis Controller.</description>
+			</parameter>
+			<parameter name="refresh" type="integer" required="false">
+				<label>Refresh Interval</label>
+				<description>Specifies the refresh interval in seconds</description>
+				<default>5</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- System Channels -->
+
+	<channel-type id="system-runstate" advanced="true">
+		<item-type>Number</item-type>
+		<label>Runstate</label>
+		<description>The controller's runstate. 1 = Not Connected, 2-7 = Startup Initialization Sequence, 8 = Connected and
+			Ready, 9-12 = Connected and Busy Executing Command
+		</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="system-model" advanced="true">
+		<item-type>Number</item-type>
+		<label>Model</label>
+		<description>The model number of the Aqualink® controller</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="system-dip" advanced="true">
+		<item-type>Number</item-type>
+		<label>Dip Switches</label>
+		<description>The current state of the Aqualink® controller's dip switches. Possible values: 8 binary digits
+			representing S1-S8 from left to right
+		</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="system-opmode">
+		<item-type>Number</item-type>
+		<label>Operation Mode</label>
+		<description>The current state of the Aqualink® controller</description>
+		<state>
+			<options>
+				<option value="0">Auto</option>
+				<option value="1">Service</option>
+				<option value="2">Timeout</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="system-vbat">
+		<item-type>Number</item-type>
+		<label>Battery Voltage</label>
+		<description>The voltage of the Aqualink® controller's battery</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="system-lowbat">
+		<item-type>Number</item-type>
+		<label>Battery State</label>
+		<description>The current state of the Aqualink® controller's battery</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">Normal</option>
+				<option value="1">Low</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="system-version" advanced="true">
+		<item-type>String</item-type>
+		<label>Version</label>
+		<description>The firmware version of the Pool Control device </description>
+	</channel-type>
+	<channel-type id="system-time" advanced="true">
+		<item-type>Number</item-type>
+		<label>Time</label>
+		<description>The time as kept by the Pool Control device</description>
+	</channel-type>
+
+	<!-- Equipment Channels -->
+
+	<channel-type id="equipment-switch">
+		<item-type>Switch</item-type>
+		<label>Equipment Switch</label>
+		<description>The current state of a equipment switch</description>
+	</channel-type>
+	<channel-type id="equipment-ht">
+		<item-type>Number</item-type>
+		<label>Heater</label>
+		<description>The current state of the heater</description>
+		<state>
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Enabled</option>
+				<option value="2">On</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="equipment-aux">
+		<item-type>Number</item-type>
+		<label>Auxiliary</label>
+		<description>The current state of auxiliary channel</description>
+		<state>
+			<options>
+				<option value="0">Off</option>
+				<option value="1">On</option>
+				<option value="25">25%</option>
+				<option value="50">50%</option>
+				<option value="75">75%</option>
+				<option value="100">100%</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<!-- Temperature Channels -->
+
+	<channel-type id="temp-sp">
+		<item-type>Number</item-type>
+		<label>Setpoint</label>
+		<description>The current setpoint</description>
+		<category>Temperature</category>
+	</channel-type>
+	<channel-type id="temp-temperature">
+		<item-type>Number</item-type>
+		<label>Temperature</label>
+		<description>The current temperature. Note: Only accurate when pool is running</description>
+		<category>Temperature</category>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="temp-airtemp">
+		<item-type>Number</item-type>
+		<label>Air Temperature</label>
+		<description>The current air temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="temp-tempunits" advanced="true">
+		<item-type>String</item-type>
+		<label>Temperature Units</label>
+		<description>The selected units for temperature</description>
+		<state>
+			<options>
+				<option value="F">Fahrenheit</option>
+				<option value="C">Celsius</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<!-- Pump Channels -->
+
+	<channel-type id="pumps-vsp1">
+		<item-type>String</item-type>
+		<label>Pump 1</label>
+		<description>Pump 1</description>
+	</channel-type>
+	<channel-type id="pumps-vsp2">
+		<item-type>String</item-type>
+		<label>Pump 2</label>
+		<description>Pump 2</description>
+	</channel-type>
+	<channel-type id="pumps-vsp3">
+		<item-type>String</item-type>
+		<label>Pump 3</label>
+		<description>Pump 3</description>
+	</channel-type>
+	<channel-type id="pumps-vsp4">
+		<item-type>String</item-type>
+		<label>Pump 4</label>
+		<description>Pump 4</description>
+	</channel-type>
+
+	<!-- Chem Channels -->
+
+	<channel-type id="chem-avail" advanced="true">
+		<item-type>Number</item-type>
+		<label>Equipment is Available</label>
+		<description>Indicates what equipment is available</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="chem-chlrp" advanced="true">
+		<item-type>Number</item-type>
+		<label>Pool Chlorination Setpoint</label>
+		<description>Pool chlorination setpoint</description>
+	</channel-type>
+	<channel-type id="chem-saltp" advanced="true">
+		<item-type>Number</item-type>
+		<label>Pool Salt Level</label>
+		<description>Pool salt level</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="chem-chlrs" advanced="true">
+		<item-type>Number</item-type>
+		<label>Spa Chlorination Setpoint</label>
+		<description>Spa chlorination setpoint</description>
+	</channel-type>
+	<channel-type id="chem-salts" advanced="true">
+		<item-type>Number</item-type>
+		<label>Spa Salt Level</label>
+		<description>Spa salt level</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="chem-orp1" advanced="true">
+		<item-type>Number</item-type>
+		<label>ORP Unit 1</label>
+		<description>ORP reading from unit 1</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="chem-orp2" advanced="true">
+		<item-type>Number</item-type>
+		<label>ORP Unit 2</label>
+		<description>ORP reading from unit 2</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="chem-ph1" advanced="true">
+		<item-type>Number</item-type>
+		<label>PH Unit 1</label>
+		<description>PH reading from unit 1</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="chem-ph2" advanced="true">
+		<item-type>Number</item-type>
+		<label>PH Unit 2</label>
+		<description>PH reading from unit 2</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="chem-orpfd1" advanced="true">
+		<item-type>Number</item-type>
+		<label>ORP Feed Unit 1</label>
+		<description>ORP feed from unit 1</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="chem-orpfd2" advanced="true">
+		<item-type>Number</item-type>
+		<label>ORP Feed Unit 2</label>
+		<description>ORP feed from unit 2</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="chem-phfd1" advanced="true">
+		<item-type>Number</item-type>
+		<label>PH Feed Unit 1</label>
+		<description>PH feed from unit 1</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="chem-phfd2" advanced="true">
+		<item-type>Number</item-type>
+		<label>PH Feed Unit 2</label>
+		<description>PH feed from unit 2</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+
+	<!-- Misc Channels -->
+
+	<channel-type id="reboot">
+		<item-type>Switch</item-type>
+		<label>Reboot Autelis Device</label>
+		<description>Reboots the Autelis device. This will not reboot any actual pool equipment.</description>
+	</channel-type>
+</thing:thing-descriptions>
