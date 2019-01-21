@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" style="enable-background:new 0 0 64 64">
+  <path d="m47.5 58.5v-51h-31v51h-4v-55h39v55z" style="fill:#ececed"/>
+  <path d="M51,4v54h-3V8V7h-1H17h-1v1v50h-3V4H51 M52,3H12v56h5V8h30v51h5V3L52,3z" style="fill:#9b9c9e"/>
+  <path d="m17.5 58.61v-50.22l15-3.75v57.72z" style="fill:#f0f0f0"/>
+  <g style="fill:#646464">
+    <path d="m32 5.28v56.44l-14-3.5v-49.44l14-3.5m1-1.28l-16 4v51l16 4v-59z"/>
+    <circle cx="29" cy="37" r="1"/>
+    <path d="m26.05 31.84l3.99.33c.27.02.48.27.46.54-.02.27-.27.48-.54.46l-3.99-.33c-.27-.02-.48-.27-.46-.54.02-.28.26-.49.54-.46"/>
+  </g>
+</svg>

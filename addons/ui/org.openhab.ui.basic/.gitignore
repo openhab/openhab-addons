@@ -1,0 +1,7 @@
+node_modules
+node
+npm_cache
+web/smarthome.css
+web/smarthome.js
+web/fonts/Roboto-Medium.svg
+web/fonts/Roboto-Regular.svg

@@ -1,0 +1,33 @@
+<div class="text-control" layout="row" layout-align="start center" style="height: 100%">
+	<div class="item-label-container" flex="40">
+		<i class="material-icons">{{::$ctrl.getIcon($ctrl.item.category)}}</i>
+		<div>{{::$ctrl.getLabel($ctrl.item, 'Value')}}</div>
+	</div>
+	<div ng-if="!$ctrl.longEditMode" flex="60" layout="row" layout-align="end center" ng-show="::($ctrl.item.readOnly || (!$ctrl.item.readOnly && !$ctrl.isOptionList($ctrl.item)))">
+		<div ng-if="::$ctrl.item.readOnly">
+			<span class="state">{{$ctrl.item.stateText}}</span>
+		</div>
+		<div ng-if="::!$ctrl.item.readOnly" layout="row" layout-align="end center">
+			<span class="state editable text-right" ng-class="{'minDimension':!$ctrl.item.state}" ng-if="!$ctrl.editMode" ng-click="$ctrl.editState()" flex>{{$ctrl.item.stateText}}</span>
+			<md-input-container ng-show="$ctrl.editMode" flex> 
+			    <input ng-model="$ctrl.item.state" aria-label={{::$ctrl.item.label}} type="{{$ctrl.inputType()}}">
+			</md-input-container>
+			<i class="md-button control-button material-icons" ng-show="$ctrl.editMode" ng-click="$ctrl.updateState()">check</i>
+		</div>
+	</div>
+</div>
+<div ng-if="$ctrl.longEditMode" flex="100" layout="row" layout-align="end center" style="height: 100%" ng-show="::($ctrl.item.readOnly || (!$ctrl.item.readOnly && !$ctrl.isOptionList($ctrl.item)))">
+	<div ng-if="::$ctrl.item.readOnly">
+		<span class="state">{{$ctrl.item.stateText}}</span>
+	</div>
+	<div ng-if="::!$ctrl.item.readOnly" layout="row" layout-align="end center" flex="100">
+		<span class="state editable text-right" ng-if="!$ctrl.editMode" ng-click="$ctrl.editState()" flex>{{$ctrl.item.stateText}}</span>
+		<md-input-container ng-show="$ctrl.editMode" flex="80">
+		    <input ng-model="$ctrl.item.state" aria-label={{::$ctrl.item.label}} type="{{$ctrl.inputType()}}">
+		</md-input-container>
+		<i class="md-button control-button material-icons" ng-show="$ctrl.editMode" ng-click="$ctrl.updateState()">check</i>
+	</div>
+</div>
+<div layout="row" layout-align="start center" ng-if="::($ctrl.isOptionList($ctrl.item) && !$ctrl.item.readOnly)">
+    <item-state-dropdown item="$ctrl.item" on-change="$ctrl.updateState()"></item-state-dropdown>
+</div>

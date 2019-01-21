@@ -1,0 +1,96 @@
+<!doctype html>
+<html class="%htmlclass%">
+	<head>
+		<title>%label%</title>
+
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+		<meta name="theme-color" content="#354497">
+
+		<link rel="icon" href="favicon.ico">
+		<link href="images/touch-icon-57.png" sizes="57x57" rel="apple-touch-icon-precomposed">
+		<link href="images/touch-icon-72.png" sizes="72x72" rel="apple-touch-icon-precomposed">
+		<link href="images/touch-icon-76.png" sizes="76x76" rel="apple-touch-icon-precomposed">
+		<link href="images/touch-icon-114.png" sizes="114x114" rel="apple-touch-icon-precomposed">
+		<link href="images/touch-icon-120.png" sizes="120x120" rel="apple-touch-icon-precomposed">
+		<link href="images/touch-icon-144.png" sizes="144x144" rel="apple-touch-icon-precomposed">
+		<link href="images/touch-icon-152.png" sizes="152x152" rel="apple-touch-icon-precomposed">
+		<link href="images/touch-icon-167.png" sizes="167x167" rel="apple-touch-icon-precomposed">
+		<link href="images/touch-icon-180.png" sizes="180x180" rel="apple-touch-icon-precomposed">
+
+		<link rel="manifest" href="manifest.json">
+
+		<link rel="stylesheet" type="text/css" href="mdl/material.min.css" />
+		<link rel="stylesheet" type="text/css" href="material-icons.css" />
+		<link rel="stylesheet" type="text/css" href="roboto.css" />
+		<link rel="stylesheet" type="text/css" href="smarthome.css" />
+
+		<script src="smarthome.js"></script>
+		<script src="mdl/material.min.js"></script>
+		<script type="text/html" id="template-modal">
+			<div class="mdl-modal">
+				<div class="mdl-modal__wrapper">
+					<div class="mdl-modal__content mdl-color--white mdl-shadow--2dp">
+						{content}
+					</div>
+				</div>
+			</div>
+		</script>
+		<script type="text/html" id="template-colorpicker">
+			<div class="colorpicker">
+				<div class="colorpicker__image">
+					<div class="colorpicker__handle">&nbsp;</div>
+				</div>
+				<div class="colorpicker__controls">
+					<div class="colorpicker__background">&nbsp;</div>
+					<input class="colorpicker__brightness" type="range" min="0" max="100" tabindex="0"/>
+				</div>
+				<div class="colorpicker__buttons">
+					<button class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">OK</button>
+				</div>
+			</div>
+		</script>
+		<script type="text/html" id="template-offline-notify">
+			<div class="mdl-notify">
+				<div class="mdl-notify__text">
+					%main.offline-msg%
+				</div>
+			</div>
+		</script>
+		<script type="text/html" id="template-long-polling-mode-notify">
+			<div class="mdl-notify">
+				<div class="mdl-notify__text">
+					%main.long-polling-mode-msg%
+				</div>
+			</div>
+		</script>
+	</head>
+	<body class="mdl-color-text--grey-700" data-sitemap="%sitemap%" data-page-id="%id%" data-theme="%theme%" data-icon-type="%icon_type%">
+	<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+		<header class="mdl-layout__header mdl-layout__header--scroll navigation navigation-home">
+			<div class="mdl-layout__header-row">
+				<div class="mdl-layout__header-button navigation__button-back">
+					<!-- arrow_back -->
+					<i class="material-icons">&#xE5C4;</i>
+				</div>
+				<div class="mdl-layout__header-button navigation__button-home">
+					<!-- home -->
+					<i class="material-icons">&#xE88A;</i>
+				</div>
+				<span class="mdl-layout-title">%label%</span>
+				<div class="mdl-layout-spacer"></div>
+			</div>
+			<div class="ui__loading mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
+		</header>
+		<main class="mdl-layout__content">
+			<div class="page-content mdl-grid">
+				%children%
+			</div>
+		</main>
+	</div>
+	<div class="mdl-notify__container mdl-notify--hidden"></div>
+	</body>
+</html>

@@ -1,0 +1,150 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 64 64" style="enable-background:new 0 0 64 64">
+  <defs>
+    <clipPath id="0">
+      <use xlink:href="#1"/>
+    </clipPath>
+    <ellipse id="1" cx="25" cy="40" rx="8" ry="2"/>
+    <radialGradient id="3" cx="35" cy="33" r="5.831" gradientTransform="matrix(1 0 0 .25 0 24.75)" gradientUnits="userSpaceOnUse" xlink:href="#4"/>
+    <radialGradient id="2" cx="25" cy="40.0799" r="5.831" gradientTransform="matrix(1 0 0 .25 0 30.0599)" gradientUnits="userSpaceOnUse" xlink:href="#4"/>
+    <radialGradient id="4" cx="19" cy="28" r="5.831" gradientTransform="matrix(1 0 0 .25 0 21)" gradientUnits="userSpaceOnUse">
+      <stop style="stop-color:#f0f0f0"/>
+      <stop offset="1" style="stop-color:#a0a0a0"/>
+    </radialGradient>
+  </defs>
+  <path d="m7 20.5c-.2 0-.38-.12-.46-.31s-.03-.4.11-.54l4-4c.09-.09.22-.15.35-.15h26c.2 0 .38.12.46.31s.03.4-.11.54l-4 4c-.09.09-.22.15-.35.15h-26" style="fill:#315c99"/>
+  <path d="m37 16l-4 4h-26l4-4h26m0-1h-26c-.27 0-.52.11-.71.29l-4 4c-.29.29-.37.72-.22 1.09.16.38.53.62.93.62h26c.27 0 .52-.11.71-.29l4-4c.29-.29.37-.72.22-1.09-.16-.38-.53-.62-.93-.62z" style="fill:#172982"/>
+  <path d="m27 7.5c-.2 0-.38-.12-.46-.31s-.03-.4.11-.54l4-4c.09-.1.22-.15.35-.15h26c.2 0 .38.12.46.31s.03.4-.11.54l-4 4c-.09.1-.22.15-.35.15h-26" style="fill:#ffd773"/>
+  <path d="m57 3l-4 4h-26l4-4h26m0-1h-26c-.27 0-.52.11-.71.29l-4 4c-.29.29-.37.72-.22 1.09.16.38.53.62.93.62h26c.27 0 .52-.11.71-.29l4-4c.29-.29.37-.72.22-1.09-.16-.38-.53-.62-.93-.62z" style="fill:#e5b12e"/>
+  <path d="m53 45.5c-.08 0-.15-.02-.22-.05-.17-.08-.28-.26-.28-.45v-38c0-.13.05-.26.15-.35l4-4c.1-.1.22-.15.35-.15.06 0 .13.01.19.04.19.08.31.26.31.46v39c0 .16-.07.31-.2.4l-4 3c-.09.07-.19.1-.3.1" style="fill:#efbd50"/>
+  <path d="m57 3v39l-4 3v-38l4-4m0-1c-.26 0-.52.1-.71.29l-4 4c-.18.19-.29.44-.29.71v38c0 .38.21.73.55.89.14.08.3.11.45.11.21 0 .42-.07.6-.2l4-3c.25-.19.4-.49.4-.8v-39c0-.4-.24-.77-.62-.92-.12-.06-.25-.08-.38-.08z" style="fill:#e5b12e"/>
+  <path d="m6.5 19.5h23v21h-23z" style="fill:#294a84"/>
+  <path d="m29 20v20h-22v-20h22m1-1h-1-22-1v1 20 1h1 22 1v-1-20-1z" style="fill:#172982"/>
+  <path d="m8 21h20v18h-20z" style="fill:#6690cc"/>
+  <path d="m26.5 6.5h27v39h-27z" style="fill:#ffd45c"/>
+  <path d="m53 7v38h-26v-38h26m1-1h-1-26-1v1 38 1h1 26 1v-1-38-1z" style="fill:#e5b12e"/>
+  <path d="m29 9h22v34h-22z" style="fill:#ffe3a6"/>
+  <path d="m27 28v19h-.01c0 .02.01.03.01.05 0 1.1-3.58 2-8 2s-8-.9-8-2c0-.02.01-.03.01-.05h-.01v-19h16m0-1h-16c-.55 0-1 .45-1 1v19c0 .01 0 .02 0 .02 0 .01 0 .01 0 .02 0 2.86 7.5 3 9 3s9-.14 9-3c0-.01 0-.01 0-.02 0-.01 0-.02 0-.02v-19c0-.55-.45-1-1-1z" style="fill:#666"/>
+  <g style="fill:#66ccca">
+    <ellipse cx="19" cy="47" rx="8" ry="2"/>
+    <path d="m11 28h16v19h-16z"/>
+  </g>
+  <g style="fill:#fcb11a">
+    <ellipse cx="19" cy="37" rx="8" ry="2"/>
+    <path d="m11 28h16v9h-16z"/>
+  </g>
+  <path d="m19.5 42h-1c-1.38 0-2.5-1.12-2.5-2.5v-1c0-1.37 1.12-2.5 2.5-2.5h1c1.38 0 2.5 1.12 2.5 2.5v1c0 1.38-1.12 2.5-2.5 2.5" style="fill:#e54545"/>
+  <ellipse cx="19" cy="28" rx="8" ry="2" style="fill:url(#4)"/>
+  <g style="fill:#666">
+    <path d="m19 26c4.42 0 8 .9 8 2s-3.58 2-8 2-8-.9-8-2 3.58-2 8-2m0-1c-1.5 0-9 .14-9 3s7.5 3 9 3 9-.14 9-3-7.5-3-9-3z"/>
+    <path d="m43 32.95v19h-.01c0 .02.01.03.01.05 0 1.1-3.58 2-8 2s-8-.9-8-2c0-.02.01-.03.01-.05h-.01v-19h16m0-1h-16c-.55 0-1 .45-1 1v19c0 .01 0 .02 0 .02 0 .01 0 .01 0 .02 0 2.86 7.5 3 9 3s9-.14 9-3c0-.01 0-.01 0-.02 0-.01 0-.02 0-.02v-19c0-.55-.45-1-1-1z"/>
+  </g>
+  <g style="fill:#0056bc">
+    <ellipse cx="35" cy="52" rx="8" ry="2"/>
+    <path d="m27 33h16v19h-16z"/>
+  </g>
+  <g style="fill:#2fa528">
+    <ellipse cx="35" cy="42.08" rx="8" ry="2"/>
+    <path d="m27 33h16v9h-16z"/>
+  </g>
+  <path d="m35.5 47h-1c-1.37 0-2.5-1.12-2.5-2.5v-1c0-1.37 1.12-2.5 2.5-2.5h1c1.37 0 2.5 1.12 2.5 2.5v1c0 1.38-1.12 2.5-2.5 2.5" style="fill:#ff80e7"/>
+  <ellipse cx="35" cy="33" rx="8" ry="2" style="fill:url(#3)"/>
+  <g style="fill:#666">
+    <path d="m35 31c4.42 0 8 .9 8 2s-3.58 2-8 2-8-.9-8-2 3.58-2 8-2m0-1c-1.5 0-9 .14-9 3s7.5 3 9 3 9-.14 9-3-7.5-3-9-3z"/>
+    <path d="m33 39.95v19h-.01c0 .02.01.03.01.05 0 1.1-3.58 2-8 2s-8-.9-8-2c0-.02.01-.03.01-.05h-.01v-19h16m0-1h-16c-.55 0-1 .45-1 1v19c0 .01 0 .02 0 .02 0 .01 0 .01 0 .02 0 2.86 7.5 3 9 3s9-.14 9-3c0-.01 0-.01 0-.02 0-.01 0-.02 0-.02v-19c0-.55-.45-1-1-1z"/>
+  </g>
+  <g style="fill:#f5f5f5">
+    <ellipse cx="25" cy="59" rx="8" ry="2"/>
+    <path d="m17 40h16v19h-16z"/>
+  </g>
+  <g style="fill:#c80028">
+    <ellipse cx="25" cy="49" rx="8" ry="2"/>
+    <path d="m17 40h16v9h-16z"/>
+  </g>
+  <path d="m25.5 54h-1c-1.38 0-2.5-1.12-2.5-2.5v-1c0-1.37 1.12-2.5 2.5-2.5h1c1.38 0 2.5 1.12 2.5 2.5v1c0 1.38-1.12 2.5-2.5 2.5" style="fill:#ffd35c"/>
+  <ellipse cx="25" cy="40.08" rx="8" ry="2" style="fill:url(#2)"/>
+  <path d="m25 38c4.42 0 8 .9 8 2s-3.58 2-8 2-8-.9-8-2 3.58-2 8-2m0-1c-1.5 0-9 .14-9 3s7.5 3 9 3 9-.14 9-3-7.5-3-9-3z" style="fill:#666"/>
+  <g style="fill:#a0a0a0">
+    <path d="m17 38h16v4h-16z" style="clip-path:url(#0)"/>
+    <ellipse cx="25" cy="40" rx="5.83" ry="1.46" style="clip-path:url(#0)"/>
+  </g>
+  <ellipse cx="25" cy="40" rx="5.76" ry="1.44" style="clip-path:url(#0);fill:#a1a1a1"/>
+  <ellipse cx="25" cy="40" rx="5.69" ry="1.42" style="clip-path:url(#0);fill:#a2a2a2"/>
+  <ellipse cx="25" cy="40" rx="5.61" ry="1.4" style="clip-path:url(#0);fill:#a3a3a3"/>
+  <ellipse cx="25" cy="40" rx="5.54" ry="1.38" style="clip-path:url(#0);fill:#a4a4a4"/>
+  <ellipse cx="25" cy="40" rx="5.47" ry="1.37" style="clip-path:url(#0);fill:#a5a5a5"/>
+  <ellipse cx="25" cy="40" rx="5.39" ry="1.35" style="clip-path:url(#0);fill:#a6a6a6"/>
+  <ellipse cx="25" cy="40" rx="5.32" ry="1.33" style="clip-path:url(#0);fill:#a7a7a7"/>
+  <ellipse cx="25" cy="40" rx="5.25" ry="1.31" style="clip-path:url(#0);fill:#a8a8a8"/>
+  <ellipse cx="25" cy="40" rx="5.17" ry="1.29" style="clip-path:url(#0);fill:#a9a9a9"/>
+  <ellipse cx="25" cy="40" rx="5.1" ry="1.28" style="clip-path:url(#0);fill:#aaa"/>
+  <ellipse cx="25" cy="40" rx="5.03" ry="1.26" style="clip-path:url(#0);fill:#ababab"/>
+  <ellipse cx="25" cy="40" rx="4.96" ry="1.24" style="clip-path:url(#0);fill:#acacac"/>
+  <ellipse cx="25" cy="40" rx="4.88" ry="1.22" style="clip-path:url(#0);fill:#adadad"/>
+  <ellipse cx="25" cy="40" rx="4.81" ry="1.2" style="clip-path:url(#0);fill:#aeaeae"/>
+  <ellipse cx="25" cy="40" rx="4.74" ry="1.18" style="clip-path:url(#0);fill:#afafaf"/>
+  <ellipse cx="25" cy="40" rx="4.66" ry="1.17" style="clip-path:url(#0);fill:#b0b0b0"/>
+  <ellipse cx="25" cy="40" rx="4.59" ry="1.15" style="clip-path:url(#0);fill:#b1b1b1"/>
+  <ellipse cx="25" cy="40" rx="4.52" ry="1.13" style="clip-path:url(#0);fill:#b2b2b2"/>
+  <ellipse cx="25" cy="40" rx="4.45" ry="1.11" style="clip-path:url(#0);fill:#b3b3b3"/>
+  <ellipse cx="25" cy="40" rx="4.37" ry="1.09" style="clip-path:url(#0);fill:#b4b4b4"/>
+  <ellipse cx="25" cy="40" rx="4.3" ry="1.08" style="clip-path:url(#0);fill:#b5b5b5"/>
+  <ellipse cx="25" cy="40" rx="4.23" ry="1.06" style="clip-path:url(#0);fill:#b6b6b6"/>
+  <ellipse cx="25" cy="40" rx="4.15" ry="1.04" style="clip-path:url(#0);fill:#b7b7b7"/>
+  <ellipse cx="25" cy="40" rx="4.08" ry="1.02" style="clip-path:url(#0);fill:#b8b8b8"/>
+  <ellipse cx="25" cy="40" rx="4.01" ry="1" style="clip-path:url(#0);fill:#b9b9b9"/>
+  <ellipse cx="25" cy="40" rx="3.94" ry=".98" style="clip-path:url(#0);fill:#bababa"/>
+  <ellipse cx="25" cy="40" rx="3.86" ry=".97" style="clip-path:url(#0);fill:#bbb"/>
+  <ellipse cx="25" cy="40" rx="3.79" ry=".95" style="clip-path:url(#0);fill:#bcbcbc"/>
+  <ellipse cx="25" cy="40" rx="3.72" ry=".93" style="clip-path:url(#0);fill:#bdbdbd"/>
+  <ellipse cx="25" cy="40" rx="3.64" ry=".91" style="clip-path:url(#0);fill:#bebebe"/>
+  <ellipse cx="25" cy="40" rx="3.57" ry=".89" style="clip-path:url(#0);fill:#bfbfbf"/>
+  <ellipse cx="25" cy="40" rx="3.5" ry=".87" style="clip-path:url(#0);fill:#c0c0c0"/>
+  <ellipse cx="25" cy="40" rx="3.43" ry=".86" style="clip-path:url(#0);fill:#c1c1c1"/>
+  <ellipse cx="25" cy="40" rx="3.35" ry=".84" style="clip-path:url(#0);fill:#c2c2c2"/>
+  <ellipse cx="25" cy="40" rx="3.28" ry=".82" style="clip-path:url(#0);fill:#c3c3c3"/>
+  <ellipse cx="25" cy="40" rx="3.21" ry=".8" style="clip-path:url(#0);fill:#c4c4c4"/>
+  <ellipse cx="25" cy="40" rx="3.13" ry=".78" style="clip-path:url(#0);fill:#c5c5c5"/>
+  <ellipse cx="25" cy="40" rx="3.06" ry=".77" style="clip-path:url(#0);fill:#c6c6c6"/>
+  <ellipse cx="25" cy="40" rx="2.99" ry=".75" style="clip-path:url(#0);fill:#c7c7c7"/>
+  <ellipse cx="25" cy="40" rx="2.92" ry=".73" style="clip-path:url(#0);fill:#c8c8c8"/>
+  <ellipse cx="25" cy="40" rx="2.84" ry=".71" style="clip-path:url(#0);fill:#c9c9c9"/>
+  <ellipse cx="25" cy="40" rx="2.77" ry=".69" style="clip-path:url(#0);fill:#cacaca"/>
+  <ellipse cx="25" cy="40" rx="2.7" ry=".67" style="clip-path:url(#0);fill:#cbcbcb"/>
+  <ellipse cx="25" cy="40" rx="2.62" ry=".66" style="clip-path:url(#0);fill:#ccc"/>
+  <ellipse cx="25" cy="40" rx="2.55" ry=".64" style="clip-path:url(#0);fill:#cdcdcd"/>
+  <ellipse cx="25" cy="40" rx="2.48" ry=".62" style="clip-path:url(#0);fill:#cecece"/>
+  <ellipse cx="25" cy="40" rx="2.41" ry=".6" style="clip-path:url(#0);fill:#cfcfcf"/>
+  <ellipse cx="25" cy="40" rx="2.33" ry=".58" style="clip-path:url(#0);fill:#d0d0d0"/>
+  <ellipse cx="25" cy="40" rx="2.26" ry=".56" style="clip-path:url(#0);fill:#d2d2d2"/>
+  <ellipse cx="25" cy="40" rx="2.19" ry=".55" style="clip-path:url(#0);fill:#d3d3d3"/>
+  <ellipse cx="25" cy="40" rx="2.11" ry=".53" style="clip-path:url(#0);fill:#d4d4d4"/>
+  <ellipse cx="25" cy="40" rx="2.04" ry=".51" style="clip-path:url(#0);fill:#d5d5d5"/>
+  <ellipse cx="25" cy="40" rx="1.97" ry=".49" style="clip-path:url(#0);fill:#d6d6d6"/>
+  <ellipse cx="25" cy="40" rx="1.9" ry=".47" style="clip-path:url(#0);fill:#d7d7d7"/>
+  <ellipse cx="25" cy="40" rx="1.82" ry=".46" style="clip-path:url(#0);fill:#d8d8d8"/>
+  <ellipse cx="25" cy="40" rx="1.75" ry=".44" style="clip-path:url(#0);fill:#d9d9d9"/>
+  <ellipse cx="25" cy="40" rx="1.68" ry=".42" style="clip-path:url(#0);fill:#dadada"/>
+  <ellipse cx="25" cy="40" rx="1.6" ry=".4" style="clip-path:url(#0);fill:#dbdbdb"/>
+  <ellipse cx="25" cy="40" rx="1.53" ry=".38" style="clip-path:url(#0);fill:#dcdcdc"/>
+  <ellipse cx="25" cy="40" rx="1.46" ry=".36" style="clip-path:url(#0);fill:#ddd"/>
+  <ellipse cx="25" cy="40" rx="1.38" ry=".35" style="clip-path:url(#0);fill:#dedede"/>
+  <ellipse cx="25" cy="40" rx="1.31" ry=".33" style="clip-path:url(#0);fill:#dfdfdf"/>
+  <ellipse cx="25" cy="40" rx="1.24" ry=".31" style="clip-path:url(#0);fill:#e0e0e0"/>
+  <ellipse cx="25" cy="40" rx="1.17" ry=".29" style="clip-path:url(#0);fill:#e1e1e1"/>
+  <ellipse cx="25" cy="40" rx="1.09" ry=".27" style="clip-path:url(#0);fill:#e2e2e2"/>
+  <ellipse cx="25" cy="40" rx="1.02" ry=".26" style="clip-path:url(#0);fill:#e3e3e3"/>
+  <ellipse cx="25" cy="40" rx=".95" ry=".24" style="clip-path:url(#0);fill:#e4e4e4"/>
+  <ellipse cx="25" cy="40" rx=".87" ry=".22" style="clip-path:url(#0);fill:#e5e5e5"/>
+  <ellipse cx="25" cy="40" rx=".8" ry=".2" style="clip-path:url(#0);fill:#e6e6e6"/>
+  <ellipse cx="25" cy="40" rx=".73" ry=".18" style="clip-path:url(#0);fill:#e7e7e7"/>
+  <ellipse cx="25" cy="40" rx=".66" ry=".16" style="clip-path:url(#0);fill:#e8e8e8"/>
+  <ellipse cx="25" cy="40" rx=".58" ry=".15" style="clip-path:url(#0);fill:#e9e9e9"/>
+  <ellipse cx="25" cy="40" rx=".51" ry=".13" style="clip-path:url(#0);fill:#eaeaea"/>
+  <ellipse cx="25" cy="40" rx=".44" ry=".11" style="clip-path:url(#0);fill:#ebebeb"/>
+  <ellipse cx="25" cy="40" rx=".36" ry=".09" style="clip-path:url(#0);fill:#ececec"/>
+  <ellipse cx="25" cy="40" rx=".29" ry=".07" style="clip-path:url(#0);fill:#ededed"/>
+  <ellipse cx="25" cy="40" rx=".22" ry=".05" style="clip-path:url(#0);fill:#eee"/>
+  <ellipse cx="25" cy="40" rx=".15" ry=".04" style="clip-path:url(#0);fill:#efefef"/>
+  <ellipse cx="25" cy="40" rx=".07" ry=".02" style="clip-path:url(#0);fill:#f0f0f0"/>
+</svg>

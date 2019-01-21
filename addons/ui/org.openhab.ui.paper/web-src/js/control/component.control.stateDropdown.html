@@ -1,0 +1,13 @@
+<div layout="row" layout-align="end center" flex="100">
+	<div class="container options">
+		<md-select placeholder="Select" 
+                   class="controlSelect" 
+                   ng-model="$ctrl.item.state" 
+                   ng-change="$ctrl.onChange()" 
+                   aria-label={{::$ctrl.item.label}}> 
+            <md-option ng-value="option.value" 
+                       ng-repeat="option in ::$ctrl.item.stateDescription.options"> {{::option.label}} 
+            </md-option>
+        </md-select>
+	</div>
+</div>

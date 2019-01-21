@@ -1,0 +1,31 @@
+<md-tab label="{{::$ctrl.tab.name}}" md-on-select="$ctrl.onTabSelect()" layout-fill>
+	<md-tab-content layout-fill="">
+		<p class="text-center" ng-if="$ctrl.things.length <= 0">
+			No Things available.
+			<button class="md-button" ng-click="$location.path('inbox/setup')">Add Thing TODO</button>
+		</p>
+		<div class="items row" ng-attr-id="{{::$ctrl.tab.name}}">
+			<div class="col-lg-4 col-sm-6 col-xs-12 item-wrapper" ng-repeat="thing in $ctrl.things track by thing.UID">
+				<div class="card item">
+					<div class="row">
+						<span class="clabel col-xs-9">{{::thing.label}}</span>
+						<i ng-click="$ctrl.navigateTo('configuration/things/view/'+thing.UID)" class="material-icons cursor-pointer col-xs-3 pull-right" style="color: black; background-color: transparent;">launch</i>
+					</div>
+					<div class="ibadge">
+						<span class="icon-x">
+					</div>
+					<div ng-repeat="group in ::thing.thingChannels track by $index">
+						<div  class="channel-group-name" ng-if="::(!angular.isUndefined(group.name) && group.name.length > 0 && group.channels.length>0)">
+							<span>{{::group.name}}</span>
+						</div>
+						<div ng-repeat="channel in ::group.channels track by channel.id">
+							<div ng-repeat="itemName in ::channel.linkedItems">
+								<item-control item-name="itemName"></item-control>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</md-tab-content>
+</md-tab>

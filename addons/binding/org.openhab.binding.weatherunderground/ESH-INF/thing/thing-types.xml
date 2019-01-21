@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="weatherunderground"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- WeatherUnderground Binding -->
+	<thing-type id="weather">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>Weather Information</label>
+		<description>Provides various weather data from the Weather Underground service</description>
+
+		<channel-groups>
+			<channel-group id="current" typeId="current" />
+			<channel-group id="forecastToday" typeId="forecast">
+				<label>Weather Forecast Today</label>
+				<description>This is the weather forecast for today</description>
+			</channel-group>
+			<channel-group id="forecastTomorrow" typeId="forecast">
+				<label>Weather Forecast Tomorrow</label>
+				<description>This is the weather forecast for tomorrow</description>
+			</channel-group>
+			<channel-group id="forecastDay2" typeId="forecast">
+				<label>Weather Forecast Day 2</label>
+				<description>This is the weather forecast in two days</description>
+			</channel-group>
+			<channel-group id="forecastDay3" typeId="forecast">
+				<label>Weather Forecast Day 3</label>
+				<description>This is the weather forecast in three days</description>
+			</channel-group>
+			<channel-group id="forecastDay4" typeId="forecast">
+				<label>Weather Forecast Day 4</label>
+				<description>This is the weather forecast in four days</description>
+			</channel-group>
+			<channel-group id="forecastDay5" typeId="forecast">
+				<label>Weather Forecast Day 5</label>
+				<description>This is the weather forecast in five days</description>
+			</channel-group>
+			<channel-group id="forecastDay6" typeId="forecast">
+				<label>Weather Forecast Day 6</label>
+				<description>This is the weather forecast in six days</description>
+			</channel-group>
+			<channel-group id="forecastDay7" typeId="forecast">
+				<label>Weather Forecast Day 7</label>
+				<description>This is the weather forecast in seven days</description>
+			</channel-group>
+			<channel-group id="forecastDay8" typeId="forecast">
+				<label>Weather Forecast Day 8</label>
+				<description>This is the weather forecast in eight days</description>
+			</channel-group>
+			<channel-group id="forecastDay9" typeId="forecast">
+				<label>Weather Forecast Day 9</label>
+				<description>This is the weather forecast in nine days</description>
+			</channel-group>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="location" type="text" required="true">
+				<label>Location of Weather Information</label>
+				<description>Multiple syntaxes are supported. Please read the binding documentation for more information</description>
+			</parameter>
+			<parameter name="language" type="text" required="false">
+				<label>Language</label>
+				<description>Language to be used by the Weather Underground service</description>
+				<options>
+					<option value="AF">Afrikaans</option>
+					<option value="AL">Albanian</option>
+					<option value="AR">Arabic</option>
+					<option value="HY">Armenian</option>
+					<option value="AZ">Azerbaijan</option>
+					<option value="EU">Basque</option>
+					<option value="BY">Belarusian</option>
+					<option value="BU">Bulgarian</option>
+					<option value="LI">British English</option>
+					<option value="MY">Burmese</option>
+					<option value="CA">Catalan</option>
+					<option value="CN">Chinese - Simplified</option>
+					<option value="TW">Chinese - Traditional</option>
+					<option value="CR">Croatian</option>
+					<option value="CZ">Czech</option>
+					<option value="DK">Danish</option>
+					<option value="DV">Dhivehi</option>
+					<option value="NL">Dutch</option>
+					<option value="EN">English</option>
+					<option value="EO">Esperanto</option>
+					<option value="ET">Estonian</option>
+					<option value="FA">Farsi</option>
+					<option value="FI">Finnish</option>
+					<option value="FR">French</option>
+					<option value="FC">French Canadian</option>
+					<option value="GZ">Galician</option>
+					<option value="DL">German</option>
+					<option value="KA">Georgian</option>
+					<option value="GR">Greek</option>
+					<option value="GU">Gujarati</option>
+					<option value="HT">Haitian Creole</option>
+					<option value="IL">Hebrew</option>
+					<option value="HI">Hindi</option>
+					<option value="HU">Hungarian</option>
+					<option value="IS">Icelandic</option>
+					<option value="IO">Ido</option>
+					<option value="ID">Indonesian</option>
+					<option value="IR">Irish Gaelic</option>
+					<option value="IT">Italian</option>
+					<option value="JP">Japanese</option>
+					<option value="JW">Javanese</option>
+					<option value="KM">Khmer</option>
+					<option value="KR">Korean</option>
+					<option value="KU">Kurdish</option>
+					<option value="LA">Latin</option>
+					<option value="LV">Latvian</option>
+					<option value="LT">Lithuanian</option>
+					<option value="ND">Low German</option>
+					<option value="MK">Macedonian</option>
+					<option value="MT">Maltese</option>
+					<option value="GM">Mandinka</option>
+					<option value="MI">Maori</option>
+					<option value="MR">Marathi</option>
+					<option value="MN">Mongolian</option>
+					<option value="NO">Norwegian</option>
+					<option value="OC">Occitan</option>
+					<option value="PS">Pashto</option>
+					<option value="GN">Plautdietsch</option>
+					<option value="PL">Polish</option>
+					<option value="BR">Portuguese</option>
+					<option value="PA">Punjabi</option>
+					<option value="RO">Romanian</option>
+					<option value="RU">Russian</option>
+					<option value="SR">Serbian</option>
+					<option value="SK">Slovak</option>
+					<option value="SL">Slovenian</option>
+					<option value="SP">Spanish</option>
+					<option value="SI">Swahili</option>
+					<option value="SW">Swedish</option>
+					<option value="CH">Swiss</option>
+					<option value="TL">Tagalog</option>
+					<option value="TT">Tatarish</option>
+					<option value="TH">Thai</option>
+					<option value="TR">Turkish</option>
+					<option value="TK">Turkmen</option>
+					<option value="UA">Ukrainian</option>
+					<option value="UZ">Uzbek</option>
+					<option value="VU">Vietnamese</option>
+					<option value="CY">Welsh</option>
+					<option value="SN">Wolof</option>
+					<option value="JI">Yiddish - transliterated</option>
+					<option value="YI">Yiddish - unicode</option>
+				</options>
+			</parameter>
+			<parameter name="refresh" type="integer" min="5" required="false" unit="min">
+				<label>Refresh interval</label>
+				<description>Specifies the refresh interval in minutes.</description>
+				<default>30</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="current">
+		<label>Current Weather</label>
+		<description>This is the current weather</description>
+		<channels>
+			<channel id="location" typeId="location" />
+			<channel id="stationId" typeId="stationId" />
+			<channel id="observationTime" typeId="observationTime" />
+			<channel id="conditions" typeId="currentConditions" />
+			<channel id="temperature" typeId="system.outdoor-temperature" />
+			<channel id="relativeHumidity" typeId="system.atmospheric-humidity" />
+			<channel id="windDirection" typeId="windDirection" />
+			<channel id="windDirectionDegrees" typeId="system.wind-direction" />
+			<channel id="windSpeed" typeId="system.wind-speed" />
+			<channel id="windGust" typeId="windGust" />
+			<channel id="pressure" typeId="system.barometric-pressure" />
+			<channel id="pressureTrend" typeId="pressureTrend" />
+			<channel id="dewPoint" typeId="dewPoint" />
+			<channel id="heatIndex" typeId="heatIndex" />
+			<channel id="windChill" typeId="windChill" />
+			<channel id="feelingTemperature" typeId="feelingTemperature" />
+			<channel id="visibility" typeId="visibility" />
+			<channel id="solarRadiation" typeId="solarRadiation" />
+			<channel id="UVIndex" typeId="UVIndex" />
+			<channel id="precipitationDay" typeId="rainDay" />
+			<channel id="precipitationHour" typeId="rainHour" />
+			<channel id="icon" typeId="icon" />
+			<channel id="iconKey" typeId="iconKey" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="forecast">
+		<label>Weather Forecast</label>
+		<description>This is the weather forecast</description>
+		<channels>
+			<channel id="forecastTime" typeId="forecastTime" />
+			<channel id="conditions" typeId="forecastConditions" />
+			<channel id="minTemperature" typeId="minTemperature" />
+			<channel id="maxTemperature" typeId="maxTemperature" />
+			<channel id="relativeHumidity" typeId="relativeHumidity" />
+			<channel id="probaPrecipitation" typeId="probaPrecipitation" />
+			<channel id="precipitationDay" typeId="rainDay" />
+			<channel id="snow" typeId="snow" />
+			<channel id="maxWindDirection" typeId="maxWindDirection" />
+			<channel id="maxWindDirectionDegrees" typeId="maxWindDirection-degrees" />
+			<channel id="maxWindSpeed" typeId="maxWindSpeed" />
+			<channel id="averageWindDirection" typeId="averageWindDirection" />
+			<channel id="averageWindDirectionDegrees" typeId="averageWindDirection-degrees" />
+			<channel id="averageWindSpeed" typeId="averageWindSpeed" />
+			<channel id="icon" typeId="icon" />
+			<channel id="iconKey" typeId="iconKey" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="location" advanced="true">
+		<item-type>String</item-type>
+		<label>Observation Location</label>
+		<description>Weather observation location</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+
+	<channel-type id="stationId" advanced="true">
+		<item-type>String</item-type>
+		<label>Station Id</label>
+		<description>Weather station identifier</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+
+	<channel-type id="observationTime" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Observation Time</label>
+		<description>Observation date and time</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="forecastTime" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Forecast Time</label>
+		<description>Forecast date and time</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="currentConditions">
+		<item-type>String</item-type>
+		<label>Current Conditions</label>
+		<description>Weather current conditions</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+
+	<channel-type id="forecastConditions">
+		<item-type>String</item-type>
+		<label>Forecast Conditions</label>
+		<description>Weather forecast conditions</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+
+	<channel-type id="minTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Minimum Temperature</label>
+		<description>Minimum temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="maxTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Maximum Temperature</label>
+		<description>Maximum temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="dewPoint" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Dew Point Temperature</label>
+		<description>Dew Point temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="heatIndex" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Heat Index</label>
+		<description>Heat index</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="windChill" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Wind Chill Temperature</label>
+		<description>Wind chill temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="feelingTemperature" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Feeling Temperature</label>
+		<description>Feeling temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="relativeHumidity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Relative Humidity</label>
+		<description>Forecast relative humidity</description>
+		<category>Humidity</category>
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="windDirection">
+		<item-type>String</item-type>
+		<label>Wind Direction</label>
+		<description>Wind direction</description>
+		<state readOnly="true" pattern="%s">
+		</state>
+	</channel-type>
+
+	<channel-type id="maxWindDirection" advanced="true">
+		<item-type>String</item-type>
+		<label>Maximum Wind Direction</label>
+		<description>Maximum wind direction</description>
+		<state readOnly="true" pattern="%s">
+		</state>
+	</channel-type>
+
+	<channel-type id="averageWindDirection" advanced="true">
+		<item-type>String</item-type>
+		<label>Average Wind Direction</label>
+		<description>Average wind direction</description>
+		<state readOnly="true" pattern="%s">
+		</state>
+	</channel-type>
+
+	<channel-type id="maxWindDirection-degrees" advanced="true">
+		<item-type>Number:Angle</item-type>
+		<label>Maximum Wind Direction (angle)</label>
+		<description>Maximum wind direction as an angle</description>
+		<category>Wind</category>
+		<state readOnly="true" min="0" max="360" pattern="%.0f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="averageWindDirection-degrees" advanced="true">
+		<item-type>Number:Angle</item-type>
+		<label>Average Wind Direction (angle)</label>
+		<description>Average wind direction as an angle</description>
+		<category>Wind</category>
+		<state readOnly="true" min="0" max="360" pattern="%.0f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="maxWindSpeed">
+		<item-type>Number:Speed</item-type>
+		<label>Maximum Wind Speed</label>
+		<description>Maximum wind speed</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="averageWindSpeed">
+		<item-type>Number:Speed</item-type>
+		<label>Average Wind Speed</label>
+		<description>Average wind speed</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="windGust">
+		<item-type>Number:Speed</item-type>
+		<label>Wind Gust</label>
+		<description>Wind gust</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="pressureTrend" advanced="true">
+		<item-type>String</item-type>
+		<label>Pressure Trend</label>
+		<description>Pressure evolution trend (up, down, stable)</description>
+		<category>Pressure</category>
+		<state readOnly="true" pattern="%s">
+			<options>
+				<option value="up">up</option>
+				<option value="stable">stable</option>
+				<option value="down">down</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="visibility" advanced="true">
+		<item-type>Number:Length</item-type>
+		<label>Visibility</label>
+		<description>Visibility</description>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="solarRadiation" advanced="true">
+		<item-type>Number:Intensity</item-type>
+		<label>Solar Radiation</label>
+		<description>Solar radiation</description>
+		<state readOnly="true" pattern="%.2f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="UVIndex" advanced="true">
+		<item-type>Number</item-type>
+		<label>UV Index</label>
+		<description>UV Index</description>
+		<state readOnly="true" pattern="%.1f">
+		</state>
+	</channel-type>
+
+	<channel-type id="rainDay">
+		<item-type>Number:Length</item-type>
+		<label>Rain Fall Day</label>
+		<description>Rain fall during the day</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.2f %unit%" />
+	</channel-type>
+
+	<channel-type id="rainHour">
+		<item-type>Number:Length</item-type>
+		<label>Rain Fall Hour</label>
+		<description>Rain fall during the last hour</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.2f %unit%" />
+	</channel-type>
+
+	<channel-type id="snow">
+		<item-type>Number:Length</item-type>
+		<label>Snow Fall</label>
+		<description>Snow fall</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.2f %unit%" />
+	</channel-type>
+
+	<channel-type id="probaPrecipitation">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Precipitation Probability</label>
+		<description>Probability of precipitation</description>
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="icon" advanced="true">
+		<item-type>Image</item-type>
+		<label>Weather icon</label>
+		<description>Icon representing the weather conditions</description>
+	</channel-type>
+
+	<channel-type id="iconKey" advanced="true">
+		<item-type>String</item-type>
+		<label>Weather icon key</label>
+		<description>Key used in the icon URL</description>
+	</channel-type>
+
+</thing:thing-descriptions>

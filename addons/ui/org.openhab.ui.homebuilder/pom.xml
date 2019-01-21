@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.openhab.ui</groupId>
+    <artifactId>pom</artifactId>
+    <version>2.5.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>org.openhab.ui.homebuilder</artifactId>
+  <packaging>eclipse-plugin</packaging>
+
+  <name>openHAB HomeBuilder UI</name>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>3.1.0</version>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>${basedir}/web</directory>
+              <includes>
+                <include>node_modules/**</include>
+                <include>npm_cache/**</include>
+                <include>npm_tmp/**</include>
+                <include>dist/**</include>
+              </includes>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.github.eirslett</groupId>
+        <artifactId>frontend-maven-plugin</artifactId>
+        <version>1.0</version>
+
+        <configuration>
+          <nodeVersion>v10.4.0</nodeVersion>
+          <npmVersion>6.1.0</npmVersion>
+          <nodeDownloadRoot>http://nodejs.org/dist/</nodeDownloadRoot>
+          <npmDownloadRoot>http://registry.npmjs.org/npm/-/</npmDownloadRoot>
+          <environmentVariables>
+            <npm_config_cache>${project.basedir}/npm_cache</npm_config_cache>
+            <npm_config_tmp>${project.basedir}/npm_tmp</npm_config_tmp>
+          </environmentVariables>
+          <installDirectory>target</installDirectory>
+          <workingDirectory>web</workingDirectory>
+        </configuration>
+
+        <executions>
+          <execution>
+            <id>Install node and npm</id>
+            <goals>
+              <goal>install-node-and-npm</goal>
+            </goals>
+          </execution>
+
+          <execution>
+            <id>npm clean</id>
+            <goals>
+              <goal>install-node-and-npm</goal>
+              <goal>npm</goal>
+            </goals>
+            <phase>clean</phase>
+            <configuration>
+              <arguments>cache clean --force</arguments>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>npm install</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <configuration>
+              <arguments>install --no-save</arguments>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>webpack build</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <configuration>
+              <arguments>run build</arguments>
+            </configuration>
+          </execution>
+
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

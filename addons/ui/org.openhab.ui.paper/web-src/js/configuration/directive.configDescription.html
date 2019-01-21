@@ -1,0 +1,156 @@
+<div class="row">
+	<form novalidate name="$ctrl.form.configForm">
+		<div class="includeConfig" ng-show="!$ctrl.expertMode" ng-init="isAdvanced=false">
+			<div ng-repeat="part in ['normal','advance']">
+				<md-button ng-show="part==='advance' && $ctrl.parameters.hasAdvanced" ng-class="{'advButton':$ctrl.parameters.length==1}" ng-click="isAdvanced=!isAdvanced">{{isAdvanced?'Show less':'Show more'}}</md-button>
+				<fieldset ng-if="(part==='normal' && group.advParam!==group.parameters.length) || (part==='advance' && isAdvanced &&  group.advParam>0)" ng-class="{borderhidden: $ctrl.parameters.length==1}" ng-repeat="group in $ctrl.parameters track by $index">
+					<legend ng-if="$ctrl.parameters.length>1">{{group.groupLabel}}</legend>
+					<div ng-repeat="parameter in group.parameters track by $index">
+						<div ng-switch="parameter.element">
+							<div ng-if="parameter.element!='textarea' && parameter.element!='dayofweek' && parameter.element!='location'" ng-show="(part==='normal' && !parameter.advanced) || (part==='advance' && parameter.advanced && isAdvanced)" class="parameter col-sm-6 col-xs-12">
+								<div ng-switch-when="input">
+									<div ng-if="(parameter.type=='INTEGER' || parameter.type=='DECIMAL')">
+										<label class="config-textInput" for="{{parameter.name}}">{{parameter.label}}</label>
+										<md-input-container ng-class="{'md-input-invalid':$ctrl.form.configForm[parameter.name].$invalid}" class="col-xs-12 configContainer no-animation"> <input ng-init="focus=false" ng-pattern="parameter.pattern" name="{{parameter.name}}" ng-readonly="parameter.readOnly" type="number" min="{{parameter.min}}" max="{{parameter.max}}" step="{{parameter.stepsize}}" ng-model="$ctrl.configuration[parameter.name]" ng-required="parameter.required" type="{{parameter.inputType}}" ng-focus="focus=true" ng-blur="focus=false" aria-label="parameter.label">
+										<div ng-messages="$ctrl.form.configForm[parameter.name].$error" ng-show="focus">
+											<div ng-message="min">Minimum allowed number is {{parameter.min}}</div>
+											<div ng-message="max">Maximum allowed number is {{parameter.max}}</div>
+											<div ng-message="pattern">Input should satisfy expression {{parameter.pattern}}</div>
+											<div ng-message="required">Field is required</div>
+										</div>
+										<parameter-description description="parameter.description" /> </md-input-container>
+									</div>
+									<div ng-if="parameter.type=='TEXT'">
+										<label class="config-textInput" for="{{parameter.name}}">{{parameter.label}}</label>
+										<md-input-container ng-class="{'md-input-invalid':$ctrl.form.configForm[parameter.name].$invalid}" class="col-xs-12 configContainer no-animation"> <input ng-init="focus=false" ng-pattern="parameter.pattern" name="{{parameter.name}}" ng-readonly="parameter.readOnly" ng-minlength="parameter.min" ng-maxlength="parameter.max" ng-model="$ctrl.configuration[parameter.name]" ng-required="parameter.required" type="{{parameter.inputType}}" ng-focus="focus=true" ng-blur="focus=false" aria-label="parameter.label">
+										<div ng-messages="$ctrl.form.configForm[parameter.name].$error" ng-show="focus">
+											<div ng-message="minlength">Minimum length is {{parameter.min}}</div>
+											<div ng-message="maxlength">Maximum length is {{parameter.max}}</div>
+											<div ng-message="pattern">Input should satisfy expression {{parameter.pattern}}</div>
+											<div ng-message="required">Field is required</div>
+										</div>
+										<parameter-description description="parameter.description" /> </md-input-container>
+									</div>
+								</div>
+								<div ng-switch-when="switch" ng-show="(part==='normal' && !parameter.advanced) || (part==='advance' && parameter.advanced && isAdvanced)">
+									<md-switch class="md-default-theme" ng-model="$ctrl.configuration[parameter.name]" aria-label="parameter.label">{{parameter.label}}</md-switch>
+									<parameter-description description="parameter.description" />
+								</div>
+								<div ng-switch-when="select" ng-show="(part==='normal' && !parameter.advanced) || (part==='advance' && parameter.advanced && isAdvanced)">
+									<label class="config-textInput">{{parameter.label}}</label>
+									<md-input-container class="col-xs-12 configContainer no-animation"> 
+									   <md-select class="config-select" isrequired="{{parameter.required}}" ng-init="focus=false" name="{{parameter.name}}" ng-model="$ctrl.configuration[parameter.name]" placeholder="Select a value" ng-focus="focus=true" ng-blur="focus=false" ng-required="parameter.required" aria-label="parameter.label"> 
+									       <md-option ng-value="option.value" ng-repeat="option in parameter.options" ng-finish-render> 
+									           <span style="display: inline-block;" ng-if="parameter.context">{{option.label}}
+										           <span class="md-caption" style="color: grey;">({{option.value}})</span>
+									           </span>
+									           <span ng-if="!parameter.context">{{option.label}}</span> 
+									      </md-option>
+									   </md-select>
+									<div ng-messages="$ctrl.form.configForm[parameter.name].$error" ng-show="focus">
+										<div ng-message="required">Field is required</div>
+									</div>
+									<parameter-description description="parameter.description" /> </md-input-container>
+								</div>
+								<div ng-switch-when="multiSelect">
+									<label class="config-textInput">{{parameter.label}}</label>
+									<dl class="dropdown" multi-select ng-init="filterText=''; configuration=$ctrl.configuration">
+										<dt class="col-xs-12">
+											<a ng-click="openDropdown($event)" ng-model="configuration[parameter.name]" select-validation="{{parameter.required}}">
+												<input class="multiSel" type="{{parameter.inputType}}" placeholder="{{getPlaceHolderText(configuration,parameter)}}" value="" ng-model="parameter.filterText" ng-keypress="onEnterPress($event)" aria-label="parameter.label" />
+												<i ng-if="parameter.multiple && !parameter.limitToOptions" class="material-icons pull-right" ng-click="addItemToList($event)" ng-class="{'enableColor':filterText.length>0}">add</i>
+											</a>
+										</dt>
+										<dd>
+											<div class="multiSelect col-xs-12">
+												<ul class="multiList">
+													<li ng-repeat="option in parameter.optionList | orderBy:'label' track by $index" ng-click="updateInConfig(option.value,option.label)" on-finish-render>
+														<input ng-if="parameter.multiple" type="checkbox" value="{{option.value}}" ng-checked="searchInConfig(option.value)" />
+														{{option.label}}
+														<span class="md-caption" style="color: grey;" ng-if="parameter.context=='item' || parameter.context=='thing' || parameter.context=='channel'">({{ option.value }}) </span>
+													</li>
+												</ul>
+											</div>
+										</dd>
+
+									</dl>
+									<parameter-description description="parameter.description" />
+								</div>
+								<div ng-switch-when="date" ng-show="(part==='normal' && !parameter.advanced) || (part==='advance' && parameter.advanced && isAdvanced)">
+									<label class="config-textInput">{{parameter.label}}</label>
+									<div class="col-xs-12 configContainer">
+										<md-datepicker ng-init="focus=false;initial=true;" ng-class="{noerror: initial}" custom-focus md-no-float class="config-select datePicker" name="{{parameter.name}}" ng-model="$ctrl.configuration[parameter.name]" md-placeholder="date" ng-required="true"> </md-datepicker>
+										<div ng-messages="$ctrl.form.configForm[parameter.name].$error" ng-show="focus">
+											<div ng-message="required" class="customMessage">Field is required</div>
+										</div>
+										<parameter-description description="parameter.description" />
+									</div>
+								</div>
+								<div ng-switch-when="color" ng-show="(part==='normal' && !parameter.advanced) || (part==='advance' && parameter.advanced && isAdvanced)">
+
+									<label class="config-textInput" for="{{parameter.name}}">{{parameter.label}}</label>
+									<md-input-container class="col-xs-11 configContainer" style="padding-right:0px"> <input color-select ng-init="focus=false" name="{{parameter.name}}" ng-readonly="parameter.readOnly" ng-minlength="parameter.min" ng-maxlength="parameter.max" ng-model="$ctrl.configuration[parameter.name]" ng-required="parameter.required" type="{{parameter.inputType}}" ng-focus="focus=true" ng-blur="focus=false" aria-label="parameter.label">
+
+									<div ng-messages="$ctrl.form.configForm[parameter.name].$error" ng-show="focus">
+										<div ng-message="required">Field is required</div>
+									</div>
+									<parameter-description description="parameter.description" /> </md-input-container>
+									<div style="float: left;">
+										<i class="material-icons color-remove" ng-model="$ctrl.configuration[parameter.name]" color-remove>close</i>
+									</div>
+								</div>
+							</div>
+							<div ng-switch-when="location" ng-if="(part==='normal' && !parameter.advanced) || (part==='advance' && parameter.advanced && isAdvanced)" class="parameter col-xs-12">
+								<location-parameter form="$ctrl.form.configForm" model="$ctrl.configuration[parameter.name]" parameter="parameter" />
+							</div>
+							<div class="parameter col-xs-12 scriptfield" ng-switch-when="textarea" ng-show="(part==='normal' && !parameter.advanced) || (part==='advance' && parameter.advanced && isAdvanced)">
+								<label class="config-textInput" for="{{parameter.name}}">{{parameter.label}}</label>
+								<div class="col-xs-12 configContainer">
+									<textarea isrequired="true" scriptarea class="scriptArea" ng-minlength="parameter.min" ng-maxlength="parameter.max" rows="2" wrap="off" ng-init="focus=false" name="{{parameter.name}}" ng-model="$ctrl.configuration[parameter.name]" ng-required="parameter.required" ng-focus="focus=true" ng-blur="focus=false" aria-label="parameter.label"></textarea>
+									<div ng-messages="$ctrl.form.configForm[parameter.name].$error" ng-show="focus">
+										<p ng-message="minlength" class="customMessage">Minimum length is {{parameter.min}}</p>
+										<p ng-message="maxlength" class="customMessage">Maximum length is {{parameter.max}}</p>
+										<p ng-message="required" class="customMessage">Field is required</p>
+									</div>
+									<parameter-description description="parameter.description" />
+								</div>
+								<span>
+									<md-chips class="scriptChips" id="{{parameter.name}}" ng-show="items && items.length>0" ng-model="items" placeholder="Add an item" md-on-select="selectChip($chip,parameter.name)"> <input disabled /> <md-chip-template> <strong>{{$chip.name}}</strong> </md-chip-template> </md-chips>
+									<span ng-if="items && items.length>0">
+										<p class="hint noMargin">
+											<small>available outputs</small>
+										</p>
+									</span>
+								</span>
+							</div>
+							<div class="parameter col-sm-6 col-xs-12 dayParameter" ng-switch-when="dayofweek" ng-show="(part==='normal' && !parameter.advanced) || (part==='advance' && parameter.advanced && isAdvanced)">
+								<label class="config-textInput">{{parameter.label?parameter.label:'Day of week'}}</label>
+								<input ng-required="parameter.required" type="hidden" ng-model="$ctrl.configuration[parameter.name]" aria-label="parameter.label" />
+								<div day-of-week multi="{{parameter.multiple}}" ng-required="{{parameter.required}}" ng-model="$ctrl.configuration[parameter.name]" class="dayOfWeek col-xs-12 configContainer">
+									<button value="MON" class="md-button dow-button">M</button>
+									<button value="TUE" class="md-button dow-button">{{parameter.locale=='de'?'D':'T'}}</button>
+									<button value="WED" class="md-button dow-button">{{parameter.locale=='de'?'M':'W'}}</button>
+									<button value="THU" class="md-button dow-button">{{parameter.locale=='de'?'D':'T'}}</button>
+									<button value="FRI" class="md-button dow-button">F</button>
+									<button value="SAT" class="md-button dow-button">S</button>
+									<button value="SUN" class="md-button dow-button">S</button>
+								</div>
+								<parameter-description description="parameter.description" />
+							</div>
+						</div>
+					</div>
+				</fieldset>
+			</div>
+		</div>
+	</form>
+	<div class="expert-view" ng-if="$ctrl.expertMode">
+		<div ng-repeat="parameter in $ctrl.configArray">
+			<div class="parameter col-xs-12" layout="row">
+				<md-input-container flex="30"> <label>Name</label> <input ng-model="$ctrl.configArray[$index].name" type="text"> </md-input-container>
+				<md-input-container flex="70"> <label>Value</label> <input ng-model="$ctrl.configArray[$index].value" type="text"> </md-input-container>
+			</div>
+		</div>
+	</div>
+
+</div>
+

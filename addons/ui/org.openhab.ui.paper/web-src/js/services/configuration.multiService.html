@@ -1,0 +1,34 @@
+<div class="multi-services white-bg">
+    <div class="header-toolbar">
+        <md-button ng-click="refresh()" aria-label="Refresh"> <i class="material-icons">refresh services</i></md-button>
+    </div>
+
+    <div class="section-header">
+        <div class="container">
+            <div class="toolbar">
+                <md-button class="md-fab" ng-click="configure(servicePID, $event)" aria-label="add service context"> <i class="material-icons">add</i></md-button>
+            </div>
+        </div>
+    </div>
+
+    <div class="multiServicesContainer container">
+        <div ng-repeat="context in serviceContexts track by context.id">
+            <div class="fab-item text-left">
+                <div class="circle">{{::context.label.substring(0,1).toUpperCase()}}</div>
+                <div class="item-content">
+                    <div class="description">
+                        <h3>
+                            {{context.label}}
+                        </h3>
+                        <p class="text-left"><small>{{::context.id}}</small></p>
+                    </div>
+                    <div class="actions">
+                        <i class="material-icons" ng-click="configure(context.id, $event)" aria-label="edit serivce context">edit</i>
+                        <i class="material-icons" ng-click="deleteConfig(context, $event)" aria-label="delete service context">delete</i>
+                    </div>
+                </div>
+                <hr class="border-line" ng-show="!$last" />
+            </div>
+        </div>
+    </div>
+</div>

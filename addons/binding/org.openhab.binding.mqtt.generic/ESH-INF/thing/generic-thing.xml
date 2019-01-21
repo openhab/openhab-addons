@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mqtt"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="topic" extensible="string,number,dimmer,switch,contact,colorRGB,colorHSB,datetime,image,location,rollershutter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="broker" />
+			<bridge-type-ref id="systemBroker" />
+		</supported-bridge-type-refs>
+		<label>Generic MQTT Thing</label>
+		<description>You need a configured Broker first. Dynamically add channels of various types to this Thing. Link different MQTT topics to each channel.</description>
+	</thing-type>
+
+</thing:thing-descriptions>

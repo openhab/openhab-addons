@@ -1,0 +1,24 @@
+<form name="$ctrl.form.thingform">
+	<div class="container">
+		<div class="thingName">
+			<md-input-container class="col-xs-12 noPadding"> <label>Name</label> <input ng-model="$ctrl.thing.label"> </md-input-container>
+
+			<md-input-container class="col-xs-12 noPadding" ng-if="!$ctrl.isEditing"> <label>Thing ID</label> <input ng-model="$ctrl.thing.ID" required>
+			<div ng-messages="$ctrl.form.thingform.uid.$error">
+				<div ng-message="pattern">ID is required</div>
+			</div>
+			</md-input-container>
+			<md-input-container class="col-xs-12 noPadding"> <label>Location</label> <input ng-model="$ctrl.thing.location"> </md-input-container>
+		</div>
+	</div>
+	<div class="container" ng-if="$ctrl.needsBridge()">
+		<h3>Bridge Selection</h3>
+		<div ng-if="$ctrl.hasBridge()" class="form-group">
+			<md-select placeholder="Select a Bridge" ng-model="$ctrl.thing.bridgeUID" ng-readonly="true"> <md-option ng-value="bridge.UID" ng-repeat="bridge in $ctrl.bridges">{{bridge.label + ' - '}}{{bridge.UID}}</md-option> </md-select>
+		</div>
+		<div ng-if="!$ctrl.hasBridge()">
+		    <md-button class="md-primary" ng-click="$ctrl.createBridge()">Create Bridge</md-button>
+		</div>
+		<hr />
+	</div>
+</form>

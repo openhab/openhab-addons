@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="hue" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Hue Presence Sensor -->
+	<thing-type id="0107">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>Hue Presence Sensor</label>
+		<description>A motion sensor providing presence detection.</description>
+
+		<channels>
+			<channel id="presence" typeId="system.motion" />
+			<channel id="last_updated" typeId="last_updated" />
+			<channel id="battery_level" typeId="system.battery-level" />
+			<channel id="battery_low" typeId="system.low-battery" />
+		</channels>
+
+		<representation-property>uniqueId</representation-property>
+
+		<config-description>
+			<parameter name="sensorId" type="text">
+				<label>Sensor ID</label>
+				<description>The identifier that is used within the hue bridge.</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="on" type="boolean">
+				<label>Sensor Status</label>
+				<description>Enables or disables the sensor.</description>
+			</parameter>
+			<parameter name="ledindication" type="boolean">
+				<label>LED Indication</label>
+				<description>Turns device LED during normal operation on or off. Devices might still indicate exceptional operation (Reset, SW Update, Battery Low).</description>
+			</parameter>
+			<parameter name="sensitivity" type="integer" min="0" step="1">
+				<label>Sensitivity</label>
+				<description>The current sensitivity of the presence sensor. Cannot exceed maximum sensitivity.</description>
+			</parameter>
+			<parameter name="sensitivitymax" type="integer" readOnly="true">
+				<label>Maximum Sensitivity</label>
+				<description>The maximum sensitivity of the presence sensor.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

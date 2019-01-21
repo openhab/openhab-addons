@@ -1,0 +1,31 @@
+<div class="mdl-form__row mdl-cell mdl-cell--6-col mdl-cell--8-col-tablet %visibility_class%">
+	<span class="mdl-form__icon">
+		<img data-icon="%category%" src="../icon/%category%?state=%state%&format=%icon_type%" />
+	</span>
+	<span %labelstyle% class="mdl-form__label">
+		%label%
+	</span>
+	<span %valuestyle% class="mdl-form__value mdl-form__value--slider">
+		%value%
+	</span>
+	<span
+		class="mdl-form__control mdl-form__slider"
+		data-control-type="slider"
+		data-item="%item%"
+		data-unit="%unit%"
+		data-has-value="%has_value%"
+		data-widget-id="%widget_id%"
+	>
+		<input
+			data-freq="%frequency%"
+			data-state="%state%"
+			class="mdl-slider mdl-js-slider"
+			type="range"
+			min="%minValue%"
+			max="%maxValue%"
+			step="%step%"
+			tabindex="0"
+			value="0"
+		/>
+	</span>
+</div>

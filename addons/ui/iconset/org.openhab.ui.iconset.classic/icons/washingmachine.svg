@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" style="enable-background:new 0 0 64 64">
+  <path d="m47 53h6v1h-6z" style="fill:#cacacc"/>
+  <path d="m10.5 4.5h43v54h-43z" style="fill:#fafafa"/>
+  <path d="m53 5v53h-42v-53h42m1-1h-44v55h44v-55z" style="fill:#666"/>
+  <g style="fill:#b2b2b2">
+    <path d="m53 14.12h-42v.76h42v-.76"/>
+    <path d="m23 5h-1v10h1v-10"/>
+  </g>
+  <circle cx="44.5" cy="9.5" r="2" style="fill:#fff"/>
+  <path d="m44.5 8c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5m0-1c-1.38 0-2.5 1.12-2.5 2.5s1.12 2.5 2.5 2.5 2.5-1.12 2.5-2.5-1.12-2.5-2.5-2.5z" style="fill:#666"/>
+  <path d="m25 7h11v4h-11z"/>
+  <g style="fill:#999">
+    <path d="m48 7h4v1h-4z"/>
+    <path d="m48 9h4v1h-4z"/>
+    <path d="m48 11h4v1h-4z"/>
+    <path d="m37 7h4v1h-4z"/>
+    <path d="m37 9h4v1h-4z"/>
+    <path d="m37 11h4v1h-4z"/>
+  </g>
+  <path d="M32,46.5c-8,0-14.5-6.5-14.5-14.5S24,17.5,32,17.5S46.5,24,46.5,32S40,46.5,32,46.5z" style="fill:#acacb7"/>
+  <path d="m32 18c7.73 0 14 6.27 14 14s-6.27 14-14 14-14-6.27-14-14 6.27-14 14-14m0-1c-8.27 0-15 6.73-15 15s6.73 15 15 15c8.27 0 15-6.73 15-15s-6.73-15-15-15z" style="fill:#646464"/>
+  <circle cx="32" cy="32" r="11" style="fill:#494949"/>
+  <circle cx="32" cy="32" r="9" style="fill:#e1f5ff"/>
+  <path d="m13 59h4v2h-4z"/>
+  <path d="m47 59h4v2h-4z"/>
+  <text transform="translate(27 9)">
+    <tspan x="0" y="0" style="font-size:.9197;font-family:'MyriadPro-Regular';fill:#fff">W</tspan>
+    <tspan x=".75" y="0" style="font-size:.9197;font-family:'MyriadPro-Regular';fill:#fff">aschen</tspan>
+  </text>
+  <g style="fill:#b2b2b2">
+    <path d="m22 49v6h-8v-6h8m0-1h-8c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h8c.55 0 1-.45 1-1v-6c0-.55-.45-1-1-1z"/>
+    <path d="m20 7v1h-7v-1h7m0-1h-7c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1h7c.55 0 1-.45 1-1v-1c0-.55-.45-1-1-1z"/>
+    <path d="m20 51c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1"/>
+  </g>
+</svg>

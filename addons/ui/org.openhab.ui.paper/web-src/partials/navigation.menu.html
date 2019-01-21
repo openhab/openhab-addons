@@ -1,0 +1,65 @@
+<nav class="menu slide-menu-left" ng-controller="NavController">
+        <div class="top clickable" ng-click="navigateToRoot()">
+            <img id="logo" alt="Eclipse SmartHome Logo" src="img/logo.png" />
+            <h1 class="title">SmartHome</h1>
+        </div>
+        <ul>
+            <li ng-class="{active: isActive('control'), hidden: isHidden('control')}">
+                <a href="#control">
+                    <span class="icon material-icons">dashboard</span>
+                    <span class="side-menu">Control</span>
+                </a>
+            </li>
+            <li ng-class="{active: isActive('inbox')}">
+                <a href="#inbox" class="clickable">
+                    <span class="icon material-icons">add_circle_outline</span>
+                    <span class="side-menu">Inbox</span>
+                    <span ng-show="getNumberOfNewDiscoveryResults() > 0" class="badge">{{getNumberOfNewDiscoveryResults()}}</span>
+                </a>
+            </li>
+            <li ng-class="{active: isActive('configuration'), hidden: isHidden('configuration')}">
+                <a ng-click="open('configuration')" class="clickable">
+                    <span class="icon material-icons">settings</span>
+                    <span class="side-menu">Configuration</span>
+                </a>
+                <ul ng-show="isActive('configuration')">
+                    <li ng-class="{active: isSubActive('system')}">
+                        <a href="#configuration/system">System</a>
+                    </li>
+                    <li ng-class="{active: isSubActive('bindings')}">
+                        <a href="#configuration/bindings">Bindings</a>
+                    </li>
+                    <li ng-class="{active: isSubActive('services')}">
+                        <a href="#configuration/services">Services</a>
+                    </li>
+                    <li ng-class="{active: isSubActive('things')}">
+                        <a href="#configuration/things">Things</a>
+                    </li>
+                    <li ng-if="advancedMode" ng-class="{active: isSubActive('items')}">
+                        <a href="#configuration/items">Items</a>
+                    </li>
+                </ul>
+            </li>
+            <li ng-show="extensionEnabled" ng-class="{active: isActive('extensions'), hidden: isHidden('extensions')}">
+                <a href="#extensions">
+                    <span class="icon material-icons">extension</span>
+                    <span class="side-menu">{{getLabel('extensions')}}</span>
+                </a>
+            </li>
+            <li ng-show="ruleEnabled" ng-class="{active: isActive('rules'), hidden: isHidden('rules')}">
+                <a href="#rules">
+                    <span class="icon material-icons">movie_creation</span>
+                    <span class="side-menu">Rules</span>
+                </a>
+            </li>
+            <li ng-class="{active: isActive('preferences'), hidden: isHidden('preferences')}">
+                <a href="#preferences">
+                    <span class="icon material-icons">brightness_medium</span>
+                    <span class="side-menu">Preferences</span>
+                </a>
+            </li>
+        </ul>
+        <div class="bottom">
+            <span>Paper UI</span>
+        </div>
+    </nav>

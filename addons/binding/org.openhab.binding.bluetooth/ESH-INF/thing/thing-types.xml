@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bluetooth" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="beacon">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bluegiga" />
+			<bridge-type-ref id="bluez" />
+		</supported-bridge-type-refs>
+
+		<label>Bluetooth Device</label>
+		<description>A generic Bluetooth device in beacon-mode</description>
+		<channels>
+			<channel id="rssi" typeId="rssi" />
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text">
+				<label>Address</label>
+				<description>The unique Bluetooth address of the device</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="connected">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bluegiga" />
+			<bridge-type-ref id="bluez" />
+		</supported-bridge-type-refs>
+
+		<label>Connected Bluetooth Device</label>
+		<description>A generic Bluetooth device in connected-mode</description>
+		<channels>
+			<channel id="rssi" typeId="rssi" />
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text">
+				<label>Address</label>
+				<description>The unique Bluetooth address of the device</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

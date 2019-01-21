@@ -1,0 +1,28 @@
+Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-ManifestVersion: 2
+Bundle-Name: IoT Marketplace Extension Service
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.extensionservice.marketplace;
+ singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.5.0.qualifier
+Export-Package: org.openhab.extensionservice.marketplace
+Import-Package: 
+ com.thoughtworks.xstream,
+ org.apache.commons.io,
+ org.apache.commons.lang,
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.config.xml.util,
+ org.eclipse.smarthome.core.common,
+ org.eclipse.smarthome.core.common.registry,
+ org.eclipse.smarthome.core.events,
+ org.eclipse.smarthome.core.extension,
+ org.eclipse.smarthome.core.storage,
+ org.openhab.extensionservice.marketplace,
+ org.osgi.framework,
+ org.slf4j
+Service-Component: OSGI-INF/*.xml
+Automatic-Module-Name: org.openhab.extensionservice.marketplace

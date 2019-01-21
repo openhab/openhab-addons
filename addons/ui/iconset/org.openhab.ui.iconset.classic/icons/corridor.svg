@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 64 64" style="enable-background:new 0 0 64 64">
+  <defs>
+    <linearGradient id="3" gradientUnits="userSpaceOnUse" x1="42.4482" y1="39.7958" x2="63.4705" y2="36.089" xlink:href="#2"/>
+    <linearGradient id="2" gradientUnits="userSpaceOnUse" x1="20.3975" y1="38.8891" x2="36.8356" y2="35.9907">
+      <stop style="stop-color:#f0f0f0"/>
+      <stop offset="1" style="stop-color:#c8c8c8"/>
+    </linearGradient>
+    <linearGradient id="0" gradientUnits="userSpaceOnUse" y1="57.6631" x2="0" y2="47.8379" xlink:href="#2"/>
+    <linearGradient id="1" gradientUnits="userSpaceOnUse" x1="26.716" y1="50.0945" x2="29.7059" y2="41.8798" xlink:href="#2"/>
+  </defs>
+  <path d="m17.5 44.61v-35.2l46-8.81v55.76z" style="fill:#fafafa"/>
+  <path d="M63,1.21v54.5L18,44.22V9.83L63,1.21 M64,0L17,9v36l47,12V0L64,0z" style="fill:#aaa"/>
+  <path d="m23.5 56.48v-38.04l10-1.37v39.41z" style="fill:url(#2)"/>
+  <path d="m33 17.65v38.34h-9v-37.12l9-1.22m1-1.15l-11 1.5v38.98h11v-40.48z" style="fill:#aaa"/>
+  <path d="m.5 4.66l17 4.72v35.24l-17 4.72z" style="fill:#fafafa"/>
+  <path d="M1,5.32l16,4.44v34.48L1,48.68V5.32 M0,4v46l18-5V9L0,4L0,4z" style="fill:#aaa"/>
+  <path d="m45.5 57.1v-41.66l14-1.87v47.04z" style="fill:url(#3)"/>
+  <path d="m59 14.14v45.83l-13-3.26v-40.83l13-1.74m1-1.14l-15 2v42.49l15 3.76v-48.25z" style="fill:#aaa"/>
+  <path d="m20.27 47.75l13.23-4.49v8.24z" style="fill:url(#1)"/>
+  <path d="m33 43.96v6.88l-11.04-3.13 11.04-3.75m1-1.4l-15.41 5.23 15.41 4.37v-9.6z" style="fill:#aaa"/>
+  <path d="m41.22 53.19l18.28-5.35v9.82z" style="fill:url(#0)"/>
+  <path d="m59 48.51v8.52l-15.85-3.88 15.85-4.64m1-1.34l-20.71 6.07 20.71 5.06v-11.13z" style="fill:#aaa"/>
+  <path d="m.5 63.5v-13.13l16.51-4.85 46.49 11.87v6.11z" style="fill:#996d4d"/>
+  <path d="M17.02,46.04L63,57.78V63H1V50.75L17.02,46.04 M17,45L0,50v14h64v-7L17,45L17,45z" style="fill:#663629"/>
+  <g style="fill:none;stroke-miterlimit:10;stroke:#663629">
+    <path d="M 64,61.25 14.67,46.3"/>
+    <path d="m60 64l-49.29-16.45"/>
+    <path d="M 46.08,64 6.65,48.75"/>
+    <path d="M 35.17,64.33 2.08,50"/>
+    <path d="M 21.42,64 0,53.17"/>
+    <path d="M 8.58,64 0,58.58"/>
+    <path d="m2.5 60.16l5.55-2.92"/>
+    <path d="m14.67 60.59l5.62-2.7"/>
+    <path d="m9.59 53.17l4.51-1.54"/>
+    <path d="m29.51 61.88l5.28-2.25"/>
+    <path d="m20.68 54.18l5.36-1.78"/>
+    <path d="m44.38 63.34l5.91-2.58"/>
+    <path d="m19.3 50.42l4.59-1.33"/>
+    <path d="m40.5 57.49l5.58-1.9"/>
+    <path d="m31.01 51.25l3.78-1.25"/>
+    <path d="m55.95 58.81l4.63-2.27"/>
+  </g>
+</svg>

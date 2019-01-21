@@ -18,6 +18,8 @@
   <modules>
     <module>org.openhab.voice.googletts</module>
 	<!--<module>org.openhab.voice.kaldi</module>-->
+    <module>org.openhab.voice.mactts</module>
+    <module>org.openhab.voice.mactts.test</module>
     <module>org.openhab.voice.marytts</module>
     <module>org.openhab.voice.picotts</module>
     <module>org.openhab.voice.voicerss</module>
