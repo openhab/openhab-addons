@@ -47,7 +47,7 @@ public class ElkAlarmConnection {
     private final ElkMessageFactory factory;
     private Socket socket;
     private boolean running = false;
-    private boolean sentSomethiung = false;
+    private boolean sentSomething = false;
     private Thread elkAlarmThread;
     private List<ElkListener> listeners = Lists.newArrayList();
     private Queue<ElkMessage> toSend = new ArrayBlockingQueue<>(100);
@@ -69,7 +69,7 @@ public class ElkAlarmConnection {
      * Initializes the connection by connecting to the elk and verifying we get
      * basic data back.
      *
-     * @return true if successfuly initialized.
+     * @return true if successfully initialized.
      */
     public boolean initialize() {
         if (config.useSSL) {
@@ -174,7 +174,7 @@ public class ElkAlarmConnection {
             this.toSend.add(message);
         }
 
-        if (!sentSomethiung) {
+        if (!sentSomething) {
             sendActualMessage();
         }
     }
@@ -184,7 +184,7 @@ public class ElkAlarmConnection {
         ElkMessage message;
         synchronized (toSend) {
             if (toSend.isEmpty()) {
-                sentSomethiung = false;
+                sentSomething = false;
                 return;
             }
             message = toSend.remove();
@@ -200,8 +200,8 @@ public class ElkAlarmConnection {
             }
             socket.getOutputStream().write(sendStr.getBytes(StandardCharsets.US_ASCII));
             socket.getOutputStream().flush();
-            logger.debug("Writing {} to alasrm", sendStr);
-            sentSomethiung = true;
+            logger.debug("Writing {} to alarm", sendStr);
+            sentSomething = true;
             if (message instanceof EthernetModuleTestReply) {
                 sendActualMessage();
             }
