@@ -35,4 +35,6 @@ public class GroheOndusBindingConstants {
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_HUMIDITY = "humidity";
     public static final String CHANNEL_BATTERY = "battery";
+
+    public static final String CHANNEL_CONFIG_TIMEFRAME = "timeframe";
 }

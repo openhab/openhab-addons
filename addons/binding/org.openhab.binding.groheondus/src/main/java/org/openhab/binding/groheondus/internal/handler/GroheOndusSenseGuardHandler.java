@@ -51,6 +51,9 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<SenseGuardAppliance, Data> {
+    private static final int MIN_API_TIMEFRAME_DAYS = 1;
+    private static final int MAX_API_TIMEFRAME_DAYS = 90;
+    private static final int DEFAULT_TIMEFRAME_DAYS = 1;
 
     private final Logger logger = LoggerFactory.getLogger(GroheOndusSenseGuardHandler.class);
 
@@ -163,19 +166,19 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<Sen
     }
 
     private Instant fromTime() {
-        Instant from = Instant.now().minus(1, ChronoUnit.DAYS);
-        Channel waterconsumptionChannel = this.thing.getChannel("waterconsumption");
+        Instant from = Instant.now().minus(DEFAULT_TIMEFRAME_DAYS, ChronoUnit.DAYS);
+        Channel waterconsumptionChannel = this.thing.getChannel(CHANNEL_WATERCONSUMPTION);
         if (waterconsumptionChannel == null) {
             return from;
         }
 
-        Object timeframeConfig = waterconsumptionChannel.getConfiguration().get("timeframe");
+        Object timeframeConfig = waterconsumptionChannel.getConfiguration().get(CHANNEL_CONFIG_TIMEFRAME);
         if (!(timeframeConfig instanceof BigDecimal)) {
             return from;
         }
 
         int timeframe = ((BigDecimal) timeframeConfig).intValue();
-        if (timeframe < 1 && timeframe > 90) {
+        if (timeframe < MIN_API_TIMEFRAME_DAYS && timeframe > MAX_API_TIMEFRAME_DAYS) {
             logger.info(
                     "timeframe configuration of waterconsumption channel needs to be a number between 1 to 90, got {}",
                     timeframe);
