@@ -39,6 +39,7 @@ import com.google.common.collect.Lists;
  * The connection to the elk, handles the socket and other pieces.
  *
  * @author David Bennett - Initial Contribution
+ * @author Noah Jacobson
  */
 public class ElkAlarmConnection {
     private final Logger logger = LoggerFactory.getLogger(ElkAlarmConnection.class);
@@ -71,19 +72,6 @@ public class ElkAlarmConnection {
      * @return true if successfuly initialized.
      */
     public boolean initialize() {
-        /*
-         * try {
-         * socket = new Socket(config.ipAddress, 2101);
-         * running = true;
-         * elkAlarmThread = new Thread(new ReadingDataThread());
-         * elkAlarmThread.start();
-         * } catch (IOException e) {
-         * logger.error("Unable to open connection to the elk alarm {}:{}", config.ipAddress, config.port, e);
-         * return false;
-         * }
-         *
-         * return socket != null && !socket.isClosed();
-         */
         if (config.useSSL) {
             TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
                 @Override
@@ -134,6 +122,11 @@ public class ElkAlarmConnection {
         return socket != null && !socket.isClosed();
     }
 
+    /**
+     * Called to login to the Elk using the given username and password.
+     *
+     * @return True if connection is established, false if it is not.
+     */
     public boolean sslLogin() {
         try {
             BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF8"));
