@@ -1,0 +1,28 @@
+<section id="main" class="white-bg">
+	<div class="content">
+		<div class="header-toolbar">
+			<md-button ng-click="navigateToRoot()" aria-label="Close"> <i class="material-icons">close</i></md-button>
+		</div>
+		<div class="section-header">
+			<div class="container">
+				<div class="toolbar">
+					<md-button title="Save" ng-click="save()" class="md-fab" aria-label="Save"> <i class="material-icons">check</i></md-button>
+				</div>
+			</div>
+		</div>
+		<div class="container">
+
+			<h3>User Interface</h3>
+			<p>Configure your UI preferences.</p>
+
+			<form class="form" role="form">
+				<div class="form-group col-sm-6 col-xs-12 language">
+					<md-select placeholder="Language" ng-model="language"> <md-option value="en">English</md-option> <md-option value="de">German</md-option> </md-select>
+					<p class="hint">
+						<small>Configure language for Binding texts (UI is not localized yet)</small>
+					</p>
+				</div>
+			</form>
+		</div>
+	</div>
+</section>

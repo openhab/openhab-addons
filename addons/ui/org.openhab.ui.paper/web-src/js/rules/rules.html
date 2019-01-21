@@ -1,0 +1,189 @@
+<section id="main" class="white-bg">
+	<div class="rules white-bg" ng-if="!page" ng-controller="RulesController">
+		<div class="header-toolbar">
+			<md-button ng-click="refresh()" aria-label="Refresh"> <i class="material-icons">refresh</i></md-button>
+		</div>
+		<div class="section-header">
+			<div class="container">
+				<div class="toolbar">
+					<md-menu md-offset="60 -25"> <md-button class="md-fab" ng-click="$mdOpenMenu(ev);" aria-label="Add"> <i class="material-icons">add</i></md-button> <md-menu-content width="2"> <md-menu-item ng-repeat="item in ruleOptions"> <md-button ng-click="ruleOptionSelected($event,$index)"> {{item}} </md-button> </md-menu-item> </md-menu-content> </md-menu>
+				</div>
+			</div>
+		</div>
+		<div class="container">
+			<p class="text-center" ng-show="data.rules.length == 0">No rules defined yet.</p>
+			<div class="groups">
+				<div class="clickable" ng-repeat="rule in rules | orderBy:'uid'" ng-click="configure(rule, $event)">
+					<div class="rule fab-item text-left">
+						<div class="circle">{{rule.name.substring(0,1)}}</div>
+						<div class="item-content" ng-class="{'enabled' : isEnabled(rule), 'disabled' : !isEnabled(rule)}">
+							<div flex="60" class="description">
+								<h3>
+									{{rule.name}} <small class="badge" ng-class="rule.status.status.toLowerCase()">{{getRuleStatus(rule)}}</small>
+								</h3>
+								<p ng-bind-html="rule.description"></p>
+								<p>{{rule.uid}}</p>
+							</div>
+							<div class="actions" flex="40">
+								<i class="material-icons run-rule" aria-label="Run rule" ng-click="runRule(rule,$event)" aria-disabled="!isEnabled(rule)">play_arrow</i> 
+								<i class="material-icons" aria-label="Toggle Enable" ng-click="toggleEnabled(rule, $event)">{{isEnabled(rule) ? "alarm_on" : "alarm_off"}}</i> 
+								<i class="material-icons" aria-label="Remove" ng-click="remove(rule, $event)">delete</i>
+							</div>
+						</div>
+						<hr class="border-line" ng-show="!$last" />
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="container extensions" ng-if="page === 'catalog'" ng-controller="RulesPageController">
+		<div class="showCards">
+			<div ng-repeat="extensionType in extensionTypes | filter: {'typeId':'ruletemplate'}" id="extensions-0">
+				<div class="extension fab-item text-left col-lg-4 col-sm-6 col-xs-12" ng-repeat="extension in extensionType.extensions" on-finish-render>
+					<div class="card item pointer" style="background-color: {{extension.backgroundColor}}" ng-click="installRuleExtenstion(extension.id,extension.installed)">
+						<div class="imageAlign">
+							<img ng-show="extension.imageLink" vertical-align class="rectangle" ng-src="{{extension.imageLink}}" onerror="this.style.display='none';" />
+						</div>
+						<div class="item-content">
+							<div class="pull-left" ng-class="{'extension-label':extension.link}">
+								<div class="md-title">{{extension.label}}</div>
+								<p>{{extension.id}} - {{extension.version}}</p>
+							</div>
+							<div style="position: absolute; right: 8px;" ng-if="extension.link">
+								<i ng-click="openExternalLink(extension.link)" class="material-icons cursor-pointer col-xs-3 launch-icon">launch</i>
+							</div>
+						</div>
+						<div ng-bind-html="extension.description" class="description rule-ext-desc"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="backdrop" ng-show="inProgress"></div>
+		<div class="progressbar">
+			<md-progress-circular md-mode="indeterminate" ng-show="inProgress"></md-progress-circular>
+		</div>
+	</div>
+
+	<!-- Config block -->
+	<div class="rules white-bg" ng-if="page === 'configure' || page ==='new'" ng-controller="NewRuleController">
+		<div class="header-toolbar">
+			<md-button ng-click="navigateTo('')" aria-label="Refresh"> <i class="material-icons">close</i></md-button>
+		</div>
+		<div class="section-header">
+			<div class="container">
+				<div class="toolbar">
+					<md-button ng-show="editing" title="Save" ng-click="updateUserRule()" class="md-fab" aria-label="Save"> <i class="material-icons">check</i></md-button>
+					<md-button ng-show="!editing" title="Save" ng-click="saveUserRule()" class="md-fab" aria-label="Save"> <i class="material-icons">check</i></md-button>
+				</div>
+			</div>
+		</div>
+		<div class="container rules-container">
+			<div class="bindings row">
+				<div class="row">
+					<div class="ruleNameDesc">
+						<md-input-container class="rules-input col-xs-12" md-no-float> <input placeholder="Name" ng-model="name" /> </md-input-container>
+						<md-input-container class="rules-input col-xs-12" md-no-float> <textarea placeholder="Description" ng-model="description"></textarea> </md-input-container>
+						<input type="hidden" ng-value="id" />
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-5 item-wrapper">
+						<h3 class="md-title md-title-nospace">
+							When...
+							<md-button class="md-fab md-custom-plus" ng-click="openNewModuleDialog($event,'trigger')" aria-label="Add">+</md-button>
+						</h3>
+						<br>
+						<div ui-sortable="sortableOptions" ng-model="aTriggers">
+							<div ng-repeat="val in aTriggers">
+								<div class="draggable vcard card">
+									<div class="item-content">
+										<h5 class="moduleLabel">{{val.label?val.label:'Trigger '+($index+1)}}</h5>
+										<div class="actions">
+											<span ng-click="openUpdateModuleDialog($event,'trigger',val)" class="material-icons cursor-pointer">settings</span>
+										</div>
+									</div>
+									<p>{{val.description}}</p>
+									<span class="draggable md-icon-reorder drag-handle" dragdrop></span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-5 item-wrapper">
+						<h3 class="md-title md-title-nospace">
+							then...
+							<md-button class="md-fab md-custom-plus" ng-click="openNewModuleDialog($event,'action')" aria-label="Add">+</md-button>
+						</h3>
+						<br>
+						<div ui-sortable="sortableOptions" ng-model="aActions">
+							<div ng-repeat="val in aActions">
+								<div class="draggable vcard card">
+									<div class="item-content">
+										<h5 class="moduleLabel">{{val.label?val.label:'Action '+($index+1)}}</h5>
+										<div class="actions">
+
+											<span ng-click="openUpdateModuleDialog($event,'action',val)" class="material-icons cursor-pointer">settings</span>
+										</div>
+									</div>
+									<p>{{val.description}}</p>
+									<span class="draggable md-icon-reorder drag-handle" dragdrop></span>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</div>
+			<div>
+				<div class="row" style="margin-top: 15px">
+					<div class="col-md-10 item-wrapper noPadding">
+						<h3 class="md-title md-title-nospace">
+							but only if...
+							<md-button class="md-fab md-custom-plus" ng-click="openNewModuleDialog($event,'condition')" aria-label="Add">+</md-button>
+						</h3>
+						<br>
+
+						<div ui-sortable="sortableOptions" ng-model="aConditions">
+							<div ng-repeat="val in aConditions track by $index">
+								<div class="draggable vcard card">
+									<div class="item-content">
+										<h5 class="moduleLabel">{{val.label?val.label:'Condition '+($index+1)}}</h5>
+										<div class="actions">
+											<span ng-click="openUpdateModuleDialog($event,'condition',val)" class="material-icons cursor-pointer">settings</span>
+										</div>
+									</div>
+									<p>{{val.description}}</p>
+									<span class="draggable md-icon-reorder drag-handle" dragdrop></span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div ng-show="page=='template'" ng-init="form={}" class="white-bg">
+		<div class="header-toolbar">
+			<md-button ng-click="navigateTo('')" aria-label="Refresh"> <i class="material-icons">close</i></md-button>
+		</div>
+		<div class="section-header">
+			<div class="container">
+				<div class="toolbar">
+					<md-button ng-disabled="form.configForm.$invalid" title="Save" ng-click="saveRule()" class="md-fab" aria-label="Save"> <i class="material-icons">check</i></md-button>
+				</div>
+			</div>
+		</div>
+		<div class="container rules-container">
+			<div class="bindings row">
+				<div class="row">
+					<div class="ruleNameDesc">
+						<md-input-container class="rules-input col-xs-12" md-no-float> <input placeholder="Name" ng-model="name" /> </md-input-container>
+						<md-input-container class="rules-input col-xs-12" md-no-float> <textarea placeholder="Description" ng-model="description"></textarea> </md-input-container>
+						<input type="hidden" ng-value="id" />
+						<h3 class="md-title-nospace">Configurations</h3>
+						<config-description configuration="configuration" parameters="parameters" />
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>

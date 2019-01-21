@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+	<config-description uri="thing-type:onewire:fastthingconfig">
+		<parameter name="id" type="text">
+			<label>Sensor ID</label>
+			<description>Sensor ID in format: xx.xxxxxxxxxxxx or a full path including hubs/branches</description>
+			<required>true</required>
+		</parameter>
+		<parameter name="refresh" type="integer" min="1">
+			<label>Refresh Time</label>
+			<description>Time in seconds after which the thing is refreshed</description>
+			<default>10</default>
+			<unitLabel>s</unitLabel>
+			<required>false</required>
+		</parameter>
+	</config-description>
+	<config-description uri="thing-type:onewire:basethingconfig">
+		<parameter name="id" type="text">
+			<label>Sensor ID</label>
+			<description>Sensor ID in format: xx.xxxxxxxxxxxx or a full path including hubs/branches</description>
+			<required>true</required>
+		</parameter>
+		<parameter name="refresh" type="integer" min="1">
+			<label>Refresh Time</label>
+			<description>Time in seconds after which the thing is refreshed</description>
+			<default>300</default>
+			<unitLabel>s</unitLabel>
+			<required>false</required>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

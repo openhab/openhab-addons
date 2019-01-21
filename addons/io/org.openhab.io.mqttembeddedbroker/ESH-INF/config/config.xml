@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+	http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="mqtt:mqttembeddedbroker">
+		<parameter name="port" type="integer" required="false">
+			<label>Embedded broker port</label>
+			<description>A custom broker connection port. Leave empty to use the
+				default MQTT ports 1883 and 8883 (SSL) for secure or non-secure
+				connections.</description>
+			<default></default>
+		</parameter>
+		<parameter name="secure" type="boolean" required="true">
+			<label>Secure connection?</label>
+			<description>If set, hosts a secure SSL connection on port 8883 or
+				otherwise a non secure connection on port 1883 (if not overwritten
+				by the port parameter)</description>
+			<default>false</default>
+		</parameter>
+
+		<parameter name="username" type="text" required="false">
+			<label>Embedded broker username</label>
+			<description>Connections need to provide this username to access the
+				broker.</description>
+			<default></default>
+		</parameter>
+		<parameter name="password" type="text" required="false">
+			<label>Embedded broker password</label>
+			<description>Connections need to provide this password to access the
+				broker. Should only be used if it is a secure connection, because
+				the password is transferred plain over the wire.</description>
+			<default></default>
+		</parameter>
+		<parameter name="persistenceFile" type="text" required="false">
+			<label>Persistence file</label>
+			<description>An optional persistence file. Retained messages are
+				stored in this file. Can be empty to not store anything. If it
+				starts with "/" on Linux/MacOS or with a drive letter and colon (eg
+				"c:/") it will be treated as an absolute path. Be careful to select
+				a path that you have write access to. </description>
+			<default>mqttembedded.bin</default>
+		</parameter>
+
+	</config-description>
+
+</config-description:config-descriptions>

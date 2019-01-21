@@ -1,0 +1,48 @@
+<div ng-if="thing.properties['firmwareVersion']" ng-controller="FirmwareController">
+    <hr>
+    <div>
+        Current firmware version:
+        <span class="current-firmware">{{thing.properties['firmwareVersion']}}</span>
+        <span ng-if="firmwareStatus.status" class="badge firmware-status" ng-class="firmwareStatus.status | firmwareStatusClass">
+           <span>{{firmwareStatus.status | firmwareStatusFormat}}</span>
+           <span ng-if="isFirmwareUpdateable(firmwareStatus)"> {{firmwareStatus.updatableVersion}}</span>
+        </span>
+    </div>
+    <div ng-if="firmwareStatus.status">
+        <span>
+	        <md-button ng-if="isFirmwareUpdateable(firmwareStatus)" aria-label="Install" ng-click="installFirmware(firmwareStatus.updatableVersion)">
+	           <span>Install</span>
+	        </md-button>
+	        <md-button ng-if="isFirmwareUpdateable(firmwareStatus) && hasChangelog(firmwareStatus)" aria-label="Changelog" ng-click="showChangelog(firmwareStatus.updatableVersion, $event)">Changelog</md-button>
+        </span>
+    </div>
+    <div ng-show="updatingFirmware" class="firmware-progressbar">
+        <md-progress-linear md-mode="determinate" value="{{percentComplete}}"></md-progress-linear>
+        <div ng-if="updateStep">
+            <span>Update step: {{updateStep | firmwareUpdateStep}}</span>
+        </div>
+    </div>
+    <md-button ng-show="firmwares.length > 0" ng-click="fvdetails=!fvdetails">{{fvdetails?'hide':'show'}} firmware details</md-button>
+    <div ng-show="fvdetails" class="thing-properties">
+        <table class="table firmware-table middle-aligned"> 
+            <tr>
+                <th>Version</th>
+                <th>Vendor</th>
+                <th>Description</th>
+                <th></th>
+                <th></th>
+            </tr>
+            <tr ng-repeat="firmware in firmwares" >
+                <td class="firmware-detail-data">{{firmware.version}}</td>
+                <td class="firmware-detail-data">{{firmware.vendor}}</td>
+                <td class="firmware-detail-data">{{firmware.description}}</td>
+                <td class="firmware-detail-data firmware-detail-button">
+                    <md-button ng-if="firmware.changelog" aria-label="Changelog" ng-click="showChangelog(firmware.version, $event)">Changelog</md-button>
+                </td>
+                <td class="firmware-detail-data firmware-detail-button">
+                    <md-button aria-label="Install" ng-click="installFirmware(firmware.version)">Install</md-button>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

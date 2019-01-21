@@ -1,0 +1,50 @@
+{
+  "exports": [
+    "ol.Collection#extend",
+    "ol.ImageTile#getImage",
+    "ol.Map",
+    "ol.Map#addLayer",
+    "ol.Map#getView",
+    "ol.Map#forEachFeatureAtPixel",
+    "ol.Map#getTargetElement",
+    "ol.Map#updateSize",
+    "ol.View",
+    "ol.View#setCenter",
+    "ol.View#setZoom",
+    "ol.layer.Tile",
+    "ol.source.OSM",
+    "ol.interaction.Pointer",
+    "ol.interaction.defaults",
+    "ol.proj.fromLonLat",
+    "ol.proj.toLonLat",
+    "ol.geom.Point",
+    "ol.geom.Point#setCoordinates",
+    "ol.geom.SimpleGeometry#translate",
+    "ol.style.Style",
+    "ol.style.Icon",
+    "ol.style.Stroke",
+    "ol.style.Fill",
+    "ol.Feature",
+    "ol.Feature#getGeometry",
+    "ol.layer.Vector",
+    "ol.source.Vector",
+    "ol.inherits"
+  ],
+  "compile": {
+    "externs": [
+      "externs/bingmaps.js",
+      "externs/cartodb.js",
+      "externs/esrijson.js",
+      "externs/geojson.js",
+      "externs/oli.js",
+      "externs/olx.js",
+      "externs/proj4js.js",
+      "externs/tilejson.js",
+      "externs/topojson.js"
+    ],
+    "compilation_level": "ADVANCED",
+    "output_wrapper": "(function(){%output%})();",
+    "use_types_for_optimization": true,
+    "manage_closure_dependencies": true
+  }
+}

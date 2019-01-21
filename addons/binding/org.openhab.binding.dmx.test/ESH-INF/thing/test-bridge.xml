@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dmx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0" xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<!-- Test Bridge -->
+	<bridge-type id="test-bridge">
+		<label>Test Bridge</label>
+		<description>The Test bridge represents a single DMX universe for testing purposes</description>
+		<channels>
+			<channel id="mute" typeId="mute" />
+		</channels>
+		<config-description>
+			<parameter name="refreshmode" type="text">
+				<label>Refresh mode</label>
+				<description>Suppress re-transmission and refresh every 800ms or send every packet.</description>
+				<options>
+					<option value="always">Always</option>
+					<option value="standard">Standard</option>
+				</options>
+				<default>standard</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="applycurve" type="text">
+				<label>Apply Curve</label>
+				<description>List of channels that should use LED dim curve. Format is channel[,channel, ...] or channel[/width].</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="refreshrate" type="decimal" min="0" max="100">
+				<description>DMX refresh rate in Hz (0=disable output)</description>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>

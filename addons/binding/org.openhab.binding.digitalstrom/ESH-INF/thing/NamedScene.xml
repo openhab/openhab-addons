@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="digitalstrom" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd"
+>
+	<thing-type id="namedScene">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="dssBridge" />
+		</supported-bridge-type-refs>
+
+		<label>@text/named_scene_label</label>
+		<description>@text/named_scene_desc</description>
+
+		<channels>
+			<channel id="scene" typeId="scene" />
+		</channels>
+
+		<config-description>
+			<!--zone id -->
+			<parameter name="zoneID" type="text">
+				<label>@text/param_scene_zone_id_label</label>
+				<description>@text/param_scene_zone_id_desc</description>
+				<required>false</required>
+			</parameter>
+			<!--groups id -->
+			<parameter name="groupID" type="text">
+				<label>@text/param_scene_group_id_label</label>
+				<description>@text/param_scene_group_id_desc</description>
+				<required>false</required>
+			</parameter>
+			<!--scene id -->
+			<parameter name="sceneID" type="text">
+				<label>@text/param_scene_id_label</label>
+				<description>@text/param_scene_id_desc</description>
+				<required>false</required>
+				<options>
+					<option value="AREA_1_OFF">@text/AREA_1_OFF</option>
+					<option value="AREA_1_ON">@text/AREA_1_ON</option>
+					<option value="AREA_2_OFF">@text/AREA_2_OFF</option>
+					<option value="AREA_2_ON">@text/AREA_2_ON</option>
+					<option value="AREA_3_OFF">@text/AREA_3_OFF</option>
+					<option value="AREA_3_ON">@text/AREA_3_ON</option>
+					<option value="AREA_4_OFF">@text/AREA_4_OFF</option>
+					<option value="AREA_4_ON">@text/AREA_4_ON</option>
+					<option value="PRESET_0">@text/PRESET_0</option>
+					<option value="PRESET_2">@text/PRESET_2</option>
+					<option value="PRESET_3">@text/PRESET_3</option>
+					<option value="PRESET_4">@text/PRESET_4</option>
+					<option value="PRESET_10">@text/PRESET_10</option>
+					<option value="PRESET_11">@text/PRESET_11</option>
+					<option value="PRESET_12">@text/PRESET_12</option>
+					<option value="PRESET_13">@text/PRESET_13</option>
+					<option value="PRESET_14">@text/PRESET_14</option>
+					<option value="PRESET_20">@text/PRESET_20</option>
+					<option value="PRESET_21">@text/PRESET_21</option>
+					<option value="PRESET_22">@text/PRESET_22</option>
+					<option value="PRESET_23">@text/PRESET_23</option>
+					<option value="PRESET_24">@text/PRESET_24</option>
+					<option value="PRESET_30">@text/PRESET_30</option>
+					<option value="PRESET_31">@text/PRESET_31</option>
+					<option value="PRESET_32">@text/PRESET_32</option>
+					<option value="PRESET_33">@text/PRESET_33</option>
+					<option value="PRESET_34">@text/PRESET_34</option>
+					<option value="PRESET_40">@text/PRESET_40</option>
+					<option value="PRESET_41">@text/PRESET_41</option>
+					<option value="PRESET_42">@text/PRESET_42</option>
+					<option value="PRESET_43">@text/PRESET_43</option>
+					<option value="PRESET_44">@text/PRESET_44</option>
+					<option value="DEEP_OFF">@text/DEEP_OFF</option>
+					<option value="STANDBY">@text/STANDBY</option>
+					<option value="SLEEPING">@text/SLEEPING</option>
+					<option value="WAKEUP">@text/WAKEUP</option>
+					<option value="ABSENT">@text/ABSENT</option>
+					<option value="PRESENT">@text/PRESENT</option>
+					<option value="DOOR_BELL">@text/DOOR_BELL</option>
+					<option value="PANIC">@text/PANIC</option>
+					<option value="FIRE">@text/FIRE</option>
+					<option value="ALARM_1">@text/ALARM_1</option>
+					<option value="ALARM_2">@text/ALARM_2</option>
+					<option value="ALARM_3">@text/ALARM_3</option>
+					<option value="ALARM_4">@text/ALARM_4</option>
+					<option value="WIND">@text/WIND</option>
+					<option value="NO_WIND">@text/NO_WIND</option>
+					<option value="RAIN">@text/RAIN</option>
+					<option value="NO_RAIN">@text/NO_RAIN</option>
+					<option value="HAIL">@text/HAIL</option>
+					<option value="NO_HAIL">@text/NO_HAIL</option>
+				</options>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

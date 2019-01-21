@@ -1,0 +1,35 @@
+<div ng-controller="InboxEntryController" ng-init="getThingTypes()">
+	<div class="search itemSearch inboxSearch" ng-show="!path[4]" layout="row" layout-align="center center">
+		<div layout="row" flex="85" class="searchControl" layout-align="start center">
+			<i ng-style="{'font-size': '24px'}" class="material-icons">search</i>
+			<md-input-container flex="90" md-no-float class="md-block searchBox"> <input ng-model="searchText" type="text" placeholder="Search"> </md-input-container>
+			<i ng-click="searchText = undefined" ng-class="{'vhidden': !searchText}" ng-style="{'font-size': '24px'}" class="material-icons clickable">close</i>
+		</div>
+		<div layout="row" flex="15" class="controls" layout-align="start center" ng-init="showMore=false">
+			<i class="material-icons clickable" ng-click="showMore=!showMore">{{showMore?'unfold_less':'unfold_more'}}</i>
+			<button class="md-button clickable" ng-click="clearAll()">clear</button>
+		</div>
+	</div>
+	<div class="row" ng-show="!path[4] && showMore" class="searchBox" search-filters>
+		<md-autocomplete md-no-cache config='{"index":0,"targetField":"bindingType","sourceField":"id"}' class="col-xs-12 md-filter" md-min-length="0" md-selected-item="selectedOptions[0].value" md-item-text="binding.name" md-search-text="searchType" md-items="binding in searchInOptions(bindings,['name'],searchType) | orderBy:'name'" placeholder="Filter by binding"> <md-item-template> <span md-highlight-text="searchType" md-highlight-flags="^i">{{binding.name}}</span> </md-item-template> <md-not-found> No matches found. </md-not-found> </md-autocomplete>
+	</div>
+	<div class="fab-item" ng-class="{'container':!path[4],'inboxContainer':!path[4]}" ng-repeat="discoveryResult in data.discoveryResults | filter:filter | filter:filterItems(['label','thingUID']) | orderBy:['label','flag']">
+		<md-button title="Add" class="md-fab green" ng-click="approve(discoveryResult.thingUID,discoveryResult.thingTypeUID, $event)" aria-label="Approve"> <i class="material-icons">done</i></md-button>
+		<div class="item-content">
+			<div class="description">
+				<h3>
+					{{discoveryResult.label}} <small ng-show="discoveryResult.flag === 'IGNORED'" class="badge">IGNORED</small>
+				</h3>
+				<p>{{getThingTypeLabel(discoveryResult.thingTypeUID)}}</p>
+				<p ng-if="key === discoveryResult.representationProperty" ng-repeat="(key, value) in discoveryResult.properties")> {{value}}</p>
+			</div>
+			<div class="actions">
+				<i class="material-icons" ng-show="discoveryResult.flag === 'IGNORED'" ng-click="unignore(discoveryResult.thingUID)" aria-label="Unignore">visibility</i> <i class="material-icons" ng-show="discoveryResult.flag !== 'IGNORED'" ng-click="ignore(discoveryResult.thingUID)" aria-label="Ignore">visibility_off</i> <i class="material-icons" ng-click="remove(discoveryResult.thingUID, $event)" aria-label="Delete">delete</i>
+			</div>
+		</div>
+		<hr class="border-line" ng-show="!$last" />
+	</div>
+	<p class="text-center">
+		<button ng-show="areEntriesIgnored(data.discoveryResults)" class="md-button" ng-click="toggleShowIgnored()" aria-label="Toggle Show Ignored">{{showIgnored ? 'Hide Ignored' : 'Show Ignored'}}</button>
+	</p>
+</div>

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" style="enable-background:new 0 0 64 64">
+  <path d="m30.5 25.5h3v9h-3z" style="fill:#ececed"/>
+  <path d="m33 26v8h-2v-8h2m1-1h-1-2-1v1 8 1h1 2 1v-1-8-1z" style="fill:#9b9c9e"/>
+  <path d="m14 56.5c-1.38 0-2.5-1.12-2.5-2.5v-20c0-1.38 1.12-2.5 2.5-2.5h36c1.38 0 2.5 1.12 2.5 2.5v20c0 1.38-1.12 2.5-2.5 2.5h-36" style="fill:#36aeff"/>
+  <path d="m50 32c1.1 0 2 .9 2 2v20c0 1.1-.9 2-2 2h-36c-1.1 0-2-.9-2-2v-20c0-1.1.9-2 2-2h36m0-1h-36c-1.65 0-3 1.35-3 3v20c0 1.65 1.35 3 3 3h36c1.65 0 3-1.35 3-3v-20c0-1.65-1.35-3-3-3z" style="fill:#2b8ed8"/>
+  <path d="m21.5 11.5h21v15h-21z" style="fill:#646464"/>
+  <path d="m42 12v14h-20v-14h20m1-1h-1-20-1v1 14 1h1 20 1v-1-14-1z" style="fill:#282828"/>
+  <path d="m24.5 14.5h15v9h-15z" style="fill:#ececed"/>
+  <path d="m39 15v8h-14v-8h14m1-1h-16v10h16v-10z" style="fill:#9b9c9e"/>
+  <g style="fill:none;stroke-miterlimit:10;stroke:#c56c33;stroke-width:3">
+    <path d="M24.5,11c0-1.93-1.57-3.5-3.5-3.5H7"/>
+    <path d="m39.5 11c0-1.93 1.57-3.5 3.5-3.5h15"/>
+  </g>
+  <g style="fill:#646464">
+    <path d="m26 16h9v1h-9z"/>
+    <path d="m26 18h5v1h-5z"/>
+    <path d="m26 20h7v1h-7z"/>
+  </g>
+</svg>

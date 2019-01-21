@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="wemo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Wemo Link -->
+	<bridge-type id="bridge">
+		<label>WeMo Link</label>
+		<description>The Wemo Link represents the Belkin WeMo Link bridge.</description>
+
+		<properties>
+			<property name="vendor">Belkin</property>
+		</properties>
+
+		<config-description>
+			<parameter name="udn" type="text">
+				<label>Unique Device Name</label>
+				<description>The UDN identifies the WeMo Link Device</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+</thing:thing-descriptions>

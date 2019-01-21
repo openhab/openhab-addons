@@ -1,0 +1,6 @@
+<table class="thing-properties-table table">
+	<tr ng-show="key != 'firmwareVersion'" ng-repeat="key in getKeysArray(thing.properties) | orderBy:'+'">
+		<td>{{key}}</td>
+		<td>{{thing.properties[key]}}</td>
+	</tr>
+</table>

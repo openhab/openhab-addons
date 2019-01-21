@@ -1,0 +1,21 @@
+<md-dialog aria-label="Configure Service"> <md-dialog-content class="md-dialog-content">
+<h1>
+	Configure {{binding.name}} <small>{{binding.id}}</small>
+</h1>
+<div ng-init="form={}">
+	<config-description configuration="configuration" parameters="parameters" expert-mode="expertMode" config-array="configArray"/>
+</div>
+<div ng-show="expertMode" layout="row" layout-align="center">
+	<button class="md-raised md-button" ng-click="addParameter()" aria-label="Add Parameter">Add Parameter</button>
+</div>
+</md-dialog-content>
+<div class="md-actions" layout="row">
+	<a class="md-button md-ink-ripple" ng-show="!newConfig" ng-click="expertMode=!expertMode">
+		<span>{{expertMode ? 'Normal' : 'Expert'}} Mode</span>
+		<div class="md-ripple-container"></div>
+	</a>
+	<span flex="auto"></span>
+	<md-button ng-click="close()">Cancel</md-button>
+	<md-button ng-disabled="form.configForm.$invalid && !expertMode" ng-click="save()">Save</md-button>
+</div>
+</md-dialog>

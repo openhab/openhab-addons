@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bosesoundtouch" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="10" extensible="notificationsound">
+		<label>Bose SoundTouch 10</label>
+		<description>Bose SoundTouch 10 Speaker</description>
+
+		<channels>
+			<channel id="power" typeId="power" />
+			<channel id="volume" typeId="volume" />
+			<channel id="bass" typeId="bass" />
+			<channel id="mute" typeId="mute" />
+			<channel id="operationMode" typeId="operationMode_BST_10_20_30" />
+			<channel id="playerControl" typeId="playerControl" />
+			<channel id="preset" typeId="preset" />
+			<channel id="saveAsPreset" typeId="saveAsPreset" />
+			<channel id="keyCode" typeId="keyCode" />
+			<channel id="rateEnabled" typeId="rateEnabled" />
+			<channel id="skipEnabled" typeId="skipEnabled" />
+			<channel id="skipPreviousEnabled" typeId="skipPreviousEnabled" />
+			<channel id="nowPlayingAlbum" typeId="nowPlayingAlbum" />
+			<channel id="nowPlayingArtist" typeId="nowPlayingArtist" />
+			<channel id="nowPlayingArtwork" typeId="nowPlayingArtwork" />
+			<channel id="nowPlayingDescription" typeId="nowPlayingDescription" />
+			<channel id="nowPlayingGenre" typeId="nowPlayingGenre" />
+			<channel id="nowPlayingItemName" typeId="nowPlayingItemName" />
+			<channel id="nowPlayingStationLocation" typeId="nowPlayingStationLocation" />
+			<channel id="nowPlayingStationName" typeId="nowPlayingStationName" />
+			<channel id="nowPlayingTrack" typeId="nowPlayingTrack" />
+			<!-- Notification channels -->
+			<channel id="notificationsound" typeId="notificationsound" />
+		</channels>
+		<config-description-ref uri="thing-type:bosesoundtouch:config" />
+	</thing-type>
+</thing:thing-descriptions>

@@ -1,0 +1,36 @@
+<div layout="row" layout-align="start center" class="dimmer-widget">
+	<div class="item-label-container" flex="40">
+        <i class="material-icons">{{::$ctrl.getIcon($ctrl.item.category, 'brightness_medium')}}</i>
+        <div>{{::$ctrl.getLabel($ctrl.item, 'Dimmer')}}</div>
+    </div>
+	<div flex="60" layout="row" layout-align="end center" class="dimmer-widget">
+		<span class="state">{{$ctrl.item.stateText}}</span>
+	</div>
+</div>
+<md-slider ng-if="::(!$ctrl.isOptionList($ctrl.item) && !$ctrl.item.readOnly)" 
+           ng-class="::{'left-padded' : $ctrl.showSwitch($ctrl.item.category)}" 
+           class="md-default-theme" 
+           style="height: 40px;" 
+           flex 
+           ng-min="0" 
+           ng-max="100" 
+           ng-model="$ctrl.item.state" 
+           ng-change="$ctrl.setBrightness()" 
+           aria-label={{::$ctrl.item.label}}>
+</md-slider>
+<div layout="row" layout-align="start center" class="dimmer-widget" 
+     ng-if="::($ctrl.showSwitch($ctrl.item.category) && !$ctrl.isOptionList($ctrl.item) && !$ctrl.item.readOnly)">
+	<div flex="40">
+		<p class="no-icon-margin-left">Off/On</p>
+	</div>
+	<div flex="60" layout="row" layout-align="end center" class="dimmer-widget">
+		<md-switch class="md-default-theme"
+		           ng-model="$ctrl.state.switchState"
+		           ng-change="$ctrl.setSwitch()"
+		           aria-label="{{::$ctrl.getLabel($ctrl.item, 'Dimmer')}}">
+		</md-switch>
+	</div>
+</div>
+<div layout="row" layout-align="start center" ng-if="::($ctrl.isOptionList($ctrl.item) && !$ctrl.item.readOnly)">
+    <item-state-dropdown item="$ctrl.item" on-change="$ctrl.setBrightness()"></item-state-dropdown>
+</div>

@@ -1,0 +1,15 @@
+.swagger-section .icon-btn {
+	cursor: pointer;
+}
+
+.swagger-section #header {
+	background-color: #ff6600;
+}
+
+.swagger-section #header a#logo {
+	padding-left: 124px;
+}
+
+.swagger-section #header form#api_selector .input a#explore {
+	background-color: #d2121c;
+}

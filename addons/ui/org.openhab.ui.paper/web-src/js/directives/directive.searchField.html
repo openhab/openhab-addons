@@ -1,0 +1,3 @@
+<i ng-style="{'font-size': '24px'}" class="material-icons">search</i>
+<md-input-container flex="auto" md-no-float class="md-block"> <input ng-model="model" type="text" placeholder="{{::placeholder}}" ng-keyup="clearSearchField($event)" ng-model-options="{ debounce : 150 }"> </md-input-container>
+<i ng-click="clearSearchField()" ng-class="{'vhidden': !model}" ng-style="{'font-size': '24px'}" class="material-icons cursor-pointer">close</i>

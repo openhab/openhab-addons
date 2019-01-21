@@ -1,0 +1,15 @@
+<md-dialog aria-label="Binding Info approve"> <md-dialog-content class="md-dialog-content">
+<h1>{{thingType.label}}</h1>
+<p>
+	You are about to add a new thing <strong>{{discoveryResult.label}}</strong> ({{discoveryResult.thingUID}}) from the inbox.
+</p>
+<div>
+	<md-input-container class="col-xs-12 noPadding"> <label>Name</label> <input ng-model="label"> </md-input-container>
+</div>
+</md-dialog-content>
+
+<div class="md-actions" layout="row">
+	<md-button ng-click="close()">Cancel</md-button>
+	<md-button class="md-primary" ng-click="approve(label)">Add As Thing</md-button>
+</div>
+</md-dialog>

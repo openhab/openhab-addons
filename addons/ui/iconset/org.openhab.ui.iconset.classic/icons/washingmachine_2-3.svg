@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 64 64">
+  <defs>
+    <path id="0" d="m46 62.362c0 3.866-3.134 7-7 7s-7-3.134-7-7 3.134-7 7-7 7 3.134 7 7" style="fill:none"/>
+    <linearGradient id="2" y2="70.362" gradientUnits="userSpaceOnUse" y1="73.362" gradientTransform="matrix(1.9998887 0 0 2.0000677-47.871459 861.62697)" x2="0">
+      <stop style="stop-color:#fff"/>
+      <stop offset="1" style="stop-color:#cdcdcd"/>
+    </linearGradient>
+    <linearGradient id="3" y2="51.362" gradientUnits="userSpaceOnUse" x2="0" gradientTransform="matrix(1.9998887 0 0 1.3168561-47.993281 934.69788)" y1="48.362">
+      <stop style="stop-color:#a6a6a6"/>
+      <stop offset="1" style="stop-color:#828282;stop-opacity:0"/>
+    </linearGradient>
+    <linearGradient id="1" y2="70.362" gradientUnits="userSpaceOnUse" x2="0" gradientTransform="matrix(1.9998887 0 0 1.2424276-47.993281 955.21738)" y1="73.362">
+      <stop style="stop-color:#fff"/>
+      <stop offset="1" style="stop-color:#ccc"/>
+    </linearGradient>
+    <radialGradient id="4" gradientUnits="userSpaceOnUse" cy="62.362" cx="39" gradientTransform="matrix(1.9998887 0 0 2.0000677-46.099351 898.87761)" r="7">
+      <stop style="stop-color:#919191"/>
+      <stop offset="1" style="stop-color:#e4e4e4"/>
+    </radialGradient>
+  </defs>
+  <g transform="translate(0-988.36218)">
+    <path d="m12.253 994.45h9.187 30.498v51.689h-39.685z" style="fill:#fff;color:#000"/>
+    <path d="m45.896 1023.6c0 7.7323-6.2677 14-13.999 14-7.7316 0-13.999-6.268-13.999-14s6.2677-14.001 13.999-14.001c7.7316 0 13.999 6.2687 13.999 14.001" id="5" style="fill:url(#4)"/>
+    <g style="fill:#d3d3d3">
+      <path d="m34 996.36h4v4h-4z" id="6"/>
+      <path d="m40 996.36h4v4h-4z" id="7"/>
+      <path d="m46 996.36h4v4h-4z"/>
+    </g>
+    <use xlink:href="#5"/>
+    <path d="m22 994.36h2v8h-2z" style="fill:#c4c4c4"/>
+    <path d="m12 1002.4h40v6h-40z" style="fill:url(#2)"/>
+    <path d="m12 1042.4h40v4h-40z" style="fill:url(#1)"/>
+    <use transform="matrix(1.9998887 0 0 2.0000677-46.099351 898.87761)" xlink:href="#0" style="stroke:#c0c0c0"/>
+    <path d="m14 998.36h6v4h-6z" style="fill:url(#3)"/>
+    <path d="m10 992.36v56h44l.000001-56zm2 2h40v52h-40z" style="fill:#969696;color:#000"/>
+    <g transform="matrix(1.9998887 0 0 2.0000677-46.099351 898.87761)">
+      <use xlink:href="#0" style="stroke:#c0c0c0"/>
+      <use xlink:href="#0" style="stroke:#4c4c4c"/>
+    </g>
+    <path d="m17 1020.4h5v6h-5z" style="fill:#939393"/>
+    <path d="m44 994.36h8v8h-8z" style="fill:#ffeca5"/>
+    <path d="m46 996.36h4v4h-4z" style="fill:#fc0"/>
+    <g style="fill:#b8b8b8">
+      <use xlink:href="#6"/>
+      <use xlink:href="#7"/>
+    </g>
+  </g>
+</svg>

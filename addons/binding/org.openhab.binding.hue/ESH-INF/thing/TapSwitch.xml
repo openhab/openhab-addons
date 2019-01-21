@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="hue" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Hue Tap Switch -->
+	<thing-type id="0830">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>Hue Tap Switch</label>
+		<description>A customizable switch.</description>
+
+		<channels>
+			<channel id="tap_switch_event" typeId="tap_switch_event" />
+			<channel id="tap_switch" typeId="tap_switch" />
+			<channel id="last_updated" typeId="last_updated" />
+		</channels>
+
+		<representation-property>uniqueId</representation-property>
+
+		<config-description>
+			<parameter name="sensorId" type="text">
+				<label>Sensor ID</label>
+				<description>The identifier that is used within the hue bridge.</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="on" type="boolean">
+				<label>Sensor Status</label>
+				<description>Enables or disables the sensor.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

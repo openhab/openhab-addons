@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="lirc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Remote Thing Type -->
+	<thing-type id="remote" listed="false">
+		<label>Remote Control</label>
+		<description>An IR remote control</description>
+
+		<channels>
+			<channel id="event" typeId="event" />
+			<channel id="transmit" typeId="transmit" />
+		</channels>
+
+		<config-description>
+			<parameter name="remote" type="text" required="true">
+				<label>Remote name</label>
+				<description>The name of the remote as configured in LIRC</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<!-- Button Event Channel Type -->
+	<channel-type id="event">
+		<kind>trigger</kind>
+		<label>Button Event</label>
+		<description>Triggers whenever a button is pressed</description>
+	</channel-type>
+
+	<!-- Transmit Channel Type -->
+	<channel-type id="transmit">
+		<item-type>String</item-type>
+		<label>Transmit Command</label>
+		<description>Used to transmit IR commands</description>
+	</channel-type>
+
+</thing:thing-descriptions>

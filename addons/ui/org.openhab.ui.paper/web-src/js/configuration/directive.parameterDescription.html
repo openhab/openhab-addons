@@ -1,0 +1,6 @@
+<div class="ellipsis" ng-class="{'show-more' : $ctrl.isShowMore}" ng-click="$ctrl.showMore(true, $event)">
+	<div>
+		<p ng-bind-html="$ctrl.description"></p>
+		<div class="less" ng-click="$ctrl.showMore(false, $event)">less</div>
+	</div>
+</div>

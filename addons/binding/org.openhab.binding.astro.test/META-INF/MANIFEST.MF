@@ -1,0 +1,32 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Astro Binding Tests
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.binding.astro.test;singleton:
+ =true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.5.0.qualifier
+Fragment-Host: org.openhab.binding.astro
+Import-Package: 
+ javax.measure,
+ javax.measure.quantity,
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.core.events,
+ org.eclipse.smarthome.core.items,
+ org.eclipse.smarthome.core.items.events,
+ org.eclipse.smarthome.core.library.items,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.library.unit,
+ org.eclipse.smarthome.core.thing.binding.builder,
+ org.eclipse.smarthome.core.thing.link,
+ org.eclipse.smarthome.test,
+ org.eclipse.smarthome.test.storage,
+ org.hamcrest;core=split,
+ org.junit,
+ org.junit.runner,
+ org.junit.runners,
+ org.mockito,
+ org.mockito.stubbing,
+ org.osgi.framework
+Automatic-Module-Name: org.openhab.binding.astro.test

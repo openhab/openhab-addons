@@ -1,0 +1,7 @@
+<li>
+	<img src="../icon/%category%.%format%" onerror="ImageOnErrorHandler(this)" width=28 height=28 class="iFull" />
+	%label%
+	<img src="images/_down.png" ontouchstart="repeatedRequest('CMD?%item%=DECREASE', %frequency%, 1)" onmousedown="repeatedRequest('CMD?%item%=DECREASE', %frequency%, 1)" onmouseup="stopRepeatedRequest('CMD?%item%=OFF')" />
+	<img src="images/colorwheel.png" width=28 height=28 border=0 onclick="colorItem='%item%';document.getElementById('waColorpicker').title='%purelabel%';document.getElementById('colorPickerInput').value='%state%';$.minicolors.refresh();document.location.href='#_Colorpicker'" />
+	<img src="images/_up.png" ontouchstart="repeatedRequest('CMD?%item%=INCREASE', %frequency%, 1)" onmousedown="repeatedRequest('CMD?%item%=INCREASE', %frequency%, 1)" onmouseup="stopRepeatedRequest('CMD?%item%=ON')" />
+</li>

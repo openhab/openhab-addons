@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="meteoblue"
+				xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+				xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+
+	<name>meteoblue Binding</name>
+	<description>The meteoblue binding retrieves weather information from the meteoblue weather service.</description>
+	<author>Chris Carman</author>
+</binding:binding>

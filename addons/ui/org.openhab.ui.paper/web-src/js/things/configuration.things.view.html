@@ -1,0 +1,104 @@
+<section class="fill-height configMain">
+<div class="thing-view white-bg" ng-controller="ViewThingController">
+	<div class="header-toolbar">
+		<md-button ng-click="remove(thing, $event)" aria-label="Delete"> <i class="material-icons">delete</i></md-button>
+		<md-button ng-click="navigateTo('')" aria-label="Close"> <i class="material-icons">close</i></md-button>
+	</div>
+	<div class="section-header">
+		<div class="container">
+			<div class="toolbar">
+				<md-button class="md-fab" ng-click="navigateTo('edit/' + thing.UID)" aria-label="Edit"> <i class="material-icons">edit</i></md-button>
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		<h3>{{thing.label}}</h3>
+		<p>{{thingType.label}}</p>
+		<p ng-bind-html="thingType.description"></p>
+		<hr />
+		<p>
+			Status:
+			<span class="badge" ng-class="thing.statusInfo.status.toLowerCase()">{{thing.statusInfo.status}} {{thing.statusInfo.statusDetail !== 'NONE' ? ' - ' + thing.statusInfo.statusDetail : ''}}</span>
+			<span>
+				<small></small>
+			</span>
+			<span>{{thing.statusInfo.description}}</span>
+		</p>
+		<div ng-init="details=false" ng-if="thing.hasProperties">
+			<md-button ng-click="details=!details">{{details?'hide':'show'}} properties</md-button>
+			<div ng-show="details">
+				<div ng-include="'partials/things/configuration.thingproperties.html'" class="thing-properties"></div>
+			</div>
+		</div>
+		<div ng-include="'partials/firmware/configuration.firmware.html'"></div>
+		<br />
+		<h2 class="inline" ng-show="thing.channels.length > 0 || isExtensible()">Channels
+		<button ng-if="isExtensible()" class="extensible-thing md-fab md-custom-plus md-button md-ink-ripple" type="button" ng-click="addChannel($event)" aria-label="Add">
+		    <span class="ng-scope">+</span>
+		    <div class="md-ripple-container"></div>
+		</button>
+		</h2>
+		<md-button class="showmore no-margin" ng-click="refreshChannels(showAdvanced=!showAdvanced)" ng-show="isAdvanced">{{showAdvanced ? 'show less' : 'show more'}}</md-button>
+		<div class="channels">
+			<div ng-repeat="group in thingChannels track by $index">
+				<div ng-init="collapsed=false">
+					<div ng-show="!angular.isUndefined(group.name) && group.name.length > 0 && group.channels && group.channels.length > 0" class="channelGroup">
+						<span class="md-title">{{group.name}}</span>
+						<i ng-show="!collapsed" ng-click="collapsed=!collapsed" style="font-size: 22px; float: right;" class="md-raised material-icons">unfold_less</i> <i ng-show="collapsed" ng-click="collapsed=!collapsed" style="color: grey; font-size: 22px; float: right;" class="md-raised material-icons">unfold_more</i>
+						<div>{{group.description}}</div>
+					</div>
+					<div class="channel fab-item" ng-init="index=1" ng-repeat="channel in group.channels">
+						<div ng-show="!collapsed">
+						    <div ng-if="channel.acceptedItemTypes.length > 0">
+							    <md-button ng-if="!advancedMode && channel.linkedItems.length == 0" class="md-fab" ng-click="enableChannel(thing.UID, channel.id, $event)" aria-label="Off"> <i class="material-icons">radio_button_unchecked</i></md-button>
+							    <md-button ng-if="!advancedMode && channel.linkedItems.length > 0" class="md-fab" ng-click="disableChannel(thing.UID, channel.id,'', $event)" aria-label="On"> <i class="material-icons">radio_button_checked</i></md-button>
+							    <md-button ng-if="advancedMode" class="md-fab" long-press on-long-press="enableChannel(thing.UID, channel.id, $event,true)" on-click="enableChannel(thing.UID, channel.id, $event)"> <i class="material-icons">{{channel.linkedItems.length > 0 ? 'radio_button_checked':'radio_button_unchecked'}}</i></md-button>
+                             </div>
+							<div ng-if="channel.acceptedItemTypes.length <= 0" class="circle" aria-label="Trigger">
+							       {{channel.channelType.label?channel.channelType.label.substring(0,1).toUpperCase():'T'}}
+						    </div>
+							<div class="item-content">
+								<div class="description">
+									<h3 long-press on-long-press="showDescription(channel)" ng-if="channel.label || channel.channelType.label">{{channel.label?channel.label:channel.channelType.label}}</h3>
+									<h3 ng-if="!channel.label && !channel.channelType.label">{{channel.id}}</h3>
+									<p>
+										{{thing.UID + ':' + channel.id}}<i ng-show="advancedMode" class="material-icons copy-clipboard" copyclipboard="{{thing.UID + ':' + channel.id}}">content_copy</i>
+									</p>
+									<p>{{channel.itemType}}</p>
+								</div>
+								<div class="actions">
+									<i ng-if="getChannelFromChannelTypes(channel.channelTypeUID).parameters && getChannelFromChannelTypes(channel.channelTypeUID).parameters.length > 0" ng-click="configChannel(channel,thing,$event)" aria-label="Edit" class="material-icons">edit</i> 
+									<i ng-if="isExtensibleChannel(channel.channelTypeUID)" ng-click="removeChannel(channel, $event)" aria-label="Remove channel" class="material-icons">delete</i> 
+									<i class="material-icons" style="transition: none" ng-show="advancedMode" ng-click="getLinkedItems(channel)">{{channel.showItems ? 'unfold_less':'unfold_more'}}</i>
+								</div>
+							</div>
+							<div ng-show="channel.showItems" class='linkedItems item-content'>
+								<h3 class="noMargin">
+									Linked items
+									<button class="md-fab md-custom-plus md-button md-ink-ripple" type="button" ng-click="linkChannel(channel.id, $event)" aria-label="Add">
+										<span class="ng-scope">+</span>
+										<div class="md-ripple-container"></div>
+									</button>
+								</h3>
+								<div ng-repeat="item in channel.items | orderBy" class="row cursor-pointer " ng-class="{'borderhidden':$last}" ng-click="navigateTo('/configuration/item/edit/' + item.name)">
+									<div class="col-lg-1 col-sm-2 col-xs-3">
+										<span class="circle">{{item.label.substring(0,1).toUpperCase()}}</span>
+									</div>
+									<div class="col-lg-9 col-sm-8 col-xs-7 name">
+										{{item.label}} <small><span>({{item.name}})</span></small>
+									</div>
+									<div class="col-xs-2 action">
+										<i class="material-icons" ng-click="editChannel(thing.UID, channel.id, item.name, $event)">edit</i>
+										<i class="material-icons" ng-click="disableChannel(thing.UID, channel.id, item.name, $event)">delete</i>
+									</div>
+								</div>
+							</div>
+							<hr ng-if="!$last" class="border-line" />
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</section>

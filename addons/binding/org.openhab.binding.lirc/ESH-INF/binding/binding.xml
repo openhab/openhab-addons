@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="lirc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+
+	<name>LIRC Binding</name>
+	<description>The LIRC binding allows transmission and receipt of
+		standard infrared remote control signals via a LIRC server.</description>
+	<author>Andrew Nagle</author>
+
+</binding:binding>

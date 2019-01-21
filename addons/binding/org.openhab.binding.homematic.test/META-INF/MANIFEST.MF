@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Homematic Binding Tests
+Bundle-SymbolicName: org.openhab.binding.homematic.test;singleton:=true
+Bundle-Version: 2.5.0.qualifier
+Bundle-Vendor: openHAB
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Fragment-Host: org.openhab.binding.homematic
+Service-Component: OSGI-INF/*.xml
+Import-Package: javax.measure.quantity,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.semantics.model.property,
+ org.eclipse.smarthome.core.thing.binding.builder,
+ org.eclipse.smarthome.test.java,
+ org.hamcrest;core=split,
+ org.junit;version="4.0.0",
+ org.mockito,
+ org.mockito.stubbing,
+ tec.uom.se.quantity
+Automatic-Module-Name: org.openhab.binding.homematic.test

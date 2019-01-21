@@ -1,0 +1,60 @@
+<section class="fill-height configMain">
+    <div class="things white-bg" ng-if="advancedMode" ng-controller="ItemSetupController">
+        <div class="header-toolbar">
+            <md-button ng-click="refresh()" aria-label="Refresh"> <i class="material-icons">refresh</i></md-button>
+        </div>
+        <div class="section-header">
+            <div class="container">
+                <div class="toolbar">
+                    <md-button class="md-fab" ng-click="createItem(selectedType,selectedGroup)" aria-label="Add Item"> <i class="material-icons">add</i></md-button>
+                </div>
+            </div>
+        </div>
+        <div class="search itemSearch" layout="row" layout-align="center center">
+            <div layout="row" flex="85" class="searchControl" layout-align="start center">
+                <i ng-style="{'font-size': '24px'}" class="material-icons">search</i>
+                <md-input-container flex="90" md-no-float class="md-block searchBox"> <input ng-model="searchText" type="text" placeholder="Search"> </md-input-container>
+                <i ng-click="searchText = undefined" ng-class="{'vhidden': !searchText}" ng-style="{'font-size': '24px'}" class="material-icons clickable">close</i>
+            </div>
+            <div layout="row" flex="15" class="controls" layout-align="start center" ng-init="showMore=false">
+                <i class="material-icons clickable" ng-click="showMore=!showMore">{{showMore?'unfold_less':'unfold_more'}}</i>
+                <button class="md-button clickable" ng-click="clearAll()">clear</button>
+            </div>
+        </div>
+        <div class="row" ng-show="showMore" class="searchBox" search-filters>
+            <md-autocomplete md-no-cache config='{"index":0,"targetField":"type"}' class="col-xs-12 col-sm-6 typeSearch md-filter" md-min-length="0" md-selected-item="selectedOptions[0].value" md-search-text="searchType" md-items="type in searchInOptions(types,null,searchType) | orderBy:'+'" placeholder="Filter by type"> <md-item-template> <span md-highlight-text="searchType" md-highlight-flags="^i">{{type}}</span> </md-item-template> <md-not-found> No matches found. </md-not-found> </md-autocomplete>
+            <md-autocomplete md-no-cache config='{"index":1,"targetField":"groupNames","sourceField":"name"}' class="col-xs-12 col-sm-6 groupSearch md-filter" md-min-length="0" md-selected-item="selectedOptions[1].value" md-search-text="searchGroup" md-items="group in searchInOptions(groups,['label'],searchGroup) | orderBy:'name'" md-item-text="group.label?group.label:group.name" placeholder="Filter by group"> <md-item-template> <span md-highlight-text="searchGroup" md-highlight-flags="^i">{{group.label?group.label:group.name}}</span> </md-item-template> <md-not-found> No matches found. </md-not-found> </md-autocomplete>
+        </div>
+        <div class="container item-container">
+            <p class="text-center" ng-show="items.length == 0">
+                No items defined.
+                <button class="md-button" ng-click="navigateTo('item/create')">Add Items</button>
+            </p>
+
+            <div class="things">
+                <div ng-repeat="item in items | filter: filterItems(['label','name']) | orderBy:'label'">
+                    <div class="thing fab-item text-left">
+                        <div class="circle">
+                            <img width="40" ng-src="{{getSrcURL(item.category,item.type)}}" onerror="this.style.display='none';this.className='itemIcon'" />
+                            <span class="itemIcon-text">{{item.label?item.label.substring(0,1).toUpperCase():item.name.substring(0,1).toUpperCase()}}</span>
+                        </div>
+                        <div class="cbody item-content">
+                            <div class="description">
+                                <h3 ng-class="{'clickable':item.type=='Group'}" ng-click="setSelectedOption(1,item)">{{item.label}}&nbsp;</h3>
+                                <p>
+                                    {{item.name}}<i class="material-icons copy-clipboard" copyclipboard="{{item.name}}">content_copy</i>
+                                </p>
+                                <p class="clickable" ng-click="setSelectedOption(0,item.type)">{{item.type}}</p>
+                            </div>
+                            <div class="actions">
+                                <i class="material-icons" ng-click="navigateTo('item/edit/' + item.name)" aria-label="Delete">edit</i> 
+                                <i ng-if="item.editable" class="material-icons" ng-click="remove(item, $event)" aria-label="Delete">delete</i>
+                            </div>
+                        </div>
+                        <hr class="border-line" ng-show="!$last" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

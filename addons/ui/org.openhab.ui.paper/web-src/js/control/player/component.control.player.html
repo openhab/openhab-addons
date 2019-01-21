@@ -1,0 +1,27 @@
+<div layout="row" layout-align="end center">
+	<div class="item-label-container" flex="40">
+        <i class="material-icons">{{::$ctrl.getIcon($ctrl.item.category, 'play_arrow')}}</i>
+        <div>{{::$ctrl.getLabel($ctrl.item, 'Control')}}</div>
+    </div>
+	<div ng-if="::!item.readOnly" flex="60" layout="row" layout-align="end center">
+		<i class="md-button control-button material-icons" 
+		   ng-mousedown="$ctrl.onPrevDown()" 
+		   ng-mouseup="$ctrl.onPrevUp()">skip_previous</i>
+		<!---->
+		<i class="md-button control-button material-icons" 
+		   ng-show="$ctrl.item.state !== 'PLAY'" 
+		   ng-click="$ctrl.sendCommand('PLAY', true)">play_arrow</i>
+		<!---->
+		<i class="md-button control-button material-icons" 
+		   ng-show="$ctrl.item.state === 'PLAY'" 
+		   ng-click="$ctrl.sendCommand('PAUSE', true)">pause</i>
+		<!---->
+		<i class="md-button control-button material-icons" 
+		   ng-mousedown="$ctrl.onNextDown()" 
+		   ng-mouseup="$ctrl.onNextUp()">skip_next</i>
+		<!---->
+	</div>
+	<div ng-if="::$ctrl.item.readOnly" flex="60" layout="row" layout-align="end center">
+		<span class="state">{{$ctrl.item.stateText}}</span>
+	</div>
+</div>

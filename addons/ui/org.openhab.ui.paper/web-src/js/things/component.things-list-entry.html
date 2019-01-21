@@ -1,0 +1,19 @@
+<div class="thing fab-item text-left" data-thing-uid="{{$ctrl.thing.UID}}" ng-click="$ctrl.navigateTo('view/' + $ctrl.thing.UID)" ng-class="{'disabled' : !$ctrl.isEnabled()}">
+	<div class="circle">{{$ctrl.thing.thingTypeUID?$ctrl.thing.thingTypeUID.split(':')[1].substring(0,1).toUpperCase():''}}</div>
+	<div class="cbody item-content">
+		<div class="description">
+			<h3>
+				{{$ctrl.thing.label}}
+				<thing-status status-info="$ctrl.thing.statusInfo"></thing-status>
+			</h3>
+			<p>{{$ctrl.getThingTypeLabel()}}</p>
+			<p>{{$ctrl.thing.UID}}</p>
+		</div>
+		<div class="actions">
+			<i class="material-icons" ng-click="$ctrl.navigateTo('edit/' + $ctrl.thing.UID)" title="Edit Thing" aria-label="Edit">edit</i>
+			<i class="material-icons" ng-click="$ctrl.toggleEnable($event)" title="{{$ctrl.isEnabled() ? 'Disable Thing' : 'Enable Thing'}}" aria-label="Toggle Enable">{{$ctrl.isEnabled() ? "alarm_on" : "alarm_off"}}</i> 
+			<i class="material-icons" ng-click="$ctrl.remove($ctrl.thing, $event)" title="Delete Thing" aria-label="Delete">delete</i>
+		</div>
+	</div>
+	<hr class="border-line" ng-show="!$last" />
+</div>

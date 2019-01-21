@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="sonyaudio"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="masterControls">
+		<label>Master</label>
+		<channels>
+			<channel id="power" typeId="power" />
+			<channel id="soundField" typeId="sound-field-dn1080" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="zone1Controls">
+		<label>Main Zone</label>
+		<channels>
+			<channel id="power" typeId="power" />
+			<channel id="input" typeId="input-dn1080-zone1" />
+			<channel id="volume" typeId="volume" />
+			<channel id="mute" typeId="mute" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="zone2Controls">
+		<label>Zone 2</label>
+		<channels>
+			<channel id="power" typeId="power" />
+			<channel id="input" typeId="input-dn1080-zone2" />
+			<channel id="volume" typeId="volume" />
+			<channel id="mute" typeId="mute" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="zone4Controls">
+		<label>HDMI Zone</label>
+		<channels>
+			<channel id="power" typeId="power" />
+			<channel id="input" typeId="input-dn1080-zone4" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="radioControls">
+		<label>Radio</label>
+		<channels>
+			<channel id="broadcastFreq" typeId="radioBroadcastFreq" />
+			<channel id="broadcastStation" typeId="radioBroadcastStation" />
+			<channel id="broadcastSeekStation" typeId="radioSeekBroadcastStation" />
+		</channels>
+	</channel-group-type>
+
+	<!-- Commands -->
+	<channel-type id="radioBroadcastFreq">
+		<item-type>Number</item-type>
+		<label>Broadcast frequency</label>
+		<description>The broadcast frequency</description>
+		<state pattern="%.2f MHz" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="radioBroadcastStation">
+		<item-type>Number</item-type>
+		<label>Broadcast station</label>
+		<description>Select preset broadcast station</description>
+	</channel-type>
+
+	<channel-type id="radioSeekBroadcastStation">
+		<item-type>String</item-type>
+		<label>Change broadcast station</label>
+		<description>Change broadcast station</description>
+		<state>
+			<options>
+				<option value="fwdSeeking">Seek Forward</option>
+				<option value="bwdSeeking">Seek Backward</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="input-dn1080-zone1">
+		<item-type>String</item-type>
+		<label>Input Source</label>
+		<description>Select the input source of the receiver</description>
+		<state>
+			<options>
+				<option value="btaudio">Bluetooth Audio</option>
+				<option value="fm">FM</option>
+				<option value="usb">USB</option>
+				<option value="bd/dvd">BD/DVD</option>
+				<option value="game">GAME</option>
+				<option value="sat/catv">SAT/CATV</option>
+				<option value="video1">VIDEO 1</option>
+				<option value="video2">VIDEO 2</option>
+				<option value="tv">TV</option>
+				<option value="sa-cd/cd">SA-CD/CD</option>
+				<option value="network">Home Network</option>
+				<option value="cast">Chromecast</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="input-dn1080-zone2">
+		<item-type>String</item-type>
+		<label>Input Source</label>
+		<description>Select the input source of the receiver</description>
+		<state>
+			<options>
+				<option value="btaudio">Bluetooth Audio</option>
+				<option value="fm">FM</option>
+				<option value="usb">USB</option>
+				<option value="source">SOURCE</option>
+				<option value="sat/catv">SAT/CATV</option>
+				<option value="video1">VIDEO 1</option>
+				<option value="sa-cd/cd">SA-CD/CD</option>
+				<option value="network">Home Network</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="input-dn1080-zone4">
+		<item-type>String</item-type>
+		<label>Input Source</label>
+		<description>Select the input source of the receiver</description>
+		<state>
+			<options>
+				<option value="bd/dvd">BD/DVD</option>
+				<option value="game">GAME</option>
+				<option value="sat/catv">SAT/CATV</option>
+				<option value="video2">VIDEO 2</option>
+				<option value="sa-cd/cd">SA-CD/CD</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="sound-field-dn1080">
+		<item-type>String</item-type>
+		<label>Sound Field</label>
+		<description>Select the Sound Field for the receiver</description>
+		<state>
+			<options>
+				<option value="pureDirect">Pure Direct</option>
+				<option value="2chStereo">2ch Stereo</option>
+				<option value="multiChStereo">Multi Ch Stereo</option>
+				<option value="direct">Direct</option>
+				<option value="audioFormatDecoding">A.F.D.</option>
+				<option value="dolbySurround">Dolby Surround</option>
+				<option value="neuralX">Neural:X</option>
+				<option value="frontSurround">Front Surround</option>
+				<option value="audioEnhancer">Audio Enhancer</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<!-- STR-DN1080 Thing Type -->
+	<thing-type id="STR-DN1080">
+		<label>SONY receiver STR-DN1080</label>
+		<description>SONY receiver STR-DN1080</description>
+
+		<channel-groups>
+			<channel-group typeId="masterControls" id="master" />
+			<channel-group typeId="zone1Controls" id="zone1" />
+			<channel-group typeId="zone2Controls" id="zone2" />
+			<channel-group typeId="zone4Controls" id="zone4" />
+			<channel-group typeId="radioControls" id="radio" />
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:sonyaudio:config" />
+	</thing-type>
+</thing:thing-descriptions>

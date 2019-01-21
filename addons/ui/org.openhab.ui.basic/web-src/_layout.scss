@@ -1,0 +1,610 @@
+
+.mdl-layout {
+	&__header-button {
+		display: block;
+		height: $layout-header-button-desktop-size;
+		width: $layout-header-button-desktop-size;
+		position: absolute;
+		top: 0;
+		left: 0;
+		z-index: 3;
+		margin: 8px 12px;
+		border: 0;
+		line-height: $layout-header-button-desktop-size + 2;
+		font-size: 26px;
+		line-height: 50px;
+		text-align: center;
+		cursor: pointer;
+		@include user-select(none);
+		@include flex-shrink(0);
+		@media screen and (max-width: $layout-desktop-size-threshold) {
+			margin: 4px;
+		}
+	}
+	&-title {
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		overflow: hidden;
+		max-width: 100%;
+		line-height: normal;
+	}
+}
+
+.navigation {
+	&__button-home {
+		cursor: default;
+		.navigation-page & {
+			display: none;
+		}
+	}
+	&__button-back {
+		.navigation-home & {
+			display: none;
+		}
+	}
+}
+
+.page-content {
+	max-width: 1080px;
+	@media screen and (max-width: $layout-tablet-size-threshold) {
+		padding: 0;
+	}
+}
+
+.mdl-form {
+	padding: 0;
+	@media screen and (max-width: $layout-mobile-size-threshold) {
+		margin-top: 0;
+		margin-left: 0;
+		margin-right: 0;
+		width: 100%;
+	}
+	&__row {
+		@include flex-display();
+		flex-direction: row;
+		@include flex-wrap(nowrap);
+		@include align-items(center);
+		@include align-items-2011(center);
+		white-space: nowrap;
+		height: $form-row-desktop-height;
+		box-sizing: content-box;
+		padding: 4px 0;
+		margin: 0 $mdl-grid-spacing;
+		border-bottom: 1px solid $item-separator-color;
+		@media screen and (max-width: $layout-tablet-size-threshold) {
+			height: $form-row-mobile-height;
+			padding: 4px $mdl-grid-spacing;
+			margin: 0;
+			html.ui-layout-condensed & {
+				height: $form-row-desktop-height-condensed;
+			}
+		}
+		@media screen and (min-width: $layout-tablet-size-threshold) {
+			&:last-child,
+			&:nth-last-child(2):nth-child(even) {
+				border: none;
+			}
+		}
+		&>* {
+			display: block;
+		}
+		&--height-auto {
+			height: auto;
+			@include justify-content(center);
+			html.ui-layout-condensed &.mdl-form__row {
+				height: auto;
+			}
+		}
+		&--hidden {
+			display: none;
+		}
+		html.ui-layout-condensed & {
+			height: $form-row-desktop-height-condensed;
+		}
+	}
+	&__image {
+		&.mdl-form__control {
+			padding-left: 0;
+			padding-right: 0;
+			max-width: 100%;
+			img {
+				max-width: 100%;
+			}
+		}
+		@media screen and (max-width: $layout-tablet-size-threshold) {
+			&.mdl-form__control {
+				padding-left: 0;
+				padding-right: 0;
+			}
+			width: 100%;
+			img {
+				height: auto;
+				width: 100%;
+			}
+		}
+	}
+	&__link {
+		cursor: pointer;
+	}
+	&__icon {
+		@include flex-shrink(0);
+		width: 32px;
+		padding-left: $form-row-desktop-padding;
+		html.ui-layout-condensed & {
+			padding-left: $form-row-desktop-padding-condensed;
+		}
+		@media screen and (max-width: $layout-tablet-size-threshold) {
+			padding-left: $form-row-mobile-padding;
+			html.ui-layout-condensed & {
+				padding-left: $form-row-mobile-padding-condensed;
+			}
+		}
+		html:not(.ui-icons-enabled) & {
+			display: none;
+		}
+		img {
+			max-width: 32px;
+			max-height: 32px;
+			width: auto;
+			height: auto;
+			html.ui-layout-condensed & {
+				max-width: 28px;
+				max-height: 28px;
+			}
+		}
+	}
+	&__label {
+		@media screen and (max-width: $layout-tablet-size-threshold) {
+			padding-left: $form-row-mobile-padding;
+			html.ui-layout-condensed & {
+				padding-left: $form-row-mobile-padding-condensed;
+			}
+		}
+		padding-left: $form-row-desktop-padding;
+		html.ui-layout-condensed & {
+			padding-left: $form-row-desktop-padding-condensed;
+		}
+		@include flex-shrink(0);
+		@include flex-grow(2);
+		@include flex-2011(2 2 auto);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	&__control {
+		@media screen and (max-width: $layout-tablet-size-threshold) {
+			padding-right: $form-row-mobile-padding;
+			html.ui-layout-condensed & {
+				padding-left: $form-row-mobile-padding-condensed;
+			}
+		}
+		padding-right: $form-row-desktop-padding;
+		padding-left: 4px;
+		html.ui-layout-condensed & {
+			padding-left: $form-row-desktop-padding-condensed;
+		}
+		font-weight: 700;
+		html.ui-capitalize-values & {
+			text-transform: uppercase;
+		}
+		&.mdl-switch {
+			width: auto;
+			&.is-upgraded {
+				padding-left: 36px;
+			}
+		}
+		.mdl-slider {
+			&.mdl-js-slider {
+				width: 100%;
+				margin: 0;
+			}
+			&__background-flex {
+				width: calc(#{"100% - 12px"});
+				margin: 0 0 0 12px;
+			}
+			&.is-upgraded.is-lowest-value~.mdl-slider__background-flex>.mdl-slider__background-upper {
+				left: 0;
+			}
+		}
+		.mdl-button,
+		.mdl-button:focus {
+			box-shadow: none;
+			-webkit-box-shadow: none;
+		}
+	}
+	&__setpoint,
+	&__colorpicker,
+	&__rollerblind {
+		.mdl-button {
+			min-width: 0;
+			padding-top: 6px;
+		}
+	}
+	&__group {
+		padding-top: 4px;
+	}
+	&__text-link {
+		.material-icons {
+			padding-top: 5px;
+		}
+	}
+	&__selection {
+		padding-top: 3px;
+		padding-left: 6px;
+		&-rows {
+			display: none;
+		}
+	}
+	&__slider {
+		width: 140px;
+	}
+	&__title {
+		margin: 0;
+		padding-left: $form-row-desktop-padding + $mdl-grid-spacing;
+		html.ui-layout-condensed & {
+			padding-left: $form-row-desktop-padding-condensed + $mdl-grid-spacing;
+		}
+		padding-top: 25px;
+		padding-bottom: 10px;
+		html.ui-layout-condensed & {
+			padding-top: 15px;
+			padding-bottom: 5px;
+		}
+		@media screen and (max-width: $layout-tablet-size-threshold) {
+			padding-left: $form-row-mobile-padding + $mdl-grid-spacing;
+			html.ui-layout-condensed & {
+				padding-left: $form-row-desktop-padding-condensed + $mdl-grid-spacing;
+			}
+		}
+	}
+	&__value {
+		font-weight: 700;
+		html.ui-capitalize-values & {
+			text-transform: uppercase;
+		}
+		&--setpoint,
+		&--rollerblind {
+			padding: 0 10px 0 5px;
+		}
+		&--group {
+			padding: 0 5px 0 5px;
+			font-weight: normal;
+		}
+		&--text-link {
+			font-weight: normal;
+		}
+		&--switch,
+		&--slider {
+			padding: 0 10px 0 10px;
+		}
+	}
+	&__text {
+		overflow: hidden;
+		flex-shrink: 2;
+		text-overflow: ellipsis;
+	}
+	&__webview,
+	&__video {
+		padding-left: 0px;
+		padding-right: 0px;
+		width: 100%;
+	}
+	&__buttons {
+		padding-top: 2px;
+	}
+	&--no-label {
+		.mdl-form__title {
+			display: none;
+		}
+	}
+	&--hidden {
+		display: none;
+	}
+}
+
+.mdl-modal {
+	position: absolute;
+	background: rgba(50, 50, 50, 0.3);
+	z-index: 10;
+	@include expand();
+	@include flex-display(flex);
+	overflow-y: auto;
+	@include align-items(center);
+	@include align-items-2011(center);
+	@include justify-content(center);
+	&--overflow {
+		display: block;
+	}
+	&__wrapper {
+		flex-grow: 2;
+		max-width: 800px;
+		width: 100%;
+		margin: auto;
+		padding: 40px 100px;
+		.ui-layout-condensed & {
+			padding: 10px;
+		}
+		@media screen and (max-width: $layout-tablet-size-threshold) {
+			padding: 20px;
+		}
+	}
+	&__content {
+		margin: 0 auto;
+	}
+}
+
+.mdl-radio {
+	width: 100%;
+	&__item {
+		border-bottom: 1px solid $item-separator-color;
+		padding-left: 20px;
+	}
+	&__group &__label {
+		padding-top: 17px;
+		width: 100%;
+		display: inline-block;
+		height: $form-row-desktop-height + 14px;
+		box-sizing: border-box;
+	}
+	&__group & {
+		padding-left: 35px;
+	}
+	&__outer-circle,
+	&__inner-circle,
+	&__ripple-container {
+		margin-top: 20px;
+	}
+}
+
+.mdl-layout {
+	&__header {
+		position: relative;
+	}
+}
+
+.ui {
+	&__loading {
+		display: none;
+		position: absolute;
+		bottom: 0;
+		width: 100%;
+	}
+}
+
+// Legacy Flexbox support (old iOS and Android)
+html.flexbox-legacy {
+	.mdl-layout {
+		&__content {
+			width: 100%;
+		}
+	}
+	.page-content {
+		display: block;
+		width: 100%;
+	}
+	.mdl-form {
+		display: block;
+		border-bottom: 1px solid $item-separator-color;
+		&__row {
+			// 2009 syntax
+			display: -webkit-box;
+			-webkit-box-orient: horizontal;
+			-webkit-box-align: center;
+		}
+		&__label {
+			-webkit-box-flex: 2;
+		}
+	}
+	.mdl-modal {
+		display: -webkit-box;
+		-webkit-box-orient: horizontal;
+		-webkit-box-align: center;
+		-webkit-box-pack: center;
+		&__content {
+			-webkit-box-flex: 2;
+		}
+	}
+	.mdl-slider {
+		background: rgba(158, 158, 158, 0.5);
+		&.is-lowest-value::-webkit-slider-thumb {
+			background: #fff;
+		}
+	}
+}
+
+// Colorpicker
+$slider-height: 20px;
+$colorpicker-desktop-size: 300px;
+$colorpicker-mobile-size: 270px;
+@mixin slider-background() {
+	background: -webkit-linear-gradient(left, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.3) 50%, rgba(0, 0, 0, 0) 100%);
+	background: linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.3) 50%, rgba(0, 0, 0, 0) 100%);
+}
+
+@mixin slider-track() {
+	display: block;
+	height: $slider-height;
+	border-radius: 0;
+	background: transparent;
+	color: transparent;
+	border: none;
+}
+
+@mixin slider-thumb() {
+	-webkit-appearance: none;
+	width: $slider-height;
+	height: $slider-height;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	border-radius: 0;
+	background: transparent;
+	border: 1px solid #aaa;
+	background: url("images/colorpicker-thumb.png") no-repeat center center;
+}
+
+.colorpicker {
+	&__image {
+		display: block;
+		position: relative;
+		width: $colorpicker-desktop-size;
+		height: $colorpicker-desktop-size;
+		@media screen and (max-width: $layout-mobile-size-threshold) {
+			width: $colorpicker-mobile-size;
+			height: $colorpicker-mobile-size;
+		}
+		background: url("images/colorwheel.png") no-repeat;
+		background-size: 100%;
+		@include user-select(none);
+		overflow: hidden;
+		cursor: pointer;
+	}
+	&__brightness {
+		-webkit-appearance: none;
+		position: absolute;
+		@include slider-background();
+		top: 15px;
+		padding: 0;
+		margin: 0;
+		width: $colorpicker-desktop-size - 30px;
+		@media screen and (max-width: $layout-mobile-size-threshold) {
+			width: $colorpicker-mobile-size - 30px;
+		}
+		height: $slider-height;
+		z-index: 3;
+		&::-ms-track {
+			@include slider-track();
+		}
+		&::-webkit-slider-runnable-track {
+			@include slider-track();
+		}
+		&::-moz-range-track {
+			@include slider-track();
+		}
+		&::-moz-range-thumb {
+			@include slider-thumb();
+		}
+		&::-webkit-slider-thumb {
+			@include slider-thumb();
+		}
+		&::-ms-thumb {
+			@include slider-thumb();
+		}
+		&::-ms-fill-upper {
+			background: none;
+		}
+		&::-ms-fill-lower {
+			background: none;
+		}
+		&::-ms-ticks {
+			background: none;
+			display: none;
+		}
+	}
+	&__background {
+		position: relative;
+		z-index: 2;
+		bottom: 0;
+		width: $colorpicker-desktop-size - 30px;
+		@media screen and (max-width: $layout-mobile-size-threshold) {
+			width: $colorpicker-mobile-size - 30px;
+		}
+		height: $slider-height;
+	}
+	&__handle {
+		$handle-size: 24px;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		box-sizing: border-box;
+		-moz-box-sizing: border-box;
+		border: 4px solid white;
+		width: $handle-size;
+		height: $handle-size;
+		margin: -($handle-size / 2) -0 0 -($handle-size / 2);
+		border-radius: $handle-size / 2;
+		box-shadow: 0 0 0 2px #aaa inset, 0 0 0 2px #aaa;
+		pointer-events: none;
+	}
+	&__controls {
+		position: relative;
+		padding: 15px;
+		border-bottom: 1px solid $item-separator-color;
+	}
+	&__buttons {
+		padding: 5px;
+	}
+	position: relative;
+}
+
+.page {
+	&-static {
+		&__content {
+			padding: $form-row-desktop-padding;
+			@media screen and (max-width: $layout-tablet-size-threshold) {
+				padding: $form-row-mobile-padding;
+			}
+		}
+	}
+}
+
+.welcome-sitemaps {
+	&__sitemap {
+		padding: 5px 0;
+		.material-icons {
+			vertical-align: middle;
+			line-height: 19px;
+			padding-right: 6px;
+		}
+		a {
+			text-transform: capitalize;
+		}
+	}
+	&__empty {
+		font-style: italic;
+	}
+}
+
+.mdl-modal {
+	&--colorpicker {
+		max-width: $colorpicker-desktop-size;
+		@media screen and (max-width: $layout-mobile-size-threshold) {
+			max-width: $colorpicker-mobile-size;
+		}
+	}
+}
+
+.mdl-notify {
+	border-radius: 2px 2px 0 0;
+	background: #323232;
+	@media screen and (max-width: $layout-mobile-size-threshold) {
+		border-radius: 0;
+		width: 100%;
+	}
+	&__text {
+		padding: 14px 24px;
+		vertical-align: middle;
+		color: white;
+		font-weight: 400;
+	}
+	&__container {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		z-index: 1;
+		@include flex-display();
+		@include justify-content(center);
+	}
+	&--hidden {
+		display: none;
+	}
+}
+
+// MS Edge hacks
+@supports (-ms-ime-align:auto) {
+	.mdl-slider.mdl-slider.is-upgraded {
+		-ms-appearance: none;
+		height: 32px;
+		margin: 0;
+	}
+}

@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Map Transformation Service Tests
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.transform.map.test
+Bundle-Vendor: openHAB
+Bundle-Version: 2.5.0.qualifier
+Fragment-Host: org.openhab.transform.map
+Import-Package: 
+ org.apache.commons.io,
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.hamcrest.core,
+ org.junit
+Automatic-Module-Name: org.openhab.transform.map.test

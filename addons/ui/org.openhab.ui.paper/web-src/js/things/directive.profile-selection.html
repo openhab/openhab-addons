@@ -1,0 +1,4 @@
+<md-select placeholder="Select" ng-model="$ctrl.profileModel">
+    <md-option ng-selected="$ctrl.selectProfile(profile.uid)" ng-value="profile.uid" ng-repeat="profile in $ctrl.profileList"> {{::profile.label}} <small><span class="small">({{::profile.uid}})</span></small>
+    </md-option>
+</md-select>

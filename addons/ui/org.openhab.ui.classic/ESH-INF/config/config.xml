@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+	http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="ui:classic">
+		<parameter name="iconType" type="text" required="true">
+			<label>Icon Format</label>
+			<description>Defines whether bitmap or vector icons are used by the UI.</description>
+			<options>
+				<option value="png">Bitmap</option>
+				<option value="svg">Vector</option>
+			</options>
+			<default>svg</default>
+		</parameter>
+		<parameter name="defaultSitemap" type="text" required="false">
+			<label>Default Sitemap</label>
+			<description>The sitemap to show if no parameter is passed.</description>
+		</parameter>
+		<parameter name="disableHtmlCache" type="text" required="false">
+			<label>Disable HTML cache</label>
+			<description>Disable in-memory caching of html fragments.
+				If this is true, on every request the html files are loaded from disk.</description>
+			<options>
+				<option value="true">Yes</option>
+				<option value="false">No</option>
+			</options>
+			<default>false</default>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

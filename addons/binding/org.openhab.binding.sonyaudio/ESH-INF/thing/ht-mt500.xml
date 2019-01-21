@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="sonyaudio"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Commands -->
+	<channel-type id="input-mt500">
+		<item-type>String</item-type>
+		<label>Input Source</label>
+		<description>Select the input source of the receiver</description>
+		<state>
+			<options>
+				<option value="btaudio">Bluetooth Audio</option>
+				<option value="tv">TV</option>
+				<option value="analog">Analog</option>
+				<option value="usb">USB</option>
+				<option value="network">Home Network</option>
+				<option value="cast">Chromecast</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="sound-field-mt500">
+		<item-type>String</item-type>
+		<label>Sound Field</label>
+		<description>Select the Sound Field for the receiver</description>
+		<state>
+			<options>
+				<option value="clearAudio">ClearAudio+</option>
+				<option value="movie">Movie</option>
+				<option value="music">Music</option>
+				<option value="sports">Sports</option>
+				<option value="game">Game Studio</option>
+				<option value="standard">Standard</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<!-- HT-MT500 Thing Type -->
+	<thing-type id="HT-MT500">
+		<label>SONY Soundbar HT-MT500</label>
+		<description>SONY Soundbar HT-MT500</description>
+		<channels>
+			<channel id="power" typeId="power" />
+			<channel id="input" typeId="input-mt500" />
+			<channel id="volume" typeId="volume" />
+			<channel id="mute" typeId="mute" />
+			<channel id="soundField" typeId="sound-field-mt500" />
+		</channels>
+		<config-description-ref uri="thing-type:sonyaudio:config" />
+	</thing-type>
+</thing:thing-descriptions>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:sonyaudio:config">
+		<parameter name="ipAddress" type="text">
+			<label>Network Address</label>
+			<description>The IP or host name of the SONY audio device</description>
+			<context>network-address</context>
+		</parameter>
+		<parameter name="port" type="integer" min="1" max="65335">
+			<label>Port</label>
+			<description>Port for the SONY audio device to control.
+				Home Audio products usually use port 10000 and Personal Audio products usually use port 54480.</description>
+			<default>10000</default>
+		</parameter>
+		<parameter name="path" type="text">
+			<label>Base Path</label>
+			<description>The base path, "/sony" in most cases</description>
+			<default>/sony</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="refreshInterval" type="integer" min="0">
+			<label>Refresh Interval</label>
+			<description>The refresh interval in seconds for polling the receiver (0=disable). Binding receive automatically updates from </description>
+			<default>300</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

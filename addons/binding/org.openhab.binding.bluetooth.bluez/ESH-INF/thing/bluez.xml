@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bluetooth" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="bluez">
+		<label>Bluetooth BlueZ Adapter</label>
+		<description>Linux built-in Bluetooth support</description>
+
+		<representation-property>address</representation-property>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>The Bluetooth address of the adapter in format XX:XX:XX:XX:XX:XX</description>
+			</parameter>
+			<parameter name="discovery" type="boolean">
+				<label>Device Discovery</label>
+				<description>Whether this adapter actively participates in Bluetooth device discovery</description>
+				<advanced>true</advanced>
+				<default>true</default>
+			</parameter>
+		</config-description>
+
+	</bridge-type>
+
+</thing:thing-descriptions>

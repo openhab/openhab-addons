@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+		http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd"
+>
+
+	<!-- yellow/black Device -->
+	<config-description uri="binding:digitalstrom:deviceWithPowerSensors">
+		<parameter-group name="devInfo">
+			<label>@text/device_param_group_info_label</label>
+			<description>@text/device_param_group_info_desc</description>
+		</parameter-group>
+		<parameter-group name="sensorSetup">
+			<label>@text/device_param_group_sensor_label</label>
+			<description>@text/device_param_group_sensor_desc</description>
+		</parameter-group>
+		<parameter name="activePowerRefreshPriority" type="text" groupName='sensorSetup'>
+			<label>@text/device_param_active_power_label</label>
+			<description>@text/device_param_active_power_desc</description>
+			<options>
+				<option value="never">@text/DS_SENSOR_OPTION1</option>
+				<option value="high">@text/DS_SENSOR_OPTION4</option>
+				<option value="medium">@text/DS_SENSOR_OPTION3</option>
+				<option value="low">@text/DS_SENSOR_OPTION2</option>
+			</options>
+			<default>never</default>
+			<required>false</required>
+		</parameter>
+		<parameter name="electricMeterRefreshPriority" type="text" groupName='sensorSetup'>
+			<label>@text/device_param_electric_meter_label</label>
+			<description>@text/device_param_electric_meter_desc</description>
+			<options>
+				<option value="never">@text/DS_SENSOR_OPTION1</option>
+				<option value="high">@text/DS_SENSOR_OPTION4</option>
+				<option value="medium">@text/DS_SENSOR_OPTION3</option>
+				<option value="low">@text/DS_SENSOR_OPTION2</option>
+			</options>
+			<default>never</default>
+			<required>false</required>
+		</parameter>
+		<parameter name="outputCurrentRefreshPriority" type="text" groupName='sensorSetup'>
+			<label>@text/device_param_output_current_label</label>
+			<description>@text/device_param_output_current_desc</description>
+			<options>
+				<option value="never">@text/DS_SENSOR_OPTION1</option>
+				<option value="high">@text/DS_SENSOR_OPTION4</option>
+				<option value="medium">@text/DS_SENSOR_OPTION3</option>
+				<option value="low">@text/DS_SENSOR_OPTION2</option>
+			</options>
+			<default>never</default>
+			<required>false</required>
+		</parameter>
+		<!--deviceID -->
+		<parameter name="dSID" type="text" readOnly="true" groupName="devInfo">
+			<label>@text/device_param_dsid_label</label>
+			<description>@text/device_param_dsid_desc</description>
+			<required>true</required>
+		</parameter>
+	</config-description>
+	<!-- gray Device -->
+	<config-description uri="binding:digitalstrom:deviceWithoutPowerSensors">
+		<parameter name="dSID" type="text" readOnly="true">
+			<label>@text/device_param_dsid_label</label>
+			<description>@text/device_param_dsid_desc</description>
+			<required>true</required>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
