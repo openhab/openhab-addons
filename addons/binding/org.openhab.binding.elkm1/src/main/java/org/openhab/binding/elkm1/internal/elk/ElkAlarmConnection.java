@@ -106,7 +106,7 @@ public class ElkAlarmConnection {
                 sc.init(null, trustAllCerts, new java.security.SecureRandom());
                 sFactory = sc.getSocketFactory();
             } catch (KeyManagementException | NoSuchAlgorithmException e) {
-                e.printStackTrace();
+                logger.error("Unable to open connection to the elk alarm {}:{}", config.ipAddress, config.port, e);
             }
 
         } else {
@@ -118,8 +118,7 @@ public class ElkAlarmConnection {
                 ((SSLSocket) socket).setEnabledProtocols(new String[] { "TLSv1" });
             }
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error("Unable to open connection to the elk alarm {}:{}", config.ipAddress, config.port, e);
         }
 
         if (config.useSSL) {
@@ -144,12 +143,12 @@ public class ElkAlarmConnection {
             out.flush();
 
             // Read back username and password
-            System.out.println(in.readLine());
-            System.out.println(in.readLine());
-            System.out.println(in.readLine());
-            System.out.println(in.readLine());
+            logger.debug("Read back from Elk: ", in.readLine());
+            logger.debug("Read back from Elk: ", in.readLine());
+            logger.debug("Read back from Elk: ", in.readLine());
+            logger.debug("Read back from Elk: ", in.readLine());
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Unable to open connection to the elk alarm {}:{}", config.ipAddress, config.port, e);
             return false;
         }
         return true;
