@@ -31,12 +31,9 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.onewire.internal.discovery.OwDiscoveryService;
 import org.openhab.binding.onewire.internal.handler.AdvancedMultisensorThingHandler;
 import org.openhab.binding.onewire.internal.handler.BasicMultisensorThingHandler;
-import org.openhab.binding.onewire.internal.handler.CounterSensorThingHandler;
-import org.openhab.binding.onewire.internal.handler.DigitalIOThingHandler;
+import org.openhab.binding.onewire.internal.handler.BasicThingHandler;
 import org.openhab.binding.onewire.internal.handler.EDSSensorThingHandler;
-import org.openhab.binding.onewire.internal.handler.IButtonThingHandler;
 import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
-import org.openhab.binding.onewire.internal.handler.TemperatureSensorThingHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
@@ -70,18 +67,12 @@ public class OwHandlerFactory extends BaseThingHandlerFactory {
             OwserverBridgeHandler owserverBridgeHandler = new OwserverBridgeHandler((Bridge) thing);
             registerDiscoveryService(owserverBridgeHandler);
             return owserverBridgeHandler;
-        } else if (TemperatureSensorThingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return new TemperatureSensorThingHandler(thing, dynamicStateDescriptionProvider);
-        } else if (IButtonThingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return new IButtonThingHandler(thing, dynamicStateDescriptionProvider);
-        } else if (DigitalIOThingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return new DigitalIOThingHandler(thing, dynamicStateDescriptionProvider);
         } else if (BasicMultisensorThingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new BasicMultisensorThingHandler(thing, dynamicStateDescriptionProvider);
         } else if (AdvancedMultisensorThingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new AdvancedMultisensorThingHandler(thing, dynamicStateDescriptionProvider);
-        } else if (CounterSensorThingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return new CounterSensorThingHandler(thing, dynamicStateDescriptionProvider);
+        } else if (BasicThingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            return new BasicThingHandler(thing, dynamicStateDescriptionProvider);
         } else if (EDSSensorThingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new EDSSensorThingHandler(thing, dynamicStateDescriptionProvider);
         }

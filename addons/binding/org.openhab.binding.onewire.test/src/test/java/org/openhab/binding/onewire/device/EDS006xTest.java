@@ -50,25 +50,15 @@ public class EDS006xTest extends AbstractDeviceTest {
     }
 
     @Test
-    public void presenceTestOn() {
-        presenceTest(OnOffType.ON);
-    }
-
-    @Test
-    public void presenceTestOff() {
-        presenceTest(OnOffType.OFF);
-    }
-
-    @Test
     public void temperatureChannel() {
-        instantiateDevice();
+        instantiateDevice(OwSensorType.EDS0068);
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
             Mockito.when(mockBridgeHandler.readDecimalType(eq(testSensorId), any())).thenReturn(new DecimalType(10.0));
 
             testDevice.enableChannel(CHANNEL_TEMPERATURE);
-            ((EDS006x) testDevice).configureChannels(OwSensorType.EDS0068);
+            testDevice.configureChannels();
             testDevice.refresh(mockBridgeHandler, true);
 
             inOrder.verify(mockBridgeHandler).readDecimalType(eq(testSensorId), any());
@@ -82,7 +72,7 @@ public class EDS006xTest extends AbstractDeviceTest {
 
     @Test
     public void humidityChannel() {
-        instantiateDevice();
+        instantiateDevice(OwSensorType.EDS0068);
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
@@ -91,7 +81,7 @@ public class EDS006xTest extends AbstractDeviceTest {
             testDevice.enableChannel(CHANNEL_HUMIDITY);
             testDevice.enableChannel(CHANNEL_ABSOLUTE_HUMIDITY);
             testDevice.enableChannel(CHANNEL_DEWPOINT);
-            ((EDS006x) testDevice).configureChannels(OwSensorType.EDS0068);
+            testDevice.configureChannels();
             testDevice.refresh(mockBridgeHandler, true);
 
             inOrder.verify(mockBridgeHandler, times(2)).readDecimalType(eq(testSensorId), any());
@@ -109,14 +99,14 @@ public class EDS006xTest extends AbstractDeviceTest {
 
     @Test
     public void pressureChannel() {
-        instantiateDevice();
+        instantiateDevice(OwSensorType.EDS0068);
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
             Mockito.when(mockBridgeHandler.readDecimalType(eq(testSensorId), any())).thenReturn(new DecimalType(2.0));
 
             testDevice.enableChannel(CHANNEL_PRESSURE);
-            ((EDS006x) testDevice).configureChannels(OwSensorType.EDS0068);
+            testDevice.configureChannels();
             testDevice.refresh(mockBridgeHandler, true);
 
             inOrder.verify(mockBridgeHandler).readDecimalType(eq(testSensorId), any());
@@ -130,14 +120,14 @@ public class EDS006xTest extends AbstractDeviceTest {
 
     @Test
     public void lightChannel() {
-        instantiateDevice();
+        instantiateDevice(OwSensorType.EDS0068);
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
             Mockito.when(mockBridgeHandler.readDecimalType(eq(testSensorId), any())).thenReturn(new DecimalType(100));
 
             testDevice.enableChannel(CHANNEL_LIGHT);
-            ((EDS006x) testDevice).configureChannels(OwSensorType.EDS0068);
+            testDevice.configureChannels();
             testDevice.refresh(mockBridgeHandler, true);
 
             inOrder.verify(mockBridgeHandler).readDecimalType(eq(testSensorId), any());
@@ -151,13 +141,13 @@ public class EDS006xTest extends AbstractDeviceTest {
 
     @Test
     public void noChannel() {
-        instantiateDevice();
+        instantiateDevice(OwSensorType.EDS0068);
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
             Mockito.when(mockBridgeHandler.readDecimalType(eq(testSensorId), any())).thenReturn(new DecimalType(2.0));
 
-            ((EDS006x) testDevice).configureChannels(OwSensorType.EDS0068);
+            testDevice.configureChannels();
             testDevice.refresh(mockBridgeHandler, true);
 
             inOrder.verifyNoMoreInteractions();

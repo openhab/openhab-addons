@@ -33,6 +33,7 @@ import org.mockito.Mockito;
 import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.SensorId;
 import org.openhab.binding.onewire.internal.device.AbstractOwDevice;
+import org.openhab.binding.onewire.internal.device.OwSensorType;
 import org.openhab.binding.onewire.internal.handler.OwBaseBridgeHandler;
 import org.openhab.binding.onewire.internal.handler.OwBaseThingHandler;
 
@@ -82,6 +83,19 @@ public abstract class AbstractDeviceTest {
         try {
             Constructor<?> constructor = deviceTestClazz.getConstructor(SensorId.class, OwBaseThingHandler.class);
             testDevice = (AbstractOwDevice) constructor.newInstance(new Object[] { testSensorId, mockThingHandler });
+            return testDevice;
+        } catch (Exception e) {
+            Assert.fail("Couldn't create test device: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public @Nullable AbstractOwDevice instantiateDevice(OwSensorType sensorType) {
+        try {
+            Constructor<?> constructor = deviceTestClazz.getConstructor(SensorId.class, OwSensorType.class,
+                    OwBaseThingHandler.class);
+            testDevice = (AbstractOwDevice) constructor
+                    .newInstance(new Object[] { testSensorId, sensorType, mockThingHandler });
             return testDevice;
         } catch (Exception e) {
             Assert.fail("Couldn't create test device: " + e.getMessage());

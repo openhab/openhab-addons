@@ -45,16 +45,6 @@ public class DS2406_DS2413Test extends AbstractDeviceTest {
     }
 
     @Test
-    public void presenceTestOn() {
-        presenceTest(OnOffType.ON);
-    }
-
-    @Test
-    public void presenceTestOff() {
-        presenceTest(OnOffType.OFF);
-    }
-
-    @Test
     public void digitalChannel() {
         for (int i = 0; i < 2; i++) {
             digitalChannelTest(OnOffType.ON, i);

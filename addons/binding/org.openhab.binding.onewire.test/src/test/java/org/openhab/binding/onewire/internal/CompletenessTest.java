@@ -28,11 +28,8 @@ import org.openhab.binding.onewire.internal.OwBindingConstants;
 import org.openhab.binding.onewire.internal.device.OwSensorType;
 import org.openhab.binding.onewire.internal.handler.AdvancedMultisensorThingHandler;
 import org.openhab.binding.onewire.internal.handler.BasicMultisensorThingHandler;
-import org.openhab.binding.onewire.internal.handler.CounterSensorThingHandler;
-import org.openhab.binding.onewire.internal.handler.DigitalIOThingHandler;
+import org.openhab.binding.onewire.internal.handler.BasicThingHandler;
 import org.openhab.binding.onewire.internal.handler.EDSSensorThingHandler;
-import org.openhab.binding.onewire.internal.handler.IButtonThingHandler;
-import org.openhab.binding.onewire.internal.handler.TemperatureSensorThingHandler;
 
 /**
  * Tests cases for binding completeness
@@ -45,21 +42,35 @@ public class CompletenessTest {
             .of(OwSensorType.DS2409, OwSensorType.DS2431, OwSensorType.EDS, OwSensorType.MS_TH_S, OwSensorType.UNKNOWN)
             .collect(Collectors.toSet()));
 
-    private static final Set<OwSensorType> THINGHANDLER_SENSOR_TYPES = Collections.unmodifiableSet(Stream
-            .of(AdvancedMultisensorThingHandler.SUPPORTED_SENSOR_TYPES,
-                    BasicMultisensorThingHandler.SUPPORTED_SENSOR_TYPES,
-                    CounterSensorThingHandler.SUPPORTED_SENSOR_TYPES, DigitalIOThingHandler.SUPPORTED_SENSOR_TYPES,
-                    EDSSensorThingHandler.SUPPORTED_SENSOR_TYPES, IButtonThingHandler.SUPPORTED_SENSOR_TYPES,
-                    TemperatureSensorThingHandler.SUPPORTED_SENSOR_TYPES)
-            .flatMap(Set::stream).collect(Collectors.toSet()));
+    private static final Set<OwSensorType> THINGHANDLER_SENSOR_TYPES = Collections
+            .unmodifiableSet(Stream
+                    .of(AdvancedMultisensorThingHandler.SUPPORTED_SENSOR_TYPES,
+                            BasicMultisensorThingHandler.SUPPORTED_SENSOR_TYPES,
+                            BasicThingHandler.SUPPORTED_SENSOR_TYPES, EDSSensorThingHandler.SUPPORTED_SENSOR_TYPES)
+                    .flatMap(Set::stream).collect(Collectors.toSet()));
 
     private static final Set<ThingTypeUID> DEPRECATED_THING_TYPES = Collections.unmodifiableSet(Stream
-            .of(OwBindingConstants.THING_TYPE_MS_TH, OwBindingConstants.THING_TYPE_MS_TV).collect(Collectors.toSet()));
+            .of(OwBindingConstants.THING_TYPE_MS_TH, OwBindingConstants.THING_TYPE_MS_TV,
+                    OwBindingConstants.THING_TYPE_COUNTER2, OwBindingConstants.THING_TYPE_DIGITALIO,
+                    OwBindingConstants.THING_TYPE_DIGITALIO2, OwBindingConstants.THING_TYPE_DIGITALIO8,
+                    OwBindingConstants.THING_TYPE_COUNTER2, OwBindingConstants.THING_TYPE_COUNTER,
+                    OwBindingConstants.THING_TYPE_IBUTTON, OwBindingConstants.THING_TYPE_TEMPERATURE)
+            .collect(Collectors.toSet()));
 
     @Test
     public void allSupportedTypesInThingHandlerMap() {
         for (OwSensorType sensorType : EnumSet.allOf(OwSensorType.class)) {
             if (!OwBindingConstants.THING_TYPE_MAP.containsKey(sensorType)
+                    && !IGNORED_SENSOR_TYPES.contains(sensorType)) {
+                Assert.fail("missing thing type map for sensor type " + sensorType.name());
+            }
+        }
+    }
+
+    @Test
+    public void allSupportedTypesInThingChannelsMap() {
+        for (OwSensorType sensorType : EnumSet.allOf(OwSensorType.class)) {
+            if (!OwBindingConstants.SENSOR_TYPE_CHANNEL_MAP.containsKey(sensorType)
                     && !IGNORED_SENSOR_TYPES.contains(sensorType)) {
                 Assert.fail("missing thing type map for sensor type " + sensorType.name());
             }
@@ -76,12 +87,11 @@ public class CompletenessTest {
     }
 
     @Test
-    public void allThingTypesInLabelMap() {
-        for (ThingTypeUID thingTypeUID : OwBindingConstants.SUPPORTED_THING_TYPES) {
-            if (!OwBindingConstants.THING_LABEL_MAP.containsKey(thingTypeUID)
-                    && !DEPRECATED_THING_TYPES.contains(thingTypeUID)
-                    && !OwBindingConstants.THING_TYPE_OWSERVER.equals(thingTypeUID)) {
-                Assert.fail("missing label for thing type " + thingTypeUID.getAsString());
+    public void allSensorTypesInLabelMap() {
+        for (OwSensorType sensorType : EnumSet.allOf(OwSensorType.class)) {
+            if (!OwBindingConstants.THING_LABEL_MAP.containsKey(sensorType)
+                    && !IGNORED_SENSOR_TYPES.contains(sensorType)) {
+                Assert.fail("missing label for sensor type " + sensorType.name());
             }
         }
     }
@@ -104,4 +114,5 @@ public class CompletenessTest {
             }
         }
     }
+
 }
