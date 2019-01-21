@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="onewire"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="digitalio">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="owserver" />
+		</supported-bridge-type-refs>
+		<label>Digital I/O</label>
+		<description>A single digital I/O device (DS2405)</description>
+		<channels>
+			<channel id="digital0" typeId="dio">
+				<label>Digital I/O 0</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:onewire:fastthingconfig" />
+	</thing-type>
+	<thing-type id="digitalio2">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="owserver" />
+		</supported-bridge-type-refs>
+		<label>Dual Digital I/O</label>
+		<description>A dual digital I/O device (DS2406, DS2413)</description>
+		<channels>
+			<channel id="digital0" typeId="dio">
+				<label>Digital I/O 0</label>
+			</channel>
+			<channel id="digital1" typeId="dio">
+				<label>Digital I/O 1</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:onewire:fastthingconfig" />
+	</thing-type>
+	<thing-type id="digitalio8">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="owserver" />
+		</supported-bridge-type-refs>
+		<label>Octal Digital I/O</label>
+		<description>A octal digital I/O device (DS2408)</description>
+		<channels>
+			<channel id="digital0" typeId="dio">
+				<label>Digital I/O 0</label>
+			</channel>
+			<channel id="digital1" typeId="dio">
+				<label>Digital I/O 1</label>
+			</channel>
+			<channel id="digital2" typeId="dio">
+				<label>Digital I/O 2</label>
+			</channel>
+			<channel id="digital3" typeId="dio">
+				<label>Digital I/O 3</label>
+			</channel>
+			<channel id="digital4" typeId="dio">
+				<label>Digital I/O 4</label>
+			</channel>
+			<channel id="digital5" typeId="dio">
+				<label>Digital I/O 5</label>
+			</channel>
+			<channel id="digital6" typeId="dio">
+				<label>Digital I/O 6</label>
+			</channel>
+			<channel id="digital7" typeId="dio">
+				<label>Digital I/O 7</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:onewire:fastthingconfig" />
+	</thing-type>
+</thing:thing-descriptions>

@@ -1,0 +1,47 @@
+{
+  "name": "homebuilder",
+  "description": "openHAB HomeBuilder - boilerplate for the Items, sitemap and more",
+  "version": "1.0.0",
+  "authors": [
+    "Kuba Wolanin <hi@kubawolanin.com> (github: kubawolanin)"
+  ],
+  "private": true,
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --open --hot",
+    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
+  },
+  "dependencies": {
+    "ascii-table": "0.0.9",
+    "bootstrap-vue": "~0.18.0",
+    "daemonite-material": "~4.1.1",
+    "lodash": "^4.17.4",
+    "pickadate": "^3.5.6",
+    "popper.js": "^1.14.4",
+    "underscore.string": "^3.3.4",
+    "v-clipboard": "^1.0.4",
+    "vue": "~2.5.17",
+    "vue-form-generator": "~2.3.1",
+    "vue-i18n": "~7.8.1",
+    "vue-multiselect": "~2.1.3",
+    "vue-resource": "~1.5.1",
+    "vue-style-loader": "~1.0.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.0.0",
+    "babel-loader": "^6.0.0",
+    "babel-preset-env": "^1.5.1",
+    "cross-env": "^3.0.0",
+    "css-loader": "^0.25.0",
+    "file-loader": "^0.9.0",
+    "jquery": "^1.12.4",
+    "lodash-webpack-plugin": "^0.11.5",
+    "node-sass": "^4.5.0",
+    "sass-loader": "^5.0.1",
+    "style-loader": "^0.18.2",
+    "vue-affix": "^0.2.1",
+    "vue-loader": "^12.1.0",
+    "vue-template-compiler": "^2.3.3",
+    "webpack": "^2.6.1",
+    "webpack-dev-server": "^2.4.5"
+  }
+}

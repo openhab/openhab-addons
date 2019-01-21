@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ClassPath: patch/,.
+Bundle-License: https://www.eclipse.org/legal/epl-2.0/
+Bundle-ManifestVersion: 2
+Bundle-Name: Paper UI
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.ui.paper;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.5.0.qualifier
+Import-Package: javax.servlet.http,
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.io.http,
+ org.eclipse.smarthome.io.http.servlet,
+ org.eclipse.smarthome.io.net.http,
+ org.openhab.ui.dashboard,
+ org.osgi.framework,
+ org.osgi.service.component;resolution:=optional,
+ org.osgi.service.http,
+ org.slf4j
+Service-Component: OSGI-INF/*.xml
+Automatic-Module-Name: org.openhab.ui.paper

@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" style="enable-background:new 0 0 64 64">
+  <path d="m.5 59.5v-45.2l19.5-9.7 19.5 9.7v45.2z" style="fill:#f0f0f0"/>
+  <path d="M20,5.1l19,9.5V59H1V14.6L20,5.1 M20,4L0,14v46h40V14L20,4L20,4z" style="fill:#c8c8c8"/>
+  <path d="m.5 33.5h39v13h-39z" style="fill:#f0f0f0"/>
+  <path d="m39 34v12h-38v-12h38m1-1h-40v14h40v-14z" style="fill:#c8c8c8"/>
+  <path d="m.5 20.5h39v13h-39z" style="fill:#f0f0f0"/>
+  <path d="m39 21v12h-38v-12h38m1-1h-40v14h40v-14z" style="fill:#c8c8c8"/>
+  <path d="m39.5 46.5v-17.9l21 3.8v14.1z" style="fill:#ffccd3"/>
+  <path d="m40 29.2l20 3.6v13.2h-20v-16.8m-1-1.2v19h22v-15l-22-4z" style="fill:#f66"/>
+  <path d="m5.4 23.4h5.1v6.1h-5.1z" style="fill:#f0f0f0"/>
+  <path d="m10.1 23.9v5.3h-4.2v-5.3h4.2m.9-.9h-6v7h6v-7z" style="fill:#c8c8c8"/>
+  <path d="m10.4 23.4h5.1v6.1h-5.1z" style="fill:#f0f0f0"/>
+  <path d="m15.1 23.9v5.3h-4.3v-5.3h4.3m.9-.9h-6v7h6v-7z" style="fill:#c8c8c8"/>
+  <path d="m28.5 36.5h6v10h-6z" style="fill:#f0f0f0"/>
+  <path d="m34 37v9h-5v-9h5m1-1h-7v11h7v-11z" style="fill:#c8c8c8"/>
+  <path d="m19.4 23.4h5.1v6.1h-5.1z" style="fill:#f0f0f0"/>
+  <path d="m24.1 23.9v5.3h-4.3v-5.3h4.3m.9-.9h-6v7h6v-7z" style="fill:#c8c8c8"/>
+  <path d="m5.4 36.4h5.1v6.1h-5.1z" style="fill:#f0f0f0"/>
+  <path d="m10.1 36.9v5.3h-4.2v-5.3h4.2m.9-.9h-6v7h6v-7z" style="fill:#c8c8c8"/>
+  <path d="m10.4 36.4h5.1v6.1h-5.1z" style="fill:#f0f0f0"/>
+  <path d="m15.1 36.9v5.3h-4.3v-5.3h4.3m.9-.9h-6v7h6v-7z" style="fill:#c8c8c8"/>
+  <path d="m19.4 36.4h5.1v6.1h-5.1z" style="fill:#f0f0f0"/>
+  <path d="m24.1 36.9v5.3h-4.3v-5.3h4.3m.9-.9h-6v7h6v-7z" style="fill:#c8c8c8"/>
+  <path d="m28.5 23.5h6.1v6.1h-6.1z" style="fill:#f0f0f0"/>
+  <g style="fill:#c8c8c8">
+    <path d="m34.1 23.9v5.1h-5.1v-5.1h5.1m.9-.9h-7v7h7v-7z"/>
+    <path d="m32 41h1v1h-1z"/>
+  </g>
+  <path d="m.5 20.5v-6.2l19.5-9.7 19.5 9.7v6.2z" style="fill:#f0f0f0"/>
+  <path d="M20,5.1l19,9.5V20H1v-5.4L20,5.1 M20,4L0,14v7h40v-7L20,4L20,4z" style="fill:#c8c8c8"/>
+  <path d="m46 17.5l-26-13-26 13" style="fill:none;stroke-miterlimit:10;stroke:#2e7de5;stroke-width:1.5"/>
+  <path d="m13.5 12.5h5v5h-5z" style="fill:#f0f0f0"/>
+  <path d="m18 13v4h-4v-4h4m1-1h-6v6h6v-6z" style="fill:#c8c8c8"/>
+  <path d="m21.5 12.5h5v5h-5z" style="fill:#f0f0f0"/>
+  <path d="m26 13v4h-4v-4h4m1-1h-6v6h6v-6z" style="fill:#c8c8c8"/>
+  <path d="m42.5 36.5h15v10h-15z" style="fill:#ffccd3"/>
+  <path d="m57 37v9h-14v-9h14m1-1h-16v11h16v-11z" style="fill:#f66"/>
+  <path d="m39 28l25 4.5" style="fill:none;stroke-miterlimit:10;stroke:#2e7de5;stroke-width:1.5"/>
+</svg>

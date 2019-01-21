@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Bundle-ClassPath: .
+Bundle-License: https://www.eclipse.org/legal/epl-2.0/
+Bundle-ManifestVersion: 2
+Bundle-Name: Scale Transformation Service
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.transform.scale
+Bundle-Vendor: openHAB
+Bundle-Version: 2.5.0.qualifier
+Import-Package: 
+ javax.measure.quantity,
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.core.i18n,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.thing.profiles,
+ org.eclipse.smarthome.core.transform,
+ org.eclipse.smarthome.core.types,
+ org.osgi.framework,
+ org.slf4j
+Service-Component: OSGI-INF/*.xml
+Automatic-Module-Name: org.openhab.transform.scale

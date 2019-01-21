@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dmx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0" xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<!-- sACN/E1.31 Bridge -->
+	<bridge-type id="sacn-bridge">
+		<label>sACN/E1.31 Bridge</label>
+		<description>The sACN/E1.31 bridge represents a single DMX universe connected via sACN/E1.31</description>
+		<channels>
+			<channel id="mute" typeId="mute"/>
+		</channels>
+		<config-description>
+			<parameter name="mode" type="text">
+				<context></context>
+				<label>Transmission Mode</label>
+				<description>Set UDP mode to multicast (default)/unicast</description>
+				<required>true</required>
+				<options>
+					<option value="unicast">Unicast</option>
+					<option value="multicast">Multicast</option>
+				</options>
+				<default>multicast</default>
+			</parameter>
+			<parameter name="address" type="text">
+				<label>Receiver Address(es)</label>
+				<description>Network addresses of sACN/E1.31 receivers, format: address[:port][, address[:port], ...]. Default port is 5568.</description>
+				<required>false</required>
+			</parameter>
+			<parameter name="localaddress" type="text">
+				<label>Local Network Address</label>
+				<description>Network address of the sending host, format: address[:port]. Default port is 0 (random)</description>
+				<required>false</required>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="universe" type="integer" min="1" max="63999">
+				<label>DMX Universe</label>
+				<description>ID of DMX universe (1-63999)</description>
+				<default>1</default>
+				<required>false</required>
+			</parameter>
+			<parameter name="refreshmode" type="text">
+				<label>Refresh mode</label>
+				<description>Suppress re-transmission and refresh every 800ms or send every packet.</description>
+				<required>false</required>
+				<options>
+					<option value="always">Always</option>
+					<option value="standard">Standard</option>
+				</options>
+				<default>standard</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="applycurve" type="text">
+				<label>Apply Curve</label>
+				<description>List of channels that should use LED dim curve. Format is channel[,channel, ...] or channel[/width].</description>
+				<required>false</required>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="refreshrate"  type="decimal" min="0" max="100">
+				<description>DMX refresh rate in Hz</description>
+				<required>false</required>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>

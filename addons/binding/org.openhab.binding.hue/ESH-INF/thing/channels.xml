@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="hue" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Color Channel -->
+	<channel-type id="color">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<description>The color channel allows to control the color of a light.
+			It is also possible to dim values and switch the
+			light on and off.
+		</description>
+		<category>ColorLight</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+
+	<!-- Brightness Channel -->
+	<channel-type id="brightness">
+		<item-type>Dimmer</item-type>
+		<label>Brightness</label>
+		<description>The brightness channel allows to control the brightness of a light.
+			It is also possible to switch the
+			light on and off.
+		</description>
+		<category>DimmableLight</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="last_updated">
+		<item-type>DateTime</item-type>
+		<label>Last Updated</label>
+		<description>The date and time when the sensor was last updated.</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS" />
+	</channel-type>
+
+	<channel-type id="illuminance">
+		<item-type>Number:Illuminance</item-type>
+		<label>Illuminance</label>
+		<description>Current illuminance.</description>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="light_level" advanced="true">
+		<item-type>Number</item-type>
+		<label>Light Level</label>
+		<description>Current light level.</description>
+		<state readOnly="true" pattern="%d" />
+	</channel-type>
+
+	<channel-type id="dark">
+		<item-type>Switch</item-type>
+		<label>Dark</label>
+		<description>Light level is below the darkness threshold.</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="daylight">
+		<item-type>Switch</item-type>
+		<label>Daylight</label>
+		<description>Light level is above the daylight threshold.</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="dimmer_switch">
+		<item-type>Number</item-type>
+		<label>Dimmer Switch State</label>
+		<description>The Button that was last pressed on the dimmer switch.</description>
+		<state readOnly="true" pattern="%d">
+			<options>
+				<option value="1000">On (Initial Press)</option>
+				<option value="1001">On (Hold)</option>
+				<option value="1002">On (Short Released)</option>
+				<option value="1003">On (Long Released)</option>
+				<option value="2000">Dim Up (Initial Press)</option>
+				<option value="2001">Dim Up (Hold)</option>
+				<option value="2002">Dim Up (Short Released)</option>
+				<option value="2003">Dim Up (Long Released)</option>
+				<option value="3000">Dim Down (Initial Press)</option>
+				<option value="3001">Dim Down (Hold)</option>
+				<option value="3002">Dim Down (Short Released)</option>
+				<option value="3003">Dim Down (Long Released)</option>
+				<option value="4000">Off (Initial Press)</option>
+				<option value="4001">Off (Hold)</option>
+				<option value="4002">Off (Short Released)</option>
+				<option value="4003">Off (Long Released)</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="dimmer_switch_event">
+		<kind>trigger</kind>
+		<label>Dimmer Switch Event</label>
+		<description>Triggers when a button is pressed on the dimmer switch.</description>
+		<event>
+			<options>
+				<option value="1000">1000</option>
+				<option value="1001">1001</option>
+				<option value="1002">1002</option>
+				<option value="1003">1003</option>
+				<option value="2000">2000</option>
+				<option value="2001">2001</option>
+				<option value="2002">2002</option>
+				<option value="2003">2003</option>
+				<option value="3000">3000</option>
+				<option value="3001">3001</option>
+				<option value="3002">3002</option>
+				<option value="3003">3003</option>
+				<option value="4000">4000</option>
+				<option value="4001">4001</option>
+				<option value="4002">4002</option>
+				<option value="4003">4003</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="tap_switch">
+		<item-type>Number</item-type>
+		<label>Tap Switch State</label>
+		<description>The Button that was last pressed on the tap switch.</description>
+		<state readOnly="true" pattern="%d">
+			<options>
+				<option value="34">Button 1</option>
+				<option value="16">Button 2</option>
+				<option value="17">Button 3</option>
+				<option value="18">Button 4</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="tap_switch_event">
+		<kind>trigger</kind>
+		<label>Tap Switch Event</label>
+		<description>Triggers when a button is pressed on the tap switch.</description>
+		<event>
+			<options>
+				<option value="34">34</option>
+				<option value="16">16</option>
+				<option value="17">17</option>
+				<option value="18">18</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<!-- Switch Channel -->
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>The switch channel allows to switch the light on and off.
+		</description>
+		<category>Light</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+
+	<!-- Temperature Channel -->
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Current temperature.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<!-- Color Temperature Channel -->
+	<channel-type id="color_temperature">
+		<item-type>Dimmer</item-type>
+		<label>Color Temperature</label>
+		<description>The color temperature channel allows to set the color
+			temperature of a light from 0 (cold) to 100 (warm).
+		</description>
+		<category>ColorLight</category>
+	</channel-type>
+
+	<!-- Alert Channel -->
+	<channel-type id="alert" advanced="true">
+		<item-type>String</item-type>
+		<label>Alert</label>
+		<description>The alert channel allows a temporary change to the bulb’s state.</description>
+		<state>
+			<options>
+				<option value="NONE">None</option>
+				<option value="SELECT">Alert</option>
+				<option value="LSELECT">Long Alert</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<!-- Effect Channel -->
+	<channel-type id="effect" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Color Loop</label>
+		<description>The effect channel allows putting the bulb in a color looping mode.</description>
+		<category>ColorLight</category>
+	</channel-type>
+</thing:thing-descriptions>

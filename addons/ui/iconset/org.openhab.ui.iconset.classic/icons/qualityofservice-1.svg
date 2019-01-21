@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" style="enable-background:new 0 0 64 64">
+  <path d="m6.5 44.5h9v11h-9z" style="fill:#323232"/>
+  <path d="m15 45v10h-8v-10h8m1-1h-10v12h10v-12z"/>
+  <g style="fill:#dae1e4">
+    <path d="m20 32h10v24h-10z"/>
+    <path d="m34 24h10v32h-10z"/>
+    <path d="m48 8h10v48h-10z"/>
+  </g>
+</svg>

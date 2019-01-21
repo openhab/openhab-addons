@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 64 64" style="enable-background:new 0 0 64 64">
+  <defs>
+    <linearGradient id="4" gradientUnits="userSpaceOnUse" y1="57" x2="0" y2="12">
+      <stop style="stop-color:#a35c48"/>
+      <stop offset="1" style="stop-color:#cd814c"/>
+    </linearGradient>
+    <linearGradient id="5" gradientUnits="userSpaceOnUse" x1="56.5858" y1="17.4142" x2="61.3284" y2="12.6716" xlink:href="#3"/>
+    <linearGradient id="3" gradientUnits="userSpaceOnUse" y1="18" x2="0" y2="11.5">
+      <stop style="stop-color:#4d2c19"/>
+      <stop offset="1" style="stop-color:#793b20"/>
+    </linearGradient>
+    <linearGradient id="1" gradientUnits="userSpaceOnUse" y1="57.5" x2="0" y2="11.5" xlink:href="#3"/>
+    <linearGradient id="0" gradientUnits="userSpaceOnUse" x1="3.6716" y1="56.3284" x2="8.4142" y2="51.5858" xlink:href="#3"/>
+    <linearGradient id="2" gradientUnits="userSpaceOnUse" x1="55.7925" y1="55.4996" x2="62.4297" y2="52.4046" xlink:href="#3"/>
+  </defs>
+  <path d="m39 18h-14c-1.1 0-2-.9-2-2v-6c0-1.66 1.34-3 3-3h12c1.66 0 3 1.34 3 3v6c0 1.1-.9 2-2 2" style="fill:#4b2b1e"/>
+  <path d="m37 20h-10c-.55 0-1-.45-1-1v-8c0-1.1.9-2 2-2h8c1.1 0 2 .9 2 2v8c0 .55-.45 1-1 1" style="fill:#f3f3f3"/>
+  <path d="m56 57h-47c-3.31 0-6-2.69-6-6v-33c0-3.31 2.69-6 6-6h47c3.31 0 6 2.69 6 6v33c0 3.31-2.69 6-6 6" style="fill:url(#4)"/>
+  <path d="m7 18h-2.5c-1.1 0-2-.9-2-2v-.5c0-2.21 1.79-4 4-4h.5c1.1 0 2 .9 2 2v2.5c0 1.1-.9 2-2 2" style="fill:url(#3)"/>
+  <path d="m60.5 18h-2.5c-1.1 0-2-.9-2-2v-2.5c0-1.1.9-2 2-2h.5c2.21 0 4 1.79 4 4v.5c0 1.1-.9 2-2 2" style="fill:url(#5)"/>
+  <path d="m58.5 57.5h-.5c-1.1 0-2-.9-2-2v-2.5c0-1.1.9-2 2-2h2.5c1.1 0 2 .9 2 2v.5c0 2.21-1.79 4-4 4" style="fill:url(#2)"/>
+  <path d="m7 57.5h-.5c-2.21 0-4-1.79-4-4v-.5c0-1.1.9-2 2-2h2.5c1.1 0 2 .9 2 2v2.5c0 1.1-.9 2-2 2" style="fill:url(#0)"/>
+  <path d="m14 11.5h4v46h-4z" style="fill:url(#1)"/>
+  <g style="fill:#4d2c19">
+    <path d="m10 27h12v2h-12z"/>
+    <path d="m42 27h12v2h-12z"/>
+  </g>
+  <path d="m46 11.5h4v46h-4z" style="fill:url(#1)"/>
+</svg>

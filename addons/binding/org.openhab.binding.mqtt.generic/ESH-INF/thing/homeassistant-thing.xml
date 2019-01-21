@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mqtt"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="homeassistant">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="broker" />
+			<bridge-type-ref id="systemBroker" />
+		</supported-bridge-type-refs>
+		<label>HomeAssistant MQTT Component</label>
+		<description>You need a configured Broker first. This Thing represents a device, that follows the "HomeAssistant MQTT Component" specification.</description>
+		<config-description>
+			<parameter name="objectid" type="text" required="true">
+				<label>Object ID</label>
+				<description>HomeAssistant Object ID</description>
+			</parameter>
+
+			<parameter name="basetopic" type="text" required="true">
+				<label>MQTT base prefix</label>
+				<description>MQTT base prefix</description>
+				<default>homeassistant</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

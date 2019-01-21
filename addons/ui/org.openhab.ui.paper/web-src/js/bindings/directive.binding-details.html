@@ -1,0 +1,19 @@
+<div class="binding white-bg" ng-class="{ 'has-section-header' : $ctrl.isConfigurable() }">
+	<div class="header-toolbar">
+		<md-button class="md-icon-button" aria-label="Refresh" ng-click="$ctrl.navigateTo('configuration/bindings')" aria-label="close"> <md-tooltip>Close</md-tooltip> <i class="material-icons">close</i> </md-button>
+	</div>
+
+	<div class="section-header" ng-if="$ctrl.isConfigurable()">
+		<div class="container">
+			<div class="toolbar">
+				<md-button class="md-fab" ng-if="$ctrl.isConfigurable()" ng-click="$ctrl.configure($event)" aria-label="edit binding"> <i class="material-icons">edit</i></md-button>
+			</div>
+		</div>
+	</div>
+
+	<div class="container">
+        <binding-overview binding="$ctrl.binding"></binding-overview>
+        <hr>
+        <binding-thingtypes binding="$ctrl.binding"></binding-thingtypes>
+    </div>
+</div>

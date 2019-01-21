@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scripts>
+	<script name="getAllVariables">
+		<data>
+		<![CDATA[
+string sys_var_id;
+Write('<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>\n');
+Write('<list>\n');
+foreach (sys_var_id, dom.GetObject(ID_SYSTEM_VARIABLES).EnumUsedIDs()) {
+  object var_obj = dom.GetObject(sys_var_id);
+  if (var_obj.Visible() == true) {
+    Write("  <entry");
+    Write(" name='");           WriteXML(var_obj.Name());
+    Write("' description='");   WriteXML(var_obj.DPInfo());
+    Write("' info='");          WriteXML(var_obj.Name());
+    Write("' value='");         WriteXML(var_obj.Value());
+    
+    var var_type = "UNKNOWN";
+    if (var_obj.ValueType() == 2   ) { var_type = "BOOL";  }
+    if (var_obj.ValueType() == 16  ) { var_type = "ENUM";  }
+    if (var_obj.ValueType() == 4   ) { var_type = "FLOAT"; }
+    if (var_obj.ValueType() == 6   ) { var_type = "FLOAT"; }
+    if (var_obj.ValueType() == 8   ) { var_type = "INTEGER"; }
+    if (var_obj.ValueType() == 20  ) { var_type = "STRING"; }
+    Write("' valueType='");     WriteXML(var_type);
+
+    if (var_type == "ENUM") {
+      Write("' options='");     WriteXML(var_obj.ValueList());
+    }
+
+    if ((var_type == "FLOAT") || (var_type == "INTEGER") || (var_type == "ENUM")) {
+      Write("' min='");         WriteXML(var_obj.ValueMin());
+      Write("' max='");         WriteXML(var_obj.ValueMax());
+    }
+    Write("' unit='");         WriteXML(var_obj.ValueUnit());
+    Write("' readOnly='false'");
+    Write(" />\n");
+  }
+}
+Write("</list>");
+		]]>
+		</data>
+	</script>
+	<script name="setVariable">
+		<data>
+		<![CDATA[
+Write('<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>\n');
+Write('<result><valid>')
+object var_obj = dom.GetObject("{variable_name}");
+if (var_obj) {
+  var_obj.State(({variable_state}));
+  Write('true');
+}
+else {
+  Write('false');
+}
+Write('</valid></result>');
+		]]>
+		</data>
+	</script>
+	<script name="getAllPrograms">
+		<data>
+		<![CDATA[
+string sys_prg_id;
+Write('<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>\n');
+Write('<list>\n');
+foreach (sys_prg_id, dom.GetObject(ID_PROGRAMS).EnumUsedIDs()) {
+  object prg_obj = dom.GetObject(sys_prg_id);
+  if (prg_obj.Visible() == true) {
+    Write("  <entry");
+    Write(" name='");           WriteXML(prg_obj.Name());
+    Write("' description='");   WriteXML(prg_obj.PrgInfo());
+    Write("' info='");          WriteXML(prg_obj.Name());
+    Write("' value='false'");
+    Write(" valueType='BOOL'");
+    Write(" readOnly='false'");
+    Write(" />\n");
+  }
+}
+Write("</list>");
+		]]>
+		</data>
+	</script>
+	<script name="executeProgram">
+		<data>
+		<![CDATA[
+Write('<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>\n');
+Write('<result><valid>');
+object prog = dom.GetObject("{program_name}");
+if (prog) {
+  Write(prog.ProgramExecute());
+}
+else {
+  Write('false');
+}
+Write('</valid></result>');
+		]]>
+		</data>
+	</script>
+    <script name="getAllDeviceNames">
+        <data>
+        <![CDATA[
+string dev_id;
+Write('<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>\n');
+Write("<list>\n");
+foreach (dev_id, root.Devices().EnumUsedIDs()) {
+  object dev_obj = dom.GetObject(dev_id);
+  Write("  <entry");
+  Write(" name='"); WriteXML(dev_obj.Address());
+  Write("' value='"); WriteXML(dev_obj.Name());
+  Write("' />\n");
+}
+Write("</list>");
+        ]]>
+        </data>
+    </script>
+    <script name="getAllChannelValues">
+        <data>
+        <![CDATA[
+string channel = "{channel_name}";
+string datapointNames = "{datapoint_names}";
+string datapointName;
+Write('<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>\n');
+Write("<list>\n");
+foreach (datapointName, datapointNames) {
+    object dp = dom.GetObject(channel #  datapointName);
+	if(dp) {
+        Write("  <entry");
+        Write(" name='"); WriteXML(dp.Name().StrValueByIndex(".",2));
+        Write("' value='"); WriteXML(dp.Value());
+        Write("' />\n");
+	}
+}
+Write("</list>");
+        ]]>
+        </data>
+    </script>
+    <script name="getParamsetDescription">
+        <data>
+        <![CDATA[
+Write('<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>\n');
+Write('<list>\n');
+
+string dev_id;
+string channel_id;
+object dev_obj;
+object channel_obj;
+boolean objectFound = false;
+
+string datapointNames = "BOOT\tWORKING\tDIRECTION\tINSTALL_TEST\tPRESS_LONG_RELEASE\t";
+datapointNames = datapointNames # "AES_KEY\tPRESS_CONT\tHUMIDITYF\tLAST_TICKS\tUNITSPTURN\t";
+string datapointName;
+
+foreach (dev_id, root.Devices().EnumUsedIDs()) {
+  if (!objectFound) {
+    dev_obj = dom.GetObject(dev_id);
+    if (dev_obj.Address() == "{device_address}") {
+      objectFound = true;
+    }
+  }
+}
+if (objectFound) {
+  objectFound = false;
+  foreach(channel_id, dev_obj.Channels()) {
+    if (!objectFound) {
+      channel_obj = dom.GetObject(channel_id);
+      string channel_number = channel_obj.Address().StrValueByIndex(":",1).ToString();
+      if (channel_number == "{channel_number}") {
+        objectFound = true;
+      }
+    }
+  }
+}
+
+if (objectFound) {
+  string dp_id;
+  foreach(dp_id, channel_obj.DPs().EnumUsedIDs()) {
+    object dp_obj = dom.GetObject(dp_id);
+    string name = dp_obj.Name().StrValueByIndex(".",2);
+    datapointNames = datapointNames # name # "\t";
+  }
+  
+  foreach (datapointName, datapointNames) {
+    object dp_obj = channel_obj.DPByHssDP(datapointName);
+    if (dp_obj) {
+      Write("  <entry");
+      Write(" name='");         WriteXML(datapointName);
+      
+      var dp_type = "UNKNOWN";
+      if (dp_obj.ValueType() == 2) {
+        if (dp_obj.ValueSubType() == 28) { dp_type = "ACTION";  }
+        else { dp_type = "BOOL"; }
+      } 
+      if (dp_obj.ValueType() == 16) {
+        if (dp_obj.ValueSubType() == 0 || dp_obj.ValueSubType() == 27) { dp_type = "INTEGER"; }
+        else { dp_type = "ENUM"; }
+      }
+      if (dp_obj.ValueType() == 4   ) { dp_type = "FLOAT"; }
+      if (dp_obj.ValueType() == 6   ) { dp_type = "FLOAT"; }
+      if (dp_obj.ValueType() == 8   ) { dp_type = "INTEGER"; }
+      if (dp_obj.ValueType() == 20  ) { dp_type = "STRING"; }
+      Write("' valueType='");     WriteXML(dp_type);
+
+      Write("' value='"); 
+      if (dp_type == "BOOL") {
+        Write("false");
+      }
+      else {
+        if (dp_type == "FLOAT") {
+          Write("0.0");
+        }
+        else {
+          if (dp_type != "STRING") {
+            Write("0");
+          }
+        }
+      }
+
+      if (dp_type == "ENUM") {
+        Write("' options='");     WriteXML(dp_obj.ValueList());
+      }
+  
+      if ((dp_type == "FLOAT") || (dp_type == "INTEGER") || (dp_type == "ENUM")) {
+        Write("' min='");         WriteXML(dp_obj.ValueMin());
+        Write("' max='");         WriteXML(dp_obj.ValueMax());
+      }
+      Write("' unit='");         WriteXML(dp_obj.ValueUnit());
+      Write("' operations='");   WriteXML(dp_obj.Operations());
+      Write("' />\n");
+    }
+  }
+}
+Write("</list>");
+        ]]>
+        </data>
+    </script>
+</scripts>

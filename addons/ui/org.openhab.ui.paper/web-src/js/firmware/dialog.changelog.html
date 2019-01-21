@@ -1,0 +1,13 @@
+<md-dialog aria-label="Firmware Changelog" class="scan" style="max-width: 450px">
+<md-dialog-content class="md-dialog-content">
+<h1>
+	Changelog for {{firmwareVersion}}
+</h1>
+
+<p ng-bind-html="changelog">{{changelog}}</p>
+
+</md-dialog-content>
+<div class="md-actions" layout="row">
+	<md-button ng-click="close()">OK</md-button>
+</div>
+</md-dialog>

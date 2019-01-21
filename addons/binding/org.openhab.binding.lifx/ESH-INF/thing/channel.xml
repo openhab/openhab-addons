@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="lifx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="brightness">
+		<item-type>Dimmer</item-type>
+		<label>Brightness</label>
+		<description>Sets the brightness of the light</description>
+		<category>DimmableLight</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+		<config-description-ref uri="channel-type:lifx:brightness" />
+	</channel-type>
+
+	<channel-type id="color">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<description>Selects the color of the light</description>
+		<category>ColorLight</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+		<config-description-ref uri="channel-type:lifx:color" />
+	</channel-type>
+
+	<channel-type id="colorzone" advanced="true">
+		<item-type>Color</item-type>
+		<label>Color zone</label>
+		<description>Selects the zone color of the light</description>
+		<category>ColorLight</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="infrared">
+		<item-type>Dimmer</item-type>
+		<label>Infrared</label>
+		<description>Sets the infrared of the light</description>
+	</channel-type>
+
+	<channel-type id="temperature">
+		<item-type>Dimmer</item-type>
+		<label>Temperature</label>
+		<description>Sets the temperature of the light</description>
+		<category>ColorLight</category>
+		<config-description-ref uri="channel-type:lifx:temperature" />
+	</channel-type>
+
+	<channel-type id="temperaturezone" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Temperature zone</label>
+		<description>Sets the zone temperature of the light</description>
+		<category>ColorLight</category>
+	</channel-type>
+
+</thing:thing-descriptions>

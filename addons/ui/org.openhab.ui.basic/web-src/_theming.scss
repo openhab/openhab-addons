@@ -1,0 +1,56 @@
+body[data-theme="default"] {
+	--primary-color: #3f51b5;
+	--header-bg: var(--primary-color);
+	--header-text-color: #fff;
+	--body-bg: #f5f5f5;
+	--container-bg: #fff;
+	--container-text-color: #616161;
+	--switch-on-track-bg: #9fa8da;
+	--border-color: #ccc;
+}
+
+body[data-theme="dark"] {
+	--primary-color: #3f51b5;
+	--header-bg: #101010;
+	--header-text-color: #c0c0c0;
+	--body-bg: #181818;
+	--container-bg: #232323;
+	--container-text-color: #c0c0c0;
+	--switch-on-track-bg: #9fa8da;
+	--border-color: #343434;
+}
+
+.mdl-layout__header {
+	background-color: #3f51b5 !important;
+	background-color: var(--header-bg, #3f51b5) !important;
+	color: #fff !important;
+	color: var(--header-text-color, #fff) !important;
+}
+
+body {
+	background-color: #f5f5f5 !important;
+	background-color: var(--body-bg, #f5f5f5) !important;
+}
+
+.mdl-form {
+	background-color: #fff !important;
+	background-color: var(--container-bg, #fff) !important;
+	color: #616161 !important;
+	color: var(--container-text-color, #616161) !important;
+}
+
+.mdl-form__row {
+	border-bottom: 1px solid #ccc;
+	border-bottom: 1px solid var(--border-color, #ccc);
+}
+
+.mdl-switch.is-checked .mdl-switch__track {
+	background: #9fa8da;
+	background: var(--switch-on-track-bg, #9fa8da);
+}
+
+.mdl-switch.is-checked .mdl-switch__thumb,
+.mdl-switch__ripple-container .mdl-ripple {
+	background: #3f51b5;
+	background: var(--primary-color, #3f51b5);
+}

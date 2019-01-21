@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="serialbutton" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="button">
+		<label>Push Button</label>
+		<description>A simple push button</description>
+
+		<channels>
+			<channel id="button" typeId="system.rawbutton" />
+		</channels>
+
+		<config-description>
+			<parameter name="port" type="text">
+				<label>Serial Port</label>
+				<context>serial-port</context>
+				<required>true</required>
+				<description>The serial port that the button is connected to</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>
