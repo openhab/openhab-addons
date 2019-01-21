@@ -15,6 +15,7 @@ package org.openhab.binding.vitotronic.handler;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -58,9 +59,8 @@ public class VitotronicThingHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("Handle command for channel '{}' command '{}'", channelUID.getId(), command.toString());
+        logger.trace("Handle command for channel '{}' command '{}'", channelUID.getId(), command);
         bridgeHandler.updateChannel(getThing().getUID().getId(), channelUID.getId(), command.toString());
-
     }
 
     @Override
@@ -69,7 +69,6 @@ public class VitotronicThingHandler extends BaseThingHandler {
     }
 
     private synchronized VitotronicBridgeHandler getBridgeHandler() {
-
         Bridge bridge = getBridge();
         if (bridge == null) {
             logger.debug("Required bridge not defined for device {}.");
@@ -81,7 +80,6 @@ public class VitotronicThingHandler extends BaseThingHandler {
     }
 
     private synchronized VitotronicBridgeHandler getBridgeHandler(Bridge bridge) {
-
         VitotronicBridgeHandler bridgeHandler = null;
 
         ThingHandler handler = bridge.getHandler();
@@ -122,6 +120,9 @@ public class VitotronicThingHandler extends BaseThingHandler {
         switch (channel.getAcceptedItemType()) {
             case "Number":
                 this.updateState(channelId, new DecimalType(value));
+                break;
+            case "String":
+                this.updateState(channelId, new StringType(value));
                 break;
             case "Switch":
                 if (value.toUpperCase().contains("ON")) {

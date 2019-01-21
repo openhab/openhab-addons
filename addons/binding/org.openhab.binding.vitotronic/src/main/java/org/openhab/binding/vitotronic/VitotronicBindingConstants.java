@@ -39,11 +39,11 @@ public class VitotronicBindingConstants {
     public static final String DISCOVERY_INTERVAL = "discoveryInterval";
 
     // List of main device types
-
     public static final String BRIDGE_VITOTRONIC = "bridge";
 
     // List of all Thing Type
     public static final String THING_ID_HEATING = "heating";
+    public static final String THING_ID_GASBURNER = "gasburner";
     public static final String THING_ID_PELLETBURNER = "pelletburner";
     public static final String THING_ID_OILBURNER = "oilburner";
     public static final String THING_ID_STORAGETANK = "storagetank";
@@ -56,6 +56,7 @@ public class VitotronicBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_UID_BRIDGE = new ThingTypeUID(BINDING_ID, BRIDGE_VITOTRONIC);
     public static final ThingTypeUID THING_TYPE_UID_HEATING = new ThingTypeUID(BINDING_ID, THING_ID_HEATING);
+    public static final ThingTypeUID THING_TYPE_UID_GASBURNER = new ThingTypeUID(BINDING_ID, THING_ID_GASBURNER);
     public static final ThingTypeUID THING_TYPE_UID_PELLETBURNER = new ThingTypeUID(BINDING_ID, THING_ID_PELLETBURNER);
     public static final ThingTypeUID THING_TYPE_UID_OILBURNER = new ThingTypeUID(BINDING_ID, THING_ID_OILBURNER);
     public static final ThingTypeUID THING_TYPE_UID_STORAGETANK = new ThingTypeUID(BINDING_ID, THING_ID_STORAGETANK);
@@ -67,10 +68,9 @@ public class VitotronicBindingConstants {
     public static final ThingTypeUID THING_TYPE_UID_VALVE = new ThingTypeUID(BINDING_ID, THING_ID_VALVE);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_UID_BRIDGE,
-            THING_TYPE_UID_HEATING, THING_TYPE_UID_PELLETBURNER, THING_TYPE_UID_OILBURNER, THING_TYPE_UID_STORAGETANK,
-            THING_TYPE_UID_CIRCUIT, THING_TYPE_UID_SOLAR, THING_TYPE_UID_TEMPERATURESENSOR, THING_TYPE_UID_PUMP,
-            THING_TYPE_UID_VALVE);
+            THING_TYPE_UID_HEATING, THING_TYPE_UID_GASBURNER, THING_TYPE_UID_PELLETBURNER, THING_TYPE_UID_OILBURNER,
+            THING_TYPE_UID_STORAGETANK, THING_TYPE_UID_CIRCUIT, THING_TYPE_UID_SOLAR, THING_TYPE_UID_TEMPERATURESENSOR,
+            THING_TYPE_UID_PUMP, THING_TYPE_UID_VALVE);
 
     public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_UID_BRIDGE);
-
 }
