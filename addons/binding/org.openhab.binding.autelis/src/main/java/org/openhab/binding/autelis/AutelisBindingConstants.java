@@ -30,8 +30,19 @@ public class AutelisBindingConstants {
 
     public static final String BINDING_ID = "autelis";
 
-    // List of all Thing Type UIDs
+    // poolcontrol is here for backwards compatibility before we had separate things for jandy and pentair
     public static final ThingTypeUID POOLCONTROL_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "poolcontrol");
+    public static final ThingTypeUID PENTAIR_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "pentair");
+    public static final ThingTypeUID JANDY_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "jandy");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(POOLCONTROL_THING_TYPE_UID);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(POOLCONTROL_THING_TYPE_UID,
+            PENTAIR_THING_TYPE_UID, JANDY_THING_TYPE_UID);
+
+    public static final String CMD_LIGHTS = "lightscmd";
+    public static final String CMD_REBOOT = "reboot";
+    public static final String CMD_EQUIPMENT = "equipment";
+    public static final String CMD_TEMP = "temp";
+    public static final String CMD_CHEM = "chem";
+    public static final String CMD_PUMPS = "pumps";
+
 }
