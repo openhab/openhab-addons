@@ -12,15 +12,13 @@
  */
 package org.openhab.binding.autelis.internal;
 
-import static org.openhab.binding.autelis.AutelisBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+import static org.openhab.binding.autelis.internal.AutelisBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.autelis.handler.AutelisHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openhab.binding.autelis.internal.handler.AutelisHandler;
 
 /**
  * The {@link AutelisHandlerFactory} is responsible for creating things and
@@ -29,7 +27,6 @@ import org.slf4j.LoggerFactory;
  * @author Dan Cunningham - Initial contribution
  */
 public class AutelisHandlerFactory extends BaseThingHandlerFactory {
-    private Logger logger = LoggerFactory.getLogger(AutelisHandlerFactory.class);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
