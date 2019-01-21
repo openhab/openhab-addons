@@ -161,7 +161,9 @@ public class ElkM1BridgeHandler extends BaseBridgeHandler implements ElkListener
                 Thing thing = getThingForType(ElkTypeToRequest.Zone, i + 1);
                 if (thing != null) {
                     ElkM1ZoneHandler handler = (ElkM1ZoneHandler) thing.getHandler();
-                    handler.updateZoneConfig(reply.getConfig()[i], reply.getStatus()[i]);
+                    if (handler != null) {
+                        handler.updateZoneConfig(reply.getConfig()[i], reply.getStatus()[i]);
+                    }
                 }
             }
         }
@@ -178,7 +180,9 @@ public class ElkM1BridgeHandler extends BaseBridgeHandler implements ElkListener
                 thing = getThingForType(ElkTypeToRequest.Zone, i + 1);
                 if (thing != null) {
                     ElkM1ZoneHandler handler = (ElkM1ZoneHandler) thing.getHandler();
-                    handler.updateZoneArea(reply.getAreas()[i]);
+                    if (handler != null) {
+                        handler.updateZoneArea(reply.getAreas()[i]);
+                    }
                 }
             }
         }
@@ -192,7 +196,9 @@ public class ElkM1BridgeHandler extends BaseBridgeHandler implements ElkListener
                 Thing thing = getThingForType(ElkTypeToRequest.Zone, i + 1);
                 if (thing != null) {
                     ElkM1ZoneHandler handler = (ElkM1ZoneHandler) thing.getHandler();
-                    handler.updateZoneDefinition(reply.getDefinition()[i]);
+                    if (handler != null) {
+                        handler.updateZoneDefinition(reply.getDefinition()[i]);
+                    }
                 }
             }
         }
@@ -201,7 +207,9 @@ public class ElkM1BridgeHandler extends BaseBridgeHandler implements ElkListener
             Thing thing = getThingForType(ElkTypeToRequest.Zone, reply.getZoneNumber());
             if (thing != null) {
                 ElkM1ZoneHandler handler = (ElkM1ZoneHandler) thing.getHandler();
-                handler.updateZoneConfig(reply.getConfig(), reply.getStatus());
+                if (handler != null) {
+                    handler.updateZoneConfig(reply.getConfig(), reply.getStatus());
+                }
             }
         }
         if (message instanceof EthernetModuleTest) {
@@ -214,7 +222,9 @@ public class ElkM1BridgeHandler extends BaseBridgeHandler implements ElkListener
                 Thing thing = getThingForType(ElkTypeToRequest.Area, i + 1);
                 if (thing != null) {
                     ElkM1AreaHandler handler = (ElkM1AreaHandler) thing.getHandler();
-                    handler.updateArea(reply.getState()[i], reply.getArmed()[i], reply.getArmedUp()[i]);
+                    if (handler != null) {
+                        handler.updateArea(reply.getState()[i], reply.getArmed()[i], reply.getArmedUp()[i]);
+                    }
                 }
             }
         }
@@ -266,7 +276,7 @@ public class ElkM1BridgeHandler extends BaseBridgeHandler implements ElkListener
      * Gets the thing associated with the type/number.
      *
      * @param type the type to look for
-     * @param num the number of the type to look for
+     * @param num  the number of the type to look for
      * @return the thing, null if not found
      */
     Thing getThingForType(ElkTypeToRequest type, int num) {
@@ -329,7 +339,7 @@ public class ElkM1BridgeHandler extends BaseBridgeHandler implements ElkListener
     /**
      * Sends the right command to the elk to change the alarmed state for the m1 gold.
      *
-     * @param area The area to alarm
+     * @param area  The area to alarm
      * @param armed The state to set it to
      */
     public void updateArmedState(int area, ElkAlarmArmedState armed) {

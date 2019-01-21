@@ -13,6 +13,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -37,7 +38,7 @@ public class ElkM1ZoneHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        super.initialize();
+        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
@@ -56,9 +57,13 @@ public class ElkM1ZoneHandler extends BaseThingHandler {
     public void updateZoneConfig(ElkZoneConfig config, ElkZoneStatus status) {
         logger.debug("Update zone config {} {}", config, status);
         Channel chan = getThing().getChannel(ElkM1BindingConstants.CHANNEL_ZONE_CONFIG);
-        updateState(chan.getUID(), new StringType(config.toString()));
+        if (chan != null) {
+            updateState(chan.getUID(), new StringType(config.toString()));
+        }
         chan = getThing().getChannel(ElkM1BindingConstants.CHANNEL_ZONE_STATUS);
-        updateState(chan.getUID(), new StringType(status.toString()));
+        if (chan != null) {
+            updateState(chan.getUID(), new StringType(status.toString()));
+        }
         chan = getThing().getChannel(ElkM1BindingConstants.CHANNEL_ZONE_DEFINITION);
     }
 
@@ -70,7 +75,9 @@ public class ElkM1ZoneHandler extends BaseThingHandler {
     public void updateZoneDefinition(ElkDefinition definition) {
         logger.debug("Update zone definition {}", definition);
         Channel chan = getThing().getChannel(ElkM1BindingConstants.CHANNEL_ZONE_DEFINITION);
-        updateState(chan.getUID(), new StringType(definition.toString()));
+        if (chan != null) {
+            updateState(chan.getUID(), new StringType(definition.toString()));
+        }
     }
 
     /**
@@ -80,9 +87,12 @@ public class ElkM1ZoneHandler extends BaseThingHandler {
     public void updateZoneArea(int area) {
         logger.debug("Update zone area {}", area);
         Channel chan = getThing().getChannel(ElkM1BindingConstants.CHANNEL_ZONE_AREA);
-        updateState(chan.getUID(), new DecimalType(area));
+        if (chan != null) {
+            updateState(chan.getUID(), new DecimalType(area));
+        }
     }
 
+    @SuppressWarnings("null")
     private ElkM1BridgeHandler getElkM1BridgeHandler() {
         return (ElkM1BridgeHandler) getBridge().getHandler();
     }

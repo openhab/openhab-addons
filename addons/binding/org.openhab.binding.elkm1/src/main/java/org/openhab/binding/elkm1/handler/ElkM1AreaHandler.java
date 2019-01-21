@@ -12,6 +12,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -37,7 +38,7 @@ public class ElkM1AreaHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        super.initialize();
+        updateStatus(ThingStatus.ONLINE);
     }
 
     /**
@@ -51,9 +52,12 @@ public class ElkM1AreaHandler extends BaseThingHandler {
                 // Changing the armed state.
                 try {
                     ElkAlarmArmedState armed = ElkAlarmArmedState.valueOf(str.toString());
+                    @SuppressWarnings("null")
                     ElkM1BridgeHandler bridgeHandler = (ElkM1BridgeHandler) getBridge().getHandler();
                     int zone = Integer.valueOf(getThing().getProperties().get(ElkM1BindingConstants.PROPERTY_ZONE_NUM));
-                    bridgeHandler.updateArmedState(zone, armed);
+                    if (bridgeHandler != null) {
+                        bridgeHandler.updateArmedState(zone, armed);
+                    }
                 } catch (Exception e) {
                     logger.error("Unable to set the alarmed state to {}", str, toString(), e);
                 }
@@ -75,13 +79,20 @@ public class ElkM1AreaHandler extends BaseThingHandler {
     public void updateArea(ElkAlarmAreaState state, ElkAlarmArmedState armed, ElkAlarmArmUpState armUp) {
         logger.debug("Update area config {} {} {}", state, armed, armUp);
         Channel chan = getThing().getChannel(ElkM1BindingConstants.CHANNEL_AREA_STATE);
-        updateState(chan.getUID(), new StringType(state.toString()));
+        if (chan != null) {
+            updateState(chan.getUID(), new StringType(state.toString()));
+        }
         chan = getThing().getChannel(ElkM1BindingConstants.CHANNEL_AREA_ARMED);
-        updateState(chan.getUID(), new StringType(armed.toString()));
+        if (chan != null) {
+            updateState(chan.getUID(), new StringType(armed.toString()));
+        }
         chan = getThing().getChannel(ElkM1BindingConstants.CHANNEL_AREA_ARMUP);
-        updateState(chan.getUID(), new StringType(armUp.toString()));
+        if (chan != null) {
+            updateState(chan.getUID(), new StringType(armUp.toString()));
+        }
     }
 
+    @SuppressWarnings("null")
     private ElkM1BridgeHandler getElkM1BridgeHandler() {
         return (ElkM1BridgeHandler) getBridge().getHandler();
     }

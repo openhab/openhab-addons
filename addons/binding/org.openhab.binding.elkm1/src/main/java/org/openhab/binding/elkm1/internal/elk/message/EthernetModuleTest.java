@@ -31,7 +31,6 @@ public class EthernetModuleTest extends ElkMessage {
         int second = Integer.valueOf(data.substring(0, 2));
         int minute = Integer.valueOf(data.substring(2, 4));
         int hour = Integer.valueOf(data.substring(4, 6));
-        int dayOfWeek = Integer.valueOf(data.substring(6, 7));
         int dayOfMonth = Integer.valueOf(data.substring(7, 9));
         int month = Integer.valueOf(data.substring(9, 11));
         int year = Integer.valueOf(data.substring(11, 13));

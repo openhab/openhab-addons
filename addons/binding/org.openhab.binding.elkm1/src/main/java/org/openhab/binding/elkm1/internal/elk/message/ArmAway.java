@@ -19,27 +19,27 @@ import org.openhab.binding.elkm1.internal.elk.ElkMessageFactory;
  *
  */
 public class ArmAway extends ElkMessage {
-    private final int area;
-    private final String pincode;
+    private int area;
+    private String pincode;
 
     public ArmAway(int area, String pincode) {
         super(ElkCommand.ArmAway);
         this.area = area;
+        this.pincode = pincode;
         if (area > ElkMessageFactory.MAX_AREAS) {
-            area = ElkMessageFactory.MAX_AREAS;
+            this.area = ElkMessageFactory.MAX_AREAS;
         }
         if (area < 0) {
-            area = 0;
+            this.area = 0;
         }
         if (pincode.length() == 4) {
-            pincode = "00" + pincode;
+            this.pincode = "00" + pincode;
         }
         System.out.println(pincode);
-        this.pincode = pincode;
     }
 
     @Override
     public String getData() {
-        return area + pincode;
+        return this.area + this.pincode;
     }
 }

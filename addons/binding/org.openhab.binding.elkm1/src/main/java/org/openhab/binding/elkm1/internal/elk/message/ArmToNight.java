@@ -18,26 +18,26 @@ import org.openhab.binding.elkm1.internal.elk.ElkMessage;
  *
  */
 public class ArmToNight extends ElkMessage {
-    private final int area;
-    private final String pincode;
+    private int area;
+    private String pincode;
 
     public ArmToNight(int area, String pincode) {
         super(ElkCommand.ArmToNight);
         this.area = area;
+        this.pincode = pincode;
         if (area > 8) {
-            area = 8;
+            this.area = 8;
         }
         if (area < 0) {
-            area = 0;
+            this.area = 0;
         }
         if (pincode.length() == 4) {
-            pincode = "00" + pincode;
+            this.pincode = "00" + pincode;
         }
-        this.pincode = pincode;
     }
 
     @Override
     public String getData() {
-        return area + pincode;
+        return this.area + this.pincode;
     }
 }
