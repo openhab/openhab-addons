@@ -163,7 +163,7 @@ However, for devices that are unsupported, you may override the value and try to
 |-----------------|---------|----------|-------------------------------------------------------------------|
 | host            | text    | true     | Device IP address                                                 |
 | token           | text    | true     | Token for communication (in Hex)                                  |
-| deviceId        | text    | false    | Device ID number for communication (in Hex)                       |
+| deviceId        | text    | true     | Device ID number for communication (in Hex)                       |
 | model           | text    | false    | Device model string, used to determine the subtype                |
 | refreshInterval | integer | false    | Refresh interval for refreshing the data in seconds. (0=disabled) |
 | timeout         | integer | false    | Timeout time in milliseconds                                      |
