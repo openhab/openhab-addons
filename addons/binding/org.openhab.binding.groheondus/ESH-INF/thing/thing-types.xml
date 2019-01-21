@@ -125,22 +125,22 @@
 		<description>The humidity reported by the device</description>
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
-    <channel-type id="temperature">
-        <item-type>Number:Temperature</item-type>
-        <label>Temperature</label>
-        <description>The temperature reported by the device</description>
-        <state readOnly="true" pattern="%.1f %unit%" />
-    </channel-type>
-    <channel-type id="waterconsumption">
-        <item-type>Number</item-type>
-        <label>Water consumption</label>
-        <description>The amount of water consumed in the given time period.</description>
-        <state readOnly="true" />
-        <config-description>
-	        <parameter name="timeframe" type="integer" min="1" max="90" step="1" required="true">
-	            <label>Timeframe</label>
-	            <description>The timeframe in days to get the water consumption of</description>
-	        </parameter>
-	    </config-description>
-    </channel-type>
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>The temperature reported by the device</description>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+	<channel-type id="waterconsumption">
+		<item-type>Number</item-type>
+		<label>Water consumption</label>
+		<description>The amount of water consumed in the given time period.</description>
+		<state readOnly="true" />
+		<config-description>
+			<parameter name="timeframe" type="integer" min="1" max="90" step="1" required="true">
+				<label>Timeframe</label>
+				<description>The timeframe in days to get the water consumption of</description>
+			</parameter>
+		</config-description>
+	</channel-type>
 </thing:thing-descriptions>
