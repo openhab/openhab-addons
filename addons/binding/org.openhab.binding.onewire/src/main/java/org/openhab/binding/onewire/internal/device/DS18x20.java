@@ -14,6 +14,9 @@ package org.openhab.binding.onewire.internal.device;
 
 import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
+import java.util.Collections;
+import java.util.Set;
+
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -38,6 +41,12 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DS18x20 extends AbstractOwDevice {
+    public static final Set<OwChannelConfig> CHANNELS = Collections
+            .singleton(new OwChannelConfig(CHANNEL_TEMPERATURE, CHANNEL_TYPE_UID_TEMPERATURE_POR_RES));
+
+    public static final Set<OwChannelConfig> CHANNELS_DS18S20 = Collections
+            .singleton(new OwChannelConfig(CHANNEL_TEMPERATURE, CHANNEL_TYPE_UID_TEMPERATURE_POR));
+
     private final Logger logger = LoggerFactory.getLogger(DS18x20.class);
 
     private final OwDeviceParameterMap temperatureParamater = new OwDeviceParameterMap() {
