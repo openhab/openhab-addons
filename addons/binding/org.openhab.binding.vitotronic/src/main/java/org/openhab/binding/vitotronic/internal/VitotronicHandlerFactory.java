@@ -22,10 +22,9 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.vitotronic.VitotronicBindingConstants;
-import org.openhab.binding.vitotronic.handler.VitotronicBridgeHandler;
-import org.openhab.binding.vitotronic.handler.VitotronicThingHandler;
 import org.openhab.binding.vitotronic.internal.discovery.VitotronicDiscoveryService;
+import org.openhab.binding.vitotronic.internal.handler.VitotronicBridgeHandler;
+import org.openhab.binding.vitotronic.internal.handler.VitotronicThingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
