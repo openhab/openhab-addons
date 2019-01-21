@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.lgwebos.handler;
+package org.openhab.binding.lgwebos.internal.handler;
 
 import static org.openhab.binding.lgwebos.internal.LGWebOSBindingConstants.*;
 

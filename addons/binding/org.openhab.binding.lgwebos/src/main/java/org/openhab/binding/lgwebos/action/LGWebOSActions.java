@@ -37,7 +37,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingActionsScope;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.openhab.binding.lgwebos.handler.LGWebOSHandler;
+import org.openhab.binding.lgwebos.internal.handler.LGWebOSHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
