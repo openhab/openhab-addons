@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.autelis;
+package org.openhab.binding.autelis.internal;
 
 import java.util.Set;
 

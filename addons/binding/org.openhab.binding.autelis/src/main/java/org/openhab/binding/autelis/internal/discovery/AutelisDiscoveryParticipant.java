@@ -23,7 +23,7 @@ import org.eclipse.smarthome.config.discovery.UpnpDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.jupnp.model.meta.RemoteDevice;
-import org.openhab.binding.autelis.AutelisBindingConstants;
+import org.openhab.binding.autelis.internal.AutelisBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
