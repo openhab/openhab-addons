@@ -15,6 +15,9 @@ package org.openhab.binding.onewire.internal.device;
 import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.types.State;
@@ -23,8 +26,6 @@ import org.openhab.binding.onewire.internal.SensorId;
 import org.openhab.binding.onewire.internal.handler.OwBaseBridgeHandler;
 import org.openhab.binding.onewire.internal.handler.OwBaseThingHandler;
 import org.openhab.binding.onewire.internal.owserver.OwserverDeviceParameter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link DS2423} class defines an DS2423 device
@@ -33,7 +34,11 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DS2423 extends AbstractOwDevice {
-    private final Logger logger = LoggerFactory.getLogger(DS2423.class);
+    public static final Set<OwChannelConfig> CHANNELS = Stream
+            .of(new OwChannelConfig(CHANNEL_COUNTER0, CHANNEL_TYPE_UID_COUNTER, "Counter 0"),
+                    new OwChannelConfig(CHANNEL_COUNTER1, CHANNEL_TYPE_UID_COUNTER, "Counter 1"))
+            .collect(Collectors.toSet());
+
     private final OwDeviceParameterMap counterParameter = new OwDeviceParameterMap() {
         {
             set(THING_TYPE_OWSERVER, new OwserverDeviceParameter("/counters.ALL"));
@@ -53,7 +58,6 @@ public class DS2423 extends AbstractOwDevice {
     public void refresh(OwBaseBridgeHandler bridgeHandler, Boolean forcedRefresh) throws OwException {
         if (isConfigured) {
             List<State> states = bridgeHandler.readDecimalTypeArray(sensorId, counterParameter);
-            logger.trace("read array {} from {}", states, sensorId);
 
             if (states.size() != 2) {
                 throw new OwException("Expected exactly two values, got " + String.valueOf(states.size()));

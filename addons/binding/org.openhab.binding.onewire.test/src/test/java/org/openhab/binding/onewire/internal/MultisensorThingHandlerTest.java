@@ -19,10 +19,7 @@ import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
-import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingUID;
-import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,13 +39,6 @@ import org.openhab.binding.onewire.test.AbstractThingHandlerTest;
  */
 public class MultisensorThingHandlerTest extends AbstractThingHandlerTest {
     private static final String TEST_ID = "00.000000000000";
-    private static final ThingUID THING_UID = new ThingUID(THING_TYPE_MS_TX, "testthing");
-    private static final ChannelUID CHANNEL_UID_TEMPERATURE = new ChannelUID(THING_UID, CHANNEL_TEMPERATURE);
-    private static final ChannelUID CHANNEL_UID_HUMIDITY = new ChannelUID(THING_UID, CHANNEL_HUMIDITY);
-    private static final ChannelUID CHANNEL_UID_ABSOLUTE_HUMIDITY = new ChannelUID(THING_UID,
-            CHANNEL_ABSOLUTE_HUMIDITY);
-    private static final ChannelUID CHANNEL_UID_DEWPOINT = new ChannelUID(THING_UID, CHANNEL_DEWPOINT);
-    private static final ChannelUID CHANNEL_UID_SUPPLYVOLTAGE = new ChannelUID(THING_UID, CHANNEL_SUPPLYVOLTAGE);
 
     @Before
     public void setup() throws OwException {
@@ -57,12 +47,6 @@ public class MultisensorThingHandlerTest extends AbstractThingHandlerTest {
         initializeBridge();
 
         thingConfiguration.put(CONFIG_ID, TEST_ID);
-
-        channels.add(ChannelBuilder.create(CHANNEL_UID_TEMPERATURE, "Number:Temperature").build());
-        channels.add(ChannelBuilder.create(CHANNEL_UID_HUMIDITY, "Number:Dimensionless").build());
-        channels.add(ChannelBuilder.create(CHANNEL_UID_ABSOLUTE_HUMIDITY, "Number:Density").build());
-        channels.add(ChannelBuilder.create(CHANNEL_UID_DEWPOINT, "Number:Temperature").build());
-        channels.add(ChannelBuilder.create(CHANNEL_UID_SUPPLYVOLTAGE, "Number:ElectricPotential").build());
 
         thing = ThingBuilder.create(THING_TYPE_MS_TX, "testthing").withLabel("Test thing").withChannels(channels)
                 .withConfiguration(new Configuration(thingConfiguration)).withProperties(thingProperties)

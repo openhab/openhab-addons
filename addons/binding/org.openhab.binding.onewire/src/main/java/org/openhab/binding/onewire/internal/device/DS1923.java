@@ -14,6 +14,10 @@ package org.openhab.binding.onewire.internal.device;
 
 import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Temperature;
 
@@ -22,16 +26,12 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
-import org.eclipse.smarthome.core.thing.Channel;
-import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.SensorId;
 import org.openhab.binding.onewire.internal.Util;
 import org.openhab.binding.onewire.internal.handler.OwBaseBridgeHandler;
 import org.openhab.binding.onewire.internal.handler.OwBaseThingHandler;
 import org.openhab.binding.onewire.internal.owserver.OwserverDeviceParameter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link DS1923} class defines an DS1923 device
@@ -41,7 +41,13 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DS1923 extends AbstractOwDevice {
-    private final Logger logger = LoggerFactory.getLogger(DS1923.class);
+    public static final Set<OwChannelConfig> CHANNELS = Stream
+            .of(new OwChannelConfig(CHANNEL_TEMPERATURE, CHANNEL_TYPE_UID_TEMPERATURE),
+                    new OwChannelConfig(CHANNEL_HUMIDITY, CHANNEL_TYPE_UID_HUMIDITY),
+                    new OwChannelConfig(CHANNEL_ABSOLUTE_HUMIDITY, CHANNEL_TYPE_UID_ABSHUMIDITY),
+                    new OwChannelConfig(CHANNEL_DEWPOINT, CHANNEL_TYPE_UID_TEMPERATURE))
+            .collect(Collectors.toSet());
+
     private final OwDeviceParameterMap temperatureParameter = new OwDeviceParameterMap() {
         {
             set(THING_TYPE_OWSERVER, new OwserverDeviceParameter("/temperature"));
@@ -59,20 +65,6 @@ public class DS1923 extends AbstractOwDevice {
 
     @Override
     public void configureChannels() throws OwException {
-        Thing thing = callback.getThing();
-        Channel temperatureChannel = thing.getChannel(CHANNEL_TEMPERATURE);
-
-        if (temperatureChannel != null) {
-            temperatureParameter.set(THING_TYPE_OWSERVER, new OwserverDeviceParameter("/temperature"));
-        } else {
-            throw new OwException(CHANNEL_TEMPERATURE + " not found");
-        }
-
-        Channel humidityChannel = thing.getChannel(CHANNEL_HUMIDITY);
-        if (humidityChannel != null) {
-            humidityParameterR.set(THING_TYPE_OWSERVER, new OwserverDeviceParameter("/humidity"));
-        }
-
         isConfigured = true;
     }
 
@@ -84,7 +76,6 @@ public class DS1923 extends AbstractOwDevice {
                     || enabledChannels.contains(CHANNEL_DEWPOINT)) {
                 QuantityType<Temperature> temperature = new QuantityType<Temperature>(
                         (DecimalType) bridgeHandler.readDecimalType(sensorId, temperatureParameter), SIUnits.CELSIUS);
-                logger.trace("read temperature {} from {}", temperature, sensorId);
                 callback.postUpdate(CHANNEL_TEMPERATURE, temperature);
 
                 if (enabledChannels.contains(CHANNEL_HUMIDITY) || enabledChannels.contains(CHANNEL_ABSOLUTE_HUMIDITY)
@@ -92,7 +83,6 @@ public class DS1923 extends AbstractOwDevice {
                     QuantityType<Dimensionless> humidity = new QuantityType<Dimensionless>(
                             (DecimalType) bridgeHandler.readDecimalType(sensorId, humidityParameterR),
                             SmartHomeUnits.PERCENT);
-                    logger.trace("read humidity {} from {}", humidity, sensorId);
 
                     if (enabledChannels.contains(CHANNEL_HUMIDITY)) {
                         callback.postUpdate(CHANNEL_HUMIDITY, humidity);

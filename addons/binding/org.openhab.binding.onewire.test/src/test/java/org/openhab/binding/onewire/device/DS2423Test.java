@@ -48,16 +48,6 @@ public class DS2423Test extends AbstractDeviceTest {
     }
 
     @Test
-    public void presenceTestOn() {
-        presenceTest(OnOffType.ON);
-    }
-
-    @Test
-    public void presenceTestOff() {
-        presenceTest(OnOffType.OFF);
-    }
-
-    @Test
     public void counterChannelTest() {
         instantiateDevice();
 

@@ -15,10 +15,17 @@ The `owserver` is the bridge that connects to an existing OWFS installation.
 
 ### Things
 
-There are different types of things: the generic ones (`counter2`, `digitalio`, `digitalio2`, `digitalio8`, `ibutton`, `temperature`), multisensors built around the DS1923/DS2438 chip (`ms-tx`) and more advanced sensors from Elaborated Networks (www.wiregate.de) (`ams`, `bms`) and Embedded Data System (`edsenv`). 
+There are different types of things: the simple one (`basic`), multisensors built around the DS1923/DS2438 chip (`ms-tx`) and more advanced sensors from Elaborated Networks (www.wiregate.de) (`ams`, `bms`) and Embedded Data System (`edsenv`). 
 
-The thing types `ms-th`and `ms-tv` have been marked deprecated and will be updated to `ms-tx`automatically. 
-Manually (via textual configuration) defined things should be changed to `ms-tx`. 
+** Important: Breaking Change with next release **
+ 
+The thing types `ms-th` and `ms-tv` have been marked deprecated and will be updated to `ms-tx` automatically. 
+The thing types `counter2`, `digitalio`, `digitalio2`, `digitalio8`, `ibutton`, `temperature` have been marked deprecated and will be updated to `basic` automatically. 
+Please note that auto-upgraded things keep their thing UID _including the deprecated thing type_.
+
+Manually (via textual configuration) defined things need to be changed to `ms-tx` or `basic` respectively. 
+
+Deprecated thing types will will be removed with the next official release.
 
 ## Discovery
 
@@ -49,30 +56,14 @@ It defaults to `4304`, which is the default of each OWFS installation.
 
 Bridges of type `owserver` are extensible with channels of type `owfs-number` and `owfs-string`. 
   
-### Counter (`counter2`)
+### Generic (`basic`)
 
-The counter thing supports the DS2423 chip, a dual counter.
-Two `counterX` channels are supported. 
-`X` is either `0` or `1`.
-
-It has two parameters: sensor id `id` and refresh time `refresh`.
- 
-
-### Digital I/O (`digitalio`, `digitalio2`, `digitalio8`) 
-
-The digital I/O things support the DS2405, DS2406, DS2408 and DS2413 chips.
-Depending on the chip, one (DS2405), two (DS2406/DS2413) or eight (DS2408) `digitalX`  channels are supported.
-`X` is a number from `0` to `7`.
+The `basic` thing supports iButton-like chips (DS1420, DS2401/DS1990A), temperature sensors (DS18B20, DS18S20, DS1822), digital i/o chips (DS2405, DS2406, DS2408, DS2413) and counter chips (DS2423).
 
 It has two parameters: sensor id `id` and refresh time `refresh`.
 
-### iButton (`ibutton`)
-
-The iButton thing supports only the DS2401 chips.
-It is used for presence detection and therefore only supports the `present` channel.
-It's value is `ON` if the device is detected on the bus and `OFF` otherwise.
-
-It has two parameters: sensor id `id` and refresh time `refresh`.
+Depending on the chip, either `present`, `temperature`, `digitalX` or `counterX` channel(s) are added.
+`X` is the number of the channel, starting from `0`.
 
 ### Multisensor (`ms-tx`)
 
@@ -88,13 +79,6 @@ Known DS2438-base sensors are iButtonLink (https://www.ibuttonlink.com/) MS-T (r
 Unknown multisensors are added as generic DS2438 and have `temperature`, `current`, `voltage` and `supplyvoltage` channels.
 
 In case the sensor is not properly detected (e.g. because it is a self-made sensor), check if it is compatible with one of the sensors listed above. If so, the first byte of page 3 of the DS2438 needs to be set to the correct identification (0x00 = generic/MS-T, 0x19 = MS-TH, 0x1A = MS-TV, 0x1B = MS-TL, 0x1C = MS-TC). **Note: Updating the pages of a sensor can break other software. This is fully your own risk.** 
-
-### Temperature sensor (`temperature`)
-
-The temperature thing supports DS18S20, DS18B20 and DS1822 sensors.
-It provides only the `temperature` channel.
-
-It has two parameters: sensor id `id` and refresh time `refresh`. 
 
 ### Elaborated Networks Multisensors (`ams`, `bms`)
 
@@ -146,7 +130,7 @@ Additional channels (`light`, `pressure`, `humidity`, `dewpoint`, `abshumidity`)
 | light               | ams, bms, edsenv           | Number:Illuminance       | yes        | lightness                                          |
 | owfs-number         | owserver                   | Number                   | yes        | direct access to OWFS nodes                        |
 | owfs-string         | owserver                   | String                   | yes        | direct access to OWFS nodes                        |
-| present             | all                        | Switch                   | yes        | sensor found on bus                                |
+| present             | all                        | Switch                   | yes        | sensor found on bus (yes = ON)                     |
 | pressure            | edsenv                     | Number:Pressure          | yes        | environmental pressure                             |
 | supplyvoltage       | ms-tx                      | Number:ElectricPotential | yes        | sensor supplyvoltage                               |
 | temperature         | temperature, ms-tx, edsenv | Number:Temperature       | yes        | environmental temperature                          |
@@ -206,7 +190,7 @@ For best performance it is recommended to set the resolution only as high as nee
 ** Attention: Adding channels with UIDs different from the ones mentioned in the thing description will not work and may cause problems.
 Please use the pre-defined channel names only. **
 
-This is the configuration for a OneWire network consisting of an owserver as bridge (`onewire:owserver:mybridge`) as well as a temperature sensor, a BMS and a 2-port Digital I/O as things (`onewire:temperature:mybridge:mysensor`, `onewire:bms:mybridge:mybms`, `onewire:digitalio2:mybridge:mydio`). 
+This is the configuration for a OneWire network consisting of an owserver as bridge (`onewire:owserver:mybridge`) as well as a temperature sensor, a BMS and a 2-port Digital I/O as things (`onewire:basic:mybridge:mysensor`, `onewire:bms:mybridge:mybms`, `onewire:basic:mybridge:mydio`). 
 
 ### demo.things:
 
@@ -215,7 +199,7 @@ Bridge onewire:owserver:mybridge [
     network-address="192.168.0.51" 
     ] {
     
-    Thing temperature mysensor [
+    Thing basic mysensor [
         id="28.505AF0020000", 
         refresh=60
         ] {
@@ -229,7 +213,7 @@ Bridge onewire:owserver:mybridge [
         id="26.CD497C010000",
         refresh=60, 
         lightsensor=true, 
-        temperaturesensor="DS18B20", 
+        temperaturesensor="DS18B20" 
         ] {
             Channels:
                 Type temperature-por-res : temperature [
@@ -237,8 +221,8 @@ Bridge onewire:owserver:mybridge [
                 ]
         } 
 
-    Thing digitalio2 mydio [
-        id="3A.134E47DB60000"
+    Thing basic mydio [
+        id="3A.67F113000000"
         ] {
             Channels:
                 Type dio : digital0 [
@@ -259,11 +243,11 @@ Bridge onewire:owserver:mybridge [
 ### demo.items:
 
 ```
-Number:Temperature      MySensor    "MySensor [%.1f °C]"            { channel="onewire:temperature:mybridge:mysensor:temperature" }
+Number:Temperature      MySensor    "MySensor [%.1f °C]"            { channel="onewire:basic:mybridge:mysensor:temperature" }
 Number:Temperature      MyBMS_T     "MyBMS Temperature [%.1f °F]"   { channel="onewire:bms:mybridge:mybms:temperature" }
 Number:Dimensionless    MyBMS_H     "MyBMS Humidity [%.1f %unit%]"  { channel="onewire:bms:mybridge:mybms:humidity" }
-Switch                  Digital0    "Digital 0"                     { channel="onewire:digitalio2:mybridge:mydio:digital0" }
-Switch                  Digital1    "Digital 1"                     { channel="onewire:digitalio2:mybridge:mydio:digital1" }
+Switch                  Digital0    "Digital 0"                     { channel="onewire:basic:mybridge:mydio:digital0" }
+Switch                  Digital1    "Digital 1"                     { channel="onewire:basic:mybridge:mydio:digital1" }
 Number                  CRC8Errors  "Bus-Errors [%d]"               { channel="onewire:owserver:mybridge:crc8errors" }
 ```
 

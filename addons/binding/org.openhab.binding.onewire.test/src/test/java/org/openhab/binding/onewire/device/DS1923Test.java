@@ -34,7 +34,6 @@ import org.openhab.binding.onewire.test.AbstractDeviceTest;
  * @author Michał Wójcik - Adapted to DS1923
  */
 public class DS1923Test extends AbstractDeviceTest {
-
     @Before
     public void setupMocks() {
         setupMocks(THING_TYPE_MS_TH);
@@ -47,16 +46,6 @@ public class DS1923Test extends AbstractDeviceTest {
     }
 
     @Test
-    public void presenceTestOn() {
-        presenceTest(OnOffType.ON);
-    }
-
-    @Test
-    public void presenceTestOff() {
-        presenceTest(OnOffType.OFF);
-    }
-
-    @Test
     public void temperatureChannel() {
         instantiateDevice();
 
@@ -66,7 +55,6 @@ public class DS1923Test extends AbstractDeviceTest {
 
             testDevice.enableChannel(CHANNEL_TEMPERATURE);
             testDevice.configureChannels();
-            inOrder.verify(mockThingHandler).getThing();
             testDevice.refresh(mockBridgeHandler, true);
 
             inOrder.verify(mockBridgeHandler).readDecimalType(eq(testSensorId), any());
@@ -90,7 +78,6 @@ public class DS1923Test extends AbstractDeviceTest {
             testDevice.enableChannel(CHANNEL_ABSOLUTE_HUMIDITY);
             testDevice.enableChannel(CHANNEL_DEWPOINT);
             testDevice.configureChannels();
-            inOrder.verify(mockThingHandler).getThing();
             testDevice.refresh(mockBridgeHandler, true);
 
             inOrder.verify(mockBridgeHandler, times(2)).readDecimalType(eq(testSensorId), any());
@@ -99,24 +86,6 @@ public class DS1923Test extends AbstractDeviceTest {
                     eq(new QuantityType<>("0.9381970824113001000 g/m³")));
             inOrder.verify(mockThingHandler).postUpdate(eq(CHANNEL_DEWPOINT),
                     eq(new QuantityType<>("-20.31395053870025 °C")));
-
-            inOrder.verifyNoMoreInteractions();
-        } catch (OwException e) {
-            Assert.fail("caught unexpected OwException");
-        }
-    }
-
-    @Test
-    public void noChannel() {
-        instantiateDevice();
-
-        try {
-            Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
-            Mockito.when(mockBridgeHandler.readDecimalType(eq(testSensorId), any())).thenReturn(new DecimalType(2.0));
-
-            testDevice.configureChannels();
-            inOrder.verify(mockThingHandler).getThing();
-            testDevice.refresh(mockBridgeHandler, true);
 
             inOrder.verifyNoMoreInteractions();
         } catch (OwException e) {
