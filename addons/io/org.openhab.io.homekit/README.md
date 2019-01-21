@@ -79,6 +79,7 @@ A full list of supported accessory types can be found in the table below.
 | MotionSensor          |                               | Switch                    | Motion sensor. ON state means motion detected. |
 | Valve                 |                               | Switch                    | Simple open/close valve. Assumes liquid is flowing when valve is open. |
 
+
 See the sample below for example items:
 
 ```
@@ -94,6 +95,23 @@ Switch Hallway_MotionSensor "Hallway Motion Sensor" [ "MotionSensor" ]
 Switch MasterBath_Toilet_LeakSensor "Master Bath Toilet Flood" ["LeakSensor"]
 Switch WaterMain_Valve "Water Main Valve" ["Valve"]
 ```
+
+## Battery Level
+
+The following devices support report low battery status:
+
+* LeakSensor
+* MotionSensor
+
+Battery status can be reported via a Number item (0 - 100) tagged as `homekit:BatteryLevel`, or via a Switch item (where ON == battery is low) tagged as `homekit:BatteryLowStatus`. The battery status item must be grouped in with the sensor in question so it can be associated as a composite device. Here's what it looks like to configure a leak sensor with a BatteryLevel:
+
+```
+Group gTest_Leaksensor "My Leak Sensor" ["LeakSensor"]
+Switch Test_LeakSensor "My Leak Sensor" (gTest_Leaksensor) ["LeakSensor"]
+Number:Dimensionless Test_LeakSensorBatteryLevel "My leak sensor battery level" (gTest_Leaksensor) ["homekit:BatteryLevel"]
+```
+
+Homekit only supports reporting battery is low, so if using a `Number` item to report battery level, the battery will be reported as low if the value falls under 10 (this will be configurable in a future release).
 
 ## Common Problems
 

@@ -25,6 +25,7 @@ import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
+import org.openhab.io.homekit.internal.battery.BatteryStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,15 +43,28 @@ public class HomekitAccessoryFactory {
     public static HomekitAccessory create(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws Exception {
         logger.debug("Constructing {} of accessoryType {}", taggedItem.getName(), taggedItem.getAccessoryType());
+
+        Map<HomekitCharacteristicType, Item> characteristicItems = getCharacteristicItems(taggedItem);
+
         switch (taggedItem.getAccessoryType()) {
             case LEAK_SENSOR:
-                return new HomekitLeakSensorImpl(taggedItem, itemRegistry, updater);
+                HomekitTaggedItem leakSensorAccessory = getPrimaryAccessory(taggedItem,
+                        HomekitAccessoryType.LEAK_SENSOR, itemRegistry).orElseThrow(
+                                () -> new Exception("Leak accessory group should have a leak sensor in it"));
+
+                return new HomekitLeakSensorImpl(leakSensorAccessory, itemRegistry, updater,
+                        BatteryStatus.getFromCharacteristics(characteristicItems));
 
             case VALVE:
                 return new HomekitValveImpl(taggedItem, itemRegistry, updater);
 
             case MOTION_SENSOR:
-                return new HomekitMotionSensorImpl(taggedItem, itemRegistry, updater);
+                HomekitTaggedItem motionSensorAccessory = getPrimaryAccessory(taggedItem,
+                        HomekitAccessoryType.MOTION_SENSOR, itemRegistry).orElseThrow(
+                                () -> new Exception("Leak accessory group should have a leak sensor in it"));
+
+                return new HomekitMotionSensorImpl(motionSensorAccessory, itemRegistry, updater,
+                        BatteryStatus.getFromCharacteristics(characteristicItems));
 
             case LIGHTBULB:
                 return new HomekitLightbulbImpl(taggedItem, itemRegistry, updater);
@@ -62,11 +76,12 @@ public class HomekitAccessoryFactory {
                 return new HomekitColorfulLightbulbImpl(taggedItem, itemRegistry, updater);
 
             case THERMOSTAT:
-                Item temperatureAccessory = getPrimaryAccessory(taggedItem, HomekitAccessoryType.TEMPERATURE_SENSOR)
-                        .orElseThrow(() -> new Exception("Thermostats need a CurrentTemperature accessory"));
+                HomekitTaggedItem temperatureAccessory = getPrimaryAccessory(taggedItem,
+                        HomekitAccessoryType.TEMPERATURE_SENSOR, itemRegistry)
+                                .orElseThrow(() -> new Exception("Thermostats need a CurrentTemperature accessory"));
 
-                return new HomekitThermostatImpl(taggedItem, itemRegistry, updater, settings, temperatureAccessory,
-                        getCharacteristicItems(taggedItem));
+                return new HomekitThermostatImpl(taggedItem, itemRegistry, updater, settings,
+                        temperatureAccessory.getItem(), getCharacteristicItems(taggedItem));
 
             case SWITCH:
                 return new HomekitSwitchImpl(taggedItem, itemRegistry, updater);
@@ -95,15 +110,16 @@ public class HomekitAccessoryFactory {
      * @param accessoryType The accessory type for which we're looking
      * @return
      */
-    private static Optional<Item> getPrimaryAccessory(HomekitTaggedItem taggedItem,
-            HomekitAccessoryType accessoryType) {
+    private static Optional<HomekitTaggedItem> getPrimaryAccessory(HomekitTaggedItem taggedItem,
+            HomekitAccessoryType accessoryType, ItemRegistry itemRegistry) {
         logger.info("{} isGroup? {}", taggedItem.getName(), taggedItem.isGroup(),
                 taggedItem.isMemberOfAccessoryGroup());
         if (taggedItem.isGroup()) {
             GroupItem groupItem = (GroupItem) taggedItem.getItem();
-            return groupItem.getMembers().stream().filter(item -> item.hasTag(accessoryType.getTag())).findFirst();
+            return groupItem.getMembers().stream().filter(item -> item.hasTag(accessoryType.getTag())).findFirst()
+                    .map(item -> new HomekitTaggedItem(item, itemRegistry));
         } else if (taggedItem.getAccessoryType() == accessoryType) {
-            return Optional.of(taggedItem.getItem());
+            return Optional.of(taggedItem);
         } else {
             return Optional.empty();
         }

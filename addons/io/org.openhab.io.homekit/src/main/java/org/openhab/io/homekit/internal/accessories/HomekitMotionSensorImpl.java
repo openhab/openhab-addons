@@ -15,18 +15,24 @@ import org.eclipse.smarthome.core.library.items.SwitchItem;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
+import org.openhab.io.homekit.internal.battery.BatteryStatus;
 
 import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
+import com.beowulfe.hap.accessories.BatteryStatusAccessory;
 import com.beowulfe.hap.accessories.MotionSensor;
 
 /**
  *
  * @author Tim Harper - Initial implementation
  */
-public class HomekitMotionSensorImpl extends AbstractHomekitAccessoryImpl<SwitchItem> implements MotionSensor {
+public class HomekitMotionSensorImpl extends AbstractHomekitAccessoryImpl<SwitchItem>
+        implements MotionSensor, BatteryStatusAccessory {
+    private BatteryStatus batteryStatus;
+
     public HomekitMotionSensorImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
-            HomekitAccessoryUpdater updater) {
+            HomekitAccessoryUpdater updater, BatteryStatus batteryStatus) {
         super(taggedItem, itemRegistry, updater, SwitchItem.class);
+        this.batteryStatus = batteryStatus;
     }
 
     @Override
@@ -46,5 +52,20 @@ public class HomekitMotionSensorImpl extends AbstractHomekitAccessoryImpl<Switch
     @Override
     public void unsubscribeMotionDetected() {
         getUpdater().unsubscribe(getItem());
+    }
+
+    @Override
+    public CompletableFuture<Boolean> getLowBatteryState() {
+        return CompletableFuture.completedFuture(batteryStatus.isLow());
+    }
+
+    @Override
+    public void subscribeLowBatteryState(HomekitCharacteristicChangeCallback callback) {
+        batteryStatus.subscribe(getUpdater(), callback);
+    }
+
+    @Override
+    public void unsubscribeLowBatteryState() {
+        batteryStatus.unsubscribe(getUpdater());
     }
 }

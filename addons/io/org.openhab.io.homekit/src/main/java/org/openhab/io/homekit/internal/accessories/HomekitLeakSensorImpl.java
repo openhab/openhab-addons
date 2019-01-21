@@ -10,11 +10,13 @@ package org.openhab.io.homekit.internal.accessories;
 
 import java.util.concurrent.CompletableFuture;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.library.items.SwitchItem;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
+import org.openhab.io.homekit.internal.battery.BatteryStatus;
 
 import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
 import com.beowulfe.hap.accessories.BatteryStatusAccessory;
@@ -27,9 +29,14 @@ import com.beowulfe.hap.accessories.LeakSensor;
 public class HomekitLeakSensorImpl extends AbstractHomekitAccessoryImpl<SwitchItem>
         implements LeakSensor, BatteryStatusAccessory {
 
+    @NonNull
+    private BatteryStatus batteryStatus;
+
     public HomekitLeakSensorImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
-            HomekitAccessoryUpdater updater) {
+            HomekitAccessoryUpdater updater, BatteryStatus batteryStatus) {
         super(taggedItem, itemRegistry, updater, SwitchItem.class);
+
+        this.batteryStatus = batteryStatus;
     }
 
     @Override
@@ -53,18 +60,25 @@ public class HomekitLeakSensorImpl extends AbstractHomekitAccessoryImpl<SwitchIt
 
     @Override
     public CompletableFuture<Boolean> getLowBatteryState() {
-        return CompletableFuture.completedFuture(false);
+        return CompletableFuture.completedFuture(batteryStatus.isLow());
     }
 
     @Override
     public void subscribeLowBatteryState(HomekitCharacteristicChangeCallback callback) {
-        // TODO Auto-generated method stub
-
+        batteryStatus.subscribe(getUpdater(), callback);
     }
 
     @Override
     public void unsubscribeLowBatteryState() {
-        // TODO Auto-generated method stub
+        batteryStatus.unsubscribe(getUpdater());
+    }
 
+    static HomekitLeakSensorImpl createForTaggedItem(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
+            HomekitAccessoryUpdater updater) {
+
+        if (taggedItem.isMemberOfAccessoryGroup()) {
+
+        }
+        return null;
     }
 }
