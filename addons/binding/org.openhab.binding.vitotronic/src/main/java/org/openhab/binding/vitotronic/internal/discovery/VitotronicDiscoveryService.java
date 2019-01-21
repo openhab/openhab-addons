@@ -37,7 +37,6 @@ public class VitotronicDiscoveryService extends AbstractDiscoveryService {
     public VitotronicDiscoveryService(VitotronicBridgeHandler vitotronicBridgeHandler) throws IllegalArgumentException {
         super(VitotronicBindingConstants.SUPPORTED_THING_TYPES_UIDS, 10, false);
         this.vitotronicBridgeHandler = vitotronicBridgeHandler;
-
     }
 
     private void addThing(ThingUID bridgeUID, String thingType, String thingID) {
@@ -46,6 +45,9 @@ public class VitotronicDiscoveryService extends AbstractDiscoveryService {
         switch (thingType) {
             case VitotronicBindingConstants.THING_ID_HEATING:
                 thingUID = new ThingUID(VitotronicBindingConstants.THING_TYPE_UID_HEATING, bridgeUID, thingID);
+                break;
+            case VitotronicBindingConstants.THING_ID_GASBURNER:
+                thingUID = new ThingUID(VitotronicBindingConstants.THING_TYPE_UID_GASBURNER, bridgeUID, thingID);
                 break;
             case VitotronicBindingConstants.THING_ID_PELLETBURNER:
                 thingUID = new ThingUID(VitotronicBindingConstants.THING_TYPE_UID_PELLETBURNER, bridgeUID, thingID);
@@ -72,13 +74,10 @@ public class VitotronicDiscoveryService extends AbstractDiscoveryService {
         } else {
             logger.debug("Discovered Thing is unsupported: type '{}'", thingID);
         }
-
     }
 
     public void addVitotronicThing(String thingType, String thingID) {
-
         addThing(vitotronicBridgeHandler.getThing().getUID(), thingType, thingID);
-
     }
 
     public void activate() {
@@ -94,5 +93,4 @@ public class VitotronicDiscoveryService extends AbstractDiscoveryService {
     protected void startScan() {
         // Scan will be done by bridge
     }
-
 }
