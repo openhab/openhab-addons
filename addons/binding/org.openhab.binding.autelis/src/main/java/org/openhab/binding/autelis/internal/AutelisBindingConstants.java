@@ -12,12 +12,13 @@
  */
 package org.openhab.binding.autelis.internal;
 
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * The {@link AutelisBinding} class defines common constants, which are used
@@ -35,8 +36,8 @@ public class AutelisBindingConstants {
     public static final ThingTypeUID PENTAIR_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "pentair");
     public static final ThingTypeUID JANDY_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "jandy");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(POOLCONTROL_THING_TYPE_UID,
-            PENTAIR_THING_TYPE_UID, JANDY_THING_TYPE_UID);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
+            .of(POOLCONTROL_THING_TYPE_UID, PENTAIR_THING_TYPE_UID, JANDY_THING_TYPE_UID).collect(Collectors.toSet()));
 
     public static final String CMD_LIGHTS = "lightscmd";
     public static final String CMD_REBOOT = "reboot";
@@ -44,5 +45,4 @@ public class AutelisBindingConstants {
     public static final String CMD_TEMP = "temp";
     public static final String CMD_CHEM = "chem";
     public static final String CMD_PUMPS = "pumps";
-
 }
