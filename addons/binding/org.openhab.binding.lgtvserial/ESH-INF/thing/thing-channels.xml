@@ -7,13 +7,13 @@
     <channel-type id="3d">
         <item-type>String</item-type>
         <label>3d</label>
-        <description>Change the 3d mode</description>
+        <description>Change the 3d mode, if your TV supports it</description>
     </channel-type>
 
     <channel-type id="3d-extended">
         <item-type>String</item-type>
         <label>3d extended</label>
-        <description>Change the 3d option</description>
+        <description>Change the 3d option, if your TV supports it</description>
     </channel-type>
 
     <channel-type id="aspect-ratio">
