@@ -46,7 +46,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-@Component(service = ThingHandlerFactory.class, name = "binding.onewire", configurationPid = "binding.onewire", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.onewire", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class OwHandlerFactory extends BaseThingHandlerFactory {
 
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
