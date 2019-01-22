@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.smarthome.binding.weatherunderground.internal.config;
+package org.openhab.binding.weatherunderground.internal.config;
 
 /**
  * The {@link WeatherUndergroundConfiguration} is the class used to match the
