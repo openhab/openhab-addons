@@ -11,6 +11,7 @@ package org.openhab.binding.lgtvserial.internal.protocol.serial;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -83,6 +84,7 @@ public class LGSerialCommunicator {
             if (data == 'x') {
                 String result = new String(buffer, offset, len);
 
+                logger.debug("Buffer : " + Arrays.toString(buffer) + " offset=" + offset + " len=" + len);
                 logger.debug("Received response : " + result);
                 LGSerialResponse response = command.parseResponse(result);
                 updateHandler(response, channel);
