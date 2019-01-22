@@ -16,7 +16,7 @@
 			<description>Whether to make rule templates from the marketplace available or not.</description>
 			<default>true</default>
 		</parameter>
-	        <parameter name="voice" type="boolean" required="false">
+		<parameter name="voice" type="boolean" required="false">
 			<label>Include Voice Extensions</label>
 			<description>Whether to make voice extensions from the marketplace available or not.</description>
 			<default>true</default>
