@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="yamahareceiver" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-						  xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-						  xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+<thing:thing-descriptions bindingId="yamahareceiver"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="yamahaAV">
 		<label>Yamaha Receiver</label>
@@ -10,15 +11,15 @@
 		</description>
 
 		<channels>
-			<channel id="power" typeId="power"/>
-			<channel id="party_mode" typeId="party_mode"/>
-			<channel id="party_mode_volume" typeId="party_mode_volume"/>
-			<channel id="party_mode_mute" typeId="party_mode_mute"/>
+			<channel id="power" typeId="power" />
+			<channel id="party_mode" typeId="party_mode" />
+			<channel id="party_mode_volume" typeId="party_mode_volume" />
+			<channel id="party_mode_mute" typeId="party_mode_mute" />
 		</channels>
 
 		<properties>
-			<property name="version"/>
-			<property name="assigned_name"/>
+			<property name="version" />
+			<property name="assigned_name" />
 		</properties>
 
 		<representation-property>host</representation-property>
@@ -71,15 +72,15 @@
 
 	<thing-type id="zone">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="yamahaAV"/>
+			<bridge-type-ref id="yamahaAV" />
 		</supported-bridge-type-refs>
 		<label>Yamaha Receiver Zone</label>
 		<description>Yamaha Receiver Zone</description>
 
 		<channel-groups>
-			<channel-group typeId="zone_channels" id="zone_channels"/>
-			<channel-group typeId="playback_channels" id="playback_channels"/>
-			<channel-group typeId="navigation_channels" id="navigation_channels"/>
+			<channel-group typeId="zone_channels" id="zone_channels" />
+			<channel-group typeId="playback_channels" id="playback_channels" />
+			<channel-group typeId="navigation_channels" id="navigation_channels" />
 		</channel-groups>
 
 		<representation-property>zone</representation-property>
@@ -115,17 +116,17 @@
 		<label>Zone control</label>
 		<description>Control the zone</description>
 		<channels>
-			<channel id="power" typeId="power"/>
+			<channel id="power" typeId="power" />
 			<!--
-			We will provide an input channel dynamically.
-			<channel id="input" typeId="availableinput" />
+				We will provide an input channel dynamically.
+				<channel id="input" typeId="availableinput" />
 			-->
-			<channel id="surroundProgram" typeId="surroundProgram"/>
-			<channel id="volume" typeId="volume"/>
-			<channel id="volumeDB" typeId="volumeDB"/>
-			<channel id="dialogueLevel" typeId="dialogueLevel"/>
-			<channel id="mute" typeId="mute"/>
-			<channel id="scene" typeId="scene"/>
+			<channel id="surroundProgram" typeId="surroundProgram" />
+			<channel id="volume" typeId="volume" />
+			<channel id="volumeDB" typeId="volumeDB" />
+			<channel id="dialogueLevel" typeId="dialogueLevel" />
+			<channel id="mute" typeId="mute" />
+			<channel id="scene" typeId="scene" />
 		</channels>
 	</channel-group-type>
 
@@ -207,7 +208,7 @@
 		<label>Volume in dB</label>
 		<description>Set the volume level (dB)</description>
 		<category>SoundVolume</category>
-		<state min="-80" max="12" step="0.5" pattern="%.1f dB"/>
+		<state min="-80" max="12" step="0.5" pattern="%.1f dB" />
 	</channel-type>
 
 	<channel-type id="mute">
@@ -222,7 +223,7 @@
 		<label>Dialogue level</label>
 		<description>Set the dialogue level</description>
 		<category>SoundVolume</category>
-		<state min="0" max="2" step="1" pattern="%d"/>
+		<state min="0" max="2" step="1" pattern="%d" />
 	</channel-type>
 
 	<channel-type id="scene">
@@ -244,14 +245,14 @@
 		<label>Playback control</label>
 		<description>Control the playback for the current zone and allow to select preset channels</description>
 		<channels>
-			<channel id="preset" typeId="defaultpreset"/>
-			<channel id="playback" typeId="playback"/>
-			<channel id="playback_station" typeId="playback_station"/>
-			<channel id="playback_artist" typeId="playback_artist"/>
-			<channel id="playback_album" typeId="playback_album"/>
-			<channel id="playback_song" typeId="playback_song"/>
-			<channel id="playback_song_image_url" typeId="playback_song_image_url"/>
-			<channel id="tuner_band" typeId="tuner_band"/>
+			<channel id="preset" typeId="defaultpreset" />
+			<channel id="playback" typeId="playback" />
+			<channel id="playback_station" typeId="playback_station" />
+			<channel id="playback_artist" typeId="playback_artist" />
+			<channel id="playback_album" typeId="playback_album" />
+			<channel id="playback_song" typeId="playback_song" />
+			<channel id="playback_song_image_url" typeId="playback_song_image_url" />
+			<channel id="tuner_band" typeId="tuner_band" />
 		</channels>
 	</channel-group-type>
 
@@ -259,35 +260,35 @@
 		<item-type>String</item-type>
 		<label>Station</label>
 		<description>Current station name</description>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="playback_artist">
 		<item-type>String</item-type>
 		<label>Artist</label>
 		<description>Artist</description>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="playback_album">
 		<item-type>String</item-type>
 		<label>Album</label>
 		<description>Album</description>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="playback_song">
 		<item-type>String</item-type>
 		<label>Title</label>
 		<description>Track title</description>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="playback_song_image_url">
 		<item-type>String</item-type>
 		<label>Track picture URL</label>
 		<description>Track picture URL</description>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="defaultpreset">
@@ -375,15 +376,15 @@
 		<label>Navigation control</label>
 		<description>Allow to navigate for inputs like USB, iPOD, NET_RADIO</description>
 		<channels>
-			<channel id="navigation_menu" typeId="navigation_menu"/>
-			<channel id="navigation_current_item" typeId="navigation_current_item"/>
-			<channel id="navigation_total_items" typeId="navigation_total_items"/>
-			<channel id="navigation_level" typeId="navigation_level"/>
-			<channel id="navigation_updown" typeId="navigation_updown"/>
-			<channel id="navigation_leftright" typeId="navigation_leftright"/>
-			<channel id="navigation_select" typeId="navigation_select"/>
-			<channel id="navigation_back" typeId="navigation_back"/>
-			<channel id="navigation_backtoroot" typeId="navigation_backtoroot"/>
+			<channel id="navigation_menu" typeId="navigation_menu" />
+			<channel id="navigation_current_item" typeId="navigation_current_item" />
+			<channel id="navigation_total_items" typeId="navigation_total_items" />
+			<channel id="navigation_level" typeId="navigation_level" />
+			<channel id="navigation_updown" typeId="navigation_updown" />
+			<channel id="navigation_leftright" typeId="navigation_leftright" />
+			<channel id="navigation_select" typeId="navigation_select" />
+			<channel id="navigation_back" typeId="navigation_back" />
+			<channel id="navigation_backtoroot" typeId="navigation_backtoroot" />
 		</channels>
 	</channel-group-type>
 
@@ -403,7 +404,7 @@
 		<label>Item</label>
 		<description>Shows the current item number</description>
 		<category>Navigation</category>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="navigation_total_items">
@@ -411,7 +412,7 @@
 		<label>Items</label>
 		<description>Shows the maximum item number</description>
 		<category>Navigation</category>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="navigation_level">
@@ -419,7 +420,7 @@
 		<label>Menu depth</label>
 		<description>Hierarchical level</description>
 		<category>Navigation</category>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="navigation_updown">
