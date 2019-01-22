@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.lgtvserial.internal.protocol.serial.commands;
 
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.lgtvserial.internal.protocol.serial.LGSerialResponse;
+
 /**
  * This class handles the temperature value D/N command.
  *
@@ -24,4 +29,39 @@ public class TemperatureValueCommand extends BaseDecimalCommand {
         super('d', 'n', setId, false);
     }
 
+    @Override
+    protected LGSerialResponse createResponse(int set, boolean success, String data) {
+        return new QuantityResponse(set, success, new QuantityType<>(Integer.parseInt(data, 16), SIUnits.CELSIUS));
+    }
+
+    public static class QuantityResponse implements LGSerialResponse {
+
+        private int setId;
+
+        private boolean success;
+
+        private State state;
+
+        public QuantityResponse(int setId, boolean success, QuantityType<?> state) {
+            this.setId = setId;
+            this.success = success;
+            this.state = state;
+        }
+
+        @Override
+        public int getSetID() {
+            return setId;
+        }
+
+        @Override
+        public State getState() {
+            return state;
+        }
+
+        @Override
+        public boolean isSuccess() {
+            return success;
+        }
+
+    }
 }
