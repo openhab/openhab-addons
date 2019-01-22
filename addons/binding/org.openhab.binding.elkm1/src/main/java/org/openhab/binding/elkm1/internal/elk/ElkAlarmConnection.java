@@ -100,11 +100,9 @@ public class ElkAlarmConnection {
         } else {
             sFactory = SocketFactory.getDefault();
         }
+
         try {
             socket = sFactory.createSocket(config.ipAddress, config.port);
-            if (config.useSSL) {
-                ((SSLSocket) socket).setEnabledProtocols(new String[] { "TLSv1" });
-            }
         } catch (IOException e) {
             logger.error("Unable to open connection to the elk alarm {}:{}", config.ipAddress, config.port, e);
         }
@@ -128,6 +126,7 @@ public class ElkAlarmConnection {
      * @return True if connection is established, false if it is not.
      */
     public boolean sslLogin() {
+        ((SSLSocket) socket).setEnabledProtocols(new String[] { "TLSv1" });
         try {
             BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF8"));
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF8"));
