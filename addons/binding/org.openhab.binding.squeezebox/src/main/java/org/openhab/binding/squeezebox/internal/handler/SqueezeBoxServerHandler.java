@@ -340,7 +340,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     String sanitizeCommand(String command) {
         String sanitizedCommand = command;
         if (command.startsWith("login")) {
-            sanitizedCommand = command.replace(password, "password");
+            sanitizedCommand = command.replace(password, "**********");
         }
         return sanitizedCommand;
     }

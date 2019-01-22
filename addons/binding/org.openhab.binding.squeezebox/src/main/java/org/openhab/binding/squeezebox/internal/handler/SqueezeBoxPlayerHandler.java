@@ -450,7 +450,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
             if (userInfo != null) {
                 String[] userInfoParts = userInfo.split(":");
                 if (userInfoParts.length == 2) {
-                    sanitizedUrl = url.replace(userInfoParts[1], "password");
+                    sanitizedUrl = url.replace(userInfoParts[1], "**********");
                 }
             }
         } catch (URISyntaxException e) {
