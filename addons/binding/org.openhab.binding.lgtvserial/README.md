@@ -16,6 +16,7 @@ Some TVs may have an alternative port type instead of a standard DB9 connector, 
 The serial port may be marked "Service only".
 
 Tested and developed with :
+
 - LG 55UF772V (with [this cable adapter](http://www.ebay.com/itm/DB9-9-Pin-Female-To-TRS-3-5mm-Male-Stereo-Serial-Data-Converter-Cable-1-8M-6Ft-/291541959764?)).
 - LG 47LK520 with a [serial hat](https://www.buyapi.ca/product/serial-hat-rs232/) on a raspberry pi
 
