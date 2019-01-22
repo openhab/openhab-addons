@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.smarthome.io.javasound.internal;
+package org.openhab.io.javasound.internal;
 
 import java.util.Collections;
 import java.util.Locale;
