@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.smarthome.binding.weatherunderground.internal.json;
+package org.openhab.binding.weatherunderground.internal.json;
 
 /**
  * The {@link WeatherUndergroundJsonResponse} is the Java class used

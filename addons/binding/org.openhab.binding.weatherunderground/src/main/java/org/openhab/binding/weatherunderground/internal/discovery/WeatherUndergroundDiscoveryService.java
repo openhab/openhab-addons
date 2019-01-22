@@ -10,10 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.smarthome.binding.weatherunderground.internal.discovery;
+package org.openhab.binding.weatherunderground.internal.discovery;
 
-import static org.eclipse.smarthome.binding.weatherunderground.WeatherUndergroundBindingConstants.*;
-import static org.eclipse.smarthome.binding.weatherunderground.internal.config.WeatherUndergroundConfiguration.*;
+import static org.openhab.binding.weatherunderground.WeatherUndergroundBindingConstants.*;
+import static org.openhab.binding.weatherunderground.internal.config.WeatherUndergroundConfiguration.*;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.binding.weatherunderground.handler.WeatherUndergroundHandler;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.i18n.LocaleProvider;
@@ -34,6 +33,7 @@ import org.eclipse.smarthome.core.i18n.LocationProvider;
 import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.weatherunderground.handler.WeatherUndergroundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
