@@ -25,9 +25,9 @@ public class CommandFactory {
         String name = channel.getId();
         switch (name) {
             case "3d":
-                return new _3DCommand(setId);
+                return new LG3DCommand(setId);
             case "3d-extended":
-                return new _3DExtendedCommand(setId);
+                return new LG3DExtendedCommand(setId);
             case "aspect-ratio":
                 return new AspectRatioCommand(setId);
             case "auto-sleep":
