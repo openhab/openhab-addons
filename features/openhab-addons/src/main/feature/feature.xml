@@ -1018,7 +1018,7 @@
 
     <feature name="openhab-ui-basic" description="Basic UI" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle>mvn:org.openhab.core/org.openhab.ui.basicui/${project.version}</bundle>
+        <bundle>mvn:org.openhab.ui/org.openhab.ui.basicui/${project.version}</bundle>
         <config name="org.eclipse.smarthome.basicui">
             iconType = svg
         </config>
@@ -1026,7 +1026,7 @@
 
     <feature name="openhab-ui-classic" description="Classic UI" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle>mvn:org.openhab.core/org.openhab.ui.classicui/${project.version}</bundle>
+        <bundle>mvn:org.openhab.ui/org.openhab.ui.classicui/${project.version}</bundle>
         <config name="org.eclipse.smarthome.classicui">
             defaultSitemap = _default
         </config>
@@ -1056,7 +1056,7 @@
 
     <feature name="openhab-ui-paper" description="Paper UI" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle>mvn:org.openhab.core/org.openhab.ui.paperui/${project.version}</bundle>
+        <bundle>mvn:org.openhab.ui/org.openhab.ui.paperui/${project.version}</bundle>
     </feature>
 
   <feature name="openhab-iconset-classic" version="${project.version}">
