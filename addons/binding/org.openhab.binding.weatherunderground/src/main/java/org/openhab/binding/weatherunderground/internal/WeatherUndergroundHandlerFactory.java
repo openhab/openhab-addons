@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.smarthome.binding.weatherunderground.internal;
+package org.openhab.binding.weatherunderground.internal;
 
-import static org.eclipse.smarthome.binding.weatherunderground.WeatherUndergroundBindingConstants.*;
+import static org.openhab.binding.weatherunderground.WeatherUndergroundBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -21,10 +21,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.smarthome.binding.weatherunderground.WeatherUndergroundBindingConstants;
-import org.eclipse.smarthome.binding.weatherunderground.handler.WeatherUndergroundBridgeHandler;
-import org.eclipse.smarthome.binding.weatherunderground.handler.WeatherUndergroundHandler;
-import org.eclipse.smarthome.binding.weatherunderground.internal.discovery.WeatherUndergroundDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.i18n.LocaleProvider;
 import org.eclipse.smarthome.core.i18n.LocationProvider;
@@ -36,6 +32,10 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.openhab.binding.weatherunderground.WeatherUndergroundBindingConstants;
+import org.openhab.binding.weatherunderground.handler.WeatherUndergroundBridgeHandler;
+import org.openhab.binding.weatherunderground.handler.WeatherUndergroundHandler;
+import org.openhab.binding.weatherunderground.internal.discovery.WeatherUndergroundDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
