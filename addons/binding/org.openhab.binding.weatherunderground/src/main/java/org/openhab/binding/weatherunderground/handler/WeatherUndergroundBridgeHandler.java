@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.smarthome.binding.weatherunderground.handler;
+package org.openhab.binding.weatherunderground.handler;
 
 import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
@@ -19,8 +19,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.binding.weatherunderground.WeatherUndergroundBindingConstants;
-import org.eclipse.smarthome.binding.weatherunderground.internal.json.WeatherUndergroundJsonData;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -29,6 +27,8 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
+import org.openhab.binding.weatherunderground.WeatherUndergroundBindingConstants;
+import org.openhab.binding.weatherunderground.internal.json.WeatherUndergroundJsonData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

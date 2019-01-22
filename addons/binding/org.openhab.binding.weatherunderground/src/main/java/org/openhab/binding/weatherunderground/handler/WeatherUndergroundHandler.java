@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.smarthome.binding.weatherunderground.handler;
+package org.openhab.binding.weatherunderground.handler;
 
 import static org.eclipse.smarthome.core.library.unit.MetricPrefix.*;
 
@@ -31,11 +31,6 @@ import javax.measure.Unit;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.binding.weatherunderground.internal.config.WeatherUndergroundConfiguration;
-import org.eclipse.smarthome.binding.weatherunderground.internal.json.WeatherUndergroundJsonCurrent;
-import org.eclipse.smarthome.binding.weatherunderground.internal.json.WeatherUndergroundJsonData;
-import org.eclipse.smarthome.binding.weatherunderground.internal.json.WeatherUndergroundJsonForecast;
-import org.eclipse.smarthome.binding.weatherunderground.internal.json.WeatherUndergroundJsonForecastDay;
 import org.eclipse.smarthome.core.i18n.LocaleProvider;
 import org.eclipse.smarthome.core.i18n.UnitProvider;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
@@ -59,6 +54,11 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
+import org.openhab.binding.weatherunderground.internal.config.WeatherUndergroundConfiguration;
+import org.openhab.binding.weatherunderground.internal.json.WeatherUndergroundJsonCurrent;
+import org.openhab.binding.weatherunderground.internal.json.WeatherUndergroundJsonData;
+import org.openhab.binding.weatherunderground.internal.json.WeatherUndergroundJsonForecast;
+import org.openhab.binding.weatherunderground.internal.json.WeatherUndergroundJsonForecastDay;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
