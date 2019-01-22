@@ -26,7 +26,7 @@
 	<channel-type id="definition">
 		<item-type>String</item-type>
 		<label>Definition</label>
-		<description>The definition of this zone.</description>
+		<description>The type of this zone. Ex: Fire Alarm, Burglar Entry 1, Burglar 24 Hour, etc</description>
 		<state readOnly="true">
 			<options>
 				<option value="Disabled">Disabled</option>
@@ -72,8 +72,8 @@
 
 	<channel-type id="status">
 		<item-type>String</item-type>
-		<label>Definition</label>
-		<description>The status of this zone.</description>
+		<label>Status</label>
+		<description>The current status of this zone. Ex: Normal, Violated, Trouble, etc</description>
 		<state readOnly="true">
 			<options>
 				<option value="Normal">Normal</option>
@@ -87,8 +87,8 @@
 
 	<channel-type id="config">
 		<item-type>String</item-type>
-		<label>Definition</label>
-		<description>The config of this zone.</description>
+		<label>Config</label>
+		<description>The physical config set for this zone. Ex: EOL, Open, Short, etc</description>
 		<state readOnly="true">
 			<options>
 				<option value="Open">Open</option>
@@ -103,7 +103,7 @@
 	<channel-type id="area">
 		<item-type>Number</item-type>
 		<label>Area</label>
-		<description>The area the zone is in</description>
+		<description>The area the zone is in.</description>
 		<state max="8" min="1" readOnly="true" />
 	</channel-type>
 
