@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.smarthome.binding.weatherunderground;
+package org.openhab.binding.weatherunderground;
 
 import java.util.Arrays;
 import java.util.Collections;
