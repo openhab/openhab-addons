@@ -159,7 +159,13 @@ public class LgTvSerialHandler extends BaseThingHandler {
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        this.channelCommands.put(channelUID, CommandFactory.createCommandFor(channelUID, responseListener));
+        LGSerialCommand command = CommandFactory.createCommandFor(channelUID, responseListener);
+        if (command == null) {
+            logger.error("A command could not be found for channel name '" + channelUID.getId()
+                    + "'. Please create an issue on the openhab project for the lgtvserial binding. ");
+            return;
+        }
+        this.channelCommands.put(channelUID, command);
         handleCommand(channelUID, RefreshType.REFRESH);
     }
 
