@@ -10,7 +10,6 @@ public class NoBatteryStatus implements BatteryStatus {
 
     @Override
     public @Nullable Boolean isLow() {
-        // TODO Auto-generated method stub
         return false;
     }
 
