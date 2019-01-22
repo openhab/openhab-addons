@@ -60,14 +60,14 @@
 		<description>The virtual rocker switch channel allows to send rocker msg.</description>
 		<config-description-ref uri="enocean:virtualRockerChannel:config" />
 	</channel-type>
-	
+
 	<!-- virtual rocker switch channel -->
-    <channel-type id="virtualRollershutterA">
-        <item-type>Rollershutter</item-type>
-        <label>Rollershutter</label>
-        <description>This channels allows to control a rollershutter through rocker msg.</description>
-        <config-description-ref uri="enocean:virtualRockerChannel:config" />
-    </channel-type>
+	<channel-type id="virtualRollershutterA">
+		<item-type>Rollershutter</item-type>
+		<label>Rollershutter</label>
+		<description>This channels allows to control a rollershutter through rocker msg.</description>
+		<config-description-ref uri="enocean:virtualRockerChannel:config" />
+	</channel-type>
 
 	<!-- virtual rocker switch channel -->
 	<channel-type id="virtualRockerswitchB" advanced="true">

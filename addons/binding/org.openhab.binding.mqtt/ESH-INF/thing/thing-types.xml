@@ -166,32 +166,32 @@
 			<property name="keep_alive_time_ms" />
 		</properties>
 
-        <config-description>
-            <parameter name="brokerid" type="text" required="true">
-                <label>Broker ID</label>
-                <description>Each system wide configured MQTT broker has a unique broker ID.</description>
-            </parameter>
-        </config-description>
-    </bridge-type>
-	
-    <channel-type id="publishTrigger">
-        <kind>trigger</kind>
-        <label>Publish trigger</label>
-        <description>This channel is triggered when a value is published to the configured MQTT topic on this broker connection. The event payload will be the received MQTT topic value.</description>
-        <event></event>
-        <config-description>
-            <parameter name="stateTopic" type="text" required="true">
-                <label>MQTT Topic</label>
-                <description>This channel will trigger on this MQTT topic. This topic can contain wildcards like + and # for example "all/in/#" or "sensors/+/config".</description>
-            </parameter>
-            <parameter name="payload" type="text" required="false">
-                <label>Payload condition</label>
-                <description>An optional condition on the value of the MQTT topic that must match before this channel is triggered.</description>
-            </parameter>
-            <parameter name="separator" type="text" required="false">
-                <label>Separator character</label>
-                <description>The trigger channel payload usually only contains the received MQTT topic value. If you define a separator character, for example '#', the topic and received value will be in the trigger channel payload. For example: my_topic#my_received_value.</description>
-            </parameter>
-        </config-description>
-    </channel-type>
+		<config-description>
+			<parameter name="brokerid" type="text" required="true">
+				<label>Broker ID</label>
+				<description>Each system wide configured MQTT broker has a unique broker ID.</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<channel-type id="publishTrigger">
+		<kind>trigger</kind>
+		<label>Publish trigger</label>
+		<description>This channel is triggered when a value is published to the configured MQTT topic on this broker connection. The event payload will be the received MQTT topic value.</description>
+		<event></event>
+		<config-description>
+			<parameter name="stateTopic" type="text" required="true">
+				<label>MQTT Topic</label>
+				<description>This channel will trigger on this MQTT topic. This topic can contain wildcards like + and # for example "all/in/#" or "sensors/+/config".</description>
+			</parameter>
+			<parameter name="payload" type="text" required="false">
+				<label>Payload condition</label>
+				<description>An optional condition on the value of the MQTT topic that must match before this channel is triggered.</description>
+			</parameter>
+			<parameter name="separator" type="text" required="false">
+				<label>Separator character</label>
+				<description>The trigger channel payload usually only contains the received MQTT topic value. If you define a separator character, for example '#', the topic and received value will be in the trigger channel payload. For example: my_topic#my_received_value.</description>
+			</parameter>
+		</config-description>
+	</channel-type>
 </thing:thing-descriptions>
