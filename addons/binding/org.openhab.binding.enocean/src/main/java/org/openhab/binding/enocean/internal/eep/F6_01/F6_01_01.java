@@ -23,8 +23,6 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message;
  */
 public class F6_01_01 extends _RPSMessage {
 
-    final byte PRESSED = 0x10;
-
     public F6_01_01() {
         super();
     }
@@ -34,23 +32,17 @@ public class F6_01_01 extends _RPSMessage {
     }
 
     @Override
-    protected String convertToEventImpl(String channelId, String channelTypeId, String lastEvent, Configuration config) {
+    protected String convertToEventImpl(String channelId, String channelTypeId, String lastEvent,
+            Configuration config) {
         if (!isValid()) {
             return null;
         }
 
-        if (t21) {
-
-            return (bytes[0] == PRESSED) ? CommonTriggerEvents.PRESSED : CommonTriggerEvents.RELEASED;
-
-        }
-
-        return null;
+        return getBit(bytes[0], 4) ? CommonTriggerEvents.PRESSED : CommonTriggerEvents.RELEASED;
     }
 
     @Override
     protected boolean validateData(byte[] bytes) {
-        return super.validateData(bytes) && t21 && !nu && !getBit(bytes[0], 7)
-                && (bytes[0] == PRESSED || bytes[0] == 0);
+        return super.validateData(bytes) && !getBit(bytes[0], 7);
     }
 }
