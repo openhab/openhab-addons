@@ -11,9 +11,13 @@ package org.openhab.io.homekit.internal.accessories;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.items.ItemRegistry;
+import org.eclipse.smarthome.core.library.items.ContactItem;
 import org.eclipse.smarthome.core.library.items.SwitchItem;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 import org.openhab.io.homekit.internal.battery.BatteryStatus;
@@ -26,7 +30,7 @@ import com.beowulfe.hap.accessories.LeakSensor;
  *
  * @author Tim Harper - Initial implementation
  */
-public class HomekitLeakSensorImpl extends AbstractHomekitAccessoryImpl<SwitchItem>
+public class HomekitLeakSensorImpl extends AbstractHomekitAccessoryImpl<GenericItem>
         implements LeakSensor, BatteryStatusAccessory {
 
     @NonNull
@@ -34,18 +38,26 @@ public class HomekitLeakSensorImpl extends AbstractHomekitAccessoryImpl<SwitchIt
 
     public HomekitLeakSensorImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
             HomekitAccessoryUpdater updater, BatteryStatus batteryStatus) {
-        super(taggedItem, itemRegistry, updater, SwitchItem.class);
+        super(taggedItem, itemRegistry, updater, GenericItem.class);
+
+        if (!(taggedItem.getItem() instanceof SwitchItem) && !(taggedItem.getItem() instanceof ContactItem)) {
+            logger.error("Item {} is a {} instead of the expected SwitchItem or ContactItem",
+                    taggedItem.getItem().getName(), taggedItem.getClass().getName());
+        }
 
         this.batteryStatus = batteryStatus;
     }
 
     @Override
     public CompletableFuture<Boolean> getLeakDetected() {
-        OnOffType state = getItem().getStateAs(OnOffType.class);
-        if (state == null) {
+        State state = getItem().getState();
+        if (state instanceof OnOffType) {
+            return CompletableFuture.completedFuture(state == OnOffType.ON);
+        } else if (state instanceof OpenClosedType) {
+            return CompletableFuture.completedFuture(state == OpenClosedType.OPEN);
+        } else {
             return CompletableFuture.completedFuture(null);
         }
-        return CompletableFuture.completedFuture(state == OnOffType.ON);
     }
 
     @Override

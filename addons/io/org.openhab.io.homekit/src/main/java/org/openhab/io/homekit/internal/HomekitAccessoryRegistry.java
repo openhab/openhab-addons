@@ -38,10 +38,10 @@ class HomekitAccessoryRegistry {
 
     private final Logger logger = LoggerFactory.getLogger(HomekitAccessoryRegistry.class);
 
-    public synchronized void remove(HomekitTaggedItem taggedItem) {
-        if (createdAccessories.containsKey(taggedItem.getName())) {
-            HomekitAccessory accessory = createdAccessories.remove(taggedItem.getName());
-            logger.debug("Removed accessory {} for taggedItem {}", accessory.getId(), taggedItem.getName());
+    public synchronized void remove(String itemName) {
+        if (createdAccessories.containsKey(itemName)) {
+            HomekitAccessory accessory = createdAccessories.remove(itemName);
+            logger.debug("Removed accessory {} for taggedItem {}", accessory.getId(), itemName);
             bridge.removeAccessory(accessory);
         }
     }

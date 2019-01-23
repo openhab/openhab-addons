@@ -206,7 +206,7 @@ public class HomekitTaggedItem {
         return id;
     }
 
-    private List<GroupItem> findMyAccessoryGroups(Item item, ItemRegistry itemRegistry) {
+    static List<GroupItem> findMyAccessoryGroups(Item item, ItemRegistry itemRegistry) {
         return item.getGroupNames().stream().flatMap(name -> {
             Item groupItem = itemRegistry.get(name);
             if ((groupItem != null) && (groupItem instanceof GroupItem)) {
