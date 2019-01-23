@@ -17,13 +17,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.UpnpDiscoveryParticipant;
+import org.eclipse.smarthome.config.discovery.upnp.UpnpDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.jupnp.model.meta.RemoteDevice;
 import org.openhab.binding.autelis.internal.AutelisBindingConstants;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,16 +34,18 @@ import org.slf4j.LoggerFactory;
  *
  * Discovery Service for Autelis Pool Controllers.
  *
- * @author Dan Cunningham
+ * @author Dan Cunningham - Initial contribution
  *
  */
+@NonNullByDefault
+@Component(immediate = true)
 public class AutelisDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(AutelisDiscoveryParticipant.class);
 
-    private static String MANUFACTURER = "autelis";
-    private static String MODEL_PENTAIR = "pc100p";
-    private static String MODEL_JANDY = "pc100j";
+    private static final String MANUFACTURER = "autelis";
+    private static final String MODEL_PENTAIR = "pc100p";
+    private static final String MODEL_JANDY = "pc100j";
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -48,7 +53,7 @@ public class AutelisDiscoveryParticipant implements UpnpDiscoveryParticipant {
     }
 
     @Override
-    public DiscoveryResult createResult(RemoteDevice device) {
+    public @Nullable DiscoveryResult createResult(RemoteDevice device) {
         ThingUID uid = getThingUID(device);
         if (uid != null) {
             Map<String, Object> properties = new HashMap<>(3);
@@ -74,7 +79,7 @@ public class AutelisDiscoveryParticipant implements UpnpDiscoveryParticipant {
     }
 
     @Override
-    public ThingUID getThingUID(RemoteDevice device) {
+    public @Nullable ThingUID getThingUID(RemoteDevice device) {
         if (device.getDetails().getManufacturerDetails().getManufacturer() != null
                 && device.getDetails().getModelDetails().getModelNumber() != null) {
             logger.trace("UPNP {} : {}", device.getDetails().getManufacturerDetails().getManufacturer(),
