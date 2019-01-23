@@ -75,8 +75,8 @@ A full list of supported accessory types can be found in the table below.
 |                       | CurrentTemperature            | Number                    | The current temperature, same as above                                                                                                                                                                                                        |
 |                       | homekit:HeatingCoolingMode    | String                    | Indicates the current mode of the device: OFF, AUTO, HEAT, COOL. The string's value must match those defined in the thermostat*Mode properties. This is a HomeKit-specific term and therefore the tags needs to be prefixed with "homekit:"   |
 |                       | TargetTemperature             | Number                    | A target temperature that will engage the thermostat's heating and cooling actions as necessary, depending on the heatingCoolingMode                                                                                                          |
-| LeakSensor            |                               | Switch                    | Leak sensor. ON state means flood detected. |
-| MotionSensor          |                               | Switch                    | Motion sensor. ON state means motion detected. |
+| LeakSensor            |                               | Switch, ContactSensor     | Leak sensor. ON / OPEN state means flood detected. |
+| MotionSensor          |                               | Switch, ContactSensor     | Motion sensor. ON / OPEN state means motion detected. |
 | Valve                 |                               | Switch                    | Simple open/close valve. Assumes liquid is flowing when valve is open. |
 
 
