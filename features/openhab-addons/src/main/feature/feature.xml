@@ -853,15 +853,16 @@
     </feature>
 
 
-	<feature name="esh-io-javasound" description="JavaSound Audio Support" version="${project.version}">
+    <feature name="openhab-io-javasound" description="JavaSound Audio Support" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-		<bundle>mvn:org.openhab.io/org.openhab.io.javasound/${project.version}</bundle>
-	</feature>
+        <bundle>mvn:org.openhab.io/org.openhab.io.sound/${project.version}</bundle>
+        <bundle>mvn:org.openhab.io/org.openhab.io.javasound/${project.version}</bundle>
+    </feature>
 
-	<feature name="esh-io-webaudio" description="Web Audio Support" version="${project.version}">
+    <feature name="openhab-io-webaudio" description="Web Audio Support" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-		<bundle>mvn:org.openhab.io/org.openhab.io.webaudio/${project.version}</bundle>
-	</feature>
+        <bundle>mvn:org.openhab.io/org.openhab.io.webaudio/${project.version}</bundle>
+    </feature>
 
     <!-- misc -->
 
