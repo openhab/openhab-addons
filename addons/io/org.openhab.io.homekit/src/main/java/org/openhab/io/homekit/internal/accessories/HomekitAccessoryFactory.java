@@ -60,10 +60,29 @@ public class HomekitAccessoryFactory {
 
             case MOTION_SENSOR:
                 HomekitTaggedItem motionSensorAccessory = getPrimaryAccessory(taggedItem,
-                        HomekitAccessoryType.MOTION_SENSOR, itemRegistry).orElseThrow(
-                                () -> new Exception("Leak accessory group should have a leak sensor in it"));
+                        HomekitAccessoryType.MOTION_SENSOR, itemRegistry)
+                                .orElseThrow(() -> new Exception(
+                                        "Motion sensor accessory group should have a motion sensor item in it"));
 
                 return new HomekitMotionSensorImpl(motionSensorAccessory, itemRegistry, updater,
+                        BatteryStatus.getFromCharacteristics(characteristicItems));
+
+            case OCCUPANCY_SENSOR:
+                HomekitTaggedItem occupancySensorAccessory = getPrimaryAccessory(taggedItem,
+                        HomekitAccessoryType.OCCUPANCY_SENSOR, itemRegistry)
+                                .orElseThrow(() -> new Exception(
+                                        "Occupancy sensor accessory group should have a occupancy sensor item in it"));
+
+                return new HomekitOccupancySensorImpl(occupancySensorAccessory, itemRegistry, updater,
+                        BatteryStatus.getFromCharacteristics(characteristicItems));
+
+            case CONTACT_SENSOR:
+                HomekitTaggedItem contactSensorAccessory = getPrimaryAccessory(taggedItem,
+                        HomekitAccessoryType.CONTACT_SENSOR, itemRegistry)
+                                .orElseThrow(() -> new Exception(
+                                        "Contact sensor accessory group should have a occupancy sensor item in it"));
+
+                return new HomekitContactSensorImpl(contactSensorAccessory, itemRegistry, updater,
                         BatteryStatus.getFromCharacteristics(characteristicItems));
 
             case LIGHTBULB:
@@ -91,9 +110,6 @@ public class HomekitAccessoryFactory {
 
             case HUMIDITY_SENSOR:
                 return new HomekitHumiditySensorImpl(taggedItem, itemRegistry, updater);
-
-            case CONTACT_SENSOR:
-                return new HomekitContactSensorImpl(taggedItem, itemRegistry, updater);
 
             case BLINDS:
             case WINDOW_COVERING:
