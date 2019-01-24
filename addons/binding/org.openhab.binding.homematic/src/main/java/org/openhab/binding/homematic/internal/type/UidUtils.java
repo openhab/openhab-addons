@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.homematic.internal.type;
 
-import static org.openhab.binding.homematic.HomematicBindingConstants.BINDING_ID;
+import static org.openhab.binding.homematic.internal.HomematicBindingConstants.BINDING_ID;
 
 import org.apache.commons.lang.math.NumberUtils;
 import org.eclipse.smarthome.core.thing.Bridge;

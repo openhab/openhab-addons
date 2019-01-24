@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.homematic.internal.type;
 
-import static org.openhab.binding.homematic.HomematicBindingConstants.*;
+import static org.openhab.binding.homematic.internal.HomematicBindingConstants.*;
 import static org.openhab.binding.homematic.internal.misc.HomematicConstants.*;
 
 import java.io.BufferedReader;
