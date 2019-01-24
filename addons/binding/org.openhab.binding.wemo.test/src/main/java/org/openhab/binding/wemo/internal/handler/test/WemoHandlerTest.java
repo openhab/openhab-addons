@@ -15,7 +15,7 @@ package org.openhab.binding.wemo.internal.handler.test;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
-import static org.openhab.binding.wemo.WemoBindingConstants.*;
+import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -28,8 +28,8 @@ import org.eclipse.smarthome.core.types.State;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.binding.wemo.WemoBindingConstants;
-import org.openhab.binding.wemo.handler.WemoHandler;
+import org.openhab.binding.wemo.internal.WemoBindingConstants;
+import org.openhab.binding.wemo.internal.handler.WemoHandler;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 
 /**
