@@ -22,7 +22,7 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.nibeuplink.handler.ChannelProvider;
+import org.openhab.binding.nibeuplink.internal.handler.ChannelProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
