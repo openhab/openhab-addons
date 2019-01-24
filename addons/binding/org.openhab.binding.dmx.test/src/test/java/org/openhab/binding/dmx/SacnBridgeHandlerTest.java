@@ -34,7 +34,7 @@ import org.eclipse.smarthome.test.java.JavaOSGiTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.binding.dmx.handler.SacnBridgeHandler;
+import org.openhab.binding.dmx.internal.handler.SacnBridgeHandler;
 
 /**
  * Tests cases for {@link SacnBridgeHandler}.

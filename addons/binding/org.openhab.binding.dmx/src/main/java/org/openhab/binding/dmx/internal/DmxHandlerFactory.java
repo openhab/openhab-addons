@@ -20,13 +20,13 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.dmx.handler.ArtnetBridgeHandler;
-import org.openhab.binding.dmx.handler.ChaserThingHandler;
-import org.openhab.binding.dmx.handler.ColorThingHandler;
-import org.openhab.binding.dmx.handler.DimmerThingHandler;
-import org.openhab.binding.dmx.handler.Lib485BridgeHandler;
-import org.openhab.binding.dmx.handler.SacnBridgeHandler;
-import org.openhab.binding.dmx.handler.TunableWhiteThingHandler;
+import org.openhab.binding.dmx.internal.handler.ArtnetBridgeHandler;
+import org.openhab.binding.dmx.internal.handler.ChaserThingHandler;
+import org.openhab.binding.dmx.internal.handler.ColorThingHandler;
+import org.openhab.binding.dmx.internal.handler.DimmerThingHandler;
+import org.openhab.binding.dmx.internal.handler.Lib485BridgeHandler;
+import org.openhab.binding.dmx.internal.handler.SacnBridgeHandler;
+import org.openhab.binding.dmx.internal.handler.TunableWhiteThingHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**

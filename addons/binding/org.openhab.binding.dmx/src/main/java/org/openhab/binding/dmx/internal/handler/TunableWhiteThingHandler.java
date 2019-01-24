@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.dmx.handler;
+package org.openhab.binding.dmx.internal.handler;
 
 import static org.openhab.binding.dmx.internal.DmxBindingConstants.*;
 
