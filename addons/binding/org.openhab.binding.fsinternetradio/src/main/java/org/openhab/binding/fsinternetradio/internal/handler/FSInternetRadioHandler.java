@@ -10,10 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.fsinternetradio.handler;
+package org.openhab.binding.fsinternetradio.internal.handler;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.openhab.binding.fsinternetradio.FSInternetRadioBindingConstants.*;
+import static org.openhab.binding.fsinternetradio.internal.FSInternetRadioBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
