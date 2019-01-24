@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.plclogo.internal.config;
 
-import static org.openhab.binding.plclogo.PLCLogoBindingConstants.DATE_TIME_ITEM;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.DATE_TIME_ITEM;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.plclogo.internal.discovery;
 
-import static org.openhab.binding.plclogo.PLCLogoBindingConstants.THING_TYPE_DEVICE;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.THING_TYPE_DEVICE;
 
 import java.io.IOException;
 import java.net.Inet4Address;

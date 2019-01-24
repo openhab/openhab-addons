@@ -14,7 +14,7 @@ package org.openhab.binding.plclogo.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.plclogo.PLCLogoBindingConstants;
+import org.openhab.binding.plclogo.internal.PLCLogoBindingConstants;
 
 /**
  * The {@link PLCLogoBridgeConfiguration} hold configuration of Siemens LOGO! PLCs.
