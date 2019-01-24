@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.tesla.internal;
 
-import static org.openhab.binding.tesla.TeslaBindingConstants.THING_TYPE_MODELS;
+import static org.openhab.binding.tesla.internal.TeslaBindingConstants.THING_TYPE_MODELS;
 
 import java.util.Collections;
 import java.util.Set;
@@ -23,7 +23,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.tesla.handler.TeslaHandler;
+import org.openhab.binding.tesla.internal.handler.TeslaHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
