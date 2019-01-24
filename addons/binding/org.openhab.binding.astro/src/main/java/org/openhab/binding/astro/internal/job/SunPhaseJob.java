@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.astro.internal.job;
 
-import static org.openhab.binding.astro.AstroBindingConstants.CHANNEL_ID_SUN_PHASE_NAME;
+import static org.openhab.binding.astro.internal.AstroBindingConstants.CHANNEL_ID_SUN_PHASE_NAME;
 import static org.openhab.binding.astro.internal.job.Job.checkNull;
 
 import org.eclipse.smarthome.core.thing.Channel;
-import org.openhab.binding.astro.handler.AstroThingHandler;
 import org.openhab.binding.astro.internal.AstroHandlerFactory;
+import org.openhab.binding.astro.internal.handler.AstroThingHandler;
 import org.openhab.binding.astro.internal.model.Planet;
 import org.openhab.binding.astro.internal.model.Sun;
 import org.openhab.binding.astro.internal.model.SunPhaseName;
