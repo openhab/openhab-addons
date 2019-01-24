@@ -26,7 +26,7 @@ import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.smarthome.config.core.Configuration;
-import org.openhab.binding.nuki.NukiBindingConstants;
+import org.openhab.binding.nuki.internal.NukiBindingConstants;
 import org.openhab.binding.nuki.internal.dto.BridgeApiCallbackAddDto;
 import org.openhab.binding.nuki.internal.dto.BridgeApiCallbackListDto;
 import org.openhab.binding.nuki.internal.dto.BridgeApiCallbackRemoveDto;
