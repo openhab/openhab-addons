@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.bosesoundtouch.internal.discovery;
 
-import static org.openhab.binding.bosesoundtouch.BoseSoundTouchBindingConstants.*;
+import static org.openhab.binding.bosesoundtouch.internal.BoseSoundTouchBindingConstants.*;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -32,7 +32,7 @@ import org.eclipse.smarthome.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.bosesoundtouch.BoseSoundTouchConfiguration;
+import org.openhab.binding.bosesoundtouch.internal.BoseSoundTouchConfiguration;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
