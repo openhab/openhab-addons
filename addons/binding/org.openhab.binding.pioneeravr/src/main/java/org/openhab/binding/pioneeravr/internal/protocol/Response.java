@@ -16,8 +16,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
-import org.openhab.binding.pioneeravr.protocol.AvrConnectionException;
-import org.openhab.binding.pioneeravr.protocol.AvrResponse;
+import org.openhab.binding.pioneeravr.internal.protocol.avr.AvrConnectionException;
+import org.openhab.binding.pioneeravr.internal.protocol.avr.AvrResponse;
 
 /**
  * Represent an AVR response.

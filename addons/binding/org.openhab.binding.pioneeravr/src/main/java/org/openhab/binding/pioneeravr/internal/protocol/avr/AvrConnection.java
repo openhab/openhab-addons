@@ -10,11 +10,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.pioneeravr.protocol;
+package org.openhab.binding.pioneeravr.internal.protocol.avr;
 
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.pioneeravr.protocol.event.AvrDisconnectionListener;
-import org.openhab.binding.pioneeravr.protocol.event.AvrUpdateListener;
+import org.openhab.binding.pioneeravr.internal.protocol.event.AvrDisconnectionListener;
+import org.openhab.binding.pioneeravr.internal.protocol.event.AvrUpdateListener;
 
 /**
  * Represent a connection to a remote Pioneer AVR.
