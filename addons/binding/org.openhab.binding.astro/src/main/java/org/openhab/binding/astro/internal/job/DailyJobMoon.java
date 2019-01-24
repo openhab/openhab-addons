@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.astro.internal.job;
 
-import static org.openhab.binding.astro.AstroBindingConstants.*;
+import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
 import static org.openhab.binding.astro.internal.job.Job.scheduleEvent;
 
-import org.openhab.binding.astro.handler.AstroThingHandler;
+import org.openhab.binding.astro.internal.handler.AstroThingHandler;
 import org.openhab.binding.astro.internal.model.Eclipse;
 import org.openhab.binding.astro.internal.model.Moon;
 import org.openhab.binding.astro.internal.model.MoonPhase;

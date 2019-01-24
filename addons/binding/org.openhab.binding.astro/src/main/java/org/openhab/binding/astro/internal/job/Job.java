@@ -18,7 +18,7 @@ import static java.util.Collections.singletonList;
 import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang.time.DateUtils.truncatedEquals;
-import static org.openhab.binding.astro.AstroBindingConstants.*;
+import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
 import static org.openhab.binding.astro.internal.util.DateTimeUtils.*;
 
 import java.lang.invoke.MethodHandles;
@@ -29,8 +29,8 @@ import org.eclipse.smarthome.core.scheduler.SchedulerRunnable;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.astro.handler.AstroThingHandler;
 import org.openhab.binding.astro.internal.config.AstroChannelConfig;
+import org.openhab.binding.astro.internal.handler.AstroThingHandler;
 import org.openhab.binding.astro.internal.model.Planet;
 import org.openhab.binding.astro.internal.model.Range;
 import org.openhab.binding.astro.internal.model.SunPhaseName;

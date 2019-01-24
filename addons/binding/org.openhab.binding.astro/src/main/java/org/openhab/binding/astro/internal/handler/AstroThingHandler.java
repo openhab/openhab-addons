@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.astro.handler;
+package org.openhab.binding.astro.internal.handler;
 
 import static org.eclipse.smarthome.core.thing.ThingStatus.*;
 import static org.eclipse.smarthome.core.thing.type.ChannelKind.TRIGGER;
