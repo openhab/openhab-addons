@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.pioneeravr.protocol;
+package org.openhab.binding.pioneeravr.internal.protocol.avr;
 
 /**
  * Thrown when a command type is not supported by the channel

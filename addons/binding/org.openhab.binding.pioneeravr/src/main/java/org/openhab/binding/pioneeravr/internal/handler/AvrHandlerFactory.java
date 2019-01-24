@@ -20,7 +20,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.pioneeravr.PioneerAvrBindingConstants;
+import org.openhab.binding.pioneeravr.internal.PioneerAvrBindingConstants;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
 
