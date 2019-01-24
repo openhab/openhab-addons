@@ -23,7 +23,7 @@ Required configuration parameters are:
 
 * __host__: The IP/Hostname of the MQTT broker. Be aware that this binding allows only one bridge / one connection per unique host:port.
 * __port__: The optional port of the MQTT broker. If none is provided, the typical ports 1883 and 8883 (SSL) are used. Be aware that this binding allows only one bridge / one connection per unique host:port.
-* __secure__: Uses TLS/SSL to establish a secure connection to the broker. Can be "OFF","ON","AUTO". The AUTO setting prefers a secure connection but will fall-back to an insecure one. Default is ON.
+* __secure__: Uses TLS/SSL to establish a secure connection to the broker. Can be true or false. Defaults to false.
 
 Additionally the following parameters can be set:
 
@@ -67,9 +67,9 @@ Configuration parameters are:
 
 In a first example a very secure connection to a broker is defined. It pins the returned certificate and public key.
 If someone tries a man in the middle attack later on, this broker connection will recognize it and refuse a connection.
-Be aware that if your brokers certificate changes, you need to remove the connection entry and add it again. Secure connections are default, if you do not provide the "secure" parameter.
+Be aware that if your brokers certificate changes, you need to remove the connection entry and add it again. 
 
-The second connection is a plain, unsecured one. Use this only for local MQTT Brokers.
+The second connection is a plain, unsecured one. Unsecure connections are default, if you do not provide the "secure" parameter. Use this only for local MQTT Brokers.
 
 A third connection uses a username and password for authentication.
 Secure is set to false as the username and password is requested by the broker.
