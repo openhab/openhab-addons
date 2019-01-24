@@ -6,9 +6,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.lirc;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
-Export-Package: 
- org.openhab.binding.lirc,
- org.openhab.binding.lirc.handler
 Import-Package: 
  org.apache.commons.io,
  org.eclipse.jdt.annotation;resolution:=optional,
@@ -20,8 +17,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.openhab.binding.lirc,
- org.openhab.binding.lirc.handler,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

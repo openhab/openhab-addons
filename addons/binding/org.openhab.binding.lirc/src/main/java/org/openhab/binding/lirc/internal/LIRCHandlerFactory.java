@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.lirc.internal;
 
-import static org.openhab.binding.lirc.LIRCBindingConstants.THING_TYPE_REMOTE;
+import static org.openhab.binding.lirc.internal.LIRCBindingConstants.THING_TYPE_REMOTE;
 
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -26,10 +26,9 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.lirc.LIRCBindingConstants;
-import org.openhab.binding.lirc.handler.LIRCBridgeHandler;
-import org.openhab.binding.lirc.handler.LIRCRemoteHandler;
 import org.openhab.binding.lirc.internal.discovery.LIRCRemoteDiscoveryService;
+import org.openhab.binding.lirc.internal.handler.LIRCBridgeHandler;
+import org.openhab.binding.lirc.internal.handler.LIRCRemoteHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 
