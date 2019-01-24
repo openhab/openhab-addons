@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.lifx.internal;
 
-import static org.openhab.binding.lifx.LifxBindingConstants.SUPPORTED_THING_TYPES;
+import static org.openhab.binding.lifx.internal.LifxBindingConstants.SUPPORTED_THING_TYPES;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -21,7 +21,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.lifx.handler.LifxLightHandler;
+import org.openhab.binding.lifx.internal.handler.LifxLightHandler;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.lifx.internal;
 
-import static org.openhab.binding.lifx.LifxBindingConstants.PACKET_INTERVAL;
+import static org.openhab.binding.lifx.internal.LifxBindingConstants.PACKET_INTERVAL;
 import static org.openhab.binding.lifx.internal.fields.MACAddress.BROADCAST_ADDRESS;
 import static org.openhab.binding.lifx.internal.util.LifxMessageUtil.randomSourceId;
 import static org.openhab.binding.lifx.internal.util.LifxSelectorUtil.*;
@@ -32,8 +32,8 @@ import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.lifx.handler.LifxLightHandler.CurrentLightState;
 import org.openhab.binding.lifx.internal.fields.MACAddress;
+import org.openhab.binding.lifx.internal.handler.LifxLightHandler.CurrentLightState;
 import org.openhab.binding.lifx.internal.listener.LifxResponsePacketListener;
 import org.openhab.binding.lifx.internal.protocol.GetServiceRequest;
 import org.openhab.binding.lifx.internal.protocol.Packet;
