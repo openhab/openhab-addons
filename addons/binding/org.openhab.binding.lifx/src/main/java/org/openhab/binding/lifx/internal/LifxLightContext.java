@@ -15,8 +15,8 @@ package org.openhab.binding.lifx.internal;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.lifx.handler.LifxLightHandler;
-import org.openhab.binding.lifx.handler.LifxLightHandler.CurrentLightState;
+import org.openhab.binding.lifx.internal.handler.LifxLightHandler;
+import org.openhab.binding.lifx.internal.handler.LifxLightHandler.CurrentLightState;
 import org.openhab.binding.lifx.internal.protocol.Product;
 
 /**

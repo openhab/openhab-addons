@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.lifx.internal;
 
-import static org.openhab.binding.lifx.LifxBindingConstants.DEFAULT_COLOR;
+import static org.openhab.binding.lifx.internal.LifxBindingConstants.DEFAULT_COLOR;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
