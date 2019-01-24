@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ntp.handler;
+package org.openhab.binding.ntp.internal.handler;
 
-import static org.openhab.binding.ntp.NtpBindingConstants.*;
+import static org.openhab.binding.ntp.internal.NtpBindingConstants.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
