@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.homematic.internal.discovery;
 
-import static org.openhab.binding.homematic.HomematicBindingConstants.THING_TYPE_BRIDGE;
+import static org.openhab.binding.homematic.internal.HomematicBindingConstants.THING_TYPE_BRIDGE;
 
 import java.util.Collections;
 import java.util.HashMap;

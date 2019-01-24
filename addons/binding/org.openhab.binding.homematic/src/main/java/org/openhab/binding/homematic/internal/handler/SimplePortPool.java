@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homematic.handler;
+package org.openhab.binding.homematic.internal.handler;
 
 import java.util.ArrayList;
 import java.util.List;
