@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.lirc.handler;
+package org.openhab.binding.lirc.internal.handler;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,7 +23,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.lirc.LIRCBindingConstants;
+import org.openhab.binding.lirc.internal.LIRCBindingConstants;
 import org.openhab.binding.lirc.internal.LIRCMessageListener;
 import org.openhab.binding.lirc.internal.config.LIRCRemoteConfiguration;
 import org.openhab.binding.lirc.internal.messages.LIRCButtonEvent;
