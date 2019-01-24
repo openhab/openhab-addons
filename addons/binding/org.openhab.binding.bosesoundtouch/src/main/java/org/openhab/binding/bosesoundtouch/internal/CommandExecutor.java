@@ -14,7 +14,6 @@ package org.openhab.binding.bosesoundtouch.internal;
 
 import static org.openhab.binding.bosesoundtouch.BoseSoundTouchBindingConstants.*;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,18 +56,18 @@ public class CommandExecutor implements AvailableSources {
         this.handler = handler;
         init();
     }
-    
+
     /**
      * Synchronizes the underlying storage container with the current value for the presets stored on the player
      * by updating the available ones and deleting the cleared ones
-     * 
+     *
      * @param playerPresets a Map<Integer, ContentItems> containing the items currently stored on the player
      */
     public void updatePresetContainerFromPlayer(Map<Integer, ContentItem> playerPresets) {
-        playerPresets.forEach((k,v) -> {
+        playerPresets.forEach((k, v) -> {
             try {
                 if (v != null) {
-                    handler.getPresetContainer().put(k, v);                    
+                    handler.getPresetContainer().put(k, v);
                 } else {
                     handler.getPresetContainer().remove(k);
                 }
@@ -76,16 +75,16 @@ public class CommandExecutor implements AvailableSources {
                 logger.debug("{}: ContentItem is not presetable", handler.getDeviceName());
             }
         });
-        
+
         handler.refreshPresetChannel();
     }
 
     /**
      * Adds a ContentItem to the PresetContainer
      *
-     * @param id the id the ContentItem should be reached
+     * @param id          the id the ContentItem should be reached
      * @param contentItem the contentItem that should be saved as PRESET. Note that a eventually set presetID of the
-     *            ContentItem will be overwritten with id
+     *                        ContentItem will be overwritten with id
      */
     public void addContentItemToPresetContainer(int id, ContentItem contentItem) {
         contentItem.setPresetID(id);
@@ -101,7 +100,7 @@ public class CommandExecutor implements AvailableSources {
      * Adds the current selected ContentItem to the PresetContainer
      *
      * @param command the command is a DecimalType, thats intValue will be used as id. The id the ContentItem should be
-     *            reached
+     *                    reached
      */
     public void addCurrentContentItemToPresetContainer(DecimalType command) {
         if (command.intValue() > 6) {
@@ -119,12 +118,8 @@ public class CommandExecutor implements AvailableSources {
     public void getInformations(APIRequest apiRequest) {
         String msg = "<msg><header " + "deviceID=\"" + handler.getMacAddress() + "\"" + " url=\"" + apiRequest
                 + "\" method=\"GET\"><request requestID=\"0\"><info type=\"new\"/></request></header></msg>";
-        try {
-            handler.getSession().getRemote().sendString(msg);
-            logger.debug("{}: sending request: {}", handler.getDeviceName(), msg);
-        } catch (IOException e) {
-            handler.onWebSocketError(e);
-        }
+        handler.getSession().getRemote().sendStringByFuture(msg);
+        logger.debug("{}: sending request: {}", handler.getDeviceName(), msg);
     }
 
     /**
@@ -380,9 +375,9 @@ public class CommandExecutor implements AvailableSources {
                 + "\" method=\"POST\"><request requestID=\"" + id + "\"><info " + infoAddon
                 + " type=\"new\"/></request></header><body>" + postData + "</body></msg>";
         try {
-            handler.getSession().getRemote().sendString(msg);
+            handler.getSession().getRemote().sendStringByFuture(msg);
             logger.debug("{}: sending request: {}", handler.getDeviceName(), msg);
-        } catch (IOException | NullPointerException e) {
+        } catch (NullPointerException e) {
             handler.onWebSocketError(e);
         }
     }
