@@ -146,7 +146,7 @@
 		<item-type>String</item-type>
 		<label>Fan fault</label>
 		<description>Check the fan fault of the TV</description>
-		<state>
+		<state readOnly="true">
 			<options>
 				<option value="0">Fan fault</option>
 				<option value="1">Fan OK</option>
@@ -290,7 +290,7 @@
 		<item-type>String</item-type>
 		<label>Lamp fault</label>
 		<description>Check the lamp fault of the TV</description>
-		<state>
+		<state readOnly="true">
 			<options>
 				<option value="0">Fan fault</option>
 				<option value="1">Fan OK</option>
@@ -396,6 +396,7 @@
 		<item-type>String</item-type>
 		<label>Serial number</label>
 		<description>Read the serial numbers</description>
+		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="sharpness">
@@ -446,6 +447,7 @@
 		<item-type>String</item-type>
 		<label>Software version</label>
 		<description>Check the software version</description>
+		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="speaker">
