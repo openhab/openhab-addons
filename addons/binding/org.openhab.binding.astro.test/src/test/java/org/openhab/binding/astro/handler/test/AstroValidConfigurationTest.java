@@ -13,7 +13,7 @@
 package org.openhab.binding.astro.handler.test;
 
 import static org.mockito.Mockito.*;
-import static org.openhab.binding.astro.AstroBindingConstants.THING_TYPE_SUN;
+import static org.openhab.binding.astro.internal.AstroBindingConstants.THING_TYPE_SUN;
 import static org.openhab.binding.astro.test.cases.AstroBindingTestsData.*;
 
 import org.eclipse.smarthome.config.core.Configuration;
@@ -26,8 +26,8 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.junit.Test;
-import org.openhab.binding.astro.handler.AstroThingHandler;
-import org.openhab.binding.astro.handler.SunHandler;
+import org.openhab.binding.astro.internal.handler.AstroThingHandler;
+import org.openhab.binding.astro.internal.handler.SunHandler;
 
 /**
  * Tests for the {@link AstroThingHandler}
