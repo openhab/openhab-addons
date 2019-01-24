@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.ntp.internal.discovery;
 
-import static org.openhab.binding.ntp.NtpBindingConstants.*;
+import static org.openhab.binding.ntp.internal.NtpBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
