@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.nibeuplink.handler;
+package org.openhab.binding.nibeuplink.internal.handler;
 
 import org.openhab.binding.nibeuplink.internal.command.GenericStatusUpdate;
 import org.openhab.binding.nibeuplink.internal.command.NibeUplinkCommand;

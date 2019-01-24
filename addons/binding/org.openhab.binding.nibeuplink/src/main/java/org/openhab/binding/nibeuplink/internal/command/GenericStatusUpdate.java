@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.nibeuplink.internal.command;
 
-import static org.openhab.binding.nibeuplink.NibeUplinkBindingConstants.*;
+import static org.openhab.binding.nibeuplink.internal.NibeUplinkBindingConstants.*;
 
 import java.nio.charset.StandardCharsets;
 
@@ -25,9 +25,9 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
-import org.openhab.binding.nibeuplink.handler.NibeUplinkHandler;
 import org.openhab.binding.nibeuplink.internal.callback.AbstractUplinkCommandCallback;
 import org.openhab.binding.nibeuplink.internal.connector.StatusUpdateListener;
+import org.openhab.binding.nibeuplink.internal.handler.NibeUplinkHandler;
 import org.openhab.binding.nibeuplink.internal.model.Channel;
 import org.openhab.binding.nibeuplink.internal.model.DataResponse;
 import org.openhab.binding.nibeuplink.internal.model.DataResponseTransformer;

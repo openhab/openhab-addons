@@ -12,16 +12,16 @@
  */
 package org.openhab.binding.nibeuplink.internal.command;
 
-import static org.openhab.binding.nibeuplink.NibeUplinkBindingConstants.*;
+import static org.openhab.binding.nibeuplink.internal.NibeUplinkBindingConstants.*;
 
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.FormContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.Fields;
-import org.openhab.binding.nibeuplink.handler.NibeUplinkHandler;
 import org.openhab.binding.nibeuplink.internal.callback.AbstractUplinkCommandCallback;
 import org.openhab.binding.nibeuplink.internal.connector.StatusUpdateListener;
+import org.openhab.binding.nibeuplink.internal.handler.NibeUplinkHandler;
 
 /**
  * implements the login to the webinterface
