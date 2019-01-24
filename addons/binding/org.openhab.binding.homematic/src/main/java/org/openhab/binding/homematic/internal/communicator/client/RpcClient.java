@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.homematic.internal.communicator.client;
 
-import static org.openhab.binding.homematic.HomematicBindingConstants.*;
+import static org.openhab.binding.homematic.internal.HomematicBindingConstants.*;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.openhab.binding.homematic.HomematicBindingConstants;
+import org.openhab.binding.homematic.internal.HomematicBindingConstants;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.message.RpcRequest;
 import org.openhab.binding.homematic.internal.communicator.parser.GetAllScriptsParser;

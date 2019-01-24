@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homematic.handler;
+package org.openhab.binding.homematic.internal.handler;
 
 /**
  * Exception if the HomematicGateway is not available.

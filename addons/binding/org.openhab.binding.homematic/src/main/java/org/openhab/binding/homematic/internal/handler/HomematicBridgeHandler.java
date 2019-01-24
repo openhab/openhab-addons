@@ -10,10 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homematic.handler;
+package org.openhab.binding.homematic.internal.handler;
 
 import static org.eclipse.smarthome.core.thing.Thing.*;
-import static org.openhab.binding.homematic.HomematicBindingConstants.CHANNEL_TYPE_DUTY_CYCLE_RATIO;
+import static org.openhab.binding.homematic.internal.HomematicBindingConstants.CHANNEL_TYPE_DUTY_CYCLE_RATIO;
 
 import java.io.IOException;
 import java.util.Hashtable;

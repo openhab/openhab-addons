@@ -9,8 +9,6 @@ Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
 Bundle-ClassPath: .
 Export-Package: 
- org.openhab.binding.homematic,
- org.openhab.binding.homematic.handler,
  org.openhab.binding.homematic.type
 Import-Package: 
  com.thoughtworks.xstream,
@@ -51,8 +49,6 @@ Import-Package:
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.io.net.http,
  org.jupnp.model.meta,
- org.openhab.binding.homematic,
- org.openhab.binding.homematic.handler,
  org.osgi.framework,
  org.osgi.service.component,
  org.slf4j

@@ -14,7 +14,7 @@ package org.openhab.binding.homematic.internal.communicator;
 
 import java.io.IOException;
 
-import org.openhab.binding.homematic.HomematicBindingConstants;
+import org.openhab.binding.homematic.internal.HomematicBindingConstants;
 import org.openhab.binding.homematic.internal.misc.HomematicClientException;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
