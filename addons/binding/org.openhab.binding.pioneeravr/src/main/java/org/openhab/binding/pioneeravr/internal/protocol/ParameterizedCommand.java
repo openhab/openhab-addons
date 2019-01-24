@@ -13,8 +13,8 @@
 package org.openhab.binding.pioneeravr.internal.protocol;
 
 import org.apache.commons.lang.StringUtils;
-import org.openhab.binding.pioneeravr.protocol.AvrCommand;
-import org.openhab.binding.pioneeravr.protocol.AvrConnectionException;
+import org.openhab.binding.pioneeravr.internal.protocol.avr.AvrCommand;
+import org.openhab.binding.pioneeravr.internal.protocol.avr.AvrConnectionException;
 
 /**
  * A command which accept a parameter.

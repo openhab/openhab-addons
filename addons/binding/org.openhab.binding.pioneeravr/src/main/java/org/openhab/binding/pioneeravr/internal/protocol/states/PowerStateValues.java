@@ -10,20 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.pioneeravr.protocol.event;
+package org.openhab.binding.pioneeravr.internal.protocol.states;
 
 /**
- * A listener which is notified when an AVR is disconnected.
  *
  * @author Antoine Besnard - Initial contribution
  */
-public interface AvrDisconnectionListener {
+public interface PowerStateValues {
 
-    /**
-     * Called when an AVR is disconnected.
-     *
-     * @param event
-     */
-    public void onDisconnection(AvrDisconnectionEvent event);
+    public static final String ON_VALUE = "0";
+    public static final String OFF_VALUE = "1";
+    public static final String NETWORK_STANDBY_VALUE = "2";
 
 }
