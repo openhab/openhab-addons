@@ -8,9 +8,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.nuki;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
-Export-Package: 
- org.openhab.binding.nuki,
- org.openhab.binding.nuki.handler
 Import-Package: 
  com.google.gson,
  javax.servlet,
@@ -33,8 +30,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.io.net.http,
- org.openhab.binding.nuki,
- org.openhab.binding.nuki.handler,
  org.osgi.framework,
  org.osgi.service.http,
  org.slf4j

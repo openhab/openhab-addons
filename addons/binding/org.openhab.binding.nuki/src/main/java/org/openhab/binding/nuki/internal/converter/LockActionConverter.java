@@ -15,7 +15,7 @@ package org.openhab.binding.nuki.internal.converter;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openhab.binding.nuki.NukiBindingConstants;
+import org.openhab.binding.nuki.internal.NukiBindingConstants;
 
 /**
  * The {@link LockActionConverter} is responsible for mapping Binding Lock States to Bridge HTTP-API Lock Actions.
