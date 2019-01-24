@@ -65,8 +65,8 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
-import org.openhab.binding.ntp.NtpBindingConstants;
-import org.openhab.binding.ntp.handler.NtpHandler;
+import org.openhab.binding.ntp.internal.NtpBindingConstants;
+import org.openhab.binding.ntp.internal.handler.NtpHandler;
 import org.openhab.binding.ntp.server.SimpleNTPServer;
 
 /**

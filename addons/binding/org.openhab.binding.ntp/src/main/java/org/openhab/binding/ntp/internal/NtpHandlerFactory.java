@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.ntp.internal;
 
-import static org.openhab.binding.ntp.NtpBindingConstants.*;
+import static org.openhab.binding.ntp.internal.NtpBindingConstants.*;
 
 import org.eclipse.smarthome.core.i18n.LocaleProvider;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -20,7 +20,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.ntp.handler.NtpHandler;
+import org.openhab.binding.ntp.internal.handler.NtpHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
