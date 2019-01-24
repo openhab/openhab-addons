@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.tradfri.internal.model;
 
-import static org.openhab.binding.tradfri.TradfriBindingConstants.*;
+import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
