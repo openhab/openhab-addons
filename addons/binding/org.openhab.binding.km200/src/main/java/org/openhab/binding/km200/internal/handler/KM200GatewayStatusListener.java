@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.km200.handler;
+package org.openhab.binding.km200.internal.handler;
 
 import org.eclipse.smarthome.core.thing.ThingStatus;
 

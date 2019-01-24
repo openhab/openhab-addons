@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.km200.internal.discovery;
 
-import static org.openhab.binding.km200.KM200BindingConstants.*;
+import static org.openhab.binding.km200.internal.KM200BindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,11 +23,11 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.km200.KM200ThingType;
-import org.openhab.binding.km200.handler.KM200GatewayHandler;
-import org.openhab.binding.km200.handler.KM200GatewayStatusListener;
 import org.openhab.binding.km200.internal.KM200ServiceObject;
+import org.openhab.binding.km200.internal.KM200ThingType;
 import org.openhab.binding.km200.internal.KM200Utils;
+import org.openhab.binding.km200.internal.handler.KM200GatewayHandler;
+import org.openhab.binding.km200.internal.handler.KM200GatewayStatusListener;
 import org.openhab.binding.km200.internal.handler.KM200SwitchProgramServiceHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
