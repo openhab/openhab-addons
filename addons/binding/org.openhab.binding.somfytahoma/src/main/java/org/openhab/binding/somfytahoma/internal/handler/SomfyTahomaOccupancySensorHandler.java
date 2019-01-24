@@ -10,26 +10,27 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.somfytahoma.handler;
+package org.openhab.binding.somfytahoma.internal.handler;
 
 import org.eclipse.smarthome.core.thing.Thing;
 
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.CONTACT;
+
 import java.util.HashMap;
 
-import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
-
 /**
- * The {@link SomfyTahomaPergolaHandler} is responsible for handling commands,
- * which are sent to one of the channels of the pergola thing.
+ * The {@link SomfyTahomaOccupancySensorHandler} is responsible for handling commands,
+ * which are sent to one of the channels of the occupancy sensor thing.
  *
  * @author Ondrej Pecta - Initial contribution
  */
-public class SomfyTahomaPergolaHandler extends SomfyTahomaAwningHandler {
+public class SomfyTahomaOccupancySensorHandler extends SomfyTahomaContactSensorHandler {
 
-    public SomfyTahomaPergolaHandler(Thing thing) {
+    public SomfyTahomaOccupancySensorHandler(Thing thing) {
         super(thing);
         stateNames = new HashMap<String, String>() {{
-            put(CONTROL, "core:TargetClosureState");
+            put(CONTACT, "core:OccupancyState");
         }};
     }
+
 }
