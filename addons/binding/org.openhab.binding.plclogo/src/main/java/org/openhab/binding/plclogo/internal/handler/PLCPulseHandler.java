@@ -10,20 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.plclogo.handler;
+package org.openhab.binding.plclogo.internal.handler;
 
-import static org.openhab.binding.plclogo.PLCLogoBindingConstants.*;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.*;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -41,7 +39,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.plclogo.internal.PLCLogoClient;
-import org.openhab.binding.plclogo.internal.config.PLCDigitalConfiguration;
+import org.openhab.binding.plclogo.internal.config.PLCPulseConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,51 +47,23 @@ import Moka7.S7;
 import Moka7.S7Client;
 
 /**
- * The {@link PLCDigitalHandler} is responsible for handling commands, which are
+ * The {@link PLCPulseHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Alexander Falkenstern - Initial contribution
  */
 @NonNullByDefault
-public class PLCDigitalHandler extends PLCCommonHandler {
+public class PLCPulseHandler extends PLCCommonHandler {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_DIGITAL);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_PULSE);
 
-    private final Logger logger = LoggerFactory.getLogger(PLCDigitalHandler.class);
-    private AtomicReference<PLCDigitalConfiguration> config = new AtomicReference<>();
-
-    private static final Map<String, @Nullable Integer> LOGO_BLOCKS_0BA7;
-    static {
-        Map<String, @Nullable Integer> buffer = new HashMap<>();
-        buffer.put("I", 24); // 24 digital inputs
-        buffer.put("Q", 16); // 16 digital outputs
-        buffer.put("M", 27); // 27 digital markers
-        LOGO_BLOCKS_0BA7 = Collections.unmodifiableMap(buffer);
-    }
-
-    private static final Map<String, @Nullable Integer> LOGO_BLOCKS_0BA8;
-    static {
-        Map<String, @Nullable Integer> buffer = new HashMap<>();
-        buffer.put("I", 24); // 24 digital inputs
-        buffer.put("Q", 20); // 20 digital outputs
-        buffer.put("M", 64); // 64 digital markers
-        buffer.put("NI", 64); // 64 network inputs
-        buffer.put("NQ", 64); // 64 network outputs
-        LOGO_BLOCKS_0BA8 = Collections.unmodifiableMap(buffer);
-    }
-
-    private static final Map<String, Map<String, @Nullable Integer>> LOGO_BLOCK_NUMBER;
-    static {
-        Map<String, Map<String, @Nullable Integer>> buffer = new HashMap<>();
-        buffer.put(LOGO_0BA7, LOGO_BLOCKS_0BA7);
-        buffer.put(LOGO_0BA8, LOGO_BLOCKS_0BA8);
-        LOGO_BLOCK_NUMBER = Collections.unmodifiableMap(buffer);
-    }
+    private final Logger logger = LoggerFactory.getLogger(PLCPulseHandler.class);
+    private AtomicReference<PLCPulseConfiguration> config = new AtomicReference<>();
 
     /**
      * Constructor.
      */
-    public PLCDigitalHandler(Thing thing) {
+    public PLCPulseHandler(Thing thing) {
         super(thing);
     }
 
@@ -104,7 +74,7 @@ public class PLCDigitalHandler extends PLCCommonHandler {
         }
 
         Channel channel = getThing().getChannel(channelUID.getId());
-        Objects.requireNonNull(channel, "PLCDigitalHandler: Invalid channel found");
+        Objects.requireNonNull(channel, "PLCPulseHandler: Invalid channel found");
 
         PLCLogoClient client = getLogoClient();
         String name = getBlockFromChannel(channel);
@@ -112,17 +82,15 @@ public class PLCDigitalHandler extends PLCCommonHandler {
         int bit = getBit(name);
         int address = getAddress(name);
         if ((address != INVALID) && (bit != INVALID) && (client != null)) {
+            byte[] buffer = new byte[1];
             if (command instanceof RefreshType) {
-                int base = getBase(name);
-                byte[] buffer = new byte[getBufferLength()];
-                int result = client.readDBArea(1, base, buffer.length, S7Client.S7WLByte, buffer);
+                int result = client.readDBArea(1, address, buffer.length, S7Client.S7WLByte, buffer);
                 if (result == 0) {
-                    updateChannel(channel, S7.GetBitAt(buffer, address - base, bit));
+                    updateChannel(channel, S7.GetBitAt(buffer, 0, bit));
                 } else {
                     logger.debug("Can not read data from LOGO!: {}.", S7Client.ErrorText(result));
                 }
             } else if ((command instanceof OpenClosedType) || (command instanceof OnOffType)) {
-                byte[] buffer = new byte[1];
                 String type = channel.getAcceptedItemType();
                 if (DIGITAL_INPUT_ITEM.equalsIgnoreCase(type)) {
                     S7.SetBitAt(buffer, 0, 0, ((OpenClosedType) command) == OpenClosedType.CLOSED);
@@ -160,25 +128,51 @@ public class PLCDigitalHandler extends PLCCommonHandler {
             return;
         }
 
-        Boolean force = config.get().isUpdateForced();
+        PLCLogoClient client = getLogoClient();
         for (Channel channel : channels) {
             ChannelUID channelUID = channel.getUID();
             String name = getBlockFromChannel(channel);
 
             int bit = getBit(name);
             int address = getAddress(name);
-            if ((address != INVALID) && (bit != INVALID)) {
-                DecimalType state = (DecimalType) getOldValue(name);
-                boolean value = S7.GetBitAt(data, address - getBase(name), bit);
-                if ((state == null) || ((value ? 1 : 0) != state.intValue()) || force) {
-                    updateChannel(channel, value);
-                }
-                if (logger.isTraceEnabled()) {
-                    int buffer = (data[address - getBase(name)] & 0xFF) + 0x100;
-                    logger.trace("Channel {} received [{}].", channelUID, Integer.toBinaryString(buffer).substring(1));
+            if ((address != INVALID) && (bit != INVALID) && (client != null)) {
+                DecimalType state = (DecimalType) getOldValue(channelUID.getId());
+                if (STATE_CHANNEL.equalsIgnoreCase(channelUID.getId())) {
+                    boolean value = S7.GetBitAt(data, address - getBase(name), bit);
+                    if ((state == null) || ((value ? 1 : 0) != state.intValue())) {
+                        updateChannel(channel, value);
+                    }
+                    if (logger.isTraceEnabled()) {
+                        int buffer = (data[address - getBase(name)] & 0xFF) + 0x100;
+                        logger.trace("Channel {} received [{}].", channelUID,
+                                Integer.toBinaryString(buffer).substring(1));
+                    }
+                } else if (OBSERVE_CHANNEL.equalsIgnoreCase(channelUID.getId())) {
+                    handleCommand(channelUID, RefreshType.REFRESH);
+                    if ((state != null) && !state.equals(getOldValue(channelUID.getId()))) {
+                        Integer pulse = config.get().getPulseLength();
+                        scheduler.schedule(new Runnable() {
+                            private final String name = config.get().getBlockName();
+
+                            @Override
+                            public void run() {
+                                byte[] data = new byte[1];
+                                S7.SetBitAt(data, 0, 0, state.intValue() == 1 ? true : false);
+                                int address = 8 * getAddress(name) + getBit(name);
+                                int result = client.writeDBArea(1, address, data.length, S7Client.S7WLBit, data);
+                                if (result == 0) {
+                                    setOldValue(channelUID.getId(), null);
+                                } else {
+                                    logger.debug("Can not write data to LOGO!: {}.", S7Client.ErrorText(result));
+                                }
+                            }
+                        }, pulse.longValue(), TimeUnit.MILLISECONDS);
+                    }
+                } else {
+                    logger.info("Invalid channel {} found.", channelUID);
                 }
             } else {
-                logger.info("Invalid channel {} found.", channelUID);
+                logger.info("Invalid channel {} or client {} found.", channelUID, client);
             }
         }
     }
@@ -193,25 +187,29 @@ public class PLCDigitalHandler extends PLCCommonHandler {
         }
 
         Channel channel = thing.getChannel(channelUID.getId());
-        Objects.requireNonNull(channel, "PLCDigitalHandler: Invalid channel found");
+        Objects.requireNonNull(channel, "PLCPulseHandler: Invalid channel found");
 
-        setOldValue(getBlockFromChannel(channel), value);
+        setOldValue(channelUID.getId(), value);
     }
 
     @Override
     protected void updateConfiguration(Configuration configuration) {
         super.updateConfiguration(configuration);
-        config.set(getConfigAs(PLCDigitalConfiguration.class));
+        config.set(getConfigAs(PLCPulseConfiguration.class));
     }
 
     @Override
     protected boolean isValid(final String name) {
-        if (2 <= name.length() && (name.length() <= 4)) {
-            String kind = getBlockKind();
-            if (Character.isDigit(name.charAt(1)) || Character.isDigit(name.charAt(2))) {
-                boolean valid = "I".equalsIgnoreCase(kind) || "NI".equalsIgnoreCase(kind);
-                valid = valid || "Q".equalsIgnoreCase(kind) || "NQ".equalsIgnoreCase(kind);
+        if (2 <= name.length() && (name.length() <= 7)) {
+            String kind = config.get().getObservedBlockKind();
+            if (Character.isDigit(name.charAt(1))) {
+                boolean valid = "I".equalsIgnoreCase(kind) || "Q".equalsIgnoreCase(kind);
                 return name.startsWith(kind) && (valid || "M".equalsIgnoreCase(kind));
+            } else if (Character.isDigit(name.charAt(2))) {
+                String bKind = getBlockKind();
+                boolean valid = "NI".equalsIgnoreCase(kind) || "NQ".equalsIgnoreCase(kind);
+                valid = name.startsWith(kind) && (valid || "VB".equalsIgnoreCase(kind));
+                return (name.startsWith(bKind) && "VB".equalsIgnoreCase(bKind)) || valid;
             }
         }
         return false;
@@ -224,19 +222,17 @@ public class PLCDigitalHandler extends PLCCommonHandler {
 
     @Override
     protected int getNumberOfChannels() {
-        String kind = getBlockKind();
-        String family = getLogoFamily();
-        logger.debug("Get block number of {} LOGO! for {} blocks.", family, kind);
-
-        Integer number = LOGO_BLOCK_NUMBER.get(family).get(kind);
-        return number == null ? 0 : number.intValue();
+        return 2;
     }
 
     @Override
     protected int getAddress(final String name) {
         int address = super.getAddress(name);
         if (address != INVALID) {
-            address = getBase(name) + (address - 1) / 8;
+            int base = getBase(name);
+            if (base != 0) {
+                address = base + (address - 1) / 8;
+            }
         } else {
             logger.info("Wrong configurated LOGO! block {} found.", name);
         }
@@ -247,38 +243,43 @@ public class PLCDigitalHandler extends PLCCommonHandler {
     protected void doInitialization() {
         Thing thing = getThing();
         Bridge bridge = getBridge();
-        Objects.requireNonNull(bridge, "PLCMemoryHandler: Bridge may not be null");
+        Objects.requireNonNull(bridge, "PLCPulseHandler: Bridge may not be null");
 
-        logger.debug("Initialize LOGO! digital input blocks handler.");
+        logger.debug("Initialize LOGO! pulse handler.");
 
-        config.set(getConfigAs(PLCDigitalConfiguration.class));
+        config.set(getConfigAs(PLCPulseConfiguration.class));
 
         super.doInitialization();
         if (ThingStatus.OFFLINE != thing.getStatus()) {
-            String kind = getBlockKind();
-            String text = "I".equalsIgnoreCase(kind) || "NI".equalsIgnoreCase(kind) ? "input" : "output";
-
             ThingBuilder tBuilder = editThing();
 
             String label = thing.getLabel();
             if (label == null) {
                 label = bridge.getLabel() == null ? "Siemens Logo!" : bridge.getLabel();
-                label += (": digital " + text + "s");
+                label += (": digital pulse in/output");
             }
             tBuilder.withLabel(label);
 
-            String type = config.get().getChannelType();
-            for (int i = 0; i < getNumberOfChannels(); i++) {
-                String name = kind + String.valueOf(i + 1);
-                ChannelUID uid = new ChannelUID(thing.getUID(), name);
-                ChannelBuilder cBuilder = ChannelBuilder.create(uid, type);
-                cBuilder.withType(new ChannelTypeUID(BINDING_ID, type.toLowerCase()));
-                cBuilder.withLabel(name);
-                cBuilder.withDescription("Digital " + text + " block " + name);
-                cBuilder.withProperties(Collections.singletonMap(BLOCK_PROPERTY, name));
-                tBuilder.withChannel(cBuilder.build());
-                setOldValue(name, null);
-            }
+            String bName = config.get().getBlockName();
+            String bType = config.get().getChannelType();
+            ChannelUID uid = new ChannelUID(thing.getUID(), STATE_CHANNEL);
+            ChannelBuilder cBuilder = ChannelBuilder.create(uid, bType);
+            cBuilder.withType(new ChannelTypeUID(BINDING_ID, bType.toLowerCase()));
+            cBuilder.withLabel(bName);
+            cBuilder.withDescription("Control block " + bName);
+            cBuilder.withProperties(Collections.singletonMap(BLOCK_PROPERTY, bName));
+            tBuilder.withChannel(cBuilder.build());
+            setOldValue(STATE_CHANNEL, null);
+
+            String oName = config.get().getObservedBlock();
+            String oType = config.get().getObservedChannelType();
+            cBuilder = ChannelBuilder.create(new ChannelUID(thing.getUID(), OBSERVE_CHANNEL), oType);
+            cBuilder.withType(new ChannelTypeUID(BINDING_ID, oType.toLowerCase()));
+            cBuilder.withLabel(oName);
+            cBuilder.withDescription("Observed block " + oName);
+            cBuilder.withProperties(Collections.singletonMap(BLOCK_PROPERTY, oName));
+            tBuilder.withChannel(cBuilder.build());
+            setOldValue(OBSERVE_CHANNEL, null);
 
             updateThing(tBuilder.build());
             updateStatus(ThingStatus.ONLINE);
@@ -297,12 +298,19 @@ public class PLCDigitalHandler extends PLCCommonHandler {
         logger.debug("Get bit of {} LOGO! for block {} .", getLogoFamily(), name);
 
         if (isValid(name) && (getAddress(name) != INVALID)) {
-            if (Character.isDigit(name.charAt(1))) {
-                bit = Integer.parseInt(name.substring(1));
-            } else if (Character.isDigit(name.charAt(2))) {
-                bit = Integer.parseInt(name.substring(2));
+            String[] parts = name.trim().split("\\.");
+            if (parts.length > 1) {
+                bit = Integer.parseInt(parts[1]);
+            } else if (parts.length == 1) {
+                if (Character.isDigit(parts[0].charAt(1))) {
+                    bit = Integer.parseInt(parts[0].substring(1));
+                } else if (Character.isDigit(parts[0].charAt(2))) {
+                    bit = Integer.parseInt(parts[0].substring(2));
+                } else if (Character.isDigit(parts[0].charAt(3))) {
+                    bit = Integer.parseInt(parts[0].substring(3));
+                }
+                bit = (bit - 1) % 8;
             }
-            bit = (bit - 1) % 8;
         } else {
             logger.info("Wrong configurated LOGO! block {} found.", name);
         }
