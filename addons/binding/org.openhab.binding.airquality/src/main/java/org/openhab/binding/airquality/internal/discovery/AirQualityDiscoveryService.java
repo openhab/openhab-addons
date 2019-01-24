@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.airquality.internal.discovery;
 
-import static org.openhab.binding.airquality.AirQualityBindingConstants.*;
+import static org.openhab.binding.airquality.internal.AirQualityBindingConstants.*;
 import static org.openhab.binding.airquality.internal.AirQualityConfiguration.LOCATION;
 
 import java.util.Collections;
