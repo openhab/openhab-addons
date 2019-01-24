@@ -14,11 +14,15 @@ package org.openhab.binding.autelis.internal;
 
 import static org.openhab.binding.autelis.internal.AutelisBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.autelis.internal.handler.AutelisHandler;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * The {@link AutelisHandlerFactory} is responsible for creating things and
@@ -26,6 +30,8 @@ import org.openhab.binding.autelis.internal.handler.AutelisHandler;
  *
  * @author Dan Cunningham - Initial contribution
  */
+@NonNullByDefault
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.autelis")
 public class AutelisHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
@@ -34,7 +40,7 @@ public class AutelisHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new AutelisHandler(thing);
