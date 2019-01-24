@@ -33,7 +33,7 @@ import org.eclipse.smarthome.test.java.JavaTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.binding.dmx.handler.Lib485BridgeHandler;
+import org.openhab.binding.dmx.internal.handler.Lib485BridgeHandler;
 
 /**
  * Tests cases for {@link Lib485BridgeHandler}.
