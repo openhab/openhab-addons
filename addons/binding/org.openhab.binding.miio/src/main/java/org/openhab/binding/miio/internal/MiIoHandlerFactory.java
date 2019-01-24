@@ -12,17 +12,17 @@
  */
 package org.openhab.binding.miio.internal;
 
-import static org.openhab.binding.miio.MiIoBindingConstants.*;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.miio.handler.MiIoBasicHandler;
-import org.openhab.binding.miio.handler.MiIoGenericHandler;
-import org.openhab.binding.miio.handler.MiIoUnsupportedHandler;
-import org.openhab.binding.miio.handler.MiIoVacuumHandler;
+import org.openhab.binding.miio.internal.handler.MiIoBasicHandler;
+import org.openhab.binding.miio.internal.handler.MiIoGenericHandler;
+import org.openhab.binding.miio.internal.handler.MiIoUnsupportedHandler;
+import org.openhab.binding.miio.internal.handler.MiIoVacuumHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**

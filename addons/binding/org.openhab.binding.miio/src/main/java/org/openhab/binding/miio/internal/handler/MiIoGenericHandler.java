@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.miio.handler;
+package org.openhab.binding.miio.internal.handler;
 
-import static org.openhab.binding.miio.MiIoBindingConstants.CHANNEL_COMMAND;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.CHANNEL_COMMAND;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ChannelUID;

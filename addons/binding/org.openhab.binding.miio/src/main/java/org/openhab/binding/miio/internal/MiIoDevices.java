@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.miio.internal;
 
-import static org.openhab.binding.miio.MiIoBindingConstants.*;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 

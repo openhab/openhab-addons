@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.miio;
+package org.openhab.binding.miio.internal;
 
 /**
  * The {@link MiIoBindingConfiguration} class defines variables which are
