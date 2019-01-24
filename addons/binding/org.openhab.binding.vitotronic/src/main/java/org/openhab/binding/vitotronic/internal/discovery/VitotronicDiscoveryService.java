@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.vitotronic.internal.discovery;
 
+import static org.openhab.binding.vitotronic.internal.VitotronicBindingConstants.*;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -28,9 +31,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author Stefan Andres - Initial contribution
  */
+@NonNullByDefault
 public class VitotronicDiscoveryService extends AbstractDiscoveryService {
 
-    private Logger logger = LoggerFactory.getLogger(VitotronicDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(VitotronicDiscoveryService.class);
 
     private VitotronicBridgeHandler vitotronicBridgeHandler;
 
@@ -43,23 +47,23 @@ public class VitotronicDiscoveryService extends AbstractDiscoveryService {
         logger.trace("Adding new Vitotronic thing: {}", thingID);
         ThingUID thingUID = null;
         switch (thingType) {
-            case VitotronicBindingConstants.THING_ID_HEATING:
-                thingUID = new ThingUID(VitotronicBindingConstants.THING_TYPE_UID_HEATING, bridgeUID, thingID);
+            case THING_ID_HEATING:
+                thingUID = new ThingUID(THING_TYPE_UID_HEATING, bridgeUID, thingID);
                 break;
-            case VitotronicBindingConstants.THING_ID_GASBURNER:
-                thingUID = new ThingUID(VitotronicBindingConstants.THING_TYPE_UID_GASBURNER, bridgeUID, thingID);
+            case THING_ID_GASBURNER:
+                thingUID = new ThingUID(THING_TYPE_UID_GASBURNER, bridgeUID, thingID);
                 break;
-            case VitotronicBindingConstants.THING_ID_PELLETBURNER:
-                thingUID = new ThingUID(VitotronicBindingConstants.THING_TYPE_UID_PELLETBURNER, bridgeUID, thingID);
+            case THING_ID_PELLETBURNER:
+                thingUID = new ThingUID(THING_TYPE_UID_PELLETBURNER, bridgeUID, thingID);
                 break;
-            case VitotronicBindingConstants.THING_ID_STORAGETANK:
-                thingUID = new ThingUID(VitotronicBindingConstants.THING_TYPE_UID_STORAGETANK, bridgeUID, thingID);
+            case THING_ID_STORAGETANK:
+                thingUID = new ThingUID(THING_TYPE_UID_STORAGETANK, bridgeUID, thingID);
                 break;
-            case VitotronicBindingConstants.THING_ID_CIRCUIT:
-                thingUID = new ThingUID(VitotronicBindingConstants.THING_TYPE_UID_CIRCUIT, bridgeUID, thingID);
+            case THING_ID_CIRCUIT:
+                thingUID = new ThingUID(THING_TYPE_UID_CIRCUIT, bridgeUID, thingID);
                 break;
-            case VitotronicBindingConstants.THING_ID_SOLAR:
-                thingUID = new ThingUID(VitotronicBindingConstants.THING_TYPE_UID_SOLAR, bridgeUID, thingID);
+            case THING_ID_SOLAR:
+                thingUID = new ThingUID(THING_TYPE_UID_SOLAR, bridgeUID, thingID);
                 break;
         }
 

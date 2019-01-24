@@ -36,9 +36,9 @@ import org.slf4j.LoggerFactory;
 
 public class VitotronicThingHandler extends BaseThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(VitotronicThingHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(VitotronicThingHandler.class);
 
-    VitotronicBridgeHandler bridgeHandler;
+    private VitotronicBridgeHandler bridgeHandler;
 
     public VitotronicThingHandler(Thing thing) {
         super(thing);
