@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.airquality.handler;
+package org.openhab.binding.airquality.internal.handler;
 
-import static org.openhab.binding.airquality.AirQualityBindingConstants.*;
+import static org.openhab.binding.airquality.internal.AirQualityBindingConstants.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -44,7 +44,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.airquality.internal.AirQualityConfiguration;
-import org.openhab.binding.airquality.json.AirQualityJsonResponse;
+import org.openhab.binding.airquality.internal.json.AirQualityJsonResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.airquality.internal;
 
-import static org.openhab.binding.airquality.AirQualityBindingConstants.THING_TYPE_AQI;
+import static org.openhab.binding.airquality.internal.AirQualityBindingConstants.THING_TYPE_AQI;
 
 import java.util.Collections;
 import java.util.Set;
@@ -22,7 +22,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.airquality.handler.AirQualityHandler;
+import org.openhab.binding.airquality.internal.handler.AirQualityHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**
