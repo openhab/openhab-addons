@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.fsinternetradio.handler;
+package org.openhab.binding.fsinternetradio.internal.handler;
 
-import org.openhab.binding.fsinternetradio.handler.FSInternetRadioHandler;
+import org.openhab.binding.fsinternetradio.internal.handler.FSInternetRadioHandler;
 import org.openhab.binding.fsinternetradio.internal.radio.FrontierSiliconRadio;
 
 /**
