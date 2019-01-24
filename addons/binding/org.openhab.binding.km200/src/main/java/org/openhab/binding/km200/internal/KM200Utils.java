@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.km200.internal;
 
-import static org.openhab.binding.km200.KM200BindingConstants.*;
+import static org.openhab.binding.km200.internal.KM200BindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;

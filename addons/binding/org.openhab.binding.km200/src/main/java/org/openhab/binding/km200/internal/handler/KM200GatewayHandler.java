@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.km200.handler;
+package org.openhab.binding.km200.internal.handler;
 
-import static org.openhab.binding.km200.KM200BindingConstants.THING_TYPE_KMDEVICE;
+import static org.openhab.binding.km200.internal.KM200BindingConstants.THING_TYPE_KMDEVICE;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -45,13 +45,10 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.km200.KM200ThingType;
 import org.openhab.binding.km200.internal.KM200Device;
 import org.openhab.binding.km200.internal.KM200ServiceObject;
+import org.openhab.binding.km200.internal.KM200ThingType;
 import org.openhab.binding.km200.internal.KM200Utils;
-import org.openhab.binding.km200.internal.handler.KM200DataHandler;
-import org.openhab.binding.km200.internal.handler.KM200ServiceHandler;
-import org.openhab.binding.km200.internal.handler.KM200VirtualServiceHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
