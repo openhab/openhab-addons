@@ -18,6 +18,7 @@ Import-Package:
  org.eclipse.jetty.util.component,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.config.discovery.upnp,
  org.eclipse.smarthome.core.audio,
  org.eclipse.smarthome.core.audio.utils,
  org.eclipse.smarthome.core.cache,
