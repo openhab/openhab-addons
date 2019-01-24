@@ -28,6 +28,7 @@ Import-Package:
  org.eclipse.jetty.websocket.common.extensions,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.config.discovery.upnp,
  org.eclipse.smarthome.core.common,
  org.eclipse.smarthome.core.id,
  org.eclipse.smarthome.core.library.types,
