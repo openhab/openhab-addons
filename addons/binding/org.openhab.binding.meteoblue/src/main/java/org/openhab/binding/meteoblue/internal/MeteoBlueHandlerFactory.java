@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.meteoblue.internal;
 
-import static org.openhab.binding.meteoblue.MeteoBlueBindingConstants.*;
+import static org.openhab.binding.meteoblue.internal.MeteoBlueBindingConstants.*;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -24,9 +24,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.meteoblue.MeteoBlueBindingConstants;
-import org.openhab.binding.meteoblue.handler.MeteoBlueBridgeHandler;
-import org.openhab.binding.meteoblue.handler.MeteoBlueHandler;
+import org.openhab.binding.meteoblue.internal.handler.MeteoBlueBridgeHandler;
+import org.openhab.binding.meteoblue.internal.handler.MeteoBlueHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**
