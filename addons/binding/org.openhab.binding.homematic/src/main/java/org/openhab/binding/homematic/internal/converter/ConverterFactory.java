@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.homematic.internal.converter;
 
-import static org.openhab.binding.homematic.HomematicBindingConstants.*;
+import static org.openhab.binding.homematic.internal.HomematicBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;

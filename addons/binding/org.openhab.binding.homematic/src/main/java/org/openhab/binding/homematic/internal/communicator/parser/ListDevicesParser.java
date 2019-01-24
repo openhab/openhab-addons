@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.homematic.internal.communicator.parser;
 
-import static org.openhab.binding.homematic.HomematicBindingConstants.CONFIGURATION_CHANNEL_NUMBER;
+import static org.openhab.binding.homematic.internal.HomematicBindingConstants.CONFIGURATION_CHANNEL_NUMBER;
 
 import java.io.IOException;
 import java.util.Collection;
