@@ -10,14 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.internal.kostal.inverter;
+package org.openhab.binding.kostalinverter.internal;
 
 /**
- * @author Christian Schneider - Initial contribution
+ * @author Örjan Backsell - Initial contribution
  */
-public class SourceConfig {
-    public String url;
-    public String userName;
-    public String password;
-    public int refreshInterval;
+public class DxsEntries {
+    private String dxsId;
+    private String value;
+
+    public String getId() {
+        return dxsId;
+    }
+
+    public String getName() {
+        return value;
+    }
 }

@@ -11,3 +11,18 @@ https://www.eclipse.org/legal/epl-2.0/.
 == Source Code
 
 https://github.com/openhab/openhab2-addons
+
+== Third-party Content
+
+[Google gson 2.5]
+* License: Apache 2.0
+* Project: https://github.com/google/gson
+* Source:  https://github.com/google/gson
+
+[JSoup Java HTML Parser 1.8.3]
+* License: MIT
+* Project: https://mvnrepository.com/artifact/org.jsoup/jsoup/1.8.3
+* Source:  https://mvnrepository.com/artifact/org.jsoup/jsoup/1.8.3
+
+
+

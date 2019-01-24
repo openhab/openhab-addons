@@ -10,24 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.internal.kostal.inverter;
-
-import javax.measure.Unit;
+package org.openhab.binding.kostalinverter;
 
 /**
  * @author Christian Schneider - Initial contribution
- * @author Christoph Weitkamp - Incorporated new QuantityType (Units of Measurement)
  */
 public class ChannelConfig {
-    public ChannelConfig(String id, String tag, int num, Unit<?> unit) {
+    public ChannelConfig(String id, String tag, int num) {
         this.id = id;
         this.tag = tag;
         this.num = num;
-        this.unit = unit;
     }
 
     String id;
     String tag;
     int num;
-    Unit<?> unit;
 }
