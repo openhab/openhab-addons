@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.miio.handler;
+package org.openhab.binding.miio.internal.handler;
 
-import static org.openhab.binding.miio.MiIoBindingConstants.*;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 
 import java.util.concurrent.TimeUnit;
 
