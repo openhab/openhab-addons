@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bosesoundtouch.handler;
+package org.openhab.binding.bosesoundtouch.internal.handler;
 
-import static org.openhab.binding.bosesoundtouch.BoseSoundTouchBindingConstants.*;
+import static org.openhab.binding.bosesoundtouch.internal.BoseSoundTouchBindingConstants.*;
 
 import java.io.IOException;
 import java.net.URI;
@@ -52,8 +52,8 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateOption;
-import org.openhab.binding.bosesoundtouch.BoseSoundTouchConfiguration;
 import org.openhab.binding.bosesoundtouch.internal.APIRequest;
+import org.openhab.binding.bosesoundtouch.internal.BoseSoundTouchConfiguration;
 import org.openhab.binding.bosesoundtouch.internal.BoseSoundTouchNotificationChannelConfiguration;
 import org.openhab.binding.bosesoundtouch.internal.BoseStateDescriptionOptionProvider;
 import org.openhab.binding.bosesoundtouch.internal.CommandExecutor;
