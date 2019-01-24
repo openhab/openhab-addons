@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.lifx.handler;
+package org.openhab.binding.lifx.internal.handler;
 
-import static org.openhab.binding.lifx.LifxBindingConstants.*;
+import static org.openhab.binding.lifx.internal.LifxBindingConstants.*;
 import static org.openhab.binding.lifx.internal.protocol.Product.Feature.*;
 import static org.openhab.binding.lifx.internal.util.LifxMessageUtil.*;
 
@@ -44,7 +44,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.lifx.LifxBindingConstants;
+import org.openhab.binding.lifx.internal.LifxBindingConstants;
 import org.openhab.binding.lifx.internal.LifxChannelFactory;
 import org.openhab.binding.lifx.internal.LifxLightCommunicationHandler;
 import org.openhab.binding.lifx.internal.LifxLightConfig;

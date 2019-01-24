@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.lifx.internal.util;
 
-import static org.openhab.binding.lifx.LifxBindingConstants.PACKET_INTERVAL;
+import static org.openhab.binding.lifx.internal.LifxBindingConstants.PACKET_INTERVAL;
 
 import java.util.List;
 import java.util.Map;
