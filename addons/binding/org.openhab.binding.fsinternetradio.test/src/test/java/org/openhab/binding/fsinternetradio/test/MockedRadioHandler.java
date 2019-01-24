@@ -14,7 +14,7 @@ package org.openhab.binding.fsinternetradio.test;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.openhab.binding.fsinternetradio.handler.FSInternetRadioHandler;
+import org.openhab.binding.fsinternetradio.internal.handler.FSInternetRadioHandler;
 
 /**
  * A mock of FSInternetRadioHandler to enable testing.

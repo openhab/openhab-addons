@@ -16,7 +16,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.*;
-import static org.openhab.binding.fsinternetradio.FSInternetRadioBindingConstants.*;
+import static org.openhab.binding.fsinternetradio.internal.FSInternetRadioBindingConstants.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -60,9 +60,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.openhab.binding.fsinternetradio.FSInternetRadioBindingConstants;
-import org.openhab.binding.fsinternetradio.handler.FSInternetRadioHandler;
-import org.openhab.binding.fsinternetradio.handler.HandlerUtils;
+import org.openhab.binding.fsinternetradio.internal.FSInternetRadioBindingConstants;
+import org.openhab.binding.fsinternetradio.internal.handler.FSInternetRadioHandler;
+import org.openhab.binding.fsinternetradio.internal.handler.HandlerUtils;
 import org.openhab.binding.fsinternetradio.internal.radio.FrontierSiliconRadio;
 
 /**
