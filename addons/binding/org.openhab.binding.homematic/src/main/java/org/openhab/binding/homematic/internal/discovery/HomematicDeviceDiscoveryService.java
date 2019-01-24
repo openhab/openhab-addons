@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.homematic.internal.discovery;
 
-import static org.openhab.binding.homematic.HomematicBindingConstants.BINDING_ID;
+import static org.openhab.binding.homematic.internal.HomematicBindingConstants.BINDING_ID;
 
 import java.util.Collections;
 import java.util.concurrent.ExecutionException;
@@ -25,9 +25,9 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.homematic.handler.HomematicBridgeHandler;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.HomematicGateway;
+import org.openhab.binding.homematic.internal.handler.HomematicBridgeHandler;
 import org.openhab.binding.homematic.internal.model.HmDevice;
 import org.openhab.binding.homematic.internal.type.UidUtils;
 import org.slf4j.Logger;

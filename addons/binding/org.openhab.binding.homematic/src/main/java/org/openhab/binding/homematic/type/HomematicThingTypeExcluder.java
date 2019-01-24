@@ -42,7 +42,7 @@ public interface HomematicThingTypeExcluder {
      * there must be a matching
      * {@link org.eclipse.smarthome.core.thing.Channel}) which can be handled by
      * the binding (see
-     * {@link org.openhab.binding.homematic.handler.HomematicThingHandler})</li>
+     * {@link org.openhab.binding.homematic.internal.handler.HomematicThingHandler})</li>
      * 
      * @return {@link ThingTypeUID}s of ThingTypes that are supposed to be
      *         excluded from the binding's thing-type generation

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homematic.handler;
+package org.openhab.binding.homematic.internal.handler;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -21,7 +21,7 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.binding.homematic.handler.SimplePortPool;
+import org.openhab.binding.homematic.internal.handler.SimplePortPool;
 
 /**
  * Tests for {@link SimplePortPool}.

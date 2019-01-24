@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homematic.handler;
+package org.openhab.binding.homematic.internal.handler;
 
-import static org.openhab.binding.homematic.HomematicBindingConstants.*;
+import static org.openhab.binding.homematic.internal.HomematicBindingConstants.*;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.net.NetworkAddressService;
