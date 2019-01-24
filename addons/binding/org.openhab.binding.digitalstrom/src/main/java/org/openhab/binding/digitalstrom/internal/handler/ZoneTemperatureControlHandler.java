@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.digitalstrom.handler;
+package org.openhab.binding.digitalstrom.internal.handler;
 
-import static org.openhab.binding.digitalstrom.DigitalSTROMBindingConstants.BINDING_ID;
+import static org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants.BINDING_ID;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,7 +40,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.digitalstrom.DigitalSTROMBindingConstants;
+import org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants;
 import org.openhab.binding.digitalstrom.internal.lib.climate.TemperatureControlSensorTransmitter;
 import org.openhab.binding.digitalstrom.internal.lib.climate.constants.ControlModes;
 import org.openhab.binding.digitalstrom.internal.lib.climate.constants.ControlStates;
