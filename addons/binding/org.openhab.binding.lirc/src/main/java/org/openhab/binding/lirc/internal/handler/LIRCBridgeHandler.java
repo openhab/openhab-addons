@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.lirc.handler;
+package org.openhab.binding.lirc.internal.handler;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
