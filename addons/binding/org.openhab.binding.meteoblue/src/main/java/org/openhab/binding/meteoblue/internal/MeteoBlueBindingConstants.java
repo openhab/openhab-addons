@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.meteoblue;
+package org.openhab.binding.meteoblue.internal;
 
 import java.util.Arrays;
 import java.util.Collections;

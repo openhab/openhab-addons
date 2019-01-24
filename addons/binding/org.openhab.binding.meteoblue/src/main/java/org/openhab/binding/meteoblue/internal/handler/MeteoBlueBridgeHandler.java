@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.meteoblue.handler;
+package org.openhab.binding.meteoblue.internal.handler;
 
-import static org.openhab.binding.meteoblue.MeteoBlueBindingConstants.THING_TYPE_BRIDGE;
+import static org.openhab.binding.meteoblue.internal.MeteoBlueBindingConstants.THING_TYPE_BRIDGE;
 
 import java.util.Collections;
 import java.util.Set;

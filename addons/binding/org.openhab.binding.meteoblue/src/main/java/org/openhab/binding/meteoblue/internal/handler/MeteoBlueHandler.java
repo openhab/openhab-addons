@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.meteoblue.handler;
+package org.openhab.binding.meteoblue.internal.handler;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -30,7 +30,7 @@ import org.apache.commons.lang.StringUtils;
 
 import static org.eclipse.smarthome.core.library.unit.MetricPrefix.HECTO;
 import static org.eclipse.smarthome.core.library.unit.MetricPrefix.MILLI;
-import static org.openhab.binding.meteoblue.MeteoBlueBindingConstants.*;
+import static org.openhab.binding.meteoblue.internal.MeteoBlueBindingConstants.*;
 
 import org.eclipse.smarthome.core.library.items.ImageItem;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
