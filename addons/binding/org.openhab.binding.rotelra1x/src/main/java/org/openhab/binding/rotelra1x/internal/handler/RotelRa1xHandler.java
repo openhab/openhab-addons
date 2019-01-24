@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.rotelra1x.handler;
+package org.openhab.binding.rotelra1x.internal.handler;
 
-import static org.openhab.binding.rotelra1x.RotelRa1xBindingConstants.*;
+import static org.openhab.binding.rotelra1x.internal.RotelRa1xBindingConstants.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
