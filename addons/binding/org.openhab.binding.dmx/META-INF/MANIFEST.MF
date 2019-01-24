@@ -9,13 +9,10 @@ Bundle-SymbolicName: org.openhab.binding.dmx;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
 Export-Package: 
- org.eclipse.smarthome.binding.dmx,
- org.openhab.binding.dmx.action,
- org.openhab.binding.dmx.handler
+ org.openhab.binding.dmx.action
 Import-Package: 
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.automation.annotation;resolution:=optional,
- org.eclipse.smarthome.binding.dmx,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.common,
  org.eclipse.smarthome.core.library.types,
@@ -25,7 +22,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.openhab.binding.dmx.action,
- org.openhab.binding.dmx.handler,
  org.osgi.service.component,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

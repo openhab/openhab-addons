@@ -34,7 +34,7 @@ import org.eclipse.smarthome.test.java.JavaTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.binding.dmx.handler.ArtnetBridgeHandler;
+import org.openhab.binding.dmx.internal.handler.ArtnetBridgeHandler;
 
 /**
  * Tests cases for {@link ArtnetBridgeHandler}.
