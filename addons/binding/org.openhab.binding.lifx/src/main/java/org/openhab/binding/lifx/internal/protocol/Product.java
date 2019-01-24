@@ -21,7 +21,7 @@ import java.util.EnumSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.openhab.binding.lifx.LifxBindingConstants;
+import org.openhab.binding.lifx.internal.LifxBindingConstants;
 
 /**
  * Enumerates the LIFX products, their IDs and feature set.

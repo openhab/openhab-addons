@@ -21,7 +21,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.lifx.handler.LifxLightHandler.CurrentLightState;
+import org.openhab.binding.lifx.internal.handler.LifxLightHandler.CurrentLightState;
 import org.openhab.binding.lifx.internal.protocol.GetEchoRequest;
 import org.openhab.binding.lifx.internal.protocol.GetServiceRequest;
 import org.openhab.binding.lifx.internal.protocol.Packet;

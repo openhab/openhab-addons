@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.lifx.internal;
 
-import static org.openhab.binding.lifx.LifxBindingConstants.PACKET_INTERVAL;
+import static org.openhab.binding.lifx.internal.LifxBindingConstants.PACKET_INTERVAL;
 import static org.openhab.binding.lifx.internal.protocol.Product.Feature.MULTIZONE;
 import static org.openhab.binding.lifx.internal.util.LifxMessageUtil.*;
 

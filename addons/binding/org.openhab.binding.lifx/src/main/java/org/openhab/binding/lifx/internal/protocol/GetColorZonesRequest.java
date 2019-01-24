@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.lifx.internal.protocol;
 
-import static org.openhab.binding.lifx.LifxBindingConstants.*;
+import static org.openhab.binding.lifx.internal.LifxBindingConstants.*;
 
 import java.nio.ByteBuffer;
 

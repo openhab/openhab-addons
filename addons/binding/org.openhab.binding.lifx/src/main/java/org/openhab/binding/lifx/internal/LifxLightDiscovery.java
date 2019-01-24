@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.lifx.internal;
 
-import static org.openhab.binding.lifx.LifxBindingConstants.*;
+import static org.openhab.binding.lifx.internal.LifxBindingConstants.*;
 import static org.openhab.binding.lifx.internal.util.LifxMessageUtil.randomSourceId;
 import static org.openhab.binding.lifx.internal.util.LifxSelectorUtil.*;
 
@@ -33,7 +33,6 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.lifx.LifxBindingConstants;
 import org.openhab.binding.lifx.internal.fields.MACAddress;
 import org.openhab.binding.lifx.internal.protocol.GetLabelRequest;
 import org.openhab.binding.lifx.internal.protocol.GetServiceRequest;
