@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.nuki.handler;
+package org.openhab.binding.nuki.internal.handler;
 
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
@@ -24,7 +24,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.nuki.NukiBindingConstants;
+import org.openhab.binding.nuki.internal.NukiBindingConstants;
 import org.openhab.binding.nuki.internal.dataexchange.BridgeCallbackAddResponse;
 import org.openhab.binding.nuki.internal.dataexchange.BridgeCallbackListResponse;
 import org.openhab.binding.nuki.internal.dataexchange.BridgeCallbackRemoveResponse;
