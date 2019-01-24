@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.plclogo.handler;
+package org.openhab.binding.plclogo.internal.handler;
 
-import static org.openhab.binding.plclogo.PLCLogoBindingConstants.*;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,9 +27,9 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.plclogo.PLCLogoBindingConstants;
-import org.openhab.binding.plclogo.PLCLogoBindingConstants.Layout;
+import org.openhab.binding.plclogo.internal.PLCLogoBindingConstants;
 import org.openhab.binding.plclogo.internal.PLCLogoClient;
+import org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.Layout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
