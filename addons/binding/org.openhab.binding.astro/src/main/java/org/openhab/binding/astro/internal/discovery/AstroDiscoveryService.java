@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.astro.internal.discovery;
 
-import static org.openhab.binding.astro.AstroBindingConstants.*;
+import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
 
 import java.util.Arrays;
 import java.util.HashSet;

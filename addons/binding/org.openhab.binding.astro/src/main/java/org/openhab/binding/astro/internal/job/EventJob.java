@@ -14,8 +14,8 @@ package org.openhab.binding.astro.internal.job;
 
 import static org.openhab.binding.astro.internal.job.Job.checkNull;
 
-import org.openhab.binding.astro.handler.AstroThingHandler;
 import org.openhab.binding.astro.internal.AstroHandlerFactory;
+import org.openhab.binding.astro.internal.handler.AstroThingHandler;
 
 /**
  * Scheduled job to trigger events

@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.astro.handler;
+package org.openhab.binding.astro.internal.handler;
 
-import static org.openhab.binding.astro.AstroBindingConstants.THING_TYPE_MOON;
+import static org.openhab.binding.astro.internal.AstroBindingConstants.THING_TYPE_MOON;
 
 import java.util.Arrays;
 import java.util.Calendar;

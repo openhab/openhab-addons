@@ -13,7 +13,7 @@
 package org.openhab.binding.astro.test;
 
 import static org.junit.Assert.assertEquals;
-import static org.openhab.binding.astro.AstroBindingConstants.*;
+import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
 import static org.openhab.binding.astro.test.cases.AstroBindingTestsData.*;
 import static org.openhab.binding.astro.test.cases.AstroParametrizedTestCases.*;
 

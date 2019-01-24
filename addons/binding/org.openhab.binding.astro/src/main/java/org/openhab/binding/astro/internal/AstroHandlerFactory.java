@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.astro.internal;
 
-import static org.openhab.binding.astro.AstroBindingConstants.*;
+import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,9 +27,9 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.astro.handler.AstroThingHandler;
-import org.openhab.binding.astro.handler.MoonHandler;
-import org.openhab.binding.astro.handler.SunHandler;
+import org.openhab.binding.astro.internal.handler.AstroThingHandler;
+import org.openhab.binding.astro.internal.handler.MoonHandler;
+import org.openhab.binding.astro.internal.handler.SunHandler;
 import org.openhab.binding.astro.internal.util.PropertyUtils;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
