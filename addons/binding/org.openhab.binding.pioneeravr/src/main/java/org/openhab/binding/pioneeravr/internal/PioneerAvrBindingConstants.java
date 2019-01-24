@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.pioneeravr;
+package org.openhab.binding.pioneeravr.internal;
 
 import java.util.Set;
 import java.util.regex.Pattern;

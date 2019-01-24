@@ -10,31 +10,31 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.pioneeravr.protocol.event;
+package org.openhab.binding.pioneeravr.internal.protocol.event;
 
-import org.openhab.binding.pioneeravr.protocol.AvrConnection;
+import org.openhab.binding.pioneeravr.internal.protocol.avr.AvrConnection;
 
 /**
- * An event fired when an AVR is disconnected.
+ * The event fired when a status is received from the AVR.
  *
  * @author Antoine Besnard - Initial contribution
  */
-public class AvrDisconnectionEvent {
+public class AvrStatusUpdateEvent {
 
     private AvrConnection connection;
-    private Throwable cause;
+    private String data;
 
-    public AvrDisconnectionEvent(AvrConnection connection, Throwable cause) {
+    public AvrStatusUpdateEvent(AvrConnection connection, String data) {
         this.connection = connection;
-        this.cause = cause;
+        this.data = data;
     }
 
     public AvrConnection getConnection() {
         return connection;
     }
 
-    public Throwable getCause() {
-        return cause;
+    public String getData() {
+        return data;
     }
 
 }

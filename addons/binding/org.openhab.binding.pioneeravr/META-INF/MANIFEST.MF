@@ -8,12 +8,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.pioneeravr;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
-Export-Package: 
- org.openhab.binding.pioneeravr,
- org.openhab.binding.pioneeravr.protocol,
- org.openhab.binding.pioneeravr.protocol.event,
- org.openhab.binding.pioneeravr.protocol.states,
- org.openhab.binding.pioneeravr.protocol.utils
 Import-Package: 
  com.google.common.base,
  com.google.common.collect,
@@ -31,11 +25,6 @@ Import-Package:
  org.eclipse.smarthome.core.util,
  org.jupnp.model.meta,
  org.jupnp.model.types,
- org.openhab.binding.pioneeravr,
- org.openhab.binding.pioneeravr.protocol,
- org.openhab.binding.pioneeravr.protocol.event,
- org.openhab.binding.pioneeravr.protocol.states,
- org.openhab.binding.pioneeravr.protocol.utils,
  org.osgi.framework,
  org.osgi.service.cm,
  org.osgi.service.component,
