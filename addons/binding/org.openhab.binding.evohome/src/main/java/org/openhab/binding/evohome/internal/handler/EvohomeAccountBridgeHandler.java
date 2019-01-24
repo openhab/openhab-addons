@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.evohome.handler;
+package org.openhab.binding.evohome.internal.handler;
 
 import java.util.HashMap;
 import java.util.HashSet;
