@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.miio.handler;
+package org.openhab.binding.miio.internal.handler;
 
-import static org.openhab.binding.miio.MiIoBindingConstants.*;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -34,8 +34,8 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ThingType;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.miio.MiIoBindingConfiguration;
 import org.openhab.binding.miio.internal.Message;
+import org.openhab.binding.miio.internal.MiIoBindingConfiguration;
 import org.openhab.binding.miio.internal.MiIoCommand;
 import org.openhab.binding.miio.internal.MiIoCrypto;
 import org.openhab.binding.miio.internal.MiIoCryptoException;

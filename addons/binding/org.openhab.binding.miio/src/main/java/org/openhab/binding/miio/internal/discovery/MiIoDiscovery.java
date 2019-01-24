@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.miio.internal.discovery;
 
-import static org.openhab.binding.miio.MiIoBindingConstants.*;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
