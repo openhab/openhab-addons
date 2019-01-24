@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.plclogo.handler;
+package org.openhab.binding.plclogo.internal.handler;
 
-import static org.openhab.binding.plclogo.PLCLogoBindingConstants.*;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.*;
 
 import java.time.ZonedDateTime;
 import java.util.Collections;
