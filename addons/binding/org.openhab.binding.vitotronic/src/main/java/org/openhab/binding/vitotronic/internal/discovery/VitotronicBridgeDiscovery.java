@@ -12,16 +12,20 @@
  */
 package org.openhab.binding.vitotronic.internal.discovery;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.vitotronic.internal.VitotronicBindingConstants;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,9 +36,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Stefan Andres - Initial contribution
  */
+@NonNullByDefault
+@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.vitotronic")
 public class VitotronicBridgeDiscovery extends AbstractDiscoveryService {
 
-    int adapterPort = 31113;
+    private int adapterPort = 31113;
 
     private final Logger logger = LoggerFactory.getLogger(VitotronicBridgeDiscovery.class);
 
@@ -51,56 +57,42 @@ public class VitotronicBridgeDiscovery extends AbstractDiscoveryService {
 
     // Runnable for search adapter
 
-    private Runnable searchRunnable = new Runnable() {
-        @Override
-        public void run() {
-            logger.trace("Start adapter discovery ");
-            logger.debug("Send broadcast message");
-            DatagramSocket localSocket = null;
-            try {
-                localSocket = new DatagramSocket();
-                localSocket.setBroadcast(true);
-                localSocket.setSoTimeout(10000); // Listen 10 seconds
+    private Runnable searchRunnable = () -> {
+        logger.trace("Start adapter discovery ");
+        logger.debug("Send broadcast message");
+        try (DatagramSocket localSocket = new DatagramSocket()) {
+            localSocket.setBroadcast(true);
+            localSocket.setSoTimeout(10000); // Listen 10 seconds
 
-                String broadcastMsg = VitotronicBindingConstants.BROADCAST_MESSAGE + "*";
-                byte[] sendData = broadcastMsg.getBytes();
+            String broadcastMsg = VitotronicBindingConstants.BROADCAST_MESSAGE + "*";
+            byte[] sendData = broadcastMsg.getBytes();
 
-                DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length,
-                        InetAddress.getByName("255.255.255.255"), adapterPort);
-                localSocket.send(sendPacket);
+            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length,
+                    InetAddress.getByName("255.255.255.255"), adapterPort);
+            localSocket.send(sendPacket);
 
-                byte[] receiveBuffer = new byte[255];
+            byte[] receiveBuffer = new byte[255];
 
-                // Listen for answer
+            // Listen for answer
 
-                DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
-                localSocket.receive(receivePacket);
-                String receiveMessage = new String(receivePacket.getData()).trim();
-                String receiveIP = receivePacket.getAddress().getHostAddress();
-                int receivePort = receivePacket.getPort();
-                logger.debug("Received Message: {}  ", receiveMessage);
-                logger.debug("Received from Host: {}", receiveIP);
-                logger.debug("Received from Port: {}", receivePort);
+            DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
+            localSocket.receive(receivePacket);
+            String receiveMessage = new String(receivePacket.getData()).trim();
+            String receiveIP = receivePacket.getAddress().getHostAddress();
+            int receivePort = receivePacket.getPort();
+            logger.debug("Received Message: {}  ", receiveMessage);
+            logger.debug("Received from Host: {}", receiveIP);
+            logger.debug("Received from Port: {}", receivePort);
 
-                if (receiveMessage.startsWith(VitotronicBindingConstants.BROADCAST_MESSAGE)) {
-                    // register bridge
-                    String adapterID = receiveMessage.substring(VitotronicBindingConstants.BROADCAST_MESSAGE.length())
-                            .toUpperCase();
-                    addAdapter(receiveIP, receivePort, adapterID);
-                }
-            } catch (Exception e) {
-                logger.debug("No optolink adapter found!");
-            } finally {
-                try {
-                    if (localSocket != null) {
-                        localSocket.close();
-                    }
-                } catch (Exception e) {
-                    // Ignore
-                }
+            if (receiveMessage.startsWith(VitotronicBindingConstants.BROADCAST_MESSAGE)) {
+                // register bridge
+                String adapterID = receiveMessage.substring(VitotronicBindingConstants.BROADCAST_MESSAGE.length())
+                        .toUpperCase();
+                addAdapter(receiveIP, receivePort, adapterID);
             }
+        } catch (IOException e) {
+            logger.debug("No optolink adapter found!");
         }
-
     };
 
     private void addAdapter(String remoteIP, int remotePort, String adapterID) {
