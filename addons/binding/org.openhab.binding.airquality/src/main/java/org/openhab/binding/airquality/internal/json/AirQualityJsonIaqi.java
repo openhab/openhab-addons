@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.airquality.json;
+package org.openhab.binding.airquality.internal.json;
 
 import java.math.BigDecimal;
 
