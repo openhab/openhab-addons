@@ -7,9 +7,6 @@ Bundle-SymbolicName: org.openhab.binding.digitalstrom;singleto
  n:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
-Export-Package: 
- org.openhab.binding.digitalstrom,
- org.openhab.binding.digitalstrom.handler
 Import-Package: 
  com.google.gson,
  javax.jmdns,
@@ -30,8 +27,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.io.transport.mdns.discovery,
- org.openhab.binding.digitalstrom,
- org.openhab.binding.digitalstrom.handler,
  org.osgi.framework,
  org.osgi.service.component,
  org.slf4j
