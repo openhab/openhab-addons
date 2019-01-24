@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.airquality;
+package org.openhab.binding.airquality.internal;
 
 import static org.eclipse.smarthome.core.library.unit.MetricPrefix.HECTO;
 
