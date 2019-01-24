@@ -37,6 +37,7 @@ Import-Package:
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.core.validation,
  org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.config.discovery.upnp,
  org.eclipse.smarthome.core.common,
  org.eclipse.smarthome.core.items,
  org.eclipse.smarthome.core.library.types,
