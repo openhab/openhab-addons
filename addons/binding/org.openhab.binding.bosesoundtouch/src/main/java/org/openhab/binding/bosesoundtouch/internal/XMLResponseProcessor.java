@@ -17,7 +17,7 @@ import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openhab.binding.bosesoundtouch.handler.BoseSoundTouchHandler;
+import org.openhab.binding.bosesoundtouch.internal.handler.BoseSoundTouchHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;

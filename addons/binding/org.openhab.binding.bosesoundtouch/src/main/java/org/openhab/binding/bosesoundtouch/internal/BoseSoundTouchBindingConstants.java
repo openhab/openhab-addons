@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bosesoundtouch;
+package org.openhab.binding.bosesoundtouch.internal;
 
 import java.util.Collections;
 import java.util.HashSet;

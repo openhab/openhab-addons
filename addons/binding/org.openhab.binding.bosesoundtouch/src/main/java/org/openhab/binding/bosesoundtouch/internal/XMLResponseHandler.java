@@ -15,7 +15,7 @@ package org.openhab.binding.bosesoundtouch.internal;
 import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
 import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_HARDWARE_VERSION;
 import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_MODEL_ID;
-import static org.openhab.binding.bosesoundtouch.BoseSoundTouchBindingConstants.*;
+import static org.openhab.binding.bosesoundtouch.internal.BoseSoundTouchBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,8 +31,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.bosesoundtouch.BoseSoundTouchConfiguration;
-import org.openhab.binding.bosesoundtouch.handler.BoseSoundTouchHandler;
+import org.openhab.binding.bosesoundtouch.internal.handler.BoseSoundTouchHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
