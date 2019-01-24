@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.globalcache.internal.discovery;
 
-import static org.openhab.binding.globalcache.GlobalCacheBindingConstants.*;
+import static org.openhab.binding.globalcache.internal.GlobalCacheBindingConstants.*;
 
 import java.io.IOException;
 import java.net.DatagramPacket;

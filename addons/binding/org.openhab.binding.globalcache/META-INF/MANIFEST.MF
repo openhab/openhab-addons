@@ -7,9 +7,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.globalcache;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
-Export-Package: 
- org.openhab.binding.globalcache,
- org.openhab.binding.globalcache.handler
 Import-Package: 
  org.apache.commons.lang,
  org.eclipse.jdt.annotation;resolution:=optional,
@@ -25,8 +22,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.transform,
  org.eclipse.smarthome.core.types,
- org.openhab.binding.globalcache,
- org.openhab.binding.globalcache.handler,
  org.osgi.framework,
  org.osgi.service.component,
  org.slf4j

@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.globalcache.handler;
+package org.openhab.binding.globalcache.internal.handler;
 
-import static org.openhab.binding.globalcache.GlobalCacheBindingConstants.*;
+import static org.openhab.binding.globalcache.internal.GlobalCacheBindingConstants.*;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -53,7 +53,7 @@ import org.eclipse.smarthome.core.transform.TransformationHelper;
 import org.eclipse.smarthome.core.transform.TransformationService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.globalcache.GlobalCacheBindingConstants.CommandType;
+import org.openhab.binding.globalcache.internal.GlobalCacheBindingConstants.CommandType;
 import org.openhab.binding.globalcache.internal.command.CommandGetstate;
 import org.openhab.binding.globalcache.internal.command.CommandGetversion;
 import org.openhab.binding.globalcache.internal.command.CommandSendir;
