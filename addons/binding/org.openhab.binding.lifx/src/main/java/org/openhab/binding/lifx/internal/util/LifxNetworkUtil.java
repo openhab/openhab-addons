@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.lifx.internal.util;
 
-import static org.openhab.binding.lifx.LifxBindingConstants.BROADCAST_PORT;
+import static org.openhab.binding.lifx.internal.LifxBindingConstants.BROADCAST_PORT;
 
 import java.net.Inet4Address;
 import java.net.InetAddress;

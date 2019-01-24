@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.lifx.internal;
 
-import static org.openhab.binding.lifx.LifxBindingConstants.MIN_ZONE_INDEX;
+import static org.openhab.binding.lifx.internal.LifxBindingConstants.MIN_ZONE_INDEX;
 import static org.openhab.binding.lifx.internal.protocol.Product.Feature.*;
 import static org.openhab.binding.lifx.internal.util.LifxMessageUtil.infraredToPercentType;
 
@@ -24,8 +24,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.PercentType;
-import org.openhab.binding.lifx.handler.LifxLightHandler.CurrentLightState;
 import org.openhab.binding.lifx.internal.fields.HSBK;
+import org.openhab.binding.lifx.internal.handler.LifxLightHandler.CurrentLightState;
 import org.openhab.binding.lifx.internal.protocol.GetColorZonesRequest;
 import org.openhab.binding.lifx.internal.protocol.GetLightInfraredRequest;
 import org.openhab.binding.lifx.internal.protocol.GetRequest;

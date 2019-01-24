@@ -27,9 +27,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.lifx.LifxBindingConstants;
-import org.openhab.binding.lifx.handler.LifxLightHandler.CurrentLightState;
 import org.openhab.binding.lifx.internal.fields.MACAddress;
+import org.openhab.binding.lifx.internal.handler.LifxLightHandler.CurrentLightState;
 import org.openhab.binding.lifx.internal.listener.LifxPropertiesUpdateListener;
 import org.openhab.binding.lifx.internal.protocol.GetHostFirmwareRequest;
 import org.openhab.binding.lifx.internal.protocol.GetVersionRequest;
