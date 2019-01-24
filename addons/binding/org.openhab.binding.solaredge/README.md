@@ -6,6 +6,10 @@ Only read access is supported.
 ## Supported Things
 
 This binding provides only one thing type: "generic" which is the inverter itself. As the name suggests it is generic which means it applies to all available inverters. Create one inverter thing per physical inverter installation available in your home(s). Additional stuff like batteries is automatically supported.
+Inverters which have a meter attached allow more detailed measuring. Either a SolarEdge modbus meter or a S0 meter (export or consumption meter) can be used. While on the one hand the S0 meter is the cheaper solution the solaredge meter on the other hand can be used as combined import+export meter and therefore allows even more detailed measurements. For more details please see here:
+- SolarEdge meter: https://www.solaredge.com/products/pv-monitoring/accessories/css-wattnode-modbus-meter
+- Avoiding Feed-In limitations with consumption meters: https://www.solaredge.com/solutions/feed-in-limitation-and-metering-solution# 
+- Detailed description of meter setup: http://solaredge.com/sites/default/files/feed-in_limitation_application_note.pdf
 
 ## Discovery
 
@@ -34,7 +38,7 @@ Set this to true when using token retrieved from browser in `tokenOrApiKey`.
 See also `meterInstalled`. (default = false)
 
 - **meterInstalled** (optional)  
-can be set to true for setups that contain a SolarEdge modbus meter integrated [here](https://www.solaredge.com/products/pv-monitoring/accessories/css-wattnode-modbus-meter).
+can be set to true for setups that contain a meter which is connected to the inverter.
 A meter allows more detailed data retrieval.
 Set this to true when using token retrieved from browser in `tokenOrApiKey`.
 See also `usePrivateApi`. (default = false)
