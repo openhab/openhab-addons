@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.pioneeravr.protocol.utils;
+package org.openhab.binding.pioneeravr.internal.protocol.utils;
 
 import java.text.DecimalFormat;
 

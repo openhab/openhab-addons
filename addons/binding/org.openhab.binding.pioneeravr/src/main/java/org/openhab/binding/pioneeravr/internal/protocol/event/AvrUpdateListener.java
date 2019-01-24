@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.pioneeravr.protocol.event;
+package org.openhab.binding.pioneeravr.internal.protocol.event;
 
 import java.util.EventListener;
 
