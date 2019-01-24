@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.nibeuplink.handler;
+package org.openhab.binding.nibeuplink.internal.handler;
 
 import java.util.HashSet;
 import java.util.Set;
