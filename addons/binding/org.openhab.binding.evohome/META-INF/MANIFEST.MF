@@ -7,9 +7,6 @@ Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
-Export-Package: 
- org.openhab.binding.evohome,
- org.openhab.binding.evohome.handler
 Import-Package: 
  com.google.gson,
  com.google.gson.annotations,
@@ -30,8 +27,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.io.net.http,
- org.openhab.binding.evohome,
- org.openhab.binding.evohome.handler,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

@@ -20,13 +20,13 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.evohome.EvohomeBindingConstants;
-import org.openhab.binding.evohome.handler.AccountStatusListener;
-import org.openhab.binding.evohome.handler.EvohomeAccountBridgeHandler;
+import org.openhab.binding.evohome.internal.EvohomeBindingConstants;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Gateway;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Location;
 import org.openhab.binding.evohome.internal.api.models.v2.response.TemperatureControlSystem;
 import org.openhab.binding.evohome.internal.api.models.v2.response.Zone;
+import org.openhab.binding.evohome.internal.handler.AccountStatusListener;
+import org.openhab.binding.evohome.internal.handler.EvohomeAccountBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
