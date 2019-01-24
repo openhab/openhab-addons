@@ -34,7 +34,8 @@ public class ElkMessageFactory {
     public ElkMessage createMessage(String input) {
         ElkData data = new ElkData(input);
         if (!verifyCrc(data)) {
-            logger.error("Checksum invalid {}  {}", data.getChecksum(), data.getCalculatedChecksum());
+            logger.error("Elk Message Checksum Invalid: Is: {}, Should Be: {}", data.getChecksum(),
+                    data.getCalculatedChecksum());
             return null;
         }
         // Figure out the elk message to create.
@@ -63,7 +64,8 @@ public class ElkMessageFactory {
 
     private boolean verifyCrc(ElkData data) {
         // First two chars is length.
-        logger.debug("Checksum val {}  {}", data.getChecksum(), data.getCalculatedChecksum());
+        logger.debug("Elk Message Checksum Value: Is: {}, Should Be: {}", data.getChecksum(),
+                data.getCalculatedChecksum());
         return data.getChecksum() == data.getCalculatedChecksum();
     }
 
@@ -76,18 +78,18 @@ public class ElkMessageFactory {
 
         ElkData(String input) {
             length = Integer.valueOf(input.substring(0, 2), 16);
-            logger.debug("Len: {}, str len: {}", length, input.length());
+            logger.debug("Elk Message Length: {}", length);
             if (length > input.length()) {
                 checksum = -1;
                 calculatedChecksum = 0;
                 command = "  ";
                 data = "";
-                logger.error("Length is incorrect {} {}", length, input.length());
+                logger.error("Elk Message Length is Incorrect: Is: {}, Should Be: {}", length, input.length());
             } else {
                 if (!input.substring(length - 2, length).equals("00")) {
                     checksum = -1;
                     calculatedChecksum = 0;
-                    logger.error("Input does not end in 00", input);
+                    logger.error("Elk Message doesn't end as suspected", input);
                 } else {
                     checksum = Integer.valueOf(input.substring(length, length + 2), 16);
                     calculatedChecksum = calculateChecksum(input, length);
@@ -96,7 +98,8 @@ public class ElkMessageFactory {
                 // Last two bits should just be 00
                 data = input.substring(4, length - 2);
             }
-            logger.debug("Len: {}, checksum: {}, command: {}, data: {}", length, checksum, command, data);
+            logger.debug("Elk Message Data: Length: {}, Checksum: {}, Command: {}, Data: {}", length, checksum, command,
+                    data);
         }
 
         public int getLength() {

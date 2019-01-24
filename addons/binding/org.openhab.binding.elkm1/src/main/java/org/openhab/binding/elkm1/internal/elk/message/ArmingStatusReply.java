@@ -14,8 +14,6 @@ import org.openhab.binding.elkm1.internal.elk.ElkAlarmArmedState;
 import org.openhab.binding.elkm1.internal.elk.ElkCommand;
 import org.openhab.binding.elkm1.internal.elk.ElkMessage;
 import org.openhab.binding.elkm1.internal.elk.ElkMessageFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Although this is technically a status reply, it can come at any time when the status changes.
@@ -24,7 +22,6 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class ArmingStatusReply extends ElkMessage {
-    private final Logger logger = LoggerFactory.getLogger(ArmingStatusReply.class);
     private ElkAlarmArmUpState[] armedUp;
     private ElkAlarmAreaState[] state;
     private ElkAlarmArmedState[] armed;
@@ -32,7 +29,6 @@ public class ArmingStatusReply extends ElkMessage {
     public ArmingStatusReply(String data) {
         super(ElkCommand.ArmingStatusRequestReply);
         byte[] dataBytes = data.getBytes();
-        logger.error("Data {} len {}", data, dataBytes.length);
         armedUp = new ElkAlarmArmUpState[ElkMessageFactory.MAX_AREAS];
         state = new ElkAlarmAreaState[ElkMessageFactory.MAX_AREAS];
         armed = new ElkAlarmArmedState[ElkMessageFactory.MAX_AREAS];

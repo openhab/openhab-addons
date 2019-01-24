@@ -148,7 +148,7 @@ public class ElkM1BridgeHandler extends BaseBridgeHandler implements ElkListener
      */
     @Override
     public void handleElkMessage(ElkMessage message) {
-        logger.debug("Got elk message {}", message.toString());
+        logger.debug("Got Elk Message: {}", message.toString());
         if (message instanceof VersionReply) {
             VersionReply reply = (VersionReply) message;
             // Set the property.
@@ -175,7 +175,7 @@ public class ElkM1BridgeHandler extends BaseBridgeHandler implements ElkListener
                     // Request the area.
                     connection.sendCommand(new StringTextDescription(ElkTypeToRequest.Area, reply.getAreas()[i]));
                     areas[reply.getAreas()[i] - 1] = true;
-                    logger.debug("Requesting area {}", reply.getAreas()[i]);
+                    logger.debug("Requesting Elk Area: {}", reply.getAreas()[i]);
                 }
                 thing = getThingForType(ElkTypeToRequest.Zone, i + 1);
                 if (thing != null) {
@@ -191,7 +191,7 @@ public class ElkM1BridgeHandler extends BaseBridgeHandler implements ElkListener
             for (int i = 0; i < ElkMessageFactory.MAX_ZONES; i++) {
                 if (reply.getDefinition()[i] != ElkDefinition.Disabled) {
                     connection.sendCommand(new StringTextDescription(ElkTypeToRequest.Zone, i + 1));
-                    logger.debug("Requesting {}", i);
+                    logger.debug("Requesting Elk Zone: {}", i);
                 }
                 Thing thing = getThingForType(ElkTypeToRequest.Zone, i + 1);
                 if (thing != null) {

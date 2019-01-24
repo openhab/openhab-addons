@@ -94,7 +94,8 @@ public class ElkAlarmConnection {
                 sc.init(null, trustAllCerts, new java.security.SecureRandom());
                 sFactory = sc.getSocketFactory();
             } catch (KeyManagementException | NoSuchAlgorithmException e) {
-                logger.error("Unable to open connection to the elk alarm {}:{}", config.ipAddress, config.port, e);
+                logger.error("An error has occured while creating the trust manager to connect to Elk alarm: {}:{}",
+                        config.ipAddress, config.port, e);
             }
 
         } else {
@@ -104,7 +105,7 @@ public class ElkAlarmConnection {
         try {
             socket = sFactory.createSocket(config.ipAddress, config.port);
         } catch (IOException e) {
-            logger.error("Unable to open connection to the elk alarm {}:{}", config.ipAddress, config.port, e);
+            logger.error("Unable to open connection to Elk alarm: {}:{}", config.ipAddress, config.port, e);
         }
 
         if (config.useSSL) {
@@ -135,12 +136,12 @@ public class ElkAlarmConnection {
             out.flush();
 
             // Read back username and password
-            logger.debug("Read back from Elk: ", in.readLine());
-            logger.debug("Read back from Elk: ", in.readLine());
-            logger.debug("Read back from Elk: ", in.readLine());
-            logger.debug("Read back from Elk: ", in.readLine());
+            logger.debug("Elk Login Readback: ", in.readLine());
+            logger.debug("Elk Login Readback: ", in.readLine());
+            logger.debug("Elk Login Readback: ", in.readLine());
+            logger.debug("Elk Login Readback: ", in.readLine());
         } catch (IOException e) {
-            logger.error("Unable to open connection to the elk alarm {}:{}", config.ipAddress, config.port, e);
+            logger.error("Unable to open connection to Elk alarm: {}:{}", config.ipAddress, config.port, e);
             return false;
         }
         return true;
@@ -158,7 +159,8 @@ public class ElkAlarmConnection {
                 socket.close();
                 socket = null;
             } catch (IOException e) {
-                logger.error("Closing the socket", config.ipAddress, config.port, e);
+                logger.error("Unable to properly close connection to Elk alarm: {}:{}", config.ipAddress, config.port,
+                        e);
             }
         }
     }
@@ -199,18 +201,19 @@ public class ElkAlarmConnection {
             }
             socket.getOutputStream().write(sendStr.getBytes(StandardCharsets.US_ASCII));
             socket.getOutputStream().flush();
-            logger.debug("Writing {} to alarm", sendStr);
+            logger.debug("Sending to Elk Alarm: {}", sendStr);
             sentSomething = true;
             if (message instanceof EthernetModuleTestReply) {
                 sendActualMessage();
             }
         } catch (IOException e) {
-            logger.error("Error writing to elk alarm {}:{}", config.ipAddress, config.port, e);
+            logger.error("Error sending to Elk alarm: {}:{}", config.ipAddress, config.port, e);
             running = false;
             try {
                 socket.close();
             } catch (IOException e1) {
-                logger.error("Error closing socket to elk alarm {}:{}", config.ipAddress, config.port, e);
+                logger.error("Unable to properly close connection to Elk alarm: {}:{}", config.ipAddress, config.port,
+                        e);
             }
             socket = null;
         }
@@ -240,19 +243,19 @@ public class ElkAlarmConnection {
         /** The reading thread to get data from the elk. */
         @Override
         public void run() {
-            logger.info("Starting to run the reading thread.");
+            logger.debug("Starting Elk alarm reading thread");
             BufferedReader buff;
             try {
                 buff = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.US_ASCII));
             } catch (IOException e1) {
-                logger.error("Unable to setup the reader for the elk alarm {}:{}", config.ipAddress, config.port, e1);
+                logger.error("Unable to setup the reader for Elk alarm: {}:{}", config.ipAddress, config.port, e1);
                 running = false;
                 return;
             }
             while (running) {
                 try {
                     String line = buff.readLine();
-                    logger.debug("Received {} from alarm", line);
+                    logger.debug("Received from Elk alarm: {}", line);
                     // Got our line. Yay.
                     ElkMessage message = factory.createMessage(line);
                     if (message != null) {
@@ -261,14 +264,14 @@ public class ElkAlarmConnection {
                                 listen.handleElkMessage(message);
                             }
                         }
-                        logger.debug("Dispatched elk message {} {}", message.toString(), line);
+                        logger.debug("Processed Elk message: {} as {}", line, message.toString());
                     } else {
-                        logger.info("Unknown elk message {}", line);
+                        logger.info("Unknown Elk message: {}", line);
                     }
                     // See if we need to send a message too.
                     sendActualMessage();
                 } catch (IOException e) {
-                    logger.error("Error reading line from elk alarm {}:{}", config.ipAddress, config.port, e);
+                    logger.error("Error reading from Elk alarm: {}:{}", config.ipAddress, config.port, e);
                 }
             }
         }

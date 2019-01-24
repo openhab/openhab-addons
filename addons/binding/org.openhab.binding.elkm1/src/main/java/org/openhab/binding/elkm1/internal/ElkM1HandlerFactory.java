@@ -70,7 +70,7 @@ public class ElkM1HandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals(ElkM1BindingConstants.THING_TYPE_AREA)) {
             return new ElkM1AreaHandler(thing);
         }
-        logger.error("Not creating handler {}", thingTypeUID);
+        logger.error("Can't Create Handler: {}", thingTypeUID);
 
         return null;
     }

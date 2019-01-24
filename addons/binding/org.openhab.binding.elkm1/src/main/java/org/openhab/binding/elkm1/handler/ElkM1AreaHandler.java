@@ -59,7 +59,7 @@ public class ElkM1AreaHandler extends BaseThingHandler {
                         bridgeHandler.updateArmedState(zone, armed);
                     }
                 } catch (Exception e) {
-                    logger.error("Unable to set the alarmed state to {}", str, toString(), e);
+                    logger.error("Unable to set the Elk alarmed state to: {}", str, toString(), e);
                 }
             }
         }
@@ -77,7 +77,7 @@ public class ElkM1AreaHandler extends BaseThingHandler {
      * @param armUp the armup state of the area
      */
     public void updateArea(ElkAlarmAreaState state, ElkAlarmArmedState armed, ElkAlarmArmUpState armUp) {
-        logger.debug("Update area config {} {} {}", state, armed, armUp);
+        logger.debug("Updated Elk area config to: {}, {}, {}", state, armed, armUp);
         Channel chan = getThing().getChannel(ElkM1BindingConstants.CHANNEL_AREA_STATE);
         if (chan != null) {
             updateState(chan.getUID(), new StringType(state.toString()));

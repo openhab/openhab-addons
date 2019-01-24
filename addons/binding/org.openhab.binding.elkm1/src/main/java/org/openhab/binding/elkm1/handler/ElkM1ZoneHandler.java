@@ -55,7 +55,7 @@ public class ElkM1ZoneHandler extends BaseThingHandler {
      * @param status the status to update
      */
     public void updateZoneConfig(ElkZoneConfig config, ElkZoneStatus status) {
-        logger.debug("Update zone config {} {}", config, status);
+        logger.debug("Update Elk Zone config {} to: {}", config, status);
         Channel chan = getThing().getChannel(ElkM1BindingConstants.CHANNEL_ZONE_CONFIG);
         if (chan != null) {
             updateState(chan.getUID(), new StringType(config.toString()));
@@ -73,7 +73,7 @@ public class ElkM1ZoneHandler extends BaseThingHandler {
      * @param definition the new defintion
      */
     public void updateZoneDefinition(ElkDefinition definition) {
-        logger.debug("Update zone definition {}", definition);
+        logger.debug("Updated Elk zone definition to: {}", definition);
         Channel chan = getThing().getChannel(ElkM1BindingConstants.CHANNEL_ZONE_DEFINITION);
         if (chan != null) {
             updateState(chan.getUID(), new StringType(definition.toString()));
@@ -85,7 +85,7 @@ public class ElkM1ZoneHandler extends BaseThingHandler {
      * @param area the new area the zone is inside
      */
     public void updateZoneArea(int area) {
-        logger.debug("Update zone area {}", area);
+        logger.debug("Updated Elk zone area to: {}", area);
         Channel chan = getThing().getChannel(ElkM1BindingConstants.CHANNEL_ZONE_AREA);
         if (chan != null) {
             updateState(chan.getUID(), new DecimalType(area));

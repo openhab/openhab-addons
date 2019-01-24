@@ -40,21 +40,21 @@ public class ElkM1DiscoveryHandler extends AbstractDiscoveryService implements E
 
     @Override
     public void activate(Map<String, Object> configProperties) {
-        logger.info("Activate!");
+        logger.info("Elk M1 Binding Activated");
         super.activate(configProperties);
         this.bridge.addListener(this);
     }
 
     @Override
     public void deactivate() {
-        logger.info("Deactivate!");
+        logger.info("Elk M1 Binding Deactivated");
         super.deactivate();
         this.bridge.removeListener(this);
     }
 
     @Override
     public void onZoneDiscovered(int zoneNum, String label) {
-        logger.info("Zone discovered {} {}", zoneNum, label);
+        logger.info("Elk Zone {} Discovered: {}", zoneNum, label);
         ThingUID thingUID = new ThingUID(ElkM1BindingConstants.THING_TYPE_ZONE, bridge.getThing().getUID(),
                 Integer.toString(zoneNum));
         Map<String, Object> properties = Maps.newHashMap();
@@ -72,7 +72,7 @@ public class ElkM1DiscoveryHandler extends AbstractDiscoveryService implements E
 
     @Override
     public void onAreaDiscovered(int areaNum, String label) {
-        logger.info("Area discovered {} {}", areaNum, label);
+        logger.info("Elk Area {} Discovered: {}", areaNum, label);
         ThingUID thingUID = new ThingUID(ElkM1BindingConstants.THING_TYPE_AREA, bridge.getThing().getUID(),
                 Integer.toString(areaNum));
         Map<String, Object> properties = Maps.newHashMap();
