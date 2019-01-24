@@ -8,8 +8,6 @@ Bundle-Version: 2.5.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Import-Package: 
- org.openhab.binding.rotelra1x,
- org.openhab.binding.rotelra1x.handler,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.library.types,
@@ -21,5 +19,3 @@ Import-Package:
  org.slf4j,
  gnu.io
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.rotelra1x,
- org.openhab.binding.rotelra1x.handler
