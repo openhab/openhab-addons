@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.rotelra1x.internal;
 
-import static org.openhab.binding.rotelra1x.RotelRa1xBindingConstants.THING_TYPE_AMP;
+import static org.openhab.binding.rotelra1x.internal.RotelRa1xBindingConstants.THING_TYPE_AMP;
 
 import java.util.Collections;
 import java.util.Set;
@@ -22,7 +22,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.rotelra1x.handler.RotelRa1xHandler;
+import org.openhab.binding.rotelra1x.internal.handler.RotelRa1xHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**
