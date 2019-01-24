@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.fsinternetradio;
+package org.openhab.binding.fsinternetradio.internal;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
