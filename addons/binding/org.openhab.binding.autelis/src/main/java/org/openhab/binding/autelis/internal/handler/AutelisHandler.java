@@ -72,7 +72,7 @@ import org.xml.sax.InputSource;
  */
 public class AutelisHandler extends BaseThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(AutelisHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(AutelisHandler.class);
 
     /**
      * Default timeout for http connections to a Autelis controller
@@ -87,42 +87,42 @@ public class AutelisHandler extends BaseThingHandler {
      * cache. This cache is cleared after a fixed time period when commands are
      * sent.
      */
-    private Map<String, State> stateMap = Collections.synchronizedMap(new HashMap<String, State>());
+    private Map<String, State> stateMap = Collections.synchronizedMap(new HashMap<>());
 
     /**
      * Clear our state every hour
      */
-    private static int NORMAL_CLEARTIME_SECONDS = 60 * 60;
+    private static final int NORMAL_CLEARTIME_SECONDS = 60 * 60;
 
     /**
      * Default poll rate rate, this is derived from the Autelis web UI
      */
-    static final int DEFAULT_REFRESH_SECONDS = 3;
+    private static final int DEFAULT_REFRESH_SECONDS = 3;
 
     /**
      * How long should we wait to poll after we send an update, derived from trial and error
      */
-    static final int COMMAND_UPDATE_TIME_SECONDS = 6;
+    private static final int COMMAND_UPDATE_TIME_SECONDS = 6;
 
     /**
      * The autelis unit will 'loose' commands if sent to fast
      */
-    static final int THROTTLE_TIME_MILLISECONDS = 500;
+    private static final int THROTTLE_TIME_MILLISECONDS = 500;
 
     /**
      * Autelis web port
      */
-    static final int WEB_PORT = 80;
+    private static final int WEB_PORT = 80;
 
     /**
      * Pentair values for pump response
      */
-    static final String[] PUMP_TYPES = { "watts", "rpm", "gpm", "filer", "error" };
+    private static final String[] PUMP_TYPES = { "watts", "rpm", "gpm", "filer", "error" };
 
     /**
      * Matcher for pump channel names for Pentair
      */
-    static final Pattern PUMPS_PATTERN = Pattern.compile("(pumps/pump\\d?)-(watts|rpm|gpm|filter|error)");
+    private static final Pattern PUMPS_PATTERN = Pattern.compile("(pumps/pump\\d?)-(watts|rpm|gpm|filter|error)");
 
     /**
      * Holds the next clear time in millis
@@ -326,14 +326,11 @@ public class AutelisHandler extends BaseThingHandler {
      */
     private synchronized void initPolling(int initalDelay) {
         clearPolling();
-        pollFuture = scheduler.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    pollAutelisController();
-                } catch (Exception e) {
-                    logger.debug("Exception during poll : {}", e);
-                }
+        pollFuture = scheduler.scheduleWithFixedDelay(() -> {
+            try {
+                pollAutelisController();
+            } catch (Exception e) {
+                logger.debug("Exception during poll", e);
             }
         }, initalDelay, DEFAULT_REFRESH_SECONDS, TimeUnit.SECONDS);
     }
@@ -441,7 +438,7 @@ public class AutelisHandler extends BaseThingHandler {
                         try {
                             value = String.valueOf(Integer.parseInt(value) * 50);
                         } catch (NumberFormatException ignored) {
-
+                            logger.debug("Failed to parse pentair salt level as integer");
                         }
                     }
                 }
