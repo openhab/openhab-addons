@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.nuki.handler;
+package org.openhab.binding.nuki.internal.handler;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -27,7 +27,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.nuki.NukiBindingConstants;
+import org.openhab.binding.nuki.internal.NukiBindingConstants;
 import org.openhab.binding.nuki.internal.converter.LockActionConverter;
 import org.openhab.binding.nuki.internal.dataexchange.BridgeLockActionResponse;
 import org.openhab.binding.nuki.internal.dataexchange.BridgeLockStateResponse;
