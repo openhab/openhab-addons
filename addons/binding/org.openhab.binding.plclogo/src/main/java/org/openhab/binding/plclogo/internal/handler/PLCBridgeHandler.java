@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.plclogo.handler;
+package org.openhab.binding.plclogo.internal.handler;
 
-import static org.openhab.binding.plclogo.PLCLogoBindingConstants.*;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.*;
 
 import java.time.DateTimeException;
 import java.time.ZonedDateTime;
@@ -44,8 +44,8 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.plclogo.PLCLogoBindingConstants.Layout;
 import org.openhab.binding.plclogo.internal.PLCLogoClient;
+import org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.Layout;
 import org.openhab.binding.plclogo.internal.config.PLCLogoBridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
