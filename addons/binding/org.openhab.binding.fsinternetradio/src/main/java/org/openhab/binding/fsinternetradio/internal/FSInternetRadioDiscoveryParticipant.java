@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.fsinternetradio.internal;
 
-import static org.openhab.binding.fsinternetradio.FSInternetRadioBindingConstants.*;
+import static org.openhab.binding.fsinternetradio.internal.FSInternetRadioBindingConstants.*;
 
 import java.util.Collections;
 import java.util.HashMap;

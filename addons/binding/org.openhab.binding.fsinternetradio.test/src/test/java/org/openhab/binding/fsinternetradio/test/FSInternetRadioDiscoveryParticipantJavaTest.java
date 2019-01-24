@@ -32,7 +32,7 @@ import org.jupnp.model.meta.RemoteDeviceIdentity;
 import org.jupnp.model.meta.RemoteService;
 import org.jupnp.model.types.DeviceType;
 import org.jupnp.model.types.UDN;
-import org.openhab.binding.fsinternetradio.FSInternetRadioBindingConstants;
+import org.openhab.binding.fsinternetradio.internal.FSInternetRadioBindingConstants;
 import org.openhab.binding.fsinternetradio.internal.FSInternetRadioDiscoveryParticipant;
 
 /**

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.fsinternetradio.internal;
 
-import static org.openhab.binding.fsinternetradio.FSInternetRadioBindingConstants.THING_TYPE_RADIO;
+import static org.openhab.binding.fsinternetradio.internal.FSInternetRadioBindingConstants.THING_TYPE_RADIO;
 
 import java.util.Collections;
 import java.util.Set;
@@ -24,7 +24,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
-import org.openhab.binding.fsinternetradio.handler.FSInternetRadioHandler;
+import org.openhab.binding.fsinternetradio.internal.handler.FSInternetRadioHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
