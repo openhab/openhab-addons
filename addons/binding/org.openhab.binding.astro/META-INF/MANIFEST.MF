@@ -7,9 +7,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.astro;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
-Export-Package: 
- org.openhab.binding.astro,
- org.openhab.binding.astro.handler
 Import-Package: 
  javax.measure,
  javax.measure.quantity,
@@ -31,8 +28,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.io.net.http,
- org.openhab.binding.astro,
- org.openhab.binding.astro.handler,
  org.osgi.framework,
  org.osgi.service.component,
  org.slf4j

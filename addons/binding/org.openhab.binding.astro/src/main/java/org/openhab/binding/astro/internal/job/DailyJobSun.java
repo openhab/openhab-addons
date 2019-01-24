@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.astro.internal.job;
 
-import static org.openhab.binding.astro.AstroBindingConstants.*;
+import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
 import static org.openhab.binding.astro.internal.job.Job.*;
 import static org.openhab.binding.astro.internal.model.SunPhaseName.*;
 
-import org.openhab.binding.astro.handler.AstroThingHandler;
+import org.openhab.binding.astro.internal.handler.AstroThingHandler;
 import org.openhab.binding.astro.internal.model.Planet;
 import org.openhab.binding.astro.internal.model.Sun;
 import org.openhab.binding.astro.internal.model.SunEclipse;
