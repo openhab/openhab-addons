@@ -7,11 +7,16 @@ The integration happens through the Hue bridge, which acts as an IP gateway to t
 
 ## Supported Things
 
-The Hue bridge is required as a "bridge" for accessing any other Hue devices.
+The Hue bridge is required as a "bridge" for accessing any other Hue device.
+It supports the ZigBee LightLink protocol as well as the upwards compatible ZigBee 3.0 protocol.
+There are two types of Hue bridges, generally refered to as v1 (the rounded version) and v2 (the squared version).
+Only noticable difference between the two generation of bridges is the added support for Apple HomeKit in v2.
+Both bridges are fully supported by this binding.
 
 Almost all available Hue devices are supported by this binding.
-This includes not only the "friends of Hue", but also products like the LivingWhites adapter.
-Additionally, it is possible to use OSRAM Lightify devices as well as other ZigBee LightLink compatible products.
+This includes not only the "Friends of Hue", but also products like the LivingWhites adapter.
+Additionally, it is possible to use OSRAM Lightify devices as well as other ZigBee LightLink compatible products, including the IKEA TRÅDFRI lights (when updated). 
+Beside bulbs and luminaires the Hue binding also supports some ZigBee sensors. Currently only Hue specific sensors are tested successfully (Hue Motion Sensor and Hue Dimmer Switch).
 Please note that the devices need to be registered with the Hue bridge before it is possible for this binding to use them.
 
 The Hue binding supports all seven types of lighting devices defined for ZigBee LightLink ([see page 24, table 2](https://www.nxp.com/documents/user_manual/JN-UG-3091.pdf).
@@ -42,8 +47,9 @@ The following matrix lists the capabilities (channels) for each type:
 |  0220       |    X   |     X      |       |          X        |
 
 Beside bulbs and luminaires the Hue binding supports some ZigBee sensors.
-Currently only Hue specific sensors are tested successfully (e.g. Hue Motion Sensor and Hue Dimmer Switch).
-The Hue Motion Sensor registers a `ZLLLightLevel` sensor, a `ZLLPresence` sensor and a `ZLLTemperature` sensor in one device.
+Currently only Hue specific sensors are tested successfully (e.g. Hue Motion Sensor, Hue Dimmer Switch, Hue Tap).
+The Hue Motion Sensor registers a `ZLLLightLevel` sensor (0106), a `ZLLPresence` sensor (0107) and a `ZLLTemperature` sensor (0302) in one device.
+They are presented by the following ZigBee Device ID and _Thing type_:
 
 | Device type                 | ZigBee Device ID | Thing type |
 |-----------------------------|------------------|------------|
@@ -52,6 +58,8 @@ The Hue Motion Sensor registers a `ZLLLightLevel` sensor, a `ZLLPresence` sensor
 | Temperature Sensor          | 0x0302           | 0302       |
 | Non-Colour Controller       | 0x0820           | 0820       |
 | Non-Colour Scene Controller | 0x0830           | 0830       |
+
+The Hue Dimmer Switch has 4 buttons and registers as a Non-Colour Controller switch, while the Hue Tap (also 4 buttons) registers as a Non-Colour Scene Controller in accordance with the ZLL standard.
 
 The type of a specific device can be found in the configuration section for things in the PaperUI.
 It is part of the unique thing id which could look like:
@@ -172,20 +180,21 @@ The `tap_switch_event` can trigger one of the following events:
 
 ## Full Example
 
-In this example **Bulb1** is a standard Philips Hue bulb (LCT001) which supports `color` and `color_temperature`.
+In this example **bulb1** is a standard Philips Hue bulb (LCT001) which supports `color` and `color_temperature`.
 Therefore it is a thing of type **0210**.
-**Bulb2** is an OSRAM tunable white bulb (PAR16 50 TW) supporting `color_temperature` and so the type is **0220**.
+**bulb2** is an OSRAM tunable white bulb (PAR16 50 TW) supporting `color_temperature` and so the type is **0220**.
+And there is one Hue Motion Sensor (represented by three devices) and a Hue Dimmer Switch **dimmer-switch** with a Rule to trigger an action when a key has been pressed.
 
 ### demo.things:
 
 ```
 Bridge hue:bridge:1 [ ipAddress="192.168.0.64" ] {
-	0210 bulb1 [ lightId="1" ]
-	0220 bulb2 [ lightId="2" ]
-	0106 light-level-sensor [ sensorId="3" ]
-	0107 motion-sensor [ sensorId="4" ]
-	0302 temperature-sensor [ sensorId="5" ]
-	0820 dimmer-switch [ sensorId="6" ]
+    0210 bulb1 [ lightId="1" ]
+    0220 bulb2 [ lightId="2" ]
+    0106 light-level-sensor [ sensorId="3" ]
+    0107 motion-sensor [ sensorId="4" ]
+    0302 temperature-sensor [ sensorId="5" ]
+    0820 dimmer-switch [ sensorId="6" ]
 }
 ```
 
@@ -193,58 +202,59 @@ Bridge hue:bridge:1 [ ipAddress="192.168.0.64" ] {
 
 ```
 // Bulb1
-Switch	Light1_Toggle		{ channel="hue:0210:1:bulb1:color" }
-Dimmer	Light1_Dimmer		{ channel="hue:0210:1:bulb1:color" }
-Color	Light1_Color		{ channel="hue:0210:1:bulb1:color" }
-Dimmer	Light1_ColorTemp	{ channel="hue:0210:1:bulb1:color_temperature" }
-String	Light1_Alert		{ channel="hue:0210:1:bulb1:alert" }
-Switch	Light1_Effect		{ channel="hue:0210:1:bulb1:effect" }
+Switch  Light1_Toggle       { channel="hue:0210:1:bulb1:color" }
+Dimmer  Light1_Dimmer       { channel="hue:0210:1:bulb1:color" }
+Color   Light1_Color        { channel="hue:0210:1:bulb1:color" }
+Dimmer  Light1_ColorTemp    { channel="hue:0210:1:bulb1:color_temperature" }
+String  Light1_Alert        { channel="hue:0210:1:bulb1:alert" }
+Switch  Light1_Effect       { channel="hue:0210:1:bulb1:effect" }
 
 // Bulb2
-Switch	Light2_Toggle		{ channel="hue:0220:1:bulb2:brightness" }
-Dimmer	Light2_Dimmer		{ channel="hue:0220:1:bulb2:brightness" }
-Dimmer	Light2_ColorTemp	{ channel="hue:0220:1:bulb2:color_temperature" }
+Switch  Light2_Toggle       { channel="hue:0220:1:bulb2:brightness" }
+Dimmer  Light2_Dimmer       { channel="hue:0220:1:bulb2:brightness" }
+Dimmer  Light2_ColorTemp    { channel="hue:0220:1:bulb2:color_temperature" }
 
 // Light Level Sensor
-Number:Illuminance LightLevelSensorIlluminance { channel="hue:0106:light-level-sensor:illuminance" }
+Number:Illuminance LightLevelSensorIlluminance { channel="hue:0106:1:light-level-sensor:illuminance" }
 
 // Motion Sensor
-Switch   MotionSensorPresence     { channel="hue:0107:motion-sensor:presence" }
-DateTime MotionSensorLastUpdate   { channel="hue:0107:motion-sensor:last_updated" }
-Number   MotionSensorBatteryLevel { channel="hue:0107:motion-sensor:battery_level" }
-Switch   MotionSensorLowBattery   { channel="hue:0107:motion-sensor:battery_low" }
+Switch   MotionSensorPresence     { channel="hue:0107:1:motion-sensor:presence" }
+DateTime MotionSensorLastUpdate   { channel="hue:0107:1:motion-sensor:last_updated" }
+Number   MotionSensorBatteryLevel { channel="hue:0107:1:motion-sensor:battery_level" }
+Switch   MotionSensorLowBattery   { channel="hue:0107:1:motion-sensor:battery_low" }
 
 // Temperature Sensor
 Number:Temperature TemperatureSensorTemperature { channel="hue:0302:temperature-sensor:temperature" }
 ```
 
 Note: The bridge ID is in this example **1** but can be different in each system.
+Also, if you are doing all your configuration through files and do not use Paper UI and the Inbox, you may add the full bridge id to the channel definitions (e.g. `channel="hue:0210:00178810d0dc:bulb1:color`) instead of the short version (e.g. `channel="hue:0210:1:bulb1:color`) to prevent frequent discovery messages in the log file.
 
 ### demo.sitemap:
 
 ```
 sitemap demo label="Main Menu"
 {
-	Frame {
-		// Bulb1
-		Switch		item=		Light1_Toggle
-		Slider		item=		Light1_Dimmer
-		Colorpicker	item=		Light1_Color
-		Slider		item=		Light1_ColorTemp
-		Switch		item=		Light1_Alert		mappings=[NONE="None", SELECT="Alert", LSELECT="Long Alert"]
-		Switch		item=		Light1_Effect
+    Frame {
+        // Bulb1
+        Switch      item=       Light1_Toggle
+        Slider      item=       Light1_Dimmer
+        Colorpicker item=       Light1_Color
+        Slider      item=       Light1_ColorTemp
+        Switch      item=       Light1_Alert        mappings=[NONE="None", SELECT="Alert", LSELECT="Long Alert"]
+        Switch      item=       Light1_Effect
 
-		// Bulb2
-		Switch		item=		Light2_Toggle
-		Slider		item=		Light2_Dimmer
-		Slider		item=		Light2_ColorTemp
+        // Bulb2
+        Switch      item=       Light2_Toggle
+        Slider      item=       Light2_Dimmer
+        Slider      item=       Light2_ColorTemp
 
-		// Motion Sensor
-		Switch item=MotionSensorPresence
-		Text item=MotionSensorLastUpdate
-		Text item=MotionSensorBatteryLevel
-		Switch item=MotionSensorLowBattery
-	}
+        // Motion Sensor
+        Switch item=MotionSensorPresence
+        Text item=MotionSensorLastUpdate
+        Text item=MotionSensorBatteryLevel
+        Switch item=MotionSensorLowBattery
+    }
 }
 ```
 
@@ -253,8 +263,19 @@ sitemap demo label="Main Menu"
  ```php
 rule "example trigger rule"
 when
-    Channel "hue:0820:dimmer-switch:dimmer_switch_event" triggered <EVENT>
+    Channel "hue:0820:1:dimmer-switch:dimmer_switch_event" triggered <EVENT>
 then
     ...
 end
+```
+
+The optional `<EVENT>` represents one of the button events that are generated by the Hue Dimmer Switch.
+If ommited the rule gets triggered by any key action and you can determine the event that triggered it with the `receivedEvent.getEvent()` method.
+Be aware that the events have a '.0' attached to them, like `2001.0` or `34.0`.
+So, testing for specific events looks like this:
+
+```
+if (receivedEvent.getEvent() == "1000.0")) {
+    //do stuff
+}       
 ```
