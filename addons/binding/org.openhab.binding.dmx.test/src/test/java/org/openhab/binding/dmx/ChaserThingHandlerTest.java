@@ -36,7 +36,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.binding.dmx.handler.ChaserThingHandler;
+import org.openhab.binding.dmx.internal.handler.ChaserThingHandler;
 import org.openhab.binding.dmx.test.TestBridgeHandler;
 
 /**

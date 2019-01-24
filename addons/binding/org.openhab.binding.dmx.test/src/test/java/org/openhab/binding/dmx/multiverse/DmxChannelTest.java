@@ -19,10 +19,10 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.openhab.binding.dmx.handler.DimmerThingHandler;
 import org.openhab.binding.dmx.internal.DmxBindingConstants.ListenerType;
 import org.openhab.binding.dmx.internal.action.FadeAction;
 import org.openhab.binding.dmx.internal.action.ResumeAction;
+import org.openhab.binding.dmx.internal.handler.DimmerThingHandler;
 import org.openhab.binding.dmx.internal.multiverse.DmxChannel;
 
 /**
