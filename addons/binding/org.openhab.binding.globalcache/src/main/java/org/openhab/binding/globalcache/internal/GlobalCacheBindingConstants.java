@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.globalcache;
+package org.openhab.binding.globalcache.internal;
 
 import java.util.Collections;
 import java.util.Set;
