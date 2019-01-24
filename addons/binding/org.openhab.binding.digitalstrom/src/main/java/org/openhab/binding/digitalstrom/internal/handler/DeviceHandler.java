@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.digitalstrom.handler;
+package org.openhab.binding.digitalstrom.internal.handler;
 
-import static org.openhab.binding.digitalstrom.DigitalSTROMBindingConstants.*;
+import static org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -47,7 +47,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.digitalstrom.DigitalSTROMBindingConstants;
+import org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants;
 import org.openhab.binding.digitalstrom.internal.lib.GeneralLibConstance;
 import org.openhab.binding.digitalstrom.internal.lib.config.Config;
 import org.openhab.binding.digitalstrom.internal.lib.listener.DeviceStatusListener;
