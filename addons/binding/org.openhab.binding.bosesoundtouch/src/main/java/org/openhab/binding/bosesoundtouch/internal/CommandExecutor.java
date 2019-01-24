@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.bosesoundtouch.internal;
 
-import static org.openhab.binding.bosesoundtouch.BoseSoundTouchBindingConstants.*;
+import static org.openhab.binding.bosesoundtouch.internal.BoseSoundTouchBindingConstants.*;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -26,7 +26,7 @@ import org.eclipse.smarthome.core.library.types.PlayPauseType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.bosesoundtouch.handler.BoseSoundTouchHandler;
+import org.openhab.binding.bosesoundtouch.internal.handler.BoseSoundTouchHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
