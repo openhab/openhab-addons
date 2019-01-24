@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.digitalstrom.handler;
+package org.openhab.binding.digitalstrom.internal.handler;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -28,7 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.digitalstrom.DigitalSTROMBindingConstants;
+import org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants;
 import org.openhab.binding.digitalstrom.internal.lib.listener.SceneStatusListener;
 import org.openhab.binding.digitalstrom.internal.lib.manager.StructureManager;
 import org.openhab.binding.digitalstrom.internal.lib.structure.scene.InternalScene;
