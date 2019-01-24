@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.digitalstrom.internal.providers;
 
-import static org.openhab.binding.digitalstrom.DigitalSTROMBindingConstants.BINDING_ID;
+import static org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants.BINDING_ID;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeProvider;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateOption;
-import org.openhab.binding.digitalstrom.DigitalSTROMBindingConstants;
+import org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.DeviceBinarayInputEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.FunctionalColorGroupEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.MeteringTypeEnum;

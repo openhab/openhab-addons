@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.digitalstrom;
+package org.openhab.binding.digitalstrom.internal;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.digitalstrom.internal.lib.structure.scene.constants.SceneTypes;

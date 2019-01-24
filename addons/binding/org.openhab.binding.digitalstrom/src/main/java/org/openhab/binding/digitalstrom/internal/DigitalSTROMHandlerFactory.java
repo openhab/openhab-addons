@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.digitalstrom.internal;
 
-import static org.openhab.binding.digitalstrom.DigitalSTROMBindingConstants.*;
+import static org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,13 +26,12 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.digitalstrom.DigitalSTROMBindingConstants;
-import org.openhab.binding.digitalstrom.handler.BridgeHandler;
-import org.openhab.binding.digitalstrom.handler.CircuitHandler;
-import org.openhab.binding.digitalstrom.handler.DeviceHandler;
-import org.openhab.binding.digitalstrom.handler.SceneHandler;
-import org.openhab.binding.digitalstrom.handler.ZoneTemperatureControlHandler;
 import org.openhab.binding.digitalstrom.internal.discovery.DiscoveryServiceManager;
+import org.openhab.binding.digitalstrom.internal.handler.BridgeHandler;
+import org.openhab.binding.digitalstrom.internal.handler.CircuitHandler;
+import org.openhab.binding.digitalstrom.internal.handler.DeviceHandler;
+import org.openhab.binding.digitalstrom.internal.handler.SceneHandler;
+import org.openhab.binding.digitalstrom.internal.handler.ZoneTemperatureControlHandler;
 import org.openhab.binding.digitalstrom.internal.lib.manager.ConnectionManager;
 import org.openhab.binding.digitalstrom.internal.lib.manager.impl.ConnectionManagerImpl;
 import org.openhab.binding.digitalstrom.internal.lib.serverconnection.constants.JSONApiResponseKeysEnum;
