@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tesla.handler;
+package org.openhab.binding.tesla.internal.handler;
 
-import static org.openhab.binding.tesla.TeslaBindingConstants.*;
+import static org.openhab.binding.tesla.internal.TeslaBindingConstants.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -60,9 +60,9 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.glassfish.jersey.client.ClientProperties;
-import org.openhab.binding.tesla.TeslaBindingConstants;
-import org.openhab.binding.tesla.TeslaBindingConstants.EventKeys;
+import org.openhab.binding.tesla.internal.TeslaBindingConstants;
 import org.openhab.binding.tesla.internal.TeslaChannelSelectorProxy;
+import org.openhab.binding.tesla.internal.TeslaBindingConstants.EventKeys;
 import org.openhab.binding.tesla.internal.TeslaChannelSelectorProxy.TeslaChannelSelector;
 import org.openhab.binding.tesla.internal.protocol.ChargeState;
 import org.openhab.binding.tesla.internal.protocol.ClimateState;

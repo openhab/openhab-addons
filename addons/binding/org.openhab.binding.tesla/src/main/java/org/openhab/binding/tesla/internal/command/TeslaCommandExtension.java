@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.tesla.internal.command;
 
-import static org.openhab.binding.tesla.TeslaBindingConstants.*;
+import static org.openhab.binding.tesla.internal.TeslaBindingConstants.*;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -32,7 +32,7 @@ import org.eclipse.smarthome.core.storage.StorageService;
 import org.eclipse.smarthome.io.console.Console;
 import org.eclipse.smarthome.io.console.extensions.AbstractConsoleCommandExtension;
 import org.eclipse.smarthome.io.console.extensions.ConsoleCommandExtension;
-import org.openhab.binding.tesla.TeslaBindingConstants;
+import org.openhab.binding.tesla.internal.TeslaBindingConstants;
 import org.openhab.binding.tesla.internal.protocol.TokenRequest;
 import org.openhab.binding.tesla.internal.protocol.TokenRequestPassword;
 import org.openhab.binding.tesla.internal.protocol.TokenResponse;
