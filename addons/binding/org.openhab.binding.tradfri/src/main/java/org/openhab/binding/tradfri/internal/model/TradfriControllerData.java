@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.tradfri.internal.model;
 
-import static org.openhab.binding.tradfri.TradfriBindingConstants.SWITCH;
+import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.SWITCH;
 
 import com.google.gson.JsonElement;
 
