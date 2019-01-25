@@ -28,8 +28,8 @@ import org.eclipse.smarthome.core.thing.binding.builder.BridgeBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelKind;
-import org.openhab.binding.wemo.WemoBindingConstants;
-import org.openhab.binding.wemo.handler.AbstractWemoHandler;
+import org.openhab.binding.wemo.internal.WemoBindingConstants;
+import org.openhab.binding.wemo.internal.handler.AbstractWemoHandler;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 
 /**
