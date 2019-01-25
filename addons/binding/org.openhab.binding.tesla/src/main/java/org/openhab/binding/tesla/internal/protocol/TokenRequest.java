@@ -23,7 +23,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.ShortBufferException;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.openhab.binding.tesla.TeslaBindingConstants;
+import org.openhab.binding.tesla.internal.TeslaBindingConstants;
 
 /**
  * The {@link TokenRequest} is a datastructure to capture
