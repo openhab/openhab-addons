@@ -17,7 +17,8 @@ Tested mowers
 |-------------------------|------------------|---------------------------|
 | Husqvarna Automower 105 | Robonect Hx      | 0.9c, 0.9e                |
 | Husqvarna Automower 315 | Robonect Hx      | 0.9e, 1.0 preview         |
-| Husqvarna Automower 420 | Robonect Hx      | 0.9e, 1.0 Beta2                 |
+| Husqvarna Automower 320 | Robonect Hx      | 1.0 Beta7a                |
+| Husqvarna Automower 420 | Robonect Hx      | 0.9e, 1.0 Beta2           |
 
 ## Discovery
 
