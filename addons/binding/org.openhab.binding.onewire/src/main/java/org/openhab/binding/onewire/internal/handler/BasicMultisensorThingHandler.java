@@ -15,7 +15,6 @@ package org.openhab.binding.onewire.internal.handler;
 import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,9 +28,9 @@ import org.openhab.binding.onewire.internal.OwDynamicStateDescriptionProvider;
 import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.device.DS1923;
 import org.openhab.binding.onewire.internal.device.DS2438;
-import org.openhab.binding.onewire.internal.device.OwSensorType;
 import org.openhab.binding.onewire.internal.device.DS2438.CurrentSensorType;
 import org.openhab.binding.onewire.internal.device.DS2438.LightSensorType;
+import org.openhab.binding.onewire.internal.device.OwSensorType;
 
 /**
  * The {@link BasicMultisensorThingHandler} is responsible for handling DS2438/DS1923 based multisensors (single
@@ -94,8 +93,8 @@ public class BasicMultisensorThingHandler extends OwBaseThingHandler {
     }
 
     @Override
-    public Map<String, String> updateSensorProperties(OwBaseBridgeHandler bridgeHandler) throws OwException {
-        Map<String, String> properties = new HashMap<String, String>();
+    public void updateSensorProperties(OwBaseBridgeHandler bridgeHandler) throws OwException {
+        Map<String, String> properties = editProperties();
         sensorType = bridgeHandler.getType(sensorId);
 
         if (sensorType == OwSensorType.DS1923) {
@@ -111,6 +110,6 @@ public class BasicMultisensorThingHandler extends OwBaseThingHandler {
             properties.put(PROPERTY_VENDOR, vendor);
         }
 
-        return properties;
+        updateProperties(properties);
     }
 }

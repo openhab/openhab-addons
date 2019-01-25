@@ -17,6 +17,7 @@ import static org.openhab.binding.onewire.internal.OwBindingConstants.CHANNEL_DI
 import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -37,7 +38,8 @@ public class DigitalIoConfig {
     private DigitalIoMode ioMode = DigitalIoMode.INPUT;
     private DigitalIoLogic ioLogic = DigitalIoLogic.NORMAL;
 
-    public DigitalIoConfig(Thing thing, Integer channelIndex, OwDeviceParameterMap inParam, OwDeviceParameterMap outParam) {
+    public DigitalIoConfig(Thing thing, Integer channelIndex, OwDeviceParameterMap inParam,
+            OwDeviceParameterMap outParam) {
         this.channelUID = new ChannelUID(thing.getUID(), String.format("%s%d", CHANNEL_DIGITAL, channelIndex));
         this.channelID = String.format("%s%d", CHANNEL_DIGITAL, channelIndex);
         this.inParam = inParam;
@@ -85,6 +87,14 @@ public class DigitalIoConfig {
             return rawValue ? OnOffType.ON : OnOffType.OFF;
         } else {
             return rawValue ? OnOffType.OFF : OnOffType.ON;
+        }
+    }
+
+    public DecimalType convertState(OnOffType command) {
+        if (ioLogic == DigitalIoLogic.NORMAL) {
+            return command.equals(OnOffType.ON) ? new DecimalType(1) : DecimalType.ZERO;
+        } else {
+            return command.equals(OnOffType.ON) ? DecimalType.ZERO : new DecimalType(1);
         }
     }
 
