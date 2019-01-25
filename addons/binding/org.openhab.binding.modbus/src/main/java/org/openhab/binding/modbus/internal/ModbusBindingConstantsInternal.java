@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.modbus.internal;
 
-import static org.openhab.binding.modbus.internal.ModbusBindingConstants.BINDING_ID;
+import static org.openhab.binding.modbus.ModbusBindingConstants.BINDING_ID;
 
 import java.util.HashMap;
 import java.util.Map;
