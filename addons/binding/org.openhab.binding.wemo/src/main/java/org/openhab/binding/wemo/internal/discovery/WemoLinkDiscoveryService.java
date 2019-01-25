@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.wemo.internal.discovery;
 
-import static org.openhab.binding.wemo.WemoBindingConstants.*;
+import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 
 import java.io.StringReader;
 import java.net.URL;
@@ -35,7 +35,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOParticipant;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
-import org.openhab.binding.wemo.handler.WemoBridgeHandler;
+import org.openhab.binding.wemo.internal.handler.WemoBridgeHandler;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

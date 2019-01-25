@@ -36,8 +36,8 @@ import org.junit.Test;
 import org.jupnp.model.ValidationException;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.openhab.binding.wemo.WemoBindingConstants;
-import org.openhab.binding.wemo.handler.WemoMakerHandler;
+import org.openhab.binding.wemo.internal.WemoBindingConstants;
+import org.openhab.binding.wemo.internal.handler.WemoMakerHandler;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.binding.wemo.internal.test.GenericWemoOSGiTest;
 

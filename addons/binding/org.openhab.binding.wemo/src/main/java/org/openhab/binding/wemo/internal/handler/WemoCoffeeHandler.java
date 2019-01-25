@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.wemo.handler;
+package org.openhab.binding.wemo.internal.handler;
 
-import static org.openhab.binding.wemo.WemoBindingConstants.*;
+import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 
 import java.io.StringReader;
 import java.math.BigDecimal;

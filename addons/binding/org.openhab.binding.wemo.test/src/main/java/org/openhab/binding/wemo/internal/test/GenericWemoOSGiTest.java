@@ -54,8 +54,8 @@ import org.jupnp.model.types.DeviceType;
 import org.jupnp.model.types.ServiceId;
 import org.jupnp.model.types.ServiceType;
 import org.jupnp.model.types.UDN;
-import org.openhab.binding.wemo.WemoBindingConstants;
-import org.openhab.binding.wemo.handler.AbstractWemoHandler;
+import org.openhab.binding.wemo.internal.WemoBindingConstants;
+import org.openhab.binding.wemo.internal.handler.AbstractWemoHandler;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 
 /**

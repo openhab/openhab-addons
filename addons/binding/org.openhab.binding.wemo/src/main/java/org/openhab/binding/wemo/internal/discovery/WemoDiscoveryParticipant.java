@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.wemo.internal.discovery;
 
-import static org.openhab.binding.wemo.WemoBindingConstants.*;
+import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +24,7 @@ import org.eclipse.smarthome.config.discovery.upnp.UpnpDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.jupnp.model.meta.RemoteDevice;
-import org.openhab.binding.wemo.WemoBindingConstants;
+import org.openhab.binding.wemo.internal.WemoBindingConstants;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

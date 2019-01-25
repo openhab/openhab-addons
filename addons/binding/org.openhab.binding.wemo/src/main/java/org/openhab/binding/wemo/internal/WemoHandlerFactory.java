@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.wemo.internal;
 
-import static org.openhab.binding.wemo.WemoBindingConstants.UDN;
+import static org.openhab.binding.wemo.internal.WemoBindingConstants.UDN;
 
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -28,13 +28,12 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
-import org.openhab.binding.wemo.WemoBindingConstants;
-import org.openhab.binding.wemo.handler.WemoBridgeHandler;
-import org.openhab.binding.wemo.handler.WemoCoffeeHandler;
-import org.openhab.binding.wemo.handler.WemoHandler;
-import org.openhab.binding.wemo.handler.WemoLightHandler;
-import org.openhab.binding.wemo.handler.WemoMakerHandler;
 import org.openhab.binding.wemo.internal.discovery.WemoLinkDiscoveryService;
+import org.openhab.binding.wemo.internal.handler.WemoBridgeHandler;
+import org.openhab.binding.wemo.internal.handler.WemoCoffeeHandler;
+import org.openhab.binding.wemo.internal.handler.WemoHandler;
+import org.openhab.binding.wemo.internal.handler.WemoLightHandler;
+import org.openhab.binding.wemo.internal.handler.WemoMakerHandler;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;

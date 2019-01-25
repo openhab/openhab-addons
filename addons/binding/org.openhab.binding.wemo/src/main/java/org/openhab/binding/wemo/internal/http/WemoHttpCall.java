@@ -19,7 +19,7 @@ import java.nio.charset.Charset;
 import java.util.Properties;
 
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.wemo.WemoBindingConstants;
+import org.openhab.binding.wemo.internal.WemoBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

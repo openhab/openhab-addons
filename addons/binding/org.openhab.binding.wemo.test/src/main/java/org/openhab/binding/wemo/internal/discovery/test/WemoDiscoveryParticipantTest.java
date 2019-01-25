@@ -34,7 +34,7 @@ import org.jupnp.model.meta.RemoteDeviceIdentity;
 import org.jupnp.model.meta.RemoteService;
 import org.jupnp.model.types.DeviceType;
 import org.jupnp.model.types.UDN;
-import org.openhab.binding.wemo.WemoBindingConstants;
+import org.openhab.binding.wemo.internal.WemoBindingConstants;
 import org.openhab.binding.wemo.internal.discovery.WemoDiscoveryParticipant;
 import org.openhab.binding.wemo.internal.test.GenericWemoOSGiTest;
 
