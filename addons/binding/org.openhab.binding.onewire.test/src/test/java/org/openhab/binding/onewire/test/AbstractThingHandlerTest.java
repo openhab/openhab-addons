@@ -116,11 +116,7 @@ public abstract class AbstractThingHandlerTest extends JavaTest {
         }).when(bridgeHandler).readBitSet(any(), any());
 
         Mockito.doAnswer(answer -> {
-            Thing thing = thingHandler.getThing();
-            Map<String, String> properties = new HashMap<String, String>();
-            properties.putAll(thing.getProperties());
-            properties.putAll(thingHandler.updateSensorProperties(secondBridgeHandler));
-            thing.setProperties(properties);
+            thingHandler.updateSensorProperties(secondBridgeHandler);
             thingHandler.initialize();
             return null;
         }).when(bridgeHandler).scheduleForPropertiesUpdate(any());

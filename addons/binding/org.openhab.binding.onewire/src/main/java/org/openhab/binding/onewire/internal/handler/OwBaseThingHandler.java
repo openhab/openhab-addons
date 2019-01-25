@@ -17,7 +17,6 @@ import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -321,7 +320,9 @@ public abstract class OwBaseThingHandler extends BaseThingHandler {
             return;
         }
 
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "required properties missing");
         bridgeHandler.scheduleForPropertiesUpdate(thing);
+        
     }
 
     /**
@@ -333,14 +334,15 @@ public abstract class OwBaseThingHandler extends BaseThingHandler {
      * @return properties to be added to the properties map
      * @throws OwException
      */
-    public Map<String, String> updateSensorProperties(OwBaseBridgeHandler bridgeHandler) throws OwException {
-        Map<String, String> properties = new HashMap<String, String>();
+    public void updateSensorProperties(OwBaseBridgeHandler bridgeHandler) throws OwException {
+        Map<String, String> properties = editProperties();
         OwSensorType sensorType = bridgeHandler.getType(sensorId);
         properties.put(PROPERTY_MODELID, sensorType.toString());
         properties.put(PROPERTY_VENDOR, "Dallas/Maxim");
-        logger.trace("updated modelid/vendor to {} / {}", sensorType.name(), "Dallas/Maxim");
 
-        return properties;
+        updateProperties(properties);
+
+        logger.trace("updated modelid/vendor to {} / {}", sensorType.name(), "Dallas/Maxim");
     }
 
     /**
