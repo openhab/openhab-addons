@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.modbus.internal;
+package org.openhab.binding.modbus;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
