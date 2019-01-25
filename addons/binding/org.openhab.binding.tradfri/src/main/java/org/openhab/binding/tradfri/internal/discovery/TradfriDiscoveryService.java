@@ -13,7 +13,7 @@
 package org.openhab.binding.tradfri.internal.discovery;
 
 import static org.eclipse.smarthome.core.thing.Thing.*;
-import static org.openhab.binding.tradfri.TradfriBindingConstants.*;
+import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.*;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -27,8 +27,8 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.tradfri.handler.TradfriGatewayHandler;
 import org.openhab.binding.tradfri.internal.DeviceUpdateListener;
+import org.openhab.binding.tradfri.internal.handler.TradfriGatewayHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

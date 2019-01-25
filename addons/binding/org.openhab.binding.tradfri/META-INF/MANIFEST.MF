@@ -8,9 +8,6 @@ Bundle-SymbolicName: org.openhab.binding.tradfri;singleton:=tr
  ue
 Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
-Export-Package: 
- org.openhab.binding.tradfri,
- org.openhab.binding.tradfri.handler
 Import-Package: 
  com.google.gson,
  javax.jmdns,
@@ -33,8 +30,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.openhab.binding.tradfri,
- org.openhab.binding.tradfri.handler,
  org.osgi.framework,
  org.osgi.service.component,
  org.slf4j

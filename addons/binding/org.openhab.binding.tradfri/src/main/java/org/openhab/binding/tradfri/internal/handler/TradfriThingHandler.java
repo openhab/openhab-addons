@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tradfri.handler;
+package org.openhab.binding.tradfri.internal.handler;
 
 import static org.eclipse.smarthome.core.thing.Thing.*;
 
