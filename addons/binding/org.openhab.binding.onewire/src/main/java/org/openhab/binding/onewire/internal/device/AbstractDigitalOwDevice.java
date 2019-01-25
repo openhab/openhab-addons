@@ -20,7 +20,6 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -130,11 +129,8 @@ public abstract class AbstractDigitalOwDevice extends AbstractOwDevice {
         if (ioChannel < getChannelCount()) {
             try {
                 if (ioConfig.get(ioChannel).isOutput()) {
-                    DecimalType value = ((OnOffType) command).as(DecimalType.class);
-                    if (value == null) {
-                        throw new OwException("command is null");
-                    }
-                    bridgeHandler.writeDecimalType(sensorId, ioConfig.get(ioChannel).getParameter(), value);
+                    bridgeHandler.writeDecimalType(sensorId, ioConfig.get(ioChannel).getParameter(),
+                            ioConfig.get(ioChannel).convertState((OnOffType) command));
                     return true;
                 } else {
                     return false;

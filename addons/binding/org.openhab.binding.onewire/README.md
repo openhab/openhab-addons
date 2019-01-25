@@ -23,7 +23,8 @@ The thing types `ms-th` and `ms-tv` have been marked deprecated and will be upda
 The thing types `counter2`, `digitalio`, `digitalio2`, `digitalio8`, `ibutton`, `temperature` have been marked deprecated and will be updated to `basic` automatically. 
 Please note that auto-upgraded things keep their thing UID _including the deprecated thing type_.
 
-Manually (via textual configuration) defined things need to be changed to `ms-tx` or `basic` respectively. 
+Manually (via textual configuration) defined things need to be changed to `ms-tx` or `basic` respectively.
+The thing UID changes and the item links need to be adjusted to the new UID.
 
 Deprecated thing types will will be removed with the next official release.
 
