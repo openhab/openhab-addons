@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.sonyaudio.handler;
+package org.openhab.binding.sonyaudio.internal.handler;
 
 import java.io.IOException;
 import java.util.Map;

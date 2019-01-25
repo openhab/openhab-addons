@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.sonyaudio.handler;
+package org.openhab.binding.sonyaudio.internal.handler;
 
-import static org.openhab.binding.sonyaudio.SonyAudioBindingConstants.*;
+import static org.openhab.binding.sonyaudio.internal.SonyAudioBindingConstants.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -41,7 +41,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.sonyaudio.SonyAudioBindingConstants;
+import org.openhab.binding.sonyaudio.internal.SonyAudioBindingConstants;
 import org.openhab.binding.sonyaudio.internal.SonyAudioEventListener;
 import org.openhab.binding.sonyaudio.internal.protocol.SonyAudioConnection;
 import org.slf4j.Logger;
