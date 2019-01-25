@@ -219,7 +219,7 @@
 
     <feature name="openhab-binding-globalcache" description="GlobalCache Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <feature>esh-transform-map</feature>
+        <feature>openhab-transformation-map</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.globalcache/${project.version}</bundle>
     </feature>
 
