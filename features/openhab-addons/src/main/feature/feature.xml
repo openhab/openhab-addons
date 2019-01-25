@@ -70,7 +70,8 @@
     </feature>
 
     <feature name="openhab-binding-bluetooth" description="Bluetooth Binding" version="${project.version}">
-    	<feature>openhab-transport-serial</feature>
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-serial</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.bluetooth/${project.version}</bundle>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.bluetooth.blukii/${project.version}</bundle>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.bluetooth.bluez/${project.version}</bundle>
@@ -135,7 +136,6 @@
 
     <feature name="openhab-binding-dmx" description="DMX Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <feature>esh-binding-dmx</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.dmx/${project.version}</bundle>
     </feature>
 
@@ -334,7 +334,7 @@
         <feature>openhab-transport-upnp</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.kodi/${project.version}</bundle>
     </feature>
-	
+
     <feature name="openhab-binding-konnected" description="Konnected Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-http</feature>
@@ -458,13 +458,13 @@
     </feature>
 
     <feature name="openhab-binding-modbus" description="Modbus Binding" version="${project.version}">
-        <feature>openhab-runtime-base</feature>        
+        <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-modbus</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.modbus/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-mqtt" description="MQTT Binding" version="${project.version}">
-        <feature>openhab-runtime-base</feature>        
+        <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mqtt</feature>
         <feature>esh-automation-api</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.mqtt/${project.version}</bundle>
@@ -606,7 +606,7 @@
 
     <feature name="openhab-binding-regoheatpump" description="RegoHeatPump Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-		<feature>openhab-transport-serial</feature>
+        <feature>openhab-transport-serial</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.regoheatpump/${project.version}</bundle>
     </feature>
 
@@ -617,7 +617,7 @@
     </feature>
 
     <feature name="openhab-binding-robonect" description="Robonect Binding" version="${project.version}">
-        <feature>openhab-runtime-base</feature>         
+        <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.robonect/${project.version}</bundle>
     </feature>
     
@@ -764,9 +764,9 @@
     </feature>
 
     <feature name="openhab-binding-tradfri" description="TRÅDFRI Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-coap</feature>
         <feature>openhab-transport-mdns</feature>
-        <feature>esh-binding-tradfri</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.tradfri/${project.version}</bundle>
     </feature>
 
@@ -896,17 +896,17 @@
 
     <feature name="openhab-misc-market" description="Eclipse IoT Market" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-	    <feature>esh-automation-api</feature>
-    	<bundle>mvn:org.openhab.extensionservice/org.openhab.extensionservice.marketplace/${project.version}</bundle>
-	    <bundle>mvn:org.openhab.extensionservice/org.openhab.extensionservice.marketplace.automation/${project.version}</bundle>
+        <feature>esh-automation-api</feature>
+        <bundle>mvn:org.openhab.extensionservice/org.openhab.extensionservice.marketplace/${project.version}</bundle>
+        <bundle>mvn:org.openhab.extensionservice/org.openhab.extensionservice.marketplace.automation/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-misc-mqttbroker" description="Embedded MQTT Broker" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mqtt</feature>
-    	<requirement>esh.tp;filter:="(feature=commons-net)"</requirement>
-	    <feature dependency="true">esh.tp-commons-net</feature>
-	    <bundle>mvn:org.openhab.io/org.openhab.io.mqttembeddedbroker/${project.version}</bundle>
+        <requirement>esh.tp;filter:="(feature=commons-net)"</requirement>
+        <feature dependency="true">esh.tp-commons-net</feature>
+        <bundle>mvn:org.openhab.io/org.openhab.io.mqttembeddedbroker/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-misc-neeo" description="NEEO Integration" version="${project.version}">
@@ -940,45 +940,45 @@
 
     <feature name="openhab-transformation-exec" description="Exec Transformation" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-	    <bundle start-level="75">mvn:org.openhab.transform/org.openhab.transform.exec/${project.version}</bundle>
+        <bundle start-level="75">mvn:org.openhab.transform/org.openhab.transform.exec/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-transformation-javascript" description="Javascript Transformation" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-	    <bundle start-level="75">mvn:org.openhab.transform/org.openhab.transform.javascript/${project.version}</bundle>
+        <bundle start-level="75">mvn:org.openhab.transform/org.openhab.transform.javascript/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-transformation-jsonpath" description="JSONPath Transformation" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-	    <bundle dependency="true">mvn:com.jayway.jsonpath/json-path/2.1.0</bundle>
-    	<bundle dependency="true">mvn:net.minidev/accessors-smart/1.1</bundle>
-	    <bundle dependency="true">mvn:net.minidev/json-smart/2.2</bundle>
-	    <bundle start-level="75">mvn:org.openhab.transform/org.openhab.transform.jsonpath/${project.version}</bundle>
+        <bundle dependency="true">mvn:com.jayway.jsonpath/json-path/2.1.0</bundle>
+        <bundle dependency="true">mvn:net.minidev/accessors-smart/1.1</bundle>
+        <bundle dependency="true">mvn:net.minidev/json-smart/2.2</bundle>
+        <bundle start-level="75">mvn:org.openhab.transform/org.openhab.transform.jsonpath/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-transformation-map" description="Map Transformation" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-	    <bundle start-level="75">mvn:org.openhab.transform/org.openhab.transform.map/${project.version}</bundle>
+        <bundle start-level="75">mvn:org.openhab.transform/org.openhab.transform.map/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-transformation-scale" description="Scale Transformation" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-	    <bundle start-level="75">mvn:org.openhab.transform/org.openhab.transform.scale/${project.version}</bundle>
+        <bundle start-level="75">mvn:org.openhab.transform/org.openhab.transform.scale/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-transformation-regex" description="RegEx Transformation" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-	    <bundle start-level="75">mvn:org.openhab.transform/org.openhab.transform.regex/${project.version}</bundle>
+        <bundle start-level="75">mvn:org.openhab.transform/org.openhab.transform.regex/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-transformation-xpath" description="XPath Transformation" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-	    <bundle start-level="75">mvn:org.openhab.transform/org.openhab.transform.xpath/${project.version}</bundle>
+        <bundle start-level="75">mvn:org.openhab.transform/org.openhab.transform.xpath/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-transformation-xslt" description="XSLT Transformation" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-	    <bundle start-level="75">mvn:org.openhab.transform/org.openhab.transform.xslt/${project.version}</bundle>
+        <bundle start-level="75">mvn:org.openhab.transform/org.openhab.transform.xslt/${project.version}</bundle>
     </feature>
 
     <!-- voice -->
@@ -1060,10 +1060,10 @@
         <bundle>mvn:org.openhab.ui/org.openhab.ui.paper/${project.version}</bundle>
     </feature>
 
-  <feature name="openhab-iconset-classic" version="${project.version}">
-    <feature>openhab-runtime-base</feature>
-    <feature>esh-ui-icon</feature>
-    <bundle>mvn:org.openhab.ui.iconset/org.openhab.ui.iconset.classic/${project.version}</bundle>
-  </feature>
+    <feature name="openhab-iconset-classic" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>esh-ui-icon</feature>
+        <bundle>mvn:org.openhab.ui.iconset/org.openhab.ui.iconset.classic/${project.version}</bundle>
+    </feature>
 
 </features>
