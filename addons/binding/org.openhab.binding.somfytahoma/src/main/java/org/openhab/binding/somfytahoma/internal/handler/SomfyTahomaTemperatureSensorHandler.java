@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.somfytahoma.handler;
+package org.openhab.binding.somfytahoma.internal.handler;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -19,39 +19,38 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
+
 import java.util.HashMap;
 
-import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
-
 /**
- * The {@link SomfyTahomaOnOffHeatingSystemHandler} is responsible for handling commands,
- * which are sent to one of the channels of the ON/OFF heating system thing.
+ * The {@link SomfyTahomaTemperatureSensorHandler} is responsible for handling commands,
+ * which are sent to one of the channels of the temperature sensor thing.
  *
  * @author Ondrej Pecta - Initial contribution
  */
-public class SomfyTahomaOnOffHeatingSystemHandler extends SomfyTahomaBaseThingHandler {
+public class SomfyTahomaTemperatureSensorHandler extends SomfyTahomaBaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaOnOffHeatingSystemHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaTemperatureSensorHandler.class);
 
-    public SomfyTahomaOnOffHeatingSystemHandler(Thing thing) {
+    public SomfyTahomaTemperatureSensorHandler(Thing thing) {
         super(thing);
-        stateNames = new HashMap<String, String>() {
-            {
-                put(TARGET_HEATING_LEVEL, "io:TargetHeatingLevelState");
-            }
-        };
+        stateNames = new HashMap<String, String>() {{
+            put(TEMPERATURE, "core:TemperatureState");
+        }};
+        //override state type because the cloud sends both percent & decimal
+        cacheStateType("core:TemperatureState", TYPE_DECIMAL);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command {} for channel {}", command, channelUID);
+        if (!TEMPERATURE.equals(channelUID.getId())) {
+            return;
+        }
+
         if (RefreshType.REFRESH.equals(command)) {
             updateChannelState(channelUID);
-        } else {
-            if (TARGET_HEATING_LEVEL.equals(channelUID.getId())) {
-                String param = "[\"" + command.toString() + "\"]";
-                sendCommand(COMMAND_SET_HEATINGLEVEL, param);
-            }
         }
     }
 }

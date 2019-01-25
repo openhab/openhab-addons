@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.somfytahoma.handler;
+package org.openhab.binding.somfytahoma.internal.handler;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -19,31 +19,31 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.LUMINANCE;
+
 import java.util.HashMap;
 
-import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.HANDLE_STATE;
-
 /**
- * The {@link SomfyTahomaWindowHandleHandler} is responsible for handling commands,
- * which are sent to one of the channels of the window handle thing.
+ * The {@link SomfyTahomaLightSensorHandler} is responsible for handling commands,
+ * which are sent to one of the channels of the light sensor thing.
  *
  * @author Ondrej Pecta - Initial contribution
  */
-public class SomfyTahomaWindowHandleHandler extends SomfyTahomaBaseThingHandler {
+public class SomfyTahomaLightSensorHandler extends SomfyTahomaBaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaWindowHandleHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaLightSensorHandler.class);
 
-    public SomfyTahomaWindowHandleHandler(Thing thing) {
+    public SomfyTahomaLightSensorHandler(Thing thing) {
         super(thing);
         stateNames = new HashMap<String, String>() {{
-                put(HANDLE_STATE, "core:ThreeWayHandleDirectionState");
-            }};
+            put(LUMINANCE, "core:LuminanceState");
+        }};
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command {} for channel {}", command, channelUID);
-        if (!HANDLE_STATE.equals(channelUID.getId())) {
+        if (!LUMINANCE.equals(channelUID.getId())) {
             return;
         }
 

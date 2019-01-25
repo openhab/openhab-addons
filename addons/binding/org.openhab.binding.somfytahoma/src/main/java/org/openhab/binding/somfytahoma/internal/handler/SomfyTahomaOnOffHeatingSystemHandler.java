@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.somfytahoma.handler;
+package org.openhab.binding.somfytahoma.internal.handler;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -19,28 +19,25 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
+
 import java.util.HashMap;
 
-import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
-
 /**
- * The {@link SomfyTahomaHeatingSystemHandler} is responsible for handling commands,
- * which are sent to one of the channels of the heating system thing.
+ * The {@link SomfyTahomaOnOffHeatingSystemHandler} is responsible for handling commands,
+ * which are sent to one of the channels of the ON/OFF heating system thing.
  *
  * @author Ondrej Pecta - Initial contribution
  */
-public class SomfyTahomaHeatingSystemHandler extends SomfyTahomaBaseThingHandler {
+public class SomfyTahomaOnOffHeatingSystemHandler extends SomfyTahomaBaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaHeatingSystemHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaOnOffHeatingSystemHandler.class);
 
-    public SomfyTahomaHeatingSystemHandler(Thing thing) {
+    public SomfyTahomaOnOffHeatingSystemHandler(Thing thing) {
         super(thing);
         stateNames = new HashMap<String, String>() {
             {
-                put(TARGET_TEMPERATURE, "core:TargetTemperatureState");
-                put(CURRENT_TEMPERATURE, "zwave:SetPointHeatingValueState");
-                put(BATTERY_LEVEL, "core:BatteryLevelState");
-                put(CURRENT_STATE, "zwave:SetPointTypeState");
+                put(TARGET_HEATING_LEVEL, "io:TargetHeatingLevelState");
             }
         };
     }
@@ -51,9 +48,9 @@ public class SomfyTahomaHeatingSystemHandler extends SomfyTahomaBaseThingHandler
         if (RefreshType.REFRESH.equals(command)) {
             updateChannelState(channelUID);
         } else {
-            if (TARGET_TEMPERATURE.equals(channelUID.getId())) {
-                String param = "[" + command.toString() + "]";
-                sendCommand("setTargetTemperature", param);
+            if (TARGET_HEATING_LEVEL.equals(channelUID.getId())) {
+                String param = "[\"" + command.toString() + "\"]";
+                sendCommand(COMMAND_SET_HEATINGLEVEL, param);
             }
         }
     }
