@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.serialbutton.handler;
+package org.openhab.binding.serialbutton.internal.handler;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,7 +31,7 @@ import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
 import org.eclipse.smarthome.io.transport.serial.SerialPortEventListener;
 import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
-import org.openhab.binding.serialbutton.SerialButtonBindingConstants;
+import org.openhab.binding.serialbutton.internal.SerialButtonBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
