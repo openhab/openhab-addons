@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.somfytahoma;
+package org.openhab.binding.somfytahoma.internal;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 

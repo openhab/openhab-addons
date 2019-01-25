@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.somfytahoma.handler;
+package org.openhab.binding.somfytahoma.internal.handler;
 
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -20,29 +20,25 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.ALARM_COMMAND;
+
 import java.util.HashMap;
 
-import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
-
 /**
- * The {@link SomfyTahomaInternalAlarmHandler} is responsible for handling commands,
+ * The {@link SomfyTahomaExternalAlarmHandler} is responsible for handling commands,
  * which are sent to one of the channels of the alarm thing.
  *
  * @author Ondrej Pecta - Initial contribution
  */
-public class SomfyTahomaInternalAlarmHandler extends SomfyTahomaBaseThingHandler {
+public class SomfyTahomaExternalAlarmHandler extends SomfyTahomaBaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaInternalAlarmHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaExternalAlarmHandler.class);
 
-    public SomfyTahomaInternalAlarmHandler(Thing thing) {
+    public SomfyTahomaExternalAlarmHandler(Thing thing) {
         super(thing);
-        stateNames = new HashMap<String, String>() {
-            {
-                put(ALARM_STATE, "internal:CurrentAlarmModeState");
-                put(TARGET_ALARM_STATE, "internal:TargetAlarmModeState");
-                put(INTRUSION_STATE, "internal:IntrusionDetectedState");
-            }
-        };
+        stateNames = new HashMap<String, String>() {{
+            put("active_zones_state", "core:ActiveZonesState");
+        }};
     }
 
     @Override
@@ -51,11 +47,10 @@ public class SomfyTahomaInternalAlarmHandler extends SomfyTahomaBaseThingHandler
         if (ALARM_COMMAND.equals(channelUID.getId()) && command instanceof StringType) {
             sendCommand(command.toString(), "[]");
         }
-        if (INTRUSION_CONTROL.equals(channelUID.getId()) && command instanceof StringType) {
-            sendCommand("setIntrusionDetected", "[\"" + command.toString() + "\"]");
-        }
         if (RefreshType.REFRESH.equals(command)) {
+            sendCommand("refreshState", "[]");
             updateChannelState(channelUID);
         }
     }
+
 }

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.somfytahoma.handler;
+package org.openhab.binding.somfytahoma.internal.handler;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -20,10 +20,9 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
-import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.LOCK;
-import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.OPEN;
+import java.util.HashMap;
 
 /**
  * The {@link SomfyTahomaDoorLockHandler} is responsible for handling commands,
