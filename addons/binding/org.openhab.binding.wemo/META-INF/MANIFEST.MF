@@ -6,9 +6,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.wemo;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
-Export-Package: 
- org.openhab.binding.wemo,
- org.openhab.binding.wemo.handler
 Import-Package: 
  org.apache.commons.io,
  org.apache.commons.lang,
@@ -27,8 +24,6 @@ Import-Package:
  org.jupnp.model.message.header,
  org.jupnp.model.meta,
  org.jupnp.model.types,
- org.openhab.binding.wemo,
- org.openhab.binding.wemo.handler,
  org.osgi.framework,
  org.slf4j,
  org.w3c.dom,

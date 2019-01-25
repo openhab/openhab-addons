@@ -32,7 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.jupnp.model.ValidationException;
 import org.jupnp.model.meta.Device;
-import org.openhab.binding.wemo.WemoBindingConstants;
+import org.openhab.binding.wemo.internal.WemoBindingConstants;
 import org.openhab.binding.wemo.internal.discovery.WemoDiscoveryService;
 import org.openhab.binding.wemo.internal.test.GenericWemoOSGiTest;
 
