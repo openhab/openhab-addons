@@ -20,8 +20,6 @@ Import-Package:
  org.junit;version="4.0.0",
  org.mockito,
  org.mockito.stubbing,
- org.openhab.binding.tradfri,
- org.openhab.binding.tradfri.handler,
  org.osgi.framework,
  org.osgi.service.device,
  org.slf4j

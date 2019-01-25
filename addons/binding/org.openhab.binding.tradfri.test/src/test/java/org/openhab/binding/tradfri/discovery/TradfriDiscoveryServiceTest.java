@@ -16,7 +16,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.openhab.binding.tradfri.TradfriBindingConstants.*;
+import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.*;
 import static org.openhab.binding.tradfri.internal.config.TradfriDeviceConfig.CONFIG_ID;
 
 import java.util.Collection;
@@ -32,8 +32,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.openhab.binding.tradfri.handler.TradfriGatewayHandler;
 import org.openhab.binding.tradfri.internal.discovery.TradfriDiscoveryService;
+import org.openhab.binding.tradfri.internal.handler.TradfriGatewayHandler;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;

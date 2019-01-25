@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.tradfri.internal;
 
-import static org.openhab.binding.tradfri.TradfriBindingConstants.*;
+import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -29,12 +29,12 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.tradfri.handler.TradfriControllerHandler;
-import org.openhab.binding.tradfri.handler.TradfriGatewayHandler;
-import org.openhab.binding.tradfri.handler.TradfriLightHandler;
-import org.openhab.binding.tradfri.handler.TradfriPlugHandler;
-import org.openhab.binding.tradfri.handler.TradfriSensorHandler;
 import org.openhab.binding.tradfri.internal.discovery.TradfriDiscoveryService;
+import org.openhab.binding.tradfri.internal.handler.TradfriControllerHandler;
+import org.openhab.binding.tradfri.internal.handler.TradfriGatewayHandler;
+import org.openhab.binding.tradfri.internal.handler.TradfriLightHandler;
+import org.openhab.binding.tradfri.internal.handler.TradfriPlugHandler;
+import org.openhab.binding.tradfri.internal.handler.TradfriSensorHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 

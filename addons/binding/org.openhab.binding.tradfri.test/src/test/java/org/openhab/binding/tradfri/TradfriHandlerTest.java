@@ -15,7 +15,7 @@ package org.openhab.binding.tradfri;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.openhab.binding.tradfri.TradfriBindingConstants.*;
+import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.*;
 import static org.openhab.binding.tradfri.internal.config.TradfriDeviceConfig.*;
 
 import java.util.HashMap;
@@ -33,7 +33,7 @@ import org.eclipse.smarthome.test.storage.VolatileStorageService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.binding.tradfri.handler.TradfriGatewayHandler;
+import org.openhab.binding.tradfri.internal.handler.TradfriGatewayHandler;
 
 /**
  * Tests cases for {@link TradfriGatewayHandler}.

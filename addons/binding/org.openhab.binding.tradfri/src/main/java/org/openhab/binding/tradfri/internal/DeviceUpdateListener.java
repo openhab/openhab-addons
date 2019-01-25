@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.tradfri.internal;
 
-import org.openhab.binding.tradfri.handler.TradfriGatewayHandler;
+import org.openhab.binding.tradfri.internal.handler.TradfriGatewayHandler;
 
 import com.google.gson.JsonObject;
 
