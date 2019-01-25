@@ -22,20 +22,21 @@ import org.slf4j.LoggerFactory;
  * @author Patrik Gfeller - Moved class to its own file.
  */
 class SqueezeBoxPlayerState {
-    boolean savedMute;
-    boolean savedPower;
-    boolean savedStop;
-    boolean savedControl;
+    private final Logger logger = LoggerFactory.getLogger(SqueezeBoxPlayerState.class);
 
-    int savedVolume;
-    int savedShuffle;
-    int savedRepeat;
-    int savedPlaylistIndex;
-    int savedNumberPlaylistTracks;
-    int savedPlayingTime;
+    private boolean savedMute;
+    private boolean savedPower;
+    private boolean savedStop;
+    private boolean savedControl;
+
+    private int savedVolume;
+    private int savedShuffle;
+    private int savedRepeat;
+    private int savedPlaylistIndex;
+    private int savedNumberPlaylistTracks;
+    private int savedPlayingTime;
 
     private SqueezeBoxPlayerHandler playerHandler;
-    private Logger logger = LoggerFactory.getLogger(SqueezeBoxPlayerState.class);
 
     public SqueezeBoxPlayerState(SqueezeBoxPlayerHandler playerHandler) {
         this.playerHandler = playerHandler;

@@ -202,3 +202,6 @@ Therefore, it is recommended that the LMS be on a more current version than 7.7.
 
 -   There have been reports that the LMS does not play some WAV files reliably.
 If you're using a TTS service that produces WAV files, and the notifications are not playing, try using an MP3-formatted TTS notification.
+
+-   The LMS treats player MAC addresses as case-sensitive.
+Therefore, the case of MAC addresses in the Squeeze Player thing configuration must match the case displayed on the *Information* tab in the LMS Settings.
