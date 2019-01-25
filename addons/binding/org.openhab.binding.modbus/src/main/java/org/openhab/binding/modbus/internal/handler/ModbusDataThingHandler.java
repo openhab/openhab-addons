@@ -880,11 +880,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         long millisSinceLastUpdate = now - lastUpdatedMillis;
         if (lastUpdatedMillis <= 0L || lastState == null || updateUnchangedValuesEveryMillis <= 0L
                 || millisSinceLastUpdate > updateUnchangedValuesEveryMillis || !lastState.equals(state)) {
-            try {
-                action.accept(uid, state);
-            } finally {
-                channelLastUpdated.put(uid, now);
-            }
+            action.accept(uid, state);
         }
     }
 
