@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.somfytahoma.handler;
+package org.openhab.binding.somfytahoma.internal.handler;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -19,31 +19,31 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.HANDLE_STATE;
+
 import java.util.HashMap;
 
-import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
-
 /**
- * The {@link SomfyTahomaContactSensorHandler} is responsible for handling commands,
- * which are sent to one of the channels of the contact sensors.
+ * The {@link SomfyTahomaWindowHandleHandler} is responsible for handling commands,
+ * which are sent to one of the channels of the window handle thing.
  *
  * @author Ondrej Pecta - Initial contribution
  */
-public class SomfyTahomaContactSensorHandler extends SomfyTahomaBaseThingHandler  {
+public class SomfyTahomaWindowHandleHandler extends SomfyTahomaBaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaContactSensorHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaWindowHandleHandler.class);
 
-    public SomfyTahomaContactSensorHandler(Thing thing) {
+    public SomfyTahomaWindowHandleHandler(Thing thing) {
         super(thing);
         stateNames = new HashMap<String, String>() {{
-            put(CONTACT, "core:ContactState");
-        }};
+                put(HANDLE_STATE, "core:ThreeWayHandleDirectionState");
+            }};
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command {} for channel {}", command, channelUID);
-        if (!CONTACT.equals(channelUID.getId())) {
+        if (!HANDLE_STATE.equals(channelUID.getId())) {
             return;
         }
 
