@@ -29,11 +29,11 @@ import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.binding.mqtt.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.generic.internal.convention.homie300.Device;
 import org.openhab.binding.mqtt.generic.internal.convention.homie300.DeviceAttributes;
+import org.openhab.binding.mqtt.generic.internal.convention.homie300.DeviceAttributes.ReadyState;
 import org.openhab.binding.mqtt.generic.internal.convention.homie300.DeviceCallback;
 import org.openhab.binding.mqtt.generic.internal.convention.homie300.HandlerConfiguration;
 import org.openhab.binding.mqtt.generic.internal.convention.homie300.Node;
 import org.openhab.binding.mqtt.generic.internal.convention.homie300.Property;
-import org.openhab.binding.mqtt.generic.internal.convention.homie300.DeviceAttributes.ReadyState;
 import org.openhab.binding.mqtt.generic.internal.generic.ChannelState;
 import org.openhab.binding.mqtt.generic.internal.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.generic.internal.tools.DelayedBatchProcessing;
@@ -107,7 +107,11 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
         // We have mostly retained messages for Homie. QoS 1 is required.
         connection.setRetain(true);
         connection.setQos(1);
-        return device.subscribe(connection, scheduler, attributeReceiveTimeout);
+        return device.subscribe(connection, scheduler, attributeReceiveTimeout)
+                .thenCompose((Void v) -> device.startChannels(connection, scheduler, attributeReceiveTimeout, this))
+                .thenRun(() -> {
+                    logger.trace("Homie device {} fully attached", device.attributes.name);
+                });
     }
 
     @Override
@@ -182,7 +186,7 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
 
     /**
      * Callback of {@link DelayedBatchProcessing}.
-     * Add all newly discovered nodes and properties to the Thing and start subscribe to each channel state topic.
+     * Add all newly discovered nodes and properties to the Thing.
      */
     @Override
     public void accept(@Nullable List<Object> t) {
@@ -194,12 +198,5 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
                 .map(prop -> prop.getChannel()).collect(Collectors.toList());
         updateThing(editThing().withChannels(channels).build());
         updateProperty(MqttBindingConstants.HOMIE_PROPERTY_VERSION, device.attributes.homie);
-
-        final MqttBrokerConnection connection = this.connection;
-        if (connection != null) {
-            device.startChannels(connection, scheduler, attributeReceiveTimeout, this).thenRun(() -> {
-                logger.trace("Homie device {} fully attached", device.attributes.name);
-            });
-        }
     }
 }
