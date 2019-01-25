@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.weatherunderground.handler;
+package org.openhab.binding.weatherunderground.internal.handler;
 
 import static org.eclipse.smarthome.core.library.unit.MetricPrefix.*;
 
