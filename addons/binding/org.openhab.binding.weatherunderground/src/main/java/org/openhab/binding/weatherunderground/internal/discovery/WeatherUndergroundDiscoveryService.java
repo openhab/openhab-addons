@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.weatherunderground.internal.discovery;
 
-import static org.openhab.binding.weatherunderground.WeatherUndergroundBindingConstants.*;
+import static org.openhab.binding.weatherunderground.internal.WeatherUndergroundBindingConstants.*;
 import static org.openhab.binding.weatherunderground.internal.config.WeatherUndergroundConfiguration.*;
 
 import java.util.Collections;
@@ -33,7 +33,7 @@ import org.eclipse.smarthome.core.i18n.LocationProvider;
 import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.weatherunderground.handler.WeatherUndergroundHandler;
+import org.openhab.binding.weatherunderground.internal.handler.WeatherUndergroundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
