@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tradfri.handler;
+package org.openhab.binding.tradfri.internal.handler;
 
-import static org.openhab.binding.tradfri.TradfriBindingConstants.CHANNEL_POWER;
+import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.CHANNEL_POWER;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;

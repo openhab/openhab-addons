@@ -13,7 +13,7 @@
 package org.openhab.binding.tradfri.internal.discovery;
 
 import static org.eclipse.smarthome.core.thing.Thing.*;
-import static org.openhab.binding.tradfri.TradfriBindingConstants.*;
+import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.*;
 
 import java.util.Collections;
 import java.util.HashMap;
