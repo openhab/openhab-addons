@@ -10,7 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.somfytahoma.handler;
+package org.openhab.binding.somfytahoma.internal.handler;
+
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -19,25 +21,18 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-
-import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
-
 /**
- * The {@link SomfyTahomaAwningHandler} is responsible for handling commands,
- * which are sent to one of the channels of the awning thing.
+ * The {@link SomfyTahomaWindowHandler} is responsible for handling commands,
+ * which are sent to one of the channels of the window thing.
  *
  * @author Ondrej Pecta - Initial contribution
  */
-public class SomfyTahomaAwningHandler extends SomfyTahomaBaseThingHandler {
+public class SomfyTahomaWindowHandler extends SomfyTahomaRollerShutterHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaAwningHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaWindowHandler.class);
 
-    public SomfyTahomaAwningHandler(Thing thing) {
+    public SomfyTahomaWindowHandler(Thing thing) {
         super(thing);
-        stateNames = new HashMap<String, String>() {{
-            put(CONTROL, "core:DeploymentState");
-        }};
     }
 
     @Override
@@ -51,34 +46,35 @@ public class SomfyTahomaAwningHandler extends SomfyTahomaBaseThingHandler {
             updateChannelState(channelUID);
         } else {
             String cmd = getTahomaCommand(command.toString());
-            if (COMMAND_MY.equals(cmd)) {
-                String executionId = getCurrentExecutions();
-                if (executionId != null) {
-                    //Check if the awning is moving and MY is sent => STOP it
+            //Check if the rollershutter is not moving
+            String executionId = getCurrentExecutions();
+            if (executionId != null) {
+                //STOP command should be interpreted if rollershutter is moving
+                //otherwise do nothing
+                if (COMMAND_STOP.equals(cmd)) {
                     cancelExecution(executionId);
-                } else {
-                    sendCommand(COMMAND_MY, "[]");
                 }
             } else {
-                String param = COMMAND_SET_DEPLOYMENT.equals(cmd) ? "[" + command.toString() + "]" : "[]";
-                sendCommand(cmd, param);
+                if (!cmd.equals(COMMAND_STOP)) {
+                    String param = COMMAND_SET_CLOSURE.equals(cmd) ? "[" + command.toString() + "]" : "[]";
+                    sendCommand(cmd, param);
+                }
             }
         }
-
     }
 
     private String getTahomaCommand(String command) {
         switch (command) {
             case "OFF":
             case "DOWN":
-                return COMMAND_DOWN;
+                return COMMAND_CLOSE;
             case "ON":
             case "UP":
-                return COMMAND_UP;
+                return COMMAND_OPEN;
             case "STOP":
-                return COMMAND_MY;
+                return COMMAND_STOP;
             default:
-                return COMMAND_SET_DEPLOYMENT;
+                return COMMAND_SET_CLOSURE;
         }
     }
 }

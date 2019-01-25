@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.somfytahoma.handler;
+package org.openhab.binding.somfytahoma.internal.handler;
 
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
-import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.STATUS;
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.STATUS;
 
 /**
  * The {@link SomfyTahomaGatewayHandler} is responsible for handling commands,
