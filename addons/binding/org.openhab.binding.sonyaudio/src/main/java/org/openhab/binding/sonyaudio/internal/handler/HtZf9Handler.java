@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.sonyaudio.handler;
+package org.openhab.binding.sonyaudio.internal.handler;
 
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -18,14 +18,14 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 
 /**
- * The {@link HtCt800Handler} is responsible for handling commands for HT-CT800, which are
+ * The {@link HtZf9Handler} is responsible for handling commands for HT-ZF9, which are
  * sent to one of the channels.
  *
  * @author David Åberg - Initial contribution
  */
-public class HtCt800Handler extends SonyAudioHandler {
+public class HtZf9Handler extends SonyAudioHandler {
 
-    public HtCt800Handler(Thing thing, WebSocketClient webSocketClient) {
+    public HtZf9Handler(Thing thing, WebSocketClient webSocketClient) {
         super(thing, webSocketClient);
     }
 
@@ -40,8 +40,6 @@ public class HtCt800Handler extends SonyAudioHandler {
                 return "extInput:hdmi?port=1";
             case "hdmi2":
                 return "extInput:hdmi?port=2";
-            case "hdmi3":
-                return "extInput:hdmi?port=3";
             case "analog":
                 return "extInput:line";
             case "usb":
@@ -68,9 +66,6 @@ public class HtCt800Handler extends SonyAudioHandler {
         }
         if (in.contains("extinput:hdmi?port=2".toLowerCase())) {
             return new StringType("hdmi2");
-        }
-        if (in.contains("extinput:hdmi?port=3".toLowerCase())) {
-            return new StringType("hdmi3");
         }
         if (in.contains("extinput:line".toLowerCase())) {
             return new StringType("analog");
