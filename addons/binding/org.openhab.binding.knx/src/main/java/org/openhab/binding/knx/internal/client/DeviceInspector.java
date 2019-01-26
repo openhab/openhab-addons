@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.knx.internal.client;
 
-import static org.openhab.binding.knx.KNXBindingConstants.*;
+import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 import static org.openhab.binding.knx.internal.handler.DeviceConstants.*;
 
 import java.util.Collections;
@@ -22,7 +22,6 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.knx.client.DeviceInfoClient;
 import org.openhab.binding.knx.internal.handler.Firmware;
 import org.openhab.binding.knx.internal.handler.Manufacturer;
 import org.slf4j.Logger;

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.knx.internal.channel;
 
-import static org.openhab.binding.knx.KNXBindingConstants.*;
+import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 
 import java.util.Collections;
 import java.util.Set;

@@ -14,10 +14,7 @@ package org.openhab.binding.knx.internal.client;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.knx.client.DeviceInfoClient;
-import org.openhab.binding.knx.client.KNXClient;
-import org.openhab.binding.knx.client.OutboundSpec;
-import org.openhab.binding.knx.handler.GroupAddressListener;
+import org.openhab.binding.knx.internal.handler.GroupAddressListener;
 
 import tuwien.auto.calimero.IndividualAddress;
 import tuwien.auto.calimero.KNXException;
