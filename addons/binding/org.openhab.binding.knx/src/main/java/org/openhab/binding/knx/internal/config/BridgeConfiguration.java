@@ -14,7 +14,7 @@ package org.openhab.binding.knx.internal.config;
 
 import java.math.BigDecimal;
 
-import org.openhab.binding.knx.handler.KNXBridgeBaseThingHandler;
+import org.openhab.binding.knx.internal.handler.KNXBridgeBaseThingHandler;
 
 /**
  * {@link KNXBridgeBaseThingHandler} configuration

@@ -17,7 +17,6 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.knx.client.StatusUpdateCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

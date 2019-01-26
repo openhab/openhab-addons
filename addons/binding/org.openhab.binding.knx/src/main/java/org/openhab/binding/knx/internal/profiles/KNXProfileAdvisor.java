@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.knx.internal.profiles;
 
-import static org.openhab.binding.knx.KNXBindingConstants.*;
+import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;

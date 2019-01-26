@@ -10,11 +10,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.knx.client;
+package org.openhab.binding.knx.internal.client;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.knx.handler.GroupAddressListener;
+import org.openhab.binding.knx.internal.handler.GroupAddressListener;
 
 import tuwien.auto.calimero.IndividualAddress;
 import tuwien.auto.calimero.KNXException;

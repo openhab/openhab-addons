@@ -26,13 +26,9 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.types.Type;
-import org.openhab.binding.knx.KNXTypeMapper;
-import org.openhab.binding.knx.client.DeviceInfoClient;
-import org.openhab.binding.knx.client.KNXClient;
-import org.openhab.binding.knx.client.OutboundSpec;
-import org.openhab.binding.knx.client.StatusUpdateCallback;
-import org.openhab.binding.knx.handler.GroupAddressListener;
+import org.openhab.binding.knx.internal.KNXTypeMapper;
 import org.openhab.binding.knx.internal.dpt.KNXCoreTypeMapper;
+import org.openhab.binding.knx.internal.handler.GroupAddressListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
