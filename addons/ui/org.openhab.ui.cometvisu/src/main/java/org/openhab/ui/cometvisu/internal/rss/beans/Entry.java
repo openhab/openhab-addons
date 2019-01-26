@@ -18,13 +18,13 @@ import java.util.List;
 /**
  * {@link Entry} is used by the CometVisu rss-plugin
  *
- * @author Tobias Bräutigam
+ * @author Tobias Bräutigam - Initial contribution
  */
 public class Entry {
     public String id;
     public String title;
     public String content;
-    public List<String> tags = new ArrayList<String>();
+    public List<String> tags = new ArrayList<>();
     public String state;
     public long publishedDate;
 }

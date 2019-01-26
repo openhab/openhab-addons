@@ -76,7 +76,7 @@ import org.xml.sax.SAXException;
  * benefit from all the features the CometVisu offers (e.g.
  * multi-column-layouts)
  *
- * @author Tobias Bräutigam
+ * @author Tobias Bräutigam - Initial contribution
  *
  */
 public class VisuConfig {
@@ -118,12 +118,12 @@ public class VisuConfig {
         pagesBean.setScrollSpeed(new BigDecimal(0));
 
         // set relative path to XSD file
-        File rootFolder = new File(Config.COMETVISU_WEBFOLDER);
+        File rootFolder = new File(Config.cometvisuWebfolder);
         File sitemap = new File(rootFolder, req.getPathInfo());
         String relXsd = "";
         File parent = sitemap.getParentFile();
         File schema = new File(parent, "visu_config.xsd");
-        while (parent != rootFolder && !schema.exists()) {
+        while (!parent.equals(rootFolder) && !schema.exists()) {
             parent = parent.getParentFile();
             relXsd += "../";
             schema = new File(parent, "visu_config.xsd");
@@ -230,10 +230,6 @@ public class VisuConfig {
                         // add top navbar always to the root page
                         barPage = pages.getPage();
                     }
-                    // if (level==1) {
-                    // configHelper.addSeparatorToNavbar(barPage, position,
-                    // true);
-                    // }
 
                     configHelper.addToNavbar(barPage, page, group, position, item);
 
@@ -266,7 +262,6 @@ public class VisuConfig {
                     configHelper.mapToTriggers(rootPage, item, switchWidget);
                 }
             } else {
-
                 Switch switchBean = new Switch();
                 switchBean.setStyling("GreyGreen");
                 switchBean.setMapping("OnOff");

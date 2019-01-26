@@ -17,8 +17,8 @@ import java.util.List;
 
 /**
  * {@link Feed} is used by the CometVisu rss-plugin
- * 
- * @author Tobias Bräutigam
+ *
+ * @author Tobias Bräutigam - Initial contribution
  */
 public class Feed {
     public String feedUrl;
@@ -27,5 +27,5 @@ public class Feed {
     public String author;
     public String description;
     public String type;
-    public List<Entry> entries = new ArrayList<Entry>();
+    public List<Entry> entries = new ArrayList<>();
 }

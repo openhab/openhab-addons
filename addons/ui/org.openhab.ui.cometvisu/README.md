@@ -111,8 +111,7 @@ You can start with the demo-sitemap to get a quick overview about how the CometV
 
 *   PHP support: Editor is working, rsslog-plugin can be used (see examples)
 *   Persistence support: Any persisted item can be used to create a chart
-*   GroupItem support: as known from the openHAB UI´s the group-functions like the number of open windows in a group of contacts
-can be shown in the visu
+*   GroupItem support: as known from the openHAB UI´s the group-functions like the number of open windows in a group of contacts can be shown in the visu
 
 
 ## Examples

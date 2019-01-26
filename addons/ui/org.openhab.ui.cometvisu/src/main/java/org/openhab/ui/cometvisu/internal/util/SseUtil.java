@@ -12,6 +12,8 @@
  */
 package org.openhab.ui.cometvisu.internal.util;
 
+import java.util.Date;
+
 import javax.ws.rs.core.MediaType;
 
 import org.glassfish.jersey.media.sse.OutboundEvent;
@@ -40,11 +42,9 @@ public class SseUtil {
      * @return a new OutboundEvent.
      */
     public static OutboundEvent buildEvent(Object eventObject) {
-
         OutboundEvent.Builder eventBuilder = new OutboundEvent.Builder();
         StateBeanMessageBodyWriter writer = new StateBeanMessageBodyWriter();
-        // OutboundEvent event = eventBuilder.mediaType(MediaType.APPLICATION_JSON_TYPE).data(eventObject).build();
-        java.util.Date date = new java.util.Date();
+        Date date = new Date();
         OutboundEvent event = eventBuilder.mediaType(MediaType.APPLICATION_JSON_TYPE)
                 .data(writer.serialize(eventObject)).id(String.valueOf(date.getTime())).build();
 

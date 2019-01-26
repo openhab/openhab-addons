@@ -27,15 +27,15 @@ import org.openhab.ui.cometvisu.internal.Config;
 import org.openhab.ui.cometvisu.internal.backend.beans.ConfigBean;
 import org.openhab.ui.cometvisu.internal.backend.beans.LoginBean;
 import org.openhab.ui.cometvisu.internal.backend.beans.ResourcesBean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * handles login request from the CometVisu client
  * currently this is just a placeholder and does no real authentification
  *
- * @author Tobias Bräutigam
+ * @author Tobias Bräutigam - Initial contribution
  */
+@Component(immediate = true, service = { LoginResource.class, RESTResource.class })
 @Path(Config.COMETVISU_BACKEND_ALIAS + "/" + Config.COMETVISU_BACKEND_LOGIN_ALIAS)
 public class LoginResource implements RESTResource {
     @GET

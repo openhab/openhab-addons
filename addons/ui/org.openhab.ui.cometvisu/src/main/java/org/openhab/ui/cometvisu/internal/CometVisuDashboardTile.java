@@ -18,14 +18,20 @@ import java.util.Set;
 
 import org.eclipse.smarthome.model.sitemap.SitemapProvider;
 import org.openhab.ui.dashboard.DashboardTile;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
 /**
  *
  * @author Tobias Bräutigam - Initial contribution
  */
+@Component
 public class CometVisuDashboardTile implements DashboardTile {
     private Set<SitemapProvider> sitemapProviders = new HashSet<>();
 
+    @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
     public void addSitemapProvider(SitemapProvider provider) {
         sitemapProviders.add(provider);
     }
@@ -41,7 +47,6 @@ public class CometVisuDashboardTile implements DashboardTile {
 
     @Override
     public String getUrl() {
-
         Set<String> sitemapNames = new HashSet<>();
         // collect all sitemap names
         for (SitemapProvider provider : sitemapProviders) {
@@ -59,7 +64,7 @@ public class CometVisuDashboardTile implements DashboardTile {
         }
         String path = "/";
         // lets find the index.html
-        File root = new File(Config.COMETVISU_WEBFOLDER);
+        File root = new File(Config.cometvisuWebfolder);
         File index = new File(root, "index.html");
         if (index.exists()) {
             path = "/index.html";
@@ -79,7 +84,7 @@ public class CometVisuDashboardTile implements DashboardTile {
                 }
             }
         }
-        return Config.COMETVISU_WEBAPP_ALIAS + path + "?config=" + sitemap;
+        return Config.cometvisuWebappAlias + path + "?config=" + sitemap;
     }
 
     @Override
