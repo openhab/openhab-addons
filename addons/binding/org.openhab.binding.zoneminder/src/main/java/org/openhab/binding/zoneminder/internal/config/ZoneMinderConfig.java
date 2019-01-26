@@ -15,7 +15,7 @@ package org.openhab.binding.zoneminder.internal.config;
 /**
  * base class containing Configuration in openHAB
  *
- * @author Martin S. Eskildsen
+ * @author Martin S. Eskildsen - Initial contribution
  */
 public abstract class ZoneMinderConfig {
     public abstract String getConfigId();

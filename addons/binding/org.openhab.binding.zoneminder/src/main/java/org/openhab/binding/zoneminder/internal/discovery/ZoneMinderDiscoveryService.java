@@ -88,7 +88,7 @@ public class ZoneMinderDiscoveryService extends AbstractDiscoveryService impleme
         super.stopScan();
     }
 
-    protected String BuildMonitorLabel(String id, String name) {
+    protected String buildMonitorLabel(String id, String name) {
         return String.format("%s [%s]", ZoneMinderConstants.ZONEMINDER_MONITOR_NAME, name);
     }
 
@@ -109,7 +109,6 @@ public class ZoneMinderDiscoveryService extends AbstractDiscoveryService impleme
      *
      * @param node the node to be added
      */
-
     public void deviceAdded(IZoneMinderMonitorData monitor) {
         try {
             ThingUID bridgeUID = serverHandler.getThing().getUID();
@@ -129,7 +128,7 @@ public class ZoneMinderDiscoveryService extends AbstractDiscoveryService impleme
                         ZoneMinderConstants.MONITOR_EVENT_OPENHAB);
 
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                        .withBridge(bridgeUID).withLabel(BuildMonitorLabel(monitor.getId(), monitor.getName())).build();
+                        .withBridge(bridgeUID).withLabel(buildMonitorLabel(monitor.getId(), monitor.getName())).build();
 
                 thingDiscovered(discoveryResult);
             }
@@ -137,6 +136,5 @@ public class ZoneMinderDiscoveryService extends AbstractDiscoveryService impleme
             logger.error("[DISCOVERY]: Error occurred when calling 'monitorAdded' from Discovery. Exception={}",
                     ex.getMessage());
         }
-
     }
 }

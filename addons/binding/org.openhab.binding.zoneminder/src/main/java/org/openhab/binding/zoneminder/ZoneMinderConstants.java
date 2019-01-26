@@ -56,7 +56,7 @@ public class ZoneMinderConstants {
     // Parameters for the ZoneMinder Server
     public static final String PARAM_HOSTNAME = "hostname";
     public static final String PARAM_PORT = "port";
-    public static final String PARAM_REFRESH_INTERVAL_ = "refresh_interval";
+    public static final String PARAM_REFRESH_INTERVAL = "refresh_interval";
     public static final String PARAM_REFRESH_INTERVAL_DISKUSAGE = "refresh_interval_disk_usage";
 
     // Default values for Monitor parameters

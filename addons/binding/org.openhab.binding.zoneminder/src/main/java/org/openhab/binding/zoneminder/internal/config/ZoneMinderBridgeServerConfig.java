@@ -17,8 +17,7 @@ import org.openhab.binding.zoneminder.ZoneMinderConstants;
 /**
  * Configuration data according to zoneminderserver.xml
  *
- * @author Martin S. Eskildsen
- *
+ * @author Martin S. Eskildsen - Initial contribution
  */
 public class ZoneMinderBridgeServerConfig extends ZoneMinderConfig {
 
