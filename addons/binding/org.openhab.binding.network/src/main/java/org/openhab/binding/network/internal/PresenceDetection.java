@@ -114,6 +114,9 @@ public class PresenceDetection implements IPRequestReceivedCallback {
                     logger.trace("host name resolved to other address, (re-)setup presence detection");
                     setUseArpPing(true, arpPingUtilPath, destinationAddress);
                     if (useDHCPsniffing) {
+                        if (cachedDestination != null) {
+                            disableDHCPListen(cachedDestination);
+                        }
                         enableDHCPListen(destinationAddress);
                     }
                     cachedDestination = destinationAddress;
@@ -569,7 +572,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     }
 
     /**
-     * Enableslisting for dhcp packets to figure out if devices have entered the network. This does not work
+     * Enables listing for dhcp packets to figure out if devices have entered the network. This does not work
      * for iOS devices. The hostname of this network service object will be registered to the dhcp request packet
      * listener if enabled and unregistered otherwise.
      *
