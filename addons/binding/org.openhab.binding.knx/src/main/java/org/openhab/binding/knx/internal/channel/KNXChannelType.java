@@ -28,9 +28,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.types.Type;
-import org.openhab.binding.knx.KNXTypeMapper;
-import org.openhab.binding.knx.client.InboundSpec;
-import org.openhab.binding.knx.client.OutboundSpec;
+import org.openhab.binding.knx.internal.KNXTypeMapper;
+import org.openhab.binding.knx.internal.client.InboundSpec;
+import org.openhab.binding.knx.internal.client.OutboundSpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
