@@ -18,9 +18,9 @@ import java.util.Map;
 /**
  * {@link ItemBean} is a helper bean used by the dataprovider-servlet
  * which delivers some additional data for the CometVisu-Editor
- * 
- * @author Tobias Bräutigam
+ *
+ * @author Tobias Bräutigam - Initial contribution
  */
 public class ItemBean extends DataBean {
-    public Map<String, String> hints = new HashMap<String, String>();
+    public Map<String, String> hints = new HashMap<>();
 }
