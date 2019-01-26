@@ -44,7 +44,7 @@ import com.beowulfe.hap.accessories.thermostat.BasicThermostat;
  * <li>Heating/Cooling Mode: String type (see HomekitSettings.thermostat*Mode)</li>
  * </ul>
  *
- * @author Andy Lintner
+ * @author Andy Lintner - Initial contribution
  */
 class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<GroupItem>
         implements BasicThermostat, GroupedAccessory {
@@ -132,7 +132,7 @@ class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<Grou
     @Override
     public CompletableFuture<Double> getCurrentTemperature() {
         Item item = getItemRegistry().get(currentTemperatureItemName);
-        DecimalType state = (DecimalType) item.getStateAs(DecimalType.class);
+        DecimalType state = item.getStateAs(DecimalType.class);
         if (state == null) {
             return CompletableFuture.completedFuture(null);
         }
@@ -148,7 +148,7 @@ class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<Grou
     public CompletableFuture<Double> getTargetTemperature() {
         if (targetTemperatureItemName != null) {
             Item item = getItemRegistry().get(targetTemperatureItemName);
-            DecimalType state = (DecimalType) item.getStateAs(DecimalType.class);
+            DecimalType state = item.getStateAs(DecimalType.class);
             if (state == null) {
                 return CompletableFuture.completedFuture(null);
             }
@@ -235,7 +235,7 @@ class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<Grou
             return null;
         }
         if (!(item instanceof GenericItem)) {
-            throw new RuntimeException("Expected GenericItem, found " + item.getClass().getCanonicalName());
+            throw new IllegalStateException("Expected GenericItem, found " + item.getClass().getCanonicalName());
         }
         return (T) item;
     }
