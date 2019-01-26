@@ -99,25 +99,13 @@ public class ValloxMVHandler extends BaseThingHandler {
                     valloxSendSocket.request(channelUID, "5");
                     valloxSendSocket.request(null, null);
                 }
-            } else if (ValloxMVBindingConstants.CHANNEL_EXTR_FAN_BALANCE_BASE.equals(channelUID.getId())) {
+            } else if (ValloxMVBindingConstants.WRITABLE_CHANNELS_DIMENSIONLESS.contains(channelUID.getId())) {
                 if (command instanceof QuantityType) {
                     QuantityType<Dimensionless> quantity = (QuantityType<Dimensionless>) command;
                     valloxSendSocket.request(channelUID, Integer.toString(quantity.intValue()));
                     valloxSendSocket.request(null, null);
                 }
-            } else if (ValloxMVBindingConstants.CHANNEL_SUPP_FAN_BALANCE_BASE.equals(channelUID.getId())) {
-                if (command instanceof QuantityType) {
-                    QuantityType<Dimensionless> quantity = (QuantityType<Dimensionless>) command;
-                    valloxSendSocket.request(channelUID, Integer.toString(quantity.intValue()));
-                    valloxSendSocket.request(null, null);
-                }
-            } else if (ValloxMVBindingConstants.CHANNEL_HOME_SPEED_SETTING.equals(channelUID.getId())) {
-                if (command instanceof QuantityType) {
-                    QuantityType<Dimensionless> quantity = (QuantityType<Dimensionless>) command;
-                    valloxSendSocket.request(channelUID, Integer.toString(quantity.intValue()));
-                    valloxSendSocket.request(null, null);
-                }
-            } else if (ValloxMVBindingConstants.CHANNEL_HOME_AIR_TEMP_TARGET.equals(channelUID.getId())) {
+            } else if (ValloxMVBindingConstants.WRITABLE_CHANNELS_TEMPERATURE.contains(channelUID.getId())) {
                 if (command instanceof QuantityType) {
                     // Convert temperature to millidegree Kelvin
                     QuantityType<Temperature> quantity = ((QuantityType<Temperature>) command)
