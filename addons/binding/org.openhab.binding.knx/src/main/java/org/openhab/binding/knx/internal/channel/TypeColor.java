@@ -13,7 +13,7 @@
 package org.openhab.binding.knx.internal.channel;
 
 import static java.util.stream.Collectors.toSet;
-import static org.openhab.binding.knx.KNXBindingConstants.*;
+import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 
 import java.util.Set;
 import java.util.stream.Stream;

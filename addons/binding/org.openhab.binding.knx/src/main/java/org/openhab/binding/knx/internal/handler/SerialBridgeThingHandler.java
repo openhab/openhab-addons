@@ -15,7 +15,6 @@ package org.openhab.binding.knx.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.openhab.binding.knx.handler.KNXBridgeBaseThingHandler;
 import org.openhab.binding.knx.internal.client.AbstractKNXClient;
 import org.openhab.binding.knx.internal.client.SerialClient;
 import org.openhab.binding.knx.internal.config.SerialBridgeConfiguration;
