@@ -42,6 +42,7 @@ import org.openhab.io.imperihome.internal.model.param.DeviceParameters;
 import org.openhab.io.imperihome.internal.model.param.ParamType;
 import org.openhab.io.imperihome.internal.processor.DeviceRegistry;
 import org.openhab.io.imperihome.internal.processor.ItemProcessor;
+import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -61,7 +62,7 @@ import com.google.gson.GsonBuilder;
  * @author Pepijn de Geus - Initial contribution
  */
 @Component(immediate = true, service = HttpServlet.class, configurationPid = "org.openhab.imperihome", property = {
-        org.osgi.framework.Constants.SERVICE_PID + "=org.openhab.imperihome",
+        Constants.SERVICE_PID + "=org.openhab.imperihome",
         ConfigurableService.SERVICE_PROPERTY_DESCRIPTION_URI + "=imperihome",
         ConfigurableService.SERVICE_PROPERTY_CATEGORY + "=io",
         ConfigurableService.SERVICE_PROPERTY_LABEL + "=ImperiHome Integration" })
