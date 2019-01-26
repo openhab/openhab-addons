@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mcp23017;
+package org.openhab.binding.mcp23017.internal;
 
 import java.util.List;
 
