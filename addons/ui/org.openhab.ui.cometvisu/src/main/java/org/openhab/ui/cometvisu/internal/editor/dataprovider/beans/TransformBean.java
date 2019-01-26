@@ -15,8 +15,8 @@ package org.openhab.ui.cometvisu.internal.editor.dataprovider.beans;
 /**
  * {@link TransformBean} is a helper bean used by the dataprovider-servlet
  * which delivers some additional data for the CometVisu-Editor
- * 
- * @author Tobias Bräutigam
+ *
+ * @author Tobias Bräutigam - Initial contribution
  */
 public class TransformBean {
     public String value;

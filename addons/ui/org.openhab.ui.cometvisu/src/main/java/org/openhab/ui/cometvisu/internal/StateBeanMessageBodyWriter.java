@@ -34,7 +34,7 @@ import org.openhab.ui.cometvisu.internal.backend.beans.StateBean;
  * {@link StateBeanMessageBodyWriter} is used to serialize state update messages
  * for the CometVisu client
  *
- * @author Tobias Bräutigam
+ * @author Tobias Bräutigam - Initial contribution
  */
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
@@ -54,7 +54,7 @@ public class StateBeanMessageBodyWriter implements MessageBodyWriter<Object> {
     @Override
     public void writeTo(Object stateBean, Class<?> type, Type genericType, Annotation[] annotations,
             MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
-                    throws IOException, WebApplicationException {
+            throws IOException, WebApplicationException {
         StringBuilder sb = new StringBuilder();
         sb.append(serialize(stateBean));
         try (DataOutputStream dos = new DataOutputStream(entityStream)) {
@@ -75,7 +75,7 @@ public class StateBeanMessageBodyWriter implements MessageBodyWriter<Object> {
             StateBean stateBean = (StateBean) bean;
             msg += "\"" + stateBean.name + "\":\"" + stateBean.state + "\"";
         } else if (bean instanceof List<?>) {
-            List<String> states = new ArrayList<String>();
+            List<String> states = new ArrayList<>();
             for (Object bo : (List<?>) bean) {
                 if (bo instanceof StateBean) {
                     StateBean stateBean = (StateBean) bo;

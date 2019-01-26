@@ -18,18 +18,22 @@ import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.items.ItemRegistryChangeListener;
 import org.openhab.ui.cometvisu.internal.backend.EventBroadcaster;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * Listener responsible for notifying the CometVisu backend about changes
  * in the ItemRegistry
- * 
+ *
  * @author Tobias Bräutigam - Initial Contribution and API
  */
+@Component(immediate = true)
 public class ItemRegistryEventListener implements ItemRegistryChangeListener {
     private ItemRegistry itemRegistry;
 
     private EventBroadcaster eventBroadcaster;
 
+    @Reference
     protected void setEventBroadcaster(EventBroadcaster eventBroadcaster) {
         this.eventBroadcaster = eventBroadcaster;
     }
@@ -38,6 +42,7 @@ public class ItemRegistryEventListener implements ItemRegistryChangeListener {
         this.eventBroadcaster = null;
     }
 
+    @Reference
     protected void setItemRegistry(ItemRegistry itemRegistry) {
         this.itemRegistry = itemRegistry;
         this.itemRegistry.addRegistryChangeListener(this);

@@ -16,8 +16,8 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * Adapter for marshaling CDATA content
- * 
- * @author Tobias Bräutigam
+ *
+ * @author Tobias Bräutigam - Initial contribution
  *
  */
 public class AdapterCDATA extends XmlAdapter<String, String> {
