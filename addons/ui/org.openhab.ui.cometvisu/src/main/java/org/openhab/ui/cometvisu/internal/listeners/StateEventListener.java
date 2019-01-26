@@ -23,8 +23,8 @@ import org.openhab.ui.cometvisu.internal.backend.beans.StateBean;
 
 /**
  * listens to state changes on items and send them to an EventBroadcaster
- * 
- * @author Tobias Bräutigam
+ *
+ * @author Tobias Bräutigam - Initial contribution
  */
 public class StateEventListener implements StateChangeListener {
 
@@ -46,10 +46,11 @@ public class StateEventListener implements StateChangeListener {
                 Class<? extends State> stateClass = clientItems.get(cvItemName);
                 StateBean stateBean = new StateBean();
                 stateBean.name = cvItemName;
-                if (stateClass != null)
+                if (stateClass != null) {
                     stateBean.state = item.getStateAs(stateClass).toString();
-                else
+                } else {
                     stateBean.state = item.getState().toString();
+                }
                 eventBroadcaster.broadcastEvent(stateBean);
             }
         } else {
@@ -58,13 +59,11 @@ public class StateEventListener implements StateChangeListener {
             stateBean.state = newState.toString();
             eventBroadcaster.broadcastEvent(stateBean);
         }
-
     }
 
     @Override
     public void stateUpdated(Item item, State state) {
         if (item instanceof GroupItem) {
-
             // group item update could be relevant for the client, although the state of switch group does not change
             // wenn more the one are on, the number-groupFunction changes
             Map<String, Class<? extends State>> clientItems = eventBroadcaster.getClientItems(item);
