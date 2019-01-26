@@ -13,7 +13,7 @@
 package org.openhab.binding.rfxcom.internal.messages;
 
 import static org.junit.Assert.assertEquals;
-import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
+import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.LIGHTING4;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting4Message.Commands.*;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting4Message.SubType.PT2262;
