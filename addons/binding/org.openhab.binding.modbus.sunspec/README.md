@@ -32,6 +32,20 @@ You need first to set up either a TCP or a Serial Modbus bridge according to the
 
 The preferred way to add new things is by using the discovery feature. This way the binding will automatically detect if the Modbus bridge supports the SunSpec protocol and if so what type of models are available. It will automatically detect the register addresses for each model.
 
+### Auto discovering things
+
+This bingind fully supports modbus auto discovery, that means all supported profiles should appear in the inbox once you connect your device.
+
+Auto discovery is turned off by default in the modbus binding so you have to enable it manually.
+
+You can add `enableDiscovery=true` attribute to your bridge config, or you can enable it in the paper ui under the modbus tcp|serial slave thing.
+
+A typical bridge configuration would looke like this:
+
+```
+Bridge modbus:tcp:bridge [ host="10.0.0.2", port=502, id=1, enableDiscovery=true ]
+```
+
 ### Adding things manually
 
 If you decide to add a thing manually then first you have to find out the start address of the model block and the length of it. While the length is usually fixed the address isn't. Please refer to your device's vendor documentation how model blocks are laid for your equipment.
