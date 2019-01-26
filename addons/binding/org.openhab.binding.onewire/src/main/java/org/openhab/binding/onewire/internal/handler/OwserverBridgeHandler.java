@@ -44,7 +44,6 @@ import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.OwPageBuffer;
 import org.openhab.binding.onewire.internal.SensorId;
-import org.openhab.binding.onewire.internal.device.OwDeviceParameterMap;
 import org.openhab.binding.onewire.internal.device.OwSensorType;
 import org.openhab.binding.onewire.internal.owserver.OwfsDirectChannelConfig;
 import org.openhab.binding.onewire.internal.owserver.OwserverConnection;
@@ -266,10 +265,9 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
      * @return a DecimalType
      * @throws OwException
      */
-    public State readDecimalType(SensorId sensorId, OwDeviceParameterMap parameter) throws OwException {
+    public State readDecimalType(SensorId sensorId, OwserverDeviceParameter parameter) throws OwException {
         synchronized (owserverConnection) {
-            return owserverConnection
-                    .readDecimalType(((OwserverDeviceParameter) parameter.get(THING_TYPE_OWSERVER)).getPath(sensorId));
+            return owserverConnection.readDecimalType(parameter.getPath(sensorId));
         }
     }
 
@@ -281,7 +279,7 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
      * @return a BitSet
      * @throws OwException
      */
-    public BitSet readBitSet(SensorId sensorId, OwDeviceParameterMap parameter) throws OwException {
+    public BitSet readBitSet(SensorId sensorId, OwserverDeviceParameter parameter) throws OwException {
         return BitSet.valueOf(new long[] { ((DecimalType) readDecimalType(sensorId, parameter)).longValue() });
     }
 
@@ -293,10 +291,9 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
      * @return a list of DecimalType values
      * @throws OwException
      */
-    public List<State> readDecimalTypeArray(SensorId sensorId, OwDeviceParameterMap parameter) throws OwException {
+    public List<State> readDecimalTypeArray(SensorId sensorId, OwserverDeviceParameter parameter) throws OwException {
         synchronized (owserverConnection) {
-            return owserverConnection.readDecimalTypeArray(
-                    ((OwserverDeviceParameter) parameter.get(THING_TYPE_OWSERVER)).getPath(sensorId));
+            return owserverConnection.readDecimalTypeArray(parameter.getPath(sensorId));
         }
     }
 
@@ -308,10 +305,9 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
      * @return a String
      * @throws OwException
      */
-    public String readString(SensorId sensorId, OwDeviceParameterMap parameter) throws OwException {
+    public String readString(SensorId sensorId, OwserverDeviceParameter parameter) throws OwException {
         synchronized (owserverConnection) {
-            return owserverConnection
-                    .readString(((OwserverDeviceParameter) parameter.get(THING_TYPE_OWSERVER)).getPath(sensorId));
+            return owserverConnection.readString(parameter.getPath(sensorId));
         }
     }
 
@@ -322,11 +318,10 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
      * @param parameter device parameters needed for this request
      * @throws OwException
      */
-    public void writeDecimalType(SensorId sensorId, OwDeviceParameterMap parameter, DecimalType value)
+    public void writeDecimalType(SensorId sensorId, OwserverDeviceParameter parameter, DecimalType value)
             throws OwException {
         synchronized (owserverConnection) {
-            owserverConnection.writeDecimalType(
-                    ((OwserverDeviceParameter) parameter.get(THING_TYPE_OWSERVER)).getPath(sensorId), value);
+            owserverConnection.writeDecimalType(parameter.getPath(sensorId), value);
         }
     }
 
@@ -337,7 +332,7 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
      * @param parameter device parameters needed for this request
      * @throws OwException
      */
-    public void writeBitSet(SensorId sensorId, OwDeviceParameterMap parameter, BitSet value) throws OwException {
+    public void writeBitSet(SensorId sensorId, OwserverDeviceParameter parameter, BitSet value) throws OwException {
         writeDecimalType(sensorId, parameter, new DecimalType(value.toLongArray()[0]));
     }
 

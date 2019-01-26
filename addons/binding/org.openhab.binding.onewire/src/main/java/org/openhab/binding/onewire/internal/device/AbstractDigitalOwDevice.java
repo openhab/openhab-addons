@@ -30,8 +30,9 @@ import org.openhab.binding.onewire.internal.DigitalIoConfig;
 import org.openhab.binding.onewire.internal.OwDynamicStateDescriptionProvider;
 import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.SensorId;
-import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
 import org.openhab.binding.onewire.internal.handler.OwBaseThingHandler;
+import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
+import org.openhab.binding.onewire.internal.owserver.OwserverDeviceParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,8 +45,8 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractDigitalOwDevice extends AbstractOwDevice {
     private final Logger logger = LoggerFactory.getLogger(AbstractDigitalOwDevice.class);
 
-    protected final OwDeviceParameterMap fullInParam = new OwDeviceParameterMap();
-    protected final OwDeviceParameterMap fullOutParam = new OwDeviceParameterMap();
+    protected @NonNullByDefault({}) OwserverDeviceParameter fullInParam;
+    protected @NonNullByDefault({}) OwserverDeviceParameter fullOutParam;
 
     protected final List<DigitalIoConfig> ioConfig = new ArrayList<DigitalIoConfig>();
 
