@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>org.eclipse.smarthome.extensionservice.marketplace.test</name>
-	<comment>This is the Eclipse SmartHome project. NO_M2ECLIPSE_SUPPORT: Project files created with the maven-eclipse-plugin are not supported in M2Eclipse.</comment>
+	<name>org.openhab.extensionservice.marketplace.test</name>
+	<comment></comment>
 	<projects>
 	</projects>
 	<buildSpec>
