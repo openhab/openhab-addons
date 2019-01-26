@@ -22,10 +22,12 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.rfxcom.internal.RFXComBindingConstants;
 import org.openhab.binding.rfxcom.internal.config.RFXComBridgeConfiguration;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +40,7 @@ import jd2xx.JD2XX;
  * @author Pauli Anttila - Initial contribution
  *
  */
+@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.rfxcom")
 public class RFXComBridgeDiscovery extends AbstractDiscoveryService {
     private static final long REFRESH_INTERVAL_IN_SECONDS = 600;
 
