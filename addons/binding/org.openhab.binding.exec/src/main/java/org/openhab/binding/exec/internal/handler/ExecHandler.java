@@ -27,6 +27,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -49,6 +51,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public class ExecHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(ExecHandler.class);
@@ -63,8 +66,8 @@ public class ExecHandler extends BaseThingHandler {
     // RegEx to extract a parse a function String <code>'(.*?)\((.*)\)'</code>
     private static final Pattern EXTRACT_FUNCTION_PATTERN = Pattern.compile("(.*?)\\((.*)\\)");
 
-    private ScheduledFuture<?> executionJob;
-    private String lastInput;
+    private @Nullable ScheduledFuture<?> executionJob;
+    private @Nullable String lastInput;
 
     private static Runtime rt = Runtime.getRuntime();
 
@@ -238,7 +241,7 @@ public class ExecHandler extends BaseThingHandler {
 
     };
 
-    protected String transformResponse(String response, String transformation) {
+    protected @Nullable String transformResponse(String response, String transformation) {
         String transformedResponse;
 
         try {
