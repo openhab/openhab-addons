@@ -19,10 +19,11 @@ It is advised to test the correct operation of the command in the scope of the `
 ```shell
 sudo -u openhab <YOUR COMMAND>
 ```
+
 It is not advised to run the virtual machine as superuser/root.
 
 ## Thing Configuration
-.
+
 The "command" Thing requires the command to execute on the shell.
 Optionally one can specify:
 

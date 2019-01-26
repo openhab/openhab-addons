@@ -18,6 +18,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.IllegalFormatException;
 import java.util.concurrent.ScheduledFuture;
@@ -26,6 +27,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -48,6 +51,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public class ExecHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(ExecHandler.class);
@@ -62,8 +66,8 @@ public class ExecHandler extends BaseThingHandler {
     // RegEx to extract a parse a function String <code>'(.*?)\((.*)\)'</code>
     private static final Pattern EXTRACT_FUNCTION_PATTERN = Pattern.compile("(.*?)\\((.*)\\)");
 
-    private ScheduledFuture<?> executionJob;
-    private String lastInput;
+    private @Nullable ScheduledFuture<?> executionJob;
+    private @Nullable String lastInput;
 
     private static Runtime rt = Runtime.getRuntime();
 
@@ -73,7 +77,6 @@ public class ExecHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         if (command instanceof RefreshType) {
             // Placeholder for later refinement
         } else {
@@ -102,11 +105,11 @@ public class ExecHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-
         if (executionJob == null || executionJob.isCancelled()) {
-            if (((BigDecimal) getConfig().get(INTERVAL)) != null && ((BigDecimal) getConfig().get(INTERVAL)).intValue() > 0) {
-                int polling_interval = ((BigDecimal) getConfig().get(INTERVAL)).intValue();
-                executionJob = scheduler.scheduleWithFixedDelay(periodicExecutionRunnable, 0, polling_interval,
+            if (((BigDecimal) getConfig().get(INTERVAL)) != null
+                    && ((BigDecimal) getConfig().get(INTERVAL)).intValue() > 0) {
+                int pollingInterval = ((BigDecimal) getConfig().get(INTERVAL)).intValue();
+                executionJob = scheduler.scheduleWithFixedDelay(periodicExecutionRunnable, 0, pollingInterval,
                         TimeUnit.SECONDS);
             }
         }
@@ -126,7 +129,6 @@ public class ExecHandler extends BaseThingHandler {
 
         @Override
         public void run() {
-
             String commandLine = (String) getConfig().get(COMMAND);
 
             int timeOut = 60000;
@@ -135,7 +137,6 @@ public class ExecHandler extends BaseThingHandler {
             }
 
             if (commandLine != null && !commandLine.isEmpty()) {
-
                 updateState(RUN, OnOffType.ON);
 
                 // For some obscure reason, when using Apache Common Exec, or using a straight implementation of
@@ -233,15 +234,14 @@ public class ExecHandler extends BaseThingHandler {
 
                 updateState(OUTPUT, new StringType(transformedResponse));
 
-                DateTimeType stampType = new DateTimeType(Calendar.getInstance());
+                DateTimeType stampType = new DateTimeType(ZonedDateTime.now());
                 updateState(LAST_EXECUTION, stampType);
-
             }
         }
 
     };
 
-    protected String transformResponse(String response, String transformation) {
+    protected @Nullable String transformResponse(String response, String transformation) {
         String transformedResponse;
 
         try {
