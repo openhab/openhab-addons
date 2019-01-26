@@ -27,23 +27,31 @@ Overview of provided channels
 
 | Channel ID                | Vallox Name                 | Description                       | Read/Write | Values               |
 | :------------------------- | :--------------------------- |:-----------------------------------|:-:|:----------------------:|
-| onoff                     | A_CYC_MODE                  | On off switch                     |rw| On/Off              |
+| onoff                     | A_CYC_MODE                  | On off switch                     |rw| On/Off               |
 | state                     | _several_                     | Current state of ventilation unit |rw| 1=FIREPLACE, 2=AWAY, 3=ATHOME, 4=BOOST    |
-| fanspeed                  | A_CYC_FAN_SPEED             | Fan speed                         |r| 0 - 100 (%)          |
-| fanspeedextract           | A_CYC_EXTR_FAN_SPEED        | Fan speed of extracting fan       |r| 1/min                |
-| fanspeedsupply            | A_CYC_SUPP_FAN_SPEED        | Fan speed of supplying fan        |r| 1/min                |
-| tempinside                | A_CYC_TEMP_EXTRACT_AIR      | Extracted air temp                |r| Number (°C)          |
-| tempoutside               | A_CYC_TEMP_OUTDOOR_AIR      | Outside air temp                  |r| Number (°C)          |
-| tempexhaust               | A_CYC_TEMP_EXHAUST_AIR      | Exhausted air temp                |r| Number (°C)          |
-| tempincomingbeforeheating | A_CYC_TEMP_SUPPLY_CELL_AIR  | Incoming air temp (pre heating)   |r| Number (°C)          |
-| tempincoming              | A_CYC_TEMP_SUPPLY_AIR       | Incoming air temp                 |r| Number (°C)          |
-| humidity                  | A_CYC_RH_VALUE              | Extracted air humidity            |r| 0 - 100 (%)          |
-| cellstate                 | A_CYC_CELL_STATE            | Current cell state                |r| 0=heat recovery, 1=cool recovery, 2=bypass, 3=defrosting          |
-| uptimeyears               | A_CYC_TOTAL_UP_TIME_YEARS   | Total uptime years                |r| Y                    |
-| uptimehours               | A_CYC_TOTAL_UP_TIME_HOURS   | Total uptime hours                |r| h                    |
-| uptimehourscurrent        | A_CYC_CURRENT_UP_TIME_HOURS | Total uptime hours                |r| h                    |
+| fanspeed                  | A_CYC_FAN_SPEED             | Fan speed                         |r | 0 - 100 (%)          |
+| fanspeedextract           | A_CYC_EXTR_FAN_SPEED        | Fan speed of extracting fan       |r | 1/min                |
+| fanspeedsupply            | A_CYC_SUPP_FAN_SPEED        | Fan speed of supplying fan        |r | 1/min                |
+| tempinside                | A_CYC_TEMP_EXTRACT_AIR      | Extracted air temp                |r | Number (°C)          |
+| tempoutside               | A_CYC_TEMP_OUTDOOR_AIR      | Outside air temp                  |r | Number (°C)          |
+| tempexhaust               | A_CYC_TEMP_EXHAUST_AIR      | Exhausted air temp                |r | Number (°C)          |
+| tempincomingbeforeheating | A_CYC_TEMP_SUPPLY_CELL_AIR  | Incoming air temp (pre heating)   |r | Number (°C)          |
+| tempincoming              | A_CYC_TEMP_SUPPLY_AIR       | Incoming air temp                 |r | Number (°C)          |
+| humidity                  | A_CYC_RH_VALUE              | Extracted air humidity            |r | 0 - 100 (%)          |
+| cellstate                 | A_CYC_CELL_STATE            | Current cell state                |r | 0=heat recovery, 1=cool recovery, 2=bypass, 3=defrosting          |
+| uptimeyears               | A_CYC_TOTAL_UP_TIME_YEARS   | Total uptime years                |r | Y                    |
+| uptimehours               | A_CYC_TOTAL_UP_TIME_HOURS   | Total uptime hours                |r | h                    |
+| uptimehourscurrent        | A_CYC_CURRENT_UP_TIME_HOURS | Current uptime in hours           |r | h                    |
+| extrfanbalancebase        | A_CYC_EXTR_FAN_BALANCE_BASE | Extract fan base speed            |rw| 0 - 100 (%)          |
+| suppfanbalancebase        | A_CYC_SUPP_FAN_BALANCE_BASE | Supply fan base speed             |rw| 0 - 100 (%)          |
+| homespeedsetting          | A_CYC_HOME_SPEED_SETTING    | Home fan speed                    |rw| 0 - 100 (%)          |
+| awayspeedsetting          | A_CYC_AWAY_SPEED_SETTING    | Away fan speed                    |rw| 0 - 100 (%)          |
+| boostspeedsetting         | A_CYC_BOOST_SPEED_SETTING   | Boost fan speed                   |rw| 0 - 100 (%)          |
+| homeairtemptarget         | A_CYC_HOME_AIR_TEMP_TARGET  | Target temperature in home state  |rw| Number (°C)          |
+| awayairtemptarget         | A_CYC_AWAY_AIR_TEMP_TARGET  | Target temperature in away state  |rw| Number (°C)          |
+| boostairtemptarget        | A_CYC_BOOST_AIR_TEMP_TARGET | Target temperature in boost state |rw| Number (°C)          |
 
-## Full Example
+## Example
 
 ### Things file ###
 

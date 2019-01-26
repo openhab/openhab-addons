@@ -199,8 +199,16 @@ public class ValloxMVWebSocket {
                 request.put(20486, Integer.parseInt(updateState));
             } else if (ValloxMVBindingConstants.CHANNEL_HOME_SPEED_SETTING.equals(channelUID.getId())) {
                 request.put(20507, Integer.parseInt(updateState));
+            } else if (ValloxMVBindingConstants.CHANNEL_AWAY_SPEED_SETTING.equals(channelUID.getId())) {
+                request.put(20501, Integer.parseInt(updateState));
+            } else if (ValloxMVBindingConstants.CHANNEL_BOOST_SPEED_SETTING.equals(channelUID.getId())) {
+                request.put(20513, Integer.parseInt(updateState));
             } else if (ValloxMVBindingConstants.CHANNEL_HOME_AIR_TEMP_TARGET.equals(channelUID.getId())) {
                 request.put(20508, Integer.parseInt(updateState));
+            } else if (ValloxMVBindingConstants.CHANNEL_AWAY_AIR_TEMP_TARGET.equals(channelUID.getId())) {
+                request.put(20502, Integer.parseInt(updateState));
+            } else if (ValloxMVBindingConstants.CHANNEL_BOOST_AIR_TEMP_TARGET.equals(channelUID.getId())) {
+                request.put(20514, Integer.parseInt(updateState));
             } else {
                 return null;
             }
@@ -272,7 +280,11 @@ public class ValloxMVWebSocket {
                 int bdSuppFanBalanceBase = getNumber(bytes, 376);
 
                 int bdHomeSpeedSetting = getNumber(bytes, 418);
+                int bdAwaySpeedSetting = getNumber(bytes, 406);
+                int bdBoostSpeedSetting = getNumber(bytes, 430);
                 BigDecimal bdHomeAirTempTarget = getTemperature(bytes, 420);
+                BigDecimal bdAwayAirTempTarget = getTemperature(bytes, 408);
+                BigDecimal bdBoostAirTempTarget = getTemperature(bytes, 432);
 
                 BigDecimal bdState;
                 if (bdFireplaceTimer > 0) {
@@ -321,8 +333,16 @@ public class ValloxMVWebSocket {
                         new QuantityType<>(bdSuppFanBalanceBase, SmartHomeUnits.PERCENT));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_HOME_SPEED_SETTING,
                         new QuantityType<>(bdHomeSpeedSetting, SmartHomeUnits.PERCENT));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_AWAY_SPEED_SETTING,
+                        new QuantityType<>(bdAwaySpeedSetting, SmartHomeUnits.PERCENT));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_BOOST_SPEED_SETTING,
+                        new QuantityType<>(bdBoostSpeedSetting, SmartHomeUnits.PERCENT));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_HOME_AIR_TEMP_TARGET,
                         new QuantityType<>(bdHomeAirTempTarget, SIUnits.CELSIUS));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_AWAY_AIR_TEMP_TARGET,
+                        new QuantityType<>(bdAwayAirTempTarget, SIUnits.CELSIUS));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_BOOST_AIR_TEMP_TARGET,
+                        new QuantityType<>(bdBoostAirTempTarget, SIUnits.CELSIUS));
 
                 voHandler.updateStatus(ThingStatus.ONLINE);
                 voHandler.dataUpdated();

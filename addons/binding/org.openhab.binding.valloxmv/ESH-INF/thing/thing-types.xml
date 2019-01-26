@@ -25,7 +25,11 @@
 			<channel id="extrfanbalancebase" typeId="extrfanbalancebase" />
 			<channel id="suppfanbalancebase" typeId="suppfanbalancebase" />
 			<channel id="homespeedsetting" typeId="homespeedsetting" />
+			<channel id="awayspeedsetting" typeId="awayspeedsetting" />
+			<channel id="boostspeedsetting" typeId="boostspeedsetting" />
 			<channel id="homeairtemptarget" typeId="homeairtemptarget" />
+			<channel id="awayairtemptarget" typeId="awayairtemptarget" />
+			<channel id="boostairtemptarget" typeId="boostairtemptarget" />
 		</channels>
 		<config-description>
 			<parameter name="ip" type="text" required="true">
@@ -189,10 +193,40 @@
 		<state readOnly="false" min="0" max="100" pattern="%d %%" />
 	</channel-type>
 
+	<channel-type id="awayspeedsetting" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Away fan speed</label>
+		<description>Away fan speed in % (0-100)</description>
+		<state readOnly="false" min="0" max="100" pattern="%d %%" />
+	</channel-type>
+
+	<channel-type id="boostspeedsetting" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Boost fan speed</label>
+		<description>Boost fan speed in % (0-100)</description>
+		<state readOnly="false" min="0" max="100" pattern="%d %%" />
+	</channel-type>
+
 	<channel-type id="homeairtemptarget" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Home target temperature</label>
 		<description>Target temperature in home state</description>
+		<category>Temperature</category>
+		<state pattern="%.2f %unit%" readOnly="false" />
+	</channel-type>
+
+	<channel-type id="awayairtemptarget" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Away target temperature</label>
+		<description>Target temperature in away state</description>
+		<category>Temperature</category>
+		<state pattern="%.2f %unit%" readOnly="false" />
+	</channel-type>
+
+	<channel-type id="boostairtemptarget" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Boost target temperature</label>
+		<description>Target temperature in boost state</description>
 		<category>Temperature</category>
 		<state pattern="%.2f %unit%" readOnly="false" />
 	</channel-type>
