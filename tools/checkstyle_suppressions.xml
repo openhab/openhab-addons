@@ -6,6 +6,7 @@
     <suppress files=".+[\\/]internal[\\/].+\.java" checks="JavadocType|JavadocVariable|JavadocMethod|JavadocFilterCheck"/>
     <suppress files=".+DTO\.java" checks="JavadocType|JavadocVariable|JavadocMethod|JavadocFilterCheck" />
     <suppress files=".+Impl\.java" checks="JavadocType|JavadocVariable|JavadocMethod|JavadocFilterCheck"/>
+
     <!-- The WiFi led binding contains test packages that shouldn't be included in the binary build -->
     <!-- The CometVisu UI contains files in the resources folder that are used only during the build -->
     <suppress files=".+org.openhab.binding.wifiled.+|.+org.openhab.ui.cometvisu.+" checks="BuildPropertiesCheck"/>
@@ -24,4 +25,5 @@
     <suppress files=".+[\\/]pom\.xml" checks="OnlyTabIndentationInXmlFilesCheck"/>
     <suppress files=".+[\\/]OSGI-INF[\\/]org.openhab.+\.xml" checks="OnlyTabIndentationInXmlFilesCheck|NewlineAtEndOfFileCheck"/>
     <suppress files=".+org.openhab.binding.yeelight.+" checks="OutsideOfLibExternalLibrariesCheck" />
+    <suppress files=".+org.openhab.ui.paper.+" checks="OutsideOfLibExternalLibrariesCheck|ManifestExternalLibrariesCheck|BuildPropertiesExternalLibrariesCheck" />
 </suppressions>

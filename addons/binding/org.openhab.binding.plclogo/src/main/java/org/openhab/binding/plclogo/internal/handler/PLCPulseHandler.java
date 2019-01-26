@@ -1,0 +1,335 @@
+/**
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.plclogo.internal.handler;
+
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.*;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.Channel;
+import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
+import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
+import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.plclogo.internal.PLCLogoClient;
+import org.openhab.binding.plclogo.internal.config.PLCPulseConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import Moka7.S7;
+import Moka7.S7Client;
+
+/**
+ * The {@link PLCPulseHandler} is responsible for handling commands, which are
+ * sent to one of the channels.
+ *
+ * @author Alexander Falkenstern - Initial contribution
+ */
+@NonNullByDefault
+public class PLCPulseHandler extends PLCCommonHandler {
+
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_PULSE);
+
+    private final Logger logger = LoggerFactory.getLogger(PLCPulseHandler.class);
+    private AtomicReference<PLCPulseConfiguration> config = new AtomicReference<>();
+
+    /**
+     * Constructor.
+     */
+    public PLCPulseHandler(Thing thing) {
+        super(thing);
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (!isThingOnline()) {
+            return;
+        }
+
+        Channel channel = getThing().getChannel(channelUID.getId());
+        Objects.requireNonNull(channel, "PLCPulseHandler: Invalid channel found");
+
+        PLCLogoClient client = getLogoClient();
+        String name = getBlockFromChannel(channel);
+
+        int bit = getBit(name);
+        int address = getAddress(name);
+        if ((address != INVALID) && (bit != INVALID) && (client != null)) {
+            byte[] buffer = new byte[1];
+            if (command instanceof RefreshType) {
+                int result = client.readDBArea(1, address, buffer.length, S7Client.S7WLByte, buffer);
+                if (result == 0) {
+                    updateChannel(channel, S7.GetBitAt(buffer, 0, bit));
+                } else {
+                    logger.debug("Can not read data from LOGO!: {}.", S7Client.ErrorText(result));
+                }
+            } else if ((command instanceof OpenClosedType) || (command instanceof OnOffType)) {
+                String type = channel.getAcceptedItemType();
+                if (DIGITAL_INPUT_ITEM.equalsIgnoreCase(type)) {
+                    S7.SetBitAt(buffer, 0, 0, ((OpenClosedType) command) == OpenClosedType.CLOSED);
+                } else if (DIGITAL_OUTPUT_ITEM.equalsIgnoreCase(type)) {
+                    S7.SetBitAt(buffer, 0, 0, ((OnOffType) command) == OnOffType.ON);
+                } else {
+                    logger.debug("Channel {} will not accept {} items.", channelUID, type);
+                }
+                int result = client.writeDBArea(1, 8 * address + bit, buffer.length, S7Client.S7WLBit, buffer);
+                if (result != 0) {
+                    logger.debug("Can not write data to LOGO!: {}.", S7Client.ErrorText(result));
+                }
+            } else {
+                logger.debug("Channel {} received not supported command {}.", channelUID, command);
+            }
+        } else {
+            logger.info("Invalid channel {} or client {} found.", channelUID, client);
+        }
+    }
+
+    @Override
+    public void setData(final byte[] data) {
+        if (!isThingOnline()) {
+            return;
+        }
+
+        if (data.length != getBufferLength()) {
+            logger.info("Received and configured data sizes does not match.");
+            return;
+        }
+
+        List<Channel> channels = thing.getChannels();
+        if (channels.size() != getNumberOfChannels()) {
+            logger.info("Received and configured channel sizes does not match.");
+            return;
+        }
+
+        PLCLogoClient client = getLogoClient();
+        for (Channel channel : channels) {
+            ChannelUID channelUID = channel.getUID();
+            String name = getBlockFromChannel(channel);
+
+            int bit = getBit(name);
+            int address = getAddress(name);
+            if ((address != INVALID) && (bit != INVALID) && (client != null)) {
+                DecimalType state = (DecimalType) getOldValue(channelUID.getId());
+                if (STATE_CHANNEL.equalsIgnoreCase(channelUID.getId())) {
+                    boolean value = S7.GetBitAt(data, address - getBase(name), bit);
+                    if ((state == null) || ((value ? 1 : 0) != state.intValue())) {
+                        updateChannel(channel, value);
+                    }
+                    if (logger.isTraceEnabled()) {
+                        int buffer = (data[address - getBase(name)] & 0xFF) + 0x100;
+                        logger.trace("Channel {} received [{}].", channelUID,
+                                Integer.toBinaryString(buffer).substring(1));
+                    }
+                } else if (OBSERVE_CHANNEL.equalsIgnoreCase(channelUID.getId())) {
+                    handleCommand(channelUID, RefreshType.REFRESH);
+                    if ((state != null) && !state.equals(getOldValue(channelUID.getId()))) {
+                        Integer pulse = config.get().getPulseLength();
+                        scheduler.schedule(new Runnable() {
+                            private final String name = config.get().getBlockName();
+
+                            @Override
+                            public void run() {
+                                byte[] data = new byte[1];
+                                S7.SetBitAt(data, 0, 0, state.intValue() == 1 ? true : false);
+                                int address = 8 * getAddress(name) + getBit(name);
+                                int result = client.writeDBArea(1, address, data.length, S7Client.S7WLBit, data);
+                                if (result == 0) {
+                                    setOldValue(channelUID.getId(), null);
+                                } else {
+                                    logger.debug("Can not write data to LOGO!: {}.", S7Client.ErrorText(result));
+                                }
+                            }
+                        }, pulse.longValue(), TimeUnit.MILLISECONDS);
+                    }
+                } else {
+                    logger.info("Invalid channel {} found.", channelUID);
+                }
+            } else {
+                logger.info("Invalid channel {} or client {} found.", channelUID, client);
+            }
+        }
+    }
+
+    @Override
+    protected void updateState(ChannelUID channelUID, State state) {
+        super.updateState(channelUID, state);
+        DecimalType value = state.as(DecimalType.class);
+        if (state instanceof OpenClosedType) {
+            OpenClosedType type = (OpenClosedType) state;
+            value = new DecimalType(type == OpenClosedType.CLOSED ? 1 : 0);
+        }
+
+        Channel channel = thing.getChannel(channelUID.getId());
+        Objects.requireNonNull(channel, "PLCPulseHandler: Invalid channel found");
+
+        setOldValue(channelUID.getId(), value);
+    }
+
+    @Override
+    protected void updateConfiguration(Configuration configuration) {
+        super.updateConfiguration(configuration);
+        config.set(getConfigAs(PLCPulseConfiguration.class));
+    }
+
+    @Override
+    protected boolean isValid(final String name) {
+        if (2 <= name.length() && (name.length() <= 7)) {
+            String kind = config.get().getObservedBlockKind();
+            if (Character.isDigit(name.charAt(1))) {
+                boolean valid = "I".equalsIgnoreCase(kind) || "Q".equalsIgnoreCase(kind);
+                return name.startsWith(kind) && (valid || "M".equalsIgnoreCase(kind));
+            } else if (Character.isDigit(name.charAt(2))) {
+                String bKind = getBlockKind();
+                boolean valid = "NI".equalsIgnoreCase(kind) || "NQ".equalsIgnoreCase(kind);
+                valid = name.startsWith(kind) && (valid || "VB".equalsIgnoreCase(kind));
+                return (name.startsWith(bKind) && "VB".equalsIgnoreCase(bKind)) || valid;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    protected String getBlockKind() {
+        return config.get().getBlockKind();
+    }
+
+    @Override
+    protected int getNumberOfChannels() {
+        return 2;
+    }
+
+    @Override
+    protected int getAddress(final String name) {
+        int address = super.getAddress(name);
+        if (address != INVALID) {
+            int base = getBase(name);
+            if (base != 0) {
+                address = base + (address - 1) / 8;
+            }
+        } else {
+            logger.info("Wrong configurated LOGO! block {} found.", name);
+        }
+        return address;
+    }
+
+    @Override
+    protected void doInitialization() {
+        Thing thing = getThing();
+        Bridge bridge = getBridge();
+        Objects.requireNonNull(bridge, "PLCPulseHandler: Bridge may not be null");
+
+        logger.debug("Initialize LOGO! pulse handler.");
+
+        config.set(getConfigAs(PLCPulseConfiguration.class));
+
+        super.doInitialization();
+        if (ThingStatus.OFFLINE != thing.getStatus()) {
+            ThingBuilder tBuilder = editThing();
+
+            String label = thing.getLabel();
+            if (label == null) {
+                label = bridge.getLabel() == null ? "Siemens Logo!" : bridge.getLabel();
+                label += (": digital pulse in/output");
+            }
+            tBuilder.withLabel(label);
+
+            String bName = config.get().getBlockName();
+            String bType = config.get().getChannelType();
+            ChannelUID uid = new ChannelUID(thing.getUID(), STATE_CHANNEL);
+            ChannelBuilder cBuilder = ChannelBuilder.create(uid, bType);
+            cBuilder.withType(new ChannelTypeUID(BINDING_ID, bType.toLowerCase()));
+            cBuilder.withLabel(bName);
+            cBuilder.withDescription("Control block " + bName);
+            cBuilder.withProperties(Collections.singletonMap(BLOCK_PROPERTY, bName));
+            tBuilder.withChannel(cBuilder.build());
+            setOldValue(STATE_CHANNEL, null);
+
+            String oName = config.get().getObservedBlock();
+            String oType = config.get().getObservedChannelType();
+            cBuilder = ChannelBuilder.create(new ChannelUID(thing.getUID(), OBSERVE_CHANNEL), oType);
+            cBuilder.withType(new ChannelTypeUID(BINDING_ID, oType.toLowerCase()));
+            cBuilder.withLabel(oName);
+            cBuilder.withDescription("Observed block " + oName);
+            cBuilder.withProperties(Collections.singletonMap(BLOCK_PROPERTY, oName));
+            tBuilder.withChannel(cBuilder.build());
+            setOldValue(OBSERVE_CHANNEL, null);
+
+            updateThing(tBuilder.build());
+            updateStatus(ThingStatus.ONLINE);
+        }
+    }
+
+    /**
+     * Calculate bit within address for block with given name.
+     *
+     * @param name Name of the LOGO! block
+     * @return Calculated bit
+     */
+    private int getBit(final String name) {
+        int bit = INVALID;
+
+        logger.debug("Get bit of {} LOGO! for block {} .", getLogoFamily(), name);
+
+        if (isValid(name) && (getAddress(name) != INVALID)) {
+            String[] parts = name.trim().split("\\.");
+            if (parts.length > 1) {
+                bit = Integer.parseInt(parts[1]);
+            } else if (parts.length == 1) {
+                if (Character.isDigit(parts[0].charAt(1))) {
+                    bit = Integer.parseInt(parts[0].substring(1));
+                } else if (Character.isDigit(parts[0].charAt(2))) {
+                    bit = Integer.parseInt(parts[0].substring(2));
+                } else if (Character.isDigit(parts[0].charAt(3))) {
+                    bit = Integer.parseInt(parts[0].substring(3));
+                }
+                bit = (bit - 1) % 8;
+            }
+        } else {
+            logger.info("Wrong configurated LOGO! block {} found.", name);
+        }
+
+        return bit;
+    }
+
+    private void updateChannel(final Channel channel, boolean value) {
+        ChannelUID channelUID = channel.getUID();
+        String type = channel.getAcceptedItemType();
+        if (DIGITAL_INPUT_ITEM.equalsIgnoreCase(type)) {
+            updateState(channelUID, value ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+            logger.debug("Channel {} accepting {} was set to {}.", channelUID, type, value);
+        } else if (DIGITAL_OUTPUT_ITEM.equalsIgnoreCase(type)) {
+            updateState(channelUID, value ? OnOffType.ON : OnOffType.OFF);
+            logger.debug("Channel {} accepting {} was set to {}.", channelUID, type, value);
+        } else {
+            logger.debug("Channel {} will not accept {} items.", channelUID, type);
+        }
+    }
+
+}

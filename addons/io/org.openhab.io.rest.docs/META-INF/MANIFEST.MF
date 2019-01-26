@@ -1,0 +1,24 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.io.rest.docs
+Bundle-ActivationPolicy: lazy
+Bundle-ManifestVersion: 2
+Bundle-Name: openHAB REST Documentation
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.io.rest.docs
+Bundle-Vendor: openHAB
+Bundle-Version: 2.5.0.qualifier
+Import-Package: 
+ com.google.gson,
+ com.google.gson.annotations,
+ javax.servlet,
+ javax.servlet.http,
+ javax.ws.rs,
+ javax.ws.rs.core,
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.io.rest,
+ org.openhab.ui.dashboard,
+ org.osgi.framework,
+ org.osgi.service.cm,
+ org.osgi.service.http,
+ org.slf4j
+Service-Component: OSGI-INF/*.xml

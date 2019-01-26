@@ -14,7 +14,7 @@ package org.openhab.binding.globalcache.internal.command;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.openhab.binding.globalcache.GlobalCacheBindingConstants.CommandType;
+import org.openhab.binding.globalcache.internal.GlobalCacheBindingConstants.CommandType;
 
 /**
  * The {@link RequestMessage} class is responsible for storing the command to be sent to the GlobalCache

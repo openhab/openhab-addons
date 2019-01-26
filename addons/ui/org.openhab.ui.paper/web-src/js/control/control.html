@@ -1,0 +1,9 @@
+<section id="main" class="control header-tabs">
+	<div class="header-toolbar">
+		<md-button ng-click="refresh()" aria-label="Refresh"> <i class="material-icons">refresh</i></md-button>
+	</div>
+
+	<md-tabs md-stretch-tabs="always" class="section-tabs" md-selected="selectedTabIndex">
+	    <tab-control tab="tab" on-selection-update="onSelectedTab($event)" ng-repeat="tab in tabs track by tab.name"></tab-control>
+	</md-tabs>
+</section>

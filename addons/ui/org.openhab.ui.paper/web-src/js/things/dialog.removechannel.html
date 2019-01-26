@@ -1,0 +1,9 @@
+<md-dialog aria-label="Remove channel"> <md-dialog-content class="md-dialog-content">
+<h2>Remove Channel {{channel.label ? channel.label : channel.UID}}</h2>
+<p>Would you like to remove the channel from this thing?</p>
+</md-dialog-content>
+<div class="md-actions" layout="row">
+	<md-button ng-click="close()">Cancel</md-button>
+	<md-button class="md-primary" ng-click="remove()">Remove</md-button>
+</div>
+</md-dialog>

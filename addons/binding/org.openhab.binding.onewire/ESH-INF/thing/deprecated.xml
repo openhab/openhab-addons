@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="onewire"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="counter2" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="owserver" />
+		</supported-bridge-type-refs>
+		<label>Counter sensor</label>
+		<description>A 1-wire Dual Counter (DS2423)</description>
+		<config-description-ref uri="thing-type:onewire:fastthingconfig" />
+	</thing-type>
+	<thing-type id="ibutton" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="owserver" />
+		</supported-bridge-type-refs>
+		<label>iButton</label>
+		<description>An iButton device</description>
+		<config-description-ref uri="thing-type:onewire:basethingconfig" />
+	</thing-type>
+	<thing-type id="temperature" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="owserver" />
+		</supported-bridge-type-refs>
+		<label>Temperature sensor</label>
+		<description>A 1-wire temperature sensor (DS18x20)</description>
+		<config-description-ref uri="thing-type:onewire:basethingconfig" />
+	</thing-type>
+	<thing-type id="ms-th" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="owserver" />
+		</supported-bridge-type-refs>
+		<label>Multisensor TH</label>
+		<description>A 1-wire multisensor (DS2438-based)</description>
+		<properties>
+			<property name="sensorCount">1</property>
+		</properties>
+		<config-description-ref uri="thing-type:onewire:basethingconfig" />
+	</thing-type>
+	<thing-type id="ms-tv" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="owserver" />
+		</supported-bridge-type-refs>
+		<label>Multisensor TV</label>
+		<description>A 1-wire multisensor (DS2438-based)</description>
+		<config-description-ref uri="thing-type:onewire:basethingconfig" />
+	</thing-type>
+</thing:thing-descriptions>

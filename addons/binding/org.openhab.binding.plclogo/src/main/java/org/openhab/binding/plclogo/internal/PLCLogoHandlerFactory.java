@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.plclogo.internal;
 
-import static org.openhab.binding.plclogo.PLCLogoBindingConstants.*;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.*;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -26,12 +26,12 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.plclogo.handler.PLCAnalogHandler;
-import org.openhab.binding.plclogo.handler.PLCBridgeHandler;
-import org.openhab.binding.plclogo.handler.PLCDateTimeHandler;
-import org.openhab.binding.plclogo.handler.PLCDigitalHandler;
-import org.openhab.binding.plclogo.handler.PLCMemoryHandler;
-import org.openhab.binding.plclogo.handler.PLCPulseHandler;
+import org.openhab.binding.plclogo.internal.handler.PLCAnalogHandler;
+import org.openhab.binding.plclogo.internal.handler.PLCBridgeHandler;
+import org.openhab.binding.plclogo.internal.handler.PLCDateTimeHandler;
+import org.openhab.binding.plclogo.internal.handler.PLCDigitalHandler;
+import org.openhab.binding.plclogo.internal.handler.PLCMemoryHandler;
+import org.openhab.binding.plclogo.internal.handler.PLCPulseHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 

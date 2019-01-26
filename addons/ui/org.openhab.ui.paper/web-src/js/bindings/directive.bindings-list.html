@@ -1,0 +1,33 @@
+<div class="bindings white-bg" ng-class="{'has-section-header' : $ctrl.extensionServiceAvailable}">
+	<div class="header-toolbar">
+		<md-button ng-click="$ctrl.refresh()" aria-label="Refresh"> <i class="material-icons">refresh bindings</i></md-button>
+	</div>
+
+	<div class="section-header" ng-if="$ctrl.extensionServiceAvailable">
+		<div class="container">
+			<div class="toolbar">
+				<md-button class="md-fab" ng-click="$ctrl.navigateTo('/extensions')" aria-label="add binding"> <i class="material-icons">add</i></md-button>
+			</div>
+		</div>
+	</div>
+
+	<div class="bindingsContainer container">
+		<div class="clickable" ng-repeat="binding in $ctrl.bindings | orderBy:'name' track by binding.id">
+			<div class="binding fab-item text-left" ng-click="$ctrl.navigateTo('/configuration/bindings/' + binding.id)" aria-label="show binding details">
+				<div class="circle">{{::binding.name.substring(0,1).toUpperCase()}}</div>
+				<div class="item-content">
+					<div class="description">
+						<h3>
+							{{::binding.name}} <small>{{::binding.id}}</small>
+						</h3>
+						<p ng-if="binding.author" class="text-left">{{::binding.author}}</p>
+					</div>
+					<div class="actions">
+						<i class="material-icons" ng-if="$ctrl.isConfigurable(binding)" ng-click="$ctrl.configure(binding, $event)" aria-label="edit binding">edit</i>
+					</div>
+				</div>
+				<hr class="border-line" ng-show="!$last" />
+			</div>
+		</div>
+	</div>
+</div>

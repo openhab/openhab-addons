@@ -1,7 +1,7 @@
 # Vitotronic Binding
 
 Viessmann heating systems with Vitotronic has a optolink Interface for maintenance.
-This interface can use for get/set data in the heating system. [see on openv](http://openv.wikispaces.com)
+This interface can use for get/set data in the heating system. [see on openv](https://github.com/openv/openv/wiki/)
 
 The Vitotronic binding is a solution to bind this interface into openHAB2.
 It supports the separation of the heating adaption from the integration in [openHAB2](http://www.openhab.org/).

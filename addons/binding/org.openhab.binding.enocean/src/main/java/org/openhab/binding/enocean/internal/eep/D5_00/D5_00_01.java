@@ -40,11 +40,7 @@ public class D5_00_01 extends _1BSMessage {
 
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId, State currentState, Configuration config) {
-        if (!isValid()) {
-            return UnDefType.UNDEF;
-        }
-
-        if (channelId == CHANNEL_CONTACT) {
+        if (channelId.equals(CHANNEL_CONTACT)) {
             return bytes[0] == CLOSED ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
         }
 

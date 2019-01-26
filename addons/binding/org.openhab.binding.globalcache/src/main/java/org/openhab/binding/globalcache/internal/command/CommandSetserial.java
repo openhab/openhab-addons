@@ -17,7 +17,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.smarthome.core.thing.Thing;
-import org.openhab.binding.globalcache.GlobalCacheBindingConstants.CommandType;
+import org.openhab.binding.globalcache.internal.GlobalCacheBindingConstants.CommandType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

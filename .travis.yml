@@ -6,7 +6,7 @@ jdk: oraclejdk8
 before_install: echo "MAVEN_OPTS='-Xms1g -Xmx2g -XX:PermSize=512m -XX:MaxPermSize=1g'" > ~/.mavenrc
 
 install:
-  - echo 'mvn clean install -B -V 1> .build.stdout 2> .build.stderr' > .build.sh
+  - echo 'mvn clean install -B -DskipChecks=true -V 1> .build.stdout 2> .build.stderr' > .build.sh
   - chmod 0755 .build.sh
 script:
   - travis_wait 60 ./.build.sh

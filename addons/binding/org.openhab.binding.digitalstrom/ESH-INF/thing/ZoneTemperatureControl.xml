@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="digitalstrom" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd"
+>
+	<thing-type id="zoneTemperatureControl">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="dssBridge" />
+		</supported-bridge-type-refs>
+
+		<label>@text/zoneTemperatureControl_label</label>
+		<description>@text/zoneTemperatureControl_desc</description>
+
+		<config-description>
+			<!--zone id -->
+			<parameter name="zoneID" type="text">
+				<label>@text/zoneTemperatureControl_parm_zoneID_label</label>
+				<description>@text/zoneTemperatureControl_parm_zoneID_desc</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

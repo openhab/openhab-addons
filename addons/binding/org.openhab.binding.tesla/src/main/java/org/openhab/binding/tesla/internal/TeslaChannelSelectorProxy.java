@@ -27,7 +27,6 @@ import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-import org.openhab.binding.tesla.TeslaBindingConstants;
 
 /**
  * The {@link TeslaChannelSelectorProxy} class is a helper class to instantiate

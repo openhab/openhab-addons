@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.nibeuplink.internal.command;
 
-import static org.openhab.binding.nibeuplink.NibeUplinkBindingConstants.MANAGE_API_BASE_URL;
+import static org.openhab.binding.nibeuplink.internal.NibeUplinkBindingConstants.MANAGE_API_BASE_URL;
 
 import java.nio.charset.StandardCharsets;
 
@@ -28,8 +28,8 @@ import org.eclipse.jetty.util.Fields;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.nibeuplink.handler.NibeUplinkHandler;
 import org.openhab.binding.nibeuplink.internal.callback.AbstractUplinkCommandCallback;
+import org.openhab.binding.nibeuplink.internal.handler.NibeUplinkHandler;
 import org.openhab.binding.nibeuplink.internal.model.Channel;
 import org.openhab.binding.nibeuplink.internal.model.SwitchChannel;
 import org.openhab.binding.nibeuplink.internal.model.ValidationException;

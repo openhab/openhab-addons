@@ -1,0 +1,63 @@
+@mixin user-select($val) {
+	-webkit-user-select: $val;
+	-moz-user-select: $val;
+	-ms-user-select: $val;
+	user-select: $val;
+}
+
+@mixin flex-display($display: flex) {
+	display: #{"-webkit-${display}"};
+	display: #{"-moz-${display}"};
+	display: #{"-ms-${display}box"};
+	display: #{"-ms-${display}"};
+	display: $display;
+}
+
+@mixin flex-grow($grow: 0) {
+	-webkit-flex-grow: $grow;
+	-moz-flex-grow: $grow;
+	-ms-flex-grow: $grow;
+	flex-grow: $grow;
+}
+
+@mixin flex-shrink($shrink: 1) {
+	-webkit-flex-shrink: $shrink;
+	-moz-flex-shrink: $shrink;
+	-ms-flex-shrink: $shrink;
+	flex-shrink: $shrink;
+}
+
+@mixin flex-wrap($wrap) {
+	flex-wrap: $wrap;
+	-webkit-flex-wrap: $wrap;
+}
+
+@mixin align-items($align) {
+	-webkit-align-items: $align;
+	-moz-align-items: $align;
+	-ms-align-items: $align;
+	align-items: $align;
+}
+
+@mixin align-items-2011($align) {
+	-ms-flex-align: $align;
+	flex-align: $align;
+}
+
+@mixin justify-content($param) {
+	-webkit-justify-content: $param;
+	-ms-justify-content: $param;
+	justify-content: $param;
+}
+
+@mixin flex-2011($flex) {
+	-ms-flex: $flex;
+	flex: $flex;
+}
+
+@mixin expand() {
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+}

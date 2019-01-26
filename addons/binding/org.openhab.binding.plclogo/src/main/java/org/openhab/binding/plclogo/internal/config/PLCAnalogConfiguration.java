@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.plclogo.internal.config;
 
-import static org.openhab.binding.plclogo.PLCLogoBindingConstants.ANALOG_ITEM;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.ANALOG_ITEM;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 

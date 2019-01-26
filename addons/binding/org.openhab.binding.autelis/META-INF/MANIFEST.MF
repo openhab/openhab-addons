@@ -7,11 +7,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.autelis;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
-Export-Package: 
- org.openhab.binding.autelis,
- org.openhab.binding.autelis.handler
 Import-Package: 
- com.google.common.collect,
  org.apache.commons.io,
  org.apache.commons.lang,
  org.eclipse.jdt.annotation;resolution:=optional,
@@ -23,6 +19,7 @@ Import-Package:
  org.eclipse.jetty.util.component,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.config.discovery.upnp,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
@@ -30,7 +27,5 @@ Import-Package:
  org.eclipse.smarthome.io.transport.upnp,
  org.jupnp.model.meta,
  org.jupnp.model.types,
- org.openhab.binding.autelis,
- org.openhab.binding.autelis.handler,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
