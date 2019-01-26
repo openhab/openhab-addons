@@ -30,7 +30,7 @@ import com.beowulfe.hap.HomekitServer;
  * Provides a mechanism to store authenticated homekit client details inside the
  * ESH StorageService, by implementing HomekitAuthInfo.
  *
- * @author Andy Lintner
+ * @author Andy Lintner - Initial contribution
  */
 public class HomekitAuthInfoImpl implements HomekitAuthInfo {
     private final Logger logger = LoggerFactory.getLogger(HomekitAuthInfoImpl.class);

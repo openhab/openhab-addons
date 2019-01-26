@@ -27,7 +27,7 @@ import com.beowulfe.hap.HomekitAccessory;
  * Abstract class for HomekitAccessory implementations, this provides the
  * accessory metadata using information from the underlying Item.
  *
- * @author Andy Lintner
+ * @author Andy Lintner - Initial contribution
  */
 abstract class AbstractHomekitAccessoryImpl<T extends GenericItem> implements HomekitAccessory {
 
