@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.zoneminder.handler;
+package org.openhab.binding.zoneminder.internal.handler;
 
 /**
  * Enumerator for each Bridge and Thing
