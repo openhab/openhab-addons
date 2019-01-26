@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.mcp23017.internal;
 
-import static org.openhab.binding.mcp23017.Mcp23017BindingConstants.THING_TYPE_MCP23017;
+import static org.openhab.binding.mcp23017.internal.Mcp23017BindingConstants.THING_TYPE_MCP23017;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.mcp23017.handler.Mcp23017Handler;
+import org.openhab.binding.mcp23017.internal.handler.Mcp23017Handler;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

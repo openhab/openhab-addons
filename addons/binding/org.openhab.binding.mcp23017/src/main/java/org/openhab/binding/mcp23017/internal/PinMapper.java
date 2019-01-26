@@ -13,7 +13,7 @@
 package org.openhab.binding.mcp23017.internal;
 
 import static com.pi4j.gpio.extension.mcp.MCP23017Pin.*;
-import static org.openhab.binding.mcp23017.Mcp23017BindingConstants.*;
+import static org.openhab.binding.mcp23017.internal.Mcp23017BindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
