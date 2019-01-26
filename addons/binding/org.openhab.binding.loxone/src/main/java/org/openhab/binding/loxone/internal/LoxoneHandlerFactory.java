@@ -20,8 +20,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.loxone.LoxoneBindingConstants;
-import org.openhab.binding.loxone.handler.LoxoneMiniserverHandler;
+import org.openhab.binding.loxone.internal.handler.LoxoneMiniserverHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
