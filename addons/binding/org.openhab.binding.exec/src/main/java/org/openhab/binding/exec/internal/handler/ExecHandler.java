@@ -73,7 +73,6 @@ public class ExecHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         if (command instanceof RefreshType) {
             // Placeholder for later refinement
         } else {
@@ -102,11 +101,11 @@ public class ExecHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-
         if (executionJob == null || executionJob.isCancelled()) {
-            if (((BigDecimal) getConfig().get(INTERVAL)) != null && ((BigDecimal) getConfig().get(INTERVAL)).intValue() > 0) {
-                int polling_interval = ((BigDecimal) getConfig().get(INTERVAL)).intValue();
-                executionJob = scheduler.scheduleWithFixedDelay(periodicExecutionRunnable, 0, polling_interval,
+            if (((BigDecimal) getConfig().get(INTERVAL)) != null
+                    && ((BigDecimal) getConfig().get(INTERVAL)).intValue() > 0) {
+                int pollingInterval = ((BigDecimal) getConfig().get(INTERVAL)).intValue();
+                executionJob = scheduler.scheduleWithFixedDelay(periodicExecutionRunnable, 0, pollingInterval,
                         TimeUnit.SECONDS);
             }
         }
@@ -126,7 +125,6 @@ public class ExecHandler extends BaseThingHandler {
 
         @Override
         public void run() {
-
             String commandLine = (String) getConfig().get(COMMAND);
 
             int timeOut = 60000;
@@ -135,7 +133,6 @@ public class ExecHandler extends BaseThingHandler {
             }
 
             if (commandLine != null && !commandLine.isEmpty()) {
-
                 updateState(RUN, OnOffType.ON);
 
                 // For some obscure reason, when using Apache Common Exec, or using a straight implementation of
@@ -235,7 +232,6 @@ public class ExecHandler extends BaseThingHandler {
 
                 DateTimeType stampType = new DateTimeType(Calendar.getInstance());
                 updateState(LAST_EXECUTION, stampType);
-
             }
         }
 
