@@ -53,30 +53,29 @@ import name.eskildsen.zoneminder.exception.ZoneMinderUrlNotFoundException;
 public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler implements ZoneMinderHandler {
 
     /** Logger for the Thing. */
-    private Logger logger = LoggerFactory.getLogger(ZoneMinderBaseThingHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ZoneMinderBaseThingHandler.class);
 
     /** Bridge Handler for the Thing. */
-    public ZoneMinderServerBridgeHandler zoneMinderBridgeHandler = null;
+    public ZoneMinderServerBridgeHandler zoneMinderBridgeHandler;
 
     /** This refresh status. */
-    private boolean thingRefreshed = false;
+    private boolean thingRefreshed;
 
     /** Unique Id of the thing in zoneminder. */
     private String zoneMinderId;
 
     /** ZoneMidner ConnectionInfo */
-    private IZoneMinderConnectionInfo zoneMinderConnection = null;
+    private IZoneMinderConnectionInfo zoneMinderConnection;
 
     private Lock lockSession = new ReentrantLock();
-    private IZoneMinderSession zoneMinderSession = null;
+    private IZoneMinderSession zoneMinderSession;
 
     /** Configuration from openHAB */
     protected ZoneMinderThingConfig configuration;
 
-    private DataRefreshPriorityEnum _refreshPriority = DataRefreshPriorityEnum.SCHEDULED;
+    private DataRefreshPriorityEnum refreshPriority = DataRefreshPriorityEnum.SCHEDULED;
 
     protected boolean isOnline() {
-
         if (zoneMinderSession == null) {
             return false;
         }
@@ -89,7 +88,7 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler implem
     }
 
     public DataRefreshPriorityEnum getRefreshPriority() {
-        return _refreshPriority;
+        return refreshPriority;
     }
 
     public ZoneMinderBaseThingHandler(Thing thing) {
@@ -104,15 +103,7 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler implem
      */
     @Override
     public void initialize() {
-
         updateStatus(ThingStatus.ONLINE);
-        try {
-
-        } catch (Exception ex) {
-            logger.error("{}: BridgeHandler failed to initialize. Exception='{}'", getLogIdentifier(), ex.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
-        } finally {
-        }
     }
 
     protected boolean isConnected() {
@@ -136,9 +127,8 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler implem
      */
 
     protected boolean startPriorityRefresh() {
-
         logger.info("[MONITOR-{}]: Starting High Priority Refresh", getZoneMinderId());
-        _refreshPriority = DataRefreshPriorityEnum.HIGH_PRIORITY;
+        refreshPriority = DataRefreshPriorityEnum.HIGH_PRIORITY;
         return true;
     }
 
@@ -147,12 +137,11 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler implem
      */
     protected void stopPriorityRefresh() {
         logger.info("{}: Stopping Priority Refresh for Monitor", getLogIdentifier());
-        _refreshPriority = DataRefreshPriorityEnum.SCHEDULED;
+        refreshPriority = DataRefreshPriorityEnum.SCHEDULED;
     }
 
     @Override
     public void dispose() {
-
     }
 
     /**
@@ -170,7 +159,6 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler implem
      * Method to Refresh Thing Handler.
      */
     public final synchronized void refreshThing(IZoneMinderSession session, DataRefreshPriorityEnum refreshPriority) {
-
         if ((refreshPriority != getRefreshPriority()) && (!isConnected())) {
             return;
         }
@@ -183,7 +171,6 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler implem
 
         if (getZoneMinderBridgeHandler() != null) {
             if (isConnected()) {
-
                 logger.debug("{}: refreshThing(): Bridge '{}' Found for Thing '{}'!", getLogIdentifier(),
                         getThing().getUID(), this.getThing().getUID());
 
@@ -201,7 +188,6 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler implem
 
         this.setThingRefreshed(true);
         logger.debug("[{}: refreshThing(): Thing Refreshed - {}", getLogIdentifier(), thing.getUID());
-
     }
 
     /**
@@ -210,9 +196,7 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler implem
      * @return zoneMinderBridgeHandler
      */
     public synchronized ZoneMinderServerBridgeHandler getZoneMinderBridgeHandler() {
-
         if (this.zoneMinderBridgeHandler == null) {
-
             Bridge bridge = getBridge();
 
             if (bridge == null) {
@@ -247,8 +231,6 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler implem
      */
     @Override
     public void updateChannel(ChannelUID channel) {
-        OnOffType onOffType;
-
         switch (channel.getId()) {
             case ZoneMinderConstants.CHANNEL_ONLINE:
                 updateState(channel, getChannelBoolAsOnOffState(isOnline()));
@@ -278,20 +260,16 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler implem
 
     @Override
     public void onBridgeDisconnected(ZoneMinderServerBridgeHandler bridge) {
-
         if (bridge.getThing().getUID().equals(getThing().getBridgeUID())) {
-
             this.setThingRefreshed(false);
         }
 
         lockSession.lock();
         try {
             zoneMinderSession = null;
-
         } finally {
             lockSession.unlock();
         }
-
     }
 
     /**
@@ -399,13 +377,11 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler implem
 
     protected void updateThingStatus(ThingStatus thingStatus, ThingStatusDetail statusDetail,
             String statusDescription) {
-
         ThingStatusInfo curStatusInfo = thing.getStatusInfo();
         String curDescription = ((curStatusInfo.getDescription() == null) ? "" : curStatusInfo.getDescription());
         // Status changed
         if ((curStatusInfo.getStatus() != thingStatus) || (curStatusInfo.getStatusDetail() != statusDetail)
                 || (curDescription != statusDescription)) {
-
             // Update Status correspondingly
             if ((thingStatus == ThingStatus.OFFLINE) && (statusDetail != ThingStatusDetail.NONE)) {
                 logger.info("{}: Thing status changed from '{}' to '{}' (DetailedStatus='{}', Description='{}')",

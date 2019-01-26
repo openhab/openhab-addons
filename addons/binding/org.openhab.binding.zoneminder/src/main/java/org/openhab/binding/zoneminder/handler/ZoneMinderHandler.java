@@ -23,7 +23,7 @@ import name.eskildsen.zoneminder.exception.ZoneMinderUrlNotFoundException;
 /**
  * Interface for ZoneMinder handlers.
  *
- * @author Martin S. Eskildsen
+ * @author Martin S. Eskildsen - Initial contribution
  */
 public interface ZoneMinderHandler {
 
