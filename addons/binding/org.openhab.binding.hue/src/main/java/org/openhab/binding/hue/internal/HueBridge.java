@@ -15,7 +15,10 @@ package org.openhab.binding.hue.internal;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -56,6 +59,8 @@ public class HueBridge {
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 
     private final String ip;
+    private final int port;
+    private final String protocol;
     private @Nullable String username;
 
     private final Gson gson = new GsonBuilder().setDateFormat(DATE_FORMAT).create();
@@ -70,8 +75,10 @@ public class HueBridge {
      *
      * @param ip ip address of bridge
      */
-    public HueBridge(String ip, ScheduledExecutorService scheduler) {
+    public HueBridge(String ip, int port, String protocol, ScheduledExecutorService scheduler) {
         this.ip = ip;
+        this.port = port;
+        this.protocol = protocol;
         this.scheduler = scheduler;
     }
 
@@ -85,9 +92,9 @@ public class HueBridge {
      * @param ip ip address of bridge
      * @param username username to authenticate with
      */
-    public HueBridge(String ip, String username, ScheduledExecutorService scheduler) throws IOException, ApiException {
-        this.ip = ip;
-        this.scheduler = scheduler;
+    public HueBridge(String ip, int port, String protocol, String username, ScheduledExecutorService scheduler)
+            throws IOException, ApiException {
+        this(ip, port, protocol, scheduler);
         authenticate(username);
     }
 
@@ -998,24 +1005,25 @@ public class HueBridge {
     private String enc(@Nullable String str) {
         try {
             if (str != null) {
-                return URLEncoder.encode(str, "utf-8");
+                return URLEncoder.encode(str, StandardCharsets.UTF_8.name());
             } else {
                 return "";
             }
         } catch (UnsupportedEncodingException e) {
-            // throw new EndOfTheWorldException()
             throw new UnsupportedOperationException("UTF-8 not supported");
         }
     }
 
     private String getRelativeURL(String path) {
-        String relativeUrl = "http://" + ip + "/api";
+        String basePath = "/api";
         if (username != null) {
-            relativeUrl += "/" + enc(username);
+            basePath += "/" + enc(username);
         }
-        if (!path.isEmpty()) {
-            relativeUrl += "/" + path;
+        try {
+            URI uri = new URI(protocol, null, ip, port, path.isEmpty() ? basePath : basePath + "/" + path, null, null);
+            return uri.toString();
+        } catch (URISyntaxException e) {
+            return protocol + "://" + ip + ":" + port + (path.isEmpty() ? basePath : basePath + "/" + path);
         }
-        return relativeUrl;
     }
 }
