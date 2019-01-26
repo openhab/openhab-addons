@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Wraps an Item with data derived from supported tags defined.
  *
- * @author Andy Lintner
+ * @author Andy Lintner - Initial contribution
  */
 public class HomekitTaggedItem {
 

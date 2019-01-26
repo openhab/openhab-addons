@@ -21,7 +21,7 @@ import com.beowulfe.hap.HomekitAccessory;
  * grouped accessory is made up of multiple items, each implementing a single
  * characteristic of the accessory.
  *
- * @author Andy Lintner
+ * @author Andy Lintner - Initial contribution
  */
 public interface GroupedAccessory extends HomekitAccessory {
 

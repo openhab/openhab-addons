@@ -20,7 +20,7 @@ import org.openhab.io.homekit.internal.HomekitTaggedItem;
 /**
  * Implements Lightbulb using an Item that provides an On/Off state
  *
- * @author Andy Lintner
+ * @author Andy Lintner - Initial contribution
  */
 class HomekitLightbulbImpl extends AbstractHomekitLightbulbImpl<SwitchItem> {
 

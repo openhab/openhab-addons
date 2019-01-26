@@ -27,7 +27,7 @@ import com.beowulfe.hap.accessories.TemperatureSensor;
 /**
  * Implements a Homekit TemperatureSensor using a NumberItem
  *
- * @author Andy Lintner
+ * @author Andy Lintner - Initial contribution
  */
 class HomekitTemperatureSensorImpl extends AbstractTemperatureHomekitAccessoryImpl<NumberItem>
         implements TemperatureSensor {
@@ -39,7 +39,7 @@ class HomekitTemperatureSensorImpl extends AbstractTemperatureHomekitAccessoryIm
 
     @Override
     public CompletableFuture<Double> getCurrentTemperature() {
-        DecimalType state = (DecimalType) getItem().getStateAs(DecimalType.class);
+        DecimalType state = getItem().getStateAs(DecimalType.class);
         if (state == null) {
             return CompletableFuture.completedFuture(null);
         }

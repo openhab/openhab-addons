@@ -28,9 +28,9 @@ import com.beowulfe.hap.accessories.Switch;
 /**
  * Implements Switch using an Item that provides an On/Off state.
  *
- * @author Andy Lintner
+ * @author Andy Lintner - Initial contribution
  */
-public class HomekitSwitchImpl extends AbstractHomekitAccessoryImpl<SwitchItem>implements Switch {
+public class HomekitSwitchImpl extends AbstractHomekitAccessoryImpl<SwitchItem> implements Switch {
 
     public HomekitSwitchImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry, HomekitAccessoryUpdater updater) {
         super(taggedItem, itemRegistry, updater, SwitchItem.class);
@@ -38,7 +38,7 @@ public class HomekitSwitchImpl extends AbstractHomekitAccessoryImpl<SwitchItem>i
 
     @Override
     public CompletableFuture<Boolean> getSwitchState() {
-        OnOffType state = (OnOffType) getItem().getStateAs(OnOffType.class);
+        OnOffType state = getItem().getStateAs(OnOffType.class);
         return CompletableFuture.completedFuture(state == OnOffType.ON);
     }
 

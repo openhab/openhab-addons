@@ -25,7 +25,7 @@ import com.beowulfe.hap.accessories.HumiditySensor;
 
 /**
  *
- * @author Andy Lintner - Initial implementation
+ * @author Andy Lintner - Initial contribution
  */
 public class HomekitHumiditySensorImpl extends AbstractHomekitAccessoryImpl<NumberItem> implements HumiditySensor {
 
@@ -36,7 +36,7 @@ public class HomekitHumiditySensorImpl extends AbstractHomekitAccessoryImpl<Numb
 
     @Override
     public CompletableFuture<Double> getCurrentRelativeHumidity() {
-        DecimalType state = (DecimalType) getItem().getStateAs(DecimalType.class);
+        DecimalType state = getItem().getStateAs(DecimalType.class);
         if (state == null) {
             return CompletableFuture.completedFuture(null);
         }

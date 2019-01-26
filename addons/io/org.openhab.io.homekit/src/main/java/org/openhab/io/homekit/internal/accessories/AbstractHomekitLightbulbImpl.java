@@ -28,7 +28,7 @@ import com.beowulfe.hap.accessories.Lightbulb;
 /**
  * Abstract class implementing a Homekit Lightbulb using a SwitchItem
  *
- * @author Andy Lintner
+ * @author Andy Lintner - Initial contribution
  */
 abstract class AbstractHomekitLightbulbImpl<T extends SwitchItem> extends AbstractHomekitAccessoryImpl<T>
         implements Lightbulb {
@@ -40,7 +40,7 @@ abstract class AbstractHomekitLightbulbImpl<T extends SwitchItem> extends Abstra
 
     @Override
     public CompletableFuture<Boolean> getLightbulbPowerState() {
-        OnOffType state = (OnOffType) getItem().getStateAs(OnOffType.class);
+        OnOffType state = getItem().getStateAs(OnOffType.class);
         return CompletableFuture.completedFuture(state == OnOffType.ON);
     }
 

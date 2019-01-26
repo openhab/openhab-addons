@@ -27,7 +27,7 @@ import com.beowulfe.hap.HomekitRoot;
  * Listens for changes to the item registry. When changes are detected, check
  * for Homekit tags and, if present, add the items to the HomekitAccessoryRegistry.
  *
- * @author Andy Lintner
+ * @author Andy Lintner - Initial contribution
  */
 public class HomekitChangeListener implements ItemRegistryChangeListener {
 
