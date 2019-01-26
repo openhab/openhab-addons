@@ -21,7 +21,9 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.exec.internal.handler.ExecHandler;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * The {@link ExecHandlerFactory} is responsible for creating things and thing
@@ -29,6 +31,7 @@ import org.openhab.binding.exec.internal.handler.ExecHandler;
  *
  * @author Karel Goderis - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.exec")
 public class ExecHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_COMMAND);
