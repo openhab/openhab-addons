@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.smarthome.config.core.ConfigurableService;
 import org.eclipse.smarthome.core.events.EventPublisher;
 import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.persistence.PersistenceServiceRegistry;
@@ -41,6 +42,13 @@ import org.openhab.io.imperihome.internal.model.param.DeviceParameters;
 import org.openhab.io.imperihome.internal.model.param.ParamType;
 import org.openhab.io.imperihome.internal.processor.DeviceRegistry;
 import org.openhab.io.imperihome.internal.processor.ItemProcessor;
+import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +61,11 @@ import com.google.gson.GsonBuilder;
  *
  * @author Pepijn de Geus - Initial contribution
  */
+@Component(immediate = true, service = HttpServlet.class, configurationPid = "org.openhab.imperihome", property = {
+        Constants.SERVICE_PID + "=org.openhab.imperihome",
+        ConfigurableService.SERVICE_PROPERTY_DESCRIPTION_URI + "=io:imperihome",
+        ConfigurableService.SERVICE_PROPERTY_CATEGORY + "=io",
+        ConfigurableService.SERVICE_PROPERTY_LABEL + "=ImperiHome Integration" })
 public class ImperiHomeApiServlet extends HttpServlet {
 
     private static final long serialVersionUID = -1966364789075448441L;
@@ -107,6 +120,7 @@ public class ImperiHomeApiServlet extends HttpServlet {
      *
      * @param config Service config.
      */
+    @Activate
     protected void activate(Map<String, Object> config) {
         modified(config);
 
@@ -130,9 +144,10 @@ public class ImperiHomeApiServlet extends HttpServlet {
 
     /**
      * OSGi config modification callback.
-
+     *
      * @param config Service config.
      */
+    @Modified
     protected void modified(Map<String, Object> config) {
         imperiHomeConfig.update(config);
     }
@@ -140,6 +155,7 @@ public class ImperiHomeApiServlet extends HttpServlet {
     /**
      * OSGi deactivation callback.
      */
+    @Deactivate
     protected void deactivate() {
         try {
             httpService.unregister(PATH);
@@ -159,6 +175,7 @@ public class ImperiHomeApiServlet extends HttpServlet {
         logger.info("ImperiHome integration service stopped");
     }
 
+    @Reference(policy = ReferencePolicy.DYNAMIC)
     protected void setItemRegistry(ItemRegistry itemRegistry) {
         this.itemRegistry = itemRegistry;
     }
@@ -167,6 +184,7 @@ public class ImperiHomeApiServlet extends HttpServlet {
         this.itemRegistry = null;
     }
 
+    @Reference
     protected void setEventPublisher(EventPublisher eventPublisher) {
         this.eventPublisher = eventPublisher;
     }
@@ -175,6 +193,7 @@ public class ImperiHomeApiServlet extends HttpServlet {
         this.eventPublisher = null;
     }
 
+    @Reference
     protected void setHttpService(HttpService httpService) {
         this.httpService = httpService;
     }
@@ -183,6 +202,7 @@ public class ImperiHomeApiServlet extends HttpServlet {
         this.httpService = null;
     }
 
+    @Reference
     protected void setPersistenceServiceRegistry(PersistenceServiceRegistry persistenceServiceRegistry) {
         this.persistenceServiceRegistry = persistenceServiceRegistry;
     }
