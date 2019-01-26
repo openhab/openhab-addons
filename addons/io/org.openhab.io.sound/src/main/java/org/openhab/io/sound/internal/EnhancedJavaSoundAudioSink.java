@@ -12,16 +12,21 @@
  */
 package org.openhab.io.sound.internal;
 
-import java.util.HashSet;
+import static java.util.stream.Collectors.toSet;
+
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.core.audio.AudioFormat;
+import org.eclipse.smarthome.core.audio.AudioSink;
 import org.eclipse.smarthome.core.audio.AudioStream;
 import org.eclipse.smarthome.core.audio.URLAudioStream;
 import org.eclipse.smarthome.core.audio.UnsupportedAudioFormatException;
 import org.eclipse.smarthome.core.audio.UnsupportedAudioStreamException;
 import org.eclipse.smarthome.io.javasound.internal.JavaSoundAudioSink;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,20 +40,17 @@ import javazoom.jl.player.Player;
  * @author Karel Goderis - Initial contribution and API
  * @author Kai Kreuzer - Refactored and moved to openHAB
  */
+@Component(service = AudioSink.class, immediate = true)
 public class EnhancedJavaSoundAudioSink extends JavaSoundAudioSink {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EnhancedJavaSoundAudioSink.class);
 
-    private static AudioFormat mp3 = new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_MP3, null, null,
-            null, null);
-    private static AudioFormat wav = new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, null,
+    private static final AudioFormat MP3 = new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_MP3, null,
             null, null, null);
-    private static HashSet<AudioFormat> supportedFormats = new HashSet<>();
-
-    static {
-        supportedFormats.add(wav);
-        supportedFormats.add(mp3);
-    }
+    private static final AudioFormat WAV = new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED,
+            null, null, null, null);
+    private static final Set<AudioFormat> SUPPORTED_FORMATS = Collections
+            .unmodifiableSet(Stream.of(MP3, WAV).collect(toSet()));
 
     private static Player streamPlayer = null;
 
@@ -102,23 +104,20 @@ public class EnhancedJavaSoundAudioSink extends JavaSoundAudioSink {
 
     @Override
     public Set<AudioFormat> getSupportedFormats() {
-        return supportedFormats;
+        return SUPPORTED_FORMATS;
     }
 
-    static private void playInThread(final Player player) {
+    private void playInThread(final Player player) {
         // run in new thread
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    player.play();
-                } catch (Exception e) {
-                    LOGGER.error("An exception occurred while playing audio : '{}'", e.getMessage());
-                } finally {
-                    player.close();
-                }
+        new Thread(() -> {
+            try {
+                player.play();
+            } catch (Exception e) {
+                LOGGER.error("An exception occurred while playing audio : '{}'", e.getMessage());
+            } finally {
+                player.close();
             }
-        }.start();
+        }).start();
     }
 
     protected synchronized void deactivate() {
