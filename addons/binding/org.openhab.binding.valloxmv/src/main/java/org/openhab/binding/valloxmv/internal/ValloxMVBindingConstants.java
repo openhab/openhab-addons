@@ -128,12 +128,12 @@ public class ValloxMVBindingConstants {
     public static final String CHANNEL_HOME_SPEED_SETTING = "homespeedsetting";
 
     /**
-     * Home fan speed in % (0-100).
+     * Away fan speed in % (0-100).
      */
     public static final String CHANNEL_AWAY_SPEED_SETTING = "awayspeedsetting";
 
     /**
-     * Home fan speed in % (0-100).
+     * Boost fan speed in % (0-100).
      */
     public static final String CHANNEL_BOOST_SPEED_SETTING = "boostspeedsetting";
 
