@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.zoneminder.internal.config;
 
-import org.openhab.binding.zoneminder.ZoneMinderConstants;
+import org.openhab.binding.zoneminder.internal.ZoneMinderConstants;
 
 /**
  * Configuration data according to zoneminderserver.xml
