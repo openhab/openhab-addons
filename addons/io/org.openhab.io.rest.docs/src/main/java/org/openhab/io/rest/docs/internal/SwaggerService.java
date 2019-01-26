@@ -12,6 +12,10 @@
  */
 package org.openhab.io.rest.docs.internal;
 
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
@@ -20,9 +24,10 @@ import org.slf4j.LoggerFactory;
 /**
  * This service registers the Swagger UI as a web resource on the HTTP service.
  *
- * @author Kai Kreuzer
+ * @author Kai Kreuzer - Initial contribution
  *
  */
+@Component(immediate = true)
 public class SwaggerService {
 
     private static final String ALIAS = "/doc";
@@ -31,6 +36,7 @@ public class SwaggerService {
 
     private HttpService httpService;
 
+    @Reference
     protected void setHttpService(HttpService httpService) {
         this.httpService = httpService;
     }
@@ -39,6 +45,7 @@ public class SwaggerService {
         this.httpService = null;
     }
 
+    @Activate
     protected void activate() {
         try {
             httpService.registerResources(ALIAS, "swagger", httpService.createDefaultHttpContext());
@@ -47,6 +54,7 @@ public class SwaggerService {
         }
     }
 
+    @Deactivate
     protected void deactivate() {
         httpService.unregister(ALIAS);
     }
