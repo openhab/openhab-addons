@@ -14,8 +14,8 @@ package org.openhab.ui.cometvisu.internal.rss.beans;
 
 /**
  * {@link ResponseData} is used by the CometVisu rss-plugin
- * 
- * @author Tobias Bräutigam
+ *
+ * @author Tobias Bräutigam - Initial contribution
  */
 public class ResponseData {
     public Feed feed;
