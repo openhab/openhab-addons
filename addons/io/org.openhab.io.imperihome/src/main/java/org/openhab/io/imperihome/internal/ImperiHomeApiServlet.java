@@ -63,7 +63,7 @@ import com.google.gson.GsonBuilder;
  */
 @Component(immediate = true, service = HttpServlet.class, configurationPid = "org.openhab.imperihome", property = {
         Constants.SERVICE_PID + "=org.openhab.imperihome",
-        ConfigurableService.SERVICE_PROPERTY_DESCRIPTION_URI + "=imperihome",
+        ConfigurableService.SERVICE_PROPERTY_DESCRIPTION_URI + "=io:imperihome",
         ConfigurableService.SERVICE_PROPERTY_CATEGORY + "=io",
         ConfigurableService.SERVICE_PROPERTY_LABEL + "=ImperiHome Integration" })
 public class ImperiHomeApiServlet extends HttpServlet {
