@@ -23,9 +23,9 @@ import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
 import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.zoneminder.ZoneMinderConstants;
-import org.openhab.binding.zoneminder.handler.ZoneMinderServerBridgeHandler;
-import org.openhab.binding.zoneminder.handler.ZoneMinderThingMonitorHandler;
+import org.openhab.binding.zoneminder.internal.ZoneMinderConstants;
+import org.openhab.binding.zoneminder.internal.handler.ZoneMinderServerBridgeHandler;
+import org.openhab.binding.zoneminder.internal.handler.ZoneMinderThingMonitorHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
