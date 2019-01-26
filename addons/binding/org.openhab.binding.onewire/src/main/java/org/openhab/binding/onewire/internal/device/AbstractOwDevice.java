@@ -20,7 +20,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.SensorId;
-import org.openhab.binding.onewire.internal.handler.OwBaseBridgeHandler;
+import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
 import org.openhab.binding.onewire.internal.handler.OwBaseThingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,7 +72,7 @@ public abstract class AbstractOwDevice {
      * @param forcedRefresh post update even if state did not change
      * @throws OwException in case of communication error
      */
-    public abstract void refresh(OwBaseBridgeHandler owBridgeHandler, Boolean forcedRefresh) throws OwException;
+    public abstract void refresh(OwserverBridgeHandler owBridgeHandler, Boolean forcedRefresh) throws OwException;
 
     /**
      * enables a channel on this device
@@ -112,7 +112,7 @@ public abstract class AbstractOwDevice {
      * @return sensors presence state
      */
 
-    public Boolean checkPresence(OwBaseBridgeHandler bridgeHandler) {
+    public Boolean checkPresence(OwserverBridgeHandler bridgeHandler) {
         try {
             State present = bridgeHandler.checkPresence(sensorId);
             callback.updatePresenceStatus(present);
@@ -131,7 +131,7 @@ public abstract class AbstractOwDevice {
      * @return this sensors type
      * @throws OwException
      */
-    public OwSensorType getSensorType(OwBaseBridgeHandler bridgeHandler) throws OwException {
+    public OwSensorType getSensorType(OwserverBridgeHandler bridgeHandler) throws OwException {
         if (sensorType == OwSensorType.UNKNOWN) {
             sensorType = bridgeHandler.getType(sensorId);
         }

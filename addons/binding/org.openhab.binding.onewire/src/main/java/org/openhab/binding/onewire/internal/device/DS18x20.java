@@ -28,7 +28,7 @@ import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.SensorId;
-import org.openhab.binding.onewire.internal.handler.OwBaseBridgeHandler;
+import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
 import org.openhab.binding.onewire.internal.handler.OwBaseThingHandler;
 import org.openhab.binding.onewire.internal.owserver.OwserverDeviceParameter;
 import org.slf4j.Logger;
@@ -87,7 +87,7 @@ public class DS18x20 extends AbstractOwDevice {
     }
 
     @Override
-    public void refresh(OwBaseBridgeHandler bridgeHandler, Boolean forcedRefresh) throws OwException {
+    public void refresh(OwserverBridgeHandler bridgeHandler, Boolean forcedRefresh) throws OwException {
         if (isConfigured && enabledChannels.contains(CHANNEL_TEMPERATURE)) {
             QuantityType<Temperature> temperature = new QuantityType<Temperature>(
                     (DecimalType) bridgeHandler.readDecimalType(sensorId, temperatureParamater), SIUnits.CELSIUS);

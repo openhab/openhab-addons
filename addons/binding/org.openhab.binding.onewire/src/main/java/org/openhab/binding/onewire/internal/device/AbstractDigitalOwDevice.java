@@ -30,7 +30,7 @@ import org.openhab.binding.onewire.internal.DigitalIoConfig;
 import org.openhab.binding.onewire.internal.OwDynamicStateDescriptionProvider;
 import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.SensorId;
-import org.openhab.binding.onewire.internal.handler.OwBaseBridgeHandler;
+import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
 import org.openhab.binding.onewire.internal.handler.OwBaseThingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,7 +96,7 @@ public abstract class AbstractDigitalOwDevice extends AbstractOwDevice {
     }
 
     @Override
-    public void refresh(OwBaseBridgeHandler bridgeHandler, Boolean forcedRefresh) throws OwException {
+    public void refresh(OwserverBridgeHandler bridgeHandler, Boolean forcedRefresh) throws OwException {
         if (isConfigured) {
             State state;
 
@@ -125,7 +125,7 @@ public abstract class AbstractDigitalOwDevice extends AbstractOwDevice {
         return ioConfig.size();
     }
 
-    public boolean writeChannel(OwBaseBridgeHandler bridgeHandler, Integer ioChannel, Command command) {
+    public boolean writeChannel(OwserverBridgeHandler bridgeHandler, Integer ioChannel, Command command) {
         if (ioChannel < getChannelCount()) {
             try {
                 if (ioConfig.get(ioChannel).isOutput()) {

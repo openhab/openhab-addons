@@ -62,8 +62,8 @@ public class OwserverConnection {
     // reset to 0 after successful request
     private int connectionErrorCounter = 0;
 
-    public OwserverConnection(OwserverBridgeHandler thingHandlerCallback) {
-        this.thingHandlerCallback = thingHandlerCallback;
+    public OwserverConnection(OwserverBridgeHandler owBaseBridgeHandler) {
+        this.thingHandlerCallback = owBaseBridgeHandler;
     }
 
     /**
