@@ -24,10 +24,9 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.rfxcom.RFXComBindingConstants;
-import org.openhab.binding.rfxcom.handler.RFXComBridgeHandler;
-import org.openhab.binding.rfxcom.handler.RFXComHandler;
 import org.openhab.binding.rfxcom.internal.discovery.RFXComDeviceDiscoveryService;
+import org.openhab.binding.rfxcom.internal.handler.RFXComBridgeHandler;
+import org.openhab.binding.rfxcom.internal.handler.RFXComHandler;
 import org.osgi.framework.ServiceRegistration;
 
 import com.google.common.collect.Sets;

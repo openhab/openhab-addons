@@ -22,6 +22,5 @@ Import-Package:
  org.junit,
  org.junit.runner,
  org.junit.runners,
- org.openhab.binding.rfxcom,
  org.osgi.service.device,
  org.slf4j

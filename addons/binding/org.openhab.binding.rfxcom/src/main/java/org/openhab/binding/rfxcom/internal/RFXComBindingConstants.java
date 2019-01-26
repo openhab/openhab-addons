@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.rfxcom;
+package org.openhab.binding.rfxcom.internal;
 
 import java.util.Map;
 import java.util.Set;

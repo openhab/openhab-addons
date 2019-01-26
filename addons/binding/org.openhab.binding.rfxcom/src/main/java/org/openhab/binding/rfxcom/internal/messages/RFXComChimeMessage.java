@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import static org.openhab.binding.rfxcom.RFXComBindingConstants.CHANNEL_CHIME_SOUND;
+import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.CHANNEL_CHIME_SOUND;
 import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;

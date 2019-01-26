@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import static org.openhab.binding.rfxcom.RFXComBindingConstants.CHANNEL_BATTERY_LEVEL;
+import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.CHANNEL_BATTERY_LEVEL;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
