@@ -19,7 +19,7 @@ import java.util.Map;
  * Characteristics are used by complex accessories that can't be represented by
  * a single item (i.e. a thermostat)
  *
- * @author Andy Lintner
+ * @author Andy Lintner - Initial contribution
  */
 public enum HomekitCharacteristicType {
 
@@ -27,11 +27,11 @@ public enum HomekitCharacteristicType {
     TARGET_TEMPERATURE("TargetTemperature"),
     HEATING_COOLING_MODE("homekit:HeatingCoolingMode");
 
-    private static final Map<String, HomekitCharacteristicType> tagMap = new HashMap<>();
+    private static final Map<String, HomekitCharacteristicType> TAG_MAP = new HashMap<>();
 
     static {
         for (HomekitCharacteristicType type : HomekitCharacteristicType.values()) {
-            tagMap.put(type.tag, type);
+            TAG_MAP.put(type.tag, type);
         }
     }
 
@@ -42,6 +42,6 @@ public enum HomekitCharacteristicType {
     }
 
     public static HomekitCharacteristicType valueOfTag(String tag) {
-        return tagMap.get(tag);
+        return TAG_MAP.get(tag);
     }
 }

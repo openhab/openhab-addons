@@ -30,7 +30,7 @@ import com.beowulfe.hap.accessories.DimmableLightbulb;
 /**
  * Implements ColorfulLightBulb using an Item that provides a On/Off and color state
  *
- * @author Felix Rotthowe
+ * @author Felix Rotthowe - Initial contribution
  */
 class HomekitColorfulLightbulbImpl extends AbstractHomekitLightbulbImpl<ColorItem>
         implements ColorfulLightbulb, DimmableLightbulb {
