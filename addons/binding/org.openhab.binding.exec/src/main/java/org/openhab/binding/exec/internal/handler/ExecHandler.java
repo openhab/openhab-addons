@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.exec.handler;
+package org.openhab.binding.exec.internal.handler;
 
-import static org.openhab.binding.exec.ExecBindingConstants.*;
+import static org.openhab.binding.exec.internal.ExecBindingConstants.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.exec.internal;
 
-import static org.openhab.binding.exec.ExecBindingConstants.THING_COMMAND;
+import static org.openhab.binding.exec.internal.ExecBindingConstants.THING_COMMAND;
 
 import java.util.Collections;
 import java.util.Set;
@@ -21,7 +21,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.exec.handler.ExecHandler;
+import org.openhab.binding.exec.internal.handler.ExecHandler;
 
 /**
  * The {@link ExecHandlerFactory} is responsible for creating things and thing
