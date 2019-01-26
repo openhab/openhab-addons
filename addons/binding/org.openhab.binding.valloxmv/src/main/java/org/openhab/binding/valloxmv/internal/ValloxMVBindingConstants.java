@@ -8,6 +8,11 @@
  */
 package org.openhab.binding.valloxmv.internal;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -146,6 +151,19 @@ public class ValloxMVBindingConstants {
      * Target temperature in boost state.
      */
     public static final String CHANNEL_BOOST_AIR_TEMP_TARGET = "boostairtemptarget";
+
+    /**
+     * Set of writable channels that are dimensionless
+     */
+    public final static Set<String> WRITABLE_CHANNELS_DIMENSIONLESS = Collections.unmodifiableSet(
+            new HashSet<String>(Arrays.asList(CHANNEL_EXTR_FAN_BALANCE_BASE, CHANNEL_SUPP_FAN_BALANCE_BASE,
+                    CHANNEL_HOME_SPEED_SETTING, CHANNEL_AWAY_SPEED_SETTING, CHANNEL_BOOST_SPEED_SETTING)));
+
+    /**
+     * Set of writable channels that are temperatures
+     */
+    public final static Set<String> WRITABLE_CHANNELS_TEMPERATURE = Collections.unmodifiableSet(new HashSet<String>(
+            Arrays.asList(CHANNEL_HOME_AIR_TEMP_TARGET, CHANNEL_AWAY_AIR_TEMP_TARGET, CHANNEL_BOOST_AIR_TEMP_TARGET)));
 
     // Thing configuration
     /**
