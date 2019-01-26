@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.loxone.handler;
+package org.openhab.binding.loxone.internal.handler;
 
-import static org.openhab.binding.loxone.LoxoneBindingConstants.*;
+import static org.openhab.binding.loxone.internal.LoxoneBindingConstants.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;

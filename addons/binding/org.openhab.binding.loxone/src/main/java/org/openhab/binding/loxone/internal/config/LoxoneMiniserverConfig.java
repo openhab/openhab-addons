@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.loxone.internal.config;
 
-import org.openhab.binding.loxone.handler.LoxoneMiniserverHandler;
+import org.openhab.binding.loxone.internal.handler.LoxoneMiniserverHandler;
 
 /**
  * Configuration of a Loxone Miniserver ({@link LoxoneMiniserverHandler})

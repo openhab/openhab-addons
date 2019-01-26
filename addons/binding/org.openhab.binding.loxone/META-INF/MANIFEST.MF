@@ -8,9 +8,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.loxone;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
-Export-Package: 
- org.openhab.binding.loxone,
- org.openhab.binding.loxone.handler
 Import-Package: 
  com.google.gson,
  com.google.gson.annotations,
@@ -42,8 +39,6 @@ Import-Package:
  org.jupnp,
  org.jupnp.model.meta,
  org.jupnp.model.types,
- org.openhab.binding.loxone,
- org.openhab.binding.loxone.handler,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
