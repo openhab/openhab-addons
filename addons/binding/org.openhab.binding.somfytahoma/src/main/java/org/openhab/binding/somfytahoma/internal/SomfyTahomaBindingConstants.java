@@ -158,10 +158,10 @@ public class SomfyTahomaBindingConstants {
     public static final String TAHOMA_URL = API_URL + "externalAPI/json/";
     public static final String TAHOMA_EVENT_URL = API_URL + "enduserAPI/events/";
     public static final String SETUP_URL = API_URL + "enduserAPI/setup/gateways/";
-    public static final String REFRESH_URL = TAHOMA_URL + "refreshAllStates";
+    public static final String REFRESH_URL = API_URL + "enduserAPI/setup/devices/states/refresh";
     public static final String EXEC_URL = API_URL + "enduserAPI/exec/";
     public static final String DELETE_URL = EXEC_URL + "current/setup/";
-    public static final String TAHOMA_AGENT = "TaHoma/3640 CFNetwork/711.1.16 Darwin/14.0.0";
+    public static final String TAHOMA_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36";
     public static final String UNAUTHORIZED = "Not logged in";
     public static final int TYPE_PERCENT = 1;
     public static final int TYPE_DECIMAL = 2;

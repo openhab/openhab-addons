@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.somfytahoma.internal.model;
 
-import java.util.ArrayList;
-
 /**
  * The {@link SomfyTahomaApplyResponse} holds information about
  * response to sending a command to a device.
