@@ -96,6 +96,9 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     @Override
     @Deactivate
     protected void deactivate() {
+        if (executorService != null) {
+            executorService.shutdown();
+        }
         super.deactivate();
     }
 
@@ -121,6 +124,9 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
      */
     @Override
     protected void startScan() {
+        if (executorService == null) {
+            executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
+        }
         final ExecutorService service = executorService;
         if (service == null) {
             return;
@@ -129,7 +135,6 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
         logger.trace("Starting Network Device Discovery");
 
         final Set<String> networkIPs = networkUtils.getNetworkIPs(MAXIMUM_IPS_PER_INTERFACE);
-        executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
         scannedIPcount = 0;
 
         for (String ip : networkIPs) {
@@ -233,7 +238,7 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
 
         Map<String, Object> properties = new HashMap<>();
         properties.put(PARAMETER_HOSTNAME, ip);
-        thingDiscovered(DiscoveryResultBuilder.create(createPingUID(ip)).withTTL(120).withProperties(properties)
-                .withLabel("Network Device (" + ip + ")").build());
+        thingDiscovered(DiscoveryResultBuilder.create(createPingUID(ip)).withTTL(DISCOVERY_RESULT_TTL)
+                .withProperties(properties).withLabel("Network Device (" + ip + ")").build());
     }
 }
