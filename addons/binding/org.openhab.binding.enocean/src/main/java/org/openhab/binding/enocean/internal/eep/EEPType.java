@@ -98,6 +98,8 @@ import org.openhab.binding.enocean.internal.eep.A5_12.A5_12_00;
 import org.openhab.binding.enocean.internal.eep.A5_12.A5_12_01;
 import org.openhab.binding.enocean.internal.eep.A5_12.A5_12_02;
 import org.openhab.binding.enocean.internal.eep.A5_12.A5_12_03;
+import org.openhab.binding.enocean.internal.eep.A5_14.A5_14_01;
+import org.openhab.binding.enocean.internal.eep.A5_14.A5_14_01_ELTAKO;
 import org.openhab.binding.enocean.internal.eep.A5_14.A5_14_09;
 import org.openhab.binding.enocean.internal.eep.A5_38.A5_38_08_Blinds;
 import org.openhab.binding.enocean.internal.eep.A5_38.A5_38_08_Dimming;
@@ -179,8 +181,13 @@ public enum EEPType {
     MechanicalHandle02(RORG._4BS, 0x14, 0x09, false, A5_14_09.class, THING_TYPE_MECHANICALHANDLE,
             CHANNEL_WINDOWHANDLESTATE, CHANNEL_CONTACT, CHANNEL_BATTERY_VOLTAGE, CHANNEL_RECEIVINGSTATE),
 
-    ContactAndSwitch(RORG._1BS, 0x00, 0x01, false, D5_00_01.class, THING_TYPE_CONTACT, CHANNEL_CONTACT,
+    ContactAndSwitch01(RORG._1BS, 0x00, 0x01, false, D5_00_01.class, THING_TYPE_CONTACT, CHANNEL_CONTACT,
             CHANNEL_RECEIVINGSTATE),
+    ContactAndSwitch02(RORG._4BS, 0x14, 0x01, false, A5_14_01.class, THING_TYPE_CONTACT, CHANNEL_BATTERY_VOLTAGE,
+            CHANNEL_CONTACT, CHANNEL_RECEIVINGSTATE),
+
+    BatteryStatus(RORG._4BS, 0x14, 0x01, false, "ELTAKO", ELTAKOID, A5_14_01_ELTAKO.class, THING_TYPE_CONTACT,
+            CHANNEL_BATTERY_VOLTAGE, CHANNEL_ENERGY_STORAGE, CHANNEL_RECEIVINGSTATE),
 
     TemperatureSensor_A5_02_01(RORG._4BS, 0x02, 0x01, false, A5_02_01.class, THING_TYPE_TEMPERATURESENSOR,
             CHANNEL_TEMPERATURE, CHANNEL_RECEIVINGSTATE),
