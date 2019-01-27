@@ -73,7 +73,7 @@
 /addons/binding/org.openhab.binding.km200/ @Markinus
 /addons/binding/org.openhab.binding.knx/ @sjka
 /addons/binding/org.openhab.binding.knx.test/ @sjka
-/addons/binding/org.openhab.binding.kodi/ @pail23
+/addons/binding/org.openhab.binding.kodi/ @pail23 @cweitkamp
 /addons/binding/org.openhab.binding.konnected/ @volfan6415
 /addons/binding/org.openhab.binding.kostalinverter/ @cschneider
 /addons/binding/org.openhab.binding.lametrictime/ @syphr42
