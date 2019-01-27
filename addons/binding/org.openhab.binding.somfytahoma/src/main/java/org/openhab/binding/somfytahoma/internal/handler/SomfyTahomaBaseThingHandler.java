@@ -176,7 +176,6 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     }
 
     private State parseTahomaState(String acceptedState, SomfyTahomaState state) {
-
         if (state == null) {
             return UnDefType.NULL;
         }
