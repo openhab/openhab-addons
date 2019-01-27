@@ -1221,7 +1221,6 @@ The definition of `autoupdate` is optional; please refer to ##autoupdate to chec
 Continue to add `data` `Thing`s for all your other Items the same way and link them to your Items.
 
 Save your updated item file and check whether updates come in as expected.
-
  
 ## Troubleshooting
 
