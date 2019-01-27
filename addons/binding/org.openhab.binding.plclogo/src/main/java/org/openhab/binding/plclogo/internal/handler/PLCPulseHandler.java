@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -58,6 +59,7 @@ public class PLCPulseHandler extends PLCCommonHandler {
 
     private final Logger logger = LoggerFactory.getLogger(PLCPulseHandler.class);
     private AtomicReference<PLCPulseConfiguration> config = new AtomicReference<>();
+    private AtomicReference<@Nullable Boolean> received = new AtomicReference<>();
 
     /**
      * Constructor.
@@ -94,9 +96,13 @@ public class PLCPulseHandler extends PLCCommonHandler {
             } else if ((command instanceof OpenClosedType) || (command instanceof OnOffType)) {
                 String type = channel.getAcceptedItemType();
                 if (DIGITAL_INPUT_ITEM.equalsIgnoreCase(type)) {
-                    S7.SetBitAt(buffer, 0, 0, ((OpenClosedType) command) == OpenClosedType.CLOSED);
+                    boolean flag = ((OpenClosedType) command == OpenClosedType.CLOSED);
+                    S7.SetBitAt(buffer, 0, 0, flag);
+                    received.set(flag);
                 } else if (DIGITAL_OUTPUT_ITEM.equalsIgnoreCase(type)) {
-                    S7.SetBitAt(buffer, 0, 0, ((OnOffType) command) == OnOffType.ON);
+                    boolean flag = ((OnOffType) command == OnOffType.ON);
+                    S7.SetBitAt(buffer, 0, 0, flag);
+                    received.set(flag);
                 } else {
                     logger.debug("Channel {} will not accept {} items.", channelUID, type);
                 }
@@ -150,21 +156,24 @@ public class PLCPulseHandler extends PLCCommonHandler {
                     }
                 } else if (OBSERVE_CHANNEL.equalsIgnoreCase(channelUID.getId())) {
                     handleCommand(channelUID, RefreshType.REFRESH);
-                    if ((state != null) && !state.equals(getOldValue(channelUID.getId()))) {
+                    DecimalType current = (DecimalType) getOldValue(channelUID.getId());
+                    if ((state != null) && (current.intValue() != state.intValue())) {
                         Integer pulse = config.get().getPulseLength();
                         scheduler.schedule(new Runnable() {
-                            private final String name = config.get().getBlockName();
-
                             @Override
                             public void run() {
-                                byte[] data = new byte[1];
-                                S7.SetBitAt(data, 0, 0, state.intValue() == 1 ? true : false);
-                                int address = 8 * getAddress(name) + getBit(name);
-                                int result = client.writeDBArea(1, address, data.length, S7Client.S7WLBit, data);
-                                if (result == 0) {
-                                    setOldValue(channelUID.getId(), null);
+                                Boolean value = received.getAndSet(null);
+                                if (value != null) {
+                                    byte[] buffer = new byte[1];
+                                    S7.SetBitAt(buffer, 0, 0, !value.booleanValue());
+                                    String block = config.get().getBlockName();
+                                    int bit = 8 * getAddress(block) + getBit(block);
+                                    int result = client.writeDBArea(1, bit, buffer.length, S7Client.S7WLBit, buffer);
+                                    if (result != 0) {
+                                        logger.debug("Can not write data to LOGO!: {}.", S7Client.ErrorText(result));
+                                    }
                                 } else {
-                                    logger.debug("Can not write data to LOGO!: {}.", S7Client.ErrorText(result));
+                                    logger.debug("Invalid received value on channel {}.", channelUID);
                                 }
                             }
                         }, pulse.longValue(), TimeUnit.MILLISECONDS);
