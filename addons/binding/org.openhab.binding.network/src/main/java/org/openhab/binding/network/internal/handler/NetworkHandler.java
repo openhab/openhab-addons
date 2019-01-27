@@ -14,7 +14,6 @@ package org.openhab.binding.network.internal.handler;
 
 import static org.openhab.binding.network.internal.NetworkBindingConstants.*;
 
-import java.net.UnknownHostException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Collections;
@@ -158,15 +157,9 @@ public class NetworkHandler extends BaseThingHandler implements PresenceDetectio
      */
     void initialize(PresenceDetection presenceDetection) {
         handlerConfiguration = getConfigAs(NetworkHandlerConfiguration.class);
-        this.presenceDetection = presenceDetection;
 
-        try {
-            presenceDetection.setHostname(handlerConfiguration.hostname);
-        } catch (UnknownHostException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "invalid IP or hostname could not be resolved");
-            return;
-        }
+        this.presenceDetection = presenceDetection;
+        presenceDetection.setHostname(handlerConfiguration.hostname);
 
         if (isTCPServiceDevice) {
             Integer port = handlerConfiguration.port;

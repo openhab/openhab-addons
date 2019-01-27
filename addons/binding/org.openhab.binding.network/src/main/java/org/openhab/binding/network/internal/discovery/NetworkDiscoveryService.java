@@ -14,7 +14,6 @@ package org.openhab.binding.network.internal.discovery;
 
 import static org.openhab.binding.network.internal.NetworkBindingConstants.*;
 
-import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -135,12 +134,7 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
 
         for (String ip : networkIPs) {
             final PresenceDetection s = new PresenceDetection(this, 2000);
-            try {
-                s.setHostname(ip);
-            } catch (UnknownHostException unknownHostException) {
-                logger.trace("Skip IP that cannot be converted to a InetAddress", unknownHostException);
-                continue;
-            }
+            s.setHostname(ip);
             s.setIOSDevice(true);
             s.setUseDhcpSniffing(false);
             s.setTimeout(PING_TIMEOUT_IN_MS);
