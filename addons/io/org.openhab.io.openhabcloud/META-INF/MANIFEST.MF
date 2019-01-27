@@ -3,12 +3,11 @@ Automatic-Module-Name: org.openhab.io.openhabcloud
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: 
  .,
- lib/json-20140107.jar,
- lib/engine.io-client-0.8.2.jar,
- lib/okhttp-3.4.1.jar,
- lib/okhttp-ws-3.4.1.jar,
- lib/okio-1.9.0.jar,
- lib/socket.io-client-0.8.2.jar
+ lib/engine.io-client-1.0.0.jar,
+ lib/json-20180813.jar,
+ lib/okhttp-3.12.1.jar,
+ lib/okio-1.15.0.jar,
+ lib/socket.io-client-1.0.0.jar
 Bundle-ManifestVersion: 2
 Bundle-Name: openHAB Cloud Connector Bundle
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
