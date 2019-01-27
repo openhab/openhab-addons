@@ -52,6 +52,8 @@ import org.openhab.binding.enocean.internal.eep.A5_04.A5_04_01;
 import org.openhab.binding.enocean.internal.eep.A5_04.A5_04_02;
 import org.openhab.binding.enocean.internal.eep.A5_04.A5_04_02_Eltako;
 import org.openhab.binding.enocean.internal.eep.A5_04.A5_04_03;
+import org.openhab.binding.enocean.internal.eep.A5_06.A5_06_01;
+import org.openhab.binding.enocean.internal.eep.A5_06.A5_06_01_ELTAKO;
 import org.openhab.binding.enocean.internal.eep.A5_07.A5_07_01;
 import org.openhab.binding.enocean.internal.eep.A5_07.A5_07_02;
 import org.openhab.binding.enocean.internal.eep.A5_07.A5_07_03;
@@ -269,6 +271,11 @@ public enum EEPType {
     FXBH_A5_08_01(RORG._4BS, 0x08, 0x01, false, "FXBH", ELTAKOID, A5_08_01_FXBH.class,
             THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR, CHANNEL_MOTIONDETECTION, CHANNEL_ILLUMINATION,
             CHANNEL_RECEIVINGSTATE),
+
+    LightSensor01(RORG._4BS, 0x06, 0x01, false, A5_06_01.class, THING_TYPE_LIGHTSENSOR, CHANNEL_ILLUMINATION,
+            CHANNEL_RECEIVINGSTATE),
+    LightSensor02(RORG._4BS, 0x06, 0x01, false, "ELTAKO", ELTAKOID, A5_06_01_ELTAKO.class, THING_TYPE_LIGHTSENSOR,
+            CHANNEL_ILLUMINATION, CHANNEL_RECEIVINGSTATE),
 
     RoomPanel_A5_10_01(RORG._4BS, 0x10, 0x01, false, A5_10_01.class, THING_TYPE_ROOMOPERATINGPANEL, CHANNEL_TEMPERATURE,
             CHANNEL_SETPOINT, CHANNEL_FANSPEEDSTAGE, CHANNEL_OCCUPANCY, CHANNEL_RECEIVINGSTATE),
