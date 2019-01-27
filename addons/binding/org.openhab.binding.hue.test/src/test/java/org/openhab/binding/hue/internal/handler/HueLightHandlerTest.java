@@ -99,43 +99,43 @@ public class HueLightHandlerTest {
 
     @Test
     public void assertCommandForColorChannelOn() {
-        String expectedReply = "{\"on\" : true}";
+        String expectedReply = "{\"on\" : true, \"transitiontime\" : 4}";
         assertSendCommandForColor(OnOffType.ON, new HueLightState(), expectedReply);
     }
 
     @Test
     public void assertCommandForColorTemperatureChannelOn() {
-        String expectedReply = "{\"on\" : true}";
+        String expectedReply = "{\"on\" : true, \"transitiontime\" : 4}";
         assertSendCommandForColorTemp(OnOffType.ON, new HueLightState(), expectedReply);
     }
 
     @Test
     public void assertCommandForColorChannelOff() {
-        String expectedReply = "{\"on\" : false}";
+        String expectedReply = "{\"on\" : false, \"transitiontime\" : 4}";
         assertSendCommandForColor(OnOffType.OFF, new HueLightState(), expectedReply);
     }
 
     @Test
     public void assertCommandForColorTemperatureChannelOff() {
-        String expectedReply = "{\"on\" : false}";
+        String expectedReply = "{\"on\" : false, \"transitiontime\" : 4}";
         assertSendCommandForColorTemp(OnOffType.OFF, new HueLightState(), expectedReply);
     }
 
     @Test
     public void assertCommandForColorTemperatureChannel0Percent() {
-        String expectedReply = "{\"ct\" : 153}";
+        String expectedReply = "{\"ct\" : 153, \"transitiontime\" : 4}";
         assertSendCommandForColorTemp(new PercentType(0), new HueLightState(), expectedReply);
     }
 
     @Test
     public void assertCommandForColorTemperatureChannel50Percent() {
-        String expectedReply = "{\"ct\" : 327}";
+        String expectedReply = "{\"ct\" : 327, \"transitiontime\" : 4}";
         assertSendCommandForColorTemp(new PercentType(50), new HueLightState(), expectedReply);
     }
 
     @Test
     public void assertCommandForColorTemperatureChannel1000Percent() {
-        String expectedReply = "{\"ct\" : 500}";
+        String expectedReply = "{\"ct\" : 500, \"transitiontime\" : 4}";
         assertSendCommandForColorTemp(new PercentType(100), new HueLightState(), expectedReply);
     }
 
@@ -159,140 +159,140 @@ public class HueLightHandlerTest {
 
     @Test
     public void assertCommandForColorChannel0Percent() {
-        String expectedReply = "{\"on\" : false}";
+        String expectedReply = "{\"on\" : false, \"transitiontime\" : 4}";
         assertSendCommandForColor(new PercentType(0), new HueLightState(), expectedReply);
     }
 
     @Test
     public void assertCommandForColorChannel50Percent() {
-        String expectedReply = "{\"bri\" : 127, \"on\" : true}";
+        String expectedReply = "{\"bri\" : 127, \"on\" : true, \"transitiontime\" : 4}";
         assertSendCommandForColor(new PercentType(50), new HueLightState(), expectedReply);
     }
 
     @Test
     public void assertCommandForColorChannel100Percent() {
-        String expectedReply = "{\"bri\" : 254, \"on\" : true}";
+        String expectedReply = "{\"bri\" : 254, \"on\" : true, \"transitiontime\" : 4}";
         assertSendCommandForColor(new PercentType(100), new HueLightState(), expectedReply);
     }
 
     @Test
     public void assertCommandForColorChannelBlack() {
-        String expectedReply = "{\"on\" : false}";
+        String expectedReply = "{\"on\" : false, \"transitiontime\" : 4}";
         assertSendCommandForColor(HSBType.BLACK, new HueLightState(), expectedReply);
     }
 
     @Test
     public void assertCommandForColorChannelRed() {
-        String expectedReply = "{\"bri\" : 254, \"sat\" : 254, \"hue\" : 0}";
+        String expectedReply = "{\"bri\" : 254, \"sat\" : 254, \"hue\" : 0, \"transitiontime\" : 4}";
         assertSendCommandForColor(HSBType.RED, new HueLightState(), expectedReply);
     }
 
     @Test
     public void assertCommandForColorChannelGreen() {
-        String expectedReply = "{\"bri\" : 254, \"sat\" : 254, \"hue\" : 21845}";
+        String expectedReply = "{\"bri\" : 254, \"sat\" : 254, \"hue\" : 21845, \"transitiontime\" : 4}";
         assertSendCommandForColor(HSBType.GREEN, new HueLightState(), expectedReply);
     }
 
     @Test
     public void assertCommandForColorChannelBlue() {
-        String expectedReply = "{\"bri\" : 254, \"sat\" : 254, \"hue\" : 43690}";
+        String expectedReply = "{\"bri\" : 254, \"sat\" : 254, \"hue\" : 43690, \"transitiontime\" : 4}";
         assertSendCommandForColor(HSBType.BLUE, new HueLightState(), expectedReply);
     }
 
     @Test
     public void assertCommandForColorChannelWhite() {
-        String expectedReply = "{\"bri\" : 254, \"sat\" : 0, \"hue\" : 0}";
+        String expectedReply = "{\"bri\" : 254, \"sat\" : 0, \"hue\" : 0, \"transitiontime\" : 4}";
         assertSendCommandForColor(HSBType.WHITE, new HueLightState(), expectedReply);
     }
 
     @Test
     public void assertXYCommandForColorChannelBlack() {
-        String expectedReply = "{\"on\" : false}";
+        String expectedReply = "{\"on\" : false, \"transitiontime\" : 4}";
         assertSendCommandForColor(HSBType.BLACK, new HueLightState().colormode(ColorMode.XY), expectedReply);
     }
 
     @Test
     public void assertXYCommandForColorChannelWhite() {
-        String expectedReply = "{\"xy\" : [ 0.31271592 , 0.32900152 ], \"bri\" : 254}";
+        String expectedReply = "{\"xy\" : [ 0.31271592 , 0.32900152 ], \"bri\" : 254, \"transitiontime\" : 4}";
         assertSendCommandForColor(HSBType.WHITE, new HueLightState().colormode(ColorMode.XY), expectedReply);
     }
 
     @Test
     public void assertXYCommandForColorChannelColorful() {
-        String expectedReply = "{\"xy\" : [ 0.16969365 , 0.12379659 ], \"bri\" : 127}";
+        String expectedReply = "{\"xy\" : [ 0.16969365 , 0.12379659 ], \"bri\" : 127, \"transitiontime\" : 4}";
         assertSendCommandForColor(new HSBType("220,90,50"), new HueLightState().colormode(ColorMode.XY), expectedReply);
     }
 
     @Test
     public void asserCommandForColorChannelIncrease() {
         HueLightState currentState = new HueLightState().bri(1).on(false);
-        String expectedReply = "{\"bri\" : 30, \"on\" : true}";
+        String expectedReply = "{\"bri\" : 30, \"on\" : true, \"transitiontime\" : 4}";
         assertSendCommandForColor(IncreaseDecreaseType.INCREASE, currentState, expectedReply);
 
         currentState.bri(200).on(true);
-        expectedReply = "{\"bri\" : 230}";
+        expectedReply = "{\"bri\" : 230, \"transitiontime\" : 4}";
         assertSendCommandForColor(IncreaseDecreaseType.INCREASE, currentState, expectedReply);
 
         currentState.bri(230);
-        expectedReply = "{\"bri\" : 254}";
+        expectedReply = "{\"bri\" : 254, \"transitiontime\" : 4}";
         assertSendCommandForColor(IncreaseDecreaseType.INCREASE, currentState, expectedReply);
     }
 
     @Test
     public void asserCommandForColorChannelDecrease() {
         HueLightState currentState = new HueLightState().bri(200);
-        String expectedReply = "{\"bri\" : 170}";
+        String expectedReply = "{\"bri\" : 170, \"transitiontime\" : 4}";
         assertSendCommandForColor(IncreaseDecreaseType.DECREASE, currentState, expectedReply);
 
         currentState.bri(20);
-        expectedReply = "{\"on\" : false}";
+        expectedReply = "{\"on\" : false, \"transitiontime\" : 4}";
         assertSendCommandForColor(IncreaseDecreaseType.DECREASE, currentState, expectedReply);
     }
 
     @Test
     public void assertCommandForBrightnessChannel50Percent() {
         HueLightState currentState = new HueLightState();
-        String expectedReply = "{\"bri\" : 127, \"on\" : true}";
+        String expectedReply = "{\"bri\" : 127, \"on\" : true, \"transitiontime\" : 4}";
         assertSendCommandForBrightness(new PercentType(50), currentState, expectedReply);
     }
 
     @Test
     public void assertCommandForBrightnessChannelIncrease() {
         HueLightState currentState = new HueLightState().bri(1).on(false);
-        String expectedReply = "{\"bri\" : 30, \"on\" : true}";
+        String expectedReply = "{\"bri\" : 30, \"on\" : true, \"transitiontime\" : 4}";
         assertSendCommandForBrightness(IncreaseDecreaseType.INCREASE, currentState, expectedReply);
 
         currentState.bri(200).on(true);
-        expectedReply = "{\"bri\" : 230}";
+        expectedReply = "{\"bri\" : 230, \"transitiontime\" : 4}";
         assertSendCommandForBrightness(IncreaseDecreaseType.INCREASE, currentState, expectedReply);
 
         currentState.bri(230);
-        expectedReply = "{\"bri\" : 254}";
+        expectedReply = "{\"bri\" : 254, \"transitiontime\" : 4}";
         assertSendCommandForBrightness(IncreaseDecreaseType.INCREASE, currentState, expectedReply);
     }
 
     @Test
     public void assertCommandForBrightnessChannelDecrease() {
         HueLightState currentState = new HueLightState().bri(200);
-        String expectedReply = "{\"bri\" : 170}";
+        String expectedReply = "{\"bri\" : 170, \"transitiontime\" : 4}";
         assertSendCommandForBrightness(IncreaseDecreaseType.DECREASE, currentState, expectedReply);
 
         currentState.bri(20);
-        expectedReply = "{\"on\" : false}";
+        expectedReply = "{\"on\" : false, \"transitiontime\" : 4}";
         assertSendCommandForBrightness(IncreaseDecreaseType.DECREASE, currentState, expectedReply);
     }
 
     @Test
     public void assertCommandForBrightnessChannelOff() {
         HueLightState currentState = new HueLightState();
-        String expectedReply = "{\"on\" : false}";
+        String expectedReply = "{\"on\" : false, \"transitiontime\" : 4}";
         assertSendCommandForBrightness(OnOffType.OFF, currentState, expectedReply);
     }
 
     @Test
     public void assertCommandForBrightnessChannelOn() {
         HueLightState currentState = new HueLightState();
-        String expectedReply = "{\"on\" : true}";
+        String expectedReply = "{\"on\" : true, \"transitiontime\" : 4}";
         assertSendCommandForBrightness(OnOffType.ON, currentState, expectedReply);
     }
 
