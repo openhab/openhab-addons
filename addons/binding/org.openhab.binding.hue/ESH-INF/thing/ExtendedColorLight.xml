@@ -27,6 +27,11 @@
 				<description>The light identifier identifies one certain hue light.</description>
 				<required>true</required>
 			</parameter>
+			<parameter name="fadetime" type="integer" min="0" step="100">
+				<label>Fade time</label>
+				<description>Fade time in ms for changing values</description>
+				<default>400</default>
+			</parameter>
 		</config-description>
 	</thing-type>
 </thing:thing-descriptions>
