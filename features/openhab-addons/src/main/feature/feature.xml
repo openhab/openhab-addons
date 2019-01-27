@@ -848,7 +848,6 @@
 
     <feature name="openhab-io-javasound" description="JavaSound Audio Support" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle>mvn:org.openhab.io/org.openhab.io.sound/${project.version}</bundle>
         <bundle>mvn:org.openhab.io/org.openhab.io.javasound/${project.version}</bundle>
     </feature>
 
@@ -927,6 +926,7 @@
         <feature>esh-automation-parser-gson</feature>
         <feature>esh-automation-providers</feature>
         <feature>esh-automation-rest</feature>
+        <feature>openhab-io-javasound</feature>
     </feature>
 
     <!-- transformation -->
@@ -1012,6 +1012,7 @@
 
     <feature name="openhab-ui-basic" description="Basic UI" version="${project.version}">
         <feature>openhab-runtime-base</feature>
+        <feature>openhab-iconset-classic</feature>
         <bundle>mvn:org.openhab.ui/org.openhab.ui.basic/${project.version}</bundle>
         <config name="org.eclipse.smarthome.basicui">
             iconType = svg
@@ -1020,6 +1021,7 @@
 
     <feature name="openhab-ui-classic" description="Classic UI" version="${project.version}">
         <feature>openhab-runtime-base</feature>
+        <feature>openhab-iconset-classic</feature>
         <bundle>mvn:org.openhab.ui/org.openhab.ui.classic/${project.version}</bundle>
         <config name="org.eclipse.smarthome.classicui">
             defaultSitemap = _default
@@ -1050,6 +1052,8 @@
 
     <feature name="openhab-ui-paper" description="Paper UI" version="${project.version}">
         <feature>openhab-runtime-base</feature>
+        <feature>openhab-io-javasound</feature>
+        <feature>openhab-io-webaudio</feature>
         <bundle>mvn:org.openhab.ui/org.openhab.ui.paper/${project.version}</bundle>
     </feature>
 

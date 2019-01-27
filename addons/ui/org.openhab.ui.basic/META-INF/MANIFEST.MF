@@ -16,7 +16,6 @@ Import-Package:
  javax.servlet.http,
  org.apache.commons.io,
  org.apache.commons.lang,
- org.apache.commons.net.util,
  org.eclipse.emf.common.util,
  org.eclipse.emf.ecore,
  org.eclipse.emf.ecore.resource,
