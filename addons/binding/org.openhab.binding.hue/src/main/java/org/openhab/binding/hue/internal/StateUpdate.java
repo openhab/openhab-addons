@@ -187,7 +187,7 @@ public class StateUpdate extends ConfigUpdate {
      * @param timeMillis time in milliseconds [0..6553600]
      * @return this object for chaining calls
      */
-    public StateUpdate setTransitionTime(int timeMillis) {
+    public StateUpdate setTransitionTime(long timeMillis) {
         if (timeMillis < 0 || timeMillis > 6553600) {
             throw new IllegalArgumentException("Transition time out of range");
         }
