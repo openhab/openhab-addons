@@ -154,7 +154,7 @@ public class JavaSoundAudioSink implements AudioSink {
 
     @Override
     public String getId() {
-        return "javasound";
+        return "enhancedjavasound";
     }
 
     @Override
