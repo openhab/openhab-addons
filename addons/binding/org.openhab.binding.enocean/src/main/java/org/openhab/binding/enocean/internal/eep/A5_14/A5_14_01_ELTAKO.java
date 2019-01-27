@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.enocean.internal.eep.A5_14;
 
-import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.CHANNEL_BATTERY_VOLTAGE;
+import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -26,20 +26,24 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message;
  *
  * @author Dominik Krickl-Vorreiter - Initial contribution
  */
-public abstract class A5_14 extends _4BSMessage {
-    public A5_14(ERP1Message packet) {
+public class A5_14_01_ELTAKO extends _4BSMessage {
+
+    public A5_14_01_ELTAKO(ERP1Message packet) {
         super(packet);
     }
 
-    private State getBatteryVoltage() {
+    private State getEnergyStorage() {
         int db3 = getDB_3Value();
 
-        if (db3 > 250) {
-            logger.warn("EEP A5-14 error code {}", db3);
-            return UnDefType.UNDEF;
-        }
+        double voltage = db3 / 51.0; // 0..255 = 0.0..5.0V
 
-        double voltage = db3 / 50.0; // 0..250 = 0.0..5.0V
+        return new QuantityType<>(voltage, SmartHomeUnits.VOLT);
+    }
+
+    private State getBatteryVoltage() {
+        int db2 = getDB_2Value();
+
+        double voltage = db2 / 51.0; // 0..255 = 0.0..5.0V
 
         return new QuantityType<>(voltage, SmartHomeUnits.VOLT);
     }
@@ -48,6 +52,8 @@ public abstract class A5_14 extends _4BSMessage {
     protected State convertToStateImpl(String channelId, String channelTypeId, State currentState,
             Configuration config) {
         switch (channelId) {
+            case CHANNEL_ENERGY_STORAGE:
+                return getEnergyStorage();
             case CHANNEL_BATTERY_VOLTAGE:
                 return getBatteryVoltage();
         }
