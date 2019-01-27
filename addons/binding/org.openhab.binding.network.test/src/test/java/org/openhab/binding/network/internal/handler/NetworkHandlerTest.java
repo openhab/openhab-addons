@@ -127,8 +127,10 @@ public class NetworkHandlerTest extends JavaTest {
         handler.initialize(presenceDetection);
         // Check that we are online
         ArgumentCaptor<ThingStatusInfo> statusInfoCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
-        verify(callback).statusUpdated(eq(thing), statusInfoCaptor.capture());
-        waitForAssert(() -> assertEquals(statusInfoCaptor.getValue().getStatus(), ThingStatus.ONLINE));
+        waitForAssert(() -> {
+            verify(callback).statusUpdated(eq(thing), statusInfoCaptor.capture());
+            assertEquals(statusInfoCaptor.getValue().getStatus(), ThingStatus.ONLINE);
+        });
 
         // Mock result value
         PresenceDetectionValue value = mock(PresenceDetectionValue.class);
