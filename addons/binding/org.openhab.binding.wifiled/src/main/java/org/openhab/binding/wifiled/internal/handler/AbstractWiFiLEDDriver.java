@@ -129,7 +129,7 @@ public abstract class AbstractWiFiLEDDriver {
 
             // Example response (14 Bytes):
             // 0x81 0x04 0x23 0x26 0x21 0x10 0x45 0x00 0x00 0x00 0x03 0x00 0x00 0x47
-            // ..........^--- On/Off.........R....G....B....WW..
+            // ..........^--- On/Off.........R....G....B....WW........CW
             // ...............^-- PGM...^---SPEED...............
 
             int state = statusBytes[2] & 0xFF; // On/Off
@@ -140,7 +140,7 @@ public abstract class AbstractWiFiLEDDriver {
             int green = statusBytes[7] & 0xFF;
             int blue = statusBytes[8] & 0xFF;
             int white = statusBytes[9] & 0xFF;
-            int white2 = protocol == Protocol.LD686 ? statusBytes[10] & 0xFF : 0;
+            int white2 = protocol == Protocol.LD686 ? statusBytes[11] & 0xFF : 0;
 
             logger.debug("RGBW: {},{},{},{}, {}", red, green, blue, white, white2);
 
