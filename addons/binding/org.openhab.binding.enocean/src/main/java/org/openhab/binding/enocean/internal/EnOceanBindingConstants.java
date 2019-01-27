@@ -108,6 +108,7 @@ public class EnOceanBindingConstants {
     public final static String CHANNEL_INSTANTLITRE = "amrLitre";
     public final static String CHANNEL_TOTALCUBICMETRE = "amrCubicMetre";
     public final static String CHANNEL_BATTERY_VOLTAGE = "batteryVoltage";
+    public final static String CHANNEL_ENERGY_STORAGE = "energyStorage";
 
     public final static String CHANNEL_AUTOOFF = "autoOFF";
     public final static String CHANNEL_DELAYRADIOOFF = "delayRadioOFF";
@@ -168,6 +169,8 @@ public class EnOceanBindingConstants {
                             new ChannelTypeUID(BINDING_ID, CHANNEL_WINDOWHANDLESTATE), CoreItemFactory.STRING));
                     put(CHANNEL_BATTERY_VOLTAGE, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_BATTERY_VOLTAGE), CoreItemFactory.NUMBER));
+                    put(CHANNEL_ENERGY_STORAGE, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_ENERGY_STORAGE), CoreItemFactory.NUMBER));
                     put(CHANNEL_TEACHINCMD, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_TEACHINCMD), CoreItemFactory.SWITCH));
 
