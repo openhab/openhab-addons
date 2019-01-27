@@ -28,6 +28,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.core.ConfigConstants;
+import org.eclipse.smarthome.config.core.ConfigurableService;
 import org.eclipse.smarthome.core.events.Event;
 import org.eclipse.smarthome.core.events.EventFilter;
 import org.eclipse.smarthome.core.events.EventPublisher;
@@ -49,6 +50,14 @@ import org.eclipse.smarthome.model.script.engine.action.ActionService;
 import org.openhab.core.OpenHAB;
 import org.openhab.io.openhabcloud.NotificationAction;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +67,11 @@ import org.slf4j.LoggerFactory;
  * @author Victor Belov - Initial contribution
  * @author Kai Kreuzer - migrated code to new Jetty client and ESH APIs
  */
-
+@Component(immediate = true, service = { EventSubscriber.class, ActionService.class }, property = {
+        Constants.SERVICE_PID + "=org.openhab.openhabcloud",
+        ConfigurableService.SERVICE_PROPERTY_DESCRIPTION_URI + "=io:openhabcloud",
+        ConfigurableService.SERVICE_PROPERTY_LABEL + "=openHAB Cloud",
+        ConfigurableService.SERVICE_PROPERTY_CATEGORY + "=io" })
 public class CloudService implements ActionService, CloudClientListener, EventSubscriber {
 
     private static final String CFG_EXPOSE = "expose";
@@ -121,6 +134,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
         cloudClient.sendBroadcastNotification(message, icon, severity);
     }
 
+    @Activate
     protected void activate(BundleContext context, Map<String, ?> config) {
         clientVersion = StringUtils.substringBefore(context.getBundle().getVersion().toString(), ".qualifier");
         localPort = HttpServiceUtil.getHttpServicePort(context);
@@ -151,11 +165,13 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
         }
     }
 
+    @Deactivate
     protected void deactivate() {
         logger.debug("openHAB Cloud connector deactivated");
         cloudClient.shutdown();
     }
 
+    @Modified
     protected void modified(Map<String, ?> config) {
         if (config != null && config.get(CFG_MODE) != null) {
             remoteAccessEnabled = "remote".equals(config.get(CFG_MODE));
@@ -308,6 +324,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
         }
     }
 
+    @Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.DYNAMIC)
     public void setItemRegistry(ItemRegistry itemRegistry) {
         this.itemRegistry = itemRegistry;
     }
@@ -316,6 +333,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
         this.itemRegistry = null;
     }
 
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
     public void setEventPublisher(EventPublisher eventPublisher) {
         this.eventPublisher = eventPublisher;
     }
