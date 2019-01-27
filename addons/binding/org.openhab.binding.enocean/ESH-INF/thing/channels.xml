@@ -155,6 +155,13 @@
 		<state pattern="%f %unit%" readOnly="true" />
 	</channel-type>
 
+	<channel-type id="energyStorage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Energy Storage</label>
+		<description>?</description>
+		<state pattern="%f %unit%" readOnly="true" />
+	</channel-type>
+
 	<!-- Teach in Channel -->
 	<channel-type id="teachInCMD" advanced="true">
 		<item-type>Switch</item-type>
@@ -162,8 +169,8 @@
 		<description>The teach in channel allows to send a teach in msg.</description>
 		<category>Switch</category>
 		<config-description>
-			<!-- <parameter name="teachInType" type="text"> <label>Teach in type</label> <description>Type of 4BS teach in message</description>
-				<options> <option value="uniWoEEP">unidirectional without EEP</option> <option value="uniWEEP">unidirectional with EEP</option>
+			<!-- <parameter name="teachInType" type="text"> <label>Teach in type</label> <description>Type of 4BS teach in message</description> 
+				<options> <option value="uniWoEEP">unidirectional without EEP</option> <option value="uniWEEP">unidirectional with EEP</option> 
 				<option value="biWEEP">bidirectional with EEP</option> </options> <limitToOptions>true</limitToOptions> </parameter> -->
 			<parameter name="manufacturerId" type="text">
 				<label>Manufacturer Id</label>
