@@ -108,7 +108,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         }, 10, thingConfig.getRefresh(), TimeUnit.SECONDS);
 
         statusFuture = scheduler.scheduleWithFixedDelay(() -> {
-            updateTahomaStates();
+            refreshTahomaStates();
         }, 60, thingConfig.getStatusTimeout(), TimeUnit.SECONDS);
 
     }
@@ -132,6 +132,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             String urlParameters = "userId=" + thingConfig.getEmail() + "&userPassword=" + thingConfig.getPassword();
 
             ContentResponse response = sendRequestBuilder(url, HttpMethod.POST)
+                    .agent(TAHOMA_AGENT)
                     .content(new StringContentProvider(urlParameters), "application/x-www-form-urlencoded; charset=UTF-8")
                     .send();
 
@@ -372,6 +373,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     }
 
     private void processEvent(SomfyTahomaEvent event) {
+        logger.debug("Got event: {}", event.getName());
         switch (event.getName()) {
             case "DeviceStateChangedEvent":
                 processStateChangedEvent(event);
@@ -379,13 +381,30 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             case "RefreshAllDevicesStatesCompletedEvent":
                 scheduler.schedule(() -> {
                     //force update thing states
-                    for (Thing th : getThing().getThings()) {
-                        updateThingStates(th);
-                    }
+                    updateAllStates();
                 }, 1, TimeUnit.SECONDS);
                 break;
             default:
                 //ignore other states
+        }
+    }
+
+    private synchronized void updateAllStates() {
+        logger.debug("Updating all states");
+        SomfyTahomaSetup setup = listDevices();
+        if (setup != null) {
+            for (SomfyTahomaDevice device : setup.getDevices()) {
+                String url = device.getDeviceURL();
+                List<SomfyTahomaState> states = device.getStates();
+                Thing th = getThingByDeviceUrl(url);
+                if (th == null) {
+                    continue;
+                }
+                SomfyTahomaBaseThingHandler handler = (SomfyTahomaBaseThingHandler) th.getHandler();
+                if (handler != null) {
+                    handler.updateThingStatus(states);
+                }
+            }
         }
     }
 
@@ -409,8 +428,8 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
         }
     }
 
-    private void updateTahomaStates() {
-        logger.debug("Updating Tahoma States...");
+    private void refreshTahomaStates() {
+        logger.debug("Refreshing Tahoma states...");
         if (ThingStatus.OFFLINE.equals(thing.getStatus())) {
             logger.debug("Doing relogin");
             login();
@@ -448,7 +467,8 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     private String sendDataToTahomaWithCookie(String url, String urlParameters) throws InterruptedException, ExecutionException, TimeoutException, SomfyTahomaException {
         logger.trace("Sending POST to Tahoma to url: {} with data: {}", url, urlParameters);
         ContentResponse response = sendRequestBuilder(url, HttpMethod.POST)
-                .content(new StringContentProvider(urlParameters))
+                .agent(TAHOMA_AGENT)
+                .content(new StringContentProvider(urlParameters), "application/json;charset=UTF-8")
                 .send();
 
         logger.trace("Response: {}", response.getContentAsString());
@@ -475,7 +495,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
     private String sendMethodToTahomaWithCookie(String url, HttpMethod method) throws InterruptedException, ExecutionException, TimeoutException, SomfyTahomaException {
         logger.trace("Sending {} to Tahoma to url: {}", method.asString(), url);
-        ContentResponse response = sendRequestBuilder(url, method).send();
+        ContentResponse response = sendRequestBuilder(url, method).agent(TAHOMA_AGENT).send();
 
         logger.trace("Response: {}", response.getContentAsString());
         if (response.getStatus() < 200 || response.getStatus() >= 300) {
@@ -712,7 +732,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
     public void refreshDeviceStates() {
         try {
-            sendGetToTahomaWithCookie(REFRESH_URL);
+            sendPutToTahomaWithCookie(REFRESH_URL);
         } catch (SomfyTahomaException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unauthorized. Please check credentials");
         } catch (ExecutionException e) {

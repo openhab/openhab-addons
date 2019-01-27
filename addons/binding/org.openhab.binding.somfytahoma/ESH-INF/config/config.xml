@@ -33,13 +33,13 @@
 			<required>true</required>
 		</parameter>
 
-		<parameter name="refresh" type="integer" required="false">
+		<parameter name="refresh" type="integer" required="false" min="10">
 			<label>Refresh</label>
 			<description>Specifies the refresh time in seconds for polling events from Tahoma cloud</description>
 			<default>30</default>
 		</parameter>
 
-		<parameter name="statusTimeout" type="integer" required="false">
+		<parameter name="statusTimeout" type="integer" required="false" min="60">
 			<label>Status timeout</label>
 			<description>Specifies the timeout in seconds after which the status is got from Tahoma cloud</description>
 			<default>300</default>
