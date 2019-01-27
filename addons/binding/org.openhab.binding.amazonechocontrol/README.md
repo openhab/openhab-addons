@@ -61,7 +61,7 @@ The binding is tested with amazon.de, amazon.fr, amazon.it, amazon.com and amazo
 
 1) Create an 'Amazon Account' thing
 2) open the url YOUR_OPENHAB/amazonechocontrol in your browser (e.g. http://openhab:8080/amazonechocontrol/), click the link for your account thing and login.
-3) You should see now a message the the login was successful
+3) You should see now a message that the login was successful
 
 ## Discovery
 
