@@ -184,7 +184,7 @@ public class NetworkHandler extends BaseThingHandler implements PresenceDetectio
         presenceDetection.setRefreshInterval(handlerConfiguration.refreshInterval.longValue());
         presenceDetection.setTimeout(handlerConfiguration.timeout.intValue());
 
-        updateStatus(ThingStatus.UNKNOWN);
+        updateStatus(ThingStatus.ONLINE);
         presenceDetection.startAutomaticRefresh(scheduler);
 
         updateNetworkProperties();

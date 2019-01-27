@@ -127,10 +127,8 @@ public class NetworkHandlerTest extends JavaTest {
         handler.initialize(presenceDetection);
         // Check that we are online
         ArgumentCaptor<ThingStatusInfo> statusInfoCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
-        waitForAssert(() -> {
-            verify(callback).statusUpdated(eq(thing), statusInfoCaptor.capture());
-            assertEquals(statusInfoCaptor.getValue().getStatus(), ThingStatus.ONLINE);
-        });
+        verify(callback).statusUpdated(eq(thing), statusInfoCaptor.capture());
+        assertEquals(ThingStatus.ONLINE, statusInfoCaptor.getValue().getStatus());
 
         // Mock result value
         PresenceDetectionValue value = mock(PresenceDetectionValue.class);
@@ -138,7 +136,7 @@ public class NetworkHandlerTest extends JavaTest {
         when(value.isReachable()).thenReturn(true);
         when(value.getSuccessfulDetectionTypes()).thenReturn("TESTMETHOD");
 
-        // Partitial result from the PresenceDetection object should affect the
+        // Partial result from the PresenceDetection object should affect the
         // ONLINE and LATENCY channel
         handler.partialDetectionResult(value);
         verify(callback).stateUpdated(eq(new ChannelUID(thingUID, NetworkBindingConstants.CHANNEL_ONLINE)),
