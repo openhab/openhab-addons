@@ -56,6 +56,7 @@ and the `locationId`. Once the account bridge is configured, the appliances in y
 | pressure                 | Number:Pressure          | The pressure of your water supply                     |
 | temperature_guard        | Number:Temperature       | The ambient temperature of the appliance              |
 | valve_open               | Switch                   | Valve switch                                          |
+| waterconsumption         | Number                   | The amount of water used in a specific timeframe      |
 
 ##### sense
 
@@ -72,7 +73,12 @@ Things file:
 
 ````
 Bridge groheondus:account:account1 [ username="user@example.com", password="YourStrongPasswordHere!" ] {
-    groheondus:senseguard:550e8400-e29b-11d4-a716-446655440000 [ applianceId="550e8400-e29b-11d4-a716-446655440000", roomId=456, locationId=123 ]
+    groheondus:senseguard:550e8400-e29b-11d4-a716-446655440000 [ applianceId="550e8400-e29b-11d4-a716-446655440000", roomId=456, locationId=123 ] {
+        Channels:
+            Type number : waterconsumption [
+               timeframe=3
+            ]
+    }
     groheondus:sense:550e8400-e29b-11d4-a716-446655440000 [ applianceId="444e8400-e29b-11d4-a716-446655440000", roomId=456, locationId=123 ]
 }
 ````
