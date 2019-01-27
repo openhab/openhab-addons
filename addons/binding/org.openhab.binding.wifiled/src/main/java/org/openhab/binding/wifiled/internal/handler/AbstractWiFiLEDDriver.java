@@ -135,6 +135,12 @@ public abstract class AbstractWiFiLEDDriver {
             int state = statusBytes[2] & 0xFF; // On/Off
             int program = statusBytes[3] & 0xFF;
             int programSpeed = statusBytes[5] & 0xFF;
+            
+            // On factory default the controller can be configured 
+            // with a value of 255 but max should be 31.
+            if (programSpeed > 31) {
+                programSpeed = 31;
+            }
 
             int red = statusBytes[6] & 0xFF;
             int green = statusBytes[7] & 0xFF;
