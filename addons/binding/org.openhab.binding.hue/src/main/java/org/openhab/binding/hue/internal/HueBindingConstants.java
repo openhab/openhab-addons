@@ -81,6 +81,7 @@ public class HueBindingConstants {
     public static final String SENSOR_ID = "sensorId";
     public static final String PRODUCT_NAME = "productName";
     public static final String UNIQUE_ID = "uniqueId";
+    public static final String FADETIME = "fadetime";
 
     public static final String NORMALIZE_ID_REGEX = "[^a-zA-Z0-9_]";
 }

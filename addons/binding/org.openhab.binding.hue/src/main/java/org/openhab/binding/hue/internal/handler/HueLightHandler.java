@@ -12,11 +12,13 @@
  */
 package org.openhab.binding.hue.internal.handler;
 
-import java.util.AbstractMap.SimpleEntry;
-
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 
+import java.math.BigDecimal;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,14 +42,16 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.hue.internal.FullHueObject;
 import org.openhab.binding.hue.internal.FullLight;
 import org.openhab.binding.hue.internal.HueBridge;
 import org.openhab.binding.hue.internal.State;
-import org.openhab.binding.hue.internal.StateUpdate;
 import org.openhab.binding.hue.internal.State.ColorMode;
+import org.openhab.binding.hue.internal.StateUpdate;
+import org.openhab.binding.hue.internal.action.LightActions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,6 +71,7 @@ import org.slf4j.LoggerFactory;
  * @author Yordan Zhelev - added alert and effect functions
  * @author Denis Dudnik - switched to internally integrated source of Jue library
  * @author Christoph Weitkamp - Added support for bulbs using CIE XY colormode only
+ * @author Jochen Leopold - Added support for custom fade times
  */
 @NonNullByDefault
 public class HueLightHandler extends BaseThingHandler implements LightStatusListener {
@@ -100,6 +105,7 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
     private boolean isOsramPar16 = false;
 
     private boolean propertiesInitializedSuccessfully = false;
+    private long defaultFadeTime = 400;
 
     private @Nullable HueClient hueClient;
 
@@ -121,6 +127,11 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
         logger.debug("initializeThing thing {} bridge status {}", getThing().getUID(), bridgeStatus);
         final String configLightId = (String) getConfig().get(LIGHT_ID);
         if (configLightId != null) {
+            BigDecimal time = (BigDecimal) getConfig().get(FADETIME);
+            if (time != null) {
+                defaultFadeTime = time.longValueExact();
+            }
+
             lightId = configLightId;
             // note: this call implicitly registers our handler as a listener on
             // the bridge
@@ -200,6 +211,10 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        handleCommand(channelUID.getId(), command, defaultFadeTime);
+    }
+
+    public void handleCommand(String channel, Command command, long fadeTime) {
         HueClient hueBridge = getHueClient();
         if (hueBridge == null) {
             logger.warn("hue bridge handler not found. Cannot handle command without bridge.");
@@ -213,34 +228,48 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
         }
 
         StateUpdate lightState = null;
-        switch (channelUID.getId()) {
+        switch (channel) {
             case CHANNEL_COLORTEMPERATURE:
                 if (command instanceof PercentType) {
                     lightState = LightStateConverter.toColorTemperatureLightState((PercentType) command);
+                    lightState.setTransitionTime(fadeTime);
                 } else if (command instanceof OnOffType) {
                     lightState = LightStateConverter.toOnOffLightState((OnOffType) command);
                     if (isOsramPar16) {
                         lightState = addOsramSpecificCommands(lightState, (OnOffType) command);
+                    } else {
+                        lightState.setTransitionTime(fadeTime);
                     }
                 } else if (command instanceof IncreaseDecreaseType) {
                     lightState = convertColorTempChangeToStateUpdate((IncreaseDecreaseType) command, light);
+                    if (lightState != null) {
+                        lightState.setTransitionTime(fadeTime);
+                    }
                 }
+
                 break;
             case CHANNEL_BRIGHTNESS:
                 if (command instanceof PercentType) {
                     lightState = LightStateConverter.toBrightnessLightState((PercentType) command);
+                    lightState.setTransitionTime(fadeTime);
                 } else if (command instanceof OnOffType) {
                     lightState = LightStateConverter.toOnOffLightState((OnOffType) command);
                     if (isOsramPar16) {
                         lightState = addOsramSpecificCommands(lightState, (OnOffType) command);
+                    } else {
+                        lightState.setTransitionTime(fadeTime);
                     }
                 } else if (command instanceof IncreaseDecreaseType) {
                     lightState = convertBrightnessChangeToStateUpdate((IncreaseDecreaseType) command, light);
+                    if (lightState != null) {
+                        lightState.setTransitionTime(fadeTime);
+                    }
                 }
                 if (lightState != null && lastSentColorTemp != null) {
                     // make sure that the light also has the latest color temp
                     // this might not have been yet set in the light, if it was off
                     lightState.setColorTemperature(lastSentColorTemp);
+                    lightState.setTransitionTime(fadeTime);
                 }
                 break;
             case CHANNEL_SWITCH:
@@ -249,12 +278,15 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
                     lightState = LightStateConverter.toOnOffLightState((OnOffType) command);
                     if (isOsramPar16) {
                         lightState = addOsramSpecificCommands(lightState, (OnOffType) command);
+                    } else {
+                        lightState.setTransitionTime(fadeTime);
                     }
                 }
                 if (lightState != null && lastSentColorTemp != null) {
                     // make sure that the light also has the latest color temp
                     // this might not have been yet set in the light, if it was off
                     lightState.setColorTemperature(lastSentColorTemp);
+                    lightState.setTransitionTime(fadeTime);
                 }
                 break;
             case CHANNEL_COLOR:
@@ -271,6 +303,9 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
                     lightState = LightStateConverter.toOnOffLightState((OnOffType) command);
                 } else if (command instanceof IncreaseDecreaseType) {
                     lightState = convertBrightnessChangeToStateUpdate((IncreaseDecreaseType) command, light);
+                }
+                if (lightState != null) {
+                    lightState.setTransitionTime(fadeTime);
                 }
                 break;
             case CHANNEL_ALERT:
@@ -306,7 +341,7 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             }
             hueBridge.updateLightState(light, lightState);
         } else {
-            logger.warn("Command sent to an unknown channel id: {}", channelUID);
+            logger.warn("Command sent to an unknown channel id: {}:{}", getThing().getUID(), channel);
         }
     }
 
@@ -537,5 +572,10 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
         }
 
         return delay;
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singletonList(LightActions.class);
     }
 }

@@ -13,6 +13,7 @@
 package org.openhab.binding.hue.internal;
 
 import java.lang.reflect.Type;
+import java.time.Duration;
 import java.util.Map;
 
 import com.google.gson.reflect.TypeToken;
@@ -30,6 +31,7 @@ public class FullLight extends FullHueObject {
     }.getType();
 
     private State state;
+    private final long fadetime = 400; // milliseconds
 
     FullLight() {
     }
@@ -41,5 +43,9 @@ public class FullLight extends FullHueObject {
      */
     public State getState() {
         return state;
+    }
+
+    public Duration getFadeTime() {
+        return Duration.ofMillis(fadetime);
     }
 }

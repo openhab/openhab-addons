@@ -13,6 +13,7 @@ Import-Package:
  com.google.gson.stream,
  javax.measure.quantity,
  org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.automation.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.core.status,
  org.eclipse.smarthome.config.discovery,
