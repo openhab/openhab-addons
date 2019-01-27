@@ -96,6 +96,9 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     @Override
     @Deactivate
     protected void deactivate() {
+        if (executorService != null) {
+            executorService.shutdown();
+        }
         super.deactivate();
     }
 
