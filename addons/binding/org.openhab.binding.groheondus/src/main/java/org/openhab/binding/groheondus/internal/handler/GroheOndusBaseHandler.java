@@ -87,7 +87,7 @@ public abstract class GroheOndusBaseHandler<T extends BaseAppliance, M> extends 
         if (appliance == null) {
             return;
         }
-        updateChannel(channelUID, appliance, getLastMeasurement(appliance));
+        updateChannel(channelUID, appliance, getLastDataPoint(appliance));
     }
 
     public void updateChannels() {
@@ -104,13 +104,13 @@ public abstract class GroheOndusBaseHandler<T extends BaseAppliance, M> extends 
             return;
         }
 
-        M measurement = getLastMeasurement(appliance);
+        M measurement = getLastDataPoint(appliance);
         getThing().getChannels().forEach(channel -> updateChannel(channel.getUID(), appliance, measurement));
 
         updateStatus(ThingStatus.ONLINE);
     }
 
-    protected abstract M getLastMeasurement(T appliance);
+    protected abstract M getLastDataPoint(T appliance);
 
     protected abstract void updateChannel(ChannelUID channelUID, T appliance, M measurement);
 
