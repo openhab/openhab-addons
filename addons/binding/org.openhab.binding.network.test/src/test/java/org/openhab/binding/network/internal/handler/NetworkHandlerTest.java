@@ -13,7 +13,7 @@
 package org.openhab.binding.network.internal.handler;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -29,6 +29,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
+import org.eclipse.smarthome.test.java.JavaTest;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,7 +45,7 @@ import org.openhab.binding.network.internal.PresenceDetectionValue;
  *
  * @author David Graeff - Initial contribution
  */
-public class NetworkHandlerTest {
+public class NetworkHandlerTest extends JavaTest {
     private ThingUID thingUID = new ThingUID("network", "ttype", "ping");
     @Mock
     private ThingHandlerCallback callback;
@@ -127,7 +128,7 @@ public class NetworkHandlerTest {
         // Check that we are online
         ArgumentCaptor<ThingStatusInfo> statusInfoCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
         verify(callback).statusUpdated(eq(thing), statusInfoCaptor.capture());
-        Assert.assertThat(statusInfoCaptor.getValue().getStatus(), is(equalTo(ThingStatus.ONLINE)));
+        assertEquals(ThingStatus.ONLINE, statusInfoCaptor.getValue().getStatus());
 
         // Mock result value
         PresenceDetectionValue value = mock(PresenceDetectionValue.class);
@@ -135,7 +136,7 @@ public class NetworkHandlerTest {
         when(value.isReachable()).thenReturn(true);
         when(value.getSuccessfulDetectionTypes()).thenReturn("TESTMETHOD");
 
-        // Partitial result from the PresenceDetection object should affect the
+        // Partial result from the PresenceDetection object should affect the
         // ONLINE and LATENCY channel
         handler.partialDetectionResult(value);
         verify(callback).stateUpdated(eq(new ChannelUID(thingUID, NetworkBindingConstants.CHANNEL_ONLINE)),
