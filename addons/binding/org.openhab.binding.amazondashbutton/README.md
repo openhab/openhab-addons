@@ -48,11 +48,13 @@ You can see which capabilities have already been set with the command:
 sudo getcap $(realpath /usr/bin/java)
 ```
 
-If you need mulitple capabilities (like "cap_net_bind_service" for the Network binding), you have to add them like this:
+If you need multiple capabilities (like "cap_net_bind_service" for the Network binding), you have to add them like this:
 
 ```shell
 sudo setcap 'cap_net_raw,cap_net_admin=+eip cap_net_bind_service=+ep' $(realpath /usr/bin/java)
 ```
+
+You need to restart openHAB for the capabilities change to take effect.
 
 ### Installing WinPcap on Windows
 
