@@ -92,6 +92,8 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
             return DeviceType.ct_bulb;
         } else if (typeUID.equals(YeelightBindingConstants.THING_TYPE_STRIPE)) {
             return DeviceType.stripe;
+        } else if (typeUID.equals(YeelightBindingConstants.THING_TYPE_DESKLAMP)) {
+            return DeviceType.desklamp;
         } else {
             return null;
         }
