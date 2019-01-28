@@ -44,17 +44,9 @@ public class CachedPollyTTSCloudImpl extends PollyTTSCloudImpl {
      * check to make sure the directory exist and
      * create it if necessary
      */
-    public CachedPollyTTSCloudImpl(PollyTTSConfig config, String cacheFolderName) throws IOException {
+    public CachedPollyTTSCloudImpl(PollyTTSConfig config, File cacheFolder) throws IOException {
         super(config);
-
-        if (cacheFolderName == null) {
-            throw new IllegalArgumentException("Folder for cache must be defined");
-        }
-        // Lazy create the cache folder
-        cacheFolder = new File(cacheFolderName);
-        if (!cacheFolder.exists()) {
-            cacheFolder.mkdirs();
-        }
+        this.cacheFolder = cacheFolder;
     }
 
     /**

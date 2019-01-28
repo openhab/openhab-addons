@@ -71,8 +71,10 @@ public class PollyTTSService implements TTSService {
      */
     static final String SERVICE_PID = "org.openhab." + SERVICE_CATEGORY + "." + SERVICE_ID;
 
-    /** Cache folder name is below userdata/polly/cache. */
-    private static final String CACHE_FOLDER_NAME = "pollytts/cache";
+    /**
+     * Cache folder under $userdata
+     */
+    private static final String CACHE_FOLDER_NAME = "cache";
 
     private final Logger logger = LoggerFactory.getLogger(PollyTTSService.class);
 
@@ -108,8 +110,16 @@ public class PollyTTSService implements TTSService {
     @Modified
     protected void modified(Map<String, Object> config) {
         try {
+            // create cache folder
+            File userData = new File(ConfigConstants.getUserDataFolder());
+            File cacheFolder = new File(new File(userData, CACHE_FOLDER_NAME), SERVICE_PID);
+            if (!cacheFolder.exists()) {
+                cacheFolder.mkdirs();
+            }
+            logger.info("Using cache folder {}", cacheFolder.getAbsolutePath());
+
             pollyTTSConfig = new PollyTTSConfig(config);
-            pollyTTSImpl = new CachedPollyTTSCloudImpl(pollyTTSConfig, getCacheFolderName());
+            pollyTTSImpl = new CachedPollyTTSCloudImpl(pollyTTSConfig, cacheFolder);
 
             audioFormats.clear();
             audioFormats.addAll(initAudioFormats());
@@ -118,7 +128,6 @@ public class PollyTTSService implements TTSService {
             voices.addAll(initVoices());
 
             logger.debug("PollyTTS service initialized");
-            logger.debug("Using PollyTTS cache folder {}", getCacheFolderName());
         } catch (Exception e) {
             logger.error("Failed to initialize PollyTTS", e);
         }
@@ -240,14 +249,6 @@ public class PollyTTSService implements TTSService {
         } else {
             throw new IllegalArgumentException("Audio format " + format.getCodec() + " not yet supported");
         }
-    }
-
-    /**
-     * fetch the name of cache folder to use
-     */
-    private String getCacheFolderName() {
-        // we assume that this folder does NOT have a trailing separator
-        return ConfigConstants.getUserDataFolder() + File.separator + CACHE_FOLDER_NAME;
     }
 
     /**
