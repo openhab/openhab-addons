@@ -73,10 +73,10 @@ public class MethodFactory {
 
     /**
      * @param type scene type {@link DeviceMethod#SCENE_TYPE_COLOR}
-     *            {@link DeviceMethod#SCENE_TYPE_CT}
-     *            {@link DeviceMethod#SCENE_TYPE_DELAY}
-     *            {@link DeviceMethod#SCENE_TYPE_HSV}
-     *            {@link DeviceMethod#SCENE_TYPE_CF}
+     *                 {@link DeviceMethod#SCENE_TYPE_CT}
+     *                 {@link DeviceMethod#SCENE_TYPE_DELAY}
+     *                 {@link DeviceMethod#SCENE_TYPE_HSV}
+     *                 {@link DeviceMethod#SCENE_TYPE_CF}
      *
      */
     public static DeviceMethod buildScene(String type, int value, int brightness, int count, int endAction,
@@ -166,6 +166,8 @@ public class MethodFactory {
             case stripe:
                 return new DeviceMethod(MethodAction.PROP,
                         new Object[] { "power", "name", "bright", "ct", "rgb", "hue", "sat" });
+            case desklamp:
+                return new DeviceMethod(MethodAction.PROP, new Object[] { "power", "name", "bright", "ct" });
             default:
                 return null;
         }
