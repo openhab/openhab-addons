@@ -12,9 +12,11 @@ Export-Package:
  org.openhab.binding.lgtvserial.handler
 Import-Package: 
  gnu.io,
+ javax.measure.quantity;version="1.0.0",
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.library.unit,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.thing.binding.builder,

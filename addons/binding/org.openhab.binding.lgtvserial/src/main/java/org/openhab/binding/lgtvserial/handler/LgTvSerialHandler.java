@@ -13,11 +13,13 @@
 package org.openhab.binding.lgtvserial.handler;
 
 import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.PercentType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -25,122 +27,179 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.lgtvserial.LgTvSerialBindingConstants;
+import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.lgtvserial.internal.protocol.serial.LGSerialCommand;
+import org.openhab.binding.lgtvserial.internal.protocol.serial.LGSerialCommunicator;
+import org.openhab.binding.lgtvserial.internal.protocol.serial.LGSerialResponse;
+import org.openhab.binding.lgtvserial.internal.protocol.serial.LGSerialResponseListener;
+import org.openhab.binding.lgtvserial.internal.protocol.serial.SerialCommunicatorFactory;
+import org.openhab.binding.lgtvserial.internal.protocol.serial.commands.CommandFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gnu.io.NRSerialPort;
 
 /**
  * The {@link LgTvSerialHandler} contains all the logic of this simple binding. It
  * is responsible for handling commands and sending them to the serial port.
  *
  * @author Marius Bjoernstad - Initial contribution
+ * @author Richard Lavoie - Major rework to add many more channels and support daisy chaining
  */
 public class LgTvSerialHandler extends BaseThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(LgTvSerialHandler.class);
-    private static final int BAUD = 9600;
-    private NRSerialPort serialPort;
-    private OutputStreamWriter output;
-    private String portName;
-    long lastCommandTime = System.currentTimeMillis();
-    boolean lastCommandWasPower = false;
-    private static final long POWER_COMMAND_DELAY_MS = 500;
+    /**
+     * Interval at which to send update refresh commands.
+     */
+    private static final int EVENT_REFRESH_INTERVAL = 120;
 
-    public LgTvSerialHandler(Thing thing) {
+    /**
+     * Logger.
+     */
+    private final Logger logger = LoggerFactory.getLogger(LgTvSerialHandler.class);
+
+    /**
+     * Serial communicator factory used to retrieve the communicator for a given port.
+     */
+    private final SerialCommunicatorFactory factory;
+
+    /**
+     * Communicator used to send commands to the TV(s).
+     */
+    private LGSerialCommunicator communicator;
+
+    /**
+     * List of linked items used for the refresh polling.
+     */
+    private Map<ChannelUID, LGSerialCommand> channelCommands = Collections.synchronizedMap(new HashMap<>());
+
+    /**
+     * Set ID of this TV.
+     */
+    private LGSerialResponseListener responseListener;
+
+    /**
+     * Polling updater job.
+     */
+    private ScheduledFuture<?> updateJob;
+
+    /**
+     * Create the LG TV hander.
+     *
+     * @param thing   Thing associated to this handler
+     * @param factory Factory to retrieve a communicator for a given port
+     */
+    public LgTvSerialHandler(Thing thing, SerialCommunicatorFactory factory) {
         super(thing);
+        this.factory = factory;
     }
 
     @Override
-    public void initialize() {
-        portName = (String) getThing().getConfiguration().get("port");
+    public synchronized void initialize() {
+        String portName = (String) getThing().getConfiguration().get("port");
+        BigDecimal setIdParam = (BigDecimal) getThing().getConfiguration().get("setId");
+        int setId = 1;
+        if (setIdParam != null) {
+            setId = setIdParam.intValue();
+        }
+        final int set = setId;
+        responseListener = new LGSerialResponseListener() {
+
+            @Override
+            public int getSetID() {
+                return set;
+            }
+
+            @Override
+            public void onSuccess(ChannelUID channel, LGSerialResponse response) {
+                State state = response.getState();
+                logger.debug("Updating channel " + channel + " with value " + state);
+                updateState(channel, state);
+            }
+
+            @Override
+            public void onFailure(ChannelUID channel, LGSerialResponse response) {
+                logger.debug("Received error response for channel " + channel + " : " + response.getState());
+            }
+
+        };
+
         if (portName != null) {
-            serialPort = new NRSerialPort(portName, BAUD);
-            if (serialPort.connect()) {
-                updateStatus(ThingStatus.ONLINE);
-                output = new OutputStreamWriter(serialPort.getOutputStream());
+            communicator = factory.getInstance(portName);
+            if (communicator != null) {
+                communicator.register(responseListener);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Failed to connect to serial port " + portName);
-                logger.debug("Failed to connect to serial port {}", portName);
+                logger.debug("Failed to connect to serial port " + portName);
+                return;
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Serial port name not configured");
             logger.debug("Serial port name not configured");
+            return;
+        }
+
+        if (updateJob == null || updateJob.isCancelled()) {
+            updateJob = scheduler.scheduleWithFixedDelay(eventRunnable, 0, EVENT_REFRESH_INTERVAL, TimeUnit.SECONDS);
+        }
+
+        updateStatus(ThingStatus.ONLINE);
+
+    }
+
+    @Override
+    public synchronized void dispose() {
+        if (updateJob != null && !updateJob.isCancelled()) {
+            updateJob.cancel(true);
+            updateJob = null;
+        }
+        if (communicator != null) {
+            communicator.unregister(responseListener);
         }
     }
 
     @Override
-    public void dispose() {
-        if (serialPort != null) {
-            serialPort.disconnect();
-            serialPort = null;
+    public void channelLinked(ChannelUID channelUID) {
+        LGSerialCommand command = CommandFactory.createCommandFor(channelUID, responseListener);
+        if (command == null) {
+            logger.error("A command could not be found for channel name '" + channelUID.getId()
+                    + "'. Please create an issue on the openhab project for the lgtvserial binding. ");
+            return;
         }
+        this.channelCommands.put(channelUID, command);
+        handleCommand(channelUID, RefreshType.REFRESH);
     }
 
     @Override
-    public synchronized void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            return; // Protocol doesn't support refreshing
-        }
+    public void channelUnlinked(ChannelUID channelUID) {
+        this.channelCommands.remove(channelUID);
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
         try {
-            long now = System.currentTimeMillis();
-
-            if (lastCommandWasPower && now - lastCommandTime < POWER_COMMAND_DELAY_MS) {
-                try {
-                    Thread.sleep(POWER_COMMAND_DELAY_MS - (now - lastCommandTime));
-                    now += POWER_COMMAND_DELAY_MS - (now - lastCommandTime);
-                } catch (InterruptedException e) {
-                    return;
-                }
+            if (command instanceof RefreshType) {
+                channelCommands.get(channelUID).execute(channelUID, communicator, null);
+            } else {
+                channelCommands.get(channelUID).execute(channelUID, communicator, command);
             }
-            lastCommandWasPower = false;
-            if (channelUID.getId().equals(LgTvSerialBindingConstants.CHANNEL_POWER) && (command instanceof OnOffType)) {
-
-                if (now - lastCommandTime < POWER_COMMAND_DELAY_MS) {
-                    try {
-                        Thread.sleep(POWER_COMMAND_DELAY_MS - (now - lastCommandTime));
-                    } catch (InterruptedException e) {
-                        return;
-                    }
-                }
-                if (command == OnOffType.ON) {
-                    output.write("ka 0 1\r");
-                } else if (command == OnOffType.OFF) {
-                    output.write("ka 0 0\r");
-                }
-                lastCommandWasPower = true;
-                updateState(channelUID, (OnOffType) command);
-            } else if (channelUID.getId().equals(LgTvSerialBindingConstants.CHANNEL_INPUT)) {
-                output.write(String.format("xb 0 %x\r", Integer.parseInt(command.toString())));
-                updateState(channelUID, new StringType(command.toString()));
-            } else if (channelUID.getId().equals(LgTvSerialBindingConstants.CHANNEL_VOLUME)
-                    && command instanceof PercentType) {
-                PercentType vol = (PercentType) command;
-                output.write(String.format("kf 0 %x\r", vol.intValue()));
-                updateState(channelUID, (PercentType) command);
-            } else if (channelUID.getId().equals(LgTvSerialBindingConstants.CHANNEL_MUTE)
-                    && (command instanceof OnOffType)) {
-                if (command == OnOffType.ON) {
-                    output.write("ke 0 0\r");
-                } else if (command == OnOffType.OFF) {
-                    output.write("ke 0 1\r");
-                }
-                updateState(channelUID, (OnOffType) command);
-            } else if (channelUID.getId().equals(LgTvSerialBindingConstants.CHANNEL_BACKLIGHT)
-                    && (command instanceof PercentType)) {
-                PercentType level = (PercentType) command;
-                output.write(String.format("mg 0 %x\r", level.intValue()));
-                updateState(channelUID, (PercentType) command);
-            } else if (channelUID.getId().equals(LgTvSerialBindingConstants.CHANNEL_COLOR_TEMPERATURE)) {
-                output.write(String.format("ku 0 %x\r", Integer.parseInt(command.toString())));
-                updateState(channelUID, new StringType(command.toString()));
-            }
-            output.flush();
-            lastCommandTime = now;
         } catch (IOException e) {
-            logger.error("Serial port write error", e);
+            logger.warn("Serial port write error", e);
         }
     }
+
+    private Runnable eventRunnable = () -> {
+        synchronized (channelCommands) {
+            for (Map.Entry<ChannelUID, LGSerialCommand> entry : channelCommands.entrySet()) {
+                if (Thread.currentThread().isInterrupted()) {
+                    logger.debug("Thread interrupted, stopping");
+                    break;
+                }
+                try {
+                    entry.getValue().execute(entry.getKey(), communicator, null);
+                } catch (IOException e) {
+                    logger.error("An error occured while sending an update command for " + entry.getKey(), e);
+                }
+            }
+        }
+    };
 }

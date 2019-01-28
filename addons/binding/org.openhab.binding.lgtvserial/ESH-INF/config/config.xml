@@ -1,0 +1,22 @@
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+	http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+	<config-description uri="thing-type:lgtvserial:serial">
+		<parameter name="port" type="text">
+			<context>serial-port</context>
+			<label>Serial port</label>
+			<description>Select serial port (COM1, /dev/ttyS0, ...)</description>
+			<required>true</required>
+			<default>/dev/ttyS0</default>
+		</parameter>
+		<parameter name="setId" type="integer">
+			<label>Set ID</label>
+			<description>Set ID configured in the TV. If 0, this will send a command to every chained TV.</description>
+			<required>true</required>
+			<default>1</default>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
+

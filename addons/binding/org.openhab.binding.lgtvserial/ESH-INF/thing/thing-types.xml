@@ -1,87 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="lgtvserial"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
+	<!-- This thing should know just about every commands any LG TV could support.
+	This would be the thing to use if we haven't yet defined a proper thing limiting the supported
+	channels. -->
 	<thing-type id="lgtv">
-		<label>LG TV</label>
-		<description>LG television connected through a serial interface.</description>
+		<label>Generic LG TV</label>
+		<description>Generic LG television connected through a serial interface. This thing should be used only when there is no proper thing defined for your TV model as it has most existing channels for most known commands.</description>
 
 		<channels>
-			<channel id="power" typeId="power"/>
-			<channel id="input" typeId="input"/>
-			<channel id="volume" typeId="volume"/>
-			<channel id="mute" typeId="mute"/>
+			<channel id="3d" typeId="3d"/>
+			<channel id="3d-extended" typeId="3d-extended"/>
+			<channel id="aspect-ratio" typeId="aspect-ratio"/>
+			<channel id="auto-sleep" typeId="auto-sleep"/>
+			<channel id="auto-volume" typeId="auto-volume"/>
 			<channel id="backlight" typeId="backlight"/>
+			<channel id="bass" typeId="bass"/>
+			<channel id="brightness" typeId="brightness"/>
+			<channel id="color" typeId="color"/>
 			<channel id="color-temperature" typeId="color-temperature"/>
+			<channel id="color-temperature2" typeId="color-temperature2"/>
+			<channel id="contrast" typeId="contrast"/>
+			<channel id="dpm" typeId="dpm"/>
+			<channel id="elapsed-time" typeId="elapsed-time"/>
+			<channel id="energy-saving" typeId="energy-saving"/>
+			<channel id="fan-fault-check" typeId="fan-fault-check"/>
+			<channel id="h-position" typeId="h-position"/>
+			<channel id="input" typeId="input"/>
+			<channel id="input2" typeId="input"/>
+			<channel id="ir-key-code" typeId="ir-key-code"/>
+			<channel id="ism-method" typeId="ism-method"/>
+			<channel id="lamp-fault-check" typeId="lamp-fault-check"/>
+			<channel id="natural-mode" typeId="natural-mode"/>
+			<channel id="osd-language" typeId="osd-language"/>
+			<channel id="osd-select" typeId="osd-select"/>
+			<channel id="picture-mode" typeId="picture-mode"/>
+			<channel id="power" typeId="power"/>
+			<channel id="power-indicator" typeId="power-indicator"/>
+			<channel id="power-saving" typeId="power-saving"/>
+			<channel id="raw" typeId="raw"/>
+			<channel id="screen-mute" typeId="screen-mute"/>
+			<channel id="serial-number" typeId="serial-number"/>
+			<channel id="sharpness" typeId="sharpness"/>
+			<channel id="sleep-time" typeId="sleep-time"/>
+			<channel id="software-version" typeId="software-version"/>
+			<channel id="sound-mode" typeId="sound-mode"/>
+			<channel id="speaker" typeId="speaker"/>
+			<channel id="temperature-value" typeId="temperature-value"/>
+			<channel id="tile" typeId="tile"/>
+			<channel id="tile-h-position" typeId="tile-h-position"/>
+			<channel id="tile-h-size" typeId="tile-h-size"/>
+			<channel id="tile-id-set" typeId="tile-id-set"/>
+			<channel id="tile-v-position" typeId="tile-v-position"/>
+			<channel id="tile-v-size" typeId="tile-v-size"/>
+			<!-- Used to set the time on the TV, but have no clue yet how to handle this...
+			<channel id="time" typeId="time"/>
+			-->
+			<channel id="tint" typeId="tint"/>
+			<channel id="treble" typeId="treble"/>
+			<channel id="volume" typeId="volume"/>
+			<channel id="volume-mute" typeId="volume-mute"/>
+			<channel id="v-position" typeId="v-position"/>
 		</channels>
 
-		<config-description>
-			<parameter name="port" type="text">
-				<label>Serial port</label>
-				<context>serial-port</context>
-				<description>Select serial port (COM1, /dev/ttyS0, ...)</description>
-				<required>true</required>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:lgtvserial:serial" />
 	</thing-type>
 
-	<channel-type id="power">
-		<item-type>Switch</item-type>
-		<label>Power</label>
-		<description>Power on/off</description>
-	</channel-type>
-
-	<channel-type id="input">
-		<item-type>String</item-type>
-		<label>Input</label>
-		<description>Input select</description>
-		<state>
-			<options>
-				<option value="144">HDMI1</option>
-				<option value="145">HDMI2</option>
-				<option value="146">HDMI3</option>
-				<option value="0">DTV</option>
-				<option value="16">Analog</option>
-				<option value="32">AV</option>
-				<option value="64">Component</option>
-				<option value="96">RGB</option>
-			</options>
-		</state>
-	</channel-type>
-
-	<channel-type id="volume">
-		<item-type>Dimmer</item-type>
-		<label>Volume</label>
-		<description>Volume control (%)</description>
-		<category>SoundVolume</category>
-	</channel-type>
-
-	<channel-type id="mute">
-		<item-type>Switch</item-type>
-		<label>Mute</label>
-		<description>Mute on/off</description>
-		<category>Mute</category>
-	</channel-type>
-
-	<channel-type id="backlight">
-		<item-type>Dimmer</item-type>
-		<label>Backlight</label>
-		<description>Display backlight brightness</description>
-	</channel-type>
-
-	<channel-type id="color-temperature">
-		<item-type>String</item-type>
-		<label>Color temperature</label>
-		<description>Color temperature of the display</description>
-		<state>
-			<options>
-				<option value="0">Cool</option>
-				<option value="1">Normal</option>
-				<option value="2">Warm</option>
-			</options>
-		</state>
-	</channel-type>
-
 </thing:thing-descriptions>
+

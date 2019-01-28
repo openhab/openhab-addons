@@ -1,0 +1,569 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="lgtvserial"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="3d">
+		<item-type>String</item-type>
+		<label>3d</label>
+		<description>Change the 3d mode, if your TV supports it</description>
+	</channel-type>
+
+	<channel-type id="3d-extended">
+		<item-type>String</item-type>
+		<label>3d extended</label>
+		<description>Change the 3d option, if your TV supports it</description>
+	</channel-type>
+
+	<channel-type id="aspect-ratio">
+		<item-type>String</item-type>
+		<label>Aspect ratio</label>
+		<description>Adjust the screen format</description>
+		<state>
+			<options>
+				<option value="01">4:3</option>
+				<option value="02">16:9</option>
+				<option value="04">Zoom</option>
+				<option value="06">Set by program</option>
+				<option value="09">Just scan</option>
+				<option value="10">Cinema Zoom 1</option>
+				<option value="11">Cinema Zoom 2</option>
+				<option value="12">Cinema Zoom 3</option>
+				<option value="13">Cinema Zoom 4</option>
+				<option value="14">Cinema Zoom 5</option>
+				<option value="15">Cinema Zoom 6</option>
+				<option value="16">Cinema Zoom 7</option>
+				<option value="17">Cinema Zoom 8</option>
+				<option value="18">Cinema Zoom 9</option>
+				<option value="19">Cinema Zoom 10</option>
+				<option value="1A">Cinema Zoom 11</option>
+				<option value="1B">Cinema Zoom 12</option>
+				<option value="1C">Cinema Zoom 13</option>
+				<option value="1D">Cinema Zoom 14</option>
+				<option value="1E">Cinema Zoom 15</option>
+				<option value="1F">Cinema Zoom 16</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="auto-sleep">
+		<item-type>Switch</item-type>
+		<label>Auto sleep</label>
+		<description>Set Auto Sleep</description>
+	</channel-type>
+
+	<channel-type id="auto-volume">
+		<item-type>Switch</item-type>
+		<label>Auto volume</label>
+		<description>Automatically adjust the volume level</description>
+	</channel-type>
+
+	<channel-type id="backlight">
+		<item-type>Dimmer</item-type>
+		<label>Backlight</label>
+		<description>Display backlight brightness</description>
+	</channel-type>
+
+	<channel-type id="balance">
+		<item-type>Dimmer</item-type>
+		<label>Balance</label>
+		<description>Adjust balance</description>
+	</channel-type>
+
+	<channel-type id="bass">
+		<item-type>Dimmer</item-type>
+		<label>Bass</label>
+		<description>Adjust bass</description>
+	</channel-type>
+
+	<channel-type id="brightness">
+		<item-type>Dimmer</item-type>
+		<label>Brightness</label>
+		<description>Adjust screen brightness</description>
+	</channel-type>
+
+	<channel-type id="contrast">
+		<item-type>Dimmer</item-type>
+		<label>Contrast</label>
+		<description>Contrast</description>
+	</channel-type>
+
+	<channel-type id="color">
+		<item-type>Dimmer</item-type>
+		<label>Color</label>
+		<description>Adjust screen color</description>
+	</channel-type>
+
+	<channel-type id="color-temperature">
+		<item-type>String</item-type>
+		<label>Color temperature</label>
+		<description>Color temperature of the display</description>
+		<state>
+			<options>
+				<option value="0">Cool</option>
+				<option value="1">Normal</option>
+				<option value="2">Warm</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="color-temperature2">
+		<item-type>Dimmer</item-type>
+		<label>Color temperature</label>
+		<description>Color temperature of the display (between 0 and 100)</description>
+	</channel-type>
+
+	<channel-type id="dpm">
+		<item-type>Switch</item-type>
+		<label>DPM Select</label>
+		<description>Set the DPM (Display Power Management) function</description>
+	</channel-type>
+
+	<channel-type id="elapsed-time">
+		<item-type>String</item-type>
+		<label>Elapsed time</label>
+		<description>Read the elapsed time</description>
+	</channel-type>
+
+	<channel-type id="energy-saving">
+		<item-type>String</item-type>
+		<label>Energy Saving</label>
+		<description>Control the energy saving function</description>
+		<state>
+			<options>
+				<option value="00">Off</option>
+				<option value="01">Minimum</option>
+				<option value="02">Medium</option>
+				<option value="03">Maximum</option>
+				<option value="04">Auto/Intelligent sensor (depending on model)</option>
+				<option value="05">Screen off</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="fan-fault-check">
+		<item-type>String</item-type>
+		<label>Fan fault</label>
+		<description>Check the fan fault of the TV</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">Fan fault</option>
+				<option value="1">Fan OK</option>
+				<option value="2">N/A(Not Available)</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="h-position">
+		<item-type>Dimmer</item-type>
+		<label>H Position</label>
+		<description>Set the horizontal position</description>
+	</channel-type>
+
+	<channel-type id="input">
+		<item-type>String</item-type>
+		<label>Input</label>
+		<description>Input select</description>
+		<state>
+			<options>
+				<option value="00">DTV (Antenna)</option>
+				<option value="01">DTV (cable)</option>
+				<option value="02">AV</option> <!-- Found in M6503C -->
+				<option value="04">Component</option> <!-- Found in M6503C -->
+				<option value="07">RGB (PC)</option> <!-- Found in M6503C -->
+				<option value="08">HDMI (DTV)</option> <!-- Found in M6503C -->
+				<option value="09">HDMI (PC)</option> <!-- Found in M6503C -->
+				<option value="10">Analog (Antenna)</option>
+				<option value="11">Analog (Cable)</option>
+				<option value="20">AV or AV1</option>
+				<option value="21">AV2</option>
+				<option value="40">Component or Component1</option>
+				<option value="41">Component2</option>
+				<option value="60">RGB-PC</option>
+				<option value="90">HDMI1</option>
+				<option value="91">HDMI2</option>
+				<option value="92">HDMI3</option>
+				<option value="93">HDMI4</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="ir-key-code">
+		<item-type>String</item-type>
+		<label>IR Code</label>
+		<description>Send IR remote key code</description>
+		<state>
+			<options>
+				<option value="00">Channel up</option>
+				<option value="01">Channel down</option>
+				<option value="02">Volume up</option>
+				<option value="03">Volume down</option>
+				<option value="06">Right</option>
+				<option value="07">Left</option>
+				<option value="08">Power toggle</option>
+				<option value="09">Mute/Delete</option>
+				<option value="0B">Input</option>
+				<option value="0C">Portal</option>
+				<option value="0E">Sleep</option>
+				<option value="0F">TV</option>
+				<option value="10">Number 0</option>
+				<option value="11">Number 1</option>
+				<option value="12">Number 2</option>
+				<option value="13">Number 3</option>
+				<option value="14">Number 4</option>
+				<option value="15">Number 5</option>
+				<option value="16">Number 6</option>
+				<option value="17">Number 7</option>
+				<option value="18">Number 8</option>
+				<option value="19">Number 9</option>
+				<option value="1A">Flashbk or Q.VIEW</option>
+				<option value="1E">FAV/MARK</option>
+				<option value="28">Back or Return</option>
+				<option value="30">AV mode</option>
+				<option value="40">Up</option>
+				<option value="41">Down</option>
+				<option value="43">Home or Menu</option>
+				<option value="44">SET/Enter</option>
+				<option value="45">Q.Menu</option>
+				<option value="4C">- (Dash)/List</option>
+				<option value="5A">AV Discrete</option>
+				<option value="5B">Exit</option>
+				<option value="61">Blue</option>
+				<option value="63">Yellow</option>
+				<option value="6E">PSM</option>
+				<option value="71">Green</option>
+				<option value="72">Red</option>
+				<option value="76">ARC (4:3) Discrete</option>
+				<option value="77">ARC (16:9) Discrete</option>
+				<option value="79">ARC Discrete/Ratio</option>
+				<option value="7E">SIMPLINK</option>
+				<option value="8E">&#x25B6;&#x25B6; Fast forward</option>
+				<option value="8F">&#x25C0;&#x25C0; Rewind</option>
+				<option value="95">Energy saving</option>
+				<option value="98">AV</option>
+				<option value="99">Auto config Discrete</option>
+				<option value="AA">Info</option>
+				<option value="AB">Guide</option>
+				<option value="AF">ARC (Zoom) Discrete</option>
+				<option value="B0">&#x25B6; Play</option>
+				<option value="B1">&#x25A0; Stop</option>
+				<option value="BA">&#x23F8; Freeze/Pause</option> <!-- Found in SAC34134216 for plasma TVs -->
+				<option value="BF">Component Discrete</option>
+				<option value="C0">Green</option> <!-- Found in SAC34134216 for LV255C, LV355B, LV355C series-->
+				<option value="C1">Red</option> <!-- Found in SAC34134216 for LV255C, LV355B, LV355C series-->
+				<option value="C2">Yellow</option> <!-- Found in SAC34134216 for LV255C, LV355B, LV355C series-->
+				<option value="C3">Blue</option> <!-- Found in SAC34134216 for LV255C, LV355B, LV355C series-->
+				<option value="C4">Power on</option>
+				<option value="C5">Power off</option>
+				<option value="C6">HDMI/DVI Discrete</option>
+				<option value="CC">HDMI2 Discrete</option>
+				<option value="CE">HDMI1 Discrete</option>
+				<option value="D0">AV2 Discrete</option>
+				<option value="D4">Component2 Discrete</option>
+				<option value="D5">RGB PC Discrete</option>
+				<option value="D6">TV Discrete</option>
+				<option value="DA">HDMI4 Discrete</option>
+				<option value="DC">3D</option>
+				<option value="E9">HDMI3 Discrete</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="ism-method">
+		<item-type>String</item-type>
+		<label>ISM Method</label>
+		<description>Avoid having a fixed image remain on screen</description>
+		<state>
+			<options>
+				<option value="01">Inversion</option>
+				<option value="02">Orbiter</option>
+				<option value="04">White Wash</option>
+				<option value="08">Normal</option>
+				<option value="10">Dot Wash</option>
+				<option value="20">Color Wash</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="lamp-fault-check">
+		<item-type>String</item-type>
+		<label>Lamp fault</label>
+		<description>Check the lamp fault of the TV</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">Fan fault</option>
+				<option value="1">Fan OK</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="natural-mode">
+		<item-type>Switch</item-type>
+		<label>Natural mode</label>
+		<description>To assign the Tile Natural mode for Tiling function</description>
+	</channel-type>
+
+	<channel-type id="osd-language">
+		<item-type>String</item-type>
+		<label>OSD Language</label>
+		<description>Set the OSD language</description>
+		<state>
+			<options>
+				<option value="00">English</option>
+				<option value="01">French</option>
+				<option value="02">German</option>
+				<option value="03">Spanish</option>
+				<option value="04">Italian</option>
+				<option value="05">Portuguese</option>
+				<option value="06">Chinese</option>
+				<option value="07">Japanese</option>
+				<option value="08">Korean</option>
+				<option value="09">Russian</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="osd-select">
+		<item-type>Switch</item-type>
+		<label>OSD</label>
+		<description>To select OSD (On Screen Display) on/off</description>
+	</channel-type>
+
+	<channel-type id="picture-mode">
+		<item-type>String</item-type>
+		<label>Picture mode</label>
+		<description>To adjust picture mode</description>
+		<state>
+			<options>
+				<option value="00">Vivid</option>
+				<option value="01">Standard</option>
+				<option value="02">Cinema</option>
+				<option value="03">Sport</option>
+				<option value="04">Game</option>
+				<option value="05">User1</option>
+				<option value="06">User2</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Power on/off</description>
+	</channel-type>
+
+	<channel-type id="power-indicator">
+		<item-type>Switch</item-type>
+		<label>Power indicator</label>
+		<description>To set the LED for Power Indicator</description>
+	</channel-type>
+
+	<channel-type id="power-saving">
+		<item-type>String</item-type>
+		<label>Power saving</label>
+		<description>Set the Power saving mode</description>
+		<state>
+			<options>
+				<option value="00">Off</option>
+				<option value="01">Static level 1</option>
+				<option value="02">Static level 2</option>
+				<option value="03">Static level 3</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="raw" advanced="true">
+		<item-type>String</item-type>
+		<label>Raw</label>
+		<description>Send raw command over the serial power directly to TV(s)</description>
+	</channel-type>
+
+	<channel-type id="screen-mute">
+		<item-type>String</item-type>
+		<label>Screen mute</label>
+		<description>Select screen mute on/off</description>
+		<state>
+			<options>
+				<option value="00">Screen mute off (Picture on), Video-out Mute off</option>
+				<option value="01">Screen mute on (Picture off)</option>
+				<option value="10">Video-out Mute on</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="serial-number">
+		<item-type>String</item-type>
+		<label>Serial number</label>
+		<description>Read the serial numbers</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="sharpness">
+		<item-type>Dimmer</item-type>
+		<label>Sharpness</label>
+		<description>Adjust screen sharpness</description>
+	</channel-type>
+
+	<!-- Definition of the M6503C definition as this is the only one we've seen so far -->
+	<channel-type id="sleep-time">
+		<item-type>String</item-type>
+		<label>Sleep time</label>
+		<description>Set sleep time</description>
+		<state>
+			<options>
+				<option value="00">Off</option>
+				<option value="01">10</option>
+				<option value="02">20</option>
+				<option value="03">30</option>
+				<option value="04">60</option>
+				<option value="05">90</option>
+				<option value="06">120</option>
+				<option value="07">180</option>
+				<option value="08">240</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<!-- Definition of the M6503C definition as this is the only one we've seen so far -->
+	<channel-type id="sound-mode">
+		<item-type>String</item-type>
+		<label>Sound mode</label>
+		<description>To adjust sound mode</description>
+		<state>
+			<options>
+				<option value="00">Clear Voice</option>
+				<option value="01">Standard</option>
+				<option value="02">Music</option>
+				<option value="03">Cinema</option>
+				<option value="04">Sport</option>
+				<option value="05">Game</option>
+				<option value="06">User</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="software-version">
+		<item-type>String</item-type>
+		<label>Software version</label>
+		<description>Check the software version</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="speaker">
+		<item-type>Switch</item-type>
+		<label>Speaker</label>
+		<description>Turn the speaker on or off</description>
+	</channel-type>
+
+	<!-- Definition of the M6503C definition as this is the only one we've seen so far -->
+	<channel-type id="temperature-value">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature value</label>
+		<description>Read the inside temperature value</description>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<!-- Definition of the M6503C definition as this is the only one we've seen so far -->
+	<channel-type id="tile">
+		<item-type>String</item-type>
+		<label>Tile mode</label>
+		<description>Change a tile mode</description>
+		<state>
+			<options>
+				<option value="00">Tile mode off</option>
+				<option value="11">1 x 1 mode (same as off)</option>
+				<option value="12">1 x 2 mode</option>
+				<option value="13">1 x 3 mode</option>
+				<option value="14">1 x 4 mode</option>
+				<option value="15">1 x 5 mode</option>
+				<option value="21">2 x 1 mode</option>
+				<option value="22">2 x 2 mode</option>
+				<option value="23">2 x 3 mode</option>
+				<option value="24">2 x 4 mode</option>
+				<option value="25">2 x 5 mode</option>
+				<option value="31">3 x 1 mode</option>
+				<option value="32">3 x 2 mode</option>
+				<option value="33">3 x 3 mode</option>
+				<option value="34">3 x 4 mode</option>
+				<option value="35">3 x 5 mode</option>
+				<option value="41">4 x 1 mode</option>
+				<option value="42">4 x 2 mode</option>
+				<option value="43">4 x 3 mode</option>
+				<option value="44">4 x 4 mode</option>
+				<option value="45">4 x 5 mode</option>
+				<option value="51">5 x 1 mode</option>
+				<option value="52">5 x 2 mode</option>
+				<option value="53">5 x 3 mode</option>
+				<option value="54">5 x 4 mode</option>
+				<option value="55">5 x 5 mode</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="tile-h-position">
+		<item-type>Dimmer</item-type>
+		<label>Horizontal position</label>
+		<description>Set the horizontal position</description>
+	</channel-type>
+
+	<channel-type id="tile-h-size">
+		<item-type>Dimmer</item-type>
+		<label>Horizontal size</label>
+		<description>Set the horizontal size</description>
+	</channel-type>
+
+	<!-- Definition of the M6503C definition as this is the only one we've seen so far -->
+	<channel-type id="tile-id-set">
+		<item-type>Dimmer</item-type>
+		<label>Tile ID Set</label>
+		<description>To assign the Tile ID for Tiling function</description>
+		<state min="0" max="25" />
+	</channel-type>
+
+	<channel-type id="tile-v-position">
+		<item-type>Dimmer</item-type>
+		<label>Vertical position</label>
+		<description>Set the vertical position</description>
+	</channel-type>
+
+	<channel-type id="tile-v-size">
+		<item-type>Dimmer</item-type>
+		<label>Vertical size</label>
+		<description>Set the vertical size</description>
+	</channel-type>
+
+	<channel-type id="tint">
+		<item-type>Dimmer</item-type>
+		<label>Tint</label>
+		<description>Tint control (%)</description>
+	</channel-type>
+
+	<channel-type id="treble">
+		<item-type>Dimmer</item-type>
+		<label>Treble</label>
+		<description>Treble control (%)</description>
+	</channel-type>
+
+	<channel-type id="v-position">
+		<item-type>Dimmer</item-type>
+		<label>V Position</label>
+		<description>Set the vertical position</description>
+	</channel-type>
+
+	<channel-type id="volume">
+		<item-type>Dimmer</item-type>
+		<label>Volume</label>
+		<description>Volume control (%)</description>
+		<category>SoundVolume</category>
+	</channel-type>
+
+	<channel-type id="volume-mute">
+		<item-type>Switch</item-type>
+		<label>Mute</label>
+		<description>Mute on/off</description>
+		<category>Mute</category>
+	</channel-type>
+
+</thing:thing-descriptions>
+
