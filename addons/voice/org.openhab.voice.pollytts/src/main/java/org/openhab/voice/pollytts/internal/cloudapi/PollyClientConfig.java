@@ -52,13 +52,6 @@ public class PollyClientConfig {
     public static HashMap<String, String> labelToID = new HashMap<>();
 
     /**
-     * class constructor
-     */
-    public PollyClientConfig() {
-
-    }
-
-    /**
      * save the user unique accessKey for the service
      */
     public void setAccessKey(String key) {
@@ -90,7 +83,7 @@ public class PollyClientConfig {
     /**
      * get the life time for cache files
      */
-    static public int getExpireDate() {
+    public static int getExpireDate() {
         return PollyClientConfig.expireDate;
     }
 
@@ -120,7 +113,6 @@ public class PollyClientConfig {
      */
     public static void setLastDelete(long today) {
         PollyClientConfig.today = today;
-        ;
     }
 
     /**

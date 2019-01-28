@@ -1,11 +1,14 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.voice.pollytts
+Bundle-ActivationPolicy: lazy
 Bundle-ManifestVersion: 2
-Bundle-Name: PollyTSS Voice Service
+Bundle-Name: Polly Text-to-Speech
 Bundle-SymbolicName: org.openhab.voice.pollytts;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: .,
+Bundle-ClassPath: 
+ .,
  lib/aws-java-sdk-polly-1.11.136.jar,
  lib/aws-java-sdk-core-1.11.136.jar,
  lib/commons-logging-1.2.jar,
@@ -16,10 +19,10 @@ Bundle-ClassPath: .,
  lib/httpcore-4.4.4.jar,
  lib/joda-time-2.8.1.jar
 Import-Package: 
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.audio,
  org.eclipse.smarthome.core.voice,
- org.osgi.framework;version="1.9.0",
+ org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Bundle-ActivationPolicy: lazy

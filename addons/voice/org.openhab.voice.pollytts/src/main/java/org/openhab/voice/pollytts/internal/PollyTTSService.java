@@ -70,7 +70,7 @@ public class PollyTTSService implements TTSService {
     static final String SERVICE_PID = "org.openhab." + SERVICE_CATEGORY + "." + SERVICE_ID;
 
     /** Cache folder name is below userdata/polly/cache. */
-    private final String CACHE_FOLDER_NAME = "pollytts/cache";
+    private static final String CACHE_FOLDER_NAME = "pollytts/cache";
 
     private final Logger logger = LoggerFactory.getLogger(PollyTTSService.class);
 
