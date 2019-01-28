@@ -136,7 +136,6 @@ public class CommandFactory {
                 return new VSizeCommand(setId);
         }
         return null;
-
     }
 
 }
