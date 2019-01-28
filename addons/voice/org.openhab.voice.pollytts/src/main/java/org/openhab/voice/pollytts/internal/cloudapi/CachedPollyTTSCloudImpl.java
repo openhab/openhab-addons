@@ -32,9 +32,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Robert Hillman - Initial contribution
  */
-public class CachedPollyTTSCloudImplementation extends PollyTTSCloudImplementation {
+public class CachedPollyTTSCloudImpl extends PollyTTSCloudImpl {
 
-    private final Logger logger = LoggerFactory.getLogger(CachedPollyTTSCloudImplementation.class);
+    private final Logger logger = LoggerFactory.getLogger(CachedPollyTTSCloudImpl.class);
 
     private final File cacheFolder;
 
@@ -43,7 +43,7 @@ public class CachedPollyTTSCloudImplementation extends PollyTTSCloudImplementati
      * check to make sure the directory exist and
      * create it if necessary
      */
-    public CachedPollyTTSCloudImplementation(String cacheFolderName) throws IOException {
+    public CachedPollyTTSCloudImpl(String cacheFolderName) throws IOException {
         if (cacheFolderName == null) {
             throw new IOException("Folder for cache must be defined");
         }

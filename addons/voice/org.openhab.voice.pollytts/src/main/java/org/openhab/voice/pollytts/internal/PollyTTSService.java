@@ -29,7 +29,7 @@ import org.eclipse.smarthome.core.audio.AudioStream;
 import org.eclipse.smarthome.core.voice.TTSException;
 import org.eclipse.smarthome.core.voice.TTSService;
 import org.eclipse.smarthome.core.voice.Voice;
-import org.openhab.voice.pollytts.internal.cloudapi.CachedPollyTTSCloudImplementation;
+import org.openhab.voice.pollytts.internal.cloudapi.CachedPollyTTSCloudImpl;
 import org.openhab.voice.pollytts.internal.cloudapi.PollyClientConfig;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
@@ -77,7 +77,7 @@ public class PollyTTSService implements TTSService {
     /**
      * We need the cached implementation to allow for FixedLengthAudioStream.
      */
-    private CachedPollyTTSCloudImplementation pollyTssImpl;
+    private CachedPollyTTSCloudImpl pollyTssImpl;
 
     /**
      * Set of supported voices
@@ -260,8 +260,8 @@ public class PollyTTSService implements TTSService {
         }
     }
 
-    private final CachedPollyTTSCloudImplementation initVoiceImplementation() throws IOException {
-        CachedPollyTTSCloudImplementation apiImpl = new CachedPollyTTSCloudImplementation(getCacheFolderName());
+    private final CachedPollyTTSCloudImpl initVoiceImplementation() throws IOException {
+        CachedPollyTTSCloudImpl apiImpl = new CachedPollyTTSCloudImpl(getCacheFolderName());
         return apiImpl;
     }
 

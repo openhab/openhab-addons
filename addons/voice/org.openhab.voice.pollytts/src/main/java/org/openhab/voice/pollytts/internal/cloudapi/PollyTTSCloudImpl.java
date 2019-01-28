@@ -36,7 +36,7 @@ import com.amazonaws.services.polly.model.Voice;
  *
  * @author Robert Hillman - Initial contribution
  */
-public class PollyTTSCloudImplementation {
+public class PollyTTSCloudImpl {
 
     // private final Logger logger = LoggerFactory.getLogger(PollyTTSCloudImplementation.class);
 
