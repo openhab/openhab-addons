@@ -104,7 +104,7 @@ Once the parameter `forecastDays` will be changed, the available channel groups 
 | forecastHours03, forecastHours06, ... forecastHours120 | condition       | String               | Forecast weather condition.                                                |
 | forecastHours03, forecastHours06, ... forecastHours120 | condition-id    | String               | Id of the forecasted weather condition. **Advanced**                       |
 | forecastHours03, forecastHours06, ... forecastHours120 | icon            | Image                | Icon representing the forecasted weather condition.                        |
-| forecastHours03, forecastHours06, ... forecastHours120 | icon-id         | String               | Id fo the icon representing the forecasted weather condition. **Advanced** |
+| forecastHours03, forecastHours06, ... forecastHours120 | icon-id         | String               | Id of the icon representing the forecasted weather condition. **Advanced** |
 | forecastHours03, forecastHours06, ... forecastHours120 | temperature     | Number:Temperature   | Forecasted temperature.                                                    |
 | forecastHours03, forecastHours06, ... forecastHours120 | min-temperature | Number:Temperature   | Minimum forecasted temperature.                                            |
 | forecastHours03, forecastHours06, ... forecastHours120 | max-temperature | Number:Temperature   | Maximum forecasted temperature.                                            |
@@ -114,8 +114,8 @@ Once the parameter `forecastDays` will be changed, the available channel groups 
 | forecastHours03, forecastHours06, ... forecastHours120 | wind-direction  | Number:Angle         | Forecasted wind direction.                                                 |
 | forecastHours03, forecastHours06, ... forecastHours120 | gust-speed      | Number:Speed         | Forecasted gust speed. **Advanced**                                        |
 | forecastHours03, forecastHours06, ... forecastHours120 | cloudiness      | Number:Dimensionless | Forecasted cloudiness.                                                     |
-| forecastHours03, forecastHours06, ... forecastHours120 | rain            | Number:Length        | Expected rain volume.                                 |
-| forecastHours03, forecastHours06, ... forecastHours120 | snow            | Number:Length        | Expected snow volume.                                 |
+| forecastHours03, forecastHours06, ... forecastHours120 | rain            | Number:Length        | Expected rain volume.                                                      |
+| forecastHours03, forecastHours06, ... forecastHours120 | snow            | Number:Length        | Expected snow volume.                                                      |
 
 ### Daily Forecast
 
