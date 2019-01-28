@@ -13,6 +13,7 @@
 package org.openhab.voice.pollytts.internal;
 
 import static java.util.stream.Collectors.toSet;
+import static org.eclipse.smarthome.core.audio.AudioFormat.*;
 import static org.openhab.voice.pollytts.internal.PollyTTSService.*;
 
 import java.io.File;
@@ -195,7 +196,7 @@ public class PollyTTSService implements TTSService {
     private Set<Voice> initVoices() {
         // @formatter:off
         return pollyTTSImpl.getAvailableLocales().stream()
-            .flatMap(locale -> 
+            .flatMap(locale ->
                 pollyTTSImpl.getAvailableVoices(locale).stream()
                     .map(label -> new PollyTTSVoice(locale, label)))
             .collect(toSet());
@@ -218,10 +219,10 @@ public class PollyTTSService implements TTSService {
     private AudioFormat getAudioFormat(String apiFormat) {
         if ("MP3".equals(apiFormat)) {
             // use by default: MP3, 22khz_16bit_mono with bitrate 64 kbps
-            return new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_MP3, null, 16, 64000, 22050L);
+            return new AudioFormat(CONTAINER_NONE, CODEC_MP3, null, 16, 64000, 22050L);
         } else if ("OGG".equals(apiFormat)) {
             // use by default: OGG, 22khz_16bit_mono
-            return new AudioFormat(AudioFormat.CONTAINER_OGG, AudioFormat.CODEC_VORBIS, null, 16, null, 22050L);
+            return new AudioFormat(CONTAINER_OGG, CODEC_VORBIS, null, 16, null, 22050L);
         } else {
             throw new IllegalArgumentException("Audio format " + apiFormat + " not yet supported");
         }
@@ -232,9 +233,9 @@ public class PollyTTSService implements TTSService {
             // Override system specified with user preferred value
             return pollyTTSConfig.getAudioFormat();
         }
-        if (AudioFormat.CODEC_MP3.equals(format.getCodec())) {
+        if (CODEC_MP3.equals(format.getCodec())) {
             return "MP3";
-        } else if (AudioFormat.CODEC_VORBIS.equals(format.getCodec())) {
+        } else if (CODEC_VORBIS.equals(format.getCodec())) {
             return "OGG";
         } else {
             throw new IllegalArgumentException("Audio format " + format.getCodec() + " not yet supported");
