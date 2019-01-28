@@ -14,32 +14,27 @@ https://github.com/openhab/openhab2-addons
 
 == Third-party Content
 
-Socket.IO
+engine.io-client
 * License: MIT License
-* Project: https://socket.io/
+* Project: https://socketio.github.io/engine.io-client-java/
 * Source:  https://github.com/socketio/engine.io-client-java
 
-Socket.IO Client
-* License: MIT License
-* Project: https://socket.io/
-* Source:  https://github.com/socketio/socket.io-client-java
-
-JSON
+json
 * License: JSON License
-* Project: https://www.json.org
+* Project: https://github.com/stleary/JSON-java
 * Source:  https://github.com/stleary/JSON-java
 
-OkHttp
-* License: Apache 2.0 License
-* Project: https://square.github.io/okhttp
+okhttp
+* License: Apache License 2.0
+* Project: https://square.github.io/okhttp/
 * Source:  https://github.com/square/okhttp
 
-OkHttp-Ws
-* License: Apache 2.0 License
-* Project: https://square.github.io/okhttp
-* Source:  https://github.com/square/okhttp
-
-OkIO
-* License: Apache 2.0 License
-* Project: https://square.github.io/okio/2.x/okio/jvm/okio
+okio
+* License: Apache License 2.0
+* Project: https://github.com/square/okio
 * Source:  https://github.com/square/okio
+
+socket.io-client
+* License: MIT License
+* Project: https://socketio.github.io/socket.io-client-java/
+* Source:  https://github.com/socketio/socket.io-client-java
