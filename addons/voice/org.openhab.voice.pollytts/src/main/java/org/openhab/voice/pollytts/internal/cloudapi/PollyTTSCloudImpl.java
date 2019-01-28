@@ -40,7 +40,7 @@ public class PollyTTSCloudImpl {
 
     // private final Logger logger = LoggerFactory.getLogger(PollyTTSCloudImplementation.class);
 
-    private static Set<String> supportedAudioFormats = new HashSet<String>();
+    private static Set<String> supportedAudioFormats = new HashSet<>();
     static {
         supportedAudioFormats.add("MP3");
         supportedAudioFormats.add("OGG");
@@ -56,7 +56,7 @@ public class PollyTTSCloudImpl {
 
     // Get all supported locales by the TTS service
     public Set<Locale> getAvailableLocales() {
-        Set<Locale> supportedLocales = new HashSet<Locale>();
+        Set<Locale> supportedLocales = new HashSet<>();
         for (Voice voice : PollyClientConfig.pollyVoices) {
             supportedLocales.add(Locale.forLanguageTag(voice.getLanguageCode()));
         }
@@ -65,7 +65,7 @@ public class PollyTTSCloudImpl {
 
     // Get all supported voices.
     public Set<String> getAvailableVoices() {
-        Set<String> supportedVoices = new HashSet<String>();
+        Set<String> supportedVoices = new HashSet<>();
         for (Voice voice : PollyClientConfig.pollyVoices) {
             supportedVoices.add(voice.getName());
         }
@@ -74,7 +74,7 @@ public class PollyTTSCloudImpl {
 
     // Get all supported voices for a specified locale.
     public Set<String> getAvailableVoices(Locale locale) {
-        Set<String> localeVoices = new HashSet<String>();
+        Set<String> localeVoices = new HashSet<>();
         for (Voice voice : PollyClientConfig.pollyVoices) {
             if (voice.getLanguageCode().equalsIgnoreCase(locale.toLanguageTag())) {
                 localeVoices.add(voice.getName());

@@ -82,12 +82,12 @@ public class PollyTTSService implements TTSService {
     /**
      * Set of supported voices
      */
-    private HashSet<Voice> voices;
+    private Set<Voice> voices;
 
     /**
      * Set of supported audio formats
      */
-    private HashSet<AudioFormat> audioFormats;
+    private Set<AudioFormat> audioFormats;
 
     /**
      * DS activate, with access to ConfigAdmin
@@ -199,8 +199,8 @@ public class PollyTTSService implements TTSService {
      *
      * @return The voices of this instance
      */
-    private final HashSet<Voice> initVoices() {
-        HashSet<Voice> voices = new HashSet<Voice>();
+    private final Set<Voice> initVoices() {
+        Set<Voice> voices = new HashSet<>();
         Set<Locale> locales = pollyTssImpl.getAvailableLocales();
         for (Locale local : locales) {
             Set<String> voiceLabels = pollyTssImpl.getAvailableVoices(local);
@@ -217,8 +217,8 @@ public class PollyTTSService implements TTSService {
      *
      * @return The audio formats of this instance
      */
-    private final HashSet<AudioFormat> initAudioFormats() {
-        HashSet<AudioFormat> audioFormats = new HashSet<AudioFormat>();
+    private final Set<AudioFormat> initAudioFormats() {
+        Set<AudioFormat> audioFormats = new HashSet<>();
         Set<String> formats = pollyTssImpl.getAvailableAudioFormats();
         for (String format : formats) {
             audioFormats.add(getAudioFormat(format));
