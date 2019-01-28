@@ -112,7 +112,7 @@ Once the parameter `forecastDays` will be changed, the available channel groups 
 | forecastHours03, forecastHours06, ... forecastHours120 | wind-direction | Number:Angle         | Forecasted wind direction.                                                 |
 | forecastHours03, forecastHours06, ... forecastHours120 | gust-speed     | Number:Speed         | Forecasted gust speed. **Advanced**                                        |
 | forecastHours03, forecastHours06, ... forecastHours120 | cloudiness     | Number:Dimensionless | Forecasted cloudiness.                                                     |
-| forecastHours03, forecastHours06, ... forecastHours120 | rain           | Number:Length        | Expected rain volum.                                                      |
+| forecastHours03, forecastHours06, ... forecastHours120 | rain           | Number:Length        | Expected rain volume.                                                      |
 | forecastHours03, forecastHours06, ... forecastHours120 | snow           | Number:Length        | Expected snow volume.                                                      |
 
 ### Daily Forecast
