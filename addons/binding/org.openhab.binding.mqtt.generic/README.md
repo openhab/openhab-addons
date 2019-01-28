@@ -72,6 +72,7 @@ All things require a configured broker.
 * __formatBeforePublish__: Format a value before it is published to the MQTT broker. The default is to just pass the channel/item state. If you want to apply a prefix, say "MYCOLOR,", you would use "MYCOLOR,%s". If you want to adjust the precision of a number to for example 4 digits, you would use "%.4f".
 * __postCommand__: If the received MQTT value should not only update the state of linked items, but command them, enable this option. You usually need this enabled if your item is also linked to another channel, say a KNX actor, and you want a received MQTT payload to command that KNX actor. 
 * __retained__: The value will be published to the command topic as retained message. A retained value stays on the broker and can even be seen by MQTT clients that are subscribing at a later point in time. 
+* __trigger__: If true, the state topic will not update a state, but trigger a channel instead.
 
 ### Channel Type "string"
 
