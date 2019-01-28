@@ -266,7 +266,7 @@
 	<channel-type id="rain">
 		<item-type>Number:Length</item-type>
 		<label>Rain</label>
-		<description>Rain volume.</description>
+		<description>Rain volume for the last 3 hours.</description>
 		<category>Rain</category>
 		<state readOnly="true" pattern="%.2f %unit%" />
 	</channel-type>
@@ -282,7 +282,7 @@
 	<channel-type id="snow">
 		<item-type>Number:Length</item-type>
 		<label>Snow</label>
-		<description>Snow volume.</description>
+		<description>Snow volume for the last 3 hours.</description>
 		<category>Snow</category>
 		<state readOnly="true" pattern="%.2f %unit%" />
 	</channel-type>
