@@ -32,6 +32,7 @@ public class YeelightBindingConstants {
     public static final ThingTypeUID THING_TYPE_CTBULB = new ThingTypeUID(BINDING_ID, "ct_bulb");
     public static final ThingTypeUID THING_TYPE_WONDER = new ThingTypeUID(BINDING_ID, "wonder");
     public static final ThingTypeUID THING_TYPE_STRIPE = new ThingTypeUID(BINDING_ID, "stripe");
+    public static final ThingTypeUID THING_TYPE_DESKLAMP = new ThingTypeUID(BINDING_ID, "desklamp");
 
     // List of thing Parameters names
     public static final String PARAMETER_DEVICE_ID = "deviceId";
