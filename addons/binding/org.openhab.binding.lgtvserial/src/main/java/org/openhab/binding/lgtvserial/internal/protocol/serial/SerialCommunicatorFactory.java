@@ -26,9 +26,6 @@ import org.slf4j.LoggerFactory;
  */
 public class SerialCommunicatorFactory {
 
-    /**
-     * Logger.
-     */
     private final Logger logger = LoggerFactory.getLogger(SerialCommunicatorFactory.class);
 
     private Map<String, LGSerialCommunicator> instances = new HashMap<>();
@@ -45,17 +42,13 @@ public class SerialCommunicatorFactory {
     }
 
     private LGSerialCommunicator createCommunicator(final String portName) {
-
         return new LGSerialCommunicator(portName, new RegistrationCallback() {
-
             @Override
             public void onUnregister() {
                 logger.debug("Unregistered last handler, closing");
                 deleteInstance(portName);
             }
-
         });
-
     }
 
     protected synchronized void deleteInstance(String port) {

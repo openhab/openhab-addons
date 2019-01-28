@@ -110,7 +110,7 @@ public class LGSerialCommunicator {
      * Forward the response to the proper response handler, if a response was given.
      *
      * @param response Serial response
-     * @param channel  Channel to update
+     * @param channel Channel to update
      */
     private void updateHandler(LGSerialResponse response, ChannelUID channel) {
         if (response != null) {
@@ -123,7 +123,6 @@ public class LGSerialCommunicator {
                 }
             }
         }
-
     }
 
     public synchronized void register(LGSerialResponseListener listener) {
