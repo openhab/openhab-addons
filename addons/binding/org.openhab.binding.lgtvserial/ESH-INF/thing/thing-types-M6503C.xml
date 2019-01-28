@@ -23,7 +23,7 @@
 			<channel id="h-position" typeId="h-position" />
 			<!-- Not yet implemented
 			<channel id="h-size" typeId="h-size" />
-			 -->
+			-->
 			<channel id="input" typeId="input-M6503C"/>
 			<channel id="input2" typeId="input2-M6503C"/>
 			<channel id="ir-key-code" typeId="ir-key-code-M6503C" />

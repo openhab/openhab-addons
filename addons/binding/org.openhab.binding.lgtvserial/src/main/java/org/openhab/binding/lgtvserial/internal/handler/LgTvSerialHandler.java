@@ -84,7 +84,7 @@ public class LgTvSerialHandler extends BaseThingHandler {
     /**
      * Create the LG TV hander.
      *
-     * @param thing   Thing associated to this handler
+     * @param thing Thing associated to this handler
      * @param factory Factory to retrieve a communicator for a given port
      */
     public LgTvSerialHandler(Thing thing, SerialCommunicatorFactory factory) {
@@ -102,7 +102,6 @@ public class LgTvSerialHandler extends BaseThingHandler {
         }
         final int set = setId;
         responseListener = new LGSerialResponseListener() {
-
             @Override
             public int getSetID() {
                 return set;
@@ -143,7 +142,6 @@ public class LgTvSerialHandler extends BaseThingHandler {
         }
 
         updateStatus(ThingStatus.ONLINE);
-
     }
 
     @Override
