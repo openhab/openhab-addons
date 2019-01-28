@@ -12,15 +12,18 @@
  */
 package org.openhab.voice.pollytts.internal.cloudapi;
 
+import static java.util.stream.Collectors.toSet;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import com.amazonaws.services.polly.model.OutputFormat;
 import com.amazonaws.services.polly.model.SynthesizeSpeechRequest;
-import com.amazonaws.services.polly.model.SynthesizeSpeechResult;
 import com.amazonaws.services.polly.model.TextType;
 import com.amazonaws.services.polly.model.Voice;
 
@@ -38,20 +41,15 @@ import com.amazonaws.services.polly.model.Voice;
  */
 public class PollyTTSCloudImpl {
 
-    // private final Logger logger = LoggerFactory.getLogger(PollyTTSCloudImplementation.class);
-
-    private static Set<String> supportedAudioFormats = new HashSet<>();
-    static {
-        supportedAudioFormats.add("MP3");
-        supportedAudioFormats.add("OGG");
-    }
+    private static final Set<String> SUPPORTED_AUDIO_FORMATS = Collections
+            .unmodifiableSet(Stream.of("MP3", "OGG").collect(toSet()));
 
     /**
      * Get all supported audio formats by the TTS service. This includes MP3,
      * WAV and more audio formats as used in APIs.
      */
     public Set<String> getAvailableAudioFormats() {
-        return supportedAudioFormats;
+        return SUPPORTED_AUDIO_FORMATS;
     }
 
     // Get all supported locales by the TTS service
@@ -100,18 +98,15 @@ public class PollyTTSCloudImpl {
      *             cloud service
      */
     public InputStream getTextToSpeech(String text, String label, String audioFormat) {
-        InputStream is = null;
         String voiceID = PollyClientConfig.labelToID.get(label);
         String format = audioFormat.toLowerCase();
         if (audioFormat.equals("ogg")) {
             format = "ogg_vorbis";
         }
         TextType textType = text.startsWith("<speak>") ? TextType.Ssml : TextType.Text;
-        SynthesizeSpeechRequest synthReq = new SynthesizeSpeechRequest().withTextType(textType).withText(text)
+        SynthesizeSpeechRequest request = new SynthesizeSpeechRequest().withTextType(textType).withText(text)
                 .withVoiceId(voiceID).withOutputFormat(OutputFormat.fromValue(format));
-        SynthesizeSpeechResult synthRes = PollyClientConfig.pollyClientInterface.synthesizeSpeech(synthReq);
-        is = synthRes.getAudioStream();
-        return is;
+        return PollyClientConfig.pollyClientInterface.synthesizeSpeech(request).getAudioStream();
     }
 
 }

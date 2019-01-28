@@ -22,6 +22,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +46,7 @@ public class CachedPollyTTSCloudImpl extends PollyTTSCloudImpl {
      */
     public CachedPollyTTSCloudImpl(String cacheFolderName) throws IOException {
         if (cacheFolderName == null) {
-            throw new IOException("Folder for cache must be defined");
+            throw new IllegalArgumentException("Folder for cache must be defined");
         }
         // Lazy create the cache folder
         cacheFolder = new File(cacheFolderName);
@@ -62,7 +63,7 @@ public class CachedPollyTTSCloudImpl extends PollyTTSCloudImpl {
      * to identify last use.
      */
     public File getTextToSpeechAsFile(String text, String label, String audioFormat) throws IOException {
-        String fileNameInCache = getUniqeFilenameForText(text, label);
+        String fileNameInCache = getUniqueFilenameForText(text, label);
         // check if in cache
         File audioFileInCache = new File(cacheFolder, fileNameInCache + "." + audioFormat.toLowerCase());
         if (audioFileInCache.exists()) {
@@ -95,7 +96,7 @@ public class CachedPollyTTSCloudImpl extends PollyTTSCloudImpl {
      *
      * Sample: "Robert_00a2653ac5f77063bc4ea2fee87318d3"
      */
-    String getUniqeFilenameForText(String text, String label) {
+    private String getUniqueFilenameForText(String text, String label) {
         byte[] bytesOfMessage;
         MessageDigest md;
         try {
@@ -134,21 +135,14 @@ public class CachedPollyTTSCloudImpl extends PollyTTSCloudImpl {
     }
 
     private void writeText(File file, String text) throws IOException {
-        OutputStream outputStream = null;
-        try {
-            outputStream = new FileOutputStream(file);
+        try (OutputStream outputStream = new FileOutputStream(file)) {
             outputStream.write(text.getBytes("UTF-8"));
-        } finally {
-            if (outputStream != null) {
-                outputStream.close();
-            }
         }
     }
 
     private void updateTimeStamp(File file) throws IOException {
-        long timestamp = System.currentTimeMillis();
         // update use date for cache management
-        file.setLastModified(timestamp);
+        file.setLastModified(System.currentTimeMillis());
     }
 
     private void purgeAgedFiles() throws IOException {
@@ -159,18 +153,18 @@ public class CachedPollyTTSCloudImpl extends PollyTTSCloudImpl {
         long now = new Date().getTime();
         long diff = now - PollyClientConfig.getlastDelete();
         // only execute ~ once every 2 days if cache called
-        long oneDay = 24 * 60 * 60 * 1000;
+        long oneDayMillis = TimeUnit.DAYS.toMillis(1);
         logger.debug("PollyTTS cache cleaner lastdelete {}", diff);
-        if (diff > (2 * oneDay)) {
+        if (diff > (2 * oneDayMillis)) {
             PollyClientConfig.setLastDelete(now);
-            long xDaysAgo = PollyClientConfig.getExpireDate() * oneDay;
+            long xDaysAgo = PollyClientConfig.getExpireDate() * oneDayMillis;
             // Now search folders and delete old files
             int filesDeleted = 0;
-            for (File f : cacheFolder.listFiles()) {
-                diff = now - f.lastModified();
+            for (File file : cacheFolder.listFiles()) {
+                diff = now - file.lastModified();
                 if (diff > xDaysAgo) {
                     filesDeleted++;
-                    f.delete();
+                    file.delete();
                 }
             }
             logger.debug("PollyTTS cache cleaner deleted '{}' aged files", filesDeleted);

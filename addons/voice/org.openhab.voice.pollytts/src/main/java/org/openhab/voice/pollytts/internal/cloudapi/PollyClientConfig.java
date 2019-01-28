@@ -14,9 +14,8 @@ package org.openhab.voice.pollytts.internal.cloudapi;
 
 import java.util.HashMap;
 import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.AWSCredentials;
@@ -37,8 +36,6 @@ import com.amazonaws.services.polly.model.Voice;
  */
 public class PollyClientConfig {
 
-    private final Logger logger = LoggerFactory.getLogger(PollyClientConfig.class);
-
     private static String accessKey;
     private static String secretKey;
     private static String regionVal;
@@ -49,7 +46,7 @@ public class PollyClientConfig {
     public static AmazonPollyClient pollyClientInterface;
     public static List<Voice> pollyVoices;
     // translation function from unique voice label to voice id
-    public static HashMap<String, String> labelToID = new HashMap<>();
+    public static Map<String, String> labelToID = new HashMap<>();
 
     /**
      * save the user unique accessKey for the service
@@ -119,36 +116,24 @@ public class PollyClientConfig {
      * Initializes the amazon service Credentials
      * as a one time event, saved for future reference
      */
-    public boolean initPollyServiceInterface() {
-        // service interface not created
-        boolean initialized = false;
-        try {
-            AWSCredentials credentials = new BasicAWSCredentials(PollyClientConfig.accessKey,
-                    PollyClientConfig.secretKey);
+    public void initPollyServiceInterface() throws AmazonServiceException {
+        AWSCredentials credentials = new BasicAWSCredentials(PollyClientConfig.accessKey, PollyClientConfig.secretKey);
 
-            pollyClientInterface = (AmazonPollyClient) AmazonPollyClientBuilder.standard().withRegion(regionVal)
-                    .withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
+        pollyClientInterface = (AmazonPollyClient) AmazonPollyClientBuilder.standard().withRegion(regionVal)
+                .withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
 
-            DescribeVoicesRequest describeVoicesRequest = new DescribeVoicesRequest();
-            // ask Amazon Polly to describe available TTS voices.
-            DescribeVoicesResult describeVoicesResult = pollyClientInterface.describeVoices(describeVoicesRequest);
-            pollyVoices = describeVoicesResult.getVoices();
+        DescribeVoicesRequest describeVoicesRequest = new DescribeVoicesRequest();
+        // ask Amazon Polly to describe available TTS voices.
+        DescribeVoicesResult describeVoicesResult = pollyClientInterface.describeVoices(describeVoicesRequest);
+        pollyVoices = describeVoicesResult.getVoices();
 
-            // create voice to ID translation for service invocation
-            for (Voice voice : PollyClientConfig.pollyVoices) {
-                labelToID.put(voice.getName(), voice.getId());
-            }
-
-            // Initialize expired check date to 172800000 +1
-            // run today and ~ every 2 days if cache cleaner enabled
-            // 1 day = 24 * 60 * 60 * 1000 = 86,400,000
-            today = 172800001;
-
-            initialized = true;
-        } catch (AmazonServiceException e) {
-            logger.error("Failed to activate PollyTTS: {}", e.getMessage(), e);
+        // create voice to ID translation for service invocation
+        for (Voice voice : PollyClientConfig.pollyVoices) {
+            labelToID.put(voice.getName(), voice.getId());
         }
-        return initialized;
+
+        // run today and ~ every 2 days if cache cleaner enabled
+        today = TimeUnit.DAYS.toMillis(2) + 1;
     }
 
 }
