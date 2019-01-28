@@ -12,13 +12,11 @@
  */
 package org.openhab.voice.pollytts.internal.cloudapi;
 
-import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -56,7 +54,7 @@ public class PollyTTSCloudImpl {
     protected final PollyTTSConfig config;
 
     private final AmazonPolly client;
-    private final Map<String, String> labelToID = new HashMap<>();
+    private final Map<String, String> labelToID;
     private final List<Voice> voices;
 
     public PollyTTSCloudImpl(PollyTTSConfig config) {
@@ -68,9 +66,7 @@ public class PollyTTSCloudImpl {
         voices = client.describeVoices(new DescribeVoicesRequest()).getVoices();
 
         // create voice to ID translation for service invocation
-        for (Voice voice : voices) {
-            labelToID.put(voice.getName(), voice.getId());
-        }
+        labelToID = voices.stream().collect(toMap(Voice::getName, Voice::getId));
     }
 
     /**
@@ -82,29 +78,28 @@ public class PollyTTSCloudImpl {
     }
 
     public Set<Locale> getAvailableLocales() {
-        Set<Locale> supportedLocales = new HashSet<>();
-        for (Voice voice : voices) {
-            supportedLocales.add(Locale.forLanguageTag(voice.getLanguageCode()));
-        }
-        return supportedLocales;
+        // @formatter:off
+        return voices.stream()
+                .map(voice -> Locale.forLanguageTag(voice.getLanguageCode()))
+                .collect(toSet());
+        // @formatter:on
     }
 
     public Set<String> getAvailableVoices() {
-        Set<String> supportedVoices = new HashSet<>();
-        for (Voice voice : voices) {
-            supportedVoices.add(voice.getName());
-        }
-        return supportedVoices;
+        // @formatter:off
+        return voices.stream()
+                .map(Voice::getName)
+                .collect(toSet());
+        // @formatter:on
     }
 
     public Set<String> getAvailableVoices(Locale locale) {
-        Set<String> localeVoices = new HashSet<>();
-        for (Voice voice : voices) {
-            if (voice.getLanguageCode().equalsIgnoreCase(locale.toLanguageTag())) {
-                localeVoices.add(voice.getName());
-            }
-        }
-        return localeVoices;
+        // @formatter:off
+        return voices.stream()
+                .filter(voice -> voice.getLanguageCode().equalsIgnoreCase(locale.toLanguageTag()))
+                .map(Voice::getName)
+                .collect(toSet());
+        // @formatter:on
     }
 
     /**

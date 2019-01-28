@@ -12,6 +12,7 @@
  */
 package org.openhab.voice.pollytts.internal;
 
+import static java.util.stream.Collectors.toSet;
 import static org.openhab.voice.pollytts.internal.PollyTTSService.*;
 
 import java.io.File;
@@ -192,14 +193,13 @@ public class PollyTTSService implements TTSService {
      * @return The voices of this instance
      */
     private Set<Voice> initVoices() {
-        Set<Voice> voices = new HashSet<>();
-        for (Locale local : pollyTTSImpl.getAvailableLocales()) {
-            for (String voiceLabel : pollyTTSImpl.getAvailableVoices(local)) {
-                voices.add(new PollyTTSVoice(local, voiceLabel));
-                logger.debug("locale '{}' for voice {}", local, voiceLabel);
-            }
-        }
-        return voices;
+        // @formatter:off
+        return pollyTTSImpl.getAvailableLocales().stream()
+            .flatMap(locale -> 
+                pollyTTSImpl.getAvailableVoices(locale).stream()
+                    .map(label -> new PollyTTSVoice(locale, label)))
+            .collect(toSet());
+        // @formatter:on
     }
 
     /**
@@ -208,11 +208,11 @@ public class PollyTTSService implements TTSService {
      * @return The audio formats of this instance
      */
     private Set<AudioFormat> initAudioFormats() {
-        Set<AudioFormat> audioFormats = new HashSet<>();
-        for (String format : pollyTTSImpl.getAvailableAudioFormats()) {
-            audioFormats.add(getAudioFormat(format));
-        }
-        return audioFormats;
+        // @formatter:off
+        return pollyTTSImpl.getAvailableAudioFormats().stream()
+                .map(this::getAudioFormat)
+                .collect(toSet());
+        // @formatter:on
     }
 
     private AudioFormat getAudioFormat(String apiFormat) {
