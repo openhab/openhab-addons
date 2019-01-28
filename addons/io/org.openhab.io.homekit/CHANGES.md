@@ -1,5 +1,25 @@
 # Changes
 
+## 2.4.0-homekit-4
+
+### Allow motion and leak accessories to be backed by Contact items
+
+Some Z-wave devices configure these things to expose their channels as an OpenClosedType, rather than OnOffType, due to the fact that Contact items are read-only. In this release, we allow these boolean-like status accessories to be backed by either a Switch or a Contact item.
+
+For Motion sensors, Open is considered "motion detected" (think "window open" as the actionable event). Similarly, leaks are reported if the backing Item is Open.
+
+### Debounce the refreshing of Homekit items
+
+The plugin now waits for items to be stable for a full second before creating, removing, and deleting the associated homekit accessories. This greatly reduces the chaos, overhead, and misleading log messages when adding, removing, or changing multiple items at a time.
+
+### Contact and Occupancy Sensors support
+
+Support is added for contact and occupancy sensors.
+
+### WindowCovering is brought back
+
+I have fixed the issue with WindowCovering in my upstream fork of HAP-Java. WindowCovering now functions properly and has been re-enabled.
+
 ## 2.4.0-homekit-3
 
 ### Removed WindowCovering
