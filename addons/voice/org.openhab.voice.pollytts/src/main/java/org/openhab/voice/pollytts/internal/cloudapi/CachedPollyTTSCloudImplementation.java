@@ -27,13 +27,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class implements a cache for the retrieved audio data. It will preserve
- * them in file system, as audio files with an additional .txt file to indicate
- * what content is in the audio file.
+ * This class implements a cache for the retrieved audio data. It will preserve them in the file system,
+ * as audio files with an additional .txt file to indicate what content is in the audio file.
  *
- * @author Jochen Hiller - Initial contribution
- * @author Robert Hillman - converted to Polly API to utilize unique voice names
- * @author Robert Hillman - added cache management to delete aged entries
+ * @author Robert Hillman - Initial contribution
  */
 public class CachedPollyTTSCloudImplementation extends PollyTTSCloudImplementation {
 

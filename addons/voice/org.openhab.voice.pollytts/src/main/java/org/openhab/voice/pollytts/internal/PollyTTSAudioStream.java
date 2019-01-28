@@ -20,13 +20,11 @@ import org.eclipse.smarthome.core.audio.AudioStream;
 import org.eclipse.smarthome.core.audio.FileAudioStream;
 
 /**
- * Implementation of the {@link AudioStream} interface for the
- * {@link PollyTTSService}. It simply uses a {@link FileAudioStream} which is
- * doing all the necessary work, e.g. supporting MP3 and WAV files with fixed
- * stream length.
+ * Implementation of the {@link AudioStream} interface for the {@link PollyTTSService}.
+ * It simply uses a {@link FileAudioStream} which is doing all the necessary work,
+ * e.g. supporting MP3 and WAV files with fixed stream length.
  *
- *  work derived for voicetts as sample
- * @author Robert Hillman - Converted to Polly API
+ * @author Robert Hillman - Initial contribution
  */
 class PollyTTSAudioStream extends FileAudioStream {
 

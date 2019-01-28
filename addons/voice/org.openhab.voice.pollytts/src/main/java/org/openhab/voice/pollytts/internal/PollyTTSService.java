@@ -39,10 +39,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This is a TTS service implementation for using PollyTTS TTS service.
+ * This is a TTS service implementation for Amazon Polly.
  *
- * work derived for voicetts as sample
- * * @author Robert Hillman - converted to Polly API, added polly voice interface, only MP3 audio currently
+ * @author Robert Hillman - Initial contribution
  */
 @Component(configurationPid = SERVICE_PID, property = { Constants.SERVICE_PID + "=" + SERVICE_PID,
         ConfigurableService.SERVICE_PROPERTY_LABEL + "=" + SERVICE_NAME + " Text-to-Speech",

@@ -29,11 +29,11 @@ import com.amazonaws.services.polly.model.DescribeVoicesResult;
 import com.amazonaws.services.polly.model.Voice;
 
 /**
- * This class implements a client interface to the amazon polly service. It is a
- * static class so the service interface, Credential setup and voice identification
+ * This class implements a client interface to the Amazon Polly service.
+ * It is a static class so the service interface, credential setup and voice identification
  * is only performed on initialization
  *
- * @author Robert Hillman - initial interface
+ * @author Robert Hillman - Initial contribution
  */
 public class PollyClientConfig {
 

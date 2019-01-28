@@ -17,11 +17,9 @@ import java.util.Locale;
 import org.eclipse.smarthome.core.voice.Voice;
 
 /**
- * Implementation of the Voice interface for PollyTTS. Label is only "default"
- * as only voice supported.
+ * Implementation of the Voice interface for PollyTTS.
  *
- * work derived for voicetts as sample
- * @author Robert Hillman - converted to utilize Polly API voices,
+ * @author Robert Hillman - Initial contribution
  */
 public class PollyTTSVoice implements Voice {
 

@@ -21,24 +21,21 @@ import java.util.Set;
 import com.amazonaws.services.polly.model.OutputFormat;
 import com.amazonaws.services.polly.model.SynthesizeSpeechRequest;
 import com.amazonaws.services.polly.model.SynthesizeSpeechResult;
-import com.amazonaws.services.polly.model.Voice;
 import com.amazonaws.services.polly.model.TextType;
+import com.amazonaws.services.polly.model.Voice;
 
 /**
- * This class implements the Cloud service from PollyTTS. For more information,
+ * This class implements the Cloud service for PollyTTS.
  *
- * Current state of implementation:
+ * The implementation supports:
  * <ul>
- * <li>All API languages supported</li>
- * <li>Only all voices supported</li>
- * <li>Only MP3 formats supported (TBD: 3 other formats)</li>
+ * <li>All languages</li>
+ * <li>All voices</li>
+ * <li>MP3 and OGG formats</li>
  * </ul>
  *
- *   work derived for voicetts as sample
- * 
- * @author Robert Hillman - adapted and implemented Polly service interface
- **/
-
+ * @author Robert Hillman - Initial contribution
+ */
 public class PollyTTSCloudImplementation {
 
     // private final Logger logger = LoggerFactory.getLogger(PollyTTSCloudImplementation.class);
@@ -110,7 +107,8 @@ public class PollyTTSCloudImplementation {
             format = "ogg_vorbis";
         }
         TextType textType = text.startsWith("<speak>") ? TextType.Ssml : TextType.Text;
-        SynthesizeSpeechRequest synthReq = new SynthesizeSpeechRequest().withTextType(textType).withText(text).withVoiceId(voiceID).withOutputFormat(OutputFormat.fromValue(format));
+        SynthesizeSpeechRequest synthReq = new SynthesizeSpeechRequest().withTextType(textType).withText(text)
+                .withVoiceId(voiceID).withOutputFormat(OutputFormat.fromValue(format));
         SynthesizeSpeechResult synthRes = PollyClientConfig.pollyClientInterface.synthesizeSpeech(synthReq);
         is = synthRes.getAudioStream();
         return is;
