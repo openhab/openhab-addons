@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.lgtvserial.internal;
 
-import static org.openhab.binding.lgtvserial.LgTvSerialBindingConstants.*;
+import static org.openhab.binding.lgtvserial.internal.LgTvSerialBindingConstants.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -21,7 +21,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.lgtvserial.handler.LgTvSerialHandler;
+import org.openhab.binding.lgtvserial.internal.handler.LgTvSerialHandler;
 import org.openhab.binding.lgtvserial.internal.protocol.serial.SerialCommunicatorFactory;
 
 /**
