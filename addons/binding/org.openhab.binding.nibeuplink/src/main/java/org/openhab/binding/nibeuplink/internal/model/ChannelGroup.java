@@ -23,5 +23,6 @@ public enum ChannelGroup {
     COMPRESSOR,
     HOTWATER,
     AIRSUPPLY,
+    WATERSUPPLY,
     CUSTOM;
 }

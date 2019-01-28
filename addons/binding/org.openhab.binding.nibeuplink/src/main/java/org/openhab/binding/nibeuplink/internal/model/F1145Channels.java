@@ -65,10 +65,9 @@ public final class F1145Channels extends BaseChannels {
     public static final Channel CH_40017 = INSTANCE.addChannel(new QuantityChannel("40017",
             "EB100-EP14-BT12 Condensor Out", ChannelGroup.COMPRESSOR, ScaleFactor.DIV_10, SIUnits.CELSIUS));
 
-    // Airsupply
-    public static final Channel CH_40025 = INSTANCE.addChannel(new QuantityChannel("40025", "BT20 Exhaust air temp. 1",
-            ChannelGroup.AIRSUPPLY, ScaleFactor.DIV_10, SIUnits.CELSIUS));
-    public static final Channel CH_40026 = INSTANCE.addChannel(new QuantityChannel("40026", "BT21 Vented air temp. 1",
-            ChannelGroup.AIRSUPPLY, ScaleFactor.DIV_10, SIUnits.CELSIUS));
-
+    // Brine temp.
+    public static final Channel CH_40015 = INSTANCE.addChannel(new QuantityChannel("40015", "EB100-EP14-BT10 Brine in temp.",
+            ChannelGroup.WATERSUPPLY, ScaleFactor.DIV_10, SIUnits.CELSIUS));
+    public static final Channel CH_40016 = INSTANCE.addChannel(new QuantityChannel("40016", "EB100-EP14-BT11 Brine out temp.",
+            ChannelGroup.WATERSUPPLY, ScaleFactor.DIV_10, SIUnits.CELSIUS));
 }
