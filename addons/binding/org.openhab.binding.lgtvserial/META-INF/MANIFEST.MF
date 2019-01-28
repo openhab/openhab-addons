@@ -9,7 +9,7 @@ Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
 Import-Package: 
  gnu.io,
- javax.measure.quantity;version="1.0.0",
+ javax.measure.quantity,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.library.types,

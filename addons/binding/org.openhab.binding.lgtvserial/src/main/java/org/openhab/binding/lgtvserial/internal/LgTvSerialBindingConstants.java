@@ -31,7 +31,7 @@ public class LgTvSerialBindingConstants {
     public static final ThingTypeUID THING_TYPE_LGTV_GENERIC = new ThingTypeUID(BINDING_ID, "lgtv");
     public static final ThingTypeUID THING_TYPE_LGTV_LK_SERIES = new ThingTypeUID(BINDING_ID, "lgtv-LK-series");
     public static final ThingTypeUID THING_TYPE_LGTV_LV_SERIES = new ThingTypeUID(BINDING_ID, "lgtv-LV-series");
-    public static final ThingTypeUID THING_TYPE_LGTV_LVx55_SERIES = new ThingTypeUID(BINDING_ID, "lgtv-LVx55-series");
+    public static final ThingTypeUID THING_TYPE_LGTV_LVX55_SERIES = new ThingTypeUID(BINDING_ID, "lgtv-LVx55-series");
     public static final ThingTypeUID THING_TYPE_LGTV_M6503C = new ThingTypeUID(BINDING_ID, "lgtv-M6503C");
     public static final ThingTypeUID THING_TYPE_LGTV_PW_SERIES = new ThingTypeUID(BINDING_ID, "lgtv-PW-series");
 

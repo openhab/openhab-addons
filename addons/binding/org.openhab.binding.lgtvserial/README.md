@@ -31,7 +31,9 @@ It is necessary to specify the serial port device used for communication.
 On Linux systems, this will usually be either `/dev/ttyS0`, `/dev/ttyUSB0` or `/dev/ttyACM0` (or a higher  number than `0` if multiple devices are present).
 On Windows it will be `COM1`, `COM2`, etc.
 
-The set id can also be specified when using daisy-chaining. That allows you to have a thing that will handle a particular device (with set id other than 0), and another to send command on all devices (with set id equals 0). However, the item values for the thing with set id 0 will never display the right values as it receives responses from many devices.
+The set id can also be specified when using daisy-chaining.
+That allows you to have a thing that will handle a particular device (with set id other than 0), and another to send command on all devices (with set id equals 0).
+However, the item values for the thing with set id 0 will never display the right values as it receives responses from many devices.
 
 ## Channels
 
@@ -44,9 +46,11 @@ The following channels are common to most TV through the serial or service port,
 | volume          | k f     | Dimmer    | Sets the volume, values are from 0 to 100        |
 | volume-mute     | k e     | Switch    | Set mute on or off                               |
 
-As for others, please refer to the documentation of your device in the section named "Controlling the multiple product", "External control" or any section that refers to RS-232, the names of the channels map the command names. If your device documentation doesn't give such information, you can look at the "LG protocol references" below and use the "Generic LG TV" thing which should contain all the different possible channels/commands.
+As for others, please refer to the documentation of your device in the section named "Controlling the multiple product", "External control" or any section that refers to RS-232, the names of the channels map the command names.
+If your device documentation doesn't give such information, you can look at the "LG protocol references" below and use the "Generic LG TV" thing which should contain all the different possible channels/commands.
 
-Note: Devices might not respond or return an error to some command when the device is powered off which will make your items look in a wrong state until the TV turns on. For instance, getting the volume status when the device is off makes no sense.
+Note: Devices might not respond or return an error to some command when the device is powered off which will make your items look in a wrong state until the TV turns on.
+For instance, getting the volume status when the device is off makes no sense.
 
 ## All channel type ids
 
@@ -122,7 +126,6 @@ Here's a list of all the LG TV commands added to the binding, in channel type id
 | off-timer-on-off   | f c     | Set days for Off Timer                                                                                     |
 | on-timer-time      | f d     | Set On Timer                                                                                               |
 | off-timer-time     | f e     | Set Off Timer                                                                                              |
-|
 
 ## LG protocol references
 
