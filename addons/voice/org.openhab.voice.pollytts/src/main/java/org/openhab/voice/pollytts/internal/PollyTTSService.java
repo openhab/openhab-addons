@@ -30,15 +30,13 @@ import org.eclipse.smarthome.core.voice.TTSException;
 import org.eclipse.smarthome.core.voice.TTSService;
 import org.eclipse.smarthome.core.voice.Voice;
 import org.openhab.voice.pollytts.internal.cloudapi.CachedPollyTTSCloudImpl;
-import org.openhab.voice.pollytts.internal.cloudapi.PollyClientConfig;
+import org.openhab.voice.pollytts.internal.cloudapi.PollyTTSConfig;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.amazonaws.AmazonServiceException;
 
 /**
  * This is a TTS service implementation for Amazon Polly.
@@ -79,7 +77,7 @@ public class PollyTTSService implements TTSService {
     /**
      * We need the cached implementation to allow for FixedLengthAudioStream.
      */
-    private CachedPollyTTSCloudImpl pollyTssImpl;
+    private CachedPollyTTSCloudImpl pollyTTSImpl;
 
     /**
      * Set of supported voices
@@ -90,6 +88,8 @@ public class PollyTTSService implements TTSService {
      * Set of supported audio formats
      */
     private final Set<AudioFormat> audioFormats = new HashSet<>();
+
+    private PollyTTSConfig pollyTTSConfig;
 
     /**
      * DS activate, with access to ConfigAdmin
@@ -105,16 +105,9 @@ public class PollyTTSService implements TTSService {
      */
     @Modified
     protected void modified(Map<String, Object> config) {
-        PollyClientConfig polly = new PollyClientConfig();
-        polly.setAccessKey(config.get("accessKey").toString());
-        polly.setSecretKey(config.get("secretKey").toString());
-        polly.setRegionVal(config.get("serviceRegion").toString());
-        polly.setAudioFormat(config.get("audioFormat").toString());
-        polly.setExpireDate((int) Double.parseDouble(config.get("cacheExpiration").toString()));
-
         try {
-            polly.initPollyServiceInterface();
-            pollyTssImpl = initVoiceImplementation();
+            pollyTTSConfig = new PollyTTSConfig(config);
+            pollyTTSImpl = new CachedPollyTTSCloudImpl(pollyTTSConfig, getCacheFolderName());
 
             audioFormats.clear();
             audioFormats.addAll(initAudioFormats());
@@ -124,7 +117,7 @@ public class PollyTTSService implements TTSService {
 
             logger.debug("PollyTTS service initialized");
             logger.debug("Using PollyTTS cache folder {}", getCacheFolderName());
-        } catch (AmazonServiceException | IllegalArgumentException | IOException e) {
+        } catch (Exception e) {
             logger.error("Failed to initialize PollyTTS", e);
         }
     }
@@ -178,7 +171,7 @@ public class PollyTTSService implements TTSService {
         // now create the input stream for given text, locale, format. There is
         // only a default voice
         try {
-            File cacheAudioFile = pollyTssImpl.getTextToSpeechAsFile(text, voice.getLabel(),
+            File cacheAudioFile = pollyTTSImpl.getTextToSpeechAsFile(text, voice.getLabel(),
                     getApiAudioFormat(requestedFormat));
             if (cacheAudioFile == null) {
                 throw new TTSException("Could not read from PollyTTS service");
@@ -200,8 +193,8 @@ public class PollyTTSService implements TTSService {
      */
     private Set<Voice> initVoices() {
         Set<Voice> voices = new HashSet<>();
-        for (Locale local : pollyTssImpl.getAvailableLocales()) {
-            for (String voiceLabel : pollyTssImpl.getAvailableVoices(local)) {
+        for (Locale local : pollyTTSImpl.getAvailableLocales()) {
+            for (String voiceLabel : pollyTTSImpl.getAvailableVoices(local)) {
                 voices.add(new PollyTTSVoice(local, voiceLabel));
                 logger.debug("locale '{}' for voice {}", local, voiceLabel);
             }
@@ -216,7 +209,7 @@ public class PollyTTSService implements TTSService {
      */
     private Set<AudioFormat> initAudioFormats() {
         Set<AudioFormat> audioFormats = new HashSet<>();
-        for (String format : pollyTssImpl.getAvailableAudioFormats()) {
+        for (String format : pollyTTSImpl.getAvailableAudioFormats()) {
             audioFormats.add(getAudioFormat(format));
         }
         return audioFormats;
@@ -235,9 +228,9 @@ public class PollyTTSService implements TTSService {
     }
 
     private String getApiAudioFormat(AudioFormat format) {
-        if (!PollyClientConfig.getAudioFormat().equals("default")) {
+        if (!"default".equals(pollyTTSConfig.getAudioFormat())) {
             // Override system specified with user preferred value
-            return PollyClientConfig.getAudioFormat();
+            return pollyTTSConfig.getAudioFormat();
         }
         if (AudioFormat.CODEC_MP3.equals(format.getCodec())) {
             return "MP3";
@@ -246,10 +239,6 @@ public class PollyTTSService implements TTSService {
         } else {
             throw new IllegalArgumentException("Audio format " + format.getCodec() + " not yet supported");
         }
-    }
-
-    private CachedPollyTTSCloudImpl initVoiceImplementation() throws IOException {
-        return new CachedPollyTTSCloudImpl(getCacheFolderName());
     }
 
     /**
@@ -273,7 +262,7 @@ public class PollyTTSService implements TTSService {
      */
     @Override
     public String getLabel(Locale locale) {
-        return "PollyTTS Text-to-Speech Engine";
+        return "Polly Text-to-Speech Engine";
     }
 
 }

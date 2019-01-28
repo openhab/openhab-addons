@@ -44,7 +44,9 @@ public class CachedPollyTTSCloudImpl extends PollyTTSCloudImpl {
      * check to make sure the directory exist and
      * create it if necessary
      */
-    public CachedPollyTTSCloudImpl(String cacheFolderName) throws IOException {
+    public CachedPollyTTSCloudImpl(PollyTTSConfig config, String cacheFolderName) throws IOException {
+        super(config);
+
         if (cacheFolderName == null) {
             throw new IllegalArgumentException("Folder for cache must be defined");
         }
@@ -75,7 +77,7 @@ public class CachedPollyTTSCloudImpl extends PollyTTSCloudImpl {
         }
 
         // if not in cache, get audio data and put to cache
-        try (InputStream is = super.getTextToSpeech(text, label, audioFormat);
+        try (InputStream is = getTextToSpeech(text, label, audioFormat);
                 FileOutputStream fos = new FileOutputStream(audioFileInCache);) {
             copyStream(is, fos);
             // write text to file for transparency too
@@ -147,17 +149,17 @@ public class CachedPollyTTSCloudImpl extends PollyTTSCloudImpl {
 
     private void purgeAgedFiles() throws IOException {
         // just exit if expiration set to 0/disabled
-        if (PollyClientConfig.getExpireDate() == 0) {
+        if (config.getExpireDate() == 0) {
             return;
         }
         long now = new Date().getTime();
-        long diff = now - PollyClientConfig.getlastDelete();
+        long diff = now - config.getLastDelete();
         // only execute ~ once every 2 days if cache called
         long oneDayMillis = TimeUnit.DAYS.toMillis(1);
         logger.debug("PollyTTS cache cleaner lastdelete {}", diff);
         if (diff > (2 * oneDayMillis)) {
-            PollyClientConfig.setLastDelete(now);
-            long xDaysAgo = PollyClientConfig.getExpireDate() * oneDayMillis;
+            config.setLastDelete(now);
+            long xDaysAgo = config.getExpireDate() * oneDayMillis;
             // Now search folders and delete old files
             int filesDeleted = 0;
             for (File file : cacheFolder.listFiles()) {

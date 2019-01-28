@@ -17,11 +17,20 @@ import static java.util.stream.Collectors.toSet;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.polly.AmazonPolly;
+import com.amazonaws.services.polly.AmazonPollyClientBuilder;
+import com.amazonaws.services.polly.model.DescribeVoicesRequest;
 import com.amazonaws.services.polly.model.OutputFormat;
 import com.amazonaws.services.polly.model.SynthesizeSpeechRequest;
 import com.amazonaws.services.polly.model.TextType;
@@ -44,6 +53,26 @@ public class PollyTTSCloudImpl {
     private static final Set<String> SUPPORTED_AUDIO_FORMATS = Collections
             .unmodifiableSet(Stream.of("MP3", "OGG").collect(toSet()));
 
+    protected final PollyTTSConfig config;
+
+    private final AmazonPolly client;
+    private final Map<String, String> labelToID = new HashMap<>();
+    private final List<Voice> voices;
+
+    public PollyTTSCloudImpl(PollyTTSConfig config) {
+        this.config = config;
+
+        AWSCredentials credentials = new BasicAWSCredentials(config.getAccessKey(), config.getSecretKey());
+        client = AmazonPollyClientBuilder.standard().withRegion(config.getServiceRegion())
+                .withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
+        voices = client.describeVoices(new DescribeVoicesRequest()).getVoices();
+
+        // create voice to ID translation for service invocation
+        for (Voice voice : voices) {
+            labelToID.put(voice.getName(), voice.getId());
+        }
+    }
+
     /**
      * Get all supported audio formats by the TTS service. This includes MP3,
      * WAV and more audio formats as used in APIs.
@@ -52,28 +81,25 @@ public class PollyTTSCloudImpl {
         return SUPPORTED_AUDIO_FORMATS;
     }
 
-    // Get all supported locales by the TTS service
     public Set<Locale> getAvailableLocales() {
         Set<Locale> supportedLocales = new HashSet<>();
-        for (Voice voice : PollyClientConfig.pollyVoices) {
+        for (Voice voice : voices) {
             supportedLocales.add(Locale.forLanguageTag(voice.getLanguageCode()));
         }
         return supportedLocales;
     }
 
-    // Get all supported voices.
     public Set<String> getAvailableVoices() {
         Set<String> supportedVoices = new HashSet<>();
-        for (Voice voice : PollyClientConfig.pollyVoices) {
+        for (Voice voice : voices) {
             supportedVoices.add(voice.getName());
         }
         return supportedVoices;
     }
 
-    // Get all supported voices for a specified locale.
     public Set<String> getAvailableVoices(Locale locale) {
         Set<String> localeVoices = new HashSet<>();
-        for (Voice voice : PollyClientConfig.pollyVoices) {
+        for (Voice voice : voices) {
             if (voice.getLanguageCode().equalsIgnoreCase(locale.toLanguageTag())) {
                 localeVoices.add(voice.getName());
             }
@@ -98,15 +124,15 @@ public class PollyTTSCloudImpl {
      *             cloud service
      */
     public InputStream getTextToSpeech(String text, String label, String audioFormat) {
-        String voiceID = PollyClientConfig.labelToID.get(label);
+        String voiceID = labelToID.get(label);
         String format = audioFormat.toLowerCase();
-        if (audioFormat.equals("ogg")) {
+        if ("ogg".equals(format)) {
             format = "ogg_vorbis";
         }
         TextType textType = text.startsWith("<speak>") ? TextType.Ssml : TextType.Text;
         SynthesizeSpeechRequest request = new SynthesizeSpeechRequest().withTextType(textType).withText(text)
                 .withVoiceId(voiceID).withOutputFormat(OutputFormat.fromValue(format));
-        return PollyClientConfig.pollyClientInterface.synthesizeSpeech(request).getAudioStream();
+        return client.synthesizeSpeech(request).getAudioStream();
     }
 
 }
