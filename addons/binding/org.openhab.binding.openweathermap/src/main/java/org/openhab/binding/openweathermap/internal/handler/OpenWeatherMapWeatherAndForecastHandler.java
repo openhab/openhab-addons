@@ -335,6 +335,12 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
                 case CHANNEL_TEMPERATURE:
                     state = getQuantityTypeState(forecastData.getMain().getTemp(), CELSIUS);
                     break;
+                case CHANNEL_MIN_TEMPERATURE:
+                    state = getQuantityTypeState(forecastData.getMain().getTempMin(), CELSIUS);
+                    break;
+                case CHANNEL_MAX_TEMPERATURE:
+                    state = getQuantityTypeState(forecastData.getMain().getTempMax(), CELSIUS);
+                    break;
                 case CHANNEL_PRESSURE:
                     state = getQuantityTypeState(forecastData.getMain().getPressure(), HECTO(PASCAL));
                     break;
