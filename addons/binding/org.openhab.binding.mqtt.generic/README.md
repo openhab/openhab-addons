@@ -260,6 +260,11 @@ Bridge mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
 
 demo.items:
 
+Generic configuration .items file:
+```xtend
+<ITEM-TYPE> <ITEM-NAME> "<FRIENDLY-NAME>" { channel="mqtt:topic:<BROKER-NAME>:<THING-NAME>:<CHANNEL-NAME>" }
+```
+
 ```xtend
 Switch Kitchen_Light "Kitchen Light" { channel="mqtt:topic:myUnsecureBroker:mything:lamp" }
 Rollershutter shutter "Blind" { channel="mqtt:topic:myUnsecureBroker:mything:blind" }
@@ -338,7 +343,7 @@ Bridge mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
 {
     Thing mqtt:topic:mything {
     Channels:
-        Type switch : heatpumpChannel "Heatpump Power" [ stateTopic="heatpump", commandTopic="heatpump/set" transformationPattern="JSONPATH:$.power" ]
+        Type switch : heatpumpChannel "Heatpump Power" [ stateTopic="heatpump/state", commandTopic="heatpump/set" transformationPattern="JSONPATH:$.power" ]
     }
 }
 ```
@@ -348,7 +353,7 @@ Add as many channels as you have items and add the *stateTopic* and *commandTopi
 Your items change to:
 
 ```xtend
-Switch ExampleItem "Heatpump Power" { channel="mqtt:myUnsecureBroker:topic:mything:heatpumpChannel" }
+Switch ExampleItem "Heatpump Power" { channel="mqtt:topic:myUnsecureBroker:mything:heatpumpChannel" }
 ```
 
 
@@ -377,6 +382,6 @@ Link both channels to one item. That item will publish to "heatpump/set" on a ch
 receive values from "heatpump/state1" and "heatpump/state2".
 
 ```xtend
-Switch ExampleItem "Heatpump Power" { channel="mqtt:myUnsecureBroker:topic:mything:heatpumpChannel",
-                                      channel="mqtt:myUnsecureBroker:topic:mything:heatpumpChannel2" }
+Switch ExampleItem "Heatpump Power" { channel="mqtt:topic:myUnsecureBroker:mything:heatpumpChannel",
+                                      channel="mqtt:topic:myUnsecureBroker:mything:heatpumpChannel2" }
 ```
