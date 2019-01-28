@@ -275,6 +275,8 @@ public class DeviceManager {
                 return "Yeelight White LED Bulb v2";
             case stripe:
                 return "Yeelight Color LED Stripe";
+            case desklamp:
+                return "Yeelight Mi LED Desk Lamp";
             default:
                 return "";
         }
