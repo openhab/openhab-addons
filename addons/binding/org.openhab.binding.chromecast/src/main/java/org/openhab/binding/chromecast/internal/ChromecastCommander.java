@@ -123,7 +123,16 @@ public class ChromecastCommander {
 
     private void handlePlayUri(Command command) {
         if (command instanceof StringType) {
-            playMedia(null, command.toString(), null);
+            String url = command.toString();
+            String mediaType = null;
+            if (url.contains(",")) {
+                String[] arrOfStr = url.split(",");
+                if (arrOfStr.length == 2) {
+                    url = arrOfStr[0];
+                    mediaType = arrOfStr[1];
+                }
+            }
+            playMedia(null, url, mediaType);
         }
     }
 
