@@ -98,22 +98,24 @@ Once the parameter `forecastDays` will be changed, the available channel groups 
 
 ### 3 Hour Forecast
 
-| Channel Group ID                                       | Channel ID     | Item Type            | Description                                                                |
-|--------------------------------------------------------|----------------|----------------------|----------------------------------------------------------------------------|
-| forecastHours03, forecastHours06, ... forecastHours120 | time-stamp     | DateTime             | Time of data forecasted.                                                   |
-| forecastHours03, forecastHours06, ... forecastHours120 | condition      | String               | Forecast weather condition.                                                |
-| forecastHours03, forecastHours06, ... forecastHours120 | condition-id   | String               | Id of the forecasted weather condition. **Advanced**                       |
-| forecastHours03, forecastHours06, ... forecastHours120 | icon           | Image                | Icon representing the forecasted weather condition.                        |
-| forecastHours03, forecastHours06, ... forecastHours120 | icon-id        | String               | Id fo the icon representing the forecasted weather condition. **Advanced** |
-| forecastHours03, forecastHours06, ... forecastHours120 | temperature    | Number:Temperature   | Forecasted temperature.                                                    |
-| forecastHours03, forecastHours06, ... forecastHours120 | pressure       | Number:Pressure      | Forecasted barometric pressure.                                            |
-| forecastHours03, forecastHours06, ... forecastHours120 | humidity       | Number:Dimensionless | Forecasted atmospheric humidity.                                           |
-| forecastHours03, forecastHours06, ... forecastHours120 | wind-speed     | Number:Speed         | Forecasted wind speed.                                                     |
-| forecastHours03, forecastHours06, ... forecastHours120 | wind-direction | Number:Angle         | Forecasted wind direction.                                                 |
-| forecastHours03, forecastHours06, ... forecastHours120 | gust-speed     | Number:Speed         | Forecasted gust speed. **Advanced**                                        |
-| forecastHours03, forecastHours06, ... forecastHours120 | cloudiness     | Number:Dimensionless | Forecasted cloudiness.                                                     |
-| forecastHours03, forecastHours06, ... forecastHours120 | rain           | Number:Length        | Expected rain volume.                                                      |
-| forecastHours03, forecastHours06, ... forecastHours120 | snow           | Number:Length        | Expected snow volume.                                                      |
+| Channel Group ID                                       | Channel ID      | Item Type            | Description                                                                |
+|--------------------------------------------------------|-----------------|----------------------|----------------------------------------------------------------------------|
+| forecastHours03, forecastHours06, ... forecastHours120 | time-stamp      | DateTime             | Time of data forecasted.                                                   |
+| forecastHours03, forecastHours06, ... forecastHours120 | condition       | String               | Forecast weather condition.                                                |
+| forecastHours03, forecastHours06, ... forecastHours120 | condition-id    | String               | Id of the forecasted weather condition. **Advanced**                       |
+| forecastHours03, forecastHours06, ... forecastHours120 | icon            | Image                | Icon representing the forecasted weather condition.                        |
+| forecastHours03, forecastHours06, ... forecastHours120 | icon-id         | String               | Id fo the icon representing the forecasted weather condition. **Advanced** |
+| forecastHours03, forecastHours06, ... forecastHours120 | temperature     | Number:Temperature   | Forecasted temperature.                                                    |
+| forecastHours03, forecastHours06, ... forecastHours120 | min-temperature | Number:Temperature   | Minimum forecasted temperature.                                            |
+| forecastHours03, forecastHours06, ... forecastHours120 | max-temperature | Number:Temperature   | Maximum forecasted temperature.                                            |
+| forecastHours03, forecastHours06, ... forecastHours120 | pressure        | Number:Pressure      | Forecasted barometric pressure.                                            |
+| forecastHours03, forecastHours06, ... forecastHours120 | humidity        | Number:Dimensionless | Forecasted atmospheric humidity.                                           |
+| forecastHours03, forecastHours06, ... forecastHours120 | wind-speed      | Number:Speed         | Forecasted wind speed.                                                     |
+| forecastHours03, forecastHours06, ... forecastHours120 | wind-direction  | Number:Angle         | Forecasted wind direction.                                                 |
+| forecastHours03, forecastHours06, ... forecastHours120 | gust-speed      | Number:Speed         | Forecasted gust speed. **Advanced**                                        |
+| forecastHours03, forecastHours06, ... forecastHours120 | cloudiness      | Number:Dimensionless | Forecasted cloudiness.                                                     |
+| forecastHours03, forecastHours06, ... forecastHours120 | rain            | Number:Length        | Expected rain volume.                                 |
+| forecastHours03, forecastHours06, ... forecastHours120 | snow            | Number:Length        | Expected snow volume.                                 |
 
 ### Daily Forecast
 
@@ -137,10 +139,10 @@ Once the parameter `forecastDays` will be changed, the available channel groups 
 
 ### UV Index
 
-| Channel Group ID                                          | Channel ID | Item Type | Description                    |
-|-----------------------------------------------------------|------------|-----------|---------------------------------|
-| current, forecastTomorrow, forecastDay2, ... forecastDay7 | time-stamp | DateTime  | Date of data observation / forecast.        |
-| current, forecastTomorrow, forecastDay2, ... forecastDay7 | uvindex    | Number    | Current or forecasted UV Index. |
+| Channel Group ID                                          | Channel ID | Item Type | Description                          |
+|-----------------------------------------------------------|------------|-----------|--------------------------------------|
+| current, forecastTomorrow, forecastDay2, ... forecastDay7 | time-stamp | DateTime  | Date of data observation / forecast. |
+| current, forecastTomorrow, forecastDay2, ... forecastDay7 | uvindex    | Number    | Current or forecasted UV Index.      |
 
 ## Full Example
 
