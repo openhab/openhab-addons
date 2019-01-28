@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: PollyTSS Voice Service
 Bundle-SymbolicName: org.openhab.voice.pollytts;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.3.0.qualifier
+Bundle-Version: 2.5.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
  lib/aws-java-sdk-polly-1.11.136.jar,
