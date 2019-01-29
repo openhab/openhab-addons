@@ -5,6 +5,8 @@
 
 	<name>KostalInverter Binding</name>
 	<description>This is the binding for KostalInverter.</description>
-	<author>Basse03</author>
-
+	<author>Christian Schneider - Initial contribution, Örjan Backsell - Added New Generation</author>
+	
 </binding:binding>
+
+
