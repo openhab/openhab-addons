@@ -95,18 +95,11 @@ public class PollyTTSService implements TTSService {
 
     private PollyTTSConfig pollyTTSConfig;
 
-    /**
-     * DS activate, with access to ConfigAdmin
-     */
     @Activate
     protected void activate(Map<String, Object> config) {
         modified(config);
     }
 
-    /**
-     * initialize voice service according to config values
-     * Keys come from ConfigAdmin
-     */
     @Modified
     protected void modified(Map<String, Object> config) {
         try {
@@ -133,17 +126,11 @@ public class PollyTTSService implements TTSService {
         }
     }
 
-    /**
-     * return voices available for the user to select
-     */
     @Override
     public Set<Voice> getAvailableVoices() {
         return voices;
     }
 
-    /**
-     * return possible auto formats provided by the system
-     */
     @Override
     public Set<AudioFormat> getSupportedFormats() {
         return audioFormats;
@@ -197,11 +184,6 @@ public class PollyTTSService implements TTSService {
         }
     }
 
-    /**
-     * Initializes voices.
-     *
-     * @return The voices of this instance
-     */
     private Set<Voice> initVoices() {
         // @formatter:off
         return pollyTTSImpl.getAvailableLocales().stream()
@@ -212,11 +194,6 @@ public class PollyTTSService implements TTSService {
         // @formatter:on
     }
 
-    /**
-     * Initializes audio formats.
-     *
-     * @return The audio formats of this instance
-     */
     private Set<AudioFormat> initAudioFormats() {
         // @formatter:off
         return pollyTTSImpl.getAvailableAudioFormats().stream()
@@ -251,20 +228,14 @@ public class PollyTTSService implements TTSService {
         }
     }
 
-    /**
-     * returns a unique identifier for the service
-     */
     @Override
     public String getId() {
         return "pollytts";
     }
 
-    /**
-     * returns txt description of this service
-     */
     @Override
     public String getLabel(Locale locale) {
-        return "Polly Text-to-Speech Engine";
+        return "PollyTTS";
     }
 
 }
