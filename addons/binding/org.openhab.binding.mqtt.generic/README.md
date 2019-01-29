@@ -341,7 +341,7 @@ This converts to an entry in your *.things file with a **Broker Thing** and a **
 ```xtend
 Bridge mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
 {
-    Thing topic myThing "My Thing" {
+    Thing topic mything "My Thing" {
     Channels:
         Type switch : heatpumpChannel "Heatpump Power" [ stateTopic="heatpump/state", commandTopic="heatpump/set", transformationPattern="JSONPATH:$.power" ]
     }
@@ -370,7 +370,7 @@ This converts to:
 ```xtend
 Bridge mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
 {
-    Thing topic myThing "My Thing" {
+    Thing topic mything "My Thing" {
     Channels:
         Type switch : heatpumpChannel "Heatpump Power" [ stateTopic="heatpump/state1", commandTopic="heatpump/set" ]
         Type switch : heatpumpChannel2 "Heatpump Power" [ stateTopic="heatpump/state2" ]
