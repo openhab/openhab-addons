@@ -333,7 +333,7 @@ You do not need to convert everything in one go. MQTT1 and MQTT2 can coexist.
 Assume you have this item:
 
 ```xtend
-Switch ExampleItem "Heatpump Power" { mqtt=">[mosquitto:heatpump/set:command:*:DEFAULT)],<[mosquitto:heatpump/state:JSONPATH($.power)]" }
+Switch ExampleItem "Heatpump Power" { mqtt=">[mosquitto:heatpump/set:command:*:DEFAULT)],<[mosquitto:heatpump:JSONPATH($.power)]" }
 ```
 
 This converts to an entry in your *.things file with a **Broker Thing** and a **Generic MQTT Thing** that uses the bridge:
@@ -343,7 +343,7 @@ Bridge mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
 {
     Thing topic mything "My Thing" {
     Channels:
-        Type switch : heatpumpChannel "Heatpump Power" [ stateTopic="heatpump/state", commandTopic="heatpump/set", transformationPattern="JSONPATH:$.power" ]
+        Type switch : heatpumpChannel "Heatpump Power" [ stateTopic="heatpump", commandTopic="heatpump/set", transformationPattern="JSONPATH:$.power" ]
     }
 }
 ```
