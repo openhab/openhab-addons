@@ -17,7 +17,7 @@ When you sign up for AWS, your account is automatically signed up for all servic
 * Create an IAM User. [link](http://docs.aws.amazon.com/polly/latest/dg/setting-up.html)
 
 Services in AWS, such as Amazon Polly, require that you provide credentials when you access them so that the service can determine whether you have permissions to access the resources owned by that service.
-Within the AWS console, You can create access keys for your AWS account to access the Polly API.
+Within the AWS console, you can create access keys for your AWS account to access the Polly API.
 
 To use the service you will need the **access key**, **secret key** and **server region**.
 
@@ -29,7 +29,8 @@ Using your favorite configuration UI (e.g. Paper UI) edit **Services/Voice/Polly
 * **Secret Key** - The AWS credentials secret key (required).
 * **Service Region** - The service region used for accessing Polly (required). To reduce latency select the region closest to you. E.g. "eu-west-1" (see [regions](https://docs.aws.amazon.com/general/latest/gr/rande.html#pol_region))
 
-The PollyTTS service caches audio files from previous requests. This reduces traffic, improves performance, reduces the number of requests and provides offline functionality.
+The PollyTTS service caches audio files from previous requests.
+This reduces traffic, improves performance, reduces the number of requests and provides offline functionality.
 
 * **Cache Expiration** - Cache expiration in days.
 
