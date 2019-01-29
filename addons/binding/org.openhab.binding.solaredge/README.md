@@ -16,16 +16,28 @@ Auto-Discovery is not supported, as access requires authentication.
 The following configuration parameters are available for this thing:
 
 - **tokenOrApiKey** (required)
-Either the official API Key for using the public API or when using the inofficial private API: a token which can be retrieved from browser's cookie store when logged into the solaredge website. It is called 'SPRING_SECURITY_REMEMBER_ME_COOKIE'
+Either the [official API Key](https://www.youtube.com/watch?v=iR26nmL5bXg) for using the public API or when using the inofficial private API: a token which can be retrieved from browser's cookie store when logged into the SolarEdge website.
+It is called "SPRING_SECURITY_REMEMBER_ME_COOKIE".
+When using this token, see also `usePrivateApi` and `meterInstalled`.
+
+E.g. for Firefox, use the built-in [Storage Inspector](https://developer.mozilla.org/en-US/docs/Tools/Storage_Inspector) to retrieve the token.
 
 - **solarId** (required)  
 Id of your inverter at SolarEdge (can be found in the URL after successful login: https://monitoring.solaredge.com/solaredge-web/p/site/**<<solarId>>**/#/dashboard)
 
 - **usePrivateApi** (optional)  
-can be set to true to use the private API. Private API has no limit regarding query frequency but is less stable. Private API will only gather live data if a meter is available. The official public API ha a limit of 300 queries per day but should be much more reliable/stable. (default = false)
+can be set to true to use the private API.
+Private API has no limit regarding query frequency but is less stable.
+Private API will only gather live data if a meter is available.
+The official public API has a limit of 300 queries per day but should be much more reliable/stable.
+Set this to true when using token retrieved from browser in `tokenOrApiKey`.
+See also `meterInstalled`. (default = false)
 
 - **meterInstalled** (optional)  
-can be set to true for setups that contain a SolarEdge modbus meter (see here: https://www.solaredge.com/products/pv-monitoring/accessories/css-wattnode-modbus-meter ). A meter allows more detailed data retrieval. (default = false)
+can be set to true for setups that contain a SolarEdge modbus meter integrated [here](https://www.solaredge.com/products/pv-monitoring/accessories/css-wattnode-modbus-meter).
+A meter allows more detailed data retrieval.
+Set this to true when using token retrieved from browser in `tokenOrApiKey`.
+See also `usePrivateApi`. (default = false)
 
 - **liveDataPollingInterval** (optional)  
 interval (minutes) in which live data values are retrieved from Solaredge. Setting less than 10 minutes is only allowed when using private API. (default = 10). 
