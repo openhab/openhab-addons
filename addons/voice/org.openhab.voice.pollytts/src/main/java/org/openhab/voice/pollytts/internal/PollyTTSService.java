@@ -41,7 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This is a TTS service implementation for Amazon Polly.
+ * This is a TTS service implementation for using Polly Text-to-Speech.
  *
  * @author Robert Hillman - Initial contribution
  */
@@ -141,8 +141,7 @@ public class PollyTTSService implements TTSService {
     }
 
     /**
-     * obtain audio stream from cach to amazon polly service and return it
-     * to play the audio
+     * obtain audio stream from cache or Amazon Polly service and return it to play the audio
      */
     @Override
     public AudioStream synthesize(String inText, Voice voice, AudioFormat requestedFormat) throws TTSException {

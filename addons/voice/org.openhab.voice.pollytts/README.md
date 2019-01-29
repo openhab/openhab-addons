@@ -1,8 +1,12 @@
-# Pollytts Text-to-Speech
+# Polly Text-to-Speech
 
 ## Overview
 
-PollyTTS is a TTS voice service for Openhab 2.x utilizing a Internet based TTS service provided by amazon called Polly.  Will generate speech from both plain text input and Speech Synthesis Markup Language. There are servers set in various geographic locations. It requires a set of API keys provided by Amazon to get access to the service. Provides multiple languages and multiple voices for each language. 
+PollyTTS is a TTS voice service for openHAB utilizing an Internet based TTS service provided by Amazon called Polly.
+Will generate speech from both plain text input and Speech Synthesis Markup Language.
+There are servers set in various geographic locations.
+It requires a set of API keys provided by Amazon to get access to the service.
+Provides multiple languages and multiple voices for each language.
 https://aws.amazon.com/polly/
 
 ## Samples
@@ -27,7 +31,9 @@ When you sign up for Amazon Web Services (AWS), your AWS account is automaticall
 
 2.) Create an IAM User
 
-Services in AWS, such as Amazon Polly, require that you provide credentials when you access them so that the service can determine whether you have permissions to access the resources owned by that service. Within the AWS console, You can create access keys for your AWS account to access the Polly API. You will need three items 1) access key, 2) secret key, and 3) server region to configure the Openhab Polly voice service.
+Services in AWS, such as Amazon Polly, require that you provide credentials when you access them so that the service can determine whether you have permissions to access the resources owned by that service.
+Within the AWS console, You can create access keys for your AWS account to access the Polly API.
+You will need three items 1) access key, 2) secret key, and 3) server region to configure the openHAB Polly voice service.
 
 Directions are Here: http://docs.aws.amazon.com/polly/latest/dg/setting-up.html
 
@@ -37,23 +43,41 @@ accessKey - required credential provided by Amazon
 
 secretKey - required credential provided by Amazon
 
-serviceRegion - Required value select region closest for best response. ServiceRegion is one of the following:  
-["us-east-2"] in US East (Ohio)  
-["us-east-1"] in US East (N. Virginia)  
-["us-west-2"] in US West (Oregon)  
-["eu-west-1"] in EU (Ireland)
+serviceRegion - Required value select region closest for best response, e.g. "eu-west-1"
 
-The Pollytts service does cache audio files from previous requests, to reduce traffic, improve performance, reduce number of requests and provide offline capability.  
-cacheExpiration - Cache expiration life in days. As Cache files are used their time stamps are updated, files that are never used will be purged if their time stamp exceeds the specified age. A default value of 0 set to disable functionality.  
+ServiceRegion is one of the following:
+
+| Region         | Region Name               |
+|----------------|---------------------------|
+| ap-south-1     | Asia Pacific (Mumbai)     |
+| ap-northeast-2 | Asia Pacific (Seoul)      |
+| ap-southeast-1 | Asia Pacific (Singapore)  |
+| ap-southeast-2 | Asia Pacific (Sydney)     |
+| ap-northeast-1 | Asia Pacific (Tokyo)      |
+| us-gov-west-1  | AWS GovCloud (US)         |
+| ca-central-1   | Canada (Central)          |
+| cn-northwest-1 | China (Ningxia)           |
+| eu-central-1   | EU (Frankfurt)            |
+| eu-west-1      | EU (Ireland)              |
+| eu-west-2      | EU (London)               |
+| eu-west-3      | EU (Paris)                |
+| sa-east-1      | South America (São Paulo) |
+| us-east-1      | US East (N. Virginia)     |
+| us-east-2      | US East (Ohio)            |
+| us-west-1      | US West (N. California)   |
+| us-west-2      | US West (Oregon)          |
+
+The PollyTTS service does cache audio files from previous requests, to reduce traffic, improve performance, reduce number of requests and provide offline capability.
+
+cacheExpiration - Cache expiration life in days.
+As Cache files are used their time stamps are updated, files that are never used will be purged if their time stamp exceeds the specified age.
+A default value of 0 set to disable functionality.
 Example, 365 not used in a year.
 
 audioFormat -  User specified audio format. 
 Use "default" to select the default audio format.
-The user can override the openhab default audio format if they prefer a specific output for thier audio device. 
+The user can override the openHAB default audio format if they prefer a specific output for their audio device.
 Choices of "default", "mp3" or "ogg" are the only audio entries that are supported.
-
-            
-
 
 ### Contents e.g. :  
 
@@ -70,12 +94,3 @@ audioFormat=default
 
 ## Caching
 
-
-
-
-
-
-
-## Open Issues
-
-* tbd

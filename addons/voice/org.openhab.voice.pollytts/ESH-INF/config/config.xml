@@ -18,7 +18,7 @@
 
 		<parameter name="serviceRegion" type="text" required="true">
 			<label>Service Region</label>
-			<description>The Service Region is need to select which region is closest to you.</description>
+			<description>The Service Region used for accessing Polly. To reduce latency select the region closest to you.</description>
 			<options>
 				<option value="ap-south-1">Asia Pacific (Mumbai)</option>
 				<option value="ap-northeast-2">Asia Pacific (Seoul)</option>
@@ -44,7 +44,7 @@
 		<parameter name="audioFormat" type="text">
 			<label>Optional User specified audio format</label>
 			<description>The user can override the system default audio format with their preferred option. 
-				"MP3"" and "OGG" are the only audio formats that are supported. </description>
+				"MP3"" and "OGG" are the only audio formats that are supported.</description>
 			<options>
 				<option value="default">Use system selected audio format</option>
 				<option value="MP3">MP3 format</option>

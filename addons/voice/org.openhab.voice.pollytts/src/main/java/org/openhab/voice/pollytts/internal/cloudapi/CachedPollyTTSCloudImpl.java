@@ -35,6 +35,8 @@ import org.slf4j.LoggerFactory;
  */
 public class CachedPollyTTSCloudImpl extends PollyTTSCloudImpl {
 
+    private static final int READ_BUFFER_SIZE = 4096;
+
     private final Logger logger = LoggerFactory.getLogger(CachedPollyTTSCloudImpl.class);
 
     private final File cacheFolder;
@@ -120,11 +122,11 @@ public class CachedPollyTTSCloudImpl extends PollyTTSCloudImpl {
     // helper methods
 
     private void copyStream(InputStream inputStream, OutputStream outputStream) throws IOException {
-        byte[] bytes = new byte[4096];
-        int read = inputStream.read(bytes, 0, 4096);
+        byte[] bytes = new byte[READ_BUFFER_SIZE];
+        int read = inputStream.read(bytes, 0, READ_BUFFER_SIZE);
         while (read > 0) {
             outputStream.write(bytes, 0, read);
-            read = inputStream.read(bytes, 0, 4096);
+            read = inputStream.read(bytes, 0, READ_BUFFER_SIZE);
         }
     }
 
