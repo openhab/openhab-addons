@@ -260,7 +260,7 @@ Bridge mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
 
 demo.items:
 
-Generic configuration .items file:
+Generic configuration .items file (when using .things file to define your broker and things channels):
 ```xtend
 <ITEM-TYPE> <ITEM-NAME> "<FRIENDLY-NAME>" { channel="mqtt:topic:<BROKER-NAME>:<THING-NAME>:<CHANNEL-NAME>" }
 ```
@@ -341,9 +341,9 @@ This converts to an entry in your *.things file with a **Broker Thing** and a **
 ```xtend
 Bridge mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
 {
-    Thing mqtt:topic:mything {
+    Thing topic myThing "My Thing" {
     Channels:
-        Type switch : heatpumpChannel "Heatpump Power" [ stateTopic="heatpump/state", commandTopic="heatpump/set" transformationPattern="JSONPATH:$.power" ]
+        Type switch : heatpumpChannel "Heatpump Power" [ stateTopic="heatpump/state", commandTopic="heatpump/set", transformationPattern="JSONPATH:$.power" ]
     }
 }
 ```
@@ -370,7 +370,7 @@ This converts to:
 ```xtend
 Bridge mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
 {
-    Thing mqtt:topic:mything {
+    Thing topic myThing "My Thing" {
     Channels:
         Type switch : heatpumpChannel "Heatpump Power" [ stateTopic="heatpump/state1", commandTopic="heatpump/set" ]
         Type switch : heatpumpChannel2 "Heatpump Power" [ stateTopic="heatpump/state2" ]
