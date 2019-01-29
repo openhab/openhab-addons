@@ -12,7 +12,10 @@
  */
 package org.openhab.voice.pollytts.internal.cloudapi;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * This class implements the PollyTTS configuration.
@@ -21,19 +24,39 @@ import java.util.Map;
  */
 public class PollyTTSConfig {
 
-    private final String accessKey;
-    private final String secretKey;
-    private final String serviceRegion;
-    private final int expireDate;
-    private String audioFormat;
+    private static final String ACCESS_KEY = "accessKey";
+    private static final String SECRET_KEY = "secretKey";
+    private static final String SERVICE_REGION = "serviceRegion";
+    private static final String AUDIO_FORMAT = "audioFormat";
+    private static final String CACHE_EXPIRATION = "cacheExpiration";
+
+    private String accessKey = "";
+    private String secretKey = "";
+    private String serviceRegion = "eu-west-1";
+    private int expireDate = 0;
+    private String audioFormat = "default";
     private long lastDelete;
 
     public PollyTTSConfig(Map<String, Object> config) {
-        accessKey = config.get("accessKey").toString();
-        secretKey = config.get("secretKey").toString();
-        serviceRegion = config.get("serviceRegion").toString();
-        audioFormat = config.get("audioFormat").toString();
-        expireDate = (int) Double.parseDouble(config.get("cacheExpiration").toString());
+        assertValidConfig(config);
+
+        accessKey = config.getOrDefault(ACCESS_KEY, accessKey).toString();
+        secretKey = config.getOrDefault(SECRET_KEY, secretKey).toString();
+        serviceRegion = config.getOrDefault(SERVICE_REGION, serviceRegion).toString();
+        audioFormat = config.getOrDefault(AUDIO_FORMAT, audioFormat).toString();
+        expireDate = (int) Double
+                .parseDouble(config.getOrDefault(CACHE_EXPIRATION, Double.toString(expireDate)).toString());
+    }
+
+    private void assertValidConfig(Map<String, Object> config) {
+        List<String> emptyParams = Stream.of(ACCESS_KEY, SECRET_KEY, SERVICE_REGION)
+                .filter(param -> config.get(param) == null || config.get(param).toString().isEmpty())
+                .collect(Collectors.toList());
+
+        if (!emptyParams.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Missing configuration parameters: " + emptyParams.stream().collect(Collectors.joining(", ")));
+        }
     }
 
     public String getAccessKey() {
@@ -76,4 +99,12 @@ public class PollyTTSConfig {
         this.lastDelete = lastDelete;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("PollyTTSConfig [accessKey=").append(accessKey).append(", secretKey=").append(secretKey)
+                .append(", serviceRegion=").append(serviceRegion).append(", expireDate=").append(expireDate)
+                .append(", audioFormat=").append(audioFormat).append(", lastDelete=").append(lastDelete).append("]");
+        return builder.toString();
+    }
 }

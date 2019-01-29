@@ -103,6 +103,9 @@ public class PollyTTSService implements TTSService {
     @Modified
     protected void modified(Map<String, Object> config) {
         try {
+            pollyTTSConfig = new PollyTTSConfig(config);
+            logger.debug("Using configuration {}", config);
+
             // create cache folder
             File userData = new File(ConfigConstants.getUserDataFolder());
             File cacheFolder = new File(new File(userData, CACHE_FOLDER_NAME), SERVICE_PID);
@@ -111,7 +114,6 @@ public class PollyTTSService implements TTSService {
             }
             logger.info("Using cache folder {}", cacheFolder.getAbsolutePath());
 
-            pollyTTSConfig = new PollyTTSConfig(config);
             pollyTTSImpl = new CachedPollyTTSCloudImpl(pollyTTSConfig, cacheFolder);
 
             audioFormats.clear();
@@ -121,8 +123,10 @@ public class PollyTTSService implements TTSService {
             voices.addAll(initVoices());
 
             logger.debug("PollyTTS service initialized");
+        } catch (IllegalArgumentException e) {
+            logger.warn("Failed to initialize PollyTTS: {}", e.getMessage());
         } catch (Exception e) {
-            logger.error("Failed to initialize PollyTTS", e);
+            logger.warn("Failed to initialize PollyTTS", e);
         }
     }
 
