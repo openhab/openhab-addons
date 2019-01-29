@@ -34,7 +34,7 @@ Set this to true when using token retrieved from browser in `tokenOrApiKey`.
 See also `meterInstalled`. (default = false)
 
 - **meterInstalled** (optional)  
-can be set to true for setups that contain a SolarEdge modbus meter integrated (see here: https://www.solaredge.com/products/pv-monitoring/accessories/css-wattnode-modbus-meter ).
+can be set to true for setups that contain a SolarEdge modbus meter integrated [here](https://www.solaredge.com/products/pv-monitoring/accessories/css-wattnode-modbus-meter).
 A meter allows more detailed data retrieval.
 Set this to true when using token retrieved from browser in `tokenOrApiKey`.
 See also `usePrivateApi`. (default = false)
