@@ -43,7 +43,7 @@
 
 		<parameter name="audioFormat" type="text">
 			<label>Audio Format</label>
-			<description>Allows for overriding the system default audio format. "MP3"" and "OGG" are the only audio formats that are supported.</description>
+			<description>Allows for overriding the system default audio format. "MP3" and "OGG" are the only audio formats that are supported.</description>
 			<options>
 				<option value="default">Use system default</option>
 				<option value="MP3">MP3</option>
