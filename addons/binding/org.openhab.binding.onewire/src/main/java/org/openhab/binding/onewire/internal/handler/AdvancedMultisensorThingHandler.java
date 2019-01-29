@@ -35,6 +35,7 @@ import org.openhab.binding.onewire.internal.DS2438Configuration;
 import org.openhab.binding.onewire.internal.OwDynamicStateDescriptionProvider;
 import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.SensorId;
+import org.openhab.binding.onewire.internal.device.AbstractOwDevice;
 import org.openhab.binding.onewire.internal.device.DS18x20;
 import org.openhab.binding.onewire.internal.device.DS2406_DS2413;
 import org.openhab.binding.onewire.internal.device.DS2438;
@@ -203,7 +204,9 @@ public class AdvancedMultisensorThingHandler extends OwBaseThingHandler {
         updateThing(thingBuilder.build());
 
         try {
-            sensors.get(0).configureChannels();
+            for (AbstractOwDevice sensor : sensors) {
+                sensor.configureChannels();
+            }
         } catch (OwException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             return;
