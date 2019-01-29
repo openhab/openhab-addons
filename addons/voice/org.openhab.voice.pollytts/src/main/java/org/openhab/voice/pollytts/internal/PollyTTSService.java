@@ -158,13 +158,9 @@ public class PollyTTSService implements TTSService {
         if (!voices.contains(voice)) {
             throw new TTSException("The passed voice is unsupported");
         }
-        boolean isAudioFormatSupported = false;
-        for (AudioFormat audioFormat : audioFormats) {
-            if (audioFormat.isCompatible(requestedFormat)) {
-                isAudioFormatSupported = true;
-                break;
-            }
-        }
+        boolean isAudioFormatSupported = audioFormats.stream()
+                .filter(audioFormat -> audioFormat.isCompatible(requestedFormat)).findAny().isPresent();
+
         if (!isAudioFormatSupported) {
             throw new TTSException("The passed AudioFormat is unsupported");
         }
