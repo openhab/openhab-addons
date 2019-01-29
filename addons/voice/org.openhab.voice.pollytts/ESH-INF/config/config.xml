@@ -8,17 +8,17 @@
 	<config-description uri="voice:pollytts">
 		<parameter name="accessKey" type="text" required="true">
 			<label>Access Key</label>
-			<description>The Access Key to get access. You need to register to get a key.</description>
+			<description>The access key part of the AWS credentials. You need to register to get a key.</description>
 		</parameter>
 
 		<parameter name="secretKey" type="text" required="true">
 			<label>Secret Key</label>
-			<description>The Secret Key to get access. You need to register to get a key.</description>
+			<description>The secret key part of the AWS credentials. You need to register to get a key.</description>
 		</parameter>
 
 		<parameter name="serviceRegion" type="text" required="true">
 			<label>Service Region</label>
-			<description>The Service Region used for accessing Polly. To reduce latency select the region closest to you.</description>
+			<description>The service region used for accessing Polly. To reduce latency select the region closest to you.</description>
 			<options>
 				<option value="ap-south-1">Asia Pacific (Mumbai)</option>
 				<option value="ap-northeast-2">Asia Pacific (Seoul)</option>
@@ -42,11 +42,10 @@
 		</parameter>
 
 		<parameter name="audioFormat" type="text">
-			<label>Optional User specified audio format</label>
-			<description>The user can override the system default audio format with their preferred option. 
-				"MP3"" and "OGG" are the only audio formats that are supported.</description>
+			<label>Audio Format</label>
+			<description>Allows for overriding the system default audio format. "MP3"" and "OGG" are the only audio formats that are supported.</description>
 			<options>
-				<option value="default">Use system selected audio format</option>
+				<option value="default">Use system default audio format</option>
 				<option value="MP3">MP3 format</option>
 				<option value="OGG">OGG audio format</option>
 			</options>
@@ -54,9 +53,9 @@
 		</parameter>
 
 		<parameter name="cacheExpiration" type="text">
-			<label>Cache expiration life</label>
-			<description>Optional value, determines the age in days that cache files will be purged. 
-				Default value set to 0 to disable functionality.</description>
+			<label>Cache Expiration</label>
+			<description>Determines the age in days when unused cached files are purged. 
+				Use 0 to disable this functionality.</description>
 			<default>0</default>
 		</parameter>
 	</config-description>

@@ -1,96 +1,52 @@
 # Polly Text-to-Speech
 
-## Overview
+PollyTTS is a voice service utilizing the Internet based text-to-speech (TTS) service [Amazon Polly](https://aws.amazon.com/polly/).
+The service generates speech from both plain text input and text with Speech Synthesis Markup Language (SSML) [tags](https://docs.aws.amazon.com/polly/latest/dg/supported-ssml.html).
+There are servers set in various geographic [regions](https://docs.aws.amazon.com/general/latest/gr/rande.html#pol_region).
+API keys provided by Amazon are required to get access to the service.
+Amazon Polly has a wide selection of [voices and languages](https://aws.amazon.com/polly/features/#Wide_Selection_of_Voices_and_Languages).
+Be aware, that using this service may incur costs on your AWS account.
+You can find pricing information on the [documentation page](https://aws.amazon.com/polly/pricing/).
 
-PollyTTS is a TTS voice service for openHAB utilizing an Internet based TTS service provided by Amazon called Polly.
-Will generate speech from both plain text input and Speech Synthesis Markup Language.
-There are servers set in various geographic locations.
-It requires a set of API keys provided by Amazon to get access to the service.
-Provides multiple languages and multiple voices for each language.
-https://aws.amazon.com/polly/
+## Obtaining Credentials
 
-## Samples
+* Sign up for Amazon Web Services (AWS). [link](https://portal.aws.amazon.com/billing/signup)
+
+When you sign up for AWS, your account is automatically signed up for all services in AWS, including Amazon Polly. 
+
+* Create an IAM User. [link](http://docs.aws.amazon.com/polly/latest/dg/setting-up.html)
+
+Services in AWS, such as Amazon Polly, require that you provide credentials when you access them so that the service can determine whether you have permissions to access the resources owned by that service.
+Within the AWS console, You can create access keys for your AWS account to access the Polly API.
+
+To use the service you will need the **access key**, **secret key** and **server region**.
+
+## Service Configuration
+
+Using your favorite configuration UI (e.g. Paper UI) edit **Services/Voice/Polly Text-to-Speech** settings and set:
+
+* **Access Key** - The AWS credentials access key (required).
+* **Secret Key** - The AWS credentials secret key (required).
+* **Service Region** - The service region used for accessing Polly (required). To reduce latency select the region closest to you. E.g. "eu-west-1" (see [regions](https://docs.aws.amazon.com/general/latest/gr/rande.html#pol_region))
+
+The PollyTTS service caches audio files from previous requests. This reduces traffic, improves performance, reduces the number of requests and provides offline functionality.
+
+* **Cache Expiration** - Cache expiration in days.
+
+When cache files are used their time stamps are updated, unused files are purged if their time stamp exceeds the specified age.
+The default value of 0 disables this functionality.
+A value of 365 removes files that have been unused for a year.
+
+* **Audio Format** - Allows for overriding the system default audio format.
+ 
+Use "default" to select the system default audio format.
+The default audio format can be overriden with the value "mp3" or "ogg".
+
+## Rule Examples
 
 ```
 say("Hello there")  
 say("Hello there", "pollytts:Joanne", "enhancedjavasound")  
-say("" + item.state,"pollytts:Joey", "enhancedjavasound")  
+say("" + item.state, "pollytts:Joey", "enhancedjavasound")  
 say("<speak>Children, come to dinner <prosody volume='x-loud'>Right now!</prosody></speak>")  
 ```
-
-
-## Configuration
-
-You have to add configuration data by adding a file "pollytts.cfg" to the services folder.
-
-Establish Amazon Polly User Credentials to get values for accessKey and secretKey
-
-1.) Sign up for AWS
-
-When you sign up for Amazon Web Services (AWS), your AWS account is automatically signed up for all services in AWS, including Amazon Polly. 
-
-2.) Create an IAM User
-
-Services in AWS, such as Amazon Polly, require that you provide credentials when you access them so that the service can determine whether you have permissions to access the resources owned by that service.
-Within the AWS console, You can create access keys for your AWS account to access the Polly API.
-You will need three items 1) access key, 2) secret key, and 3) server region to configure the openHAB Polly voice service.
-
-Directions are Here: http://docs.aws.amazon.com/polly/latest/dg/setting-up.html
-
-## Config values:
-
-accessKey - required credential provided by Amazon 
-
-secretKey - required credential provided by Amazon
-
-serviceRegion - Required value select region closest for best response, e.g. "eu-west-1"
-
-ServiceRegion is one of the following:
-
-| Region         | Region Name               |
-|----------------|---------------------------|
-| ap-south-1     | Asia Pacific (Mumbai)     |
-| ap-northeast-2 | Asia Pacific (Seoul)      |
-| ap-southeast-1 | Asia Pacific (Singapore)  |
-| ap-southeast-2 | Asia Pacific (Sydney)     |
-| ap-northeast-1 | Asia Pacific (Tokyo)      |
-| us-gov-west-1  | AWS GovCloud (US)         |
-| ca-central-1   | Canada (Central)          |
-| cn-northwest-1 | China (Ningxia)           |
-| eu-central-1   | EU (Frankfurt)            |
-| eu-west-1      | EU (Ireland)              |
-| eu-west-2      | EU (London)               |
-| eu-west-3      | EU (Paris)                |
-| sa-east-1      | South America (São Paulo) |
-| us-east-1      | US East (N. Virginia)     |
-| us-east-2      | US East (Ohio)            |
-| us-west-1      | US West (N. California)   |
-| us-west-2      | US West (Oregon)          |
-
-The PollyTTS service does cache audio files from previous requests, to reduce traffic, improve performance, reduce number of requests and provide offline capability.
-
-cacheExpiration - Cache expiration life in days.
-As Cache files are used their time stamps are updated, files that are never used will be purged if their time stamp exceeds the specified age.
-A default value of 0 set to disable functionality.
-Example, 365 not used in a year.
-
-audioFormat -  User specified audio format. 
-Use "default" to select the default audio format.
-The user can override the openHAB default audio format if they prefer a specific output for their audio device.
-Choices of "default", "mp3" or "ogg" are the only audio entries that are supported.
-
-### Contents e.g. :  
-
-```
-######################## Polly  Text-to-Speech Engine ########################  
-#configuration data from Amazon Polly Service when registering  
-accessKey=BKIAJIBOBQWL35PUIQLZ  
-secretKey=1zv5TS96WiJa/zBobbyeVPdeKrNkui7GwkYD8x  
-serviceRegion=us-east-1  
-cacheExpiration=40
-audioFormat=default  
-###################################
-```
-
-## Caching
-
