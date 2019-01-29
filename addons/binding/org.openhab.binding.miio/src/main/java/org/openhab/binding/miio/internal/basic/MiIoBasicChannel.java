@@ -15,6 +15,8 @@ package org.openhab.binding.miio.internal.basic;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openhab.binding.miio.internal.MiIoBindingConstants;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -78,7 +80,9 @@ public class MiIoBasicChannel {
     }
 
     public String getChannelType() {
-        return channelType == null || channelType.isEmpty() ? channel : channelType;
+        return channelType == null || channelType.isEmpty() ? MiIoBindingConstants.BINDING_ID + ":" + channel
+                : (channelType.startsWith("system") ? channelType
+                        : MiIoBindingConstants.BINDING_ID + ":" + channelType);
     }
 
     public void setChannelType(String channelType) {
