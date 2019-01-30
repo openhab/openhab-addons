@@ -8,7 +8,7 @@ Bundle-ClassPath: .,
  lib/httpcore-4.4.10.jar,
  lib/commons-logging-1.2.jar
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-Version: 2.4.0.qualifier
+Bundle-Version: 2.5.0.qualifier
 Import-Package: org.apache.commons.io,
  org.apache.commons.lang,
  org.eclipse.jdt.annotation;resolution:=optional,
