@@ -34,11 +34,9 @@ Switch  TestSwitch2     "Bathroom" [ "Lighting" ]
 Dimmer  TestDimmer3     "Hallway" [ "Lighting" ]
 Number  TestNumber4     "Temperature Set Point" [ "TargetTemperature" ]
 ```
-If you have an item with a channel or binding attached the tag needs to be applied before the channel
-```
-Switch BLamp1 "Bedroom Lamp 1" <switch> (FirstFloor) {mqtt=">[mosquitto:cmnd/sonoff-BLamp1/POWER:command:*:default],<[mosquitto:stat/sonoff-BLamp1/POWER:state:default]"}
-```
-becomes
+
+If you have an item with a channel or binding attached the tag needs to be applied before the channel.
+
 ```
 Switch BLamp1 "Bedroom Lamp 1" <switch> (FirstFloor) [ "Lighting" ] {mqtt=">[mosquitto:cmnd/sonoff-BLamp1/POWER:command:*:default],<[mosquitto:stat/sonoff-BLamp1/POWER:state:default]"}
 ```
