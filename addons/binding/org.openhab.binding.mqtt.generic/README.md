@@ -370,7 +370,7 @@ This converts to:
 ```xtend
 Bridge mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
 {
-    Thing topic mything "My Thing" {
+    Thing mqtt:topic:mything "My Thing" {
     Channels:
         Type switch : heatpumpChannel "Heatpump Power" [ stateTopic="heatpump/state1", commandTopic="heatpump/set" ]
         Type switch : heatpumpChannel2 "Heatpump Power" [ stateTopic="heatpump/state2" ]
