@@ -76,7 +76,7 @@ public class HeatingThermostat extends Device {
         return this.mode;
     }
 
-    void setMode(ThermostatModeType mode) {
+    public void setMode(ThermostatModeType mode) {
         if (this.mode != mode) {
             setUpdated(true);
         }
