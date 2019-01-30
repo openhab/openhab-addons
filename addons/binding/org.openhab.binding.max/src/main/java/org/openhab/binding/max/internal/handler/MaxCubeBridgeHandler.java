@@ -438,7 +438,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                 if (commandContent.contentEquals(ThermostatModeType.AUTOMATIC.toString())) {
                     device.setMode(ThermostatModeType.AUTOMATIC);
                     return new SCommand(device.getRFAddress(), device.getRoomId(), ThermostatModeType.AUTOMATIC, 0D);
-
                 } else if (commandContent.contentEquals(ThermostatModeType.BOOST.toString())) {
                     device.setMode(ThermostatModeType.BOOST);
                     return new SCommand(device.getRFAddress(), device.getRoomId(), ThermostatModeType.BOOST, setTemp);
