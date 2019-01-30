@@ -67,14 +67,12 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
     private volatile List<NhcProfile2> profiles = new ArrayList<>();
     private volatile String profileUuid = "";
 
-    private volatile CompletableFuture<Boolean> communicationStarted = new CompletableFuture<>();
+    @Nullable
+    private volatile CompletableFuture<Boolean> communicationStarted;
 
     private volatile List<NhcService2> services = new ArrayList<>();
 
     private volatile List<NhcLocation2> locations = new ArrayList<>();
-
-    // Scheduler used to start profile connection in new thread
-    private ScheduledExecutorService scheduler;
 
     @Nullable
     private volatile NhcSystemInfo2 nhcSystemInfo;
@@ -94,12 +92,12 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
     public NikoHomeControlCommunication2(NhcControllerEvent handler, String clientId, String persistencePath,
             ScheduledExecutorService scheduler) throws CertificateException {
         this.handler = handler;
-        this.scheduler = scheduler;
-        this.mqttConnection = new NhcMqttConnection2(clientId, persistencePath);
+        this.mqttConnection = new NhcMqttConnection2(clientId, persistencePath, scheduler);
     }
 
     @Override
-    public void startCommunication() {
+    public synchronized void startCommunication() {
+        communicationStarted = new CompletableFuture<>();
         startPublicCommunication();
     }
 
@@ -107,7 +105,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
      * This method executes the first part of the communication start. A public connection (no username or password, but
      * secured with SSL) will be started and the controller will be queried for existing capabilities and profiles.
      */
-    private synchronized void startPublicCommunication() {
+    private void startPublicCommunication() {
         InetAddress addr = handler.getAddr();
         if (addr == null) {
             logger.warn("Niko Home Control: IP address cannot be empty");
@@ -119,17 +117,13 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
         int port = handler.getPort();
         logger.debug("Niko Home Control: initializing for mqtt connection to CoCo on {}:{}", addrString, port);
 
-        // Start the connection in a separate thread, so a previous connection on the current thread can be closed
-        // without harm
-        scheduler.submit(() -> {
-            try {
-                mqttConnection.startPublicConnection(this, addrString, port);
-                initializePublic();
-            } catch (MqttException e) {
-                logger.warn("Niko Home Control: error in mqtt communication", e);
-                connectionLost();
-            }
-        });
+        try {
+            mqttConnection.startPublicConnection(this, addrString, port);
+            initializePublic();
+        } catch (MqttException e) {
+            logger.debug("Niko Home Control: error in mqtt communication ");
+            stopCommunication();
+        }
     }
 
     /**
@@ -137,7 +131,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
      * public MQTT connection, this method should be called to stop the general connection and start a touch profile
      * specific MQTT connection. This will allow receiving state information and updating state of devices.
      */
-    private synchronized void startProfileCommunication() {
+    private void startProfileCommunication() {
         String profile = handler.getProfile();
         String password = handler.getPassword();
 
@@ -160,31 +154,37 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
             return;
         }
 
-        // Start the connection in a separate thread, so a previous connection on the current thread can be closed
-        // without harm
-        scheduler.submit(() -> {
-            try {
-                mqttConnection.startProfileConnection(this, profileUuid, password);
-                initializeProfile();
-            } catch (MqttException e) {
-                logger.warn("Niko Home Control: error in mqtt communication", e);
-                connectionLost();
-            }
-        });
+        mqttConnection.stopPublicConnection();
+        try {
+            mqttConnection.startProfileConnection(this, profileUuid, password);
+            initializeProfile();
+        } catch (MqttException e) {
+            logger.warn("Niko Home Control: error in mqtt communication ");
+            stopCommunication();
+        }
     }
 
     @Override
     public synchronized void stopCommunication() {
+        if (communicationStarted != null) {
+            communicationStarted.complete(false);
+        }
+        communicationStarted = null;
         mqttConnection.stopPublicConnection();
         mqttConnection.stopProfileConnection();
     }
 
     @Override
     public boolean communicationActive() {
+        CompletableFuture<Boolean> started = communicationStarted;
+        if (started == null) {
+            return false;
+        }
         try {
             // Wait until we received all devices info to confirm we are active.
-            return communicationStarted.get(5000, TimeUnit.MILLISECONDS);
+            return started.get(5000, TimeUnit.MILLISECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            logger.debug("Niko Home Control: exception waiting for connection start");
             return false;
         }
     }

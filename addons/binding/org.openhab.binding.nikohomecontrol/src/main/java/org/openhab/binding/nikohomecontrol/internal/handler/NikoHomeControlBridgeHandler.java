@@ -126,7 +126,6 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
             if (comm != null) {
                 comm.restartCommunication();
                 if (!comm.communicationActive()) {
-                    logger.debug("Niko Home Control: communication socket error");
                     bridgeOffline();
                     return;
                 }

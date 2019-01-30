@@ -24,6 +24,7 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -68,7 +69,7 @@ public class NhcMqttConnection2 implements MqttActionCallback {
     @Nullable
     private volatile CompletableFuture<Boolean> publicStoppedFuture;
     @Nullable
-    private volatile CompletableFuture<Boolean> privateStoppedFuture;
+    private volatile CompletableFuture<Boolean> profileStoppedFuture;
 
     private Path persistenceBasePath;
     private SSLContextProvider sslContextProvider;
@@ -78,12 +79,16 @@ public class NhcMqttConnection2 implements MqttActionCallback {
     private volatile String cocoAddress = "";
     private volatile int port;
 
-    NhcMqttConnection2(String clientId, String persistencePath) throws CertificateException {
+    private ScheduledExecutorService scheduler;
+
+    NhcMqttConnection2(String clientId, String persistencePath, ScheduledExecutorService scheduler)
+            throws CertificateException {
         this.persistenceBasePath = Paths.get(persistencePath).resolve("nikohomecontrol");
         // to be removed after testing
         logger.debug("Niko Home Control: base persistence path set to {}", persistenceBasePath);
         this.sslContextProvider = getSSLContext();
         this.clientId = clientId;
+        this.scheduler = scheduler;
     }
 
     private SSLContextProvider getSSLContext() throws CertificateException {
@@ -130,37 +135,40 @@ public class NhcMqttConnection2 implements MqttActionCallback {
      * @throws MqttException
      */
     void startPublicConnection(MqttMessageSubscriber subscriber, String cocoAddress, int port) throws MqttException {
-        logger.trace("Niko Home Control: starting public connection...");
+        if (publicStoppedFuture != null) {
+            try {
+                publicStoppedFuture.get(5000, TimeUnit.MILLISECONDS);
+                logger.debug("Niko Home Control: finished stopping public connection");
+            } catch (InterruptedException | ExecutionException | TimeoutException ignore) {
+                logger.debug("Niko Home Control: error stopping public connection");
+            }
+            publicStoppedFuture = null;
+        }
+
+        logger.debug("Niko Home Control: starting public connection...");
         this.cocoAddress = cocoAddress;
         this.port = port;
         String clientId = this.clientId + "-public";
         MqttBrokerConnection connection = createMqttConnection(subscriber, null, null, clientId);
-        if (publicStoppedFuture != null) {
-            try {
-                publicStoppedFuture.get(2000, TimeUnit.MILLISECONDS);
-            } catch (InterruptedException | ExecutionException | TimeoutException ignore) {
-            }
-            publicStoppedFuture = null;
-        }
         mqttPublicConnection = connection;
         try {
-            if (connection.start().get(2000, TimeUnit.MILLISECONDS)) {
+            if (connection.start().get(5000, TimeUnit.MILLISECONDS)) {
                 if (publicSubscribedFuture == null) {
                     publicSubscribedFuture = connection.subscribe("#", subscriber);
                 }
             } else {
-                logger.debug("Niko Home Control: public connection timeout");
-                throw new MqttException(32000);
+                logger.debug("Niko Home Control: error connecting");
+                throw new MqttException(32103);
             }
         } catch (InterruptedException e) {
-            logger.debug("Niko Home Control: public connection interrupted exception", e);
-            throw new MqttException(e);
+            logger.debug("Niko Home Control: public connection interrupted exception");
+            throw new MqttException(0);
         } catch (ExecutionException e) {
-            logger.debug("Niko Home Control: public connection execution exception", e);
-            throw new MqttException(e);
+            logger.debug("Niko Home Control: public connection execution exception for {}", e.getCause());
+            throw new MqttException(32103);
         } catch (TimeoutException e) {
-            logger.debug("Niko Home Control: public connection timeout exception", e);
-            throw new MqttException(e);
+            logger.debug("Niko Home Control: public connection timeout exception");
+            throw new MqttException(32000);
         }
     }
 
@@ -177,37 +185,38 @@ public class NhcMqttConnection2 implements MqttActionCallback {
      */
     void startProfileConnection(MqttMessageSubscriber subscriber, String username, String password)
             throws MqttException {
-        stopPublicConnection();
+        if (profileStoppedFuture != null) {
+            try {
+                profileStoppedFuture.get(5000, TimeUnit.MILLISECONDS);
+                logger.debug("Niko Home Control: finished stopping profile connection");
+            } catch (InterruptedException | ExecutionException | TimeoutException ignore) {
+                logger.debug("Niko Home Control: error stopping profile connection");
+            }
+            profileStoppedFuture = null;
+        }
 
-        logger.trace("Niko Home Control: starting profile connection...");
+        logger.debug("Niko Home Control: starting profile connection...");
         String clientId = this.clientId + "-profile";
         MqttBrokerConnection connection = createMqttConnection(subscriber, username, password, clientId);
-        if (privateStoppedFuture != null) {
-            try {
-                privateStoppedFuture.get(2000, TimeUnit.MILLISECONDS);
-            } catch (InterruptedException | ExecutionException | TimeoutException ignore) {
-            }
-            privateStoppedFuture = null;
-        }
         mqttProfileConnection = connection;
         try {
-            if (connection.start().get(2000, TimeUnit.MILLISECONDS)) {
+            if (connection.start().get(5000, TimeUnit.MILLISECONDS)) {
                 if (profileSubscribedFuture == null) {
                     profileSubscribedFuture = connection.subscribe("#", subscriber);
                 }
             } else {
-                logger.debug("Niko Home Control: profile connection timeout");
-                throw new MqttException(32000);
+                logger.warn("Niko Home Control: error with profile password");
+                throw new MqttException(4);
             }
         } catch (InterruptedException e) {
-            logger.debug("Niko Home Control: profile connection interrupted exception", e);
-            throw new MqttException(e);
+            logger.debug("Niko Home Control: profile connection interrupted exception ");
+            throw new MqttException(0);
         } catch (ExecutionException e) {
-            logger.debug("Niko Home Control: profile connection execution exception", e);
-            throw new MqttException(e);
+            logger.debug("Niko Home Control: profile connection execution exception for {}", e.getCause());
+            throw new MqttException(32103);
         } catch (TimeoutException e) {
-            logger.debug("Niko Home Control: connection timeout exception", e);
-            throw new MqttException(e);
+            logger.debug("Niko Home Control: public connection timeout exception");
+            throw new MqttException(32000);
         }
     }
 
@@ -227,12 +236,12 @@ public class NhcMqttConnection2 implements MqttActionCallback {
      * Stop the public MQTT connection.
      */
     void stopPublicConnection() {
-        logger.trace("Niko Home Control: stopping public connection...");
-        stopConnection(mqttPublicConnection);
+        logger.debug("Niko Home Control: stopping public connection...");
+        publicStoppedFuture = stopConnection(mqttPublicConnection);
         mqttPublicConnection = null;
 
         if (publicSubscribedFuture != null) {
-            publicSubscribedFuture.cancel(true);
+            publicSubscribedFuture.complete(false);
             publicSubscribedFuture = null;
         }
     }
@@ -241,12 +250,12 @@ public class NhcMqttConnection2 implements MqttActionCallback {
      * Stop the profile specific MQTT connection.
      */
     void stopProfileConnection() {
-        logger.trace("Niko Home Control: stopping profile connection...");
-        stopConnection(mqttProfileConnection);
+        logger.debug("Niko Home Control: stopping profile connection...");
+        profileStoppedFuture = stopConnection(mqttProfileConnection);
         mqttProfileConnection = null;
 
         if (profileSubscribedFuture != null) {
-            profileSubscribedFuture.cancel(true);
+            profileSubscribedFuture.complete(false);
             profileSubscribedFuture = null;
         }
     }
@@ -280,7 +289,7 @@ public class NhcMqttConnection2 implements MqttActionCallback {
 
         if (connection != null) {
             try {
-                if ((future != null) && future.get(1000, TimeUnit.MILLISECONDS)) {
+                if ((future != null) && future.get(5000, TimeUnit.MILLISECONDS)) {
                     MqttConnectionState state = connection.connectionState();
                     logger.debug("Niko Home Control: connection state {} for {}", state, connection.getClientId());
                     return state == MqttConnectionState.CONNECTED;

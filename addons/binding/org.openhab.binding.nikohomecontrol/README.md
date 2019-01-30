@@ -85,7 +85,7 @@ For Niko Home Control II:
 
 ```
 Bridge nikohomecontrol:bridge2:<bridgeId> [ addr="<IP-address of IP-interface>", port=<listening port>,
-                                           touchprofile=<touch profile>, password=<password>,
+                                           profile=<touch profile>, password=<password>,
                                            refresh=<Refresh interval> ]
 ```
 
@@ -93,7 +93,7 @@ Bridge nikohomecontrol:bridge2:<bridgeId> [ addr="<IP-address of IP-interface>",
 
 `addr` is the fixed Niko Home Connected Controller address and is required.
 `port` will be the port used to connect and is 8883 by default.
-`touchprofile` is the name of the touch profile configured in the Niko Home Control II programming software to be made available to openHAB.
+`profile` is the name of the touch profile configured in the Niko Home Control II programming software to be made available to openHAB.
 `password` is the password for the touchprofile, cannot be empty.
 `refresh` is the interval to restart the communication in minutes (300 by default), if 0 or omitted the connection will not restart at regular intervals.
 
@@ -132,7 +132,10 @@ For textual configuration, you can manually retrieve it from the content of the 
 Open the file with an unzip tool to read it's content.
 
 For Niko Home Control II, the `actionId` parameter is a unique ID for the action in the controller. It can only be auto-discovered.
-If you want to define the action through textual configuration, you may first need to do discovery on the bridge to get the correct `actionId` to use in the textual configuration.
+If you want to define the action through textual configuration, the easiest way is to first do discovery on the bridge to get the correct `actionId` to use in the textual configuration.
+Discover and add the thing you want to add.
+Note down the `actionId` parameter from the thing, remove it before adding it again through textual configuration, with the same `actionId`parameter.
+Alternatively the `actionId`can be retrieved from the configuration file. The file contains a SQLLite database. The database contains a table `Action` with column `FifthplayId` corresponding to the required `actionId`parameter.
 
 The `step` parameter is only available for dimmers.
 It sets a step value for dimmer increase/decrease actions. The parameter is optional and set to 10 by default.
@@ -197,11 +200,11 @@ The event message is the alarm or notice text coming from Niko Home Control.
 
 The binding has been tested with a Niko Home Control I IP-interface (550-00508) and the Niko Home Control Connected Controller (550-00003) for Niko Home Control I and Niko Home Control II.
 
-The Niko Home Control II bridge does not yet support rollershutters and thermostats.
+The Niko Home Control II bridge does not yet support rollershutters.
 
-The action events implemented are limited to onOff, dimmer and rollershutter or blinds.
+The action events implemented are limited to onOff, dimmer, allOff, scenes, PIR and rollershutter or blinds.
 Other actions have not been implemented.
-It is not possible to tilt the slats of venetian blinds.
+It is not possible to tilt the slates of venetian blinds.
 
 Beyond action and thermostat events, the Niko Home Control communication also supports electricity usage data.
 This has not been implemented.
@@ -219,7 +222,7 @@ Bridge nikohomecontrol:bridge:nhc1 [ addr="192.168.0.70", port=8000, refresh=300
     thermostat 5 [ thermostatId=0 ]
 }
 
-Bridge nikohomecontrol:bridge2:nhc2 [ addr="192.168.0.70", port=8883, touchprofile="openHAB", password="mypassword", refresh=300 ] {
+Bridge nikohomecontrol:bridge2:nhc2 [ addr="192.168.0.70", port=8883, profile="openHAB", password="mypassword", refresh=300 ] {
     pushButton 1 "AllOff" [ actionId="12345678-abcd-1234-ef01-aa12bb34ee89" ]
     onOff 2 "Office" @ "Downstairs" [ actionId="12345678-abcd-1234-ef01-aa12bb34cc56" ]
     dimmer 3 "DiningRoom" [ actionId="abcdef01-abcd-1234-ab98-abcdef012345", step=5 ]
