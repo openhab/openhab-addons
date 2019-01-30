@@ -180,6 +180,7 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
      */
     public void start() {
         this.config = uplinkHandler.getConfiguration();
+        setAuthenticated(false);
         updateJobReference(requestExecutorJobReference, scheduler.scheduleWithFixedDelay(requestExecutor,
                 WEB_REQUEST_INITIAL_DELAY, WEB_REQUEST_INTERVAL, TimeUnit.MILLISECONDS));
     }
@@ -269,6 +270,7 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
     public void dispose() {
         logger.debug("Webinterface disposed.");
         cancelJobReference(requestExecutorJobReference);
+        setAuthenticated(false);
     }
 
     private boolean isAuthenticated() {
