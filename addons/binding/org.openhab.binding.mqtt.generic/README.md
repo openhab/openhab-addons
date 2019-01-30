@@ -247,7 +247,7 @@ demo.Things:
 ```xtend
 Bridge mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
 {
-    Thing topic mything {
+    Thing mqtt:topic:mything {
     Channels:
         Type switch : lamp "Kitchen Lamp" [ stateTopic="lamp/enabled", commandTopic="lamp/enabled/set" ]
         Type switch : fancylamp "Fancy Lamp" [ stateTopic="fancy/lamp/state", commandTopic="fancy/lamp/command", on="i-am-on", off="i-am-off" ]
