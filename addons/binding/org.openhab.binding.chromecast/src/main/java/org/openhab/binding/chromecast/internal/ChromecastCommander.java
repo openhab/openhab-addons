@@ -17,6 +17,7 @@ import static org.openhab.binding.chromecast.internal.ChromecastBindingConstants
 
 import java.io.IOException;
 
+import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -45,6 +46,8 @@ public class ChromecastCommander {
     private final ChromeCast chromeCast;
     private final ChromecastScheduler scheduler;
     private final ChromecastStatusUpdater statusUpdater;
+
+    private static final int VOLUMESTEP = 10;
 
     public ChromecastCommander(ChromeCast chromeCast, ChromecastScheduler scheduler,
             ChromecastStatusUpdater statusUpdater) {
@@ -178,14 +181,23 @@ public class ChromecastCommander {
 
     public void handleVolume(final Command command) {
         if (command instanceof PercentType) {
-            final PercentType num = (PercentType) command;
-            try {
-                chromeCast.setVolumeByIncrement(num.floatValue() / 100);
-                statusUpdater.updateStatus(ThingStatus.ONLINE);
-            } catch (final IOException ex) {
-                logger.debug("Set volume failed: {}", ex.getMessage());
-                statusUpdater.updateStatus(ThingStatus.OFFLINE, COMMUNICATION_ERROR, ex.getMessage());
-            }
+            setVolumeInternal((PercentType) command);
+        } else if (command == IncreaseDecreaseType.INCREASE) {
+            setVolumeInternal(new PercentType(
+                    Math.max(statusUpdater.getVolume().intValue() + VOLUMESTEP, PercentType.ZERO.intValue())));
+        } else if (command == IncreaseDecreaseType.DECREASE) {
+            setVolumeInternal(new PercentType(
+                    Math.min(statusUpdater.getVolume().intValue() - VOLUMESTEP, PercentType.HUNDRED.intValue())));
+        }
+    }
+
+    private void setVolumeInternal(PercentType volume) {
+        try {
+            chromeCast.setVolumeByIncrement(volume.floatValue() / 100);
+            statusUpdater.updateStatus(ThingStatus.ONLINE);
+        } catch (final IOException ex) {
+            logger.debug("Set volume failed: {}", ex.getMessage());
+            statusUpdater.updateStatus(ThingStatus.OFFLINE, COMMUNICATION_ERROR, ex.getMessage());
         }
     }
 
