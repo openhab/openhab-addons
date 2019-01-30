@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.miio.internal.basic;
 
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.BINDING_ID;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,7 +80,8 @@ public class MiIoBasicChannel {
     }
 
     public String getChannelType() {
-        return channelType == null || channelType.isEmpty() ? channel : channelType;
+        return channelType == null || channelType.isEmpty() ? BINDING_ID + ":" + channel
+                : (channelType.startsWith("system") ? channelType : BINDING_ID + ":" + channelType);
     }
 
     public void setChannelType(String channelType) {

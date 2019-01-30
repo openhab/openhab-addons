@@ -74,7 +74,7 @@ public class MiIoAsyncCommunication {
     private int timeout;
     private boolean needPing = true;
     private static final int MAX_ERRORS = 3;
-    private static final int MAX_ID = 1000;
+    private static final int MAX_ID = 15000;
 
     private ConcurrentLinkedQueue<MiIoSendCommand> concurrentLinkedQueue = new ConcurrentLinkedQueue<MiIoSendCommand>();
 
