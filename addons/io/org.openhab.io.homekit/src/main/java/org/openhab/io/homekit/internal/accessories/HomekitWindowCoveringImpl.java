@@ -12,9 +12,11 @@ import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
 import com.beowulfe.hap.accessories.WindowCovering;
 import com.beowulfe.hap.accessories.properties.WindowCoveringPositionState;
 
-public class HomekitWindowCoveringImpl extends AbstractHomekitAccessoryImpl<RollershutterItem> implements WindowCovering {
+public class HomekitWindowCoveringImpl extends AbstractHomekitAccessoryImpl<RollershutterItem>
+        implements WindowCovering {
 
-    public HomekitWindowCoveringImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry, HomekitAccessoryUpdater updater) {
+    public HomekitWindowCoveringImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
+            HomekitAccessoryUpdater updater) {
         super(taggedItem, itemRegistry, updater, RollershutterItem.class);
     }
 
@@ -28,11 +30,6 @@ public class HomekitWindowCoveringImpl extends AbstractHomekitAccessoryImpl<Roll
     }
 
     @Override
-    public CompletableFuture<Boolean> getObstructionDetected() {
-        return CompletableFuture.completedFuture(false);
-    }
-
-    @Override
     public CompletableFuture<WindowCoveringPositionState> getPositionState() {
         return CompletableFuture.completedFuture(WindowCoveringPositionState.STOPPED);
     }
@@ -40,11 +37,6 @@ public class HomekitWindowCoveringImpl extends AbstractHomekitAccessoryImpl<Roll
     @Override
     public CompletableFuture<Integer> getTargetPosition() {
         return getCurrentPosition();
-    }
-
-    @Override
-    public CompletableFuture<Void> setHoldPosition(boolean value) throws Exception {
-        return CompletableFuture.completedFuture(null);
     }
 
     @Override
@@ -56,11 +48,6 @@ public class HomekitWindowCoveringImpl extends AbstractHomekitAccessoryImpl<Roll
     @Override
     public void subscribeCurrentPosition(HomekitCharacteristicChangeCallback callback) {
         getUpdater().subscribe(getItem(), callback);
-    }
-
-    @Override
-    public void subscribeObstructionDetected(HomekitCharacteristicChangeCallback callback) {
-        // Not implemented
     }
 
     @Override
@@ -79,11 +66,6 @@ public class HomekitWindowCoveringImpl extends AbstractHomekitAccessoryImpl<Roll
     }
 
     @Override
-    public void unsubscribeObstructionDetected() {
-        // Not implemented
-    }
-
-    @Override
     public void unsubscribePositionState() {
         // Not implemented
     }
@@ -92,5 +74,4 @@ public class HomekitWindowCoveringImpl extends AbstractHomekitAccessoryImpl<Roll
     public void unsubscribeTargetPosition() {
         getUpdater().unsubscribe(getItem(), "targetPosition");
     }
-
 }
