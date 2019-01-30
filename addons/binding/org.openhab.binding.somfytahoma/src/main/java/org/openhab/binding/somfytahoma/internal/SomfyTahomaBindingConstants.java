@@ -104,6 +104,10 @@ public class SomfyTahomaBindingConstants {
     // Temperature sensor
     public static final ThingTypeUID THING_TYPE_TEMPERATURESENSOR = new ThingTypeUID(BINDING_ID, "temperaturesensor");
 
+    // Gate
+    public static final ThingTypeUID THING_TYPE_GATE = new ThingTypeUID(BINDING_ID, "gate");
+
+
     // List of all Channel ids
     // Gateway
     public static final String STATUS = "status";
@@ -153,6 +157,10 @@ public class SomfyTahomaBindingConstants {
     // Window handle
     public static final String HANDLE_STATE = "handle_state";
 
+    // Gate
+    public static final String GATE_STATE = "gate_state";
+    public static final String GATE_COMMAND = "gate_command";
+
     //Constants
     private static final String API_URL = "https://www.tahomalink.com/enduser-mobile-web/";
     public static final String TAHOMA_URL = API_URL + "externalAPI/json/";
@@ -172,6 +180,7 @@ public class SomfyTahomaBindingConstants {
     public static final String COMMAND_SET_ORIENTATION = "setOrientation";
     public static final String COMMAND_SET_CLOSURESPEED = "setClosureAndLinearSpeed";
     public static final String COMMAND_SET_HEATINGLEVEL = "setHeatingLevel";
+    public static final String COMMAND_SET_PEDESTRIANPOSITION = "setPedestrianPosition";
     public static final String COMMAND_REFRESH_HEATINGLEVEL = "refreshHeatingLevel";
     public static final String COMMAND_UP = "up";
     public static final String COMMAND_DOWN = "down";
@@ -205,6 +214,7 @@ public class SomfyTahomaBindingConstants {
     public static final String PERGOLA = "Pergola";
     public static final String WINDOWHANDLE = "WindowHandle";
     public static final String TEMPERATURESENSOR = "TemperatureSensor";
+    public static final String GATE = "Gate";
 
     // unsupported uiClasses
     public static final String PROTOCOLGATEWAY = "ProtocolGateway";

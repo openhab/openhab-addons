@@ -109,7 +109,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                 THING_TYPE_EXTERIORVENETIANBLIND, THING_TYPE_GARAGEDOOR, THING_TYPE_ACTIONGROUP, THING_TYPE_AWNING,
                 THING_TYPE_ONOFF, THING_TYPE_LIGHT, THING_TYPE_LIGHTSENSOR, THING_TYPE_SMOKESENSOR,
                 THING_TYPE_CONTACTSENSOR, THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_WINDOW, THING_TYPE_EXTERNAL_ALARM,
-                THING_TYPE_INTERNAL_ALARM, THING_TYPE_POD, THING_TYPE_HEATING_SYSTEM, THING_TYPE_ONOFF_HEATING_SYSTEM, THING_TYPE_DOOR_LOCK, THING_TYPE_PERGOLA, THING_TYPE_WINDOW_HANDLE, THING_TYPE_TEMPERATURESENSOR));
+                THING_TYPE_INTERNAL_ALARM, THING_TYPE_POD, THING_TYPE_HEATING_SYSTEM, THING_TYPE_ONOFF_HEATING_SYSTEM, THING_TYPE_DOOR_LOCK, THING_TYPE_PERGOLA, THING_TYPE_WINDOW_HANDLE, THING_TYPE_TEMPERATURESENSOR, THING_TYPE_GATE));
     }
 
     @Override
@@ -122,6 +122,11 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
 
         if (bridge.getThing().getStatus().equals(ThingStatus.ONLINE)) {
             SomfyTahomaSetup devices = bridge.listDevices();
+
+            if (devices == null) {
+                return;
+            }
+
             for (SomfyTahomaDevice device : devices.getDevices()) {
                 discoverDevice(device);
             }
@@ -220,6 +225,9 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                 break;
             case TEMPERATURESENSOR:
                 deviceDiscovered(device, THING_TYPE_TEMPERATURESENSOR);
+                break;
+            case GATE:
+                deviceDiscovered(device, THING_TYPE_GATE);
                 break;
             case PROTOCOLGATEWAY:
                 break;

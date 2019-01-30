@@ -132,7 +132,6 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             String urlParameters = "userId=" + thingConfig.getEmail() + "&userPassword=" + thingConfig.getPassword();
 
             ContentResponse response = sendRequestBuilder(url, HttpMethod.POST)
-                    .agent(TAHOMA_AGENT)
                     .content(new StringContentProvider(urlParameters), "application/x-www-form-urlencoded; charset=UTF-8")
                     .send();
 
@@ -467,7 +466,6 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     private String sendDataToTahomaWithCookie(String url, String urlParameters) throws InterruptedException, ExecutionException, TimeoutException, SomfyTahomaException {
         logger.trace("Sending POST to Tahoma to url: {} with data: {}", url, urlParameters);
         ContentResponse response = sendRequestBuilder(url, HttpMethod.POST)
-                .agent(TAHOMA_AGENT)
                 .content(new StringContentProvider(urlParameters), "application/json;charset=UTF-8")
                 .send();
 
@@ -495,7 +493,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
     private String sendMethodToTahomaWithCookie(String url, HttpMethod method) throws InterruptedException, ExecutionException, TimeoutException, SomfyTahomaException {
         logger.trace("Sending {} to Tahoma to url: {}", method.asString(), url);
-        ContentResponse response = sendRequestBuilder(url, method).agent(TAHOMA_AGENT).send();
+        ContentResponse response = sendRequestBuilder(url, method).send();
 
         logger.trace("Response: {}", response.getContentAsString());
         if (response.getStatus() < 200 || response.getStatus() >= 300) {
