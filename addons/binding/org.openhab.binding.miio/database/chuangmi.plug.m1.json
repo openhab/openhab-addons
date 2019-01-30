@@ -2,6 +2,7 @@
 	"deviceMapping": {
 		"id": [
 			"chuangmi.plug.m1",
+			"chuangmi.plug.m3",
 			"chuangmi.plug.hmi205"
 		],
 		"channels": [
