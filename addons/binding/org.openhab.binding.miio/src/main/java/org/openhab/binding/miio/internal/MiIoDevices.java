@@ -82,6 +82,7 @@ public enum MiIoDevices {
     POWERPLUG1("chuangmi.plug.v1", "Mi Power-plug v1", THING_TYPE_BASIC),
     POWERPLUG2("chuangmi.plug.v2", "Mi Power-plug v2", THING_TYPE_BASIC),
     POWERPLUG3("chuangmi.plug.v3", "Mi Power-plug v3", THING_TYPE_BASIC),
+    POWERPLUGM3("chuangmi.plug.m3", "Mi Power-plug", THING_TYPE_BASIC),
     POWERPLUG_HMI205("chuangmi.plug.hmi205", "Mi Smart Plug", THING_TYPE_BASIC),
     POWERSTRIP("qmi.powerstrip.v1", "Qing Mi Smart Power Strip v1", THING_TYPE_BASIC),
     POWERSTRIP2("zimi.powerstrip.v2", "Mi Power-strip v2", THING_TYPE_BASIC),
