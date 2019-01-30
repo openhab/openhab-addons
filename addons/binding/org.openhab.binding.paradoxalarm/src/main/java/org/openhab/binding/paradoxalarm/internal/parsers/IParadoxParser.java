@@ -1,0 +1,35 @@
+/**
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.paradoxalarm.internal.parsers;
+
+import org.openhab.binding.paradoxalarm.internal.model.PartitionState;
+import org.openhab.binding.paradoxalarm.internal.model.Version;
+import org.openhab.binding.paradoxalarm.internal.model.ZoneState;
+import org.openhab.binding.paradoxalarm.internal.model.ZoneStateFlags;
+
+/**
+ * The {@link IParadoxParser} Interface for Paradox Parsers implementations
+ *
+ * @author Konstantin_Polihronov - Initial contribution
+ */
+public interface IParadoxParser {
+    public PartitionState calculatePartitionState(byte[] partitionFlags);
+
+    public ZoneState calculateZoneState(int id, ZoneStateFlags zoneStateFlags);
+
+    public Version parseApplicationVersion(byte[] panelInfoBytes);
+
+    public Version parseHardwareVersion(byte[] panelInfoBytes);
+
+    public Version parseBootloaderVersion(byte[] panelInfoBytes);
+}
