@@ -35,6 +35,7 @@ public enum StatusType {
     SHUTTING_DOWN(13, "Shutting Down"),
     UPDATING(14, "Updating"),
     DOCKING(15, "Docking"),
+    GOTO(16, "Go To"),
     ZONE(17, "Zone Clean"),
     FULL(100, "Full");
 
