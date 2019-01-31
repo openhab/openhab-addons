@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.io.homekit.internal;
 
 import java.time.Clock;
@@ -13,17 +25,19 @@ import org.slf4j.LoggerFactory;
 /**
  * Highly performant generic debouncer
  *
- * Note: This is not written as an Actor for performance reasons. Debounced calls are filtered synchronously, in the
- * caller thread, without the need for locks, context switches, or heap allocations. We use AtomicBoolean to resolve
- * concurrent races; the probability of contending on an AtomicBoolean transition is very low.
+ * @author Tim Harper - Initial contribution
  *
- * @param name      The name of this debouncer
+ *         Note: This is not written as an Actor for performance reasons. Debounced calls are filtered synchronously, in
+ *         the caller thread, without the need for locks, context switches, or heap allocations. We use AtomicBoolean to
+ *         resolve concurrent races; the probability of contending on an AtomicBoolean transition is very low.
+ *
+ * @param name The name of this debouncer
  * @param scheduler The scheduler implementation to use
- * @param delay     The time after which to invoke action; each time [[Debouncer.call]] is invoked, this delay is
- *                      reset
- * @param Clock     The source from which we get the current time. This input should use the same source. Specified
- *                      for testing purposes
- * @param action    The action to invoke
+ * @param delay The time after which to invoke action; each time [[Debouncer.call]] is invoked, this delay is
+ *            reset
+ * @param Clock The source from which we get the current time. This input should use the same source. Specified
+ *            for testing purposes
+ * @param action The action to invoke
  */
 class Debouncer {
 
