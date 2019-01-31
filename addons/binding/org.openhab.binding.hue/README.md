@@ -225,13 +225,14 @@ And there is one Hue Motion Sensor (represented by three devices) and a Hue Dimm
 ### demo.things:
 
 ```
-Bridge hue:bridge:1 "Hue Bridge" [ ipAddress="192.168.0.64" ] {
-    0210 bulb1          "Lamp 1"        @ "Kitchen" [ lightId="1" ]
-    0220 bulb2          "Lamp 2"        @ "Kitchen" [ lightId="2" ]
+Bridge hue:bridge:1         "Hue Bridge"                    [ ipAddress="192.168.0.64" ] {
+    0210 bulb1              "Lamp 1"        @ "Kitchen"     [ lightId="1" ]
+    0220 bulb2              "Lamp 2"        @ "Kitchen"     [ lightId="2" ]
     0106 light-level-sensor "Light-Sensor"  @ "Entrance"    [ sensorId="3" ]
-    0107 motion-sensor  "Motion-Sensor" @ "Entrance"    [ sensorId="4" ]
+    0107 motion-sensor      "Motion-Sensor" @ "Entrance"    [ sensorId="4" ]
     0302 temperature-sensor "Temp-Sensor"   @ "Entrance"    [ sensorId="5" ]
-    0820 dimmer-switch  "Dimmer-Switch" @ "Entrance"    [ sensorId="6" ]
+    0820 dimmer-switch      "Dimmer-Switch" @ "Entrance"    [ sensorId="6" ]
+}
 ```
 
 ### demo.items:
