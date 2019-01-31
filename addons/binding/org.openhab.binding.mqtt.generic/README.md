@@ -242,9 +242,7 @@ Have a look at the following textual examples.
 
 ### A broker Thing with a Generic MQTT Thing and a few channels 
 
-Note: the [broker connection](https://www.openhab.org/addons/bindings/mqtt/) may be set up as a Bridge or as a stand-alone Thing. 
-
-demo.Things (using bridge setup):
+demo1.things:
 
 ```xtend
 Bridge mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
@@ -260,7 +258,7 @@ Bridge mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
 }
 ```
 
-demo.Things (using non-bridge setup):
+demo2.things:
 
 ```xtend
 mqtt:broker:WorkBroker "Work Broker" [ host="localhost", port="1883", secure=false, username="openhabian", password="ohmqtt", clientID="WORKOPENHAB24" ]
@@ -278,11 +276,16 @@ When using .things and .items files for configuration, items and channels follow
 <ITEM-TYPE> <ITEM-NAME> "<FRIENDLY-NAME>" { channel="mqtt:topic:<BROKER-NAME>:<THING-NAME>:<CHANNEL-NAME>" }
 ```
 
-demo.items:
+demo1.items:
 
 ```xtend
 Switch Kitchen_Light "Kitchen Light" { channel="mqtt:topic:myUnsecureBroker:mything:lamp" }
 Rollershutter shutter "Blind" { channel="mqtt:topic:myUnsecureBroker:mything:blind" }
+```
+
+demo2.items:
+
+```xtend
 Switch SW_WorkLight "Work Light Switch" { channel="mqtt:topic:WorkBroker:WorkSonoff:WorkLight", channel="mqtt:topic:WorkBroker:WorkSonoff:WorkLightTele" }
 ```
 
