@@ -23,11 +23,13 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.elkm1.internal.discovery.ElkM1DiscoveryHandler;
 import org.openhab.binding.elkm1.internal.handler.ElkM1AreaHandler;
 import org.openhab.binding.elkm1.internal.handler.ElkM1BridgeHandler;
 import org.openhab.binding.elkm1.internal.handler.ElkM1ZoneHandler;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +39,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author David Bennett - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.elkm1")
 public class ElkM1HandlerFactory extends BaseThingHandlerFactory {
     private Logger logger = LoggerFactory.getLogger(ElkM1BridgeHandler.class);
     private static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
