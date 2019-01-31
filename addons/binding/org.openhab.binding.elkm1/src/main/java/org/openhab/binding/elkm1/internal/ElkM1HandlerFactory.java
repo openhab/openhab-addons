@@ -8,7 +8,10 @@
  */
 package org.openhab.binding.elkm1.internal;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
@@ -28,8 +31,6 @@ import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.ImmutableSet;
-
 /**
  * The {@link ElkM1HandlerFactory} is responsible for creating things and thing
  * handlers.
@@ -38,9 +39,12 @@ import com.google.common.collect.ImmutableSet;
  */
 public class ElkM1HandlerFactory extends BaseThingHandlerFactory {
     private Logger logger = LoggerFactory.getLogger(ElkM1BridgeHandler.class);
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(
-            ElkM1BindingConstants.THING_TYPE_BRIDGE, ElkM1BindingConstants.THING_TYPE_ZONE,
-            ElkM1BindingConstants.THING_TYPE_AREA);
+    private static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
+            Arrays.asList(ElkM1BindingConstants.THING_TYPE_BRIDGE, ElkM1BindingConstants.THING_TYPE_ZONE,
+                    ElkM1BindingConstants.THING_TYPE_AREA));
+    static {
+        SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(SUPPORTED_THING_TYPES_UIDS);
+    }
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     @Override

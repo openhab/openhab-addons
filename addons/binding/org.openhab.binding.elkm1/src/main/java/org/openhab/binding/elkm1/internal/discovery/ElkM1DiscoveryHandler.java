@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.elkm1.internal.discovery;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
@@ -20,8 +21,6 @@ import org.openhab.binding.elkm1.internal.elk.ElkTypeToRequest;
 import org.openhab.binding.elkm1.internal.handler.ElkM1BridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Maps;
 
 /**
  * Sets up the discovery results and details from the elk m1 when it is found.
@@ -57,7 +56,7 @@ public class ElkM1DiscoveryHandler extends AbstractDiscoveryService implements E
         logger.info("Elk Zone {} Discovered: {}", zoneNum, label);
         ThingUID thingUID = new ThingUID(ElkM1BindingConstants.THING_TYPE_ZONE, bridge.getThing().getUID(),
                 Integer.toString(zoneNum));
-        Map<String, Object> properties = Maps.newHashMap();
+        Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(ElkM1BindingConstants.PROPERTY_TYPE_ID, ElkTypeToRequest.Zone.toString());
         properties.put(ElkM1BindingConstants.PROPERTY_ZONE_NUM, Integer.toString(zoneNum));
         DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridge.getThing().getUID())
@@ -75,7 +74,7 @@ public class ElkM1DiscoveryHandler extends AbstractDiscoveryService implements E
         logger.info("Elk Area {} Discovered: {}", areaNum, label);
         ThingUID thingUID = new ThingUID(ElkM1BindingConstants.THING_TYPE_AREA, bridge.getThing().getUID(),
                 Integer.toString(areaNum));
-        Map<String, Object> properties = Maps.newHashMap();
+        Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(ElkM1BindingConstants.PROPERTY_TYPE_ID, ElkTypeToRequest.Area.toString());
         properties.put(ElkM1BindingConstants.PROPERTY_ZONE_NUM, Integer.toString(areaNum));
         DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridge.getThing().getUID())

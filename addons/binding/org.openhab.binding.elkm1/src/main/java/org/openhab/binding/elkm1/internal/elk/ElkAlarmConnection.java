@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -33,8 +34,6 @@ import org.openhab.binding.elkm1.internal.elk.message.EthernetModuleTestReply;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
-
 /**
  * The connection to the elk, handles the socket and other pieces.
  *
@@ -49,7 +48,7 @@ public class ElkAlarmConnection {
     private boolean running = false;
     private boolean sentSomething = false;
     private Thread elkAlarmThread;
-    private List<ElkListener> listeners = Lists.newArrayList();
+    private List<ElkListener> listeners = new ArrayList<ElkListener>();
     private Queue<ElkMessage> toSend = new ArrayBlockingQueue<>(100);
 
     private SocketFactory sFactory;

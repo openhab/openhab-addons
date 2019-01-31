@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.elkm1.internal.handler;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -53,8 +54,6 @@ import org.openhab.binding.elkm1.internal.elk.message.ZoneStatusReply;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
-
 /**
  * The {@link ElkM1BridgeHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -68,7 +67,7 @@ public class ElkM1BridgeHandler extends BaseBridgeHandler implements ElkListener
     private ElkMessageFactory messageFactory;
     // private ZoneDetails[] zoneDetails = new ZoneDetails[208];
     private boolean[] areas = new boolean[ElkMessageFactory.MAX_AREAS];
-    private List<ElkM1HandlerListener> listeners = Lists.newArrayList();
+    private List<ElkM1HandlerListener> listeners = new ArrayList<ElkM1HandlerListener>();
 
     public ElkM1BridgeHandler(Bridge thing) {
         super(thing);
