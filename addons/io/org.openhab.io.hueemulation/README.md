@@ -116,3 +116,9 @@ Switch  TestSwitch      "Kitchen Switch" [ "Switchable" ]
 Color   TestColorBulb   "Bathroom"       [ "ColorLighting" ]
 Dimmer  TestDimmer      "Hallway"        [ "Lighting" ]
 ```
+
+If you have an item with a channel or binding attached the tag needs to be applied before the channel.
+
+```
+Switch BLamp1 "Bedroom Lamp 1" <switch> (FirstFloor) [ "Lighting" ] {mqtt=">[mosquitto:cmnd/sonoff-BLamp1/POWER:command:*:default],<[mosquitto:stat/sonoff-BLamp1/POWER:state:default]"}
+```
