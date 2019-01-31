@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.elkm1.handler;
+package org.openhab.binding.elkm1.internal.handler;
 
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -16,7 +16,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.elkm1.ElkM1BindingConstants;
+import org.openhab.binding.elkm1.internal.ElkM1BindingConstants;
 import org.openhab.binding.elkm1.internal.elk.ElkAlarmAreaState;
 import org.openhab.binding.elkm1.internal.elk.ElkAlarmArmUpState;
 import org.openhab.binding.elkm1.internal.elk.ElkAlarmArmedState;

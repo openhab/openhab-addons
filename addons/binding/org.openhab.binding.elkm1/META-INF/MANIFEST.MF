@@ -19,13 +19,8 @@ Import-Package:
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.model.script.engine.action,
- org.openhab.binding.elkm1,
- org.openhab.binding.elkm1.handler,
  org.osgi.framework,
  org.osgi.service.component,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.elkm1,
- org.openhab.binding.elkm1.handler,
- org.openhab.binding.elkm1.discovery
 Bundle-ActivationPolicy: lazy
