@@ -16,7 +16,7 @@ Requirements beyond this are not clear, and Apple enforces limitations on eligib
 At the very least, you cannot use repeating (111-11-111) or sequential (123-45-678) pin codes.
 If your home network is secure, a good starting point is the pin code used in most sample applications: 031-45-154.
 
-Other settings, such as using Fahrenheit temperatures, customizing the thermostat heat/cool/auto modes, and specifying the interface to advertise the HomeKit bridge (which can be edited in PaperUI standard mode) are also illustrated in the following sample:
+Other settings, such as using Fahrenheit temperatures, customizing the thermostat heat/cool/auto modes, and specifying the interface to advertise the HomeKit bridge (which can be edited in Paper UI standard mode) are also illustrated in the following sample:
 
 ```
 org.openhab.homekit:port=9124
@@ -29,7 +29,7 @@ org.openhab.homekit:thermostatOffMode=Off
 org.openhab.homekit:networkInterface=192.168.0.6
 ```
 
-The following additional settings can be added or edited in PaperUI after switching to expert mode:
+The following additional settings can be added or edited in Paper UI after switching to expert mode:
 
 ```
 org.openhab.homekit:name=openHAB
