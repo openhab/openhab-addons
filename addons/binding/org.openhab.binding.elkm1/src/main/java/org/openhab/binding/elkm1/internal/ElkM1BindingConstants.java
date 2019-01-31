@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.elkm1.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -20,6 +21,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author David Bennett - Initial contribution
  */
+
+@NonNullByDefault
 public class ElkM1BindingConstants {
 
     public static final String BINDING_ID = "elkm1";
