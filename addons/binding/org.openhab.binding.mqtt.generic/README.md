@@ -242,7 +242,7 @@ Have a look at the following textual examples.
 
 ### A broker Thing with a Generic MQTT Thing and a few channels 
 
-demo.Things:
+demo1.things:
 
 ```xtend
 Bridge mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
@@ -258,16 +258,35 @@ Bridge mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
 }
 ```
 
-demo.items:
+demo2.things:
 
-Generic configuration .items file (when using .things file to define your broker and things channels):
+```xtend
+mqtt:broker:WorkBroker "Work Broker" [ host="localhost", port="1883", secure=false, username="openhabian", password="ohmqtt", clientID="WORKOPENHAB24" ]
+
+Thing mqtt:topic:WorkBroker:WorkSonoff "Work Sonoff" (mqtt:broker:WorkBroker) @ "Home" {
+    Channels:
+        Type switch : WorkLight "Work Light" [ stateTopic="stat/worklight/POWER", commandTopic="cmnd/worklight/POWER" ]
+        Type switch : WorkLightTele "Work Tele" [ stateTopic="tele/worklight/STATE", transformationPattern="JSONPATH:$.POWER" ]
+}
+```
+
+When using .things and .items files for configuration, items and channels follow the format of:
+
 ```xtend
 <ITEM-TYPE> <ITEM-NAME> "<FRIENDLY-NAME>" { channel="mqtt:topic:<BROKER-NAME>:<THING-NAME>:<CHANNEL-NAME>" }
 ```
 
+demo1.items:
+
 ```xtend
 Switch Kitchen_Light "Kitchen Light" { channel="mqtt:topic:myUnsecureBroker:mything:lamp" }
 Rollershutter shutter "Blind" { channel="mqtt:topic:myUnsecureBroker:mything:blind" }
+```
+
+demo2.items:
+
+```xtend
+Switch SW_WorkLight "Work Light Switch" { channel="mqtt:topic:WorkBroker:WorkSonoff:WorkLight", channel="mqtt:topic:WorkBroker:WorkSonoff:WorkLightTele" }
 ```
 
 ### Publish an MQTT value on startup
@@ -362,7 +381,7 @@ Switch ExampleItem "Heatpump Power" { channel="mqtt:topic:myUnsecureBroker:mythi
 If you receive updates from two different topics, you need to create multiple channels now, 1 for each MQTT receive topic.
 
 ```xtend
-Switch ExampleItem "Heatpump Power" { mqtt=">[mosquitto:heatpump/set:command:*:DEFAULT)],<[mosquitto:heatpump/state1:state:*:DEFAULT",<[mosquitto:heatpump/state2:state:*:DEFAULT" }
+Switch ExampleItem "Heatpump Power" { mqtt=">[mosquitto:heatpump/set:command:*:DEFAULT)],<[mosquitto:heatpump/state1:state:*:DEFAULT,<[mosquitto:heatpump/state2:state:*:DEFAULT" }
 ```
 
 This converts to:
