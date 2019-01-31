@@ -48,13 +48,6 @@ public abstract class ElkMessage {
 
     private int checksum(String str) {
         int checksum = 0;
-
-        /*
-         * for (my $i=0;$i<length($str);$i++) {
-         * $val += ord(substr($str,$i,1));
-         * }
-         * return sprintf('%0.2X',((~$val + 1) & 0xFF));
-         */
         for (char input : getFullBodyText().toCharArray()) {
             checksum += input;
         }

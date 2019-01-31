@@ -69,7 +69,6 @@ public class ElkM1BridgeHandler extends BaseBridgeHandler implements ElkListener
 
     private ElkAlarmConnection connection;
     private ElkMessageFactory messageFactory;
-    // private ZoneDetails[] zoneDetails = new ZoneDetails[208];
     private boolean[] areas = new boolean[ElkMessageFactory.MAX_AREAS];
     private List<ElkM1HandlerListener> listeners = new ArrayList<ElkM1HandlerListener>();
 
