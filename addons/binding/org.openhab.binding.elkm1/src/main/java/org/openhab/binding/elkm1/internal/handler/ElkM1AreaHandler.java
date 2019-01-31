@@ -50,7 +50,7 @@ public class ElkM1AreaHandler extends BaseThingHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (channelUID.getId().equals(ElkM1BindingConstants.CHANNEL_AREA_ARMED)) {
+        if (ElkM1BindingConstants.CHANNEL_AREA_ARMED.equals(channelUID.getId())) {
             if (command instanceof StringType) {
                 StringType str = (StringType) command;
                 // Changing the armed state.
