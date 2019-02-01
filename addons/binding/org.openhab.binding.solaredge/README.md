@@ -5,8 +5,13 @@ Only read access is supported.
 
 ## Supported Things
 
-This binding provides only one thing type: "generic" which is the inverter itself. As the name suggests it is generic which means it applies to all available inverters. Create one inverter thing per physical inverter installation available in your home(s). Additional stuff like batteries is automatically supported.
-Inverters which have a meter attached allow more detailed measuring. Either a SolarEdge modbus meter or a S0 meter (export or consumption meter) can be used. While on the one hand the S0 meter is the cheaper solution the solaredge meter on the other hand can be used as combined import+export meter and therefore allows even more detailed measurements.
+This binding provides only one thing type: "generic" which is the inverter itself.
+As the name suggests it is generic which means it applies to all available inverters.
+Create one inverter thing per physical inverter installation available in your home(s).
+Additional stuff like batteries is automatically supported.
+Inverters which have a meter attached allow more detailed measuring.
+Either a SolarEdge modbus meter or a S0 meter (export or consumption meter) can be used.
+While on the one hand the S0 meter is the cheaper solution the solaredge meter on the other hand can be used as combined import+export meter and therefore allows even more detailed measurements.
 For more details please see here:
 - [SolarEdge meter](https://www.solaredge.com/products/pv-monitoring/accessories/css-wattnode-modbus-meter)
 - [Avoiding Feed-In limitations with consumption meters](https://www.solaredge.com/solutions/feed-in-limitation-and-metering-solution#)
@@ -52,8 +57,10 @@ interval (minutes) in which aggregate data values are retrieved from Solaredge. 
 
 ## Channels
 
-Available channels depend on the specific setup e.g. if a meter and/or a battery is present. Following models/channels are currently available
-All numeric channels use the [UoM feature](https://www.eclipse.org/smarthome/blog/2018/02/22/units-of-measurement.html). This means you can easily change the desired unit e.g. MWh instead of kWh just in your item definition.
+Available channels depend on the specific setup e.g. if a meter and/or a battery is present.
+All numeric channels use the [UoM feature](https://www.eclipse.org/smarthome/blog/2018/02/22/units-of-measurement.html).
+This means you can easily change the desired unit e.g. MWh instead of kWh just in your item definition.
+Following channels are currently available:
 
 | Channel Type ID                               | Item Type            | Description                                      | Remark                                           |
 |-----------------------------------------------|----------------------|--------------------------------------------------|--------------------------------------------------|
