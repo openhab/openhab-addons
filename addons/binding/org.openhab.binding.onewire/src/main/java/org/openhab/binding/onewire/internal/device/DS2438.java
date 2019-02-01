@@ -217,7 +217,7 @@ public class DS2438 extends AbstractOwDevice {
             if (enabledChannels.contains(CHANNEL_VOLTAGE)) {
                 double measured = ((DecimalType) bridgeHandler.readDecimalType(sensorId, voltageParameter))
                         .doubleValue();
-                if (measured > 10.0) {
+                if (measured < 0 || measured > 10.0) {
                     // workaround bug in DS2438
                     measured = 0.0;
                 }
@@ -278,12 +278,13 @@ public class DS2438 extends AbstractOwDevice {
                     case IBUTTONLINK:
                         double measured = ((DecimalType) bridgeHandler.readDecimalType(sensorId, voltageParameter))
                                 .doubleValue();
-                        if (measured > 10.0) {
+                        if (measured <= 0 || measured > 10.0) {
                             // workaround bug in DS2438
-                            measured = 0.0;
+                            light = new QuantityType<Illuminance>(0, SmartHomeUnits.LUX);
+                        } else {
+                            light = new QuantityType<Illuminance>(
+                                    Math.pow(10, (65 / 7.5) - (47 / 7.5) * (Vcc / measured)), SmartHomeUnits.LUX);
                         }
-                        light = new QuantityType<Illuminance>(Math.pow(10, (65 / 7.5) - (47 / 7.5) * (Vcc / measured)),
-                                SmartHomeUnits.LUX);
                         callback.postUpdate(CHANNEL_LIGHT, light);
                 }
             }
