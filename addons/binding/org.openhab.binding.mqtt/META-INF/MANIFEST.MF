@@ -12,7 +12,7 @@ Import-Package:
  org.apache.commons.lang,
  org.apache.commons.net.util,
  org.eclipse.jdt.annotation;resolution:=optional,
- org.eclipse.smarthome.automation.annotation;resolution:=optional,
+ org.openhab.core.automation.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.library.types,
