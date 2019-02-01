@@ -340,6 +340,14 @@ public class TradfriGatewayHandler extends BaseBridgeHandler implements CoapCall
 
     @Override
     public void setStatus(ThingStatus status, ThingStatusDetail statusDetail) {
+        // to fix connection issues after a gateway reboot, a session resume is forced for the next command
+        if (status == ThingStatus.OFFLINE && statusDetail == ThingStatusDetail.COMMUNICATION_ERROR) {
+            logger.debug("Gateway communication error. Forcing session resume on next command.");
+            TradfriGatewayConfig configuration = getConfigAs(TradfriGatewayConfig.class);
+            InetSocketAddress peerAddress = new InetSocketAddress(configuration.host, configuration.port);
+            this.dtlsConnector.forceResumeSessionFor(peerAddress);
+        }
+
         // are we still connected at all?
         if (endPoint != null) {
             updateStatus(status, statusDetail);
