@@ -40,7 +40,8 @@ public class EtherRainHandler extends BaseThingHandler {
 
     private EtherRainCommunication device = null;
 
-    private @Nullable ScheduledFuture<?> updateJob;
+    @Nullable
+    private ScheduledFuture<?> updateJob;
 
     public EtherRainHandler(Thing thing) {
         super(thing);
@@ -126,6 +127,7 @@ public class EtherRainHandler extends BaseThingHandler {
 
     }
 
+    @SuppressWarnings("null")
     private void stopUpdateJob() {
         logger.debug("Stopping Etherrain Update Job");
         if (updateJob != null && !updateJob.isDone()) {
