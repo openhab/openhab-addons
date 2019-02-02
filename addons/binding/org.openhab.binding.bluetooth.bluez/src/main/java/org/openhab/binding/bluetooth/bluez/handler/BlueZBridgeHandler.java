@@ -254,9 +254,8 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
 
     private BlueZBluetoothDevice createAndRegisterBlueZDevice(tinyb.BluetoothDevice tinybDevice) {
         BlueZBluetoothDevice device = new BlueZBluetoothDevice(this, tinybDevice);
-        tinybDevice.getManufacturerData().entrySet().stream().filter(entry -> entry.getKey() != null).findFirst()
-                .ifPresent(entry -> {
-                    Short manufacturerId = entry.getKey();
+        tinybDevice.getManufacturerData().keySet().stream().filter(manufacturerId -> manufacturerId != null).findFirst()
+                .ifPresent(manufacturerId -> {
                     if (manufacturerId != null) {
                         // Convert to unsigned int to match the convention in
                         // BluetoothCompanyIdentifiers
