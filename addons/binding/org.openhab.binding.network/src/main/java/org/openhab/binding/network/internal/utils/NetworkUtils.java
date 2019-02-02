@@ -40,6 +40,8 @@ import org.apache.commons.net.util.SubnetUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.net.exec.ExecUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Network utility functions for pinging and for determining all interfaces and assigned IP addresses.
@@ -48,6 +50,8 @@ import org.eclipse.smarthome.io.net.exec.ExecUtil;
  */
 @NonNullByDefault
 public class NetworkUtils {
+    private final Logger logger = LoggerFactory.getLogger(NetworkUtils.class);
+
     /**
      * Gets every IPv4 Address on each Interface except the loopback
      * The Address format is ip/subnet
@@ -132,10 +136,14 @@ public class NetworkUtils {
     public Set<String> getNetworkIPs(Set<String> interfaceIPs, int maximumPerInterface) {
         LinkedHashSet<String> networkIPs = new LinkedHashSet<>();
 
+        logger.info("{} interface IPs found: {}", interfaceIPs.size(), interfaceIPs);
+
         for (String string : interfaceIPs) {
+            logger.info("processing IP: {}", string);
             try {
                 // gets every ip which can be assigned on the given network
                 SubnetUtils utils = new SubnetUtils(string);
+                logger.info("resolved to network: {}", utils.getInfo());
                 String[] addresses = utils.getInfo().getAllAddresses();
                 int len = addresses.length;
                 if (maximumPerInterface != 0 && maximumPerInterface < len) {
