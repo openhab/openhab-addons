@@ -26,7 +26,10 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +59,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.max.internal.MaxBackupUtils;
 import org.openhab.binding.max.internal.MaxBindingConstants;
 import org.openhab.binding.max.internal.command.ACommand;
 import org.openhab.binding.max.internal.command.CCommand;
@@ -164,6 +168,9 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
     private Thread queueConsumerThread;
 
+    private int backup = 1;
+    private MaxBackupUtils bk;
+
     public MaxCubeBridgeHandler(Bridge br) {
         super(br);
     }
@@ -212,7 +219,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         logger.debug("Max Requests    {}.", maxRequestsPerConnection);
 
         previousOnline = true; // To trigger offline in case no connection @ startup
-
+        bk = new MaxBackupUtils();
         startAutomaticRefresh();
     }
 
@@ -282,10 +289,10 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
     }
 
-    private void cubeReboot() {
-        logger.info("Rebooting MAX! Cube {}", getThing().getThingTypeUID());
+    public void cubeReboot() {
+        logger.info("Rebooting MAX! Cube {}", getThing().getUID());
         MaxCubeBridgeConfiguration maxConfiguration = getConfigAs(MaxCubeBridgeConfiguration.class);
-        UdpCubeCommand reset = new UdpCubeCommand(UdpCubeCommand.UdpCommandType.RESET, maxConfiguration.serialNumber);
+        UdpCubeCommand reset = new UdpCubeCommand(UdpCubeCommand.UdpCommandType.REBOOT, maxConfiguration.serialNumber);
         reset.setIpAddress(maxConfiguration.ipAddress);
         reset.send();
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Rebooting");
@@ -614,6 +621,9 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         while (cont) {
             String raw = reader.readLine();
             if (raw != null) {
+                if (backup > 0) {
+                    bk.buildMsg(raw);
+                }
                 logger.trace("message block: '{}'", raw);
                 try {
                     this.messageProcessor.addReceivedLine(raw);
@@ -669,10 +679,14 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                 break;
             case H:
                 processHMessage((HMessage) message);
+                if (backup == 1) {
+                    backup++;
+                }
                 break;
             case L:
                 ((LMessage) message).updateDevices(devices, configurations);
                 logger.trace("{} devices found.", devices.size());
+                backup = (backup == 2) ? 0 : backup; // backup = finished
                 break;
             case M:
                 processMMessage((MMessage) message);
@@ -991,5 +1005,17 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
     public boolean hasExcessDutyCycle() {
         return dutyCycle >= MAX_DUTY_CYCLE;
+    }
+
+    public void backup() {
+        if (this.backup != 2) {
+            this.backup = 1;
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmm");
+            this.bk = new MaxBackupUtils(
+                    new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().format(formatter));
+            socketClose();
+        } else {
+            logger.info("MAX backup for {} already in progress..", getThing().getUID().toString());
+        }
     }
 }

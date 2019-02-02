@@ -65,7 +65,7 @@ public class UdpCubeCommand {
      * DEFAULTNET - c get network default info
      */
     public enum UdpCommandType {
-        RESET,
+        REBOOT,
         DISCOVERY,
         NETWORK,
         URL,
@@ -77,7 +77,7 @@ public class UdpCubeCommand {
      */
     public synchronized boolean send() {
         String commandString;
-        if (commandType.equals(UdpCommandType.RESET)) {
+        if (commandType.equals(UdpCommandType.REBOOT)) {
             commandString = MAXCUBE_COMMAND_STRING + serialNumber + "R";
         } else if (commandType.equals(UdpCommandType.DISCOVERY)) {
             commandString = MAXCUBE_COMMAND_STRING + serialNumber + "I";
@@ -165,7 +165,7 @@ public class UdpCubeCommand {
      * Send broadcast message over all active interfaces
      *
      * @param commandString string to be used for the discovery
-     * @param ipAddress     IP address of the MAX! Cube
+     * @param ipAddress IP address of the MAX! Cube
      *
      */
     private void sendUdpCommand(String commandString, String ipAddress) {
