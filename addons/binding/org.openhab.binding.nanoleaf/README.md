@@ -82,8 +82,8 @@ Below is a full example for a configuration (using things file instead of automa
 
 ```
 Bridge nanoleaf:controller:MyLightPanels [ address="192.168.1.100", port=16021, authToken="AbcDefGhiJk879LmNopqRstUv1234WxyZ", refreshInterval=61, discoverPanels="false" ] {
-	Thing nanoleaf:lightpanel:MyLightPanels:135 [ id=135 ]
-	Thing nanoleaf:lightpanel:MyLightPanels:158 [ id=158 ]
+	Thing lightpanel 135 [ id=135 ]
+	Thing lightpanel 158 [ id=158 ]
 }
 ```
 
