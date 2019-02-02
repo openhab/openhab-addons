@@ -17,7 +17,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -255,15 +254,16 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
 
     private BlueZBluetoothDevice createAndRegisterBlueZDevice(tinyb.BluetoothDevice tinybDevice) {
         BlueZBluetoothDevice device = new BlueZBluetoothDevice(this, tinybDevice);
-        for (Entry<Short, byte[]> entry : tinybDevice.getManufacturerData().entrySet()) {
-            Short manufacturerId = entry.getKey();
-            if (manufacturerId != null) {
-                // Convert to unsigned int to match the convention in
-                // BluetoothCompanyIdentifiers
-                device.setManufacturerId(manufacturerId & 0xFFFF);
-                break;
-            }
-        }
+        tinybDevice.getManufacturerData().entrySet().stream().filter(entry -> entry.getKey() != null).findFirst()
+                .ifPresent(entry -> {
+                    Short manufacturerId = entry.getKey();
+                    if (manufacturerId != null) {
+                        // Convert to unsigned int to match the convention in
+                        // BluetoothCompanyIdentifiers
+                        device.setManufacturerId(manufacturerId & 0xFFFF);
+
+                    }
+                });
         device.initialize();
         devices.put(tinybDevice.getAddress(), device);
         notifyDiscoveryListeners(device);
