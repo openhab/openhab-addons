@@ -19,6 +19,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Coaster Li - Initial contribution
+ * @author Joe Ho - Added Duration
  */
 public class YeelightBindingConstants {
 
@@ -35,6 +36,7 @@ public class YeelightBindingConstants {
 
     // List of thing Parameters names
     public static final String PARAMETER_DEVICE_ID = "deviceId";
+    public static final String PARAMETER_Duration = "duration";
 
     // List of all Channel ids
     public static final String CHANNEL_BRIGHTNESS = "brightness";

@@ -48,6 +48,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Coaster Li - Initial contribution
+ * @author Joe Ho - Added Duration Thing parameter
  */
 public abstract class YeelightHandlerBase extends BaseThingHandler
         implements DeviceConnectionStateListener, DeviceStatusChangeListener {
@@ -198,43 +199,56 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
     }
 
     void handlePercentMessage(PercentType brightness) {
+        DeviceAction pAction;
         if (brightness.intValue() == 0) {
-            DeviceManager.getInstance().doAction(deviceId, DeviceAction.close);
+            pAction = DeviceAction.close;
+            pAction.putDuration(getDuration());
+            DeviceManager.getInstance().doAction(deviceId, pAction);
         } else {
             if (mDevice.getDeviceStatus().isPowerOff()) {
-                DeviceManager.getInstance().doAction(deviceId, DeviceAction.open);
+                pAction = DeviceAction.open;
+                // hard coded to fast open, the duration should apply to brightness increase only
+                pAction.putDuration(0);
+                DeviceManager.getInstance().doAction(deviceId, pAction);
             }
-            DeviceAction baction = DeviceAction.brightness;
-            baction.putValue(brightness.intValue());
-            DeviceManager.getInstance().doAction(deviceId, baction);
+            pAction = DeviceAction.brightness;
+            pAction.putValue(brightness.intValue());
+            pAction.putDuration(getDuration());
+            DeviceManager.getInstance().doAction(deviceId, pAction);
         }
     }
 
     void handleIncreaseDecreaseBrightnessCommand(IncreaseDecreaseType increaseDecrease) {
-        DeviceManager.getInstance().doAction(deviceId,
-                increaseDecrease == IncreaseDecreaseType.INCREASE ? DeviceAction.increase_bright
-                        : DeviceAction.decrease_bright);
+        DeviceAction idbAcation = increaseDecrease == IncreaseDecreaseType.INCREASE ? DeviceAction.increase_bright
+                : DeviceAction.decrease_bright;
+        idbAcation.putDuration(getDuration());
+        DeviceManager.getInstance().doAction(deviceId, idbAcation);
     }
 
     void handleIncreaseDecreaseColorTemperatureCommand(IncreaseDecreaseType increaseDecrease) {
-        DeviceManager.getInstance().doAction(deviceId,
-                increaseDecrease == IncreaseDecreaseType.INCREASE ? DeviceAction.increase_ct
-                        : DeviceAction.decrease_ct);
+        DeviceAction idctAcation = increaseDecrease == IncreaseDecreaseType.INCREASE ? DeviceAction.increase_ct
+                : DeviceAction.decrease_ct;
+        idctAcation.putDuration(getDuration());
+        DeviceManager.getInstance().doAction(deviceId, idctAcation);
     }
 
     void handleOnOffCommand(OnOffType onoff) {
-        DeviceManager.getInstance().doAction(deviceId, onoff == OnOffType.ON ? DeviceAction.open : DeviceAction.close);
+        DeviceAction ofAction = onoff == OnOffType.ON ? DeviceAction.open : DeviceAction.close;
+        ofAction.putDuration(getDuration());
+        DeviceManager.getInstance().doAction(deviceId, ofAction);
     }
 
     void handleHSBCommand(HSBType color) {
         DeviceAction caction = DeviceAction.color;
         caction.putValue(color.getRGB() & 0xFFFFFF);
+        caction.putDuration(getDuration());
         DeviceManager.getInstance().doAction(deviceId, caction);
     }
 
     void handleColorTemperatureCommand(PercentType ct) {
         DeviceAction ctaction = DeviceAction.colortemperature;
         ctaction.putValue(COLOR_TEMPERATURE_STEP * ct.intValue() + COLOR_TEMPERATURE_MINIMUM);
+        ctaction.putDuration(getDuration());
         DeviceManager.getInstance().doAction(deviceId, ctaction);
     }
 
@@ -261,6 +275,18 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
             }
             updateState(YeelightBindingConstants.CHANNEL_COLOR_TEMPERATURE,
                     new PercentType((status.getCt() - COLOR_TEMPERATURE_MINIMUM) / COLOR_TEMPERATURE_STEP));
+        }
+    }
+
+    int getDuration() {
+        // Duration should not be null, but just in case do a null check.
+        try {
+            return getThing().getConfiguration().get(YeelightBindingConstants.PARAMETER_Duration) == null ? 500
+                    : ((Number) getThing().getConfiguration().get(YeelightBindingConstants.PARAMETER_Duration))
+                            .intValue();
+        } catch (Exception e) {
+            logger.error("Unable to get Thing duration, default to 500. Device ID: {}", deviceId);
+            return 500;
         }
     }
 }
