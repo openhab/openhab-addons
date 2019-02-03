@@ -8,9 +8,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.tesla;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
-Export-Package: 
- org.openhab.binding.tesla,
- org.openhab.binding.tesla.handler
 Import-Package: 
  com.google.gson,
  javax.ws.rs.client,
@@ -27,8 +24,6 @@ Import-Package:
  org.eclipse.smarthome.io.console.extensions,
  org.glassfish.jersey.client,
  org.glassfish.jersey.media.sse,
- org.openhab.binding.tesla,
- org.openhab.binding.tesla.handler,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

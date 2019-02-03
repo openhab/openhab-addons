@@ -1,8 +1,10 @@
 # PLCLogo Binding
 
-This binding provides native support of Siemens LOGO! PLC devices. Communication with LOGO! is done via Moka7 library.
-Currently only two devices are supported: `0BA7` (LOGO! 7) and `0BA8` (LOGO! 8). Additionally multiple devices are
-supported. Different families of LOGO! devices should work also, but was not tested now due to lack of hardware.
+This binding provides native support of Siemens LOGO! PLC devices.
+Communication with LOGO! is done via Moka7 library.
+Currently only two devices are supported: `0BA7` (LOGO! 7) and `0BA8` (LOGO! 8).
+Additionally multiple devices are supported.
+Different families of LOGO! devices should work also, but was not tested now due to lack of hardware.
 Binding works nicely at least 100ms polling rate, if network connection is stable.
 
 ## Pitfalls
@@ -126,7 +128,9 @@ Follow block names are allowed for datetime things:
 | Word  | `VW[0-849]` | `VW[0-849]` |
 
 If parameter `type` is `"date"`, then the binding will try to interpret incoming data as calendar date.
+The time this case will be taken from openHAB host.
 If `type` is set to `"time"`, then incoming data will be tried to interpret as time of day.
+The date this case will be taken from openHAB host.
 
 ### Pulse Things
 
@@ -153,6 +157,11 @@ Follow observed block names are allowed for pulse things:
 | Bit   |                   | `NI[1-64]`        |
 | Bit   |                   | `NQ[1-64]`        |
 
+If `observe` is not set or set equal `block`, simply pulse with length `pulse` milliseconds is send to `block`.
+If `observe` is set and differ from `block`, binding will wait for value change on `observe` and send then a pulse with length `pulse` milliseconds to block.
+Please note, update rate for change detection depends on bridge refresh value.
+For both use cases: if `block` was `0` then `1` is send and vice versa.
+
 ## Channels
 
 ### Bridge
@@ -165,12 +174,12 @@ channel="plclogo:device:<DeviceId>:rtc"
 channel="plclogo:device:<DeviceId>:weekday"
 ```
 
-Channels `diagnostic` and `weekday` supports `String` items. Channel `diagnostic` contains the last
-diagnostic message reported by LOGO!. Channel `weekday` contains current day of the week. The value
-is provided by LOGO!.  Channel `rtc` supports `DateTime` items only. Since Siemens `0BA7` (LOGO! 7)
-devices will not transfer any useful data for this channel, local time of openHAB host will be used.
-Rather for Siemens `0BA8` (LOGO! 8) devices, the data will be read from PLC. Since the smallest
-resolution provided by LOGO! is one second, `rtc` channel will be tried to update with the same rate.
+Channels `diagnostic` and `weekday` supports `String` items. Channel `diagnostic` contains the last diagnostic message reported by LOGO!.
+Channel `weekday` contains current day of the week.
+The value is provided by LOGO!.
+Channel `rtc` supports `DateTime` items only. Since Siemens `0BA7` (LOGO! 7) devices will not transfer any useful data for this channel, local time of openHAB host will be used.
+Rather for Siemens `0BA8` (LOGO! 8) devices, the data will be read from PLC.
+Since the smallest resolution provided by LOGO! is one second, `rtc` channel will be tried to update with the same rate.
 
 ### Digital
 
@@ -225,18 +234,12 @@ Dependent on configured LOGO! PLC and thing kind, follow channels are available:
 | `VW[0-849]`       | `value` | `value` | `Number` |
 | `VD[0-847]`       | `value` | `value` | `Number` |
 
-### Datime
+### DateTime
 
-Format pattern depends for datetime channels is
+Format pattern depends for date/time channels is
 
 ```
 channel="plclogo:datetime:<DeviceId>:<ThingId>:<date/time>"
-```
-
-Additionally raw block data is provided via `value` channel
-
-```
-channel="plclogo:datetime:<DeviceId>:<ThingId>:value"
 ```
 
 Dependent on configured LOGO! PLC and thing kind, follow channels are available:
@@ -244,9 +247,16 @@ Dependent on configured LOGO! PLC and thing kind, follow channels are available:
 | Kind        | `0BA7`  | `0BA8`  | Item       |
 | ----------- | :-----: | :-----: | ---------- |
 | `VW[0-849]` | `date`  | `date`  | `DateTime` |
-| `VW[0-849]` | `value` | `value` | `Number`   |
 | `VW[0-849]` | `time`  | `time`  | `DateTime` |
 | `VW[0-849]` | `value` | `value` | `Number`   |
+
+Channel `date` is available, if thing is configured as `"date"`.
+Is thing configured as `"time"`, then channel `time` is provided.
+Raw block data is provided via `value` channel, independed from thing configuration:
+
+```
+channel="plclogo:datetime:<DeviceId>:<ThingId>:value"
+```
 
 ### Pulse
 
@@ -363,15 +373,15 @@ Be sure to have only one bridge for each LOGO! device.
 
 **Log shows reader was created but no communication with LOGO! possible**
 
-Check TSAP values: localTSAP and remoteTSAP should not be the same. You have to choose different addresses.
+Check TSAP values: localTSAP and remoteTSAP should not be the same.
+You have to choose different addresses.
 
 **openHAB is starting without errors but no reader was created for the LOGO!**
 
-If all configuration parameters were checked and fine, it maybe possible that the network interface of the
-LOGO! is crashed. To recover stop openHAB, cold boot your LOGO! (power off/on) and reflash the program with
-LOGO! SoftComfort. Then restart openHAB and check logging for a created reader.
+If all configuration parameters were checked and fine, it maybe possible that the network interface of the LOGO! is crashed.
+To recover stop openHAB, cold boot your LOGO! (power off/on) and reflash the program with LOGO! SoftComfort.
+Then restart openHAB and check logging for a created reader.
 
 **RTC value differs from the value shown in LOGO! (0BA7)**
 
-This is no bug! Since there is no way to read the RTC from a 0BA7, the binding simply returns the local time
-of openHAB host.
+This is no bug! Since there is no way to read the RTC from a 0BA7, the binding simply returns the local time of openHAB host.

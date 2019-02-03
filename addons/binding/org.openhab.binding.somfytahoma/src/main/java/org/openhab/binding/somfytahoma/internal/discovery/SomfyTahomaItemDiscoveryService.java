@@ -21,18 +21,18 @@ import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.somfytahoma.handler.SomfyTahomaBridgeHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaBridgeHandler;
 import org.openhab.binding.somfytahoma.internal.model.*;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
+
 import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
-import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
 
 /**
  * The {@link SomfyTahomaItemDiscoveryService} discovers rollershutters and

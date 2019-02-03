@@ -72,6 +72,7 @@ All things require a configured broker.
 * __formatBeforePublish__: Format a value before it is published to the MQTT broker. The default is to just pass the channel/item state. If you want to apply a prefix, say "MYCOLOR,", you would use "MYCOLOR,%s". If you want to adjust the precision of a number to for example 4 digits, you would use "%.4f".
 * __postCommand__: If the received MQTT value should not only update the state of linked items, but command them, enable this option. You usually need this enabled if your item is also linked to another channel, say a KNX actor, and you want a received MQTT payload to command that KNX actor. 
 * __retained__: The value will be published to the command topic as retained message. A retained value stays on the broker and can even be seen by MQTT clients that are subscribing at a later point in time. 
+* __trigger__: If true, the state topic will not update a state, but trigger a channel instead.
 
 ### Channel Type "string"
 
@@ -241,7 +242,7 @@ Have a look at the following textual examples.
 
 ### A broker Thing with a Generic MQTT Thing and a few channels 
 
-demo.Things:
+demo1.things:
 
 ```xtend
 Bridge mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
@@ -257,11 +258,35 @@ Bridge mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
 }
 ```
 
-demo.items:
+demo2.things:
+
+```xtend
+mqtt:broker:WorkBroker "Work Broker" [ host="localhost", port="1883", secure=false, username="openhabian", password="ohmqtt", clientID="WORKOPENHAB24" ]
+
+Thing mqtt:topic:WorkBroker:WorkSonoff "Work Sonoff" (mqtt:broker:WorkBroker) @ "Home" {
+    Channels:
+        Type switch : WorkLight "Work Light" [ stateTopic="stat/worklight/POWER", commandTopic="cmnd/worklight/POWER" ]
+        Type switch : WorkLightTele "Work Tele" [ stateTopic="tele/worklight/STATE", transformationPattern="JSONPATH:$.POWER" ]
+}
+```
+
+When using .things and .items files for configuration, items and channels follow the format of:
+
+```xtend
+<ITEM-TYPE> <ITEM-NAME> "<FRIENDLY-NAME>" { channel="mqtt:topic:<BROKER-NAME>:<THING-NAME>:<CHANNEL-NAME>" }
+```
+
+demo1.items:
 
 ```xtend
 Switch Kitchen_Light "Kitchen Light" { channel="mqtt:topic:myUnsecureBroker:mything:lamp" }
 Rollershutter shutter "Blind" { channel="mqtt:topic:myUnsecureBroker:mything:blind" }
+```
+
+demo2.items:
+
+```xtend
+Switch SW_WorkLight "Work Light Switch" { channel="mqtt:topic:WorkBroker:WorkSonoff:WorkLight", channel="mqtt:topic:WorkBroker:WorkSonoff:WorkLightTele" }
 ```
 
 ### Publish an MQTT value on startup
@@ -327,7 +352,7 @@ You do not need to convert everything in one go. MQTT1 and MQTT2 can coexist.
 Assume you have this item:
 
 ```xtend
-Switch ExampleItem "Heatpump Power" { mqtt=">[mosquitto:heatpump/set:command:*:DEFAULT)],<[mosquitto:heatpump/state:JSONPATH($.power)]" }
+Switch ExampleItem "Heatpump Power" { mqtt=">[mosquitto:heatpump/set:command:*:DEFAULT)],<[mosquitto:heatpump:JSONPATH($.power)]" }
 ```
 
 This converts to an entry in your *.things file with a **Broker Thing** and a **Generic MQTT Thing** that uses the bridge:
@@ -335,9 +360,9 @@ This converts to an entry in your *.things file with a **Broker Thing** and a **
 ```xtend
 Bridge mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
 {
-    Thing mqtt:topic:mything {
+    Thing topic mything "My Thing" {
     Channels:
-        Type switch : heatpumpChannel "Heatpump Power" [ stateTopic="heatpump", commandTopic="heatpump/set" transformationPattern="JSONPATH:$.power" ]
+        Type switch : heatpumpChannel "Heatpump Power" [ stateTopic="heatpump", commandTopic="heatpump/set", transformationPattern="JSONPATH:$.power" ]
     }
 }
 ```
@@ -347,7 +372,7 @@ Add as many channels as you have items and add the *stateTopic* and *commandTopi
 Your items change to:
 
 ```xtend
-Switch ExampleItem "Heatpump Power" { channel="mqtt:myUnsecureBroker:topic:mything:heatpumpChannel" }
+Switch ExampleItem "Heatpump Power" { channel="mqtt:topic:myUnsecureBroker:mything:heatpumpChannel" }
 ```
 
 
@@ -356,7 +381,7 @@ Switch ExampleItem "Heatpump Power" { channel="mqtt:myUnsecureBroker:topic:mythi
 If you receive updates from two different topics, you need to create multiple channels now, 1 for each MQTT receive topic.
 
 ```xtend
-Switch ExampleItem "Heatpump Power" { mqtt=">[mosquitto:heatpump/set:command:*:DEFAULT)],<[mosquitto:heatpump/state1:state:*:DEFAULT",<[mosquitto:heatpump/state2:state:*:DEFAULT" }
+Switch ExampleItem "Heatpump Power" { mqtt=">[mosquitto:heatpump/set:command:*:DEFAULT)],<[mosquitto:heatpump/state1:state:*:DEFAULT,<[mosquitto:heatpump/state2:state:*:DEFAULT" }
 ```
 
 This converts to:
@@ -364,7 +389,7 @@ This converts to:
 ```xtend
 Bridge mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
 {
-    Thing mqtt:topic:mything {
+    Thing topic mything "My Thing" {
     Channels:
         Type switch : heatpumpChannel "Heatpump Power" [ stateTopic="heatpump/state1", commandTopic="heatpump/set" ]
         Type switch : heatpumpChannel2 "Heatpump Power" [ stateTopic="heatpump/state2" ]
@@ -376,6 +401,6 @@ Link both channels to one item. That item will publish to "heatpump/set" on a ch
 receive values from "heatpump/state1" and "heatpump/state2".
 
 ```xtend
-Switch ExampleItem "Heatpump Power" { channel="mqtt:myUnsecureBroker:topic:mything:heatpumpChannel",
-                                      channel="mqtt:myUnsecureBroker:topic:mything:heatpumpChannel2" }
+Switch ExampleItem "Heatpump Power" { channel="mqtt:topic:myUnsecureBroker:mything:heatpumpChannel",
+                                      channel="mqtt:topic:myUnsecureBroker:mything:heatpumpChannel2" }
 ```

@@ -90,7 +90,7 @@ public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<SenseApp
     }
 
     @Override
-    protected Measurement getLastMeasurement(SenseAppliance appliance) {
+    protected Measurement getLastDataPoint(SenseAppliance appliance) {
         if (getOndusService() == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                     "No initialized OndusService available from bridge.");

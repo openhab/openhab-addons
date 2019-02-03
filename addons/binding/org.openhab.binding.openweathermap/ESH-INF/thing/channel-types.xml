@@ -48,6 +48,8 @@
 			<channel id="icon" typeId="condition-icon" />
 			<channel id="icon-id" typeId="condition-icon-id" />
 			<channel id="temperature" typeId="forecasted-outdoor-temperature" />
+			<channel id="min-temperature" typeId="forecasted-min-outdoor-temperature" />
+			<channel id="max-temperature" typeId="forecasted-max-outdoor-temperature" />
 			<channel id="pressure" typeId="forecasted-barometric-pressure" />
 			<channel id="humidity" typeId="forecasted-atmospheric-humidity" />
 			<channel id="wind-speed" typeId="forecasted-wind-speed" />
@@ -274,7 +276,7 @@
 	<channel-type id="forecasted-rain">
 		<item-type>Number:Length</item-type>
 		<label>Forecasted Rain</label>
-		<description>Forecasted rain volume for the next 3 hours.</description>
+		<description>Forecasted rain volume.</description>
 		<category>Rain</category>
 		<state readOnly="true" pattern="%.2f %unit%" />
 	</channel-type>
@@ -290,7 +292,7 @@
 	<channel-type id="forecasted-snow">
 		<item-type>Number:Length</item-type>
 		<label>Forecasted Snow</label>
-		<description>Forecasted snow volume for the next 3 hours.</description>
+		<description>Forecasted snow volume.</description>
 		<category>Snow</category>
 		<state readOnly="true" pattern="%.2f %unit%" />
 	</channel-type>

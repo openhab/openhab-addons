@@ -13,7 +13,7 @@
 package org.openhab.binding.rfxcom.internal.messages;
 
 import static org.junit.Assert.assertEquals;
-import static org.openhab.binding.rfxcom.RFXComBindingConstants.CHANNEL_COMMAND;
+import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.CHANNEL_COMMAND;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.LIGHTING5;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting5Message.Commands.ON;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting5Message.SubType.IT;

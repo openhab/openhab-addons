@@ -38,8 +38,8 @@ The following matrix lists the capabilities (channels) for each type:
 
 | Thing type  | On/Off | Brightness | Color | Color Temperature |
 |-------------|:------:|:----------:|:-----:|:-----------------:|
-|  0000       |    X   |            |       |                   |    
-|  0010       |    X   |            |       |                   |    
+|  0000       |    X   |            |       |                   |
+|  0010       |    X   |            |       |                   |
 |  0100       |    X   |     X      |       |                   |
 |  0110       |    X   |     X      |       |                   |
 |  0200       |    X   |            |   X   |                   |
@@ -107,14 +107,28 @@ The devices are identified by the number that the Hue bridge assigns to them (al
 Thus, all it needs for manual configuration is this single value like
 
 ```
-0210 bulb1 [ lightId="1" ]
+0210 bulb1 "Lamp 1" @ "Office" [ lightId="1" ]
 ```
 
 or
 
 ```
-0107 motion-sensor [ sensorId="4" ]
+0107 motion-sensor "Motion Sensor" @ "Entrance" [ sensorId="4" ]
 ```
+You can freely choose the thing identifier (such as motion-sensor), its name (such as "Motion Sensor") and the location (such as "Entrance"). The name will then be used e.g. by Paper UI to show the item.
+
+The following device types also have an optional configuration value to specify the fade time in milliseconds for the transition to a new state:
+* Dimmable Light
+* Dimmable Plug-in Unit
+* Colour Light
+* Extended Colour Light
+* Colour Temperature Light
+
+| Parameter | Description                                                                   |
+|-----------|-------------------------------------------------------------------------------|
+| lightId   | Number of the device provided by the Hue bridge. **Mandatory**                |
+| fadetime  | Fade time in Milliseconds to a new state (min="0", step="100", default="400") |
+
 
 ## Channels
 
@@ -178,6 +192,29 @@ The `tap_switch_event` can trigger one of the following events:
 | Button 3 | Button 3 | 17    |
 | Button 4 | Button 4 | 18    |
 
+
+## Rule Actions
+
+This binding includes a rule action, which allows to change a light channel with a specific fading time from within rules.
+There is a separate instance for each light, which can be retrieved e.g. through
+
+```
+val hueActions = getActions("hue","hue:0210:00178810d0dc:1")
+```
+
+where the first parameter always has to be `hue` and the second is the full Thing UID of the light that should be used.
+Once this action instance is retrieved, you can invoke the `fadingLightCommand(String channel, Command command, DecimalType fadeTime)` method on it:
+
+```
+hueActions.fadingLightCommand("color", new PercentType(100), new DecimalType(1000))
+```
+
+| Parameter | Description                                                                                      |
+|-----------|--------------------------------------------------------------------------------------------------|
+| channel   | The following channels have fade time support: **brightness, color, color_temperature, switch**  |
+| command   | All commands supported by the channel can be used                                                |
+| fadeTime  | Fade time in Milliseconds to a new light value (min="0", step="100")                             |
+
 ## Full Example
 
 In this example **bulb1** is a standard Philips Hue bulb (LCT001) which supports `color` and `color_temperature`.
@@ -188,13 +225,13 @@ And there is one Hue Motion Sensor (represented by three devices) and a Hue Dimm
 ### demo.things:
 
 ```
-Bridge hue:bridge:1 [ ipAddress="192.168.0.64" ] {
-    0210 bulb1 [ lightId="1" ]
-    0220 bulb2 [ lightId="2" ]
-    0106 light-level-sensor [ sensorId="3" ]
-    0107 motion-sensor [ sensorId="4" ]
-    0302 temperature-sensor [ sensorId="5" ]
-    0820 dimmer-switch [ sensorId="6" ]
+Bridge hue:bridge:1         "Hue Bridge"                    [ ipAddress="192.168.0.64" ] {
+    0210 bulb1              "Lamp 1"        @ "Kitchen"     [ lightId="1" ]
+    0220 bulb2              "Lamp 2"        @ "Kitchen"     [ lightId="2" ]
+    0106 light-level-sensor "Light-Sensor"  @ "Entrance"    [ sensorId="3" ]
+    0107 motion-sensor      "Motion-Sensor" @ "Entrance"    [ sensorId="4" ]
+    0302 temperature-sensor "Temp-Sensor"   @ "Entrance"    [ sensorId="5" ]
+    0820 dimmer-switch      "Dimmer-Switch" @ "Entrance"    [ sensorId="6" ]
 }
 ```
 

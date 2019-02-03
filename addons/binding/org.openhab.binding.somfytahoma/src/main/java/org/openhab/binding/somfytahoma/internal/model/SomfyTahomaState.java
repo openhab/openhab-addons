@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.somfytahoma.internal.model;
 
-import java.util.ArrayList;
-
 /**
  * The {@link SomfyTahomaState} holds information about
  * device state.

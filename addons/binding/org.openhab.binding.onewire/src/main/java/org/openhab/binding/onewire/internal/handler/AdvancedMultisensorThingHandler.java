@@ -35,12 +35,13 @@ import org.openhab.binding.onewire.internal.DS2438Configuration;
 import org.openhab.binding.onewire.internal.OwDynamicStateDescriptionProvider;
 import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.SensorId;
+import org.openhab.binding.onewire.internal.device.AbstractOwDevice;
 import org.openhab.binding.onewire.internal.device.DS18x20;
 import org.openhab.binding.onewire.internal.device.DS2406_DS2413;
 import org.openhab.binding.onewire.internal.device.DS2438;
+import org.openhab.binding.onewire.internal.device.DS2438.LightSensorType;
 import org.openhab.binding.onewire.internal.device.OwChannelConfig;
 import org.openhab.binding.onewire.internal.device.OwSensorType;
-import org.openhab.binding.onewire.internal.device.DS2438.LightSensorType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -203,7 +204,9 @@ public class AdvancedMultisensorThingHandler extends OwBaseThingHandler {
         updateThing(thingBuilder.build());
 
         try {
-            sensors.get(0).configureChannels();
+            for (AbstractOwDevice sensor : sensors) {
+                sensor.configureChannels();
+            }
         } catch (OwException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             return;
@@ -214,8 +217,8 @@ public class AdvancedMultisensorThingHandler extends OwBaseThingHandler {
     }
 
     @Override
-    public Map<String, String> updateSensorProperties(OwBaseBridgeHandler bridgeHandler) throws OwException {
-        Map<String, String> properties = new HashMap<String, String>();
+    public void updateSensorProperties(OwBaseBridgeHandler bridgeHandler) throws OwException {
+        Map<String, String> properties = editProperties();
         DS2438Configuration ds2438configuration = new DS2438Configuration(bridgeHandler, sensorId);
 
         sensorType = DS2438Configuration.getMultisensorType(ds2438configuration.getSensorSubType(),
@@ -247,7 +250,7 @@ public class AdvancedMultisensorThingHandler extends OwBaseThingHandler {
                 throw new OwException("sensorType " + sensorType.toString() + " not supported by this thing handler");
         }
 
-        return properties;
+        updateProperties(properties);
     }
 
     /**

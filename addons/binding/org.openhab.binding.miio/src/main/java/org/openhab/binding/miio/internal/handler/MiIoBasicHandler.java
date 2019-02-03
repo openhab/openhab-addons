@@ -360,7 +360,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             return false;
         }
         ChannelUID channelUID = new ChannelUID(getThing().getUID(), channel);
-        ChannelTypeUID channelTypeUID = new ChannelTypeUID(MiIoBindingConstants.BINDING_ID, channelType);
+        ChannelTypeUID channelTypeUID = new ChannelTypeUID(channelType);
 
         // TODO: Need to understand if this harms anything. If yes, channel only to be added when not there already.
         // current way allows to have no issues when channels are changing.

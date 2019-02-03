@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.somfytahoma.internal.model;
 
-import java.util.ArrayList;
-
 /**
  * The {@link SomfyTahomaVersionResponse} holds information about
  * response to getting gateway's firmware version.

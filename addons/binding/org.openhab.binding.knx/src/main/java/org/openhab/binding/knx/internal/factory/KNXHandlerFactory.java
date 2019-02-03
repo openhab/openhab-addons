@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.knx.internal.factory;
 
-import static org.openhab.binding.knx.KNXBindingConstants.*;
+import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 
 import java.util.Arrays;
 import java.util.Collection;

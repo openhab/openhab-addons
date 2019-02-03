@@ -16,7 +16,6 @@ import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -63,8 +62,8 @@ public class EDSSensorThingHandler extends OwBaseThingHandler {
     }
 
     @Override
-    public Map<String, String> updateSensorProperties(OwBaseBridgeHandler bridgeHandler) throws OwException {
-        Map<String, String> properties = new HashMap<String, String>();
+    public void updateSensorProperties(OwBaseBridgeHandler bridgeHandler) throws OwException {
+        Map<String, String> properties = editProperties();
 
         OwPageBuffer pages = bridgeHandler.readPages(sensorId);
 
@@ -86,6 +85,6 @@ public class EDSSensorThingHandler extends OwBaseThingHandler {
         properties.put(PROPERTY_VENDOR, "Embedded Data Systems");
         properties.put(PROPERTY_HW_REVISION, String.valueOf(fwRevision));
 
-        return properties;
+        updateProperties(properties);
     }
 }

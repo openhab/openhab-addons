@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.tradfri.internal.model;
 
-import static org.openhab.binding.tradfri.TradfriBindingConstants.DEVICE_BATTERY_LEVEL;
+import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.DEVICE_BATTERY_LEVEL;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;

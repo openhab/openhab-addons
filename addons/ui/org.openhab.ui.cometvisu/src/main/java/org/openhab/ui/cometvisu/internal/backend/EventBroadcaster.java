@@ -20,7 +20,7 @@ import org.eclipse.smarthome.core.types.State;
 /**
  * Broadcast state change events of items to listening clients
  *
- * @author Tobias Bräutigam
+ * @author Tobias Bräutigam - Initial contribution
  */
 public interface EventBroadcaster {
     /**

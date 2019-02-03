@@ -22,14 +22,16 @@ import javax.ws.rs.core.Response;
 import org.eclipse.smarthome.io.rest.RESTResource;
 import org.openhab.ui.cometvisu.internal.Config;
 import org.openhab.ui.cometvisu.internal.util.ClientInstaller;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Allows certain actions to configure the CometVisu backend through the REST api.
  *
- * @author Tobias Bräutigam
+ * @author Tobias Bräutigam - Initial contribution
  */
+@Component(immediate = true, service = { ConfigResource.class, RESTResource.class })
 @Path(Config.COMETVISU_BACKEND_ALIAS + "/" + Config.COMETVISU_BACKEND_CONFIG_ALIAS)
 public class ConfigResource implements RESTResource {
 
@@ -39,7 +41,6 @@ public class ConfigResource implements RESTResource {
     @Path("/{actionName}")
     @Produces({ MediaType.TEXT_PLAIN })
     public Response getValue(@PathParam("actionName") String actionName) {
-
         if ("download-client".equalsIgnoreCase(actionName)) {
             logger.debug("calling installation checker with config overriding");
             ClientInstaller.getInstance().check(true);

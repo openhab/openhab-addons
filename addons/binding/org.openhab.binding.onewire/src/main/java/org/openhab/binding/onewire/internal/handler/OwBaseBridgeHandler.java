@@ -13,10 +13,8 @@
 package org.openhab.binding.onewire.internal.handler;
 
 import java.util.BitSet;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledFuture;
@@ -99,12 +97,8 @@ public abstract class OwBaseBridgeHandler extends BaseBridgeHandler {
                 OwBaseThingHandler owHandler = (OwBaseThingHandler) updateThing.getHandler();
                 if (owHandler != null) {
                     try {
-                        Map<String, String> properties = new HashMap<String, String>();
-                        properties.putAll(updateThing.getProperties());
-                        properties.putAll(owHandler.updateSensorProperties(this));
-                        updateThing.setProperties(properties);
+                        owHandler.updateSensorProperties(this);
                         owHandler.initialize();
-
                         logger.debug("{} sucessfully updated properties, removing from property update list",
                                 updateThing.getUID());
                     } catch (OwException e) {
@@ -117,8 +111,7 @@ public abstract class OwBaseBridgeHandler extends BaseBridgeHandler {
                 }
             }
         }
-
-    };
+    }
 
     @Override
     public void initialize() {

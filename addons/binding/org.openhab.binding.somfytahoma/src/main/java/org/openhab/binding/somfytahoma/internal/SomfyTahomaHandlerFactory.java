@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.somfytahoma.internal;
 
-import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -29,8 +29,8 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.somfytahoma.handler.*;
 import org.openhab.binding.somfytahoma.internal.discovery.SomfyTahomaItemDiscoveryService;
+import org.openhab.binding.somfytahoma.internal.handler.*;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;

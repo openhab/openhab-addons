@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="lgtvserial"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Unimplemented so far : Abnormal state, Remote lock, Auto configure, command 36,37,38,39,42 (timers), reset, 52 scheduling input select -->
+	<thing-type id="lgtv-M6503C">
+		<label>M6503C model</label>
+		<description><![CDATA[This thing supports the M6503C LG TV]]></description>
+
+		<channels>
+			<channel id="aspect-ratio" typeId="aspect-ratio-M6503C"/>
+			<channel id="auto-sleep" typeId="auto-sleep"/>
+			<channel id="auto-volume" typeId="auto-volume"/>
+			<channel id="balance" typeId="balance"/>
+			<channel id="brightness" typeId="brightness"/>
+			<channel id="contrast" typeId="contrast"/>
+			<channel id="color" typeId="color"/>
+			<channel id="color-temperature" typeId="color-temperature"/>
+			<channel id="elapsed-time" typeId="elapsed-time"/>
+			<channel id="fan-fault-check" typeId="fan-fault-check"/>
+			<channel id="h-position" typeId="h-position" />
+			<!-- Not yet implemented
+			<channel id="h-size" typeId="h-size" />
+			-->
+			<channel id="input" typeId="input-M6503C"/>
+			<channel id="input2" typeId="input2-M6503C"/>
+			<channel id="ir-key-code" typeId="ir-key-code-M6503C" />
+			<channel id="ism-method" typeId="ism-M6503C"/>
+			<channel id="lamp-fault-check" typeId="lamp-fault-check"/>
+			<channel id="natural-mode" typeId="natural-mode"/>
+			<channel id="osd-language" typeId="osd-language"/>
+			<channel id="osd-select" typeId="osd-select"/>
+			<channel id="picture-mode" typeId="picture-mode"/>
+			<channel id="power" typeId="power"/>
+			<channel id="power-indicator" typeId="power-indicator"/>
+			<channel id="power-saving" typeId="power-saving"/>
+			<channel id="raw" typeId="raw"/>
+			<channel id="screen-mute" typeId="screen-mute" />
+			<channel id="serial-number" typeId="serial-number"/>
+			<channel id="sharpness" typeId="sharpness"/>
+			<channel id="sleep-time" typeId="sleep-time"/>
+			<channel id="software-version" typeId="software-version"/>
+			<channel id="sound-mode" typeId="sound-mode"/>
+			<channel id="speaker" typeId="speaker"/>
+			<channel id="temperature-value" typeId="temperature-value"/>
+			<channel id="tile" typeId="tile"/>
+			<channel id="tile-h-position" typeId="tile-h-position"/>
+			<channel id="tile-h-size" typeId="tile-h-size"/>
+			<channel id="tile-id-set" typeId="tile-id-set"/>
+			<channel id="tile-v-position" typeId="tile-v-position"/>
+			<channel id="tile-v-size" typeId="tile-v-size"/>
+			<channel id="tint" typeId="tint"/>
+			<!-- Used to set the time on the TV, but have no clue yet how to handle this...
+			<channel id="time" typeId="time"/>
+			-->
+			<channel id="v-position" typeId="v-position"/>
+			<!--  Not yet implemented
+			<channel id="v-size" typeId="v-size"/>
+			-->
+			<channel id="volume" typeId="volume"/>
+			<channel id="volume-mute" typeId="volume-mute"/>
+
+		</channels>
+		<config-description-ref uri="thing-type:lgtvserial:serial" />
+	</thing-type>
+
+	<channel-type id="aspect-ratio-M6503C">
+		<item-type>String</item-type>
+		<label>Aspect ratio</label>
+		<description>Adjust the screen format</description>
+		<state>
+			<options>
+				<option value="01">Normal Screen (4:3)</option>
+				<option value="02">Wide Screen (16:9)</option>
+				<option value="04">Zoom1 (AV)</option>
+				<option value="05">Zoom2 (AV)</option>
+				<option value="06">Original (AV)</option>
+				<option value="07">14:9 (AV)</option>
+				<option value="09">Just scan(HD DTV), 1:1 (RGB PC, HDMI/DVI PC)</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="input-M6503C">
+		<item-type>String</item-type>
+		<label>Input</label>
+		<description>Input select</description>
+		<state>
+			<options>
+				<option value="02">AV</option>
+				<option value="04">Component</option>
+				<option value="07">RGB (PC)</option>
+				<option value="08">HDMI (DTV)</option>
+				<option value="09">HDMI (PC)</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="input2-M6503C">
+		<item-type>String</item-type>
+		<label>Input</label>
+		<description>Input select</description>
+		<state>
+			<options>
+				<option value="20">AV</option>
+				<option value="40">Component</option>
+				<option value="60">RGB (PC)</option>
+				<option value="90">HDMI (DTV)</option>
+				<option value="A0">HDMI (PC)</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="ir-key-code-M6503C">
+		<item-type>String</item-type>
+		<label>IR Code</label>
+		<description>Send IR remote key code</description>
+		<state>
+			<options>
+				<option value="00">Channel up</option>
+				<option value="01">Channel down</option>
+				<option value="02">Volume up</option>
+				<option value="03">Volume down</option>
+				<option value="08">Power toggle</option>
+				<option value="09">Mute</option>
+				<option value="0B">Input</option>
+				<option value="0E">Sleep</option>
+				<option value="10">Number 0</option>
+				<option value="11">Number 1</option>
+				<option value="12">Number 2</option>
+				<option value="13">Number 3</option>
+				<option value="14">Number 4</option>
+				<option value="15">Number 5</option>
+				<option value="16">Number 6</option>
+				<option value="17">Number 7</option>
+				<option value="18">Number 8</option>
+				<option value="19">Number 9</option>
+				<option value="43">Menu</option>
+				<option value="44">SET</option>
+				<option value="5A">AV Discrete</option>
+				<option value="5B">Exit</option>
+				<option value="6E">PSM</option>
+				<option value="76">ARC (4:3) Discrete</option>
+				<option value="77">ARC (16:9) Discrete</option>
+				<option value="79">ARC Discrete</option>
+				<option value="AF">ARC (Zoom) Discrete</option>
+				<option value="BF">Component Discrete</option>
+				<option value="C4">Power on</option>
+				<option value="C5">Power off</option>
+				<option value="C6">HDMI/DVI Discrete</option>
+				<option value="D5">RGB PC Discrete</option>
+				<option value="98">AV</option>
+				<option value="99">Auto config Discrete</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="ism-M6503C">
+		<item-type>String</item-type>
+		<label>ISM Method</label>
+		<description>Avoid having a fixed image remain on screen</description>
+		<state>
+			<options>
+				<option value="01">Inversion</option>
+				<option value="02">Orbiter</option>
+				<option value="04">White Wash</option>
+				<option value="08">Normal</option>
+				<option value="10">Dot Wash</option>
+			</options>
+		</state>
+	</channel-type>
+
+</thing:thing-descriptions>
+

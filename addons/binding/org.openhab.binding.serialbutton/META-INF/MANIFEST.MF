@@ -8,9 +8,6 @@ Bundle-SymbolicName:
  org.openhab.binding.serialbutton;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
-Export-Package: 
- org.openhab.binding.serialbutton,
- org.openhab.binding.serialbutton.handler
 Import-Package: 
  org.apache.commons.io,
  org.eclipse.jdt.annotation;resolution:=optional,
@@ -22,8 +19,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.io.transport.serial,
- org.openhab.binding.serialbutton,
- org.openhab.binding.serialbutton.handler,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
 Automatic-Module-Name: org.openhab.binding.serialbutton

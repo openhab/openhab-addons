@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Provides the configured and static settings for the Homekit addon
  *
- * @author Andy Lintner
+ * @author Andy Lintner - Initial contribution
  */
 public class HomekitSettings {
 

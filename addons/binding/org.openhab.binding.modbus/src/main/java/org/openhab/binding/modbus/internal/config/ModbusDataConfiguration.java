@@ -40,6 +40,7 @@ public class ModbusDataConfiguration {
     private String writeValueType;
     private boolean writeMultipleEvenWithSingleRegisterOrCoil;
     private int writeMaxTries = 3; // backwards compatibility and tests
+    private long updateUnchangedValuesEveryMillis = 1000L;
 
     public @Nullable String getReadStart() {
         return readStart;
@@ -111,5 +112,13 @@ public class ModbusDataConfiguration {
 
     public void setWriteMaxTries(int writeMaxTries) {
         this.writeMaxTries = writeMaxTries;
+    }
+
+    public long getUpdateUnchangedValuesEveryMillis() {
+        return updateUnchangedValuesEveryMillis;
+    }
+
+    public void setUpdateUnchangedValuesEveryMillis(long updateUnchangedValuesEveryMillis) {
+        this.updateUnchangedValuesEveryMillis = updateUnchangedValuesEveryMillis;
     }
 }

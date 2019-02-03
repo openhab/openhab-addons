@@ -18,15 +18,19 @@ import java.util.List;
 import org.eclipse.smarthome.core.storage.StorageService;
 import org.eclipse.smarthome.io.console.Console;
 import org.eclipse.smarthome.io.console.extensions.AbstractConsoleCommandExtension;
+import org.eclipse.smarthome.io.console.extensions.ConsoleCommandExtension;
 import org.openhab.io.homekit.Homekit;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Console commands for interacting with the HomeKit integration
  *
- * @author Andy Lintner
+ * @author Andy Lintner - Initial contribution
  */
+@Component(service = ConsoleCommandExtension.class)
 public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
 
     private static final String SUBCMD_CLEAR_PAIRINGS = "clearPairings";
@@ -74,12 +78,22 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
                                 "enables or disables unauthenticated access to facilitate debugging") });
     }
 
+    @Reference
     public void setStorageService(StorageService storageService) {
         this.storageService = storageService;
     }
 
+    public void unsetStorageService(StorageService storageService) {
+        this.storageService = null;
+    }
+
+    @Reference
     public void setHomekit(Homekit homekit) {
         this.homekit = homekit;
+    }
+
+    public void unsetHomekit(Homekit homekit) {
+        this.homekit = null;
     }
 
     private void clearHomekitPairings(Console console) {

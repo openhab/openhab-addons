@@ -18,10 +18,10 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.openhab.ui.cometvisu.internal.util.SseUtil;
 import org.glassfish.jersey.media.sse.SseFeature;
 import org.glassfish.jersey.servlet.spi.AsyncContextDelegate;
 import org.glassfish.jersey.servlet.spi.AsyncContextDelegateProvider;
+import org.openhab.ui.cometvisu.internal.util.SseUtil;
 
 /**
  * An {@link AsyncContextDelegateProvider} implementation that returns a
@@ -29,9 +29,9 @@ import org.glassfish.jersey.servlet.spi.AsyncContextDelegateProvider;
  * alive if the response content-type is {@link SseFeature #SERVER_SENT_EVENTS}
  * or throws an UnsupportedOperationException otherwise. The blocking continues
  * until the response can longer be written to.
- * 
+ *
  * @author Tobias Bräutigam - Initial Contribution and API
- * 
+ *
  */
 public class BlockingAsyncContextDelegateProvider implements AsyncContextDelegateProvider {
 
@@ -78,7 +78,6 @@ public class BlockingAsyncContextDelegateProvider implements AsyncContextDelegat
                             outputStream.write('\n');
                             response.flushBuffer();
                         } catch (Exception exception) {
-
                             // If an exception has occurred during write and
                             // flush we consider the connection closed, attempt
                             // to close the output stream and stop blocking.

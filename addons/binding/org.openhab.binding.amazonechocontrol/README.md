@@ -61,7 +61,7 @@ The binding is tested with amazon.de, amazon.fr, amazon.it, amazon.com and amazo
 
 1) Create an 'Amazon Account' thing
 2) open the url YOUR_OPENHAB/amazonechocontrol in your browser (e.g. http://openhab:8080/amazonechocontrol/), click the link for your account thing and login.
-3) You should see now a message the the login was successful
+3) You should see now a message that the login was successful
 
 ## Discovery
 
@@ -115,7 +115,7 @@ It will be configured at runtime by using the save channel to store the current 
 | amazonMusicPlayListId | String      | W         | echo, echoshow, echospot, wha | Write Only! Start playing of a Amazon Music playlist by specifying it's id od stops playing if a empty string was provided. Selection will only work in PaperUI
 | amazonMusic           | Switch      | R/W         | echo, echoshow, echospot, wha | Start playing of the last used Amazon Music song (works after at least one song was started after the openhab start)
 | remind                | String      | R/W         | echo, echoshow, echospot      | Write Only! Speak the reminder and sends a notification to the Alexa app (Currently the reminder is played and notified two times, this seems to be a bug in the amazon software)
-| startRoutine          | Switch      | W         | echo, echoshow, echospot      | Write Only! Type in what you normally say to Alexa without the preceding "Alexa," 
+| startRoutine          | String      | W         | echo, echoshow, echospot      | Write Only! Type in what you normally say to Alexa without the preceding "Alexa," 
 | musicProviderId       | String      | R/W         | echo, echoshow, echospot      | Current Music provider
 | playMusicVoiceCommand | String      | W         | echo, echoshow, echospot      | Write Only! Voice command as text. E.g. 'Yesterday from the Beatles' 
 | startCommand          | String      | W         | echo, echoshow, echospot      | Write Only! Used to start anything. Available options: Weather, Traffic, GoodMorning, SingASong, TellStory, FlashBriefing and FlashBriefing.<FlahshbriefingDeviceID> (Note: The options are case sensitive)
