@@ -1298,7 +1298,7 @@ public class EchoHandler extends BaseThingHandler {
                         if (StringUtils.isNotBlank(notification.recurringPattern) && alarmTime.isBefore(now)) {
                             continue; // Ignore recurring entry if alarm time is before now
                         }
-                        if (nextMusicAlarm == null || alarmTime.isBefore(nextAlarm)) {
+                        if (nextMusicAlarm == null || alarmTime.isBefore(nextMusicAlarm)) {
                             nextMusicAlarm = alarmTime;
                         }
                     }
