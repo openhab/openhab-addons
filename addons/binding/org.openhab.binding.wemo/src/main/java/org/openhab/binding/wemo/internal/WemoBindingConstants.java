@@ -56,6 +56,8 @@ public class WemoBindingConstants {
     public static final String CHANNEL_BRIGHTNESS = "brightness";
     public static final String CHANNEL_RELAY = "relay";
     public static final String CHANNEL_SENSOR = "sensor";
+    public static final String CHANNEL_ONSTANDBY = "onStandBy";
+
 
     public static final String CHANNEL_COFFEEMODE = "coffeeMode";
     public static final String CHANNEL_MODETIME = "modeTime";

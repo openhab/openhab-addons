@@ -303,6 +303,12 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
                             getThing().getUID());
                     updateState(CHANNEL_STANDBYLIMIT, standByLimit);
                 }
+                if (currentMW.divide(new BigDecimal(1000), RoundingMode.HALF_UP).intValue() > standByLimitMW.divide(new BigDecimal(1000), RoundingMode.HALF_UP).intValue()){
+                    updateState(CHANNEL_ONSTANDBY, OnOffType.OFF);
+                }
+                else{
+                    updateState(CHANNEL_ONSTANDBY, OnOffType.ON);
+                }
             }
         } else {
             State state = stateMap.get("BinaryState").equals("0") ? OnOffType.OFF : OnOffType.ON;
