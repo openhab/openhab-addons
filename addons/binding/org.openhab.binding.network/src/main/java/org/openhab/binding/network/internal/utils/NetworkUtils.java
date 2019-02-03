@@ -33,6 +33,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
@@ -51,6 +53,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class NetworkUtils {
     private final Logger logger = LoggerFactory.getLogger(NetworkUtils.class);
+    private static final Pattern IP4_ADDRESS = Pattern
+            .compile("^(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})\\/(\\d+)$");
 
     /**
      * Gets every IPv4 Address on each Interface except the loopback
@@ -136,27 +140,48 @@ public class NetworkUtils {
     public Set<String> getNetworkIPs(Set<String> interfaceIPs, int maximumPerInterface) {
         LinkedHashSet<String> networkIPs = new LinkedHashSet<>();
 
-        logger.info("{} interface IPs found: {}", interfaceIPs.size(), interfaceIPs);
+        long minCIDRsuffix = 8; // historic Class A network, addresses = 16777214
+        if (maximumPerInterface != 0) {
+            // calculate minimum CIDR suffix from maximumPerInterface (equals leading unset bits (Integer has 32 bits)
+            minCIDRsuffix = Integer.numberOfLeadingZeros(maximumPerInterface);
+            // if only the highest is set, increase suffix by 1 to cover all addresses
+            if (Integer.bitCount(maximumPerInterface) == 1) {
+                minCIDRsuffix++;
+            }
+        }
+        logger.trace("set minCIDRsuffix to {}, maximumPerInterFace is {}", minCIDRsuffix, maximumPerInterface);
 
         for (String string : interfaceIPs) {
-            logger.info("processing IP: {}", string);
-            try {
-                // gets every ip which can be assigned on the given network
-                SubnetUtils utils = new SubnetUtils(string);
-                logger.info("resolved to network: {}", utils.getInfo());
-                String[] addresses = utils.getInfo().getAllAddresses();
-                int len = addresses.length;
-                if (maximumPerInterface != 0 && maximumPerInterface < len) {
-                    len = maximumPerInterface;
+            Matcher addressMatcher = IP4_ADDRESS.matcher(string);
+            if (addressMatcher.matches()) {
+                if (Integer.valueOf(addressMatcher.group(2)) < minCIDRsuffix) {
+                    logger.info(
+                            "CIDR suffix is smaller than /{} on interface with address {}, truncating to /{}, some addresses might be lost",
+                            minCIDRsuffix, string, minCIDRsuffix);
+                    string = addressMatcher.group(1) + "/" + String.valueOf(minCIDRsuffix);
                 }
-                for (int i = 0; i < len; i++) {
-                    networkIPs.add(addresses[i]);
+                try {
+                    // gets every ip which can be assigned on the given network
+                    SubnetUtils utils = new SubnetUtils(string);
+                    // TODO: remove logging
+                    logger.info("resolved to network: {}", utils.getInfo());
+                    String[] addresses = utils.getInfo().getAllAddresses();
+                    int len = addresses.length;
+                    if (maximumPerInterface != 0 && maximumPerInterface < len) {
+                        len = maximumPerInterface;
+                    }
+                    for (int i = 0; i < len; i++) {
+                        networkIPs.add(addresses[i]);
+                    }
+                } catch (Exception ex) {
                 }
-            } catch (Exception ex) {
+            } else {
+                logger.info("skipping interface with address {}: not an IPv4 address", string);
             }
         }
 
         return networkIPs;
+
     }
 
     /**
