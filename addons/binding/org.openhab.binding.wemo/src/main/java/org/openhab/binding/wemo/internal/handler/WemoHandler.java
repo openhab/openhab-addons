@@ -56,6 +56,7 @@ import org.slf4j.LoggerFactory;
  * @author Kai Kreuzer - some refactoring for performance and simplification
  * @author Stefan Bußweiler - Added new thing status handling
  * @author Erdoan Hadzhiyusein - Adapted the class to work with the new DateTimeType
+ * @author Mihir Patil - Added standby switch
  */
 
 public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipant {
@@ -302,6 +303,12 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
                     logger.trace("New InsightParam standByLimit '{}' for device '{}' received", standByLimit,
                             getThing().getUID());
                     updateState(CHANNEL_STANDBYLIMIT, standByLimit);
+                }
+                if (currentMW.divide(new BigDecimal(1000), RoundingMode.HALF_UP).intValue() > standByLimitMW.divide(new BigDecimal(1000), RoundingMode.HALF_UP).intValue()){
+                    updateState(CHANNEL_ONSTANDBY, OnOffType.OFF);
+                }
+                else{
+                    updateState(CHANNEL_ONSTANDBY, OnOffType.ON);
                 }
             }
         } else {
