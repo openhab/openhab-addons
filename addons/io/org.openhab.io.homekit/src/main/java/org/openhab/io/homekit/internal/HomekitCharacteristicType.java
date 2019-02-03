@@ -30,7 +30,10 @@ public enum HomekitCharacteristicType {
     @Deprecated()
     OLD_TARGET_TEMPERATURE("TargetTemperature"),
     BATTERY_LOW_STATUS("homekit:BatteryLowStatus"),
-    HEATING_COOLING_MODE("homekit:HeatingCoolingMode");
+    @Deprecated()
+    OLD_TARGET_HEATING_COOLING_MODE("homekit:HeatingCoolingMode"),
+    TARGET_HEATING_COOLING_MODE("homekit:TargetHeatingCoolingMode"),
+    CURRENT_HEATING_COOLING_STATE("homekit:CurrentHeatingCoolingMode");
 
     private static final Map<String, HomekitCharacteristicType> TAG_MAP = new HashMap<>();
 

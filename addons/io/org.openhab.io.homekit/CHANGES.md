@@ -1,5 +1,21 @@
 # Changes
 
+## 2.4.0-homekit-5
+
+### Breaking changes
+
+You will need to reconfigure the homekit thermostat mapping values when upgrading to this plugin, in order to set the defaults for the currentHeatingCoolingMode value mappings.
+
+### Thermostat fixes
+
+Previously, the mapping of target and current thermostat mode was broken. It is considered illegal to return current mode of "AUTO", and resulted in an error. The issue has been fixed in my fork of homekit (see https://github.com/beowulfe/HAP-Java/issues/60)
+
+Support for an item indicating the thermostat current mode has been added.
+
+The homekit plugin configuration screen for paper-ui has been improved, adding groupings for each set of mappings.
+
+The tag `homekit:HeatingCoolingMode` has been changed to `homekit:TargetHeatingCoolingMode`. The old tag is supported still, but you should update your thermostat tagged item, respectively.
+
 ## 2.4.0-homekit-4
 
 ### Allow motion and leak accessories to be backed by Contact items

@@ -45,13 +45,18 @@ org.openhab.homekit:maximumTemperature=100
 | port                      | Port under which the HomeKit bridge can be reached.                                                                                                                                                                                       | 9123              |
 | pin                       | Pin code used for pairing with iOS devices. Apparently, pin codes are provided by Apple and represent specific device types, so they cannot be chosen freely. The pin code 031-45-154 is used in sample applications and known to work.   | 031-45-154        |
 | useFahrenheitTemperature  | Set to true to use Fahrenheit degrees, or false to use Celsius degrees.                                                                                                                                                                   | false             |
-| thermostatCoolMode        | Word used for activating the cooling mode of the device (if applicable).                                                                                                                                                                  | CoolOn            |
-| thermostatHeatMode        | Word used for activating the heating mode of the device (if applicable).                                                                                                                                                                  | HeatOn            |
-| thermostatAutoMode        | Word used for activating the automatic mode of the device (if applicable).                                                                                                                                                                | Auto              |
-| thermostatOffMode         | Word used to set the thermostat mode of the device to off (if applicable).                                                                                                                                                                | Off               |
+| thermostatCoolMode        | Word used to set the thermostat target heatingCoolingMode to COOL                                                                                                                                                                         | CoolOn            |
+| thermostatHeatMode        | Word used to set the thermostat target heatingCoolingMode to HEAT                                                                                                                                                                         | HeatOn            |
+| thermostatAutoMode        | Word used to set the thermostat target heatingCoolingMode to AUTO                                                                                                                                                                         | Auto              |
+| thermostatOffMode         | Word used to set the thermostat target heatingCoolingMode to OFF                                                                                                                                                                          | Off               |
+| thermostatCoolingCurrentMode    | Word reported by the thermostat when currently cooling the home.                                                                                                                                                                          | Cooling           |
+| thermostatHeatingCurrentMode    | Word reported by the thermostat when currently heating the home.                                                                                                                                                                          | Heating           |
+| thermostatOffState        | Word reported by the thermostat when it is currently idle.                                                                                                                                                                                | Off               |
 | minimumTemperature        | Lower bound of possible temperatures, used in the user interface of the iOS device to display the allowed temperature range. Note that this setting applies to all devices in HomeKit.                                                    | -100              |
 | maximumTemperature        | Upper bound of possible temperatures, used in the user interface of the iOS device to display the allowed temperature range. Note that this setting applies to all devices in HomeKit.                                                    | 100               |
 | name                      | Name under which this HomeKit bridge is announced on the network. This is also the name displayed on the iOS device when searching for available bridges.                                                                                 | openHAB           |
+
+If no thermostat is defined, then all thermostat* settings can be safely ignored / left at their default.
 
 ## Item Configuration
 
@@ -64,21 +69,22 @@ Complex accessories require a tag on a Group indicating the accessory type, as w
 
 A full list of supported accessory types can be found in the table below.
 
-| Tag                   | Child tag                     | Supported items           | Description                                                                                                                                                                                                                                   |
-|--------------------   |----------------------------   |-----------------------    |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------  |
-| Lighting              |                               | Switch, Dimmer, Color     | A lightbulb, switchable, dimmable or rgb                                                                                                                                                                                                      |
-| Switchable            |                               | Switch, Dimmer, Color     | An accessory that can be turned off and on. While similar to a lightbulb, this will be presented differently in the Siri grammar and iOS apps                                                                                                 |
-| ContactSensor         |                               | Contact                   | An accessory with on/off state that can be viewed in HomeKit but not changed such as a contact sensor for a door or window                                                                                                                    |
-| CurrentTemperature    |                               | Number                    | An accessory that provides a single read-only temperature value. The units default to celsius but can be overridden globally using the useFahrenheitTemperature global property                                                               |
-| CurrentHumidity       |                               | Number                    | An accessory that provides a single read-only value indicating the relative humidity.                                                                                                                                                         |
-| Thermostat            |                               | Group                     | A thermostat requires all child tags defined below                                                                                                                                                                                            |
-|                       | CurrentTemperature            | Number                    | The current temperature, same as above                                                                                                                                                                                                        |
-|                       | homekit:HeatingCoolingMode    | String                    | Indicates the current mode of the device: OFF, AUTO, HEAT, COOL. The string's value must match those defined in the thermostat*Mode properties. This is a HomeKit-specific term and therefore the tags needs to be prefixed with "homekit:"   |
-|                       | TargetTemperature             | Number                    | A target temperature that will engage the thermostat's heating and cooling actions as necessary, depending on the heatingCoolingMode                                                                                                          |
-| LeakSensor            |                               | Switch, ContactSensor     | Leak sensor. ON / OPEN state means flood detected. |
-| MotionSensor          |                               | Switch, ContactSensor     | Motion sensor. ON / OPEN state means motion detected. |
-| Valve                 |                               | Switch                    | Simple open/close valve. Assumes liquid is flowing when valve is open. |
-| WindowCovering        |                               | Rollershutter             | Simple window covering with support for setting target position / current position support. |
+| Tag                   | Child tag                         | Supported items           | Description                                                                                                                                                                                                                                   |
+|--------------------   |----------------------------       |-----------------------    |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------  |
+| Lighting              |                                   | Switch, Dimmer, Color     | A lightbulb, switchable, dimmable or rgb                                                                                                                                                                                                      |
+| Switchable            |                                   | Switch, Dimmer, Color     | An accessory that can be turned off and on. While similar to a lightbulb, this will be presented differently in the Siri grammar and iOS apps                                                                                                 |
+| ContactSensor         |                                   | Contact                   | An accessory with on/off state that can be viewed in HomeKit but not changed such as a contact sensor for a door or window                                                                                                                    |
+| CurrentTemperature    |                                   | Number                    | An accessory that provides a single read-only temperature value. The units default to celsius but can be overridden globally using the useFahrenheitTemperature global property                                                               |
+| CurrentHumidity       |                                   | Number                    | An accessory that provides a single read-only value indicating the relative humidity.                                                                                                                                                         |
+| Thermostat            |                                   | Group                     | A thermostat requires all child tags defined below                                                                                                                                                                                            |
+|                       | TargetTemperature                 | Number                    | A target temperature that will engage the thermostat's heating and cooling actions as necessary, depending on the heatingCoolingMode |
+|                       | homekit:CurrentTemperature        | Number                    | The current temperature, same as above |
+|                       | homekit:TargetHeatingCoolingMode  | String                    | Item used to set and get the current target mode of the device: OFF, AUTO, HEAT, COOL. The string's value must match those defined in the `thermostat*Mode` | 
+|                       | homekit:CurrentHeatingCoolingMode | String                    | (Optional) Item used to read the current state of the device: OFF, HEATING, COOLING. The string's value must match those defined in the `thermostat*State` properties. |
+| LeakSensor            |                                   | Switch, ContactSensor     | Leak sensor. ON / OPEN state means flood detected. |
+| MotionSensor          |                                   | Switch, ContactSensor     | Motion sensor. ON / OPEN state means motion detected. |
+| Valve                 |                                   | Switch                    | Simple open/close valve. Assumes liquid is flowing when valve is open. |
+| WindowCovering        |                                   | Rollershutter             | Simple window covering with support for setting target position / current position support. |
 
 
 See the sample below for example items:
@@ -87,10 +93,12 @@ See the sample below for example items:
 Switch KitchenLights "Kitchen Lights" <light> (gKitchen) [ "Lighting" ]
 Dimmer BedroomLights "Bedroom Lights" <light> (gBedroom) [ "Lighting" ]
 Number BedroomTemperature "Bedroom Temperature" (gBedroom) [ "CurrentTemperature" ]
+
 Group gDownstairsThermostat "Downstairs Thermostat" (gFF) [ "Thermostat" ]
 Number DownstairsThermostatCurrentTemp "Downstairs Thermostat Current Temperature" (gDownstairsThermostat) [ "CurrentTemperature" ]
 Number DownstairsThermostatTargetTemperature "Downstairs Thermostat Target Temperature" (gDownstairsThermostat) [ "TargetTemperature" ]
-String DownstairsThermostatHeatingCoolingMode "Downstairs Thermostat Heating/Cooling Mode" (gDownstairsThermostat) [ "homekit:HeatingCoolingMode" ]
+String DownstairsThermostatHeatingCoolingMode "Downstairs Thermostat Heating/Cooling Mode" (gDownstairsThermostat) [ "homekit:TargetHeatingCoolingMode" ]
+String DownstairsThermostatCurrentHeatingCoolingMode "Downstairs Thermostat Current Heating/Cooling Mode" (gDownstairsThermostat) [ "homekit:CurrentHeatingCoolingMode" ]
 
 Switch Hallway_MotionSensor "Hallway Motion Sensor" [ "MotionSensor" ]
 Switch MasterBath_Toilet_LeakSensor "Master Bath Toilet Flood" ["LeakSensor"]
