@@ -56,6 +56,7 @@ import org.slf4j.LoggerFactory;
  * @author Kai Kreuzer - some refactoring for performance and simplification
  * @author Stefan Bußweiler - Added new thing status handling
  * @author Erdoan Hadzhiyusein - Adapted the class to work with the new DateTimeType
+ * @author Mihir Patil - Added standby switch
  */
 
 public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipant {

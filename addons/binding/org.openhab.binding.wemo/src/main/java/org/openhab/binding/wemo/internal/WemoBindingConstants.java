@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Hans-Jörg Merk - Initial contribution
+ * @author Mihir Patil - Added standby switch
  */
 public class WemoBindingConstants {
 
