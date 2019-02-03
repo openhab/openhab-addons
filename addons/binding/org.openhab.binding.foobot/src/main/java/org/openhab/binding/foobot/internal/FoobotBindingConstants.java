@@ -29,7 +29,7 @@ public class FoobotBindingConstants {
     public static final String URL_TO_FETCH_UUID = "https://api.foobot.io/v2/owner/%username%/device/";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID BRIDGE_TYPE_FOOBOTACCOUNT = new ThingTypeUID(BINDING_ID, "foobotaccount");
+    public static final ThingTypeUID BRIDGE_TYPE_FOOBOTACCOUNT = new ThingTypeUID(BINDING_ID, "account");
     public static final ThingTypeUID THING_TYPE_FOOBOT = new ThingTypeUID(BINDING_ID, "device");
 
     // List of all Channel ids

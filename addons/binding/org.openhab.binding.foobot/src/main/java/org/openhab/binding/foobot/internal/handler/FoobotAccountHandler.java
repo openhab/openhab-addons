@@ -32,6 +32,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.foobot.internal.config.FoobotAccountConfiguration;
+import org.openhab.binding.foobot.internal.discovery.FoobotAccountDiscoveryService;
 import org.openhab.binding.foobot.internal.json.FoobotDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +41,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 /**
- * HaBridge handler to manage Foobot Account
+ * Bridge handler to manage Foobot Account
  *
  * @author George Katsis - Initial contribution
  */
@@ -51,8 +52,9 @@ public class FoobotAccountHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(FoobotAccountHandler.class);
 
     private @Nullable String username;
-    public @Nullable String apiKey;
+    private @Nullable String apiKey;
     private @Nullable Integer refreshIntervalInMinutes;
+    private FoobotAccountDiscoveryService discoveryService;
     private static final String URL_TO_FETCH_DEVICES = "https://api.foobot.io/v2/owner/%username%/device/";
     private static final Gson GSON = new Gson();
     private final HttpClient httpClient;
@@ -62,6 +64,16 @@ public class FoobotAccountHandler extends BaseBridgeHandler {
     public FoobotAccountHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
         this.httpClient = httpClient;
+        this.discoveryService = new FoobotAccountDiscoveryService(this);
+    }
+
+    public String getApiKey() {
+        return this.apiKey != null ? this.apiKey : "";
+    }
+
+    @Nullable
+    public Integer getRefreshIntervalInMinutes() {
+        return this.refreshIntervalInMinutes;
     }
 
     @Override
@@ -143,15 +155,13 @@ public class FoobotAccountHandler extends BaseBridgeHandler {
 
     public List<FoobotDevice> getAssociatedDevices() {
 
-        HttpClient currentHttpClient = this.httpClient;
-
         String urlStr = URL_TO_FETCH_DEVICES.replace("%username%", StringUtils.trimToEmpty(this.username));
         logger.debug("URL = {}", urlStr);
         ContentResponse response;
         String errorMsg;
 
         // Run the HTTP request and get the list of all foobot devices belonging to the user from foobot.io
-        Request request = currentHttpClient.newRequest(urlStr).timeout(3, TimeUnit.SECONDS);
+        Request request = this.httpClient.newRequest(urlStr).timeout(3, TimeUnit.SECONDS);
         request.header("accept", "application/json");
         request.header("X-API-KEY-TOKEN", this.apiKey);
 
@@ -178,12 +188,12 @@ public class FoobotAccountHandler extends BaseBridgeHandler {
                 this.foobotDevices = devices;
             } else {
                 updateStatus(ThingStatus.OFFLINE);
-                devices = new ArrayList<FoobotDevice>();
+                devices = new ArrayList<>();
             }
 
         } catch (ExecutionException | TimeoutException | InterruptedException ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
-            devices = new ArrayList<FoobotDevice>();
+            devices = new ArrayList<>();
         }
         return devices;
     }
@@ -198,21 +208,22 @@ public class FoobotAccountHandler extends BaseBridgeHandler {
 
     private void refreshDeviceList() {
         try {
-            logger.debug("Refreshing device list {}", getThing().getUID().getAsString());
+            logger.debug("Refreshing device list {}", getThing().getUID());
 
             // get all devices associated with the account
             this.foobotDevices = getAssociatedDevices();
 
             // update account state
             if (this.foobotDevices.size() > 0) {
+                this.discoveryService.startScan(null);
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE);
             }
-            logger.debug("Refresh device list {} finished", getThing().getUID().getAsString());
+            logger.debug("Refresh device list {} finished", getThing().getUID());
 
         } catch (Exception e) {
-            logger.error("Refresh device list fails with unexpected error {}", e);
+            logger.error("Refresh device list fails with unexpected error");
         }
     }
 }

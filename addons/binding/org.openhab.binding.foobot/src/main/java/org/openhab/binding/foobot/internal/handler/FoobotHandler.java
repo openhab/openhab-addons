@@ -8,7 +8,6 @@
  */
 package org.openhab.binding.foobot.internal.handler;
 
-import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,14 +35,12 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.foobot.internal.FoobotBindingConstants;
-import org.openhab.binding.foobot.internal.config.FoobotDeviceConfiguration;
 import org.openhab.binding.foobot.internal.json.FoobotDevice;
 import org.openhab.binding.foobot.internal.json.FoobotJsonData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 /**
  * The {@link FoobotHandler} is responsible for handling commands, which are
@@ -52,6 +49,7 @@ import com.google.gson.reflect.TypeToken;
  * @author Divya Chauhan - Initial contribution
  * @author George Katsis - Add Bridge thing type
  */
+@NonNullByDefault
 public class FoobotHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FoobotHandler.class);
@@ -59,28 +57,26 @@ public class FoobotHandler extends BaseThingHandler {
     private static final String URL_TO_FETCH_SENSOR_DATA = "https://api.foobot.io/v2/device/%uuid%/datapoint/0/last/0/?sensorList=%sensors%";
     private static final Gson GSON = new Gson();
 
-    private @Nullable FoobotDevice device;
+    private FoobotDevice device;
     private @Nullable FoobotAccountHandler account;
-    private @Nullable String apiKey;
-    private @Nullable String username;
-    private @Nullable String mac;
-    private @Nullable Integer refreshIntervalInMinutes;
-    private FoobotJsonData foobotData;
-    private FoobotDeviceConfiguration config;
-    private ScheduledFuture<?> retrieveFoobotJob;
-    private ScheduledFuture<?> refreshDataJob;
+    private @Nullable FoobotJsonData foobotData;
+    private @Nullable ScheduledFuture<?> retrieveFoobotJob;
+    private @Nullable ScheduledFuture<?> refreshDataJob;
     private final HttpClient httpClient;
 
     public FoobotHandler(Thing thing, HttpClient httpClient) {
         super(thing);
         this.httpClient = httpClient;
+        this.device = new FoobotDevice(this.getThing().getProperties().get(FoobotBindingConstants.CONFIG_UUID),
+                Thing.PROPERTY_MAC_ADDRESS, FoobotBindingConstants.PROPERTY_NAME);
     }
 
     @Override
     public void initialize() {
         logger.debug("Initializing Foobot handler.");
 
-        FoobotDeviceConfiguration config = getThing().getConfiguration().as(FoobotDeviceConfiguration.class);
+        this.device = new FoobotDevice(this.getThing().getProperties().get(FoobotBindingConstants.CONFIG_UUID),
+                Thing.PROPERTY_MAC_ADDRESS, FoobotBindingConstants.PROPERTY_NAME);
 
         Bridge bridge = this.getBridge();
         if (bridge != null) {
@@ -93,19 +89,12 @@ public class FoobotHandler extends BaseThingHandler {
         List<String> missingParams = new ArrayList<>();
         String errorMsg = "";
 
-        this.apiKey = config.apiKey;
-        if (StringUtils.trimToNull(this.apiKey) == null) {
-            missingParams.add("'apikey'");
-        }
-        this.username = config.username;
-        if (StringUtils.trimToNull(this.username) == null) {
-            missingParams.add("'username'");
-        }
-        this.mac = config.mac;
-        if (StringUtils.trimToNull(this.mac) == null) {
+        if (StringUtils.trimToNull(this.device.getMac()) == null) {
             missingParams.add("'mac'");
         }
-
+        if (StringUtils.trimToNull(this.device.getUuid()) == null) {
+            missingParams.add("'uuid'");
+        }
         if (missingParams.size() > 0) {
             errorMsg = "Parameter" + (missingParams.size() == 1 ? " [" : "s [") + StringUtils.join(missingParams, ",")
                     + (missingParams.size() == 1 ? "] is " : "] are ") + "mandatory and must be configured";
@@ -114,55 +103,15 @@ public class FoobotHandler extends BaseThingHandler {
             return;
         }
 
-        this.refreshIntervalInMinutes = config.refreshIntervalInMinutes;
-        if (this.refreshIntervalInMinutes == null || this.refreshIntervalInMinutes < 5) {
-            logger.warn(
-                    "Refresh interval time [{}] is not valid. Refresh interval time must be at least 5 minutes.  Setting to 7 sec",
-                    this.refreshIntervalInMinutes);
-            this.refreshIntervalInMinutes = FoobotBindingConstants.DEFAULT_REFRESH_PERIOD_MINUTES;
-        }
-
         this.retrieveFoobotJob = scheduler.schedule(() -> retrieveFoobot(), 0, TimeUnit.SECONDS);
     }
 
     private void retrieveFoobot() {
 
-        List<FoobotDevice> devices;
+        List<FoobotDevice> devices = this.account.getDeviceList();
         String errorMsg;
 
-        if (this.account == null) {
-
-            String urlStr = FoobotBindingConstants.URL_TO_FETCH_UUID.replace("%username%",
-                    StringUtils.trimToEmpty(config.username));
-            logger.debug("URL = {}", urlStr);
-            ContentResponse response;
-
-            // Run the HTTP request and get the list of all foobot devices belonging to the user from foobot.io
-            Request request = httpClient.newRequest(urlStr).timeout(3, TimeUnit.SECONDS);
-            request.header("accept", "application/json");
-            request.header("X-API-KEY-TOKEN", config.apiKey);
-
-            try {
-                response = request.send();
-                logger.debug("foobotResponse = {}", response);
-
-                if (response.getStatus() != 200) {
-                    errorMsg = response.getContentAsString();
-                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR, errorMsg);
-                    return;
-                }
-                // Map the JSON response to list of objects
-                Type listType = new TypeToken<ArrayList<FoobotDevice>>() {
-                }.getType();
-                String userDevices = response.getContentAsString();
-                devices = GSON.fromJson(userDevices, listType);
-            } catch (ExecutionException | TimeoutException | InterruptedException ex) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
-                return;
-            }
-        } else {
-            devices = this.account.getAssociatedDevices();
-        }
+        boolean deviceFound = false;
 
         if (devices == null) {
             errorMsg = "No devices found on this account.";
@@ -170,15 +119,15 @@ public class FoobotHandler extends BaseThingHandler {
             return;
         }
 
-        for (FoobotDevice ob : devices) {
+        for (FoobotDevice fb : devices) {
             // Compare the mac address to each record in order to fetch the UUID of the current device.
-            if (config.mac.equals(ob.getMac())) {
-                this.device = ob;
+            if (this.device.getUuid().equals(fb.getUuid())) {
+                deviceFound = true;
                 break;
             }
         }
 
-        if (this.device == null) {
+        if (!deviceFound) {
             errorMsg = "No device found for this MAC address.";
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
             return;
@@ -192,11 +141,11 @@ public class FoobotHandler extends BaseThingHandler {
      * Start the job refreshing the Sensor data from Foobot device
      */
     private void startAutomaticRefresh() {
-        int delay = (config.refreshIntervalInMinutes != null) ? config.refreshIntervalInMinutes.intValue()
+        int delay = (this.account.getRefreshIntervalInMinutes() != null) ? this.account.getRefreshIntervalInMinutes()
                 : FoobotBindingConstants.DEFAULT_REFRESH_PERIOD_MINUTES;
         refreshDataJob = scheduler.scheduleWithFixedDelay(() -> {
             // Request new sensor data from foobot.io service
-            foobotData = updateFoobotData();
+            this.foobotData = updateFoobotData();
 
             // Update all channels from the updated Sensor data
             for (Channel channel : getThing().getChannels()) {
@@ -223,16 +172,24 @@ public class FoobotHandler extends BaseThingHandler {
         }
     }
 
-    private void updateChannel(String channelId, FoobotJsonData foobotResponse) {
+    private Request createNewRquest(String url) {
+
+        Request request = httpClient.newRequest(url).timeout(3, TimeUnit.SECONDS);
+        request.header("accept", "application/json");
+        request.header("X-API-KEY-TOKEN", this.account.getApiKey());
+
+        return request;
+    }
+
+    private void updateChannel(String channelId, @Nullable FoobotJsonData foobotResponse) {
         Object value = null;
         try {
             value = getValue(channelId, foobotResponse);
+        } catch (NullPointerException npe) {
+            logger.debug("NullPointerException while getting Foobot sensor data for channel id = {}: {}", channelId,
+                    npe);
         } catch (RuntimeException rte) {
-            logger.debug("RuntimeException while getting Foobot sensor data for channel id = {}: {}",
-                    channelId.toUpperCase(), rte);
-        } catch (Exception e) {
-            logger.debug("Foobot device doesn't provide sensor data for channel id = {}: {}", channelId.toUpperCase(),
-                    e);
+            logger.debug("RuntimeException while getting Foobot sensor data for channel id = {}: {}", channelId, rte);
         }
 
         if (value == null) {
@@ -248,18 +205,17 @@ public class FoobotHandler extends BaseThingHandler {
         }
     }
 
+    @Nullable
     private FoobotJsonData updateFoobotData() {
         FoobotJsonData result = null;
-        // Run the HTTP request and get the list of all foobot devices belonging to the user from foobot.io
+
         String urlStr = URL_TO_FETCH_SENSOR_DATA.replace("%uuid%", StringUtils.trimToEmpty(this.device.getUuid()));
         urlStr = urlStr.replace("%sensors%", StringUtils.trimToEmpty(""));
         logger.debug("URL = {}", urlStr);
 
         ContentResponse response;
 
-        Request request = httpClient.newRequest(urlStr).timeout(3, TimeUnit.SECONDS);
-        request.header("accept", "application/json");
-        request.header("X-API-KEY-TOKEN", config.apiKey);
+        Request request = createNewRquest(urlStr);
 
         try {
             // Run the HTTP request and get the JSON response from foobot.io
@@ -276,28 +232,26 @@ public class FoobotHandler extends BaseThingHandler {
                 result = GSON.fromJson(responseData, FoobotJsonData.class);
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
             }
-        } catch (ExecutionException ee) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ee.getMessage());
-        } catch (TimeoutException te) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, te.getMessage());
-        } catch (InterruptedException ie) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ie.getMessage());
+        } catch (ExecutionException | TimeoutException | InterruptedException ex) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
         }
 
         return result;
     }
 
-    public static BigDecimal getValue(String channelId, FoobotJsonData data) {
+    @Nullable
+    public static BigDecimal getValue(String channelId, @Nullable FoobotJsonData data) {
         if (data == null) {
             return null;
         }
         return getBigDecimalForLabelAndData(channelId, data);
     }
 
+    @Nullable
     private static BigDecimal getBigDecimalForLabelAndData(String channelId, FoobotJsonData data) {
 
         if (channelId != null && FoobotBindingConstants.SENSOR_MAP.containsKey(channelId)) {
-            return new BigDecimal(data.getDatapointsList()
+            return new BigDecimal(data.getDatapoints().get(0)
                     .get(data.getSensors().indexOf(FoobotBindingConstants.SENSOR_MAP.get(channelId))));
         } else {
             return null;

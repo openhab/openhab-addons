@@ -17,7 +17,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -78,18 +77,16 @@ public class FoobotHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected void removeHandler(@NonNull ThingHandler thingHandler) {
+    protected void removeHandler(ThingHandler thingHandler) {
         ServiceRegistration<DiscoveryService> serviceRegistration = discoveryServiceRegistrations
                 .get(thingHandler.getThing().getUID());
 
-        if (serviceRegistration != null) {
-            // remove discovery service, if bridge handler is removed
-            FoobotAccountDiscoveryService service = (FoobotAccountDiscoveryService) bundleContext
-                    .getService(serviceRegistration.getReference());
-            serviceRegistration.unregister();
-            if (service != null) {
-                service.deactivate();
-            }
+        // remove discovery service, if bridge handler is removed
+        FoobotAccountDiscoveryService service = (FoobotAccountDiscoveryService) bundleContext
+                .getService(serviceRegistration.getReference());
+        serviceRegistration.unregister();
+        if (service != null) {
+            service.deactivate();
         }
     }
 

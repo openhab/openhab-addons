@@ -9,7 +9,7 @@
 		<label>Foobot Account</label>
 		<description>Retrieves your Foobot account and all the devices associated with.</description>
 		<config-description>
-			<parameter name="apikey" type="text" required="true">
+			<parameter name="apiKey" type="text" required="true">
 				<context>password</context>
 				<label>API Key</label>
 				<description>You can request your API Key from https://api.foobot.io/apidoc/index.html </description>
@@ -42,30 +42,6 @@
 			<channel id="gpi" typeId="gpi" />
 		</channels>
 
-		<config-description>
-			<parameter name="apikey" type="text" required="true">
-				<context>password</context>
-				<label>API Key</label>
-				<description>You can request your API Key from https://api.foobot.io/apidoc/index.html </description>
-			</parameter>
-
-			<parameter name="username" type="text" required="true">
-				<label>Username</label>
-				<description>The Username you use to login to your Foobot account.</description>
-			</parameter>
-
-			<parameter name="mac" type="text" required="true">
-				<label>MAC Address</label>
-				<description>MAC address of your device. You can find it in the Foobot App under settings.</description>
-			</parameter>
-
-			<parameter name="refreshIntervalInMinutes" type="integer" min="5" required="false">
-				<label>Refresh Interval</label>
-				<description>Specifies the refresh interval in minutes.</description>
-				<default>7</default>
-			</parameter>
-
-		</config-description>
 	</thing-type>
 
 	<channel-type id="temperature">
@@ -101,7 +77,7 @@
 		<label>PM</label>
 		<description>Particulate Matter Level</description>
 		<category>Sensor</category>
-		<state readOnly="true" pattern="%.1f μg/m³"></state>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 	<channel-type id="gpi">
 		<item-type>Number:Dimensionless</item-type>

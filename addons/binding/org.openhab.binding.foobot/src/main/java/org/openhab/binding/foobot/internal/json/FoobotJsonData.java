@@ -26,7 +26,7 @@ public class FoobotJsonData {
     private List<String> units;
     private List<List<String>> datapoints;
 
-    private List<String> datapointsList;
+    // private List<String> datapointsList;
 
     public String getUuid() {
         return uuid;
@@ -74,10 +74,5 @@ public class FoobotJsonData {
 
     public void setDatapoints(List<List<String>> datapoints) {
         this.datapoints = datapoints;
-    }
-
-    public List<String> getDatapointsList() {
-        this.datapointsList = datapoints.get(0);
-        return datapointsList;
     }
 }

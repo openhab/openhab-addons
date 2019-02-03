@@ -50,8 +50,18 @@ public class FoobotAccountDiscoveryService extends AbstractDiscoveryService {
     private void retrieveFoobots() {
         List<FoobotDevice> foobots = handler.getDeviceList();
 
+        List<Thing> thingList = this.handler.getThing().getThings();
+
         for (FoobotDevice foobot : foobots) {
-            addThing(foobot);
+
+            if (thingList.stream().filter(t -> t.getBridgeUID().getId().equals(foobot.getUuid())).findAny()
+                    .orElse(null) == null) {
+                logger.debug(
+                        "retrieveFoobots(): New Foobot found, with uuid {}. It will be added to the Account handler",
+                        foobot.getUuid());
+                addThing(foobot);
+            }
+            // otherwise, current foobot is already in the account handler
         }
     }
 
@@ -88,7 +98,7 @@ public class FoobotAccountDiscoveryService extends AbstractDiscoveryService {
 
         Map<String, Object> properties = new HashMap<>();
         ThingUID thingUID = new ThingUID(FoobotBindingConstants.THING_TYPE_FOOBOT, foobot.getUuid());
-        properties.put(FoobotBindingConstants.CONFIG_APIKEY, handler.apiKey);
+        // properties.put(FoobotBindingConstants.CONFIG_APIKEY, handler.getApiKey());
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, foobot.getUuid());
         properties.put(FoobotBindingConstants.CONFIG_UUID, foobot.getUuid());
         properties.put(Thing.PROPERTY_MAC_ADDRESS, foobot.getMac());

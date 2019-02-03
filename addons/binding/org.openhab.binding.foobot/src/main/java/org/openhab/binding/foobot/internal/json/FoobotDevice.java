@@ -19,11 +19,17 @@ public class FoobotDevice {
 
     private String uuid;
 
-    private int userId;
+    // private int userId;
 
     private String mac;
 
     private String name;
+
+    public FoobotDevice(String uuid, String mac, String name) {
+        this.uuid = uuid;
+        this.mac = mac;
+        this.name = name;
+    }
 
     public String getUuid() {
         return uuid;
@@ -31,14 +37,6 @@ public class FoobotDevice {
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
-    }
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
     }
 
     public String getMac() {
